@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
   int fd;
   int rc;
 
-  if (argc != 2 ) {
+  if (argc != 2) {
     printf("usage: %s filename\n", argv[0]);
     exit(2);
   }
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
   }
 
   rc = lseek(fd, 10, SEEK_SET);
-  if (rc == -1 ) {
+  if (rc == -1) {
     perror("selinux_seek:lseek");
     close(fd);
     exit(1);

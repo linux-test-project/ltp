@@ -25,7 +25,7 @@ main (int argc, char *argv[])
 	int		n, remain;
 	static	char	buf[BUFSIZ];
 
-	for (fsize = 0; fsize < BUFSIZ; ) {
+	for (fsize = 0; fsize < BUFSIZ;) {
 		buf[fsize++] = 'U';
 		buf[fsize++] = '\n';
 	}

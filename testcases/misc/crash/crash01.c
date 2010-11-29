@@ -169,7 +169,7 @@ main (int argc, char *argv[])
   char *msg;
   int lc;
 
-  if ((msg=parse_opts(argc, argv, options, help)) != (char *) NULL )
+  if ((msg=parse_opts(argc, argv, options, help)) != (char *) NULL)
 	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
   if (v_opt)

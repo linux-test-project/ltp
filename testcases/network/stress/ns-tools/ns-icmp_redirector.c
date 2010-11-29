@@ -173,7 +173,7 @@ parse_options(int argc, char *argv[], struct redirector_info *redirector_p, int 
     int optc;			/* option */
     double opt_d;		/* option value in double */
 
-    while ((optc = getopt(argc, argv, "I:N:t:bdh")) != EOF ) {
+    while ((optc = getopt(argc, argv, "I:N:t:bdh")) != EOF) {
 	switch (optc) {
 	    case 'I':
 		redirector_p->ifname = strdup(optarg);

@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	if (-1 == (s = flistxattr(fd, list, 1024)) ) {
+	if (-1 == (s = flistxattr(fd, list, 1024))) {
 		perror("flistxattr");
 		return 1;
 	}

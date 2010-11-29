@@ -809,7 +809,7 @@ int term()
 int massmurder()
 {
 	int i;
-	for (i=0 ; i < MAXCHILD ; i++ )
+	for (i=0 ; i < MAXCHILD ; i++)
 	{
 		if (allchild[i])
 		{

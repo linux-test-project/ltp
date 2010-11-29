@@ -453,7 +453,7 @@ parse_options(int argc, char *argv[], struct icmp6_info *info_p, int *bg_p)
     mld_saddrs = NULL;
     max_resp = MY_MLD_MAX_HOST_REPORT_DELAY;
 
-    while ((optc = getopt(argc, argv, "I:S:M:D:t:w:obdhs:iLnvma:r:")) != EOF ) {
+    while ((optc = getopt(argc, argv, "I:S:M:D:t:w:obdhs:iLnvma:r:")) != EOF) {
 	switch (optc) {
 	    case 'I':
 		if (if_nametoindex(optarg) == 0) {

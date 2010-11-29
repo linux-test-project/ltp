@@ -97,7 +97,7 @@ main(int argc, char **argv)
 
     write_html_head(f4);
     i=0;
-    while (fgets(line1, 100, f1) ) {
+    while (fgets(line1, 100, f1)) {
 	   fgets(line2, 100, f2);
 
 	 if (p=strstr(line1,"\n")) *(p+1)=0;
@@ -106,7 +106,7 @@ main(int argc, char **argv)
 	 strcpy(line3,line1);
 	 line3[strlen(line3)-1]=0;
 
-	 while (strlen(line3) < 40 ) {
+	 while (strlen(line3) < 40) {
 	     strcat(line3," ");
 	 }
 
@@ -132,7 +132,7 @@ main(int argc, char **argv)
 	     else {
 	         k=0; p=line3;
 	         while (*p++ != 0) {
-	             if ((*p != ' ') && (*p != '\n') ) k++;
+	             if ((*p != ' ') && (*p != '\n')) k++;
 	         }
 	         if (k > 0) {
 	             fprintf(f4, "<tt>%s</tt><br>\n", line3);
@@ -144,7 +144,7 @@ main(int argc, char **argv)
 	 else if (strstr(line3,"Create")) fprintf (f4, "</td>\n");
 
 	 line2[strlen(line2)-1]=0;
-	 while (strlen(line2) < 40 ) {
+	 while (strlen(line2) < 40) {
 	     strcat(line2," ");
 	 }
 

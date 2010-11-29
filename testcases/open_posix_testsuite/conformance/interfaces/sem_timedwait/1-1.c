@@ -35,7 +35,7 @@ int main() {
 	int val, sts;
 
 
-        if (sem_init (&mysemp, 0, 1) == -1 ) {
+        if (sem_init (&mysemp, 0, 1) == -1) {
                 perror(ERROR_PREFIX "sem_init");
                 return PTS_UNRESOLVED;
         }
@@ -45,14 +45,14 @@ int main() {
 
 	/* Lock Semaphore */
 	sts = sem_timedwait(&mysemp, &ts);
-        if (sts == -1 ) {
+        if (sts == -1) {
 		perror(ERROR_PREFIX "sem_timedwait");
 		return PTS_UNRESOLVED; 
 	}
 
 
 	/* Value of Semaphore */
-	if (sem_getvalue(&mysemp, &val) == -1 ) {
+	if (sem_getvalue(&mysemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 	}

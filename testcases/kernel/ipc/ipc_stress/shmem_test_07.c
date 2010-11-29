@@ -439,7 +439,7 @@ int main (int argc, char **argv)
 	ulptr=checksum[i];
 	for (j=0; j<num_readers; j++) {
 
-		if (cksum[i] != *ulptr )
+		if (cksum[i] != *ulptr)
 			error ("checksums do not match", __LINE__);
 	
 		}
@@ -704,7 +704,7 @@ void sys_error (const char *msg, int line)
 void error (const char *msg, int line)
 {
 	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	if (line >= 260 )
+	if (line >= 260)
 	release ();
 	exit (-1);
 }

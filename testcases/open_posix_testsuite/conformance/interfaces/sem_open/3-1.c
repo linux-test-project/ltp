@@ -79,13 +79,13 @@ int main()
 	/* Opening the same existance SEM with write mode */
 	mysemp = sem_open(semname, O_CREAT, 0222 , 1);
 
-	if (mysemp  != SEM_FAILED )
+	if (mysemp  != SEM_FAILED)
 	{
   		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
-	if (errno == EACCES )  {
+	if (errno == EACCES)  {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

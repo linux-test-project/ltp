@@ -188,7 +188,7 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
 	inparms = NULL;
 	outparms = NULL;
 
-	        if (copy_from_user(&tif, (void *)l, sizeof(tif)) ) {
+	        if (copy_from_user(&tif, (void *)l, sizeof(tif))) {
                 /* Bad address */
                 return(-EFAULT);
         }
@@ -247,7 +247,7 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
         }
 
         /* copy tif structure into l so that can be used by user program */
-        if (copy_to_user((void*)l, &tif, sizeof(tif)) ) {
+        if (copy_to_user((void*)l, &tif, sizeof(tif))) {
                 printk("tpci: Unsuccessful copy_to_user of tif\n");
                 rc = -EFAULT;
         }

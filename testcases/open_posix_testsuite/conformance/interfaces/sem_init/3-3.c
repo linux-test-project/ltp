@@ -103,7 +103,7 @@ int main( int argc, char * argv[] )
 	/* Create the shared memory segment */
 	fd = shm_open( "/sem_init_3-2", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR );
 
-	if (fd == -1 )
+	if (fd == -1)
 	{
 		UNRESOLVED( errno, "Failed to open shared memory segment" );
 	}
@@ -111,7 +111,7 @@ int main( int argc, char * argv[] )
 	/* Size the memory segment to 1 page size. */
 	ret = ftruncate( fd, sysconf( _SC_PAGESIZE ) );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to size the shared memory segment" );
 	}
@@ -119,7 +119,7 @@ int main( int argc, char * argv[] )
 	/* Map these sengments in the process memory space */
 	buf = mmap( NULL, sysconf( _SC_PAGESIZE ), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0 );
 
-	if (buf == MAP_FAILED )
+	if (buf == MAP_FAILED)
 	{
 		UNRESOLVED( errno, "Failed to mmap the shared memory segment" );
 	}
@@ -129,7 +129,7 @@ int main( int argc, char * argv[] )
 	/* Initialize the semaphore */
 	ret = sem_init( sem, 1, 0 );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to init the semaphore" );
 	}
@@ -137,18 +137,18 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if (child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1)
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if (child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0)
 	{
 		/* Post the sempahore */
 		ret = sem_post( sem );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Failed to post the semaphore" );
 		}
@@ -160,12 +160,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if (ctl != child )
+	if (ctl != child)
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
 	{
 		FAILED( "Child exited abnormally" );
 	}
@@ -173,12 +173,12 @@ int main( int argc, char * argv[] )
 	/* Check semaphore count */
 	ret = sem_getvalue( sem , &status );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to get semaphore count" );
 	}
 
-	if (status != 1 )
+	if (status != 1)
 	{
 		FAILED( "The semaphore count was not increased in other process" );
 	}
@@ -187,14 +187,14 @@ int main( int argc, char * argv[] )
 	/* Clean things */
 	ret = sem_destroy( sem );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to destroy the semaphore" );
 	}
 
 	ret = shm_unlink( "/sem_init_3-2" );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to unlink shared memory" );
 	}

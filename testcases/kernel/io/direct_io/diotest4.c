@@ -531,7 +531,7 @@ main(int argc, char *argv[])
 	}
 	else {
 		ret = write(fd, (char *)((ulong)ADDRESS_OF_MAIN & pagemask), count);
-		if (ret < 0 ) {
+		if (ret < 0) {
 			tst_resm(TFAIL,"write to read-only space. returns %d: %s",
 				ret, strerror(errno));
 			l_fail = TRUE;

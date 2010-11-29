@@ -80,7 +80,7 @@ static void	parse_args( int argc, char *argv[] )
 	int		opt, errflag = 0;
 	int		bflag = 0, dflag = 0, tflag = 0;
 
-	while ((opt = getopt( argc, argv, "b:d:t:Dh?" )) != EOF ) {
+	while ((opt = getopt( argc, argv, "b:d:t:Dh?" )) != EOF) {
 	    switch ( opt ) {
 		case 'b':
 		    if (bflag)
@@ -88,7 +88,7 @@ static void	parse_args( int argc, char *argv[] )
 		    else {
 			bflag++;
 			breadth = atoi( optarg );
-			if (breadth <= 0 )
+			if (breadth <= 0)
 			    errflag++;
 		    }
 		    break;
@@ -98,7 +98,7 @@ static void	parse_args( int argc, char *argv[] )
 		    else {
 			dflag++;
 			depth = atoi( optarg );
-			if (depth <= 0 )
+			if (depth <= 0)
 			    errflag++;
 		    }
 		    break;
@@ -108,7 +108,7 @@ static void	parse_args( int argc, char *argv[] )
 		    else {
 			tflag++;
 			timeout = atoi( optarg );
-			if (timeout <= 0 )
+			if (timeout <= 0)
 			    errflag++;
 		    }
 		    break;
@@ -150,7 +150,7 @@ int	num_nodes( int b, int d )
 	 * in this simplistic loop, we start sum at 1 (above) to compensate
 	 * and do the computations from 1->d below.
 	 */
-	for (n = 1; n <= d; n++ ) {
+	for (n = 1; n <= d; n++) {
 		partial_exp *= b;
 		sum += partial_exp;
 	}
@@ -232,7 +232,7 @@ int	synchronize_children( c_info *parent ) {
 	 * them know they can now create their children (if they are not
 	 * leaf nodes)).  Otherwise, go to sleep waiting for the broadcast.
 	 */
-	if (node_count == num_nodes(breadth, cdepth) ) {
+	if (node_count == num_nodes(breadth, cdepth)) {
 
 	    /*
 	     * Increase the current depth variable, as the tree is now
@@ -318,7 +318,7 @@ int	doit( c_info *parent ) {
 	c_info 		*info_p;
 	struct timespec	timer;
 
-	if (parent != NULL ) {
+	if (parent != NULL) {
 	    /*
 	     * Synchronize with our siblings so that all the children at
 	     * a given level have been created before we allow those children
@@ -359,7 +359,7 @@ int	doit( c_info *parent ) {
 	    fflush( stdout );
 	}
 
-	if (cdepth <= depth ) {
+	if (cdepth <= depth) {
 
 	    /*
 	     * Since the tree is not yet complete (it is not yet tall enough),
@@ -371,7 +371,7 @@ int	doit( c_info *parent ) {
 	    /*
 	     * Create breadth children.
 	     */
-	    for (child = 0; child < breadth; child++ ) {
+	    for (child = 0; child < breadth; child++) {
 		if (debug) {
 		    printf( "thread %d making child %d, ptr=%p\n", my_index,
 		 		       child, &(info_p->threads[child]) );
@@ -400,7 +400,7 @@ int	doit( c_info *parent ) {
 	    /*
 	     * Wait for our children to finish before we exit ourselves.
 	     */
-	    for (child = 0; child < breadth; child++ ) {
+	    for (child = 0; child < breadth; child++) {
 		if (debug) {
 		    printf( "attempting join on thread %p\n",
 		      &(info_p->threads[child]) );
@@ -434,13 +434,13 @@ int	doit( c_info *parent ) {
 	    /*
 	     * Talk to siblings (children of the same parent node).
 	     */
-	    if (breadth > 1 ) {
+	    if (breadth > 1) {
 
-		for (child = 0; child < breadth; child++ ) {
+		for (child = 0; child < breadth; child++) {
 		    /*
 		     * Don't talk to yourself.
 		     */
-		    if (parent->child_ptrs[child] != info_p ) {
+		    if (parent->child_ptrs[child] != info_p) {
 			if (debug) {
 			    printf( "thread %d locking talk_mutex\n",
 			      my_index );
@@ -481,7 +481,7 @@ int	doit( c_info *parent ) {
 		}
 
 		pthread_mutex_lock( &info_p->talk_mutex );
-		if (info_p->talk_count < (breadth - 1) ) {
+		if (info_p->talk_count < (breadth - 1)) {
 		    time( &timer.tv_sec );
 		    timer.tv_sec += (unsigned long)timeout * 60;
 		    timer.tv_nsec = (unsigned long)0;
@@ -556,7 +556,7 @@ int	main( int argc, char *argv[] ) {
 	/*
 	 * Allocate array of pthreads descriptors and initialize variables.
 	 */
-	for (ind = 0; ind < total; ind++ ) {
+	for (ind = 0; ind < total; ind++) {
 
 		if ( (child_info[ind].threads =
 		    (pthread_t *)malloc( breadth * sizeof(pthread_t) ))

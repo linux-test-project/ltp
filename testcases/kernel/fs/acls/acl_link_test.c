@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	if (-1 == (s = listxattr(argv[1], list, 1024)) ) {
+	if (-1 == (s = listxattr(argv[1], list, 1024))) {
 		perror("listxattr");
 		return 1;
 	}

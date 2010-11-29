@@ -196,7 +196,7 @@ main(int argc, char *argv[])
 	bind_addr.sin_addr.s_addr = INADDR_ANY;
         bind_addr.sin_port = htons(SCTP_TESTPORT_1);
 	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
-	if (error < 0 )
+	if (error < 0)
 		tst_brkm(TBROK, tst_exit, "bind() with INADDR_ANY address and "
 			 "non-zero port error:%d, errno:%d", error, errno);
 
@@ -213,7 +213,7 @@ main(int argc, char *argv[])
 	succeed*/
         bind_addr.sin_port = 0;
 	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
-	if (error < 0 )
+	if (error < 0)
 		tst_brkm(TBROK, tst_exit, "bind() with INADDR_ANY address and "
 			 "zero port error:%d, errno:%d", error, errno);
 
@@ -231,7 +231,7 @@ main(int argc, char *argv[])
         bind_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
         bind_addr.sin_port = 0;
 	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
-	if (error < 0 )
+	if (error < 0)
 		tst_brkm(TBROK, tst_exit, "bind() with local address and "
 			 "zero port error:%d, errno:%d", error, errno);
 
@@ -256,7 +256,7 @@ main(int argc, char *argv[])
 
 	/*listen() TEST15:listen on a bound socket, should succeed*/
 	error = listen(sk, 3);
-	if (error < 0 )
+	if (error < 0)
 		tst_brkm(TBROK, tst_exit, "listen() on a bound socket "
 			 "error:%d, errno:%d", error, errno);
 

@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 		return PTS_PASS;
 	}
 
-	if (errno != 0 ) {
+	if (errno != 0) {
 		perror("Unexpected error");
 		return PTS_FAIL;
 	}

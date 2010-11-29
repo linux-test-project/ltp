@@ -137,7 +137,7 @@ void output( char * string, ... )
 	nw = time( NULL );
 	now = localtime( &nw );
 
-	if (now == NULL )
+	if (now == NULL)
 		printf( ts );
 	else
 		printf( "[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec );
@@ -194,7 +194,7 @@ int main()
 
 	/* Register the signal handler with signal */
 
-	if (SIG_ERR == signal( SIGNAL, handler_1 ) )
+	if (SIG_ERR == signal( SIGNAL, handler_1 ))
 	{
 		UNRESOLVED( errno, "Failed to register signal handler with signal()" );
 	}
@@ -209,7 +209,7 @@ int main()
 
 	ret = sigemptyset( &sa.sa_mask );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
@@ -217,7 +217,7 @@ int main()
 	/* Install the signal handler for SIGPROF */
 	ret = sigaction( SIGNAL, &sa, &save );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to set signal handler" );
 	}
@@ -225,12 +225,12 @@ int main()
 	/* Check the signal handler has been set up */
 	ret = raise( SIGNAL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret , "Failed to raise the signal" );
 	}
 
-	if (called != 0 )
+	if (called != 0)
 	{
 		FAILED( "handler not executed" );
 	}
@@ -238,7 +238,7 @@ int main()
 	/* Restore the first signal handler */
 	ret = sigaction( SIGNAL, &save, 0 );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to set signal handler" );
 	}
@@ -246,12 +246,12 @@ int main()
 	/* Check the signal handler has been set up */
 	ret = raise( SIGNAL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret , "Failed to raise the signal" );
 	}
 
-	if (called != 1 )
+	if (called != 1)
 	{
 		FAILED( "handler not executed" );
 	}

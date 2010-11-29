@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   int fd;
   int rc;
 
-  if (argc != 3 ) {
+  if (argc != 3) {
     printf("usage: %s filename context\n", argv[0]);
     exit(2);
   }
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   }
 
   rc = flock(fd, LOCK_EX);
-  if (rc == -1 ) {
+  if (rc == -1) {
     perror("selinux_lock:LOCK_EX");
     exit(1);
   }

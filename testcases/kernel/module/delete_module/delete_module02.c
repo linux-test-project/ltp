@@ -169,7 +169,7 @@ main(int argc, char **argv)
 		Tst_count = 0;
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if ((tdat[testno].setup) && (tdat[testno].setup()) ) {
+			if ((tdat[testno].setup) && (tdat[testno].setup())) {
 		 		/* setup() failed, skip this test */
 		 		continue;
 		 	}

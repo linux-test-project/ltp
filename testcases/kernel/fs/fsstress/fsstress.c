@@ -391,7 +391,7 @@ int main(int argc, char **argv)
 
 	make_freq_table();
 
-	while ((loopcntr <= loops) || (loops == 0) )
+	while ((loopcntr <= loops) || (loops == 0))
 	{
 		if (!dirname) {
 			/* no directory specified */

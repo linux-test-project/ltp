@@ -36,7 +36,7 @@ int main(int ac,char *av[])
   int maxfiles=0xFFFFFF;
   int createfiles=0;
 
-  if (ac > 1 ) {
+  if (ac > 1) {
     sscanf(av[1],"%x",&maxfiles);
     if (maxfiles==0) {
       printf("maxfile argument error (0 value)\n");
@@ -61,7 +61,7 @@ int main(int ac,char *av[])
 	for (l = 0 ; l < 0xFF ; l++) {
 	  sprintf(filename,"%s%s%s%2.2x",dir1,dir2,dir3,l);
 	  create_file(filename);
-	  if (maxfiles < createfiles++ ) {
+	  if (maxfiles < createfiles++) {
 	    goto end;
 	  }
 	}
@@ -89,7 +89,7 @@ void makedir(char *dir1)
 
 void changedir(char *dir)
 {
-  if (chdir(dir) < 0 ) {
+  if (chdir(dir) < 0) {
     perror(dir);
     exit(1);
   }
@@ -108,7 +108,7 @@ void create_file(char *filename)
   if ((randomsize=box_muler(0,MAXFSIZE)) < 0) {
     randomsize = MAXFSIZE;
   }
-  if (write(fd,wbuf,randomsize) < 0 ) {
+  if (write(fd,wbuf,randomsize) < 0) {
     fprintf(stderr,"\nTotal create files: %d\n",filecount);
     perror(filename);
     exit(1);

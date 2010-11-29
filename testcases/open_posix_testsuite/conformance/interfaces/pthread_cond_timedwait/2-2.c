@@ -52,7 +52,7 @@ void *t1_func(void *arg)
 	t1_start = 1;
 
 	/* Set time for pthread_cond_timedwait to wait */
-	if (gettimeofday(&curtime, NULL) !=0 ) {
+	if (gettimeofday(&curtime, NULL) !=0) {
 		fprintf(stderr,"Fail to get current time\n");
 		exit(PTS_UNRESOLVED);
 	}

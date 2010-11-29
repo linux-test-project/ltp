@@ -97,13 +97,13 @@ void * threaded ( void * arg )
 	int i;
 	/* yield the control some times */
 
-	for (i = 0; i < 10; i++ )
+	for (i = 0; i < 10; i++)
 		sched_yield();
 
 	/* Now tell we're done */
 	ret = clock_gettime( CLOCK_REALTIME, arg );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to get clock time" );
 	}
@@ -125,7 +125,7 @@ int main( int argc, char *argv[] )
 	/* Initialize thread attribute objects */
 	scenar_init();
 
-	for (sc = 0; sc < NSCENAR; sc++ )
+	for (sc = 0; sc < NSCENAR; sc++)
 	{
 #if VERBOSE > 0
 		output( "-----\n" );
@@ -133,7 +133,7 @@ int main( int argc, char *argv[] )
 #endif
 		ret = clock_gettime( CLOCK_REALTIME, &ts_pre );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Failed to read clock" );
 		}
@@ -144,7 +144,7 @@ int main( int argc, char *argv[] )
 		{
 				case 0:                        /* Operation was expected to succeed */
 
-				if (ret != 0 )
+				if (ret != 0)
 				{
 					UNRESOLVED( ret, "Failed to create this thread" );
 				}
@@ -153,7 +153,7 @@ int main( int argc, char *argv[] )
 
 				case 1:                        /* Operation was expected to fail */
 
-				if (ret == 0 )
+				if (ret == 0)
 				{
 					UNRESOLVED( -1, "An error was expected but the thread creation succeeded" );
 				}
@@ -164,7 +164,7 @@ int main( int argc, char *argv[] )
 				default:
 #if VERBOSE > 0
 
-				if (ret == 0 )
+				if (ret == 0)
 				{
 					output( "Thread has been created successfully for this scenario\n" );
 				}
@@ -177,25 +177,25 @@ int main( int argc, char *argv[] )
 
 		}
 
-		if (ret == 0 )                        /* The new thread is running */
+		if (ret == 0)                        /* The new thread is running */
 		{
 
 			ret = pthread_join( child, NULL );
 
-			if (ret != 0 )
+			if (ret != 0)
 			{
 				UNRESOLVED( ret, "Unable to join a thread" );
 			}
 
 			ret = clock_gettime( CLOCK_REALTIME, &ts_post );
 
-			if (ret != 0 )
+			if (ret != 0)
 			{
 				UNRESOLVED( errno, "Failed to read clock" );
 			}
 
 			/* Now check that ts_pre <= ts_th <= ts_post */
-			if (( ts_th.tv_sec < ts_pre.tv_sec )
+			if (( ts_th.tv_sec < ts_pre.tv_sec)
 			        || ( ( ts_th.tv_sec == ts_pre.tv_sec ) && ( ts_th.tv_nsec < ts_pre.tv_nsec ) ) )
 			{
 				output( "Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec );
@@ -204,7 +204,7 @@ int main( int argc, char *argv[] )
 				FAILED( "Child returned before its creation ???" );
 			}
 
-			if (( ts_post.tv_sec < ts_th.tv_sec )
+			if (( ts_post.tv_sec < ts_th.tv_sec)
 			        || ( ( ts_post.tv_sec == ts_th.tv_sec ) && ( ts_post.tv_nsec < ts_th.tv_nsec ) ) )
 			{
 				output( "Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec );

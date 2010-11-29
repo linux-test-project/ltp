@@ -85,7 +85,7 @@ static void timeout_handler (int sig)
       		nanosleep (&ts, NULL);
 	}
 
-	if (0 != killed && pid != killed ) {
+	if (0 != killed && pid != killed) {
 		printf("\n Failed to kill child process ");
 		exit(1);
 	}
@@ -114,7 +114,7 @@ int  main(int argc, char **argv)
 	signal( SIGALRM, timeout_handler);
 	alarm(TIMEOUT);
 	termpid = TEMP_FAILURE_RETRY (waitpid (pid, &status, 0));
-	if (-1 == termpid ) {
+	if (-1 == termpid) {
 		printf("\n Waiting for test program failed, Exiting \n");
 		exit(1);
 	}

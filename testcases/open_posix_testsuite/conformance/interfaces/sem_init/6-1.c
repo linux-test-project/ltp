@@ -38,7 +38,7 @@ int main()
         sem_init (&mysemp, 0, counter);
 
 
-	if (errno == EINVAL )  {
+	if (errno == EINVAL)  {
 		puts("TEST PASSED");
 		return PTS_PASS;
 	} else {

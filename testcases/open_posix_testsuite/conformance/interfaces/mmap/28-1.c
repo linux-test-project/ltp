@@ -84,7 +84,7 @@ int main()
   flag = MAP_SHARED;
   off = page_size;
   pa = mmap (addr, len, prot, flag, fd, off);
-  if (pa != MAP_FAILED )
+  if (pa != MAP_FAILED)
   {
     printf ("Test Fail: " TNAME " Got no error at mmap()\n");    
     close(fd);

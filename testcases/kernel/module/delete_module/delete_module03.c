@@ -128,7 +128,7 @@ main(int argc, char **argv)
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
 	}
-	if ((system(cmd)) != 0 ) {
+	if ((system(cmd)) != 0) {
 		tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD);
 		return 1;
 	}
@@ -139,7 +139,7 @@ main(int argc, char **argv)
 		tst_resm(TBROK, "sprintf failed");
 		goto END;
 	}
-        if ((system(cmd)) != 0 ) {
+        if ((system(cmd)) != 0) {
 		tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD_DEP);
 		goto END;
         }
@@ -158,7 +158,7 @@ main(int argc, char **argv)
 		TEST(delete_module(DUMMY_MOD));
 
 		TEST_ERROR_LOG(TEST_ERRNO);
-		if ((TEST_RETURN == (int) EXP_RET_VAL ) &&
+		if ((TEST_RETURN == (int) EXP_RET_VAL) &&
 		     (TEST_ERRNO == EXP_ERRNO) ) {
 			tst_resm(TPASS, "Expected failure for module in-use, "
 		 			"errno: %d", TEST_ERRNO);

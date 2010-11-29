@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 
 	sleep(EXPIREDELTA+1);
 
-	if ((caughtalarm == 1) && (caughtabort == 1) ) { 
+	if ((caughtalarm == 1) && (caughtabort == 1)) { 
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

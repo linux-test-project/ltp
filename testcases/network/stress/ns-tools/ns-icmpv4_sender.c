@@ -182,7 +182,7 @@ parse_options(int argc, char *argv[], struct icmpv4_fake *fake_p)
     int is_specified_daddr_ll = 0;
     int is_specified_daddr = 0;
 
-    while ((optc = getopt(argc, argv, "I:S:M:D:s:t:dhcfilLpv")) != EOF ) {
+    while ((optc = getopt(argc, argv, "I:S:M:D:s:t:dhcfilLpv")) != EOF) {
 	switch (optc) {
 	    case 'I':
 		fake_p->src_ifname = strdup(optarg);

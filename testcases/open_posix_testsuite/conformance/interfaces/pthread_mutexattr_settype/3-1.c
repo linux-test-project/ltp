@@ -56,14 +56,14 @@ int main()
 	}
 
 	/* Lock the mutex. */
-	if (pthread_mutex_lock(&mutex) != 0 )
+	if (pthread_mutex_lock(&mutex) != 0)
 	{
 		perror("Error locking the mutex first time around.\n");
 		return PTS_UNRESOLVED;
 	}
 			
 	/* Lock the mutex again.  Here, an error should be returned. */
-	if (pthread_mutex_lock(&mutex) == 0 )
+	if (pthread_mutex_lock(&mutex) == 0)
 	{
 		perror("Test FAILED: Did not return error when locking an already locked mutex.\n");
 		return PTS_FAIL;

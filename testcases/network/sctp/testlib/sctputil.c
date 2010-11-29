@@ -113,7 +113,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 		 * are NUL terminated...
 		 */
 		printf("DATA(%zi):  ", msg_len);
-		while (msg_len > 0 ) {
+		while (msg_len > 0) {
 			char *text;
 			int len;
 
@@ -121,11 +121,11 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 			len = msg->msg_iov[index].iov_len;
 
                         save = text[msg_len-1];
-			if (len > msg_len ) {
+			if (len > msg_len) {
                                 text[(len = msg_len) - 1] = '\0';
                         }
 
-			if ((msg_len -= len) > 0 ) { index++; }
+			if ((msg_len -= len) > 0) { index++; }
 
 			for (i = 0; i < len - 1; ++i) {
                                 if (!isprint(text[i])) text[i] = '.';
@@ -134,7 +134,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 			printf("%s", text);
 			text[msg_len-1] = save;
 
-			if ((done = !strcmp(text, "exit")) ) { break; }
+			if ((done = !strcmp(text, "exit"))) { break; }
 		}
 	} else {
 		printf("NOTIFICATION: ");

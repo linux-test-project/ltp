@@ -94,12 +94,12 @@ int main( int argc, char * argv[] )
 
 	ret = sem_unlink( SEM_NAME );
 
-	if (ret != -1 )
+	if (ret != -1)
 	{
 		FAILED( "sem_unlink did not return -1" );
 	}
 
-	if (errno != ENOENT )
+	if (errno != ENOENT)
 	{
 		output( "Error %d: %s\n", errno, strerror( errno ) );
 		FAILED( "The error was not ENOENT" );

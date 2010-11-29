@@ -91,7 +91,7 @@ void check_param( pthread_t thread, int policy, int priority )
 
 	/* Check the priority is valid */
 
-	if (priority == -1 )
+	if (priority == -1)
 	{
 		UNRESOLVED( errno, "Wrong priority value" );
 	}
@@ -99,17 +99,17 @@ void check_param( pthread_t thread, int policy, int priority )
 	/* Get the thread's parameters */
 	ret = pthread_getschedparam( thread, &t_pol, &t_parm );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to get thread's parameters" );
 	}
 
-	if (t_pol != policy )
+	if (t_pol != policy)
 	{
 		FAILED( "The thread's policy is not as expected" );
 	}
 
-	if (t_parm.sched_priority != priority )
+	if (t_parm.sched_priority != priority)
 	{
 		FAILED( "The thread's priority is not as expected" );
 	}
@@ -127,7 +127,7 @@ void * threaded ( void * arg )
 
 	ret = pthread_setschedparam( pthread_self(), SCHED_RR, &sp );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to set thread policy -- need to be root?" );
 	}
@@ -142,7 +142,7 @@ void * threaded ( void * arg )
 
 	ret = pthread_setschedparam( pthread_self(), SCHED_RR, &sp );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		/* check the thread attributes have been applied
 		  (we only check what is reported, not the real behavior) 
@@ -176,14 +176,14 @@ int main( int argc, char *argv[] )
 	/* Create the controler thread */
 	ret = pthread_create( &child, NULL, threaded, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "thread creation failed" );
 	}
 
 	ret = pthread_join( child, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join the thread" );
 	}

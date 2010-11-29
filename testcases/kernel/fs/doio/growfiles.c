@@ -403,7 +403,7 @@ char *cptr;			/* temp char pointer */
 extern int Forker_npids;	/* num of forked pid, defined in forker.c */
 struct timeval tv1;
 
-	if (argv[0][0] == '-' )
+	if (argv[0][0] == '-')
 	   reexec=REXEC_DONE;
 	/*
 	 * Determine name of file used to invoke this program
@@ -463,7 +463,7 @@ struct timeval tv1;
 			break;
 
 		case 'C':
-			if (sscanf(optarg, "%i", &write_check_inter) != 1 ) {
+			if (sscanf(optarg, "%i", &write_check_inter) != 1) {
 				fprintf(stderr, "%s%s: --c option arg invalid\n",
 					Progname, TagName);
 				usage();
@@ -472,7 +472,7 @@ struct timeval tv1;
 		       break;
 
 		case 'c':
-			if (sscanf(optarg, "%i", &file_check_inter) != 1 ) {
+			if (sscanf(optarg, "%i", &file_check_inter) != 1) {
 				fprintf(stderr, "%s%s: --c option arg invalid\n",
 					Progname, TagName);
 				usage();
@@ -486,9 +486,9 @@ struct timeval tv1;
 #ifdef CRAY
 			unsetenv("TMPDIR");	/* force the use of auto_dir */
 #endif
-			if (stat(auto_dir, &statbuf) == -1 ) {
-			    if (mkdir(auto_dir, 0777) == -1 ) {
-				if (errno != EEXIST ) {
+			if (stat(auto_dir, &statbuf) == -1) {
+			    if (mkdir(auto_dir, 0777) == -1) {
+				if (errno != EEXIST) {
 				    fprintf(stderr,
 				        "%s%s: Unable to make dir %s\n",
 				        Progname, TagName, auto_dir);
@@ -497,7 +497,7 @@ struct timeval tv1;
 			    }
 			}
 			else {
-			    if (! (statbuf.st_mode & S_IFDIR) )  {
+			    if (! (statbuf.st_mode & S_IFDIR))  {
 				fprintf(stderr,
 				    "%s%s: %s already exists and is not a directory\n",
 				    Progname, TagName, auto_dir);
@@ -507,7 +507,7 @@ struct timeval tv1;
 			break;
 
 		case 'D':
-			if (sscanf(optarg, "%i", &Debug) != 1 ) {
+			if (sscanf(optarg, "%i", &Debug) != 1) {
 				fprintf(stderr, "%s%s: --D option arg invalid\n",
 					Progname, TagName);
 				usage();
@@ -516,7 +516,7 @@ struct timeval tv1;
 			break;
 
 		case 'e':
-			if (sscanf(optarg, "%i", &Maxerrs) != 1 ) {
+			if (sscanf(optarg, "%i", &Maxerrs) != 1) {
 				fprintf(stderr, "%s%s: --e option arg invalid\n",
 					Progname, TagName);
 				usage();
@@ -537,8 +537,8 @@ struct timeval tv1;
 				usage();
 				exit(1);
 			}
-			if (ret == 2 ) {
-				if (chr == 'b' || chr == 'B' )
+			if (ret == 2) {
+				if (chr == 'b' || chr == 'B')
 					grow_incr *= 4096;
 				else {
 					fprintf(stderr,
@@ -551,7 +551,7 @@ struct timeval tv1;
 			break;
 
 		case 'H':
-			if (sscanf(optarg, "%f", &delaysecs) != 1 || delaysecs < 0 ) {
+			if (sscanf(optarg, "%f", &delaysecs) != 1 || delaysecs < 0) {
 
 				fprintf(stderr, "%s%s: --H option arg invalid\n",
 					Progname, TagName);
@@ -573,29 +573,29 @@ struct timeval tv1;
 
 		case 'I':
 #if NEWIO
-			if ((io_type=lio_parse_io_arg1(optarg)) == -1 ) {
+			if ((io_type=lio_parse_io_arg1(optarg)) == -1) {
 			    fprintf(stderr,
 				"%s%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
 				Progname, TagName);
 			    exit(1);
 			}
-			if (io_type & LIO_RANDOM )
+			if (io_type & LIO_RANDOM)
 				using_random++;
 #else
-			if ((io_type=parse_io_arg(optarg)) == -1 ) {
+			if ((io_type=parse_io_arg(optarg)) == -1) {
 			    fprintf(stderr,
 				"%s%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
 				Progname, TagName);
 			    exit(1);
 			}
-			if (io_type == 99 ) /* hold-over until tlibio.h */
+			if (io_type == 99) /* hold-over until tlibio.h */
 				using_random++;
 #endif
 			break;
 
 		case 'l':
 			lockfile++;
-			if (lockfile > 2 )
+			if (lockfile > 2)
 			   lockfile=2;	/* lockfile can only be 1 or 2 */
 			break;
 
@@ -644,11 +644,11 @@ struct timeval tv1;
 			break;
 
 		case 'o':
-		        if (strcmp(optarg, "random") == 0 ) {
+		        if (strcmp(optarg, "random") == 0) {
 			    open_flags=RANDOM_OPEN;
 			    using_random++;
 
-		        } else if ((open_flags=parse_open_flags(optarg, NULL)) == -1 ) {
+		        } else if ((open_flags=parse_open_flags(optarg, NULL)) == -1) {
 		            fprintf(stderr, "%s%s: --o arg contains invalid flag\n",
 				Progname, TagName);
 		            exit(1);
@@ -668,7 +668,7 @@ struct timeval tv1;
 
 		case 'P':
 #ifdef CRAY
-			if (strcmp(optarg, "PANIC") != 0 ) {
+			if (strcmp(optarg, "PANIC") != 0) {
 				fprintf(stderr, "%s%s: --P arg must be PANIC\n", Progname, TagName);
 				exit(1);
 			}
@@ -721,15 +721,15 @@ struct timeval tv1;
 			break;
 
 		case 'R':	/* random lseek before write arg: [min-]max*/
-			if (sscanf(optarg, "%i-%i", &min_lseek, &max_lseek) != 2 ) {
+			if (sscanf(optarg, "%i-%i", &min_lseek, &max_lseek) != 2) {
 			    min_lseek=1;    /* same as default in define */
-			    if (sscanf(optarg, "%i%c", &max_lseek, &chr) != 1 ) {
+			    if (sscanf(optarg, "%i%c", &max_lseek, &chr) != 1) {
 				fprintf(stderr, "%s%s: --R option arg invalid: [min-]max\n",
 				    Progname, TagName);
 				exit(1);
 			    }
 			}
-			if (max_lseek < LSK_EOFMINUSGROW ) {
+			if (max_lseek < LSK_EOFMINUSGROW) {
 			    fprintf(stderr, "%s%s: --R option, max_lseek is invalid\n",
 				Progname, TagName);
                             exit(1);
@@ -751,7 +751,7 @@ struct timeval tv1;
 		    	    if (sscanf(optarg, "%i-%i%c", &min_size,
 							&max_size, &chr) != 2 ) {
 			      min_size=1;  
-		      	      if (sscanf(optarg, "%i%c", &max_size, &chr) != 1 ) {
+		      	      if (sscanf(optarg, "%i%c", &max_size, &chr) != 1) {
 				fprintf(stderr,
 				     "%s%s: --r option arg invalid: [min-]max[:mult]\n",
 			    	Progname, TagName);
@@ -761,7 +761,7 @@ struct timeval tv1;
 		  	  }
 			}
 
-			if (max_size < 0 ) {
+			if (max_size < 0) {
 			    fprintf(stderr, "%s%s: --r option, max_size is invalid\n",
 				Progname, TagName);
                             exit(1);
@@ -769,7 +769,7 @@ struct timeval tv1;
 			/*
 			 * If min and max are the same, no randomness
 			 */
-			if (min_size != max_size ) {
+			if (min_size != max_size) {
 			    Mode |= MODE_RAND_SIZE;
 			    using_random++;
  			}
@@ -791,7 +791,7 @@ struct timeval tv1;
 			/* count the number of seeds */
 			cptr=optarg;
 			for (Nseeds=1; *cptr ; Nseeds++) {
-			    if ((filename=strchr(cptr, ',')) == NULL )
+			    if ((filename=strchr(cptr, ',')) == NULL)
 				break;
 			    cptr=filename;
 			    cptr++;
@@ -804,8 +804,8 @@ struct timeval tv1;
 			 */
 			filename=cptr=optarg;
 			for (Nseeds=0; *cptr; Nseeds++) {
-			    if ((filename=strchr(cptr, ',')) == NULL ) {
-				if (sscanf(cptr, "%i", &Seeds[Nseeds]) < 1 ) {
+			    if ((filename=strchr(cptr, ',')) == NULL) {
+				if (sscanf(cptr, "%i", &Seeds[Nseeds]) < 1) {
                                     fprintf(stderr, "%s%s: --s option arg %s invalid\n",
                                         Progname, TagName, cptr);
                                     usage();
@@ -816,7 +816,7 @@ struct timeval tv1;
 			    }
 
 			    *filename='\0';
-			    if (sscanf(cptr, "%i", &Seeds[Nseeds]) < 1 ) {
+			    if (sscanf(cptr, "%i", &Seeds[Nseeds]) < 1) {
                                fprintf(stderr, "%s%s: --s option arg %s invalid\n",
                                         Progname, TagName, cptr);
                                 usage();
@@ -837,8 +837,8 @@ struct timeval tv1;
 				usage();
 				exit(1);
 			}
-			if (ret == 2 ) {
-				if (chr == 'b' || chr == 'B' )
+			if (ret == 2) {
+				if (chr == 'b' || chr == 'B')
 					trunc_incr *= 4096;
 				else {
 					fprintf(stderr,
@@ -874,14 +874,14 @@ struct timeval tv1;
                        if (sscanf(optarg, "%i-%i", &unlink_inter,
 						&unlink_inter_ran) == 2 ) {
 
-			   if (unlink_inter < 0 || unlink_inter_ran < 0 ) {
+			   if (unlink_inter < 0 || unlink_inter_ran < 0) {
                                 fprintf(stderr, "%s%s: --U option arg invalid\n",
                                         Progname, TagName);
                                 usage();
                                 exit(1);
 			   }
 			   /* ensure unlink_inter contains smaller value */
-			   if (unlink_inter > unlink_inter_ran ) {
+			   if (unlink_inter > unlink_inter_ran) {
 				tmp=unlink_inter_ran;
 				unlink_inter_ran=unlink_inter;
 				unlink_inter=tmp;
@@ -899,7 +899,7 @@ struct timeval tv1;
 			break;
 
 	        case 'x':
-			if (reexec != REXEC_DONE )
+			if (reexec != REXEC_DONE)
 			    reexec=REXEC_DOIT;
 			break;
 
@@ -923,20 +923,20 @@ struct timeval tv1;
 		}
 	}
 
-	if (Debug == 1 ) {
+	if (Debug == 1) {
 		cptr = getenv("TOUTPUT");
-		if ((cptr != NULL) && (strcmp( cptr, "NOPASS" ) == 0) ) {
+		if ((cptr != NULL) && (strcmp( cptr, "NOPASS" ) == 0)) {
 			Debug = 0;
 		}
 	}
 
-	if (Pattern == PATTERN_RANDOM ) {
+	if (Pattern == PATTERN_RANDOM) {
 	    no_file_check=1;
-	    if (write_check_inter || file_check_inter )
+	    if (write_check_inter || file_check_inter)
                 printf("%s%s: %d Using random pattern - no data checking will be performed!\n",
 		    Progname, TagName, getpid());
 	}
-	else if (max_lseek == LSK_EOFPLUSGROW || Mode & MODE_GROW_BY_LSEEK ) {
+	else if (max_lseek == LSK_EOFPLUSGROW || Mode & MODE_GROW_BY_LSEEK) {
 	    no_file_check=1;
 
 	    if (file_check_inter)
@@ -945,7 +945,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 
 	}
 
-	if (Mode & MODE_RAND_SIZE )
+	if (Mode & MODE_RAND_SIZE)
 	    grow_incr=max_size;
 
 	set_sig();
@@ -954,7 +954,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	Pid=Opid;
 
 	if (backgrnd) {
-	    if (Debug > 1 )
+	    if (Debug > 1)
 		printf("%s: %d DEBUG2 forking, returning control to the user\n",
 		    Progname, Opid);
 	    background(Progname);	/* give user their prompt back */
@@ -965,7 +965,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	   setpgrp();
 #endif
 
-	if (Debug > 3 ) {
+	if (Debug > 3) {
 #if NEWIO
 	    lio_set_debug(Debug-3);
 #else
@@ -978,36 +978,36 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 * level 3 or higher.
 	 */
 
-        if (Debug > 2 ) {
+        if (Debug > 2) {
 	   
-	    if (Mode & MODE_GROW_BY_LSEEK )
+	    if (Mode & MODE_GROW_BY_LSEEK)
 		printf("%s: %d DEBUG lseeking past end of file, writting a \"w\"\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_OFFSET )
+	    else if (Pattern == PATTERN_OFFSET)
 		printf("%s: %d DEBUG3 %d<byteoffset>%d per word pattern multi-writers.\n",
 		    Progname, Pid, STATIC_NUM, STATIC_NUM);
-	    else if (Pattern == PATTERN_PID )
+	    else if (Pattern == PATTERN_PID)
 		printf("%s: %d DEBUG3 <pid><byteoffset><pid> per word pattern - 1 writer\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_ASCII )
+	    else if (Pattern == PATTERN_ASCII)
 		printf("%s: %d DEBUG3 ascii pattern (vi'able)- allows multiple writers\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_ALT )
+	    else if (Pattern == PATTERN_ALT)
 		printf("%s: %d DEBUG3 alt bit pattern - allows multiple writers\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_CHKER )
+	    else if (Pattern == PATTERN_CHKER)
 		printf("%s: %d DEBUG3 checkerboard pattern - allows multiple writers\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_CNTING )
+	    else if (Pattern == PATTERN_CNTING)
 		printf("%s: %d DEBUG3 counting pattern - allows multiple writers\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_RANDOM )
+	    else if (Pattern == PATTERN_RANDOM)
 		printf("%s: %d DEBUG3 random integer pattern - no write/file checking\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_ONES )
+	    else if (Pattern == PATTERN_ONES)
 		printf("%s: %d DEBUG3 all ones pattern - allows multiple writers\n",
 		    Progname, Pid);
-	    else if (Pattern == PATTERN_ZEROS )
+	    else if (Pattern == PATTERN_ZEROS)
 		printf("%s: %d DEBUG3 all zeros pattern - allows multiple writers\n",
 		    Progname, Pid);
 
@@ -1025,14 +1025,14 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 
 	    printf("%s: %d DEBUG3 Mode = %#o\n", Progname, Pid, Mode);
 
-	    if (open_flags == RANDOM_OPEN )
+	    if (open_flags == RANDOM_OPEN)
 	       printf("%s: %d DEBUG3 open_flags = (random), io_type = %#o\n", Progname,
 		 Pid, io_type);
 	    else
 	       printf("%s: %d DEBUG3 open_flags = %#o, io_type = %#o\n", Progname,
 		 Pid, open_flags, io_type);
 
-	    if (Mode & MODE_RAND_SIZE ) {
+	    if (Mode & MODE_RAND_SIZE) {
 	        printf("%s: %d DEBUG3 random write/trunc:  min=%d, max=%d, mult = %d\n",
 		    Progname, Pid, min_size, max_size, mult_size);
 	    }
@@ -1040,14 +1040,14 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		printf("%s: %d DEBUG3 grow_incr = %d\n",
 		    Progname, Pid, grow_incr);
 	    }
-	    if (Mode & MODE_RAND_LSEEK ) {
-		if (max_lseek == LSK_EOF )
+	    if (Mode & MODE_RAND_LSEEK) {
+		if (max_lseek == LSK_EOF)
 	          printf("%s: %d DEBUG3 random lseek:  min=%d, max=<endoffile>\n",
 		    Progname, Pid, min_lseek);
-		else if (max_lseek == LSK_EOFPLUSGROW )
+		else if (max_lseek == LSK_EOFPLUSGROW)
 	          printf("%s: %d DEBUG3 random lseek:  min=%d, max=<endoffile+iosize>\n",
 		    Progname, Pid, min_lseek);
-		else if (max_lseek == LSK_EOFMINUSGROW )
+		else if (max_lseek == LSK_EOFMINUSGROW)
 	          printf("%s: %d DEBUG3 random lseek:  min=%d, max=<endoffile-iosize>\n",
 		    Progname, Pid, min_lseek);
 		else
@@ -1065,7 +1065,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		printf("%s: %d DEBUG3 no whole file checking will be done\n",
 		    Progname, Pid);
 	   
-	    if (unlink_inter_ran == -1 ) {
+	    if (unlink_inter_ran == -1) {
 		printf("%s: %d DEBUG3 unlink_inter = %d\n",
 		        Progname, Pid, unlink_inter);
 	    } else {
@@ -1073,7 +1073,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
                         Progname, Pid, unlink_inter, unlink_inter_ran);
 	    } 
 
-	    if (Debug > 8 ) {
+	    if (Debug > 8) {
 	       num=sizeof(Open_flags)/sizeof(int);
 	       printf("%s: %d DEBUG9 random open flags values:\n", Progname, Pid);
 	       for (ind=0; ind<num; ind++) {
@@ -1082,7 +1082,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	    }
 	}  /* end of DEBUG > 2 */
 
-	if (Debug > 1 && num_procs > 1 ) {
+	if (Debug > 1 && num_procs > 1) {
 	    printf("%s: %d DEBUG2 about to fork %d more copies\n", Progname,
 		Opid, num_procs-1);
 	}
@@ -1098,24 +1098,24 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 * get random seed if it was not specified by the user.
 	 * This is done after the forks, because pid is used to get the seed.
          */
-	if (Nseeds == 1 ) {
+	if (Nseeds == 1) {
 	    /*
 	     * If only one seed specified, all processes will get that seed.
 	     */
 	    Seed=Seeds[0];
-	} else if (Nseeds > 1 ) {
+	} else if (Nseeds > 1) {
 	    /*
 	     * More than one seed was specified.
 	     * The original process gets the first seed.  Each
 	     * process will be get the next seed in the specified list.
 	     */
-	    if (Opid == Pid ) {
+	    if (Opid == Pid) {
 		Seed=Seeds[0];
 	    } else {
 		/*
 		 * If user didn't specify enough seeds, use default method.
 		 */
-		if (Forker_npids >= Nseeds )
+		if (Forker_npids >= Nseeds)
 		{
 	    	struct timeval ts;
 			gettimeofday(&ts,NULL);
@@ -1139,11 +1139,11 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 
 	random_range_seed(Seed);
 
-        if (using_random && Debug > 0 )
+        if (using_random && Debug > 0)
 	    printf("%s%s: %d DEBUG1 Using random seed of %d\n",
 		Progname, TagName, Pid, Seed);
 
-	if (unlink_inter_ran > 0 ) {
+	if (unlink_inter_ran > 0) {
 	    /*
 	     * Find unlinking file interval.  This must be done after
 	     * the seed was set.   This allows multiple copies to
@@ -1152,7 +1152,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	    tmp=unlink_inter;
 	    unlink_inter=random_range(tmp, unlink_inter_ran, 1, NULL);
 
-	    if (Debug > 2 )
+	    if (Debug > 2)
 		printf("%s: %d DEBUG3 Unlink interval is %d (random %ld - %d)\n",
 		    Progname, Pid, unlink_inter, tmp, unlink_inter_ran);
 	}
@@ -1162,15 +1162,15 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 * This is useful on MPP systems to get the
 	 * child process on another PE.
 	 */
-	if (reexec == REXEC_DOIT && Opid != Pid ) {
-	    if (exec_path == NULL ) {
+	if (reexec == REXEC_DOIT && Opid != Pid) {
+	    if (exec_path == NULL) {
 		exec_path = argv[0];
 		/* Get space for cmd (2 extra, 1 for - and 1 fro NULL */
 		argv[0] = (char *)malloc(strlen(exec_path) + 2);
 		sprintf(argv[0], "-%s", exec_path);
 	    }
 	 
-	    if (Debug > 2 )
+	    if (Debug > 2)
 	        printf("%s: %d DEBUG3 %s/%d: execvp(%s, argv)\n",
 		    Progname, Pid, __FILE__, __LINE__, argv[0]);
 
@@ -1181,12 +1181,12 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	/*
 	 * Determine the number of files to be dealt with
 	 */
-	if (optind == argc ) {
+	if (optind == argc) {
 		/*
 		 * no cmd line files, therfore, set
 		 * the default number of auto created files
 		 */
-		if (! num_auto_files && ! seq_auto_files )
+		if (! num_auto_files && ! seq_auto_files)
 			num_auto_files=1;
 	}
 	else {
@@ -1243,7 +1243,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 
 /**** end filename stuff ****/
 
-	if (time_iterval > 0 )
+	if (time_iterval > 0)
 	{
 		struct timeval ts;
 		gettimeofday(&ts,NULL);
@@ -1265,19 +1265,19 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 
 	}
 
-	if (Debug > 2 ) {
+	if (Debug > 2) {
 		printf("%s: %d DEBUG3 num_files = %d\n",
 			Progname, Pid, num_files);
 	}
 
 #ifndef linux
 	if (pre_alloc_space) {
-		if (iterations == 0 ) {
+		if (iterations == 0) {
 		    fprintf(stderr, "%s%s: %d %s/%d: can NOT pre-alloc and grow forever\n",
 			Progname, TagName, Pid, __FILE__, __LINE__);
 		    exit(1);
 		}
-		if (Mode & MODE_RAND_SIZE ) {
+		if (Mode & MODE_RAND_SIZE) {
 		    fprintf(stderr,
 			"%s%s: %d %s/%d: can NOT pre-alloc and do random io size\n",
 			Progname, TagName, Pid, __FILE__, __LINE__);
@@ -1289,7 +1289,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		/*
 		 * attempt to limit
 		 */
-		if (bytes_to_consume && bytes_to_consume < total_grow_value ) {
+		if (bytes_to_consume && bytes_to_consume < total_grow_value) {
 			total_grow_value=bytes_to_consume;
 		}
 	}
@@ -1320,13 +1320,13 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 */
 	for (Iter_cnt=1; ! stop ; Iter_cnt++) {
 		struct timeval ts;
-	    if (iterations && (Iter_cnt >= iterations+1) ) {
+	    if (iterations && (Iter_cnt >= iterations+1)) {
 		strcpy(reason, "Hit iteration value");
 		stop=1;
 		continue;
 	    }
 		gettimeofday(&ts,NULL);
-	    if ((time_iterval > 0) && (start_time + time_iterval < ts.tv_sec) ) {
+	    if ((time_iterval > 0) && (start_time + time_iterval < ts.tv_sec)) {
 
 		sprintf(reason, "Hit time value of %d", time_iterval);
 		stop=1;
@@ -1354,7 +1354,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		Fileinfo.filename=(char *)filenames+(ind*PATH_MAX);
 
 
-		if (open_flags ==  RANDOM_OPEN ) {
+		if (open_flags ==  RANDOM_OPEN) {
 		   ret=Open_flags[random_range(0, sizeof(Open_flags)/sizeof(int)-1, 1, NULL)];
 		}
 
@@ -1363,11 +1363,11 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 
 		Fileinfo.openflags=ret;
 
-		if (Debug > 3 ) {
+		if (Debug > 3) {
 		    printf("%s: %d DEBUG3 %s/%d: %d Open filename = %s, open flags = %#o %s\n",
 			Progname, Pid, __FILE__, __LINE__, Iter_cnt, filename, ret,
 		        openflags2symbols(ret, ",", NULL));
-		} else if (Debug > 2 ) {
+		} else if (Debug > 2) {
 		    printf("%s: %d DEBUG3 %s/%d: %d filename = %s, open flags = %#o\n",
 			Progname, Pid, __FILE__, __LINE__, Iter_cnt, filename, ret);
 		}
@@ -1375,7 +1375,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		/*
 		 * open file with desired flags.
 		 */
-		if ((fd=open(filename, ret, 0777)) == -1 ) {
+		if ((fd=open(filename, ret, 0777)) == -1) {
 		    fprintf(stderr,
                         "%s%s: %d %s/%d: open(%s, %#o, 0777) returned -1, errno:%d %s\n",
 			Progname, TagName, Pid, __FILE__, __LINE__, filename, ret, errno, strerror(errno));
@@ -1392,11 +1392,11 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		 * preallocation is only done once, if specified.
 		 */
 		if (pre_alloc_space) {
-			if (pre_alloc(fd, total_grow_value) != 0 ) {
+			if (pre_alloc(fd, total_grow_value) != 0) {
 				cleanup();
 				exit(2);
 			}
-			if (Debug > 1 ) {
+			if (Debug > 1) {
 				printf("%s: %d DEBUG2 %s/%d: pre_allocated %ld for file %s\n",
 				    Progname, Pid, __FILE__, __LINE__, total_grow_value, filename);
 			}
@@ -1424,7 +1424,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 			continue;
 		}
 
-		if (growfile(fd, filename, grow_incr, Buffer, &curr_size) != 0 ) { /* BUG:14136 */
+		if (growfile(fd, filename, grow_incr, Buffer, &curr_size) != 0) { /* BUG:14136 */
 			handle_error();
 			lkfile(fd, LOCK_UN, LKLVL1);   /* release lock */
 			close(fd);
@@ -1451,13 +1451,13 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		 * shrink file by desired amount if it is time
 		 */
 
-		if (shrinkfile(fd, filename, trunc_incr, trunc_inter, Mode) != 0 ) {
+		if (shrinkfile(fd, filename, trunc_incr, trunc_inter, Mode) != 0) {
 		    handle_error();
 		}
 
 		lkfile(fd, LOCK_UN, LKLVL1);   /* release lock */
 
-		if (Debug > 4 )
+		if (Debug > 4)
 		    printf("%s: %d DEBUG5 %s/%d: %d Closing file %s fd:%d \n",
 			Progname, Pid, __FILE__, __LINE__, Iter_cnt, filename, fd);
 		close(fd);
@@ -1465,9 +1465,9 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		/*
 		 * Unlink the file if that is desired
 		 */
-		if (unlink_inter && (Iter_cnt % unlink_inter == 0) ) {
+		if (unlink_inter && (Iter_cnt % unlink_inter == 0)) {
 	
-		    if (Debug > 4 )
+		    if (Debug > 4)
 			printf("%s: %d DEBUG5 %s/%d: %d Unlinking file %s\n",
 			    Progname, Pid, __FILE__, __LINE__, Iter_cnt, filename);
 
@@ -1483,7 +1483,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 #ifdef CRAY
 		    ct=_rtc();
 		    end=ct+delaytime;
-        	    while (ct < end ) {
+        	    while (ct < end) {
 		        ct = _rtc();
 		    }
 #else
@@ -1491,7 +1491,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		    gettimeofday(&curtime, NULL);
 		    ct=curtime.tv_sec*USECS_PER_SEC + curtime.tv_usec;
 		    end=ct+delaytime;
-                    while (ct < end ) {
+                    while (ct < end) {
 
 		        gettimeofday(&curtime, NULL);
 		        ct=curtime.tv_sec*USECS_PER_SEC + curtime.tv_usec;
@@ -1505,7 +1505,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	     * and we are starting outside loop over.  Set pre_alloc_space
 	     * to zero otherwise we get in infinite loop
 	     */
-	    if (Iter_cnt == 0 ) {
+	    if (Iter_cnt == 0) {
 		pre_alloc_space=0;
 	    }
 #endif
@@ -1524,14 +1524,14 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	cleanup();
 
 	if (Errors) {
-		if (Debug > 2 ) {
+		if (Debug > 2) {
 		    printf("%s%s: %d DEBUG3 %d error(s) encountered\n",
 			Progname, TagName, Pid, Errors);
 		    printf("%s%s: %d DEBUG3 %s/%d: exiting with value of 1\n", Progname, TagName, Pid, __FILE__, __LINE__);
 		}
 		exit(1);
 	}
-	if (Debug > 2 ) {
+	if (Debug > 2) {
 	    printf("%s%s: %d DEBUG3 %s/%d: no errors, exiting with value of 0\n", Progname, TagName, Pid, __FILE__, __LINE__);
     }
 
@@ -1594,17 +1594,17 @@ int sig;
 {
     int exit_stat = 2;
 
-    if (sig == SIGUSR2 ) {
+    if (sig == SIGUSR2) {
 	fprintf(stdout, "%s%s: %d %s/%d: received SIGUSR2 (%d) - stopping.\n",
 	    Progname, TagName, Pid, __FILE__, __LINE__, sig);
 #ifndef sgi
         signal(sig, sig_handler);	/* allow us to get this signal more than once */
 #endif
        
-    } else if (sig == SIGINT ) {
+    } else if (sig == SIGINT) {
 	/* The user has told us to cleanup, don't pretend it's an error. */
 	exit_stat=0;
-	if (Debug != 0 ) {
+	if (Debug != 0) {
 		fprintf(stderr, "%s%s: %d %s/%d: received unexpected signal: %d\n", Progname, TagName,
 		    Pid, __FILE__, __LINE__, sig);
 	}
@@ -1615,7 +1615,7 @@ int sig;
 
     notify_others();
     cleanup();
-    if (Debug > 2 ) {
+    if (Debug > 2) {
 	printf("%s%s: %d DEBUG3 %s/%d: Exiting with a value of %d\n",
 	       Progname, TagName, Pid, __FILE__, __LINE__, exit_stat);
     }
@@ -1635,11 +1635,11 @@ notify_others()
     extern int Forker_pids[];
     extern int Forker_npids;
 
-    if (Sync_with_others && send_signals == 0 ) {
+    if (Sync_with_others && send_signals == 0) {
 
 #if CRAY
 	send_signals=1; /* only send signals once */
-	if (Debug > 1 )
+	if (Debug > 1)
 	    printf("%s%s: %d DEBUG2 %s/%d: Sending SIGUSR2 to pgrp\n",
 		  Progname, TagName, Pid, __FILE__, __LINE__);
 	killm(C_PGRP, getpgrp(), SIGUSR2);
@@ -1647,8 +1647,8 @@ notify_others()
 	send_signals=1; /* only send signals once */
 
         for (ind=0; ind< Forker_npids; ind++) {
-	    if (Forker_pids[ind] != Pid )
-	        if (Debug > 1 )
+	    if (Forker_pids[ind] != Pid)
+	        if (Debug > 1)
 		    printf("%s%s: %d DEBUG2 %s/%d: Sending SIGUSR2 to pid %d\n",
 		        Progname, TagName, Pid, __FILE__, __LINE__, Forker_pids[ind]);
 	        kill(Forker_pids[ind], SIGUSR2);
@@ -1669,18 +1669,18 @@ handle_error()
     Errors++;
 
 #ifdef CRAY
-    if (Errors & Upanic_on_error ) {
+    if (Errors & Upanic_on_error) {
         upanic(PA_PANIC);
     }
 #endif
 
-    if (Maxerrs && Errors >= Maxerrs ) {
+    if (Maxerrs && Errors >= Maxerrs) {
 	printf("%s%s: %d %s/%d: %d Hit max errors value of %d\n",
 	    Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, Maxerrs);
 	notify_others();
 	cleanup();
 
-        if (Debug > 2 ) {
+        if (Debug > 2) {
             printf("%s%s: %d DEBUG3 %d error(s) encountered\n",
                         Progname, TagName, Pid, Errors);
             printf("%s%s: %d DEBUG3 %s/%d: exiting with value of 1\n", Progname, TagName, Pid, __FILE__, __LINE__);
@@ -1701,14 +1701,14 @@ cleanup()
     int ind;
 
 	if (remove_files) {
-	    if (Debug > 2 )
+	    if (Debug > 2)
 		printf("%s: %d DEBUG3 Removing all %d files\n",
 		    Progname, Pid, num_files);
 	    for (ind=0; ind<=num_files; ind++) {
 		unlink(filenames+(ind*PATH_MAX));
 	    }
 	}
-	if (using_random && Debug > 1 )
+	if (using_random && Debug > 1)
 	    printf("%s%s: %d DEBUG2 Used random seed: %d\n",
 		Progname, TagName, Pid, Seed);
 	return 0;
@@ -1883,11 +1883,11 @@ long *curr_size_ptr;	/* BUG:14136 */
          * This fifo check must be done prior to growfile() returning.
 	 * Also get the current size of the file.
          */
-        if (fstat(fd, &stbuf) != -1 ) {
+        if (fstat(fd, &stbuf) != -1) {
             if (S_ISFIFO(stbuf.st_mode)) {
 		Fileinfo.mode |= MODE_FIFO;
                 Mode |= MODE_FIFO;
-                if (Debug > 3 )
+                if (Debug > 3)
                     printf("%s: %d DEBUG4 %s/%d: file is a fifo - no lseek or truncs,\n",
                         Progname, Pid, __FILE__, __LINE__);
             }
@@ -1901,16 +1901,16 @@ long *curr_size_ptr;	/* BUG:14136 */
 	}
 
 
-        if (grow_incr <= 0 ) {   /* don't attempt i/o if grow_incr <= 0 */
+        if (grow_incr <= 0) {   /* don't attempt i/o if grow_incr <= 0 */
 
 	    Grow_incr=grow_incr;
-	    if (Debug > 2 )
+	    if (Debug > 2)
 		printf("%s: %d DEBUG3 %s/%d: Not attempting to grow, growsize == %d\n",
 		    Progname, Pid, __FILE__, __LINE__, grow_incr);
 	    return grow_incr;
 	}
 
-	if (Mode & MODE_RAND_SIZE ) {
+	if (Mode & MODE_RAND_SIZE) {
 	    grow_incr=random_range(min_size, max_size, mult_size, &errmsg);
 	    if (errmsg != NULL) {
 		fprintf(stderr, "%s%s: %d %s/%d: random_range() failed - %s\n", Progname, TagName, Pid, __FILE__, __LINE__, errmsg);
@@ -1921,24 +1921,24 @@ long *curr_size_ptr;	/* BUG:14136 */
 	else
 	    Grow_incr=grow_incr;
 
-	if (! (Mode & MODE_FIFO) ) {
-	    if ((cur_offset=lseek(fd,0,SEEK_CUR)) == -1 ) {
+	if (! (Mode & MODE_FIFO)) {
+	    if ((cur_offset=lseek(fd,0,SEEK_CUR)) == -1) {
 	        fprintf(stderr, "%s%s: %d %s/%d: tell failed: %s\n",
 		    Progname, TagName, Pid, __FILE__, __LINE__, strerror(errno));
 	        return -1;
 	    }
         }
 
-	if (Mode & MODE_GROW_BY_LSEEK ) {
+	if (Mode & MODE_GROW_BY_LSEEK) {
                 Woffset=fsize;
-		if (Debug > 2 ) {
+		if (Debug > 2) {
 		    printf("%s: %d DEBUG3 %s/%d: Current size of file is %ld\n", Progname,
 			Pid, __FILE__, __LINE__, Woffset);
 		    printf("%s: %d DEBUG3 %s/%d: lseeking to %d byte with SEEK_END\n", Progname,
 			Pid, __FILE__, __LINE__, grow_incr-1);
 		}
 
-		if ((noffset=lseek(fd, grow_incr-1, SEEK_END)) == -1 ) {
+		if ((noffset=lseek(fd, grow_incr-1, SEEK_END)) == -1) {
 			fprintf(stderr, "%s%s: %s/%d: lseek(fd, %d, SEEK_END) failed: %s\n",
 				Progname, TagName, __FILE__, __LINE__, grow_incr-1, strerror(errno));
 			return -1;
@@ -1952,10 +1952,10 @@ long *curr_size_ptr;	/* BUG:14136 */
 		ret=write_buffer(fd, io_type, "w", 1, 0, &errmsg);
 #endif
 
-		if (ret != 1 ) {
+		if (ret != 1) {
 			fprintf(stderr, "%s%s: %d %s/%d: %d %s\n",
 			    Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg);
-			if (ret == -ENOSPC ) {
+			if (ret == -ENOSPC) {
 				cleanup();
 				exit(2);
 			}
@@ -1966,19 +1966,19 @@ long *curr_size_ptr;	/* BUG:14136 */
 
 		lkfile(fd, LOCK_UN, LKLVL0);
 
-                if (Debug > 2 )
+                if (Debug > 2)
                     printf("%s: %d DEBUG3 %s/%d: %d wrote 1 byte to file\n",
                             Progname, Pid, __FILE__, __LINE__, Iter_cnt);
 
 	} else {  /* end of grow by lseek */
 
-		if (Fileinfo.openflags & O_APPEND ) {
+		if (Fileinfo.openflags & O_APPEND) {
 		   /*
 		    * Deal with special case of the open flag containing O_APPEND.
 		    * If it does, the current offset does not matter since the write
 		    * will be done end of the file.
 		    */
-		    if (Debug > 4 )
+		    if (Debug > 4)
 			printf("%s: %d DEBUG5 %s/%d: dealing with O_APPEND condition\n",
 			    Progname, Pid, __FILE__, __LINE__ );
 		    lkfile(fd, LOCK_EX, LKLVL0);	 /* get exclusive lock */
@@ -1987,7 +1987,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 		     * do fstat again to get size of the file.
 		     * This is done inside a file lock (if locks are being used).
 		     */
-        	    if (fstat(fd, &stbuf) != -1 ) {
+        	    if (fstat(fd, &stbuf) != -1) {
             		Woffset = stbuf.st_size;
         	    } else {
             		fprintf(stderr, "%s%s: %d %s/%d: Unable to fstat(%d, &buf), errno:%d %s\n",
@@ -1996,20 +1996,20 @@ long *curr_size_ptr;	/* BUG:14136 */
 			lkfile(fd, LOCK_UN, LKLVL0);     /* release lock */
             		return -1;
         	    }
-		    if (Debug > 2 )
+		    if (Debug > 2)
 			printf("%s: %d DEBUG3 %s/%d: dealing with O_APPEND condition (offset:fsz:%d)\n",
 			    Progname, Pid, __FILE__, __LINE__, (int)stbuf.st_size);
 
 
-		} else if (Mode & MODE_RAND_LSEEK ) {
-                   if (max_lseek == LSK_EOF ) {	/* within file size */
+		} else if (Mode & MODE_RAND_LSEEK) {
+                   if (max_lseek == LSK_EOF) {	/* within file size */
                         noffset=random_range(min_lseek, fsize, 1, NULL);
                    }	
-		   else if (max_lseek == LSK_EOFPLUSGROW ) {
+		   else if (max_lseek == LSK_EOFPLUSGROW) {
 		        /* max to beyond file size */
 			noffset=random_range(min_lseek, fsize+grow_incr, 1, NULL);
 		   }
-		   else if (max_lseek == LSK_EOFMINUSGROW ) {
+		   else if (max_lseek == LSK_EOFMINUSGROW) {
 		        /*
 			 * Attempt to not grow the file.
 			 * If the i/o will fit from min_lseek to EOF,
@@ -2020,7 +2020,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 			 * with whole file checking if file is ever smaller
 			 * than min_lseek.
 			 */
-			if (fsize <= min_lseek + grow_incr )
+			if (fsize <= min_lseek + grow_incr)
 			    noffset=min_lseek;  /* file will still grow */
 			else
 			    noffset=random_range(min_lseek, fsize-grow_incr, 1, NULL);
@@ -2029,12 +2029,12 @@ long *curr_size_ptr;	/* BUG:14136 */
                         noffset=random_range(min_lseek, max_lseek, 1, NULL);
                    }
 
-		   if ((Woffset=lseek(fd, noffset, SEEK_SET)) == -1 ) {
+		   if ((Woffset=lseek(fd, noffset, SEEK_SET)) == -1) {
                         fprintf(stderr, "%s%s: %d %s/%d: lseek(%d, %ld, SEEK_SET) l2 failed: %s\n",
                                 Progname, TagName, Pid, __FILE__, __LINE__, fd, noffset, strerror(errno));
                         return -1;
 		   }
-                   else if (Debug > 2 )
+                   else if (Debug > 2)
                         printf("%s: %d DEBUG3 %s/%d: lseeked to random offset %ld (fsz:%d)\n",
                             Progname, Pid, __FILE__, __LINE__, Woffset,
 			    (int)stbuf.st_size);
@@ -2044,39 +2044,39 @@ long *curr_size_ptr;	/* BUG:14136 */
 		/*
 		 * lseek to end of file only if not fifo
 		 */
-		else if (! (Mode & MODE_FIFO) ) {
-		    if ((Woffset=lseek(fd, 0, SEEK_END)) == -1 ) {
+		else if (! (Mode & MODE_FIFO)) {
+		    if ((Woffset=lseek(fd, 0, SEEK_END)) == -1) {
 			fprintf(stderr, "%s%s: %d %s/%d: lseek(fd, 0, SEEK_END) failed: %s\n",
 				Progname, TagName, Pid, __FILE__, __LINE__, strerror(errno));
 			return -1;
 		    }
-                    else if (Debug > 2 )
+                    else if (Debug > 2)
                         printf("%s: %d DEBUG3 %s/%d: lseeked to end of file, offset %ld\n",
                             Progname, Pid, __FILE__, __LINE__, Woffset);
 		}
 
-		if (Pattern == PATTERN_OFFSET )
+		if (Pattern == PATTERN_OFFSET)
 		    datapidgen(STATIC_NUM, buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_PID )
+		else if (Pattern == PATTERN_PID)
 		    datapidgen(Pid, buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_ASCII )
+		else if (Pattern == PATTERN_ASCII)
 		    dataasciigen(NULL, buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_RANDOM )
+		else if (Pattern == PATTERN_RANDOM)
 		    databingen('r', buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_ALT )
+		else if (Pattern == PATTERN_ALT)
 		    databingen('a', buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_CHKER )
+		else if (Pattern == PATTERN_CHKER)
 		    databingen('c', buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_CNTING )
+		else if (Pattern == PATTERN_CNTING)
 		    databingen('C', buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_ZEROS )
+		else if (Pattern == PATTERN_ZEROS)
 		    databingen('z', buf, grow_incr, Woffset);
-		else if (Pattern == PATTERN_ONES )
+		else if (Pattern == PATTERN_ONES)
 		    databingen('o', buf, grow_incr, Woffset);
 		else
 		    dataasciigen(NULL, buf, grow_incr, Woffset);
 
-		if (Debug > 2 )
+		if (Debug > 2)
 		    printf("%s: %d DEBUG3 %s/%d: attempting to write %d bytes\n",
 			Progname, Pid, __FILE__, __LINE__, grow_incr);
 
@@ -2103,14 +2103,14 @@ long *curr_size_ptr;	/* BUG:14136 */
 		ret=write_buffer(fd, io_type, buf, grow_incr, 0, &errmsg);
 #endif
 
-		if (Mode & MODE_FIFO ) {
+		if (Mode & MODE_FIFO) {
 			/* If it is a fifo then just pretend the file
 			 * offset is where we think it should be.
 			 */
 			tmp = Woffset + grow_incr;
 		}
 		else{
-			if ((tmp=lseek(fd,0,SEEK_CUR)) < 0 ) { /* get offset after the write */
+			if ((tmp=lseek(fd,0,SEEK_CUR)) < 0) { /* get offset after the write */
 				fprintf(stderr, "%s%s: %s/%d: tell(2) failed: %d  %s\n",
 					Progname, TagName, __FILE__, __LINE__, errno, strerror(errno) );
 				return -1;
@@ -2123,9 +2123,9 @@ long *curr_size_ptr;	/* BUG:14136 */
 			 * unspecified--which means we cannot trust what
 			 * tell() told us.  Fudge it here.
 			 */
-			if ((io_type & LIO_IO_ASYNC_TYPES) || (io_type & LIO_RANDOM) ) {
-				if (tmp != Woffset + grow_incr ) {
-					if (Debug > 5 ) {
+			if ((io_type & LIO_IO_ASYNC_TYPES) || (io_type & LIO_RANDOM)) {
+				if (tmp != Woffset + grow_incr) {
+					if (Debug > 5) {
 						printf("%s: %d DEBUG6 %s/%d: posix fudge, forcing tmp (%"PRId64") to match Woffset+grow_incr (%"PRId64")\n",
 						       Progname, Pid, __FILE__, __LINE__, (int64_t)tmp, (int64_t)Woffset+grow_incr);
 					}
@@ -2139,10 +2139,10 @@ long *curr_size_ptr;	/* BUG:14136 */
 
 		lkfile(fd, LOCK_UN, LKLVL0);
 
-		if (ret != grow_incr ) {
+		if (ret != grow_incr) {
 			fprintf(stderr, "%s%s: %d %s/%d: %d %s\n",
 			    Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg);
-			if (ret == -ENOSPC ) {
+			if (ret == -ENOSPC) {
 				cleanup();
 				exit(2);
 			}
@@ -2163,18 +2163,18 @@ long *curr_size_ptr;	/* BUG:14136 */
 		     *
 		     * The pattern written to the file will be considered corrupted.
 		     */
-		    if (Debug > 0 && lockfile ) {
+		    if (Debug > 0 && lockfile) {
 		        printf("%s%s: %d DEBUG1 %s/%d: offset after write(%ld) not as exp(%ld+%d=%ld)\n", 
 			    Progname, TagName, Pid, __FILE__, __LINE__, tmp, Woffset, grow_incr, Woffset+grow_incr);
 			printf("%s%s: %d DEBUG1 %s/%d: %d Assuming file changed by another process, resetting offset:%ld (expect pattern mismatch)\n",
 				Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, tmp-grow_incr);
 		    }
-		    if (Debug > 4 ) {
+		    if (Debug > 4) {
 			printf("%s: %d DEBUG5 %s/%d: about to chop Woffset.  tmp=%ld, grow_incr=%d, Woffset was %ld\n",
 			       Progname, Pid, __FILE__, __LINE__, tmp, grow_incr, Woffset);
 		    }
 		    Woffset=tmp-grow_incr;
-		    if (Woffset < 0 )
+		    if (Woffset < 0)
 			Woffset = 0;
 		}
 
@@ -2188,12 +2188,12 @@ long *curr_size_ptr;	/* BUG:14136 */
 	 */
 	size_grew=(Woffset + Grow_incr) - fsize;
 	if (Debug > 1) {
-	     if (Mode & MODE_FIFO ) {
+	     if (Mode & MODE_FIFO) {
 		printf("%s: %d DEBUG2 %s/%d: file is fifo, %d wrote %d bytes\n",
 		    Progname, Pid, __FILE__, __LINE__, Grow_incr, Iter_cnt);
 	     }
 
-	     else if (size_grew > 0 )
+	     else if (size_grew > 0)
 		printf("%s: %d DEBUG2 %s/%d: %d wrote %d bytes(off:%ld), grew file by %d bytes\n",
                         Progname, Pid, __FILE__, __LINE__, Iter_cnt, Grow_incr, Woffset, size_grew);
 	     else
@@ -2233,14 +2233,14 @@ int just_trunc;		/* lseek has already been done for you */
 	shrink_cnt++;
 
 	if (trunc_inter == 0 || (shrink_cnt % trunc_inter != 0))  {
-	    if (Debug > 3 )
+	    if (Debug > 3)
 		printf("%s: %d DEBUG4 %s/%d: Not shrinking file - not time, iter=%d, cnt=%d\n",
 		    Progname, Pid, __FILE__, __LINE__, trunc_inter, shrink_cnt);
 	    return 0;	/* not this time */
 	}
 
-	if (Mode & MODE_FIFO ) {
-	    if (Debug > 5 )
+	if (Mode & MODE_FIFO) {
+	    if (Debug > 5)
 		printf("%s: %d DEBUG5 %s/%d: Not attempting to shrink a FIFO\n",
 		    Progname, Pid, __FILE__, __LINE__);
 	    return 0;	/* can not truncate fifo */
@@ -2248,21 +2248,21 @@ int just_trunc;		/* lseek has already been done for you */
 
 	lkfile(fd, LOCK_EX, LKLVL0);
 
-	if ((cur_offset=lseek(fd,0,SEEK_CUR)) == -1 ) {
+	if ((cur_offset=lseek(fd,0,SEEK_CUR)) == -1) {
 	    fprintf(stderr, "%s%s: %d %s/%d: tell(%d) failed: %s\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, fd, strerror(errno));
 	    lkfile(fd, LOCK_UN, LKLVL0);
 	    return -1;
 	}
 
-        if (Mode & MODE_RAND_LSEEK ) {
-            if (max_lseek <= -1 ) {
-                if ((new_offset=file_size(fd)) == -1 ) {
+        if (Mode & MODE_RAND_LSEEK) {
+            if (max_lseek <= -1) {
+                if ((new_offset=file_size(fd)) == -1) {
 	            lkfile(fd, LOCK_UN, LKLVL0);
 		    return -1;
 		}
 		
-		if (new_offset < min_lseek )
+		if (new_offset < min_lseek)
 		    new_offset=min_lseek;
 		else
                     new_offset=random_range(min_lseek, new_offset, 1, NULL);
@@ -2272,13 +2272,13 @@ int just_trunc;		/* lseek has already been done for you */
             }
 
 #ifdef CRAY
-            if ((offset=lseek(fd, new_offset, SEEK_SET)) == -1 ) {
+            if ((offset=lseek(fd, new_offset, SEEK_SET)) == -1) {
                 fprintf(stderr, "%s%s: %d %s/%d: lseek(%d, %d, SEEK_SET) l3 failed: %s\n",
                     Progname, TagName, Pid, __FILE__, __LINE__, fd, new_offset, strerror(errno));
 	        lkfile(fd, LOCK_UN, LKLVL0);
                 return -1;
             }
-            else if (Debug > 3 )
+            else if (Debug > 3)
                 printf("%s: %d DEBUG4 %s/%d: lseeked to random offset %d\n",
                     Progname, Pid, __FILE__, __LINE__, offset);
    
@@ -2289,17 +2289,17 @@ int just_trunc;		/* lseek has already been done for you */
 
 	    new_offset = cur_offset-trunc_incr;
 
-	    if (new_offset < 0 )
+	    if (new_offset < 0)
 		new_offset=0;
 
 #ifdef CRAY
-	    if (lseek(fd, new_offset, SEEK_SET) == -1 ) {
+	    if (lseek(fd, new_offset, SEEK_SET) == -1) {
 		fprintf(stderr, "%s%s: %d %s/%d: lseek(fd, %d, SEEK_SET) l4 failed: %s\n",
 			Progname, TagName, Pid, __FILE__, __LINE__, new_offset, strerror(errno));
 	        lkfile(fd, LOCK_UN, LKLVL0);
 		return -1;
 	    }
-            else if (Debug > 3 )
+            else if (Debug > 3)
                 printf("%s: %d DEBUG4 %s/%d: lseeked to offset %d, %d bytes from end\n",
                     Progname, Pid, __FILE__, __LINE__, new_offset, trunc_incr);
 #endif
@@ -2310,7 +2310,7 @@ int just_trunc;		/* lseek has already been done for you */
 	ret=trunc(fd);
 #else
 	ret=ftruncate(fd, new_offset );
-	if ((ret == 0) && (Debug > 3) ) {
+	if ((ret == 0) && (Debug > 3)) {
                 printf("%s: %d DEBUG4 %s/%d: ftruncated to offset %d, %d bytes from end\n",
                     Progname, Pid, __FILE__, __LINE__, new_offset, trunc_incr);
 	}
@@ -2318,7 +2318,7 @@ int just_trunc;		/* lseek has already been done for you */
 
 	lkfile(fd, LOCK_UN, LKLVL0);
 
-	if (ret == -1 ) {
+	if (ret == -1) {
 #ifdef CRAY
 		fprintf(stderr, "%s%s: %d %s/%d: trunc failed: %s\n",
 			Progname, TagName, Pid, __FILE__, __LINE__, strerror(errno));
@@ -2329,7 +2329,7 @@ int just_trunc;		/* lseek has already been done for you */
 		return -1;
 	}
 
-	if (Debug > 2 ) {
+	if (Debug > 2) {
 	    printf("%s: %d DEBUG2 %s/%d: trunc file by %d bytes, to size of = %d bytes\n",
 		Progname, Pid, __FILE__, __LINE__, cur_offset-new_offset, new_offset);
 	}
@@ -2360,14 +2360,14 @@ int mode;       /* write mode */
     cf_count++;
 
     if (cf_inter == 0 || (cf_count % cf_inter != 0)) {
-	if (Debug > 4 )
+	if (Debug > 4)
 	    printf("%s: %d DEBUG5 %s/%d: no write check, not time iter=%d, cnt=%d\n",
 		Progname, Pid, __FILE__, __LINE__, cf_inter, cf_count);
 	return 0;	 /* no check done */
     }
 
-    if (Grow_incr <= 0 ) {
-        if (Debug > 3 )
+    if (Grow_incr <= 0) {
+        if (Debug > 3)
 	    printf("%s: %d DEBUG4 %s/%d: No write validation,  Grow_incr = %d, offset = %ld\n",
 	        Progname, Pid, __FILE__, __LINE__, Grow_incr, Woffset);
         return 0;	/* no check */
@@ -2381,16 +2381,16 @@ int mode;       /* write mode */
      */
     lkfile(fd, LOCK_SH, LKLVL0);
 
-    if ((fsize=file_size(fd)) == -1 )  {
+    if ((fsize=file_size(fd)) == -1)  {
         lkfile(fd, LOCK_UN, LKLVL0);
         return -1;
 
-    } else if (fsize <= Woffset ) {
+    } else if (fsize <= Woffset) {
 	/*
 	 * The file was truncated between write and now.
 	 * The contents of our last write is totally gone, no check.
 	 */
-	if (Debug > 1 )
+	if (Debug > 1)
 	    printf("%s%s: %d DEBUG2 %s/%d: %d File size (%d) smaller than where last wrote (%ld)- no write validation\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, fsize, Woffset);
         lkfile(fd, LOCK_UN, LKLVL0);
@@ -2406,7 +2406,7 @@ int mode;       /* write mode */
 	tmp=Grow_incr;
 	Grow_incr=fsize-Woffset;
 
-	if (Debug > 1 )  {
+	if (Debug > 1)  {
 
 	    printf("%s%s: %d DEBUG2 %s/%d: %d fsz:%d, lost(%d)of wrt(off:%ld, sz:%d), adj=%d\n",
 	    Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, fsize, tmp-Grow_incr, Woffset, tmp, Grow_incr);
@@ -2414,17 +2414,17 @@ int mode;       /* write mode */
 
     }
 
-    if (Debug > 2 )
+    if (Debug > 2)
         printf("%s: %d DEBUG3 %s/%d: about to do write validation, offset = %ld, size = %d\n",
 	    Progname, Pid, __FILE__, __LINE__, Woffset, Grow_incr);
 
-    if (! (mode & MODE_FIFO)  ) {
+    if (! (mode & MODE_FIFO)) {
 
-        if (lseek(fd, Woffset, 0) == -1 ) {
+        if (lseek(fd, Woffset, 0) == -1) {
             fprintf(stderr, "%s%s: %d %s/%d: lseek(fd, %ld, 0) failed: %s\n",
 	        Progname, TagName, Pid, __FILE__, __LINE__, Woffset, strerror(errno));
         }
-        if (Debug > 3 )
+        if (Debug > 3)
 	    printf("%s: %d DEBUG4 %s/%d: lseeked to offset:%ld\n",
 	        Progname, Pid, __FILE__, __LINE__, Woffset);
     }
@@ -2442,12 +2442,12 @@ int mode;       /* write mode */
      * report the error and debug information before releasing
      * the file lock
      */
-    if (ret != Grow_incr ) {
+    if (ret != Grow_incr) {
         fprintf(stderr, "%s%s: %d %s/%d: %d CW %s\n", Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg);
         {
 	    struct stat stbuf;
 	    fstat(fd, &stbuf);
-	    if (Debug > 2 )
+	    if (Debug > 2)
 	        printf("%s%s: %d DEBUG3 %s/%d: fd:%d, offset:%d, fsize:%d, openflags:%#o\n",
 	            Progname, TagName, Pid, __FILE__, __LINE__, fd,
 		    (int)lseek(fd,SEEK_CUR,0),	/* FIXME: 64bit/LFS ? */
@@ -2462,10 +2462,10 @@ int mode;       /* write mode */
 
     lkfile(fd, LOCK_UN, LKLVL0);
 
-    if (Mode & MODE_GROW_BY_LSEEK ) {
+    if (Mode & MODE_GROW_BY_LSEEK) {
 	/* check that all zeros upto last character */
 	for (ptr=Buffer; ptr < (Buffer+Grow_incr-1); ptr++) {
-	    if (*ptr != '\0' ) {
+	    if (*ptr != '\0') {
 	        fprintf(stderr,
 		    "%s%s: %d %s/%d: data mismatch at offset %d, exp:%#o(zerofilled), act:%#o in file %s\n",
 		    Progname, TagName, Pid, __FILE__, __LINE__,
@@ -2476,7 +2476,7 @@ int mode;       /* write mode */
 	    }
 	}
 	/* check that the last char is a 'w' */
-	if (*ptr != 'w' ) {
+	if (*ptr != 'w') {
 	    fprintf(stderr,
 	  "%s%s: %d %s/%d: data mismatch at offset %d, exp:%#o(zerofilled), act:%#o in file %s\n",
 	        Progname, TagName, Pid, __FILE__, __LINE__,
@@ -2488,32 +2488,32 @@ int mode;       /* write mode */
 	return 0;   /* all is well */
 
     }
-    else if (Pattern == PATTERN_OFFSET )
+    else if (Pattern == PATTERN_OFFSET)
 	ret=datapidchk(STATIC_NUM, Buffer, Grow_incr, Woffset, &errmsg);
-    else if (Pattern == PATTERN_PID )
+    else if (Pattern == PATTERN_PID)
 	ret=datapidchk(Pid, Buffer, Grow_incr, Woffset, &errmsg);
-    else if (Pattern == PATTERN_ASCII )
+    else if (Pattern == PATTERN_ASCII)
         ret=dataasciichk(NULL, Buffer, Grow_incr, Woffset, &errmsg);
-    else if (Pattern == PATTERN_RANDOM )
+    else if (Pattern == PATTERN_RANDOM)
 	;	/* no check for random */
-    else if (Pattern == PATTERN_ALT )
+    else if (Pattern == PATTERN_ALT)
         ret=databinchk('a', Buffer, Grow_incr, Woffset, &errmsg);
-    else if (Pattern == PATTERN_CHKER )
+    else if (Pattern == PATTERN_CHKER)
         ret=databinchk('c', Buffer, Grow_incr, Woffset, &errmsg);
-    else if (Pattern == PATTERN_CNTING )
+    else if (Pattern == PATTERN_CNTING)
   	ret=databinchk('C', Buffer, Grow_incr, Woffset, &errmsg);
-    else if (Pattern == PATTERN_ZEROS )
+    else if (Pattern == PATTERN_ZEROS)
     	ret=databinchk('z', Buffer, Grow_incr, Woffset, &errmsg);
-    else if (Pattern == PATTERN_ONES )
+    else if (Pattern == PATTERN_ONES)
     	ret=databinchk('o', Buffer, Grow_incr, Woffset, &errmsg);
     else
 	ret=dataasciichk(NULL, Buffer, Grow_incr, Woffset, &errmsg);
 
-    if (ret >= 0 ) {
+    if (ret >= 0) {
 	fprintf(stderr, "%s%s: %d %s/%d: %d CW %s in file %s\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg, filename);
 
-	if (Debug > 0 )
+	if (Debug > 0)
 	    printf("%s%s: %d DEBUG1 %s/%d: **fd:%d, lk:%d, offset:%ld, sz:%d open flags:%#o %s\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, fd, lockfile,
 		Woffset, Grow_incr, Fileinfo.openflags, openflags2symbols(Fileinfo.openflags, ",", NULL));
@@ -2522,7 +2522,7 @@ int mode;       /* write mode */
 	return 1;
     }
 
-    if (Debug > 6 )
+    if (Debug > 6)
         printf("%s: %d DEBUG7 %s/%d: No corruption detected on write validation , offset = %ld, size = %d\n",
             Progname, Pid, __FILE__, __LINE__, Woffset, Grow_incr);
 
@@ -2553,7 +2553,7 @@ int no_file_check;	/* if set, do not do file content check */
 	cf_count++;
 
 	if (cf_inter == 0 || (cf_count % cf_inter != 0)) {
-		if (Debug > 4 )
+		if (Debug > 4)
 		    printf("%s: %d DEBUG5 %s/%d: No file check - not time, iter=%d, cnt=%d\n",
 			Progname, Pid, __FILE__, __LINE__, cf_inter, cf_count);
 		return 0;	 /* no check done */
@@ -2563,7 +2563,7 @@ int no_file_check;	/* if set, do not do file content check */
 	 * if we can't determine file content, don't bother checking
 	 */
         if (no_file_check) {
-		if (Debug > 4 )
+		if (Debug > 4)
 		    printf("%s: %d DEBUG5 %s/%d: No file check, lseek grow or random lseeks\n",
 			Progname, Pid, __FILE__, __LINE__);
 		return 0;
@@ -2576,13 +2576,13 @@ int no_file_check;	/* if set, do not do file content check */
 	 */
 	lkfile(fd, LOCK_SH, LKLVL0);
 
-	if ((fsize=file_size(fd)) == -1 )  {
+	if ((fsize=file_size(fd)) == -1)  {
 	    lkfile(fd, LOCK_UN, LKLVL0);
 	    return -1;
 	}
 
-        if (fsize == 0 ) {
-	    if (Debug > 2 )
+        if (fsize == 0) {
+	    if (Debug > 2)
             printf("%s: %d DEBUG3 %s/%d: No file validation, file size == 0\n",
                 Progname, Pid, __FILE__, __LINE__);
 
@@ -2590,16 +2590,16 @@ int no_file_check;	/* if set, do not do file content check */
 	    return 0;
 	}
 
-	if (Debug > 2 )
+	if (Debug > 2)
             printf("%s: %d DEBUG3 %s/%d: about to do file validation\n",
 	        Progname, Pid, __FILE__, __LINE__);
 
-        if (fsize > MAX_FC_READ ) {
+        if (fsize > MAX_FC_READ) {
 	    /*
 	     * read the file in MAX_FC_READ chuncks.
 	     */
 
-	    if ((buf=(char *)malloc(MAX_FC_READ)) == NULL ) {
+	    if ((buf=(char *)malloc(MAX_FC_READ)) == NULL) {
 	        fprintf(stderr, "%s%s: %s/%d: malloc(%d) failed: %s\n", Progname, TagName,
 		    __FILE__, __LINE__, MAX_FC_READ, strerror(errno));
 	       lkfile(fd, LOCK_UN, LKLVL0);
@@ -2611,8 +2611,8 @@ int no_file_check;	/* if set, do not do file content check */
 	    lkfile(fd, LOCK_SH, LKLVL0);  /* get lock on file before getting file size */
 
 	    rd_cnt=0;
-	    while (rd_cnt < fsize ) {
-	        if (fsize - rd_cnt > MAX_FC_READ )
+	    while (rd_cnt < fsize) {
+	        if (fsize - rd_cnt > MAX_FC_READ)
 		    rd_size=MAX_FC_READ;
 	        else
 		    rd_size=fsize - rd_cnt;
@@ -2624,7 +2624,7 @@ int no_file_check;	/* if set, do not do file content check */
 	        ret=read_buffer(fd, io_type, buf, rd_size, 0, &errmsg);
 #endif
 
-	        if (ret != rd_size ) {
+	        if (ret != rd_size) {
 		    fprintf(stderr, "%s%s: %d %s/%d: %d CFa %s\n",
 			Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg);
 		    free(buf);
@@ -2635,29 +2635,29 @@ int no_file_check;	/* if set, do not do file content check */
 	        read(fd, buf, rd_size);
 ***/
 
-	        if (Pattern == PATTERN_OFFSET )
+	        if (Pattern == PATTERN_OFFSET)
 	            ret=datapidchk(STATIC_NUM, buf, rd_size, rd_cnt, &errmsg);
-	        else if (Pattern == PATTERN_PID )
+	        else if (Pattern == PATTERN_PID)
 	            ret=datapidchk(Pid, buf, rd_size, rd_cnt, &errmsg);
-	        else if (Pattern == PATTERN_ASCII )
+	        else if (Pattern == PATTERN_ASCII)
 	            ret=dataasciichk(NULL, buf, rd_size, rd_cnt, &errmsg);
-	        else if (Pattern == PATTERN_RANDOM )
+	        else if (Pattern == PATTERN_RANDOM)
 	   	  	;  /* no checks for random */
-	        else if (Pattern == PATTERN_ALT )
+	        else if (Pattern == PATTERN_ALT)
 	            ret=databinchk('a', buf, rd_size, rd_cnt, &errmsg);
-	        else if (Pattern == PATTERN_CHKER )
+	        else if (Pattern == PATTERN_CHKER)
 	            ret=databinchk('c', buf, rd_size, rd_cnt, &errmsg);
-	        else if (Pattern == PATTERN_CNTING )
+	        else if (Pattern == PATTERN_CNTING)
 	            ret=databinchk('C', buf, rd_size, rd_cnt, &errmsg);
-	        else if (Pattern == PATTERN_ZEROS )
+	        else if (Pattern == PATTERN_ZEROS)
 	            ret=databinchk('z', buf, rd_size, rd_cnt, &errmsg);
-	        else if (Pattern == PATTERN_ONES )
+	        else if (Pattern == PATTERN_ONES)
 	            ret=databinchk('o', buf, rd_size, rd_cnt, &errmsg);
 	        else
 	            ret=dataasciichk(NULL, buf, rd_size, rd_cnt, &errmsg);
 	
 		   
-	        if (ret >= 0 ) {
+	        if (ret >= 0) {
 		    fprintf(stderr,
 		        "%s%s: %d %s/%d: %d CFp %s in file %s\n",
 		        Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg, filename);
@@ -2678,7 +2678,7 @@ int no_file_check;	/* if set, do not do file content check */
 	    /*
 	     * Read the whole file in a single read
 	     */
-	    if ((buf=(char *)malloc(fsize)) == NULL ) {
+	    if ((buf=(char *)malloc(fsize)) == NULL) {
 			fprintf(stderr, "%s%s: %s/%d: malloc(%d) failed: %s\n", Progname, TagName,
 				__FILE__, __LINE__, fsize, strerror(errno));
 			fflush(stderr);
@@ -2700,34 +2700,34 @@ int no_file_check;	/* if set, do not do file content check */
 	    lkfile(fd, LOCK_UN, LKLVL0);
 
 
-	    if (ret != fsize ) {
+	    if (ret != fsize) {
 		fprintf(stderr, "%s%s: %d %s/%d: %d CFw %s\n",
 		    Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg);
 		ret_val=1;
 	    }
 	    else  {
-	        if (Pattern == PATTERN_OFFSET )
+	        if (Pattern == PATTERN_OFFSET)
 		    ret=datapidchk(STATIC_NUM, buf, fsize, 0, &errmsg);
-	        else if (Pattern == PATTERN_PID )
+	        else if (Pattern == PATTERN_PID)
 		    ret=datapidchk(Pid, buf, fsize, 0, &errmsg);
-		else if (Pattern == PATTERN_ASCII )
+		else if (Pattern == PATTERN_ASCII)
 		    ret=dataasciichk(NULL, buf, fsize, 0, &errmsg);
-		else if (Pattern == PATTERN_RANDOM )
+		else if (Pattern == PATTERN_RANDOM)
 		    ;	/* no check for random */
-		else if (Pattern == PATTERN_ALT )
+		else if (Pattern == PATTERN_ALT)
 		    ret=databinchk('a', buf, fsize, 0, &errmsg);
-		else if (Pattern == PATTERN_CHKER )
+		else if (Pattern == PATTERN_CHKER)
 		    ret=databinchk('c', buf, fsize, 0, &errmsg);
-		else if (Pattern == PATTERN_CNTING )
+		else if (Pattern == PATTERN_CNTING)
 		    ret=databinchk('C', buf, fsize, 0, &errmsg);
-		else if (Pattern == PATTERN_ZEROS )
+		else if (Pattern == PATTERN_ZEROS)
 		    ret=databinchk('z', buf, fsize, 0, &errmsg);
-		else if (Pattern == PATTERN_ONES )
+		else if (Pattern == PATTERN_ONES)
 		    ret=databinchk('o', buf, fsize, 0, &errmsg);
 		else
 		    ret=dataasciichk(NULL, buf, fsize, 0, &errmsg);
 
-		if (ret >= 0 ) {
+		if (ret >= 0) {
 		    fprintf(stderr, "%s%s: %d %s/%d: %d CFw %s in file %s\n",
 			Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg, filename);
 		    fflush(stderr);
@@ -2770,7 +2770,7 @@ lkfile(int fd, int operation, int lklevel)
    
     if (lockfile == lklevel) {
 
-        if (Debug > 5 ) {
+        if (Debug > 5) {
 	    switch (operation) {
  	    case LOCK_UN:
 	        printf("%s: %d DEBUG6 %s/%d: Attempting to release lock on fd %d\n",
@@ -2795,7 +2795,7 @@ lkfile(int fd, int operation, int lklevel)
 	 * either an unretryable error or the action is completed.
 	 */
 
-        if (file_lock(fd, operation, &errmsg) != 0 ) {
+        if (file_lock(fd, operation, &errmsg) != 0) {
 	    printf("%s%s: %d %s/%d: Unable to perform lock operation. %s\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, errmsg);
 
@@ -2803,7 +2803,7 @@ lkfile(int fd, int operation, int lklevel)
 	    return -1;
         }
 
-        if (Debug > 2 ) {
+        if (Debug > 2) {
 	    switch (operation) {
  	    case LOCK_UN:
 	        printf("%s: %d DEBUG3 %s/%d: Released lock on fd %d\n",
@@ -2842,7 +2842,7 @@ pre_alloc(int fd, long size)
 #ifdef CRAY
     long avl;
 
-        if (ialloc(fd, size, IA_CONT, &avl) == -1 ) {
+        if (ialloc(fd, size, IA_CONT, &avl) == -1) {
                 fprintf(stderr, "%s%s %s/%d: Unable to pre-alloc space: ialloc failed: %d  %s\n",
 			Progname, TagName,
                         __FILE__, __LINE__, errno, strerror(errno));
@@ -2858,7 +2858,7 @@ pre_alloc(int fd, long size)
 	f.l_len = size;
 
 	/* non-zeroing reservation */
-	if (fcntl( fd, F_RESVSP, &f ) == -1 ) {
+	if (fcntl( fd, F_RESVSP, &f ) == -1) {
                 fprintf(stderr, "%s%s %s/%d: Unable to pre-alloc space: fcntl(F_RESVSP) failed: %d  %s\n",
 			Progname, TagName,
                         __FILE__, __LINE__, errno, strerror(errno));

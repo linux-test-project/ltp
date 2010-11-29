@@ -155,7 +155,7 @@ main(int ac, char **av)
 #if __WORDSIZE==32
 		tst_resm(TINFO,"Total amount of free huge pages is %d",freepages);
 		tst_resm(TINFO,"Max number allowed for 1 mmap file in 32-bits is 128");
-		if (freepages > 128 )
+		if (freepages > 128)
 		  freepages=128;
 #endif
 		/*

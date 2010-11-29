@@ -107,7 +107,7 @@ int main( int argc, char *argv[] )
                 sa.sa_handler = sigfunc;
                 sa.sa_flags = SA_RESTART;
                 sigemptyset(&sa.sa_mask);
-                if (sigaction(SIGINT, &sa, 0) < 0 )
+                if (sigaction(SIGINT, &sa, 0) < 0)
 		{
 			tst_brkm(TBROK, NULL, "#Sigaction SIGINT failed\n");
 			tst_exit();

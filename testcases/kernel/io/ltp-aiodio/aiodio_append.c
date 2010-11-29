@@ -114,7 +114,7 @@ void aiodio_append(char *filename)
 	memset(&myctx, 0, sizeof(myctx));
 	io_queue_init(NUM_AIO, &myctx);
 
-	for (i = 0; i < NUM_AIO; i++ ) {
+	for (i = 0; i < NUM_AIO; i++) {
 		if (posix_memalign(&bufptr, 4096, AIO_SIZE)) {
 			perror("cannot malloc aligned memory");
 			return;

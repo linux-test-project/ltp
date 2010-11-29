@@ -949,7 +949,7 @@ int check_conclusions(child_args_t *args)
 	rv = stat(args->device, &stat_buf);
 	if (0 == rv) { /* no error on call to stat, compare against -I option */
 		/* files are usually file type */
-		if ((args->flags & CLD_FLG_FILE) && !IS_FILE(stat_buf.st_mode) ) {
+		if ((args->flags & CLD_FLG_FILE) && !IS_FILE(stat_buf.st_mode)) {
 			pMsg(ERR, args, "Can't open non-file filespec with file device type, -If.\n");
 			return(-1);
 		}

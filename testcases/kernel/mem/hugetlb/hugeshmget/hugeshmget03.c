@@ -84,7 +84,7 @@ int main(int ac, char **av)
 	}
 
 	/* The following loop checks looping state if -i option given */
-        if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0 )
+        if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
              tst_brkm(TCONF, tst_exit, "Not enough available Hugepages");
         else             
              huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;

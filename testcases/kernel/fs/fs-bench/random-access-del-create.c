@@ -35,13 +35,13 @@ int main(int ac, char **av)
   int i;
   int m;
 
-  if (ac != 2 ) {
+  if (ac != 2) {
     printf("%s hex-style-filename \n", av[0]);
     printf("ex) %s 00022300\n", av[0]);
     exit(1);
   }
   sscanf(av[1],"%x",&m);
-  if (m < 1 || m > MAXNUM ) {
+  if (m < 1 || m > MAXNUM) {
     printf("out of size %d\n",m);
     exit(1);
   }
@@ -105,7 +105,7 @@ int create_file(char *filename)
   if ((randomsize=box_muler(0,MAXFSIZE)) < 0) {
     randomsize = MAXFSIZE;
   }
-  if (write(fd,wbuf,randomsize) < 0 ) {
+  if (write(fd,wbuf,randomsize) < 0) {
     errorcount++;
     close(fd);
     return(-1);
@@ -125,12 +125,12 @@ int delete_file(char *filename)
   struct stat buf;
   int st;
   st = stat(filename, &buf);
-  if (st < 0 ) {
+  if (st < 0) {
     errorcount++;
     return (-1);
   }
   disk_space_pool += buf.st_size;
-  if (unlink(filename) < 0 ) {
+  if (unlink(filename) < 0) {
     errorcount++;
     return(-1);
   }

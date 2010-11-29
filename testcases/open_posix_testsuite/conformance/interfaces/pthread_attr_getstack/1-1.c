@@ -63,13 +63,13 @@ int main()
 	printf("stack_addr = %p, stack_size = %zu\n", stack_addr, stack_size);
 
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 perror(ERROR_PREFIX "pthread_attr_setstack");
                 exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_attr_getstack(&attr, &saddr, &ssize);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 perror(ERROR_PREFIX "pthread_attr_getstack");
                 exit(PTS_UNRESOLVED);
         }

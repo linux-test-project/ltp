@@ -103,7 +103,7 @@ void init_routine( void )
 	int ret = 0;
 	ret = pthread_mutex_lock( &mtx );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to lock mutex in initializer" );
 	}
@@ -112,7 +112,7 @@ void init_routine( void )
 
 	ret = pthread_mutex_unlock( &mtx );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to unlock mutex in initializer" );
 	}
@@ -129,7 +129,7 @@ void * threaded( void * arg )
 	/* Wait for all threads being created */
 	ret = pthread_barrier_wait( arg );
 
-	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
+	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
 	{
 		UNRESOLVED( ret, "Barrier wait failed" );
 	}
@@ -137,7 +137,7 @@ void * threaded( void * arg )
 	/* Call init routine */
 	ret = pthread_once( &once_ctl, init_routine );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "pthread_once failed" );
 	}
@@ -163,7 +163,7 @@ int main ( int argc, char *argv[] )
 	/* Initialize barrier */
 	ret = pthread_barrier_init( &bar, NULL, NTHREADS );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to init barrier" );
 	}
@@ -176,12 +176,12 @@ int main ( int argc, char *argv[] )
 
 	sa.sa_handler = sighdl;
 
-	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
 
-	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
@@ -199,22 +199,22 @@ int main ( int argc, char *argv[] )
 
 		/* create the threads */
 
-		for (i = 0; i < NTHREADS; i++ )
+		for (i = 0; i < NTHREADS; i++)
 		{
 			ret = pthread_create( &th[ i ], NULL, threaded, &bar );
 
-			if (ret != 0 )
+			if (ret != 0)
 			{
 				UNRESOLVED( ret, "Failed to create a thread" );
 			}
 		}
 
 		/* Then join */
-		for (i = 0; i < NTHREADS; i++ )
+		for (i = 0; i < NTHREADS; i++)
 		{
 			ret = pthread_join( th[ i ], NULL );
 
-			if (ret != 0 )
+			if (ret != 0)
 			{
 				UNRESOLVED( ret, "Failed to join a thread" );
 			}
@@ -223,12 +223,12 @@ int main ( int argc, char *argv[] )
 		/* check the value */
 		ret = pthread_mutex_lock( &mtx );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to lock mutex in initializer" );
 		}
 
-		if (once_chk != 1 )
+		if (once_chk != 1)
 		{
 			output( "Control: %d\n", once_chk );
 			FAILED( "The initializer function did not execute once" );
@@ -236,7 +236,7 @@ int main ( int argc, char *argv[] )
 
 		ret = pthread_mutex_unlock( &mtx );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to unlock mutex in initializer" );
 		}
@@ -250,7 +250,7 @@ int main ( int argc, char *argv[] )
 
 	ret = pthread_barrier_destroy( &bar );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to destroy the barrier" );
 	}

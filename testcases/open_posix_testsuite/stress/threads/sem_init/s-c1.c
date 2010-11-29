@@ -171,7 +171,7 @@ int main ( int argc, char *argv[] )
 		/* Create a new block */
 		sems_tmp = ( test_t * ) malloc( sizeof( test_t ) );
 
-		if (sems_tmp == NULL )
+		if (sems_tmp == NULL)
 		{
 			/* We stop here */
 #if VERBOSE > 0
@@ -188,24 +188,24 @@ int main ( int argc, char *argv[] )
 		/* read clock */
 		ret = clock_gettime( CLOCK_REALTIME, &ts_ref );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Unable to read clock" );
 		}
 
 		/* Open all semaphores in the current block */
-		for (i = 0; i < BLOCKSIZE; i++ )
+		for (i = 0; i < BLOCKSIZE; i++)
 		{
 			ret = sem_init( &( sems_tmp->sems[ i ] ), i & 1, i & 3 );
 
-			if (ret != 0 )
+			if (ret != 0)
 			{
 #if VERBOSE > 0
 				output( "sem_init failed with error %d (%s)\n", errno, strerror( errno ) );
 #endif
 				/* Check error code */
 
-				if (( errno == EMFILE ) || ( errno == ENFILE ) || ( errno == ENOSPC ) || ( errno == ENOMEM ) )
+				if (( errno == EMFILE ) || ( errno == ENFILE ) || ( errno == ENOSPC ) || ( errno == ENOMEM ))
 				{
 					status = 2;
 				}
@@ -217,7 +217,7 @@ int main ( int argc, char *argv[] )
 				break;
 			}
 
-			if (( SEM_MAX > 0 ) && ( nsem > SEM_MAX ) )
+			if (( SEM_MAX > 0 ) && ( nsem > SEM_MAX ))
 			{
 				/* Erreur */
 				FAILED( "sem_open opened more than SEM_NSEMS_MAX semaphores" );
@@ -229,20 +229,20 @@ int main ( int argc, char *argv[] )
 		/* read clock */
 		ret = clock_gettime( CLOCK_REALTIME, &ts_fin );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Unable to read clock" );
 		}
 
-		if (status == 2 )
+		if (status == 2)
 		{
 			/* We were not able to fill this bloc, so we can discard it */
 
-			for (--i; i >= 0; i-- )
+			for (--i; i >= 0; i--)
 			{
 				ret = sem_destroy( &( sems_tmp->sems[ i ] ) );
 
-				if (ret != 0 )
+				if (ret != 0)
 				{
 					UNRESOLVED( errno, "Failed to close" );
 				}
@@ -263,7 +263,7 @@ int main ( int argc, char *argv[] )
 		/* add to the measure list */
 		m_tmp = ( mes_t * ) malloc( sizeof( mes_t ) );
 
-		if (m_tmp == NULL )
+		if (m_tmp == NULL)
 		{
 			/* We stop here */
 #if VERBOSE > 0
@@ -285,7 +285,7 @@ int main ( int argc, char *argv[] )
 		m_cur->_data_open = ( ( ts_fin.tv_sec - ts_ref.tv_sec ) * 1000000 ) + ( ( ts_fin.tv_nsec - ts_ref.tv_nsec ) / 1000 ) ;
 		m_cur->_data_close = 0 ;
 
-		if (nsem >= NSEM_LIMIT )
+		if (nsem >= NSEM_LIMIT)
 			break;
 	}
 
@@ -299,23 +299,23 @@ int main ( int argc, char *argv[] )
 
 	/* Reverse list order */
 
-	while (sems_cur != &sems )
+	while (sems_cur != &sems)
 	{
 		/* read clock */
 		ret = clock_gettime( CLOCK_REALTIME, &ts_ref );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Unable to read clock" );
 		}
 
 		/* Empty the sems_cur block */
 
-		for (i = 0; i < BLOCKSIZE; i++ )
+		for (i = 0; i < BLOCKSIZE; i++)
 		{
 			ret = sem_destroy( &( sems_cur->sems[ i ] ) );
 
-			if (ret != 0 )
+			if (ret != 0)
 			{
 				UNRESOLVED( errno, "Failed to destroy a semaphore" );
 			}
@@ -324,7 +324,7 @@ int main ( int argc, char *argv[] )
 		/* read clock */
 		ret = clock_gettime( CLOCK_REALTIME, &ts_fin );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Unable to read clock" );
 		}
@@ -362,7 +362,7 @@ int main ( int argc, char *argv[] )
 
 #endif
 
-	while (sentinel.next != NULL )
+	while (sentinel.next != NULL)
 	{
 		m_cur = sentinel.next;
 #if (VERBOSE > 5) || defined(PLOT_OUTPUT)
@@ -379,7 +379,7 @@ int main ( int argc, char *argv[] )
 	}
 
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		FAILED( "The function is not scalable, add verbosity for more information" );
 	}
@@ -509,13 +509,13 @@ int parse_measure( mes_t * measures )
 	 * -> average values 
 	 */
 
-	while (cur->next != NULL )
+	while (cur->next != NULL)
 	{
 		cur = cur->next;
 
 		N++;
 
-		if (cur->_data_open != 0 )
+		if (cur->_data_open != 0)
 		{
 			array_max = N;
 			Xavg += ( double ) cur->nsem;
@@ -529,7 +529,7 @@ int parse_measure( mes_t * measures )
 	}
 
 	/* We have the sum; we can divide to obtain the average values */
-	if (array_max != -1 )
+	if (array_max != -1)
 	{
 		Xavg /= array_max;
 		LnXavg /= array_max;
@@ -549,7 +549,7 @@ int parse_measure( mes_t * measures )
 
 	Table = calloc( N, sizeof( struct row ) );
 
-	if (Table == NULL )
+	if (Table == NULL)
 	{
 		UNRESOLVED( errno, "Unable to alloc space for results parsing" );
 	}
@@ -559,14 +559,14 @@ int parse_measure( mes_t * measures )
 
 	cur = measures;
 
-	while (cur->next != NULL )
+	while (cur->next != NULL)
 	{
 		cur = cur->next;
 
 		Table[ N ].X = ( long ) cur->nsem;
 		Table[ N ].LnX = log( ( double ) cur->nsem );
 
-		if (array_max > N )
+		if (array_max > N)
 		{
 			Table[ N ]._x = Table[ N ].X - Xavg ;
 			Table[ N ]._lnx = Table[ N ].LnX - LnXavg;
@@ -599,7 +599,7 @@ int parse_measure( mes_t * measures )
 	output( "Starting first pass...\n" );
 
 #endif
-	for (r = 0; r < array_max; r++ )
+	for (r = 0; r < array_max; r++)
 	{
 		r1_o += ( ( double ) Table[ r ]._y_o / array_max ) * ( double ) Table[ r ]._y_o;
 
@@ -636,7 +636,7 @@ int parse_measure( mes_t * measures )
 	output( "Starting second pass...\n" );
 
 #endif
-	for (r = 0; r < array_max; r++ )
+	for (r = 0; r < array_max; r++)
 	{
 		/* r2 = avg((y - ax -b)²);  t = (y - ax - b) = (y - yavg) - a (x - xavg); */
 		t = ( Table[ r ]._y_o - ( ( _q_o[ 0 ] * Table[ r ]._x ) / _d_o[ 0 ] ) );
@@ -755,11 +755,11 @@ int parse_measure( mes_t * measures )
 
 #endif
 
-	if (array_max != -1 )
+	if (array_max != -1)
 	{
 		/* Compare r1 to other values, with some ponderations */
 
-		if (( r1_o > 1.1 * r2_o ) || ( r1_o > 1.2 * r3_o ) || ( r1_o > 1.3 * r4_o )
+		if (( r1_o > 1.1 * r2_o ) || ( r1_o > 1.2 * r3_o ) || ( r1_o > 1.3 * r4_o)
 		        || ( r1_c > 1.1 * r2_c ) || ( r1_c > 1.2 * r3_c ) || ( r1_c > 1.3 * r4_c ) )
 			ret++;
 

@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 	while (1) {
 
 		/* accept a connection from a client */
-		if ((as = accept(s, &from, &fromlen)) < 0 ) {
+		if ((as = accept(s, &from, &fromlen)) < 0) {
 			tst_resm(TBROK, "accept error = %d\n", errno);
 			if (errno == EINTR)
 				continue;

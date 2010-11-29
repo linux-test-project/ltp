@@ -99,7 +99,7 @@ int main(int ac, char *av[])
 
 	/*--------------------------------------------------------------------*/
 	block1 :
-		if (( fd = open("/dev/tty",O_WRONLY)) >= 0 )
+		if (( fd = open("/dev/tty",O_WRONLY)) >= 0)
 		{
 			close(fd);
 			if (( stream = fopen("/dev/tty","w"))==NULL) {

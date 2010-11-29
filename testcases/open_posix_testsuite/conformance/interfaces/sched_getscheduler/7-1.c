@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		printf("The function sched_getscheduler has successed.\n");
 		return PTS_FAIL;
 	}
-	if (errno != EPERM ) {
+	if (errno != EPERM) {
 		perror("errno is not EPERM");
 		return PTS_FAIL;
 	} else {

@@ -128,12 +128,12 @@ int main(int ac, char **av) {
 
         setup();
 
-        if (ac < 2 ) {
+        if (ac < 2) {
             tst_resm(TFAIL, "%s failed - Usage: %s outfile", TCID, av[0]);
             tst_exit();
 	}
 	fd=open(av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd < 0 ) {
+	if (fd < 0) {
 		tst_resm(TFAIL, "open(%s) failed - errno = %d : %s", av[1], errno, strerror(errno));
 	   cleanup();
 	   tst_exit();

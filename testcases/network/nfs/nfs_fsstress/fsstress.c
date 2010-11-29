@@ -375,7 +375,7 @@ int main(int argc, char **argv)
 			break; 
 		}
 	}
-        while ((loopcntr <= loops) || (loops == 0) ) 
+        while ((loopcntr <= loops) || (loops == 0)) 
         {
 		if (no_xfs && errtag) { 
 			fprintf(stderr, "error injection only works on XFS\n");

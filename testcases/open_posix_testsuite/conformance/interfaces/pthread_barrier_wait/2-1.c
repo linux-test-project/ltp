@@ -105,7 +105,7 @@ int main()
 			}
 		}
 		
-		if (serial != 1 || (serial + normal_rt) != THREAD_NUM )
+		if (serial != 1 || (serial + normal_rt) != THREAD_NUM)
 		{
 			printf("Test FAILED: On %d loop, PTHREAD_BARRIER_SERIAL_THREAD "
 				"should be returned to one unspecified thread\n", loop);

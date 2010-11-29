@@ -69,7 +69,7 @@ int main()
         }
 
 	rc = pthread_attr_getstacksize(&attr, &ssize);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 printf(ERROR_PREFIX "pthread_attr_getstacksize: %s",
 			strerror(rc));
                 exit(PTS_UNRESOLVED);
@@ -77,7 +77,7 @@ int main()
 	/* printf("stack_size = %lu\n", ssize); */
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
-	if (rc !=0 ) {
+	if (rc !=0) {
 		printf(ERROR_PREFIX "failed to create a thread: %s",
 			strerror(rc));
                 exit(PTS_FAIL);

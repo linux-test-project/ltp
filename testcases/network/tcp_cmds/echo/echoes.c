@@ -169,7 +169,7 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 #endif
 
 	pid = getpid();
-	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0 ) {
+	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0) {
 		tst_resm(TBROK, "Failed to create listener socket (pid=%d)",
 				pid);
 		perror("echo:socket");

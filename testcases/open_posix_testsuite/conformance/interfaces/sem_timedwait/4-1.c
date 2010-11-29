@@ -35,7 +35,7 @@ int main() {
 	int unresolved=0, sts;
 
 
-        if (sem_init (&mysemp, 0, 1) == -1 ) {
+        if (sem_init (&mysemp, 0, 1) == -1) {
                 perror(ERROR_PREFIX "sem_init");
 		unresolved=1;
         }
@@ -45,14 +45,14 @@ int main() {
 
 	/* Lock Semaphore */
 	sts = sem_timedwait(&mysemp, &ts);
-        if (sts == -1 ) {
+        if (sts == -1) {
 		perror(ERROR_PREFIX "sem_timedwait");
 		unresolved=1;
 	}
 
 
 	/* unlock Semaphore */
-	if (sem_post(&mysemp) == -1 ) {
+	if (sem_post(&mysemp) == -1) {
 		perror(ERROR_PREFIX "sem_post");
 		unresolved=1;
 	}

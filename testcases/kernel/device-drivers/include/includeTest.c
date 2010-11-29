@@ -101,7 +101,7 @@ static int test_ioctl(struct inode *ino, struct file *f, unsigned int cmd, unsig
 
         printk("Entered the ioctl call.\n");
 
-        if (copy_from_user(&arg, (void *)l, sizeof(int)) ) {
+        if (copy_from_user(&arg, (void *)l, sizeof(int))) {
                 //bad address
                 return(-EFAULT);
         }

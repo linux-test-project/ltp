@@ -53,7 +53,7 @@ int main(void)
 	printf("Current value is: %d\n", val);
 	*/
 
-	if (val <= 0 ) {
+	if (val <= 0) {
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);

@@ -423,7 +423,7 @@ parse_command_line_args(int argc, char *argv[])
 	/*
 	 * process command line options.
 	 */
-	while ((c = getopt(argc, argv, OPTIONS)) != (char)EOF ) {
+	while ((c = getopt(argc, argv, OPTIONS)) != (char)EOF) {
 		char *next;
 
 		switch (c) {

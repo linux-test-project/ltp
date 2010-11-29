@@ -173,7 +173,7 @@ main(void)
 
 	acpt_sk = test_accept(server_sk, (struct sockaddr *)&svr_addr, &len);
 
-	for (i = 0; i < THREAD_SND_RCV_LOOPS; i++ ) {
+	for (i = 0; i < THREAD_SND_RCV_LOOPS; i++) {
 		for (cnt = 1; cnt < THREADS; cnt++) {
 			status = pthread_create(&thread[cnt], &attr,
 						relay, (void*)(uintptr_t)cnt);

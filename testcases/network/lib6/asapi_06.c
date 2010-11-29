@@ -290,7 +290,7 @@ so_test(struct soent *psoe)
 	static int sr = -1;
 	int st;
 
-	if (psoe->so_opt == -1 ) {
+	if (psoe->so_opt == -1) {
 		tst_resm(TBROK, "%s not present at compile time",
 			psoe->so_tname);
 		return;

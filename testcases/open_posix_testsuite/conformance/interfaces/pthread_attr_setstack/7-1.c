@@ -70,7 +70,7 @@ int main()
 	stack_addr = stack_addr + OFFSET;
 	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != EINVAL ) {
+        if (rc != EINVAL) {
                 printf("The function didn't fail when stackaddr "
                        "lacks proper alignment\n");
         }
@@ -79,7 +79,7 @@ int main()
 	stack_size = PTHREAD_STACK_MIN + OFFSET;
 	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != EINVAL ) {
+        if (rc != EINVAL) {
                 printf("The function didn't fail when (stackaddr + stacksize) "
                        "lacks proper alignment\n");
         }

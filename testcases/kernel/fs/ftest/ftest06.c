@@ -312,7 +312,7 @@ static void unlfile(int me, int count)
 	for (; i < count; i++) {
 		ft_mkname(fname, dirname, me, i);
 		val = rmdir(fname);
-		if (val < 0 )
+		if (val < 0)
 			val = unlink(fname);
 		if (val == 0 || errno == ENOENT)
 			continue;

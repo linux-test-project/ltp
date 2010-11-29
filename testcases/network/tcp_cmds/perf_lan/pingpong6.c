@@ -118,7 +118,7 @@ char *argv[];
         
 	/*  Determine Packet Size - either use what was passed in or default */
         printf ("Determine packet size \n");
-	if (argc >= 3 )
+	if (argc >= 3)
 		datalen = atoi( av[2] ) - 8;  
 	else
 		datalen = 64-8;
@@ -234,7 +234,7 @@ int npackets;
                 printf ("Sending packet through created socket \n");
 		i = sendto( s, outpack, cc, 0, &whereto, sizeof(whereto) );
 
-		if (i < 0 || i != cc )  {
+		if (i < 0 || i != cc)  {
 			if (i<0)  perror("sendto");
 			printf("pingpong6: wrote %s %d chars, ret=%d\n",hostname,cc,i);
 			fflush(stdout);
@@ -288,7 +288,7 @@ struct sockaddr_in6 *from; 	/* address of sender */
 
 	printf ("Checking Data.\n");
         for (i=0; i<datalen; i++) {     
-          if ((*datap) != 6 ) {               
+          if ((*datap) != 6) {               
                  printf ("RVW: Data in [%d] is %d\n",i,(*datap));
 		 printf ("Data cannot be validated. \n");
           }

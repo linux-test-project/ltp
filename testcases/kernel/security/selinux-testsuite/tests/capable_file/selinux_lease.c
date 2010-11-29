@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
   int fd;
   int rc;
 
-  if (argc != 2 ) {
+  if (argc != 2) {
     printf("usage: %s filename\n", argv[0]);
     exit(2);
   }
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   }
 
   rc = fcntl(fd, F_SETLEASE, 0);
-  if (rc == -1 ) {
+  if (rc == -1) {
     perror("test_lease:F_SETLEASE");
     close(fd);
     exit(1);

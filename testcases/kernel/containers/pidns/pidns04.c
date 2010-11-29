@@ -82,7 +82,7 @@ static int child_fn1(void *ttype)
        	close(fd[0]);
 
 	/* Comparing the values to make sure pidns is created correctly */
-	if (( cpid == CHILD_PID) && ( ppid == PARENT_PID ) ) {
+	if (( cpid == CHILD_PID) && ( ppid == PARENT_PID )) {
 		tst_resm(TINFO, "PIDNS test is running inside container");
 		kill(INIT_PID, SIGKILL);
 		/* Verifying whether the container init is not killed, "
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 	/* Read in a string from the pipe */
 	nbytes = read(fd[0], readbuffer, sizeof(readbuffer));
 
-	if (nbytes !=0 ) {
+	if (nbytes !=0) {
 		tst_resm(TPASS, "Container init : %s", readbuffer);
 	}
 	else {

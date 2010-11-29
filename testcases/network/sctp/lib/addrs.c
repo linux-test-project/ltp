@@ -105,7 +105,7 @@ sctp_getaddrs(int sd, sctp_assoc_t id,
 						 optname_num_old, optname_old,
 						 addrs);
 		}
-		if (errno != ENOMEM ) {
+		if (errno != ENOMEM) {
 			/*unknown error*/
 			return -1;
 		}

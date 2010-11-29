@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 		printf("The function sched_getparam has successed.\n");
 		return PTS_FAIL;
 	}
-	if (errno != EPERM ) {
+	if (errno != EPERM) {
 		perror("errno is not EPERM: The system allows a non-root" 
 			"user to use sched_getparam()");
 		return PTS_UNRESOLVED;

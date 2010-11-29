@@ -263,7 +263,7 @@ parse_options(int argc, char *argv[], struct igmp_info *info_p, int *bg_p)
     maddr = NULL;
     saddrs = NULL;
 
-    while ((optc = getopt(argc, argv, "I:m:s:r:t:i:obdh")) != EOF ) {
+    while ((optc = getopt(argc, argv, "I:m:s:r:t:i:obdh")) != EOF) {
 	switch (optc) {
 	    case 'I':
 		info_p->ifindex = if_nametoindex(optarg);

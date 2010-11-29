@@ -59,7 +59,7 @@ int sockfd;
    char line[MAXLINE];
 
    printf("sockfd = %d\n", sockfd);
-   for (; ; )
+   for (; ;)
    {
    prtln();
    dprt2(("%s: str_echo(): reading from sockfd %d\n", __FILE__, sockfd));
@@ -140,7 +140,7 @@ main(int argc, char *argv[])
     listen(sockfd, 5);
 
     prtln();
-    for (; ; )
+    for (; ;)
 	{
 	    /* Wait for connection from a client process */
 	    clilen = sizeof(cli_addr);

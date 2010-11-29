@@ -44,7 +44,7 @@ void *t1_func(void *arg)
 	fprintf(stderr,"Thread1 started\n");
 	t1_start = 1;	/* let main thread continue */
 
-	if (gettimeofday(&curtime, NULL) !=0 ) {
+	if (gettimeofday(&curtime, NULL) !=0) {
 		fprintf(stderr,"Fail to get current time\n");
 		exit(PTS_UNRESOLVED);
 	}

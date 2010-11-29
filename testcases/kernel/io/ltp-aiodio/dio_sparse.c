@@ -176,7 +176,7 @@ void dio_sparse(char *filename, int align, int writesize, int filesize)
 	}
 
 	memset(bufptr, 0, writesize);
-	for (i = 0; i < filesize; )  {
+	for (i = 0; i < filesize;)  {
 		if (debug > 1 && ((i % writesize) % 100)) {
 			fprintf(stderr, "DIO write # %d\n", i);
 		}

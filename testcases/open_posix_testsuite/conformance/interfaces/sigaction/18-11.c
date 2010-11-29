@@ -103,7 +103,7 @@ int main()
 	sa.sa_handler = handler;
 	ret = sigemptyset( &sa.sa_mask );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
@@ -111,7 +111,7 @@ int main()
 	/* Install the signal handler for SIGQUIT */
 	ret = sigaction( SIGNAL, &sa, 0 );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to set signal handler" );
 	}
@@ -123,7 +123,7 @@ int main()
 
 	ret = raise( SIGNAL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to raise SIGQUIT" );
 	}

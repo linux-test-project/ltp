@@ -1192,7 +1192,7 @@ static void show_self_test_page(unsigned char * resp, int len)
 	return;
     }
     printf("Self-test results page\n");
-    for (k = 0, ucp = resp + 4; k < 20; ++k, ucp += 20 ) {
+    for (k = 0, ucp = resp + 4; k < 20; ++k, ucp += 20) {
 	n = (ucp[6] << 8) | ucp[7];
 	if ((0 == n) && (0 == ucp[4]))
 	    break;

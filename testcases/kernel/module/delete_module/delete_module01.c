@@ -108,7 +108,7 @@ main(int argc, char **argv)
 			module_name);
 
 		/* Insmod the module */
- 		if ((system( cmd )) != 0 ) {
+ 		if ((system( cmd )) != 0) {
 			tst_resm(TBROK, "Failed to load %s module",
 					module_name);
 			printf("system() failed; cannot test init_module: "

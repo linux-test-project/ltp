@@ -1320,11 +1320,11 @@ struct io_req	*req;
 	addr = Memptr;
 
 
-	if ((req->r_data.read.r_uflags & F_WORD_ALIGNED) ) {
+	if ((req->r_data.read.r_uflags & F_WORD_ALIGNED)) {
 		/*
 		 * Force memory alignment for Direct I/O
 		 */
-		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0) ) {
+		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0)) {
 			addr += fdc->c_memalign - ((long)addr % fdc->c_memalign);
 		}
 	} else {
@@ -1533,7 +1533,7 @@ struct io_req	*req;
 		}
 
 		(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
-		if (addr != Memptr )
+		if (addr != Memptr)
 			memmove( addr, Memptr, nbytes);
 	}
 #else /* CRAY */
@@ -1547,11 +1547,11 @@ struct io_req	*req;
 
 	addr = Memptr;
 
-	if ((req->r_data.write.r_uflags & F_WORD_ALIGNED) ) {
+	if ((req->r_data.write.r_uflags & F_WORD_ALIGNED)) {
 		/*
 		 * Force memory alignment for Direct I/O
 		 */
-		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0) ) {
+		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0)) {
 			addr += fdc->c_memalign - ((long)addr % fdc->c_memalign);
 		}
 	} else {
@@ -1559,7 +1559,7 @@ struct io_req	*req;
 	}
 
 	(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
-	if (addr != Memptr )
+	if (addr != Memptr)
 		memmove( addr, Memptr, nbytes);
 
 #else /* sgi */
@@ -1570,7 +1570,7 @@ struct io_req	*req;
 	addr = Memptr;
 
 	(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
-	if (addr != Memptr )
+	if (addr != Memptr)
 		memmove( addr, Memptr, nbytes);
 #endif /* sgi */
 #endif /* CRAY */
@@ -1948,7 +1948,7 @@ struct io_req	*req;
 	if (lio->r_opcode == LO_WRITE) {
 		Pattern[0] = lio->r_pattern;
 		(*Data_Fill)(Memptr, mem_needed, Pattern, Pattern_Length, 0);
-		if (addr != Memptr )
+		if (addr != Memptr)
 			memmove( addr, Memptr, mem_needed);
 	}
 
@@ -2386,13 +2386,13 @@ char *addr;
 	lc = (sysc->sy_flags & SY_ASYNC) ? LC_START : LC_WAIT;
 
 	status = (struct status *)malloc(sizeof(struct status));
-	if (status == NULL ) {
+	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
 	}
 	status->aioid = (int *)malloc( (nents+1) * sizeof(int) );
-	if (status->aioid == NULL ) {
+	if (status->aioid == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2401,7 +2401,7 @@ char *addr;
 	signo = (aio_strat == A_SIGNAL) ? SIGUSR1 : 0;
 
 	lio_req = (struct listreq *)malloc(nents * sizeof(struct listreq));
-	if (lio_req == NULL ) {
+	if (lio_req == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2465,7 +2465,7 @@ fmt_listio(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 
 	if (errbuf == NULL) {
 		errbuf = (char *)malloc(32768);
-		if (errbuf == NULL ) {
+		if (errbuf == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 			return NULL;
@@ -2499,7 +2499,7 @@ char *addr;
 		   req->r_data.io.r_offset);
 
 	status = (struct status *)malloc(sizeof(struct status));
-	if (status == NULL ) {
+	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2525,7 +2525,7 @@ char *addr;
 		    req->r_data.io.r_offset);
 
 	status = (struct status *)malloc(sizeof(struct status));
-	if (status == NULL ) {
+	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2545,7 +2545,7 @@ fmt_pread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 
 	if (errbuf == NULL) {
 		errbuf = (char *)malloc(32768);
-		if (errbuf == NULL ) {
+		if (errbuf == NULL) {
 			doio_fprintf(stderr, "malloc failed, %s/%d\n",
 				__FILE__, __LINE__);
 			return NULL;
@@ -2595,7 +2595,7 @@ int rw;
 	struct iovec	iov[2];
 
 	status = (struct status *)malloc(sizeof(struct status));
-	if (status == NULL ) {
+	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2678,7 +2678,7 @@ int rw;
 	struct aio_info		*aiop;
 
 	status = (struct status *)malloc(sizeof(struct status));
-	if (status == NULL ) {
+	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2717,7 +2717,7 @@ int rw;
 		rc = aio_read(&aiop->aiocb);
 
 	status->aioid = (int *)malloc( 2 * sizeof(int) );
-	if (status->aioid == NULL ) {
+	if (status->aioid == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2786,7 +2786,7 @@ int rw;
     int rc;
 
 	status = (struct status *)malloc(sizeof(struct status));
-	if (status == NULL ) {
+	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
 			__FILE__, __LINE__);
 		return NULL;
@@ -2796,8 +2796,8 @@ int rw;
 
 	fdc = alloc_fdcache(req->r_data.io.r_file, req->r_data.io.r_oflags);
 
-	if (v_opt || fdc->c_memaddr == NULL ) {
-		if (fstat(fd, &sbuf) < 0 ) {
+	if (v_opt || fdc->c_memaddr == NULL) {
+		if (fstat(fd, &sbuf) < 0) {
 			doio_fprintf(stderr, "fstat failed, errno=%d\n",
 				     errno);
 			status->err = errno;
@@ -2809,7 +2809,7 @@ int rw;
 		     rw ? PROT_WRITE|PROT_READ : PROT_READ,
 		     MAP_SHARED, fd, 0);
 
-		if (mrc == MAP_FAILED ) {
+		if (mrc == MAP_FAILED) {
 			doio_fprintf(stderr, "mmap() failed - 0x%lx %d\n",
 				mrc, errno);
 			status->err = errno;
@@ -3000,7 +3000,7 @@ do_rw(req)
 	nents   = req->r_data.io.r_nent;
 	pattern	= req->r_data.io.r_pattern;
 
-	if (nents >= MAX_AIO ) {
+	if (nents >= MAX_AIO) {
 		doio_fprintf(stderr, "do_rw: too many list requests, %d.  Maximum is %d\n",
 			     nents, MAX_AIO);
 		return(-1);
@@ -3038,7 +3038,7 @@ do_rw(req)
 	 *	MPP_BUMP extra words for T3E non-hw-aligned memory address.
 	 */
 
-	if (sy->sy_buffer != NULL ) {
+	if (sy->sy_buffer != NULL) {
 		mem_needed = (*sy->sy_buffer)(req, 0, 0, NULL, NULL);
 	} else {
 		mem_needed = nbytes;
@@ -3076,7 +3076,7 @@ do_rw(req)
 		if (alloc_sds(nbytes) == -1)
 			return -1;
 
-		if (sy->sy_flags & SY_WRITE ) {
+		if (sy->sy_flags & SY_WRITE) {
 			/*pattern_fill(Memptr, mem_needed, Pattern, Pattern_Length, 0);*/
 			(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
 
@@ -3122,7 +3122,7 @@ do_rw(req)
 		/*
 		 * Force memory alignment for Direct I/O
 		 */
-		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0) ) {
+		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0)) {
 			addr += fdc->c_memalign - ((long)addr % fdc->c_memalign);
 		}
 #endif
@@ -3134,7 +3134,7 @@ do_rw(req)
 		 */
 		if (sy->sy_flags & SY_WRITE) {
 			(*Data_Fill)(Memptr, mem_needed, Pattern, Pattern_Length, 0);
-			if (addr != Memptr )
+			if (addr != Memptr)
 			    memmove( addr, Memptr, mem_needed);
 		}
 	}
@@ -3147,7 +3147,7 @@ do_rw(req)
 	 * Lock data if this is a write and locking option is set
 	 */
 	if (sy->sy_flags & SY_WRITE && k_opt) {
-		if (sy->sy_buffer != NULL ) {
+		if (sy->sy_buffer != NULL) {
 			(*sy->sy_buffer)(req, offset, 0, &min_byte, &max_byte);
 		} else {
 			min_byte = offset;
@@ -3208,7 +3208,7 @@ do_rw(req)
 
 	s = (*sy->sy_syscall)(req, sy, fd, addr);
 
-	if (s->rval == -1 ) {
+	if (s->rval == -1) {
 		doio_fprintf(stderr,
 			     "%s() request failed:  %s (%d)\n%s\n%s\n",
 			     sy->sy_name, SYSERR, errno,
@@ -3241,9 +3241,9 @@ do_rw(req)
 		 * structure.
 		 */
 
-		if (sy->sy_flags & SY_IOSW ) {
+		if (sy->sy_flags & SY_IOSW) {
 #ifdef CRAY
-			for (i=0; i < nents; i++ ) {
+			for (i=0; i < nents; i++) {
 				if (s->aioid == NULL)
 					break; /* >>> error condition? */
 				aiop = aio_slot(s->aioid[i]);
@@ -3275,7 +3275,7 @@ do_rw(req)
 			}
 #endif /* CRAY */
 #ifdef sgi
-			for (i=0; s->aioid[i] != -1; i++ ) {
+			for (i=0; s->aioid[i] != -1; i++) {
 				if (s->aioid == NULL) {
 					doio_fprintf(stderr,
 						     "aioid == NULL!\n");
@@ -3456,7 +3456,7 @@ do_fcntl(req)
 
 	rval = fcntl(fd, op, &flk);
 
-	if (rval == -1 ) {
+	if (rval == -1) {
 		doio_fprintf(stderr,
 			     "fcntl %s request failed: %s (%d)\n\tfcntl(%d, %s %d, {%d %lld ==> %lld}\n",
 			     msg, SYSERR, errno,
@@ -3667,7 +3667,7 @@ int	fsa;
 #ifdef sgi
 	/* Irix: Guarantee a properly aligned address on Direct I/O */
 	fdc = alloc_fdcache(file, flags);
-	if ((flags & O_DIRECT) && ((long)buf % fdc->c_memalign != 0) ) {
+	if ((flags & O_DIRECT) && ((long)buf % fdc->c_memalign != 0)) {
 		buf += fdc->c_memalign - ((long)buf % fdc->c_memalign);
 	}
 #endif
@@ -3695,7 +3695,7 @@ int	fsa;
 		return errbuf;
 	}
    
-	if ((em = (*Data_Check)(buf, offset, length, pattern, pattern_length, patshift)) != NULL ) {
+	if ((em = (*Data_Check)(buf, offset, length, pattern, pattern_length, patshift)) != NULL) {
 		ep = errbuf;
 		ep += sprintf(ep, "*** DATA COMPARISON ERROR ***\n");
 		ep += sprintf(ep, "check_file(%s, %d, %d, %s, %d, %d) failed\n\n",
@@ -3770,7 +3770,7 @@ int nbytes;
 #endif
 
 	/* nbytes = -1 means "free all allocated memory" */
-	if (nbytes == -1 ) {
+	if (nbytes == -1) {
 
 		for (me=0; me < Nmemalloc; me++) {
 			if (Memalloc[me].space == NULL)
@@ -3836,10 +3836,10 @@ int nbytes;
 
 	switch(M->memtype) {
 	case MEM_DATA:
-		if (nbytes > M->size ) {
-			if (M->space != NULL ) {
+		if (nbytes > M->size) {
+			if (M->space != NULL) {
 #ifdef sgi
-				if (M->flags & MEMF_MPIN )
+				if (M->flags & MEMF_MPIN)
 					munpin( M->space, M->size );
 #endif
 				free(M->space);
@@ -3848,15 +3848,15 @@ int nbytes;
 			M->size = 0;
 		}
 
-		if (M->space == NULL ) {
-			if ((cp = malloc( nbytes )) == NULL ) {
+		if (M->space == NULL) {
+			if ((cp = malloc( nbytes )) == NULL) {
 				doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
 					     nbytes, SYSERR, errno);
 				return -1;
 			}
 #ifdef sgi
 			if (M->flags & MEMF_MPIN) {
-				if (mpin(cp, nbytes) == -1 ) {
+				if (mpin(cp, nbytes) == -1) {
 					doio_fprintf(stderr, "mpin(0x%lx, %d) failed:  %s (%d)\n",
 					     cp, nbytes, SYSERR, errno);
 				}
@@ -3868,22 +3868,22 @@ int nbytes;
 		break;
 
 	case MEM_MMAP:
-		if (nbytes > M->size ) {
-			if (M->space != NULL ) {
+		if (nbytes > M->size) {
+			if (M->space != NULL) {
 #ifdef sgi
-				if (M->flags & MEMF_MPIN )
+				if (M->flags & MEMF_MPIN)
 					munpin(M->space, M->size);
 #endif
 				munmap(M->space, M->size);
 				close(M->fd);
-				if (M->flags & MEMF_FILE )
+				if (M->flags & MEMF_FILE)
 					unlink( M->name );
 			}
 			M->space = NULL;
 			M->size = 0;
 		}
 
-		if (M->space == NULL ) {
+		if (M->space == NULL) {
 			if (strchr(M->name, '%')) {
 				sprintf(filename, M->name, getpid());
 				M->name = strdup(filename);
@@ -3942,10 +3942,10 @@ int nbytes;
 		break;
 	
 	case MEM_SHMEM:
-		if (nbytes > M->size ) {
-			if (M->space != NULL ) {
+		if (nbytes > M->size) {
+			if (M->space != NULL) {
 #ifdef sgi
-				if (M->flags & MEMF_MPIN )
+				if (M->flags & MEMF_MPIN)
 					munpin(M->space, M->size);
 #endif
 				shmdt( M->space );
@@ -3968,7 +3968,7 @@ int nbytes;
 
 			M->size = M->nblks ? M->nblks * 512 : nbytes;
 
-			if (nbytes > M->size ) {
+			if (nbytes > M->size) {
 #ifdef DEBUG
 				doio_fprintf(stderr, "MEM_SHMEM: nblks(%d) too small:  nbytes=%d  Msize=%d, skipping this req.\n",
 					     M->nblks, nbytes, M->size );
@@ -3977,21 +3977,21 @@ int nbytes;
 			}
 
 			shmid = shmget(key, M->size, IPC_CREAT|0666);
-			if (shmid == -1 ) {
+			if (shmid == -1) {
 				doio_fprintf(stderr, "shmget(0x%x, %d, CREAT) failed: %s (%d)\n",
 					     key, M->size, SYSERR, errno);
 				return(-1);
 			}
 			M->fd = shmid;
 			M->space = shmat(shmid, NULL, SHM_RND);
-			if (M->space == (void *)-1 ) {
+			if (M->space == (void *)-1) {
 				doio_fprintf(stderr, "shmat(0x%x, NULL, SHM_RND) failed: %s (%d)\n",
 					     shmid, SYSERR, errno);
 				return(-1);
 			}
 #ifdef sgi
 			if (M->flags & MEMF_MPIN) {
-				if (mpin(M->space, M->size) == -1 ) {
+				if (mpin(M->space, M->size) == -1) {
 					doio_fprintf(stderr, "mpin(0x%lx, %d) failed:  %s (%d)\n",
 						     M->space, M->size, SYSERR, errno);
 			    }
@@ -4043,18 +4043,18 @@ int nbytes;
 #else
 
 	/* nbytes = -1 means "free all allocated memory" */
-	if (nbytes == -1 ) {
+	if (nbytes == -1) {
 		free( malloc_space );
 		Memptr = NULL;
 		Memsize = 0;
 		return 0;
 	}
 
-	if (nbytes > Memsize ) {
-	    if (Memsize != 0 )
+	if (nbytes > Memsize) {
+	    if (Memsize != 0)
 		free( malloc_space );
 
-	    if ((cp = malloc_space = malloc( nbytes )) == NULL ) {
+	    if ((cp = malloc_space = malloc( nbytes )) == NULL) {
 		doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
 			     nbytes, SYSERR, errno);
 		return -1;
@@ -4063,12 +4063,12 @@ int nbytes;
 #ifdef _CRAYT3E
 	    /* T3E requires memory to be aligned on 0x40 word boundaries */
 	    ip = (int)cp;
-	    if (ip & 0x3F != 0 ) {
+	    if (ip & 0x3F != 0) {
 		doio_fprintf(stderr, "malloc(%d) = 0x%x(0x%x) not aligned by 0x%x\n",
 			     nbytes, cp, ip, ip & 0x3f);
 
 		free(cp);
-		if ((cp = malloc_space = malloc( nbytes + 0x40 )) == NULL ) {
+		if ((cp = malloc_space = malloc( nbytes + 0x40 )) == NULL) {
 		    doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
 				 nbytes, SYSERR, errno);
 		    return -1;
@@ -4358,7 +4358,7 @@ signal_info(int sig, siginfo_t *info, void *v)
 			break;
 		}
 
-		if (! haveit ) {
+		if (! haveit) {
 			if ((info->si_signo == SIGSEGV) ||
 			   (info->si_signo == SIGBUS) ) {
 				doio_fprintf(stderr, "signal_info  si_signo %d si_errno %d si_code = %d  si_addr=%p  active_mmap_rw=%d havesigint=%d\n",
@@ -4421,7 +4421,7 @@ sigbus_handler(int sig, siginfo_t *info, void *v)
 	 */
 
 
-	if (active_mmap_rw && havesigint && (info->si_errno == EINTR) ) {
+	if (active_mmap_rw && havesigint && (info->si_errno == EINTR)) {
 		cleanup_handler( sig, info, v );
 	}
 	else{
@@ -4457,7 +4457,7 @@ int sig;
 	   do it anyway.
 	*/
 
-	if (active_mmap_rw && havesigint )
+	if (active_mmap_rw && havesigint)
 		cleanup_handler();
 	else
 		die_handler(sig);
@@ -4597,7 +4597,7 @@ int	aio_id;
 		}
 	}
 
-	if (aiop == NULL ) {
+	if (aiop == NULL) {
 		doio_fprintf(stderr,"aio_slot(%d) not found.  Request %d\n",
 			     aio_id, Reqno);
 		dump_aio();
@@ -4692,7 +4692,7 @@ int	aio_id;
 		sigemptyset(&sigset);
 		sighold( aiop->sig );
 
-		while (!aiop->signalled || !aiop->done ) {
+		while (!aiop->signalled || !aiop->done) {
 			sigsuspend(&sigset);
 			sighold( aiop->sig );
 		}
@@ -4739,7 +4739,7 @@ int	aio_id;
 		cnt=0;
 		do {
 			r = aio_suspend(aioary, 1, NULL);
-			if (r == -1 ) {
+			if (r == -1) {
 				doio_fprintf(stderr, "aio_suspend failed: %s (%d)\n",
 					     SYSERR, errno );
 				exit(E_SETUP);
@@ -4765,7 +4765,7 @@ int	aio_id;
 	case A_SUSPEND:
 		aioary[0] = &aiop->aiocb;
 		r = aio_suspend(aioary, 1, NULL);
-		if (r == -1 ) {
+		if (r == -1) {
 			doio_fprintf(stderr, "aio_suspend failed: %s (%d)\n",
 				     SYSERR, errno );
 			exit(E_SETUP);
@@ -4812,14 +4812,14 @@ aio_done(struct aio_info *ainfo)
 #endif
 
 #ifdef sgi
-	if ((ainfo->aio_errno = aio_error(&ainfo->aiocb)) == -1 ) {
+	if ((ainfo->aio_errno = aio_error(&ainfo->aiocb)) == -1) {
 		doio_fprintf(stderr, "aio_done: aio_error failed: %s (%d)\n",
 			     SYSERR, errno );
 		exit(E_SETUP);
 	}
 	/*printf("%d aio_done aio_errno=%d\n", getpid(), ainfo->aio_errno);*/
-	if (ainfo->aio_errno != EINPROGRESS ) {
-		if ((ainfo->aio_ret = aio_return(&ainfo->aiocb)) == -1 ) {
+	if (ainfo->aio_errno != EINPROGRESS) {
+		if ((ainfo->aio_ret = aio_return(&ainfo->aiocb)) == -1) {
 			doio_fprintf(stderr, "aio_done: aio_return failed: %s (%d)\n",
 				     SYSERR, errno );
 			exit(E_SETUP);

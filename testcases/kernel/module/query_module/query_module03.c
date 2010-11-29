@@ -177,7 +177,7 @@ main(int argc, char **argv)
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			if ((tdat[testno].setup) && (tdat[testno].setup()) ) {
+			if ((tdat[testno].setup) && (tdat[testno].setup())) {
 				/* setup() failed, skip this test */
 				continue;
 			}
@@ -216,7 +216,7 @@ setup1(void)
                 tst_resm(TBROK, "sprintf failed");
                 return 1;
         }
-        if (system(cmd) != 0 ) {
+        if (system(cmd) != 0) {
                 tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD);
                 return 1;
         }
@@ -228,7 +228,7 @@ setup1(void)
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
 	}
-	if (system(cmd) != 0 ) {
+	if (system(cmd) != 0) {
 		tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD);
 		return 1;
 	}

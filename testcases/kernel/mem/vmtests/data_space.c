@@ -120,7 +120,7 @@ int main(argc, argv)
 			bd_arg(argv[i-1]);
 		if (sscanf(argv[i++], "%d", &iterations) != 1)
 			bd_arg(argv[i-1]);
-		if (nchild > MAXCHILD )
+		if (nchild > MAXCHILD)
 		{
 			tst_resm(TBROK,"FAILURE, %d children exceeded maximum allowed\n", nchild);
 			tst_exit();
@@ -501,7 +501,7 @@ int chld()
 int massmurder()
 {
 	int i;
-	for (i=0 ; i < MAXCHILD ; i++ )
+	for (i=0 ; i < MAXCHILD ; i++)
 	{
 		if (allchild[i])
 		{

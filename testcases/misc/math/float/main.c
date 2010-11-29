@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 
 	if (argc != 1)
 	{
- 	while ((opt = getopt( argc, argv, "vn:l:D:?" )) != EOF ) {
+ 	while ((opt = getopt( argc, argv, "vn:l:D:?" )) != EOF) {
        	 switch ( opt ) {
                 case 'v':
 			++debug; /* verbose mode */
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
         }
 	}
 	pid=fork();
-        if (pid == 0 ) {                    /*Child*/
+        if (pid == 0) {                    /*Child*/
 		generate(datadir,bin_path);          
 		return(0);} 
 	else                                /*Parent*/
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 			argv[0], nb_func, num_threads);
 
         retval = pthread_mutex_init (&sig_mutex, NULL);
-        if (retval != 0 )
+        if (retval != 0)
                 sys_error("main : mutex_init(&sig_mutex) FAILED",__LINE__);
 
         retval = pthread_create (&sig_hand, NULL,
@@ -286,7 +286,7 @@ finished:
 
 		/* test the result in TH_DATA : communication buffer */
 		pcom = * tabcour++; 
-		if (pcom->th_result !=0 ) {
+		if (pcom->th_result !=0) {
 	           error++;
                    tst_resm(TFAIL, "thread %d (%s) terminated unsuccessfully %d errors/%d loops", th_num,pcom->th_func.fident,pcom->th_nerror,pcom->th_nloop);
                    tst_resm(TFAIL, "%s", pcom->detail_data);

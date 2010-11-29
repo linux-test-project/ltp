@@ -111,12 +111,12 @@ void * flood_receiver( void *arg )
 	sa.sa_flags = 0;
 	sa.sa_handler = floodsighdl;
 
-	if (( ret = sigaction ( SIGABRT, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGABRT, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
 
-	if (( ret = sigaction ( SIGBUS, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGBUS, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
@@ -127,7 +127,7 @@ void * flood_receiver( void *arg )
 	{
 		sched_yield();
 	}
-	while (*( int * ) arg );
+	while (*( int * ) arg);
 
 	return NULL;
 }
@@ -142,7 +142,7 @@ void * flooder_1( void * arg )
 		iterations++;
 		ret = pthread_kill( *( pthread_t * ) arg , SIGABRT );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Flooder 1 thread got an error" );
 		}
@@ -160,7 +160,7 @@ void * flooder_2( void * arg )
 		iterations++;
 		ret = pthread_kill( *( pthread_t * ) arg , SIGBUS );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Flooder 1 thread got an error" );
 		}
@@ -187,7 +187,7 @@ void * sync_rec( void * arg )
 	sa.sa_flags = 0;
 	sa.sa_handler = syncsighdl;
 
-	if (( ret = sigaction ( SIGILL, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGILL, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
@@ -197,7 +197,7 @@ void * sync_rec( void * arg )
 	{
 		sched_yield();
 	}
-	while (*( int * ) arg );
+	while (*( int * ) arg);
 
 	return NULL;
 }
@@ -213,17 +213,17 @@ void * sync_send( void * arg )
 		/* Send the signal */
 		ret = pthread_kill( *( pthread_t * ) arg, SIGILL );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to send signal" );
 		}
 
 		/* Sleep up to 5 sec */
-		for (ret = 0; ( ret < 5 ) && ( sync == 0 ); ret++ )
+		for (ret = 0; ( ret < 5 ) && ( sync == 0 ); ret++)
 			sleep( 1 );
 
 		/* Test if signal was received */
-		if (sync == 0 )
+		if (sync == 0)
 		{
 			FAILED( "Signal SIGILL was not delivered within 5 second -- lost?" );
 		}
@@ -259,12 +259,12 @@ int main ( int argc, char * argv[] )
 
 	sa.sa_handler = sighdl;
 
-	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
 
-	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
@@ -276,35 +276,35 @@ int main ( int argc, char * argv[] )
 
 	ret = pthread_create( &fl_rec, NULL, flood_receiver, &flooding );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Unable to create a thread" );
 	}
 
 	ret = pthread_create( &fl_snd1, NULL, flooder_1, &fl_rec );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Unable to create a thread" );
 	}
 
 	ret = pthread_create( &fl_snd2, NULL, flooder_2, &fl_rec );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Unable to create a thread" );
 	}
 
 	ret = pthread_create( &sy_rec, NULL, sync_rec, &synchro );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Unable to create a thread" );
 	}
 
 	ret = pthread_create( &sy_snd, NULL, sync_send, &sy_rec );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Unable to create a thread" );
 	}
@@ -313,14 +313,14 @@ int main ( int argc, char * argv[] )
 	/* Wait the user stops the test */
 	ret = pthread_join( fl_snd1, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join a thread" );
 	}
 
 	ret = pthread_join( fl_snd2, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join a thread" );
 	}
@@ -328,14 +328,14 @@ int main ( int argc, char * argv[] )
 	flooding = 0;
 	ret = pthread_join( fl_rec, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join a thread" );
 	}
 
 	ret = pthread_join( sy_snd, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join a thread" );
 	}
@@ -344,7 +344,7 @@ int main ( int argc, char * argv[] )
 
 	ret = pthread_join( sy_rec, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join a thread" );
 	}

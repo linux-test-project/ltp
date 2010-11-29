@@ -34,7 +34,7 @@ char *argv[];
         extern int optind;
         extern char *optarg;
         prog = argv[0];
-        if (argc == 1 )
+        if (argc == 1)
             usage ();
         
         while ((c = getopt(argc,argv,"jlg:s:i:")) != EOF)
@@ -98,12 +98,12 @@ char *argv[];
 	   printf("Socket set for Multicasting on: %s\n",interface);
 
  
-        if ((!jflg && !lflg) || jflg )
+        if ((!jflg && !lflg) || jflg)
            join_group ( s, group_list, &imr );
 
         sleep (sflg);
 
-        if ((!jflg && !lflg) || lflg )
+        if ((!jflg && !lflg) || lflg)
            leave_group ( s, group_list, &imr );
 
         close (s);

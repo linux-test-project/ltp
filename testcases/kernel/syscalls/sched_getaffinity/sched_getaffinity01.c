@@ -191,7 +191,7 @@ realloc:
 #else
 					TEST(CPU_ISSET(i, mask));
 #endif
-					if (TEST_RETURN != -1 ) {
+					if (TEST_RETURN != -1) {
 						tst_resm(TPASS,"sched_getaffinity() succeed ,this process %d is running processor: %d",getpid(), i);
 					}
 				}

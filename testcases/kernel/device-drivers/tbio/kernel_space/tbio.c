@@ -223,7 +223,7 @@ static int test_bio_put(struct bio *biop)
 static int test_bio_clone(void)
 {
 	tbiop_dup = bio_clone(tbiop,GFP_NOIO);
-	if (tbiop_dup == NULL ) {
+	if (tbiop_dup == NULL) {
 		printk("tbio: bio_clone failed\n");
 		return -1;
 	}
@@ -249,13 +249,13 @@ static int test_bio_add_page(void)
 		}
 
 		ppage = virt_to_page(addr);
-		if (ppage ==  NULL ) {
+		if (ppage ==  NULL) {
 			printk ("tbio: covert virture page to page struct failed\n");
 			return -1;
 		}
 
 		res = bio_add_page(tbiop , ppage , PAGE_SIZE , offset );
-		if (res <0 ) {
+		if (res <0) {
 			printk("bio_add_page :res %d\n",res);
 			return -1;
 		}
@@ -269,7 +269,7 @@ static int test_bio_add_page(void)
 static int test_do_bio_alloc(int num)
 {
 	tbiop = bio_alloc(GFP_KERNEL , num);
-	if (tbiop == NULL ) {
+	if (tbiop == NULL) {
 		printk("tbio: bio_alloc failed\n");
 		return -1;
 	}
@@ -311,7 +311,7 @@ static int test_bio_alloc(void)
 
 
 	tbiop = bio_alloc(GFP_KERNEL , BIO_MAX_PAGES);
-	if (tbiop == NULL ) {
+	if (tbiop == NULL) {
 		printk("tbio: bio_alloc failed\n");
 		return -1;
 	}
@@ -374,7 +374,7 @@ static int test_bio_split(struct block_device *bdev,
 	//		printk("tbio: split now\n");
 			bio_pairp = bio_split(bio , bio_split_pool, 2);
 		
-			if (bio_pairp == NULL ) {
+			if (bio_pairp == NULL) {
 				printk("tbio: bio_split failed\n");
 				bio_unmap_user(bio,reading);
 				return -1;
@@ -410,7 +410,7 @@ static int test_bio_get_nr_vecs(void)
 
 	number = bio_get_nr_vecs(tbiop->bi_bdev);
 
-	if (number <0 ) {
+	if (number <0) {
 		printk("tbio: bio_get_nr_vec failed\n");
 		return -1;
 	}
@@ -498,7 +498,7 @@ static void tbio_request(request_queue_t *q)
 
 static int tbio_open(struct inode *inode , struct file *filep)
 {
-	if (! Device.bdev ) {
+	if (! Device.bdev) {
 		Device.bdev = inode->i_bdev;
 		//atomic_inc((atomic_t)&Device.bdev->bd_part_count);
 	}

@@ -29,22 +29,22 @@ int main ()
 	sem_t   mysemp;
 	int val;
 
-	if (sem_init (&mysemp, 0, 0) == -1 ) {
+	if (sem_init (&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sem_post(&mysemp) == -1 ) {
+	if (sem_post(&mysemp) == -1) {
 		perror(ERROR_PREFIX "trywait");
                 return PTS_UNRESOLVED;
         }
 
-        if (sem_getvalue(&mysemp, &val) < 0 ) {
+        if (sem_getvalue(&mysemp, &val) < 0) {
                 perror(ERROR_PREFIX "sem_getvalue");
                 return PTS_UNRESOLVED;
         }
 
-        if (val == 1 ) {
+        if (val == 1) {
                 puts("TEST PASSED");
 		sem_destroy(&mysemp);
                 return PTS_PASS;

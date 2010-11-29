@@ -73,7 +73,7 @@ void *calc(int loops)
 {
 	int i, j;
 	for (i = 0; i < loops*LOOPS_MULTIPLIER; i++) {
-		for (j = 0; j < 125; j++ ) {
+		for (j = 0; j < 125; j++) {
 			// Sum of the numbers up to J
 			volatile int temp = j * ( j + 1 ) / 2;
 			(void)temp;

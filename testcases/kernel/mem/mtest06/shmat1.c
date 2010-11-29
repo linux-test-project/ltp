@@ -179,7 +179,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 			"page fault at [%#lx] - ignore\n", scp->edi);
 	    siglongjmp(jmpbuf, 1);
         }
-        else if (scp->esi == (int)map_address )
+        else if (scp->esi == (int)map_address)
 	{
 	    fprintf(stdout,
 			"page fault at [%#lx] - ignore\n", scp->esi);

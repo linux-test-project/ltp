@@ -604,13 +604,13 @@ struct io_req   *req;
     req->r_type = sc->m_value;
 
 #ifdef CRAY
-    if (sc->m_value == LISTIO ) {
+    if (sc->m_value == LISTIO) {
 	    opcode = random_range(0, 1, 1, NULL) ? LO_READ : LO_WRITE;
 	    cmd = random_range(0, 1, 1, NULL) ? LC_START : LC_WAIT;
     }
 #endif
 
-    if (sc->m_flags & SY_WRITE )
+    if (sc->m_flags & SY_WRITE)
 	    pattern = Byte_Patterns[random_range(0, sizeof(Byte_Patterns) - 1, 1, NULL)];
     else
 	    pattern = 0;
@@ -620,7 +620,7 @@ struct io_req   *req;
      * If sds io, simply choose a length (possibly pattern) and return
      */
 
-    if (sc->m_flags & SY_SDS ) {
+    if (sc->m_flags & SY_SDS) {
 	    req->r_data.ssread.r_nbytes = random_range(Mintrans, Maxtrans, BSIZE, NULL);
 	    if (sc->m_flags & SY_WRITE)
 		    req->r_data.sswrite.r_pattern = pattern;
@@ -643,7 +643,7 @@ struct io_req   *req;
      * it must be aligned on the regular iou (normally 1).
      */
 
-    if (fptr->f_type == S_IFREG && (flags->m_flags & FLG_RAW) )
+    if (fptr->f_type == S_IFREG && (flags->m_flags & FLG_RAW))
 	    mult = fptr->f_riou;
     else
 	    mult = fptr->f_iou;
@@ -751,7 +751,7 @@ struct io_req   *req;
     /*
      * Choose an async io completion strategy if necessary
      */
-    if (sc->m_flags & SY_ASYNC )
+    if (sc->m_flags & SY_ASYNC)
 	    aio_strat = Aio_Strat_List[random_range(0, Naio_Strat_Types - 1,
 						    1, NULL)];
     else
@@ -853,7 +853,7 @@ struct io_req   *req;
 	 *
 	 * maxstrides = min(length / mult, overall.max#strides)
 	 * nstrides = random #
-	 * while (length / nstrides < minlength )
+	 * while (length / nstrides < minlength)
 	 *	nstrides = new random #
 	 */
 	maxstride = length / mult;
@@ -882,7 +882,7 @@ struct io_req   *req;
 	}
 
 	req->r_data.io.r_nbytes = slength;
-	if (sc->m_flags & SY_NENT ) {
+	if (sc->m_flags & SY_NENT) {
 		req->r_data.io.r_nstrides = 1;
 		req->r_data.io.r_nent = nstrides;
 	} else {
@@ -997,7 +997,7 @@ struct file_info    *rec;
 	rec->f_riou = BSIZE;
 #endif
 #ifdef sgi
-	if ((fd = open(rec->f_path, O_RDWR|O_DIRECT, 0)) != -1 ) {
+	if ((fd = open(rec->f_path, O_RDWR|O_DIRECT, 0)) != -1) {
 	    if (fcntl(fd, F_DIOINFO, &finfo) != -1) {
 		rec->f_riou = finfo.d_miniosz;
 	    } else {
@@ -1121,7 +1121,7 @@ int 	nbytes;
 	    memset(&xattr, 0x00, sizeof(xattr));
 	    xattr.fsx_xflags = XFS_XFLAG_REALTIME;
 	    /*fprintf(stderr, "set: fsx_xflags = 0x%x\n", xattr.fsx_xflags);*/
-	    if (fcntl(fd, F_FSSETXATTR, &xattr) == -1 ) {
+	    if (fcntl(fd, F_FSSETXATTR, &xattr) == -1) {
 		fprintf(stderr, "iogen%s: Error %s (%d) setting XFS XATTR->Realtime on file %s\n",
 			TagName, SYSERR, errno, path);
 		close(fd);
@@ -1129,7 +1129,7 @@ int 	nbytes;
 	    }
 
 #ifdef DEBUG
-	    if (fcntl(fd, F_FSGETXATTR, &xattr) == -1 ) {
+	    if (fcntl(fd, F_FSGETXATTR, &xattr) == -1) {
 		fprintf(stderr, "iogen%s: Error getting realtime flag %s (%d)\n",
 			TagName, SYSERR, errno);
 		close(fd);
@@ -1195,7 +1195,7 @@ int 	nbytes;
 #ifdef sgi
 	if (Owrite == 2) {
 	    close(fd);
-	    if ((fd = open(path, O_CREAT|O_RDWR|O_DIRECT, 0)) != -1 ) {
+	    if ((fd = open(path, O_CREAT|O_RDWR|O_DIRECT, 0)) != -1) {
 		if (fcntl(fd, F_DIOINFO, &finfo) == -1) {
 		    fprintf(stderr,
 			    "iogen%s: Error %s (%d) getting direct I/O info for file %s\n",
@@ -1236,7 +1236,7 @@ int 	nbytes;
 
 	    b = buf = (char *)malloc(finfo.d_miniosz+finfo.d_mem);
 
-	    if (((long)buf % finfo.d_mem != 0) ) {
+	    if (((long)buf % finfo.d_mem != 0)) {
 		buf += finfo.d_mem - ((long)buf % finfo.d_mem);
 	    }
 	   
@@ -1407,7 +1407,7 @@ char	*opts;
  	case 'f':
 	    cp = strtok(optarg, ",");
 	    while (cp != NULL) {
-		if ((flgs = str_lookup(Flag_Map, cp)) == NULL ) {
+		if ((flgs = str_lookup(Flag_Map, cp)) == NULL) {
 		    fprintf(stderr, "iogen%s:  Unrecognized flags:  %s\n", TagName, cp);
 		    exit(2);
 		}
@@ -1631,7 +1631,7 @@ char	*opts;
      * Supply defaults
      */
 
-    if (! L_opt ) {
+    if (! L_opt) {
 	    Minstrides = 1;
 	    Maxstrides = 255;
     }

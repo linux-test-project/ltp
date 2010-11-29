@@ -41,7 +41,7 @@ int main()
 	pthread_t new_th;
 
 	rc = pthread_create(&new_th, NULL, thread_func, NULL);
-        if (rc !=0 ) {
+        if (rc !=0) {
                 perror(ERROR_PREFIX "failed to create a thread");
                 exit(PTS_UNRESOLVED);
         }
@@ -54,7 +54,7 @@ int main()
         }
 
 	rc = pthread_getcpuclockid(new_th, &cid); 
-        if (rc == ESRCH ) {
+        if (rc == ESRCH) {
                 printf("pthread_getcpuclockid returns ESRCH "
                        "when thread_id doesn't exist\n");
         } else {

@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
   int rc;
   struct flock my_lock;
 
-  if (argc != 2 ) {
+  if (argc != 2) {
     printf("usage: %s filename\n", argv[0]);
     exit(2);
   }
@@ -38,13 +38,13 @@ int main(int argc, char **argv) {
   }
 
   rc = fcntl(fd, F_SETFL, 0);
-  if (rc == -1 ) {
+  if (rc == -1) {
     perror("selinux_fcntl:F_SETFL");
     exit(1);
   }
 
   rc = fcntl(fd, F_GETFL);
-  if (rc == -1 ) {
+  if (rc == -1) {
     perror("selinux_fcntl:F_GETFL");
     exit(1);
   }
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
   my_lock.l_len = 0;
 
   rc = fcntl(fd, F_GETLK, &my_lock);
-  if (rc == -1 ) {
+  if (rc == -1) {
     perror("selinux_fcntl:F_GETLK");
     exit(1);
   }

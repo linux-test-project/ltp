@@ -89,7 +89,7 @@ void check_param( pthread_t thread, int policy, int priority )
 
 	/* Check the priority is valid */
 
-	if (priority == -1 )
+	if (priority == -1)
 	{
 		UNRESOLVED( errno, "Wrong priority value" );
 	}
@@ -97,17 +97,17 @@ void check_param( pthread_t thread, int policy, int priority )
 	/* Get the thread's parameters */
 	ret = pthread_getschedparam( thread, &t_pol, &t_parm );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to get thread's parameters" );
 	}
 
-	if (t_pol != policy )
+	if (t_pol != policy)
 	{
 		FAILED( "The thread's policy is not as expected" );
 	}
 
-	if (t_parm.sched_priority != priority )
+	if (t_parm.sched_priority != priority)
 	{
 		FAILED( "The thread's priority is not as expected" );
 	}
@@ -121,7 +121,7 @@ void * controler ( void * arg )
 	/* Wait until the policy has been changed. */
 	ret = pthread_barrier_wait( arg );
 
-	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
+	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
 	{
 		UNRESOLVED( ret, "barrier wait failed" );
 	}
@@ -142,7 +142,7 @@ void * changer( void * arg )
 	struct sched_param sp;
 	sp.sched_priority = sched_get_priority_min( SCHED_RR );
 
-	if (sp.sched_priority < 0 )
+	if (sp.sched_priority < 0)
 	{
 		UNTESTED( "Failed to get min SCHED_RR range" );
 	}
@@ -150,7 +150,7 @@ void * changer( void * arg )
 	/* set the other thread's policy */
 	ret = pthread_setschedparam( *( pthread_t * ) arg, SCHED_RR, &sp );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to set other's thread policy" );
 	}
@@ -170,7 +170,7 @@ int main( int argc, char *argv[] )
 
 	ret = pthread_barrier_init( &bar, NULL, 2 );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to init barrier" );
 	}
@@ -178,7 +178,7 @@ int main( int argc, char *argv[] )
 	/* Create the controler thread */
 	ret = pthread_create( &tcontrol, NULL, controler, &bar );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "thread creation failed" );
 	}
@@ -186,7 +186,7 @@ int main( int argc, char *argv[] )
 	/* Now create the changer thread */
 	ret = pthread_create( &tchange, NULL, changer, &tcontrol );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "thread creation failed" );
 	}
@@ -194,7 +194,7 @@ int main( int argc, char *argv[] )
 	/* wait until the changer finishes */
 	ret = pthread_join( tchange, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join the thread" );
 	}
@@ -203,7 +203,7 @@ int main( int argc, char *argv[] )
 	/* let the controler control */
 	ret = pthread_barrier_wait( &bar );
 
-	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
+	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
 	{
 		UNRESOLVED( ret, "barrier wait failed" );
 	}
@@ -211,14 +211,14 @@ int main( int argc, char *argv[] )
 
 	ret = pthread_join( tcontrol, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join the thread" );
 	}
 
 	ret = pthread_barrier_destroy( &bar );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "barrier destroy failed" );
 	}

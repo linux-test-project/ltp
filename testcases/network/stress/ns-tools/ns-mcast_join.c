@@ -182,7 +182,7 @@ parse_options(int argc, char *argv[])
     int optc;			/* option */
     unsigned long opt_ul;	/* option value in unsigned long */
 
-    while ((optc = getopt(argc, argv, "f:I:p:F:s:n:ml:i:a:dh")) != EOF ) {
+    while ((optc = getopt(argc, argv, "f:I:p:F:s:n:ml:i:a:dh")) != EOF) {
 	switch (optc) {
 	    case 'f':
 		if (optarg[0] == '4') {

@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 		printf("returned code is not -1.\n");
 		return PTS_FAIL;
 	}
-	if (errno != ESRCH ) {
+	if (errno != ESRCH) {
 		perror("errno is not ESRCH");
 		return PTS_FAIL;
 	} else {

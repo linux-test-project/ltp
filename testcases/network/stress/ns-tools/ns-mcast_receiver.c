@@ -178,7 +178,7 @@ parse_options(int argc, char *argv[], struct mcast_rcv_info *info_p, int *bg_p)
     saddrs = NULL;
     portnum = NULL;
 
-    while ((optc = getopt(argc, argv, "f:I:m:F:s:p:t:bdh")) != EOF ) {
+    while ((optc = getopt(argc, argv, "f:I:m:F:s:p:t:bdh")) != EOF) {
 	switch (optc) {
 	    case 'f':
 		if (optarg[0] == '4')

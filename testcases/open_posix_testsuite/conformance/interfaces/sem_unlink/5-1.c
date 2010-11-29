@@ -106,12 +106,12 @@ int main( int argc, char * argv[] )
 	output( "PATH_MAX: %ld\n", PATH_MAX );
 #endif
 
-	if (PATH_MAX > 0 )
+	if (PATH_MAX > 0)
 	{
 		/* create a semaphore with a name longer than PATH_MAX */
 		sem_name = calloc( PATH_MAX + 1, sizeof( char ) );
 
-		if (sem_name == NULL )
+		if (sem_name == NULL)
 		{
 			UNRESOLVED( errno, "Failed to allocate space for the semaphore name" );
 		}
@@ -126,13 +126,13 @@ int main( int argc, char * argv[] )
 		/* Create the semaphore */
 		sem = sem_open( sem_name, O_CREAT, 0777, 1 );
 
-		if (sem != SEM_FAILED )
+		if (sem != SEM_FAILED)
 		{
 			ret = sem_unlink( sem_name );
 			error = errno;
 			free( sem_name );
 
-			if (ret == 0 )
+			if (ret == 0)
 			{
 				FAILED( "The function did not return ENAMETOOLONG as expected" );
 			}
@@ -161,12 +161,12 @@ int main( int argc, char * argv[] )
 
 #endif
 
-	if (NAME_MAX > 0 )
+	if (NAME_MAX > 0)
 	{
 		/* create a semaphore with a name longer than NAME_MAX */
 		sem_name = calloc( NAME_MAX + 2, sizeof( char ) );
 
-		if (sem_name == NULL )
+		if (sem_name == NULL)
 		{
 			UNRESOLVED( errno, "Failed to allocate space for the semaphore name" );
 		}
@@ -181,13 +181,13 @@ int main( int argc, char * argv[] )
 		/* Create the semaphore */
 		sem = sem_open( sem_name, O_CREAT , 0777, 1 );
 
-		if (sem != SEM_FAILED )
+		if (sem != SEM_FAILED)
 		{
 			ret = sem_unlink( sem_name );
 			error = errno;
 			free( sem_name );
 
-			if (ret == 0 )
+			if (ret == 0)
 			{
 				FAILED( "The function did not return ENAMETOOLONG as expected" );
 			}

@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 		}
 		delta = tpget.tv_sec-tpset.tv_sec;
 		nsdelta = PR_NSEC_PER_SEC - tpget.tv_nsec;
-		if ((delta <= ACCEPTABLEDELTA) && (delta >= 0) ) {
+		if ((delta <= ACCEPTABLEDELTA) && (delta >= 0)) {
 			printf("Test PASSED\n");
 			setBackTime(tpreset);
 			return PTS_PASS;

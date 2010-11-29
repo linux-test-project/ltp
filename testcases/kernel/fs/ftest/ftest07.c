@@ -148,7 +148,7 @@ static void setup(void)
 	 * Make a directory to do this in; ignore error if already exists.
 	 * Save starting directory.
 	 */
-	if ((cwd = getcwd(homedir, sizeof (homedir))) == NULL ) {
+	if ((cwd = getcwd(homedir, sizeof (homedir))) == NULL) {
 		tst_resm(TBROK,"Failed to get corrent directory") ;
 		tst_exit();
 	}

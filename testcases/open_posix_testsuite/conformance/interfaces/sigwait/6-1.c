@@ -100,7 +100,7 @@ void * threaded( void * arg )
 	/* wait for the signal */
 	ret = sigwait( &setusr, &sig );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "failed to wait for signal in thread" );
 	}
@@ -123,32 +123,32 @@ int main( int argc, char * argv[] )
 	/* Set the signal mask */
 	ret = sigemptyset( &setusr );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
 
 	ret = sigaddset( &setusr, SIGUSR1 );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "failed to add SIGUSR1 to signal set" );
 	}
 
 	ret = pthread_sigmask( SIG_BLOCK, &setusr, NULL );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to block SIGUSR1" );
 	}
 
 	/* Create the children */
 
-	for (i = 0; i < NTHREADS; i++ )
+	for (i = 0; i < NTHREADS; i++)
 	{
 		ret = pthread_create( &ch[ i ], NULL, threaded, NULL );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to create a thread" );
 		}
@@ -157,36 +157,36 @@ int main( int argc, char * argv[] )
 	/* raise the signal */
 	ret = kill( getpid(), SIGUSR1 );
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to raise the signal" );
 	}
 
 	sleep( 1 );
 
-	if (n_awaken != 1 )
+	if (n_awaken != 1)
 	{
 		output( "%d threads were awaken\n", n_awaken );
 		FAILED( "Unexpected number of threads awaken" );
 	}
 
 	/* Wake other threads */
-	for (; n_awaken < NTHREADS ; sched_yield() )
+	for (; n_awaken < NTHREADS ; sched_yield())
 	{
 		ret = kill( getpid(), SIGUSR1 );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to raise the signal" );
 		}
 	}
 
 	/* Wait for child thread termination */
-	for (i = 0; i < NTHREADS; i++ )
+	for (i = 0; i < NTHREADS; i++)
 	{
 		ret = pthread_join( ch[ i ], NULL );
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to join the thread" );
 		}

@@ -315,9 +315,9 @@ int main(int argc, char *argv[])
 	fflush(NULL);
 
 	if (argc > 2) {
-		if (!strcmp(argv[2], "process") )
+		if (!strcmp(argv[2], "process"))
 			process_mode = 1;
-		else if (!strcmp(argv[2], "thread") )
+		else if (!strcmp(argv[2], "thread"))
 			process_mode = 0;
 		else
 			print_usage_exit();

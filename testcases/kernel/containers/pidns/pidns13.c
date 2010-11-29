@@ -151,7 +151,7 @@ int child_fn(void *arg)
 		}
 
 		/* Recieved SIGUSR1. Check details. */
-		if (info.si_fd == pipe_fd[0] && info.si_code == POLL_IN )
+		if (info.si_fd == pipe_fd[0] && info.si_code == POLL_IN)
 			tst_resm(TPASS, "cinit1: si_fd is %d, si_code is %d",\
 					info.si_fd, info.si_code);
 		else

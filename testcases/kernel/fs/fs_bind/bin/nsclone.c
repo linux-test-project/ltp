@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	char *parent_cmd;
 	int ret=0, childret=0;
 
-	if (argc < 3 ) {
+	if (argc < 3) {
 		usage(argv[0]);
 		exit(1);
 	}
