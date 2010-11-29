@@ -465,8 +465,6 @@ lchown01_16 lchown01_16
 lchown02 prep_create_link; lchown02
 lchown02_16 prep_create_link; lchown02_16
 
-libevent01 export LTPROOT; $LTPROOT/testcases/bin/libevent/run_libevent.sh
-
 link01 symlink01 -T link01
 link02 link02
 link03 link03
