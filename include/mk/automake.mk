@@ -27,7 +27,6 @@ AUTOHEADER	?= autoheader
 AUTOMAKE	?= automake
 
 AUTOCONFED_SUBDIRS	= \
-			testcases/kernel/syscalls/libevent \
 			testcases/realtime
 
 # We want to run this every single time to ensure that all of the prereq files
