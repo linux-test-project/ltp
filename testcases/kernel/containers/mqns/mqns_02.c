@@ -34,12 +34,11 @@
 #define _GNU_SOURCE
 #endif
 #include <sys/wait.h>
-#include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <errno.h>
+#include <unistd.h>
 #include "mqns.h"
 
 char *TCID = "posixmq_namespace_02";
@@ -57,45 +56,44 @@ int check_mqueue(void *vtest)
 	close(p2[0]);
 
 	if (read(p1[0], buf, 3) < 0)
-		tst_resm(TBROK | TERRNO, "read(p1[0], ..) failed");
+		perror("read(p1[0], ..) failed");
+		exit(1);
 	else {
 
 		mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL,
 				0777, NULL);
 		if (mqd == -1) {
 			if (write(p2[1], "mqfail", strlen("mqfail") + 1) < 0) {
-				tst_resm(TBROK | TERRNO,
-					"write(p2[1], \"mqfail\", ..) failed");
+				perror("write(p2[1], \"mqfail\", ..) failed");
+				exit(1);
 			}
-			tst_exit();
 		} else {
 
-			if (write(p2[1], "mqopen", strlen("mqopen") + 1) < 0)
-				tst_resm(TBROK | TERRNO,
-					"write(p2[1], \"mqopen\", ..) failed");
+			if (write(p2[1], "mqopen", strlen("mqopen") + 1) < 0) {
+				perror("write(p2[1], \"mqopen\", ..) failed");
+				exit(1);
+			} else {
 
-			else {
-
-				if (read(p1[0], buf, 5) < 0)
-					tst_resm(TBROK | TERRNO,
-						"read(p1[0], ..) failed");
-				else {
+				if (read(p1[0], buf, 5) < 0) {
+					perror("read(p1[0], ..) failed");
+					exit(1);
+				} else {
 
 					/* destroy the mqueue */
 					if (mq_close(mqd) < 0) {
-						tst_resm(TBROK | TERRNO,
-							"mq_close(mqd) failed");
+						perror("mq_close(mqd) failed");
+						exit(1);
 					} else if (syscall(__NR_mq_unlink,
 							NOSLASH_MQ1) < 0) {
-						tst_resm(TBROK | TERRNO,
-							"mq_unlink(" NOSLASH_MQ1
-							") failed");
+						perror("mq_unlink(" NOSLASH_MQ1
+						    ") failed");
+						exit(1);
 					} else if (write(p2[1], "done",
 							strlen("done") + 1)
 							< 0) {
-						tst_resm(TBROK | TERRNO,
-							"write(p2[1], "
-							"\"done\", ..) failed");
+						perror("write(p2[1], "
+						    "\"done\", ..) failed");
+						exit(1);
 					}
 
 				}
@@ -105,7 +103,7 @@ int check_mqueue(void *vtest)
 		}
 
 	}
-	tst_exit();
+	exit(0);
 
 }
 
@@ -123,14 +121,14 @@ int main(int argc, char *argv[])
 	} else
 		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2).\n");
 
-	if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
-	if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
+	if (pipe(p1) == -1 || pipe(p2) == -1) {
+		tst_brkm(TBROK|TERRNO, NULL, "pipe");
+	}
 
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
-		tst_resm(TFAIL, "failed clone/unshare\n");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "failed clone/unshare\n");
 	}
 
 	tst_resm(TINFO, "Checking namespaces isolation (child to parent)\n");
@@ -138,34 +136,30 @@ int main(int argc, char *argv[])
 	close(p1[0]);
 	close(p2[1]);
 	if (write(p1[1], "go", strlen("go") + 1) < 0) {
-		tst_resm(TBROK, "write(p1[1], \"go\", ..) failed");
+		tst_brkm(TBROK, NULL, "write(p1[1], \"go\", ..) failed");
 	}
 
 	if (read(p2[0], buf, 7) < 0) {
-		tst_resm(TBROK, "read(p2[0], ..) failed");
+		tst_resm(TBROK|TERRNO, "read(p2[0], ..) failed");
 	} else if (!strcmp(buf, "mqfail")) {
 		tst_resm(TFAIL, "child process could not create mqueue\n");
 		umount(DEV_MQUEUE);
-		tst_exit();
 	} else if (strcmp(buf, "mqopen")) {
 		tst_resm(TFAIL, "child process could not create mqueue\n");
 		umount(DEV_MQUEUE);
-		tst_exit();
 	} else {
-
 		mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
 		if (mqd == -1) {
 			tst_resm(TPASS, "Parent process can't see the mqueue\n");
 		} else {
-			tst_resm(TFAIL, "Parent process found mqueue\n");
+			tst_resm(TFAIL|TERRNO, "Parent process found mqueue\n");
 			mq_close(mqd);
 		}
 		if (write(p1[1], "cont", 5) < 0) {
-			tst_resm(TBROK, "write(p1[1], ..) failed");
-
+			tst_resm(TBROK|TERRNO, "write(p1[1], ..) failed");
 		}
+		read(p2[0], buf, 7);
 	}
-	read(p2[0], buf, 7);
 
 	tst_exit();
 }
