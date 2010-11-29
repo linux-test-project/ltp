@@ -72,7 +72,7 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-static void setup();
+void setup(void);
 
 char *TCID = "clock_gettime02";	/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
@@ -87,10 +87,8 @@ main(int ac, char **av)
 	clockid_t clocks[2] = {CLOCK_REALTIME, CLOCK_MONOTONIC};
 
 	/* parse standard options */
-	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) !=
-			(char *) NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts (ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	TST_TOTAL = sizeof(clocks) / sizeof(clocks[0]);
 
@@ -110,27 +108,26 @@ main(int ac, char **av)
 		}	/* End of TEST CASE LOOPING */
 	}		/* End for TEST_LOOPING */
 
-	/* Clean up and exit */
 	CLEANUP();
 	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-static void
-setup()
+void
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, CLEANUP);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
+}
 
 /*
  * CLEANUP() - Performs one time CLEANUP for this test at
  * completion or premature exit
  */
-static void
+void
 cleanup(void)
 {
 	/*
@@ -138,4 +135,4 @@ cleanup(void)
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-}	/* End CLEANUP() */
+}

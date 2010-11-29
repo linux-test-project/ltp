@@ -73,7 +73,7 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-static void setup();
+void setup(void);
 static int setup_test(int option);
 
 char *TCID = "timer_settime02";	/* Test program identifier.    */
@@ -121,7 +121,6 @@ main(int ac, char **av)
 		}	/* End of TEST CASE LOOPING */
 	}		/* End for TEST_LOOPING */
 
-	/* Clean up and exit */
 	cleanup();
 	tst_exit();
 }
@@ -184,8 +183,8 @@ setup_test(int option)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-static void
-setup()
+void
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -195,13 +194,13 @@ setup()
 
 	if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0)
 		tst_brkm(TBROK, tst_exit, "timer_create failed");
-}	/* End setup() */
+}
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-static void
+void
 cleanup(void)
 {
 	/*
@@ -209,7 +208,4 @@ cleanup(void)
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-}	/* End cleanup() */
+}

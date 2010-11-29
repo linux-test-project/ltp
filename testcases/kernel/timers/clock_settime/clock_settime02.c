@@ -73,7 +73,7 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-static void setup();
+void setup(void);
 
 char *TCID = "clock_settime02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
@@ -88,10 +88,8 @@ main(int ac, char **av)
 	struct timespec spec;	/* Used to specify time for test */
 
 	/* parse standard options */
-	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) !=
-			(char *) NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts (ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	/* perform global setup for test */
 	setup();
@@ -111,14 +109,13 @@ main(int ac, char **av)
 			(TEST_RETURN == 0 ? "passed" : "failed"));
 	}		/* End for TEST_LOOPING */
 
-	/* Clean up and exit */
 	cleanup();
 	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-static void
-setup()
+void
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -133,14 +130,14 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
+}
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
 
-static void
+void
 cleanup(void)
 {
 	/* Set the saved time */
@@ -154,4 +151,4 @@ cleanup(void)
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-}	/* End cleanup() */
+}
