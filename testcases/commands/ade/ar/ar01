@@ -55,56 +55,56 @@ TCRESULT=0
 
 # Setup function
 setup() {
-  for i in $LIST;do
-	touch $i
-  done
+	for i in $LIST;do
+		touch $i
+	done
 }
 
 # Cleanup function
 cleanup() {
-  if [ $TCRESULT = 0 ]; then
-	echo "---------------ar command passed the system test-----------------"
-	exit 0
-  else 
-	echo "---------------ar command failed the system test-----------------"
-	exit 1
-fi
+	if [ $TCRESULT = 0 ]; then
+		echo "---------------ar command passed the system test-----------------"
+		exit 0
+	else 
+		echo "---------------ar command failed the system test-----------------"
+		exit 1
+	fi
 }
 
 crtest() {
-  if [ $? -ne 0 ]
-  then
-	TCRESULT=1
-	echo "FAIL - could not create lib.a"
-	cleanup
-  fi
+	if [ $? -ne 0 ]
+	then
+		TCRESULT=1
+		echo "FAIL - could not create lib.a"
+		cleanup
+	fi
 }
 
 ttest() {
-  if [ $? -ne 0 ]
-  then
-	TCRESULT=1
-	echo "FAIL - could not output table from lib.a to lib.a.stdout"
-	cleanup
-  fi
+	if [ $? -ne 0 ]
+	then
+		TCRESULT=1
+		echo "FAIL - could not output table from lib.a to lib.a.stdout"
+		cleanup
+	fi
 }
 
 rtest() {
-  if [ $? -ne 0 ]
-  then
-	TCRESULT=1
-	echo "FAIL - could not add file into lib.a"
-	cleanup
-  fi
+	if [ $? -ne 0 ]
+	then
+		TCRESULT=1
+		echo "FAIL - could not add file into lib.a"
+		cleanup
+	fi
 }
 
 mtest() {
-  if [ $? -ne 0 ]
-  then
-	TCRESULT=1
-	echo "FAIL - could not move file into lib.a"
-	cleanup
-  fi
+	if [ $? -ne 0 ]
+	then
+		TCRESULT=1
+		echo "FAIL - could not move file into lib.a"
+		cleanup
+	fi
 }
 
 setup
