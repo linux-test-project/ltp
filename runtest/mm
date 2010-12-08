@@ -57,6 +57,8 @@ mmapstress10 mmapstress10 -p 20 -t 0.2
 mmap10 mmap10
 
 mlock03 mlock03 -i 20
+
+mbind01 mbind01
 mmap10_1 mmap10 -a
 mmap10_2 mmap10 -s
 mmap10_3 mmap10 -a -s
