@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 	 * Check interval first
 	 */
 	if ((itsget.it_interval.tv_sec != itsset.it_interval.tv_sec) ||
-		(itsget.it_interval.tv_nsec/RESOLUTION != itsset.it_interval.tv_nsec/RESOLUTION) ) {
+		(itsget.it_interval.tv_nsec/RESOLUTION != itsset.it_interval.tv_nsec/RESOLUTION)) {
 		printf("FAIL:  it_interval not correctly set\n");
 		printf("%d != (expected) %d or %d != (expected) %d\n",
 				(int) itsget.it_interval.tv_sec,

@@ -68,7 +68,7 @@ int main()
 
 	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != EINVAL ) {
+        if (rc != EINVAL) {
                 perror(ERROR_PREFIX "Got the wrong return value");
                 exit(PTS_FAIL);
         }

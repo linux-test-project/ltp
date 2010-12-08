@@ -6,7 +6,7 @@
  *
  * pthread_barrierattr_destroy()
  *
- * The pthread_barrierattr_destroy( ) function shall destroy a barrier 
+ * The pthread_barrierattr_destroy() function shall destroy a barrier 
  * attributes object. A destroyed attr attributes object can be reinitialized 
  *
  */

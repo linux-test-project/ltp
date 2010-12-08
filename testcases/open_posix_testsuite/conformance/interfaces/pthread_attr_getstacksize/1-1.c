@@ -62,13 +62,13 @@ int main()
 	/* printf("stack_size = %lu\n", stack_size); */
 
 	rc = pthread_attr_setstacksize(&attr, stack_size);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 perror(ERROR_PREFIX "pthread_attr_setstacksize");
                 exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_attr_getstacksize(&attr, &ssize);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 perror(ERROR_PREFIX "pthread_attr_getstacksize");
                 exit(PTS_UNRESOLVED);
         }

@@ -83,30 +83,30 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 
-int count( DIR * thedir )
+int count(DIR * thedir)
 {
 	int counter = 0;
 
 	struct dirent *dp;
 
-	rewinddir( thedir );
+	rewinddir(thedir);
 
 	/* Count the directory entries */
 
 	do
 	{
-		dp = readdir( thedir );
+		dp = readdir(thedir);
 
-		if (dp != NULL )
+		if (dp != NULL)
 			counter++;
 	}
-	while ( dp != NULL );
+	while (dp != NULL);
 
 	return counter;
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -120,76 +120,76 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Open the directory */
-	dotdir = opendir( "." );
+	dotdir = opendir(".");
 
-	if (dotdir == NULL )
+	if (dotdir == NULL)
 	{
-		UNRESOLVED( errno, "opendir failed" );
+		UNRESOLVED(errno, "opendir failed");
 	}
 
 	/* Count entries */
-	counted = count( dotdir );
+	counted = count(dotdir);
 
 #if VERBOSE > 0
 
-	output( "Found %d entries in current dir\n", counted );
+	output("Found %d entries in current dir\n", counted);
 
 #endif
 
 	/* Create the child */
 	child = fork();
 
-	if (child == ( pid_t ) - 1 )
+	if (child == (pid_t) - 1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == ( pid_t ) 0 )
+	if (child == (pid_t) 0)
 	{
 		/* Count in child process */
-		counted = count( dotdir );
+		counted = count(dotdir);
 
 #if VERBOSE > 0
 
-		output( "Found %d entries in current dir from child\n", counted );
+		output("Found %d entries in current dir from child\n", counted);
 #endif
 
-		ret = closedir( dotdir );
+		ret = closedir(dotdir);
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to close dir in child" );
+			UNRESOLVED(errno, "Failed to close dir in child");
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child )
+	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
 	{
-		FAILED( "Child exited abnormally -- dir stream not copied?" );
+		FAILED("Child exited abnormally -- dir stream not copied?");
 	}
 
 	/* close the directory stream */
-	ret = closedir( dotdir );
+	ret = closedir(dotdir);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to closedir in parent" );
+		UNRESOLVED(errno, "Failed to closedir in parent");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

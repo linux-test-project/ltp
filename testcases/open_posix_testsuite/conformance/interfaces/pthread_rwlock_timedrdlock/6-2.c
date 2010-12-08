@@ -6,7 +6,7 @@
  * Test pthread_rwlock_timedrdlock(pthread_rwlock_t * rwlock)
  * 
  * If a signal that causes a signal handler to be executed is delivered to 
- * a thread blocked on a read-write lock via a call to pthread_rwlock_timedrdlock( ),
+ * a thread blocked on a read-write lock via a call to pthread_rwlock_timedrdlock(),
  * upon return from the signal handler the thread shall resume waiting for the lock 
  * as if it was not interrupted.
  *

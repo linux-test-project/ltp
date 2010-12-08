@@ -28,7 +28,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (shm_unlink(SHM_NAME) == 0 ) {
+	if (shm_unlink(SHM_NAME) == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

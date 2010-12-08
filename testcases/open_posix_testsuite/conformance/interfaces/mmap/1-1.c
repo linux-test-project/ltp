@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
 
- * The mmap( ) function shall establish a mapping between a process's 
+ * The mmap() function shall establish a mapping between a process's 
  * address space and a file,
  *
  * Test Step:

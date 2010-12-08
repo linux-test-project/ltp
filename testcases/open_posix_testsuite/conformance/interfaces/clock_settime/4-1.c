@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	setBackTime(tpreset);
 	
 	printf("delta: %d\n", delta);
-	if ((delta <= ACCEPTABLEDELTA) && (delta >= 0) ) {
+	if ((delta <= ACCEPTABLEDELTA) && (delta >= 0)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

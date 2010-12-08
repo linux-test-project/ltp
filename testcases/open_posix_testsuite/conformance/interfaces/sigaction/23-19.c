@@ -81,41 +81,41 @@
 
 int called = 0;
 
-void handler( int sig )
+void handler(int sig)
 {
 	int ret;
 	sigset_t pending;
 	called++;
 
-	if (called == 2 )
+	if (called == 2)
 	{
-		FAILED( "Signal was not masked in signal handler" );
+		FAILED("Signal was not masked in signal handler");
 	}
 
-	if (called == 1 )
+	if (called == 1)
 	{
 
 		/* Raise the signal again. It should be masked */
-		ret = raise( SIGNAL );
+		ret = raise(SIGNAL);
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to raise SIGPOLL again" );
+			UNRESOLVED(ret, "Failed to raise SIGPOLL again");
 		}
 
 		/* check the signal is pending */
-		ret = sigpending( &pending );
+		ret = sigpending(&pending);
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to get pending signal set" );
+			UNRESOLVED(ret, "Failed to get pending signal set");
 		}
 
-		ret = sigismember( &pending, SIGNAL );
+		ret = sigismember(&pending, SIGNAL);
 
-		if (ret != 1 )
+		if (ret != 1)
 		{
-			FAILED( "signal is not pending" );
+			FAILED("signal is not pending");
 		}
 	}
 
@@ -137,35 +137,35 @@ int main()
 
 	sa.sa_handler = handler;
 
-	ret = sigemptyset( &sa.sa_mask );
+	ret = sigemptyset(&sa.sa_mask);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to empty signal set" );
+		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGPOLL */
-	ret = sigaction( SIGNAL, &sa, 0 );
+	ret = sigaction(SIGNAL, &sa, 0);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to set signal handler" );
+		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
-	ret = raise( SIGNAL );
+	ret = raise(SIGNAL);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to raise SIGPOLL" );
+		UNRESOLVED(ret, "Failed to raise SIGPOLL");
 	}
 
-	while ( called != 4 )
+	while (called != 4)
 		sched_yield();
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

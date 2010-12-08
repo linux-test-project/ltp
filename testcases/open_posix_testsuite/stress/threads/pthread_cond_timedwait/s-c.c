@@ -224,7 +224,7 @@ void * waiter(void * arg)
 	if (ret != 0)  {  UNRESOLVED(ret, "Mutex lock failed in waiter");  }
 	
 #ifdef USE_CANCEL
-	pthread_cleanup_push( (void *)pthread_mutex_unlock, (void *)(dt->mtx));
+	pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)(dt->mtx));
 #endif
 	
 	/* This thread is ready to wait */
@@ -252,7 +252,7 @@ void * waiter(void * arg)
  *  < 0 if function was not able to create enough threads.
  *  cumulated # of nanoseconds otherwise.
  */
-long do_threads_test( int nthreads, mes_t * measure )
+long do_threads_test(int nthreads, mes_t * measure)
 {
 	int ret;
 	
@@ -577,11 +577,11 @@ int main (int argc, char *argv[])
  * The next function will seek for the better model for each series of measurements.
  *
  * The tested models are: -- X = # threads; Y = latency
- * -> Y = a;      -- Error is r1 = avg( (Y - Yavg)² );
- * -> Y = aX + b; -- Error is r2 = avg( (Y -aX -b)² );
- *                -- where a = avg ( (X - Xavg)(Y - Yavg) ) / avg( ( X - Xavg)² )
- *                --         Note: We will call _q = sum( (X - Xavg) * (Y - Yavg) ); 
- *                --                       and  _d = sum( (X - Xavg)² );
+ * -> Y = a;      -- Error is r1 = avg((Y - Yavg)²);
+ * -> Y = aX + b; -- Error is r2 = avg((Y -aX -b)²);
+ *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg(( X - Xavg)²)
+ *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg)); 
+ *                --                       and  _d = sum((X - Xavg)²);
  *                -- and   b = Yavg - a * Xavg
  * -> Y = c * X^a;-- Same as previous, but with log(Y) = a log(X) + b; and b = log(c). Error is r3
  * -> Y = exp(aX + b); -- log(Y) = aX + b. Error is r4
@@ -659,12 +659,12 @@ int parse_measure(mes_t * measures)
 		N++;
 		
 		Xavg += (double) cur->nthreads;
-		LnXavg += log( (double) cur->nthreads);
+		LnXavg += log((double) cur->nthreads);
 		
 		for (i=0; i<NSCENAR; i++)
 		{
 			Yavg[i] += (double) cur->_data[i];
-			LnYavg[i] += log( (double) cur->_data[i] );
+			LnYavg[i] += log((double) cur->_data[i]);
 		}
 	}
 	
@@ -684,7 +684,7 @@ int parse_measure(mes_t * measures)
 	
 	
 	/* We will now alloc the array ... */
-	Table = calloc(N, sizeof( struct row ));
+	Table = calloc(N, sizeof(struct row));
 	if (Table == NULL)  {  UNRESOLVED(errno, "Unable to alloc space for results parsing");  }
 	
 	/* ... and fill it */
@@ -755,26 +755,26 @@ int parse_measure(mes_t * measures)
 		for (i=0; i<NSCENAR; i++)
 		{
 			/* r2 = avg((y - ax -b)²);  t = (y - ax - b) = (y - yavg) - a (x - xavg); */
-			t = ( Table[r]._y[i] - ((_q[0][i] * Table[r]._x) / _d[0][i]));
+			t = (Table[r]._y[i] - ((_q[0][i] * Table[r]._x) / _d[0][i]));
 			r2[i] += t * t / N  ;
 			
-			/* r3 = avg(( y - c.x^a) ²);  
+			/* r3 = avg((y - c.x^a) ²);  
 			    t = y - c * x ^ a 
 			      = y - log (LnYavg - (_q[1]/_d[1]) * LnXavg) * x ^ (_q[1]/_d[1])
 			*/
 			t = (   Table[r].Y[i]
-			      - ( logl ( LnYavg[i] - (_q[1][i] / _d[1][i] ) * LnXavg)
-			        * powl( Table[r].X,  (_q[1][i] / _d[1][i] ))
+			      - (logl (LnYavg[i] - (_q[1][i] / _d[1][i]) * LnXavg)
+			        * powl(Table[r].X,  (_q[1][i] / _d[1][i]))
 			    )   );
 			r3[i] += t * t / N  ;
 			
-			/* r4 = avg(( y - exp(ax+b))²);
+			/* r4 = avg((y - exp(ax+b))²);
 			    t = y - exp(ax+b)
-			      = y - exp( _q[2]/_d[2] * x + ( LnYavg - (_q[2]/_d[2] * Xavg) ));
-			      = y - exp( _q[2]/_d[2] * (x - Xavg) + LnYavg );
+			      = y - exp(_q[2]/_d[2] * x + (LnYavg - (_q[2]/_d[2] * Xavg)));
+			      = y - exp(_q[2]/_d[2] * (x - Xavg) + LnYavg);
 			*/
 			t = (   Table[r].Y[i]
-			      - expl( ( _q[2][i] / _d[2][i] ) * Table[r]._x + LnYavg[i] ) );
+			      - expl(( _q[2][i] / _d[2][i]) * Table[r]._x + LnYavg[i]) );
 			r4[i] += t * t / N  ;
 			
 		}
@@ -800,7 +800,7 @@ int parse_measure(mes_t * measures)
 		
 		output("  Model: Y = c * X ^ a\n");
 		output("       a = %Lg\n", _q[1][i] / _d[1][i]);
-		output("       c = %Lg\n", logl ( LnYavg[i] - (_q[1][i] / _d[1][i] ) * LnXavg));
+		output("       c = %Lg\n", logl (LnYavg[i] - (_q[1][i] / _d[1][i]) * LnXavg));
 		output("    Divergence %g\n", r2[i]);
 		
 		output("  Model: Y = exp(a * X + b)\n");

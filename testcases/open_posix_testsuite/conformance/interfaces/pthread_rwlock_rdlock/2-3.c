@@ -188,7 +188,7 @@ int main()
 		sleep(1);
 	}while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if (wr_thread_state == EXITING_THREAD )
+	if (wr_thread_state == EXITING_THREAD)
 	{
 		printf("wr_thread did not block on write lock, when a reader owns the lock\n");
 		exit(PTS_UNRESOLVED);
@@ -214,7 +214,7 @@ int main()
 		sleep(1);
 	}while (rd_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if (rd_thread_state == ENTERED_THREAD )
+	if (rd_thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: rd_thread blocked on read lock\n");
 		exit(PTS_FAIL);
@@ -238,7 +238,7 @@ int main()
 		sleep(1);
 	}while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if (wr_thread_state == ENTERED_THREAD )
+	if (wr_thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: higher priority wr_thread still blocked on write lock, when a reader release the lock\n");
 		exit(PTS_FAIL);

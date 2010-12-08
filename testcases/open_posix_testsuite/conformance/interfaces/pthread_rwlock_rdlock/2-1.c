@@ -260,7 +260,7 @@ int main()
 		sleep(1);
 	}while (rd_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if (rd_thread_state == ENTERED_THREAD )
+	if (rd_thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: rd_thread still block on read lock when the lock has no owner\n");
 		exit(PTS_FAIL);

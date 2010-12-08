@@ -7,7 +7,7 @@
  * pthread_barrier_destroy()
  *
  *
- * The pthread_barrier_destroy( ) function shall destroy the barrier 
+ * The pthread_barrier_destroy() function shall destroy the barrier 
  * referenced by barrier and release any resources used by the barrier.
  *
  * Steps:

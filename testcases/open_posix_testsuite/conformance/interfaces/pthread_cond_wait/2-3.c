@@ -169,9 +169,9 @@ void * threaded (void * arg)
 	} while ((ret != 0) && (errno == EINTR));
 	if (ret != 0)  {  UNRESOLVED(errno, "Sem post failed in cleanup handler 2");  }
 	
-	pthread_cleanup_push ( clnp3, NULL);
-	pthread_cleanup_push ( clnp2, NULL);
-	pthread_cleanup_push ( clnp1, NULL);
+	pthread_cleanup_push (clnp3, NULL);
+	pthread_cleanup_push (clnp2, NULL);
+	pthread_cleanup_push (clnp1, NULL);
 	
 	do {
 		ret = pthread_cond_wait(&(data.cnd), &(data.mtx));

@@ -29,7 +29,7 @@ int main ()
 {
 	sem_t   mysemp;
 
-	if (sem_init (&mysemp, 0, 1) == 0 ) {
+	if (sem_init (&mysemp, 0, 1) == 0) {
                 puts("TEST PASSED");
 		sem_destroy(&mysemp);
                 return PTS_PASS;

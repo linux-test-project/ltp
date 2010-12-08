@@ -101,7 +101,7 @@ int main(int argc, char * argv[])
 	#endif
 	
 	/* If we are running Linux */
-	if (strcmp(un.sysname, "Linux") == 0 )
+	if (strcmp(un.sysname, "Linux") == 0)
 	{
 		/* Linux does not provide privilege access to pthread_mutex_init function */
 		ret = PTS_UNSUPPORTED;
@@ -111,12 +111,12 @@ int main(int argc, char * argv[])
 	}
 	
 	/* If we are running AIX */
-	if (strcmp(un.sysname, "AIX") == 0 )
+	if (strcmp(un.sysname, "AIX") == 0)
 	{
 		;
 	}
 	/* If we are running Solaris */
-	if (strcmp(un.sysname, "SunOS") == 0 )
+	if (strcmp(un.sysname, "SunOS") == 0)
 	{
 		;
 	}

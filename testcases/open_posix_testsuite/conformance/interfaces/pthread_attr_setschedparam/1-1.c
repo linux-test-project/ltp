@@ -82,7 +82,7 @@ int main()
 	pthread_join(thread, &status);
 	pthread_attr_destroy(&attr);
 
-	if (thread_created == 0 ) {
+	if (thread_created == 0) {
 		printf(ERROR_PREFIX "Thread was not created\n");
 		exit(PTS_FAIL);
 	}

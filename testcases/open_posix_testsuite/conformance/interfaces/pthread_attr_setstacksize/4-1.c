@@ -58,7 +58,7 @@ int main()
     	}
 
 	rc = pthread_attr_setstacksize(&attr, stack_size);
-        if (rc != EINVAL ) {
+        if (rc != EINVAL) {
                 perror(ERROR_PREFIX "Got the wrong return value");
                 exit(PTS_FAIL);
         }

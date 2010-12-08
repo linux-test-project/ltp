@@ -27,79 +27,79 @@ int main()
 
 	/* Empty set of blocked signals */
 
-	if (( sigemptyset( &newmask ) == -1 ) ||
-	        ( sigemptyset( &pendingset ) == -1 ) )
+	if ((sigemptyset(&newmask) == -1) ||
+	        (sigemptyset(&pendingset) == -1) )
 	{
-		printf( "Error in sigemptyset()\n" );
+		printf("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Add SIGALRM to the set of blocked signals */
-	if (sigaddset( &newmask, SIGALRM ) == -1 )
+	if (sigaddset(&newmask, SIGALRM) == -1)
 	{
-		perror( "Error in sigaddset()\n" );
+		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Block SIGALRM */
-	if (sigprocmask( SIG_SETMASK, &newmask, NULL ) == -1 )
+	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1)
 	{
-		printf( "Error in sigprocmask()\n" );
+		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Send SIGALRM signal to this process.  Since it is blocked,
 	 * it should be pending */
-	if (raise( SIGALRM ) != 0 )
+	if (raise(SIGALRM) != 0)
 	{
-		printf( "Could not raise SIGALRM\n" );
+		printf("Could not raise SIGALRM\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Test that SIGALRM is pending */
-	if (sigpending( &pendingset ) == -1 )
+	if (sigpending(&pendingset) == -1)
 	{
-		printf( "Could not get pending signal set\n" );
+		printf("Could not get pending signal set\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember( &pendingset, SIGALRM ) != 1 )
+	if (sigismember(&pendingset, SIGALRM) != 1)
 	{
-		printf( "Signal SIGALRM is not pending!\n" );
+		printf("Signal SIGALRM is not pending!\n");
 		return PTS_FAIL;
 	}
 
 
 	/* Call sigwait and test if it passed/failed*/
-	if (sigwait( &newmask, &sig ) != 0 )
+	if (sigwait(&newmask, &sig) != 0)
 	{
-		printf( "Error in sigwait()\n" );
+		printf("Error in sigwait()\n");
 		return PTS_FAIL;
 	}
 
-	if (sig != SIGALRM )
+	if (sig != SIGALRM)
 	{
-		printf( "sigwait selected another signal\n" );
+		printf("sigwait selected another signal\n");
 		return PTS_FAIL;
 	}
 
 	/* Test that SIGALRM is not pending anymore */
-	if (sigpending( &pendingset ) == -1 )
+	if (sigpending(&pendingset) == -1)
 	{
-		printf( "Could not get pending signal set\n" );
+		printf("Could not get pending signal set\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember( &pendingset, SIGALRM ) != 0 )
+	if (sigismember(&pendingset, SIGALRM) != 0)
 	{
-		printf( "Signal SIGALRM is not pending!\n" );
+		printf("Signal SIGALRM is not pending!\n");
 		return PTS_FAIL;
 	}
 
 
 	/* If we get here, then the process was suspended until
 	 * SIGALRM was raised.  */
-	printf( "Test PASSED\n" );
+	printf("Test PASSED\n");
 
 	return PTS_PASS;
 

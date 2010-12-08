@@ -44,13 +44,13 @@ void *a_thread_func(void *tmp)
 	int              rc = 0;
 
 	rc = pthread_key_create(&key, destructor);
-	if (rc != 0 ) {	
+	if (rc != 0) {	
 		printf(ERROR_PREFIX "pthread_key_create\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_setspecific(key, &value);
-	if (rc != 0 ) {	
+	if (rc != 0) {	
 		printf(ERROR_PREFIX "pthread_setspecific\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -78,7 +78,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (cleanup_flag != 1 ) {
+	if (cleanup_flag != 1) {
 		printf("Test FAIL: Destructor was not called.\n");
 		return PTS_FAIL;
 	}

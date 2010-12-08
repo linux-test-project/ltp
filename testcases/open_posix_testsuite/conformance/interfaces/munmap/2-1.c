@@ -5,7 +5,7 @@
  * source tree.
  *
  * If there are no
- * mappings in the specified address range, then munmap( ) has no effect.
+ * mappings in the specified address range, then munmap() has no effect.
  *
  */
 

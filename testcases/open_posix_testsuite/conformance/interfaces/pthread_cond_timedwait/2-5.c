@@ -111,7 +111,7 @@ struct _td
 	int stopped;                /* # of threads which are terminated */
 } data;
 
-void * threaded ( void * arg )
+void * threaded (void * arg)
 {
 	int ret;
 	

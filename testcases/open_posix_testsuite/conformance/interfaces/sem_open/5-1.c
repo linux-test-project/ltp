@@ -40,7 +40,7 @@ int main()
 
 	++counter;
 	mysemp = sem_open(semname, O_CREAT, 0444, counter);
-	if (( mysemp  == SEM_FAILED) && ( errno == EINVAL ))  {
+	if ((mysemp  == SEM_FAILED) && (errno == EINVAL))  {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

@@ -54,7 +54,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if ((rc = pthread_rwlockattr_destroy(&rwa)) != 0 )
+	if ((rc = pthread_rwlockattr_destroy(&rwa)) != 0)
 	{
 		printf("Error at pthread_rwlockattr_destory()\n");
 		return PTS_UNRESOLVED;

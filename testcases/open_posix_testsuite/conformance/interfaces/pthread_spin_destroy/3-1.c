@@ -8,7 +8,7 @@
  *
  * [EBUSY] The implementation has detected an attempt to 
  * initialize or destroy a spin lock while it is in use 
- * (for example, while being used in a pthread_spin_lock( )
+ * (for example, while being used in a pthread_spin_lock()
  * call) by another thread.
  *
  * Note: This test will always pass 

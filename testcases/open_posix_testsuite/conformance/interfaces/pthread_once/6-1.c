@@ -178,7 +178,7 @@ void initializer(void)
 
 
 /* Test function -- calls pthread_equal() and checks that EINTR is never returned. */
-void * test( void * arg )
+void * test(void * arg)
 {
 	int ret = 0;
 
@@ -247,13 +247,13 @@ int main (int argc, char * argv[])
 	output_init();
 
 	/* We need to register the signal handlers for the PROCESS */
-	sigemptyset ( &sa.sa_mask );
+	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = sighdl1;
 
 	if ((ret = sigaction (SIGUSR1, &sa, NULL)) == -1)
 	{
-		UNRESOLVED( ret, "Unable to register signal handler1" );
+		UNRESOLVED(ret, "Unable to register signal handler1");
 	}
 
 	sa.sa_handler = sighdl2;
@@ -276,29 +276,29 @@ int main (int argc, char * argv[])
 	}
 
 	/* We now block the signals SIGUSR1 and SIGUSR2 for this THREAD */
-	ret = pthread_sigmask( SIG_BLOCK, &usersigs, NULL );
+	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Unable to block SIGUSR1 and SIGUSR2 in main thread" );
+		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in main thread");
 	}
 
 #ifdef WITH_SYNCHRO
-	if (sem_init( &semsig1, 0, 1 ))
+	if (sem_init(&semsig1, 0, 1))
 	{
-		UNRESOLVED( errno, "Semsig1  init" );
+		UNRESOLVED(errno, "Semsig1  init");
 	}
 
-	if (sem_init( &semsig2, 0, 1))
+	if (sem_init(&semsig2, 0, 1))
 	{
-		UNRESOLVED( errno, "Semsig2  init" );
+		UNRESOLVED(errno, "Semsig2  init");
 	}
 
 #endif
 
 	if ((ret = pthread_create(&th_work, NULL, test, NULL)))
 	{
-		UNRESOLVED( ret, "Worker thread creation failed" );
+		UNRESOLVED(ret, "Worker thread creation failed");
 	}
 
 	arg1.sig = SIGUSR1;
@@ -312,12 +312,12 @@ int main (int argc, char * argv[])
 
 	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) &arg1)))
 	{
-		UNRESOLVED( ret, "Signal 1 sender thread creation failed" );
+		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
 	}
 
 	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *) &arg2)))
 	{
-		UNRESOLVED( ret, "Signal 2 sender thread creation failed" );
+		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
 	}
 
 
@@ -334,7 +334,7 @@ int main (int argc, char * argv[])
 	while (do_it);
 
 
-	if ((ret = pthread_join(th_sig1, NULL )))
+	if ((ret = pthread_join(th_sig1, NULL)))
 	{
 		UNRESOLVED(ret, "Signal 1 sender thread join failed");
 	}

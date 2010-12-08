@@ -85,7 +85,7 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 
-void read_catalog( nl_catd cat, char * who )
+void read_catalog(nl_catd cat, char * who)
 {
 	char * msg = NULL;
 	int i, j;
@@ -93,22 +93,22 @@ void read_catalog( nl_catd cat, char * who )
 
 #if VERBOSE > 0
 
-	output( "Reading the message catalog from %s...\n", who );
+	output("Reading the message catalog from %s...\n", who);
 #endif
 
-	for ( i = 1; i <= 2; i++ )
+	for (i = 1; i <= 2; i++)
 	{
-		for ( j = 1; j <= 2; j++ )
+		for (j = 1; j <= 2; j++)
 		{
-			msg = catgets( cat, i, j, "not found" );
+			msg = catgets(cat, i, j, "not found");
 
-			if (errno != 0 )
+			if (errno != 0)
 			{
-				UNRESOLVED( errno, "catgets returned an error" );
+				UNRESOLVED(errno, "catgets returned an error");
 			}
 
 #if VERBOSE > 1
-			output( "set %i msg %i: %s\n", i, j, msg );
+			output("set %i msg %i: %s\n", i, j, msg);
 
 #endif
 
@@ -116,13 +116,13 @@ void read_catalog( nl_catd cat, char * who )
 	}
 
 #if VERBOSE > 0
-	output( "Message catalog read successfully in %s\n", who );
+	output("Message catalog read successfully in %s\n", who);
 
 #endif
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -135,81 +135,81 @@ int main( int argc, char * argv[] )
 
 	/* Generate the message catalog file from the text sourcefile */
 
-	if (system( NULL ) )
+	if (system(NULL) )
 	{
-		ret = system( "gencat mess.cat " PATH_OFFSET "messcat_src.txt" );
+		ret = system("gencat mess.cat " PATH_OFFSET "messcat_src.txt");
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
-			output( "Unable to find messcat_src.txt in standard directory %s\n", PATH_OFFSET );
-			output( "Trying local dir\n" );
-			ret = system( "gencat mess.cat messcat_src.txt" );
+			output("Unable to find messcat_src.txt in standard directory %s\n", PATH_OFFSET);
+			output("Trying local dir\n");
+			ret = system("gencat mess.cat messcat_src.txt");
 
-			if (ret != 0 )
+			if (ret != 0)
 			{
-				output( "Could not find the source file for message catalog.\n" \
-				        "You may need to execute gencat yourself.\n" );
+				output("Could not find the source file for message catalog.\n" \
+				        "You may need to execute gencat yourself.\n");
 			}
 		}
 	}
 
 	/* Try opening the message catalog file */
-	messcat = catopen( "./mess.cat", 0 );
+	messcat = catopen("./mess.cat", 0);
 
-	if (messcat == ( nl_catd ) - 1 )
+	if (messcat == (nl_catd) - 1)
 	{
-		UNRESOLVED( errno, "Could not open ./mess.cat. You may need to do a gencat before executing this testcase" );
+		UNRESOLVED(errno, "Could not open ./mess.cat. You may need to do a gencat before executing this testcase");
 	}
 
 	/* Read the message catalog */
-	read_catalog( messcat, "parent" );
+	read_catalog(messcat, "parent");
 
 
 	/* Create the child */
 	child = fork();
 
-	if (child == ( pid_t ) - 1 )
+	if (child == (pid_t) - 1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == ( pid_t ) 0 )
+	if (child == (pid_t) 0)
 	{
-		read_catalog( messcat, "child" );
+		read_catalog(messcat, "child");
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child )
+	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 	/* We can now clean up the message catalog file */
-	ret = catclose( messcat );
+	ret = catclose(messcat);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close the message catalog" );
+		UNRESOLVED(errno, "Failed to close the message catalog");
 	}
 
 	/* Try removing the message catalog file */
-	system( "rm -f mess.cat" );
+	system("rm -f mess.cat");
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

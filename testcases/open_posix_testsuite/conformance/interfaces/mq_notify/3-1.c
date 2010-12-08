@@ -74,7 +74,7 @@ int main()
 		mqclean(mqdes, mqname);
                 return PTS_UNRESOLVED;
         }
-	if (mq_notify(mqdes, NULL) != 0 ) {
+	if (mq_notify(mqdes, NULL) != 0) {
 		printf("Test FAILED \n");
 		mqclean(mqdes, mqname);
 		return PTS_FAIL;

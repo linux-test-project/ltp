@@ -70,7 +70,7 @@ int main()
 	}
 
 	/* Lock the mutex. */
-	if (pthread_mutex_lock(&mutex) != 0 )
+	if (pthread_mutex_lock(&mutex) != 0)
 	{
 		perror("Error locking the mutex first time around.\n");
 		return PTS_UNRESOLVED;

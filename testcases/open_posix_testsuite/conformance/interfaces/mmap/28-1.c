@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
 
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * [ENXIO] Addresses in the range [off,off+len) are invalid 
  * for the object specified by fildes.
  *
@@ -84,7 +84,7 @@ int main()
   flag = MAP_SHARED;
   off = page_size;
   pa = mmap (addr, len, prot, flag, fd, off);
-  if (pa != MAP_FAILED )
+  if (pa != MAP_FAILED)
   {
     printf ("Test Fail: " TNAME " Got no error at mmap()\n");    
     close(fd);

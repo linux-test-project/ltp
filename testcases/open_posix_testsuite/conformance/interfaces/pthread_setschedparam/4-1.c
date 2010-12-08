@@ -81,7 +81,7 @@
 /******************************************************************************/
 
 /* This function checks the thread policy & priority */
-void check_param( pthread_t thread, int policy, int priority )
+void check_param(pthread_t thread, int policy, int priority)
 {
 	int ret = 0;
 
@@ -91,71 +91,71 @@ void check_param( pthread_t thread, int policy, int priority )
 
 	/* Check the priority is valid */
 
-	if (priority == -1 )
+	if (priority == -1)
 	{
-		UNRESOLVED( errno, "Wrong priority value" );
+		UNRESOLVED(errno, "Wrong priority value");
 	}
 
 	/* Get the thread's parameters */
-	ret = pthread_getschedparam( thread, &t_pol, &t_parm );
+	ret = pthread_getschedparam(thread, &t_pol, &t_parm);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to get thread's parameters" );
+		UNRESOLVED(ret, "Failed to get thread's parameters");
 	}
 
-	if (t_pol != policy )
+	if (t_pol != policy)
 	{
-		FAILED( "The thread's policy is not as expected" );
+		FAILED("The thread's policy is not as expected");
 	}
 
-	if (t_parm.sched_priority != priority )
+	if (t_parm.sched_priority != priority)
 	{
-		FAILED( "The thread's priority is not as expected" );
+		FAILED("The thread's priority is not as expected");
 	}
 }
 
 /* thread function */
-void * threaded ( void * arg )
+void * threaded (void * arg)
 {
 	int ret = 0;
 
 	struct sched_param sp;
 
 	/* Set priority to a known value */
-	sp.sched_priority = sched_get_priority_max( SCHED_RR );
+	sp.sched_priority = sched_get_priority_max(SCHED_RR);
 
-	ret = pthread_setschedparam( pthread_self(), SCHED_RR, &sp );
+	ret = pthread_setschedparam(pthread_self(), SCHED_RR, &sp);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to set thread policy -- need to be root?" );
+		UNRESOLVED(ret, "Failed to set thread policy -- need to be root?");
 	}
 
 	/* check the thread attributes have been applied
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param( pthread_self(), SCHED_RR, sp.sched_priority );
+	check_param(pthread_self(), SCHED_RR, sp.sched_priority);
 
 	/* Now set the priority to an invalid value. */
 	sp.sched_priority++;
 
-	ret = pthread_setschedparam( pthread_self(), SCHED_RR, &sp );
+	ret = pthread_setschedparam(pthread_self(), SCHED_RR, &sp);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
 		/* check the thread attributes have been applied
 		  (we only check what is reported, not the real behavior) 
 		 */
-		check_param( pthread_self(), SCHED_RR, sp.sched_priority - 1 );
+		check_param(pthread_self(), SCHED_RR, sp.sched_priority - 1);
 #if VERBOSE > 0
-		output( "Setting to a wrong priority failed with error %d (%s).\n",
+		output("Setting to a wrong priority failed with error %d (%s).\n",
 		        ret,
-		        strerror( ret ) );
+		        strerror(ret) );
 	}
 	else
 	{
-		output( "UNTESTED: setting to max prio + 1 did not fail.\n" );
+		output("UNTESTED: setting to max prio + 1 did not fail.\n");
 #endif
 
 	}
@@ -165,7 +165,7 @@ void * threaded ( void * arg )
 
 
 /* The main test function. */
-int main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
 	int ret = 0;
 	pthread_t child;
@@ -174,22 +174,22 @@ int main( int argc, char *argv[] )
 	output_init();
 
 	/* Create the controler thread */
-	ret = pthread_create( &child, NULL, threaded, NULL );
+	ret = pthread_create(&child, NULL, threaded, NULL);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "thread creation failed" );
+		UNRESOLVED(ret, "thread creation failed");
 	}
 
-	ret = pthread_join( child, NULL );
+	ret = pthread_join(child, NULL);
 
-	if (ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to join the thread" );
+		UNRESOLVED(ret, "Failed to join the thread");
 	}
 
 #if VERBOSE > 0
-	output( "Test PASSED.\n" );
+	output("Test PASSED.\n");
 
 #endif
 

@@ -85,7 +85,7 @@ int main() {
 
 	snprintf(semname, 20, "/sem23-1_%d", getpid());
 	sem = sem_open(semname, O_CREAT, 0777, 1);
-	if (sem == SEM_FAILED || sem == NULL ) {
+	if (sem == SEM_FAILED || sem == NULL) {
 		perror("error at sem_open");
 		return PTS_UNRESOLVED;
 	}

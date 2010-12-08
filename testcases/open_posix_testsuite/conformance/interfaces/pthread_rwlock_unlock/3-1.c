@@ -235,7 +235,7 @@ int main()
 		sleep(1);
 	}while (wr_thread_state_1 != 3 && cnt++ < 3); 
 	
-	if (wr_thread_state_1 == 3 )
+	if (wr_thread_state_1 == 3)
 	{
 		printf("writer1 did not block on write lock, when main owns the lock\n");
 		exit(PTS_UNRESOLVED);
@@ -263,7 +263,7 @@ int main()
 		sleep(1);
 	}while (rd_thread_state != 3 && cnt++ < 2); 
 	
-	if (rd_thread_state == 3 )
+	if (rd_thread_state == 3)
 	{
 		printf("Test Fail: reader did not block on read lock\n");
 		exit(PTS_FAIL);
@@ -318,7 +318,7 @@ int main()
 		sleep(1);
 	}while (wr_thread_state_1 != 3 && cnt++ < 3); 
 	
-	if (wr_thread_state_1 == 2 )
+	if (wr_thread_state_1 == 2)
 	{
 		printf("Test fail: writer did not get write lock, when main release the lock\n");
 		exit(PTS_FAIL);
@@ -344,7 +344,7 @@ int main()
 		sleep(1);
 	}while (rd_thread_state !=3 && cnt++ < 3); 
 	
-	if (rd_thread_state == 2 )
+	if (rd_thread_state == 2)
 	{
 		printf("Test failed: reader did not get the lock when writer1 release the lock\n");
 		exit(PTS_FAIL);
@@ -370,7 +370,7 @@ int main()
 		sleep(1);
 	}while (wr_thread_state_2 !=3 && cnt++ < 3); 
 	
-	if (wr_thread_state_2 == 2 )
+	if (wr_thread_state_2 == 2)
 	{
 		printf("Test fail: writer2 still blocked on write lock, when main release the lock\n");
 		exit(PTS_FAIL);

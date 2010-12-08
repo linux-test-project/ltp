@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	printf("_POSIX_SEMAPHORES is not defined \n");
 	return PTS_UNRESOLVED;
 #endif
-	if ((2 != argc) || (( num = atoi(argv[1])) <= 0)) {
+	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		printf("Setting num_of_processes to default value: %d\n",
 		    DEFAULT_THREADS);
 		num = DEFAULT_THREADS;

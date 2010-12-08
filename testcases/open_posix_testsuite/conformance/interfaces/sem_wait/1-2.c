@@ -38,14 +38,14 @@ int main() {
 
 	/* Initial value of Semaphore is 10 */
 	mysemp = sem_open(semname, O_CREAT, 0777, value);
-	if (mysemp == SEM_FAILED || mysemp == NULL ) {
+	if (mysemp == SEM_FAILED || mysemp == NULL) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
 	while (value)
 	{ // checking the value if zero yet.
-		if (sem_wait(mysemp) == -1 ) {
+		if (sem_wait(mysemp) == -1) {
 			perror(ERROR_PREFIX "sem_getvalue");
 			return PTS_UNRESOLVED;
 		} else {
@@ -54,11 +54,11 @@ int main() {
 	}
 
 
-	if (sem_getvalue(mysemp, &val) == -1 ) {
+	if (sem_getvalue(mysemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 
-	} else if (val == 0 ) {
+	} else if (val == 0) {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		sem_close(mysemp);

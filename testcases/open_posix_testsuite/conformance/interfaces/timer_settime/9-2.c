@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	 * in call to sigwait immediately after timer is set
 	 */
 
-	if (sigemptyset(&set) == -1 ) {
+	if (sigemptyset(&set) == -1) {
 		perror("sigemptyset() failed\n");
 		return PTS_UNRESOLVED;
 	}

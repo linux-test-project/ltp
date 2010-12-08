@@ -48,19 +48,19 @@ int main()
 	}
 
 	rc = pthread_attr_setscope(&attr, CONSCOPE); 	
-	if (rc != 0 ) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "PTHREAD_SCOPE_SYSTEM is not supported");
 		exit(PTS_UNRESOLVED);
         } 
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
-	if (rc !=0 ) {
+	if (rc !=0) {
 		perror(ERROR_PREFIX "pthread_create");
                 exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_attr_getscope(&attr, &cscope);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 perror(ERROR_PREFIX "pthread_attr_getscope");
                 exit(PTS_UNRESOLVED);
         }

@@ -89,7 +89,7 @@
 /******************************************************************************/
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, error;
 	sem_t * sem;
@@ -100,20 +100,20 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Get PATH_MAX value */
-	PATH_MAX = pathconf( "/", _PC_PATH_MAX );
+	PATH_MAX = pathconf("/", _PC_PATH_MAX);
 
 #if VERBOSE > 0
-	output( "PATH_MAX: %ld\n", PATH_MAX );
+	output("PATH_MAX: %ld\n", PATH_MAX);
 #endif
 
-	if (PATH_MAX > 0 )
+	if (PATH_MAX > 0)
 	{
 		/* create a semaphore with a name longer than PATH_MAX */
-		sem_name = calloc( PATH_MAX + 1, sizeof( char ) );
+		sem_name = calloc(PATH_MAX + 1, sizeof(char) );
 
-		if (sem_name == NULL )
+		if (sem_name == NULL)
 		{
-			UNRESOLVED( errno, "Failed to allocate space for the semaphore name" );
+			UNRESOLVED(errno, "Failed to allocate space for the semaphore name");
 		}
 
 		/* the space was allocated */
@@ -121,32 +121,32 @@ int main( int argc, char * argv[] )
 
 		sem_name[ PATH_MAX ] = '\0';
 
-		memset( sem_name + 1, 'P', PATH_MAX - 1 );
+		memset(sem_name + 1, 'P', PATH_MAX - 1);
 
 		/* Create the semaphore */
-		sem = sem_open( sem_name, O_CREAT, 0777, 1 );
+		sem = sem_open(sem_name, O_CREAT, 0777, 1);
 
-		if (sem != SEM_FAILED )
+		if (sem != SEM_FAILED)
 		{
-			ret = sem_unlink( sem_name );
+			ret = sem_unlink(sem_name);
 			error = errno;
-			free( sem_name );
+			free(sem_name);
 
-			if (ret == 0 )
+			if (ret == 0)
 			{
-				FAILED( "The function did not return ENAMETOOLONG as expected" );
+				FAILED("The function did not return ENAMETOOLONG as expected");
 			}
 			else
 			{
-				output( "Error was %d: %s\n", error, strerror( error ) );
-				FAILED( "Unable to unlink a semaphore which we just created" );
+				output("Error was %d: %s\n", error, strerror(error) );
+				FAILED("Unable to unlink a semaphore which we just created");
 			}
 		}
 
 #if VERBOSE > 0
 		else
 		{
-			output( "Creation of the semaphore failed with error %d: %s\n", errno, strerror( errno ) );
+			output("Creation of the semaphore failed with error %d: %s\n", errno, strerror(errno) );
 		}
 
 #endif
@@ -154,21 +154,21 @@ int main( int argc, char * argv[] )
 	}
 
 	/* Get NAME_MAX value */
-	NAME_MAX = pathconf( "/", _PC_NAME_MAX );
+	NAME_MAX = pathconf("/", _PC_NAME_MAX);
 
 #if VERBOSE > 0
-	output( "NAME_MAX: %ld\n", NAME_MAX );
+	output("NAME_MAX: %ld\n", NAME_MAX);
 
 #endif
 
-	if (NAME_MAX > 0 )
+	if (NAME_MAX > 0)
 	{
 		/* create a semaphore with a name longer than NAME_MAX */
-		sem_name = calloc( NAME_MAX + 2, sizeof( char ) );
+		sem_name = calloc(NAME_MAX + 2, sizeof(char) );
 
-		if (sem_name == NULL )
+		if (sem_name == NULL)
 		{
-			UNRESOLVED( errno, "Failed to allocate space for the semaphore name" );
+			UNRESOLVED(errno, "Failed to allocate space for the semaphore name");
 		}
 
 		/* the space was allocated */
@@ -176,32 +176,32 @@ int main( int argc, char * argv[] )
 
 		sem_name[ NAME_MAX + 1 ] = '\0';
 
-		memset( sem_name + 1, 'N', NAME_MAX );
+		memset(sem_name + 1, 'N', NAME_MAX);
 
 		/* Create the semaphore */
-		sem = sem_open( sem_name, O_CREAT , 0777, 1 );
+		sem = sem_open(sem_name, O_CREAT , 0777, 1);
 
-		if (sem != SEM_FAILED )
+		if (sem != SEM_FAILED)
 		{
-			ret = sem_unlink( sem_name );
+			ret = sem_unlink(sem_name);
 			error = errno;
-			free( sem_name );
+			free(sem_name);
 
-			if (ret == 0 )
+			if (ret == 0)
 			{
-				FAILED( "The function did not return ENAMETOOLONG as expected" );
+				FAILED("The function did not return ENAMETOOLONG as expected");
 			}
 			else
 			{
-				output( "Error was %d: %s\n", error, strerror( error ) );
-				FAILED( "Unable to unlink a semaphore which we just created" );
+				output("Error was %d: %s\n", error, strerror(error) );
+				FAILED("Unable to unlink a semaphore which we just created");
 			}
 		}
 
 #if VERBOSE > 0
 		else
 		{
-			output( "Creation of the semaphore failed with error %d: %s\n", errno, strerror( errno ) );
+			output("Creation of the semaphore failed with error %d: %s\n", errno, strerror(errno) );
 		}
 
 #endif
@@ -210,7 +210,7 @@ int main( int argc, char * argv[] )
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

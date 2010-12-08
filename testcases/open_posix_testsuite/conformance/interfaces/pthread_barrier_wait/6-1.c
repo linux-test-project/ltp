@@ -6,7 +6,7 @@
  *
  * pthread_barrier_wait()
  *
- * The pthread_barrier_wait( ) function may fail if:
+ * The pthread_barrier_wait() function may fail if:
  * [EINVAL] The value specified by barrier does not refer to an initialized barrier object.
  *
  * This case will always pass.

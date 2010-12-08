@@ -62,7 +62,7 @@ int main(){
 
 	result = munlockall();
 	
-	if ((result == 0 && memlock > 0) || (result == -1 && memlock <=0) ){
+	if ((result == 0 && memlock > 0) || (result == -1 && memlock <=0)){
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == EPERM){

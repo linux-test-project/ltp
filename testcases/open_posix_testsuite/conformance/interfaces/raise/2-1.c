@@ -63,7 +63,7 @@ int main()
 	}
 
 	if ((INHANDLER == globalStatus) ||
-		(BEFOREHANDLER == globalStatus) ) {
+		(BEFOREHANDLER == globalStatus)) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

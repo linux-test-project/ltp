@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 		return PTS_PASS;
 	}
 	
-	if (errno != ESRCH ) {
+	if (errno != ESRCH) {
 		perror("ESRCH is not returned");
 		return PTS_FAIL;
 	}

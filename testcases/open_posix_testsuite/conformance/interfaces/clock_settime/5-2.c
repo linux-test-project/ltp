@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	act.sa_flags=0;
 
 	if ((sigemptyset(&set) != 0) ||
-		(sigemptyset(&act.sa_mask) != 0) ) {
+		(sigemptyset(&act.sa_mask) != 0)) {
 		perror("sigemptyset() was not successful\n");
 		return PTS_UNRESOLVED;
 	}

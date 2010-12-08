@@ -193,7 +193,7 @@ int main(){
 	sleep(1);
 
 	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
-				sched_get_priority_max(SCHED_FIFO) ) / 2;
+				sched_get_priority_max(SCHED_FIFO)) / 2;
 
 	oldcount = *shmptr;
 	if (sched_setparam(child_pid[i], &param) != 0) {

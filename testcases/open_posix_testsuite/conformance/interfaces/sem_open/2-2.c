@@ -41,7 +41,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (errno != EEXIST )
+	if (errno != EEXIST)
 	{
 		puts("TEST PASSED");
 		sem_unlink(semname);

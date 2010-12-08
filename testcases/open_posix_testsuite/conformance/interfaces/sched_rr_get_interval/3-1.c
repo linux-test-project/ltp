@@ -51,12 +51,12 @@ int main(int argc, char **argv)
 		return PTS_PASS;
 	}
 	
-	if (errno != ESRCH ) {
+	if (errno != ESRCH) {
 		perror("Returned error is not ESRCH");
 		return PTS_FAIL;
 	}
 
-	if (result == 0 ) {
+	if (result == 0) {
 		printf("Returned code == 0.\n");
 		return PTS_FAIL;
 	} else {

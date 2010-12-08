@@ -5,10 +5,10 @@
  * source tree.
  *
  * If MAP_FIXED is set, 
- * mmap( ) may return MAP_FAILED and set errno to [EINVAL]. 
+ * mmap() may return MAP_FAILED and set errno to [EINVAL]. 
  *
  * [EINVAL] The addr argument (if MAP_FIXED was specified) or off is not a multiple of
- * the page size as returned by sysconf( ), or is considered invalid by the
+ * the page size as returned by sysconf(), or is considered invalid by the
  * implementation.
  * 
  * Test step:

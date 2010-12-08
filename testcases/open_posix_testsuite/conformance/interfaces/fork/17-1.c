@@ -85,7 +85,7 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, param, status;
 	pid_t child, ctl;
@@ -96,78 +96,78 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Change process policy and parameters */
-	sp.sched_priority = param = sched_get_priority_max( POLICY );
+	sp.sched_priority = param = sched_get_priority_max(POLICY);
 
-	if (sp.sched_priority == -1 )
+	if (sp.sched_priority == -1)
 	{
-		UNRESOLVED( errno, "Failed to get max priority value" );
+		UNRESOLVED(errno, "Failed to get max priority value");
 	}
 
-	ret = sched_setscheduler( 0, POLICY, &sp );
+	ret = sched_setscheduler(0, POLICY, &sp);
 
-	if (ret == -1 )
+	if (ret == -1)
 	{
-		UNRESOLVED( errno, "Failed to change process scheduling policy" );
+		UNRESOLVED(errno, "Failed to change process scheduling policy");
 	}
 
 	/* Create the child */
 	child = fork();
 
-	if (child == ( pid_t ) - 1 )
+	if (child == (pid_t) - 1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == ( pid_t ) 0 )
+	if (child == (pid_t) 0)
 	{
 
 		/* Check the scheduling policy */
-		ret = sched_getscheduler( 0 );
+		ret = sched_getscheduler(0);
 
-		if (ret == -1 )
+		if (ret == -1)
 		{
-			UNRESOLVED( errno, "Failed to read scheduling policy in child" );
+			UNRESOLVED(errno, "Failed to read scheduling policy in child");
 		}
 
-		if (ret != POLICY )
+		if (ret != POLICY)
 		{
-			FAILED( "The scheduling policy was not inherited" );
+			FAILED("The scheduling policy was not inherited");
 		}
 
-		ret = sched_getparam( 0, &sp );
+		ret = sched_getparam(0, &sp);
 
-		if (ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to read scheduling parameter in child" );
+			UNRESOLVED(errno, "Failed to read scheduling parameter in child");
 		}
 
-		if (sp.sched_priority != param )
+		if (sp.sched_priority != param)
 		{
-			FAILED( "The scheduling parameter was not inherited" );
+			FAILED("The scheduling parameter was not inherited");
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child )
+	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

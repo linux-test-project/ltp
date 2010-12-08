@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 {	       
 	int result = -1;
 
-	result = sched_getparam( 0, NULL);
+	result = sched_getparam(0, NULL);
 	
 	if (result == -1 && errno == EFAULT) {
 		printf("sched_getparam() sets errno == EFAULT when param argument points to NULL\n");

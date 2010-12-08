@@ -6,7 +6,7 @@
 
  * Test pthread_spin_lock(pthread_spinlock_t *lock)
  *
- * The pthread_spin_lock( ) function may fail if:
+ * The pthread_spin_lock() function may fail if:
  * [EDEADLK] The calling thread already holds the lock.
  * 
  * This case will always pass. The thread might keep spin

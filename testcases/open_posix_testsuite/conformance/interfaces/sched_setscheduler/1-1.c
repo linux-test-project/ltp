@@ -59,8 +59,8 @@ int main(int argc, char **argv)
 		fflush(stdout);
 
 		policy = tst->value;
-		priority = ( sched_get_priority_min(policy) + 
-			     sched_get_priority_max(policy) ) / 2;
+		priority = (sched_get_priority_min(policy) + 
+			     sched_get_priority_max(policy)) / 2;
 		param.sched_priority = priority;
 
 		tmp = sched_setscheduler(getpid(), policy, &param);

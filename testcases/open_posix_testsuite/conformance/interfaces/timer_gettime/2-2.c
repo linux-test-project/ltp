@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
 
 	if ((0 == itsget.it_value.tv_sec) &&
-		(0 == itsget.it_value.tv_nsec) ) {
+		(0 == itsget.it_value.tv_nsec)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

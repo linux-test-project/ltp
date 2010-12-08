@@ -6,7 +6,7 @@
  * 
  * Test pthread_spin_destroy(pthread_spinlock_t * lock)
  *
- * pthread_spin_destroy( ) function shall destroy the spin lock 
+ * pthread_spin_destroy() function shall destroy the spin lock 
  * referenced by lock and release any resources used by the lock.
  *
  * Steps:

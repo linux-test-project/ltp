@@ -6,9 +6,9 @@
  *
  * pthread_barrier_wait()
  *
- * The pthread_barrier_wait( ) function shall synchronize participating threads 
+ * The pthread_barrier_wait() function shall synchronize participating threads 
  * at the barrier referenced by barrier. The calling thread shall block 
- * until the required number of threads have called pthread_barrier_wait( ) 
+ * until the required number of threads have called pthread_barrier_wait() 
  * specifying the barrier.
  *
  * Steps:

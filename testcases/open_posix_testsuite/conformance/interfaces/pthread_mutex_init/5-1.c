@@ -166,7 +166,7 @@ int main(int argc, char * argv[])
 	/* Allocate all available memory */
 	while (1)
 	{
-		ptr = malloc( sz ); /* Allocate one page of memory */
+		ptr = malloc(sz); /* Allocate one page of memory */
 		if (ptr == NULL)
 			break;
 		#if VERBOSE > 1
@@ -182,7 +182,7 @@ int main(int argc, char * argv[])
 	
 	while (1)
 	{
-		ptr = malloc( sizeof(void*) ); /* Allocate every remaining bits of memory */
+		ptr = malloc(sizeof(void*)); /* Allocate every remaining bits of memory */
 		if (ptr == NULL)
 			break;
 		#if VERBOSE > 1
@@ -233,7 +233,7 @@ int main(int argc, char * argv[])
 			output("Mutex initialization for attribute %d succeeds when memory is full\n", i);
 			#endif
 			if (retdtr[i] != 0)
-			{  UNRESOLVED( retdtr[i],  "Mutex destroy failed on mutex inilialized under heavy loaded memory"); }
+			{  UNRESOLVED(retdtr[i],  "Mutex destroy failed on mutex inilialized under heavy loaded memory"); }
 		}
 		#if VERBOSE > 0
 		else

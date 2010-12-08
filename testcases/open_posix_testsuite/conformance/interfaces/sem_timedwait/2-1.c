@@ -37,7 +37,7 @@ int main()
 
 
 	/* Semaphore started out locked */
-	 if (sem_init (&mysemp, 0, 0) == -1 ) {
+	 if (sem_init (&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
                 return PTS_UNRESOLVED;
          }
@@ -48,7 +48,7 @@ int main()
 		ts.tv_sec=time(NULL)+2;
 		ts.tv_nsec=0;
 
-	       	if (sem_timedwait(&mysemp, &ts) == -1 ) {
+	       	if (sem_timedwait(&mysemp, &ts) == -1) {
 			puts ("TEST FAILED");
 			return PTS_FAIL;
 		} else {
@@ -61,7 +61,7 @@ int main()
 	{  
 		int i;
 		sleep(1);
-		if (sem_post(&mysemp) == -1 ) {
+		if (sem_post(&mysemp) == -1) {
 			perror(ERROR_PREFIX "sem_post");
 			return PTS_FAIL;
 		}

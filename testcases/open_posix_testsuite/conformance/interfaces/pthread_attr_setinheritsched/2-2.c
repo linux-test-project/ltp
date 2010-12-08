@@ -46,7 +46,7 @@ void *thread_func(void* arg)
         memset(&param, 0, sizeof(param));
 
 	rc = pthread_getschedparam(self, &new_policy, &param);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 perror(ERROR_PREFIX "pthread_getschedparam");
                 exit(PTS_UNRESOLVED);
         }
@@ -73,27 +73,27 @@ int main()
 	}
 
 	rc = pthread_attr_setschedpolicy(&attr, policy); 	
-	if (rc != 0 ) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy");
 		exit(PTS_UNRESOLVED);
         } 
 	
 	sp.sched_priority = 1;
 	rc = pthread_attr_setschedparam(&attr, &sp); 	
-	if (rc != 0 ) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam");
 		exit(PTS_UNRESOLVED);
         } 
 
 	int insched = PTHREAD_EXPLICIT_SCHED;	
 	rc = pthread_attr_setinheritsched(&attr, insched); 
-	if (rc != 0 ) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setinheritsched");
 		exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
-	if (rc !=0 ) {
+	if (rc !=0) {
 		printf("Error at pthread_create(): %s\n", strerror(rc));
                 exit(PTS_UNRESOLVED);
         }

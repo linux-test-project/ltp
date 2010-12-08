@@ -171,7 +171,7 @@ int main(int argc, char * argv[])
 	/* Allocate all available memory */
 	while (1)
 	{
-		ptr = malloc( sz ); /* Allocate one page of memory */
+		ptr = malloc(sz); /* Allocate one page of memory */
 		if (ptr == NULL)
 			break;
 		#if VERBOSE > 1
@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
 	
 	while (1)
 	{
-		ptr = malloc( sizeof(void*) ); /* Allocate every remaining bits of memory */
+		ptr = malloc(sizeof(void*)); /* Allocate every remaining bits of memory */
 		if (ptr == NULL)
 			break;
 		#if VERBOSE > 1
@@ -238,7 +238,7 @@ int main(int argc, char * argv[])
 			output("Cond (%i) initialization succeeded when memory is full\n", i);
 			#endif
 			if (retdtr[i] != 0)
-			{  UNRESOLVED( retdtr[i],  "Cond destroy failed for a cond inilialized under full memory"); }
+			{  UNRESOLVED(retdtr[i],  "Cond destroy failed for a cond inilialized under full memory"); }
 		}
 		#if VERBOSE > 0
 		else

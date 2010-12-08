@@ -47,7 +47,7 @@ void *thr_func(void *arg)
 	fprintf(stderr,"[Thread 0x%p] started and locked the mutex\n", (void*)self);
 	start_num ++;
 	
-	if (gettimeofday(&curtime, NULL) !=0 ) {
+	if (gettimeofday(&curtime, NULL) !=0) {
 		fprintf(stderr,"Fail to get current time\n");
 		exit(PTS_UNRESOLVED);
 	}

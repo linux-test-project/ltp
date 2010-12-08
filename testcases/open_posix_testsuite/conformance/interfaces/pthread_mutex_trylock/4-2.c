@@ -247,7 +247,7 @@ int main(int argc, char * argv[])
  * For each test scenario, initialize the attributes and other variables.
  * Do the whole thing for each time to test.
  */
-	for ( sc=0; sc < NSCENAR ; sc++)
+	for (sc=0; sc < NSCENAR ; sc++)
 	{
 		#if VERBOSE > 1
 		output("[parent] Preparing attributes for: %s\n", scenarii[sc].descr);
@@ -329,7 +329,7 @@ int main(int argc, char * argv[])
 				
 				if (tf((void *)td) != NULL)
 				{
-					UNRESOLVED( -1, "[child] Got an unexpected return value from test function");
+					UNRESOLVED(-1, "[child] Got an unexpected return value from test function");
 				}
 				else
 				{
@@ -360,7 +360,7 @@ int main(int argc, char * argv[])
 			if (WIFSIGNALED(status))
 			{ 
 				output("Child process killed with signal %d\n",WTERMSIG(status)); 
-				UNRESOLVED( -1 , "Child process was killed"); 
+				UNRESOLVED(-1 , "Child process was killed"); 
 			}
 			
 			if (WIFEXITED(status))
@@ -369,7 +369,7 @@ int main(int argc, char * argv[])
 			}
 			else
 			{
-				UNRESOLVED( -1, "Child process was neither killed nor exited");
+				UNRESOLVED(-1, "Child process was neither killed nor exited");
 			}
 			
 			if (ret != 0)

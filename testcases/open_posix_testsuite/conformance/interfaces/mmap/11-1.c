@@ -6,11 +6,11 @@
  *
  * The off argument is constrained to be aligned and sized 
  * according to the value returned by
- * sysconf( ) when passed _SC_PAGESIZE or _SC_PAGE_SIZE. 
+ * sysconf() when passed _SC_PAGESIZE or _SC_PAGE_SIZE. 
  * 
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * [EINVAL] The addr argument (if MAP_FIXED was specified) or off is not a multiple of
- * the page size as returned by sysconf( ), or is considered invalid by the
+ * the page size as returned by sysconf(), or is considered invalid by the
  * implementation.
  *
  * Test step:

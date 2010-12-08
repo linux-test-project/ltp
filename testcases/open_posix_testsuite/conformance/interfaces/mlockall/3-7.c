@@ -53,7 +53,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	page_ptr = (void*) ( (long)foo - ((long)foo % page_size) );
+	page_ptr = (void*) ((long)foo - ((long)foo % page_size));
 
 	result = msync(page_ptr, page_size, MS_SYNC|MS_INVALIDATE);
 	if (result == -1 && errno == EBUSY) {

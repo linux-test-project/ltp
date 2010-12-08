@@ -9,7 +9,7 @@
  * This case will always PASS.
  * 
  * The functions may fail if:
- * The pthread_spin_unlock( ) function may fail if:
+ * The pthread_spin_unlock() function may fail if:
  *	[EPERM] The calling thread does not hold the lock.
  *
  * Steps:

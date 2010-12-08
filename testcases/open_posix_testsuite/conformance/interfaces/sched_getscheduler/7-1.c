@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 		}
         }
 
-	result = sched_getscheduler( 1 );
+	result = sched_getscheduler(1);
 	
 	if (result == -1 && errno == EPERM) {
 		printf("Test PASSED\n");
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		printf("The function sched_getscheduler has successed.\n");
 		return PTS_FAIL;
 	}
-	if (errno != EPERM ) {
+	if (errno != EPERM) {
 		perror("errno is not EPERM");
 		return PTS_FAIL;
 	} else {
