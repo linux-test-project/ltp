@@ -139,13 +139,13 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == (pid_t) - 1)
+	if (child == -1)
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 		/* Count in child process */
 		counted = count(dotdir);

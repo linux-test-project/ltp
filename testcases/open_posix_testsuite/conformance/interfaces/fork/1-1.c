@@ -108,7 +108,7 @@ int main(int argc, char * argv[])
 	
 	/* Create the child */
 	child = fork();
-	if (child == (pid_t) -1)  {  UNRESOLVED(errno, "Failed to fork");  }
+	if (child == -1)  {  UNRESOLVED(errno, "Failed to fork");  }
 	
 	/* Open the semaphore */
 	sem = sem_open(SEM_NAME, O_CREAT, O_RDWR, 0);
@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
 	sleep(1);
 	
 	/* child posts the semaphore and terminates */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 		do { ret = sem_post(sem); }
 		while ((ret == -1) && (errno == EINTR));

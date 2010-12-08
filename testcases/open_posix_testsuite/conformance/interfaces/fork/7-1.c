@@ -156,7 +156,7 @@ int main(int argc, char * argv[])
 	/* Try opening the message catalog file */
 	messcat = catopen("./mess.cat", 0);
 
-	if (messcat == (nl_catd) - 1)
+	if (messcat == (nl_catd) -1)
 	{
 		UNRESOLVED(errno, "Could not open ./mess.cat. You may need to do a gencat before executing this testcase");
 	}
@@ -168,13 +168,13 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == (pid_t) - 1)
+	if (child == -1)
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 		read_catalog(messcat, "child");
 

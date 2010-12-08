@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
 	/* Initialize first times */
 	st_time = times(&ini_tms);
 
-	if (st_time == (clock_t) - 1)
+	if (st_time == (clock_t) -1)
 	{
 		UNRESOLVED(errno, "times failed");
 	}
@@ -120,7 +120,7 @@ int main(int argc, char * argv[])
 	{
 		cur_time = times(&parent_tms);
 
-		if (cur_time == (clock_t) - 1)
+		if (cur_time == (clock_t) -1)
 		{
 			UNRESOLVED(errno, "times failed");
 		}
@@ -142,18 +142,18 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == (pid_t) - 1)
+	if (child == -1)
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 
 		cur_time = times(&child_tms);
 
-		if (cur_time == (clock_t) - 1)
+		if (cur_time == (clock_t) -1)
 		{
 			UNRESOLVED(errno, "times failed");
 		}
@@ -167,7 +167,7 @@ int main(int argc, char * argv[])
 		{
 			cur_time = times(&child_tms);
 
-			if (cur_time == (clock_t) - 1)
+			if (cur_time == (clock_t) -1)
 			{
 				UNRESOLVED(errno, "times failed");
 			}
@@ -212,7 +212,7 @@ int main(int argc, char * argv[])
 
 #endif
 
-	if (cur_time == (clock_t) - 1)
+	if (cur_time == (clock_t) -1)
 	{
 		UNRESOLVED(errno, "times failed");
 	}

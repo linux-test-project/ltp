@@ -143,7 +143,7 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == (pid_t) - 1)
+	if (child == -1)
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
 	}
 
 	/* child */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 		/* sleep a little while to let the thread execute in case it exists */
 		sleep(1);
