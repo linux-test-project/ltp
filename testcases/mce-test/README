@@ -33,9 +33,11 @@ cases/*
 	Contains all test cases, which may be organized in
 	sub-directories, the interface of a class of test cases is a
 	shell script under cases/, such as:
-	    cases/soft-inj/panic/cases.sh
-	is for test cases triggered by soft-inject and my cause system
-	panic during testing.
+	   -- cases/soft-inj/panic/cases.sh
+		is for test cases triggered by soft-inject and may cause system 
+		panic during testing.
+	   -- cases/apei-inj/ucr/cases.sh  
+		is for test cases triggered by apei-inject.
 
 config/*
 	Contains test configuration files, which specifies the
@@ -80,12 +82,19 @@ bin/
 	Some tools used by test drivers or test cases will be
 	installed into this directory.
 
+stress/
+	Linux MCE stress test suite.
 
 Test Instruction
 ----------------
 
 Please refer to corresponding section in doc/howto.txt.
 
+Very quick way to test this:
+	be root
+	make sure you have a kernel with CONFIG_X86_MCE_INJECT
+	and CONFIG_HWPOISON_INJECT and soft-offlining support
+	run "make test"
 
 Futher Information
 ------------------
@@ -94,6 +103,8 @@ For futher information about MCE test suite, please refer to documents
 in doc sub-directory.
 
 doc/howto.txt:		a more detailed HOWTO document
+
+doc/stress-howto.txt:	Detailed HOWTO document for MCE stress test suite
 
 doc/cases/*.txt:	Description of every test case, including test
 			objective, code patch tested, reference and

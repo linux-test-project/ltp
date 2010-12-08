@@ -1,6 +1,10 @@
 These are some standalone test programs for various parts of the
 machine check code:
 
+They can be all tested together by running "make test"
+This requires root rights and a kernel with soft offlining and hard
+offlining support.
+
 To use ttable and tcases you need to specify a linux source tree
 with the mce improvements patchkit added with make LSRC=/path/to/linux
 or symlink the linux tree to ../linux

@@ -1,4 +1,4 @@
-
+/* Unit tester for ring buffer code in mce.c */
 #define DEFINE_PER_CPU(a,b) a b
 #define __get_cpu_var(x) x
 #define barrier() asm volatile("" ::: "memory")
@@ -64,7 +64,7 @@ void *thread(void *arg)
 	}
 }
 
-main()
+int main(void)
 {
 	long k;
 	
@@ -82,4 +82,6 @@ main()
 			k++;
 		}
 	}
+
+	return 0;
 }

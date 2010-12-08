@@ -1,4 +1,7 @@
 
 all:
+	$(MAKE) -C simple_process
+	$(MAKE) -C simple_process install
 clean:
-distclean:
+	$(MAKE) -C simple_process clean
+distclean: clean

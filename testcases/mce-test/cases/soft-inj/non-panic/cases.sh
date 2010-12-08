@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Software injection based test cases - non-panic cases: test cases
 # are triggered via the mce-inject tool, and they will not trigger kernel

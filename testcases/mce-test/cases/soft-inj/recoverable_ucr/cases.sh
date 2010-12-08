@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Software injection based test cases: test cases are triggered via
 # mce-inject tool.

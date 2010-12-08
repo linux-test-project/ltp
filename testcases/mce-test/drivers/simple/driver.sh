@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Simple test driver: run test cases one by one, assuming test case
 # will not trigger panic or reboot.
@@ -58,10 +58,19 @@ test_all()
 	    export GCOV=copy
 	    export KSRC_DIR
 	else
-	    echo "gcov is not supported by kernel, or there is no " \
-		"gcov utility installed, disable gcov support."
+	    echo "gcov is not supported by kernel or there is no " \
+		"gcov utility installed"
+	    echo "disabling gcov support."
 	    unset GCOV
 	fi
+    fi
+
+    #if mce_inject is a module, it is ensured to have been loaded
+    modinfo mce_inject > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        lsmod | grep mce_inject > /dev/null 2>&1
+        [ $? -eq 0 ] || modprobe mce_inject
+        [ $? -eq 0 ] || die "module mce_inject isn't supported ?"
     fi
 
     for case_sh in $CASES; do
@@ -109,6 +118,9 @@ if [ -n "$START_BACKGROUND" ]; then
 else
     start_background
 fi
+
+[ -d $RDIR ] && mv $RDIR --backup=numbered -T $RDIR.old
+[ -d $WDIR ] && mv $WDIR --backup=numbered -T $WDIR.old
 
 test_all
 

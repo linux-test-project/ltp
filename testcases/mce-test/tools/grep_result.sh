@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Filter out specified test case results from all results.
 #

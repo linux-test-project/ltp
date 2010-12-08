@@ -26,7 +26,7 @@ guide and how to add new test cases into test suite.
 
   CONFIG_X86_MCE=y
   CONFIG_X86_MCE_INTEL=y
-  CONFIG_X86_MCE_INJECT=y
+  CONFIG_X86_MCE_INJECT=y or CONFIG_X86_MCE_INJECT=m
 
 - Get mcelog git version from 
   git://git.kernel.org/pub/scm/utils/cpu/mce/mcelog.git.
@@ -45,7 +45,14 @@ guide and how to add new test cases into test suite.
   make
   sudo make install
 
-- Run make test-simple
+- Install page-types tool (sec 3.4), which is accompanied with Linux kernel
+  source (2.6.32 or newer).
+
+  cd $KERNEL_SRC/Documentation/vm/
+  gcc -o page-types page-types.c
+  cp page-types /usr/bin/
+
+- Run make test
   This will do the basic tests, but not the more complicated kdump ones.
   For more information on those read below.
 
@@ -101,14 +108,13 @@ reboot (for kdump)		indicate there is a reboot between test
 				case trigger and test case verify, some
 				context has been gone.
 
-Several test case classes are provided with the test suite. They are
-all based on mce-inject MCE software injection tool, and follows same
-structure.
+Several test case classes are provided with the test suite. 
+cases/soft-inj/* is based on mce-inject MCE software injection tool.
+cases/apei-inj/* is based on apei-inj APEI haredware injection tool.
 
-cases/soft-inj/<class name>/cases.sh	Interface of the test case class
-cases/soft-inj/<class name>/data/	Directory contains data file for
-					mce-inject tool.
-cases/soft-inj/<class name>/refer/	Directory contains data file for
+cases/<injection tool>/<class name>/cases.sh	Interface of the test case class
+cases/<injection tool>/<class name>/data/	Directory contains data file
+cases/<injection tool>/<class name>/refer/	Directory contains data file for
 					reference MCE records if necessary.
 
 For document of various test cases, please refer to doc/cases/*.
@@ -169,13 +175,13 @@ Additional test result for various test cases will go
 "results/<driver_name>/<case_name>/<xxx>. For in-package test case
 class, additional test results include:
 
-results/<driver_name>/soft-inject/<case_name>/klog
+results/<driver_name>/<injection_tool>/<case_name>/klog
 				Kernel log during testing
-results/<driver_name>/soft-inject/<case_name>/mcelog
+results/<driver_name>/<injection_tool>/<case_name>/mcelog
 				mcelog output during testing
-results/<driver_name>/soft-inject/<case_name>/mcelog_refer
+results/<driver_name>/<injection_tool>/<case_name>/mcelog_refer
 				mcelog output reference
-results/<driver_name>/soft-inject/<case_name>/mce_64.c.gcov (for gcov)
+results/<driver_name>/<injection_tool>/<case_name>/mce_64.c.gcov (for gcov)
 				gcov output file
 
 
@@ -214,6 +220,10 @@ been merged by LTP cvs. For more information please refer to gcovdump
 document. The latest gcovdump can be gotten from cvs:
 http://ltp.cvs.sourceforge.net/viewvc/ltp/utils/analysis/gcov-kdump/.
 
+3.4 page-types
+A tool to query page types, which is accompanied with Linux kernel 
+source (2.6.32 or newer, $KERNEL_SRC/Documentation/vm/page-types.c).
+It is required for MCE apei-inj testing. 
 
 4. Usage Guide
 --------------
@@ -241,6 +251,7 @@ a. Linux kernel and user space tools as follow should be installed
    - A Linux kernel with full MCE injection support (see 0)
    - mce-inject tool (see 3.1)
    - mcelog with proper version (see 3.2)
+   - page-types (see 3.4)
 
 b. Modify config/simple.conf or create a new test configuration
    file. Refer to section 2.3 for more instruction about test
@@ -248,12 +259,19 @@ b. Modify config/simple.conf or create a new test configuration
 
 c. Run "make". Carefully check for any errors.
 
-d. To be root and invoke simple test driver on test configuration file
+d. It is recommended to stop cron before testing. Because there
+   might be another mcelog reading events running on background
+   by cron, which will upset the test.
+
+      /etc/init.d/crond stop
+
+e. To be root and invoke simple test driver on test configuration file
    as follow
 
-       drivers/simple/driver.sh config/simple.conf
+       Run "make test" to do all the standard tests that do not require
+       special set up.
 
-e. General test result will go results/simple/result. Test log will go
+f. General test result will go results/simple/result. Test log will go
    work/simple/log. Additional test results for various test cases
    will go results/simple/<test case>/<xxx>. For more details about
    in-package test case class, please refer to section 2.1.
@@ -306,24 +324,48 @@ b. Install these additional packages:
      * kexec-tools
      * kernel-devel
 
-c. In addition to bzImage and modules of Linux kernel should be
+c. Configure where to put the kdump /proc/vmcore files. The path should be
+   specified via COREDIR in test configuration file.
+   By default, the kdump /proc/vmcore files will be put into /var/crash.
+
+   For SLES10 or OpenSUSE Distro:
+     * edit KDUMP_SAVEDIR in /etc/sysconfig/kdump
+   For RHEL5 or Fedora distro:
+     * edit path in /etc/kdump.conf
+
+d. In addition to bzImage and modules of Linux kernel should be
    installed on test machine, the vmlinux of Linux kernel should be
    put on test machine and specified via VMLINUX in test configuration
    file.
 
-d. Make sure the partition where the test driver is running has space
+e. Make sure the partition where the test driver is running has space
    for the tests results and one vmcore file (size of physical
    memory).
 
-e. Create a new test configuration file or use a existing one in
+f. Now, reboot system. Test if kdump works by starting kdump and triggering
+   kernel panic.
+
+   For SLES10 or OpenSUSE Distro:
+    service boot.kdump restart
+    chkconfig boot.kdump on
+    echo "c" > /proc/sysrq-trigger
+
+   For RHEL5 or Fedora distro:
+    service kdump restart
+    /sbin/chkconfig kdump on
+    echo "c" > /proc/sysrq-trigger
+
+   After system reboot, check if there are vmcore files. By default, they are in /var/crash/*/. If yes, "kdump" works in the system.
+
+g. Create a new test configuration file or use a existing one in
    config/, such as kdump.conf. Note: not all test case classes can be
    used with kdump test driver, see "important points" below.
 
-f. Run "make". Carefully check for any errors.
+h. Run "make". Carefully check for any errors.
 
-g. To be root and run "drivers/kdump/driver.sh <conf>"
+i. To be root and run "drivers/kdump/driver.sh <conf>" or "make test-kdump" (for a full test)
 
-h. After test is done, the test log of the last run of kdump driver will
+j. After test is done, the test log of the last run of kdump driver will
    be displayed on main console.
 
 Few Important points to remember:
@@ -437,6 +479,15 @@ Some tools are provided to help analyze test result.
 
   Where <grep options> are same as options available to /bin/grep.
 
+- tools/loop-mce-test
+
+  Run mce test cases in a loop. It exits on failure of any one of the test
+  cases. This script is using simple test driver.
+
+  Usage:
+      ./loop-mce-test <config_file>
+ 
+  Note that only simple test configure file can be used here.
 
 5. Add test cases
 -----------------

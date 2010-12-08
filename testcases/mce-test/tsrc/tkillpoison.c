@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define MADV_POISON 12
+#define MADV_POISON 100
 
 int main(void)
 {

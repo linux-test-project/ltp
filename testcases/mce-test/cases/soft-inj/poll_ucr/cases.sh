@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Software injection based test cases: test cases are triggered via
 # mce-inject tool.
@@ -37,10 +37,15 @@ verify()
 {
     local removes="TSC TIME PROCESSOR"
     case "$bcase" in
-	ucna|ucna_over)
+	ucna|ucna_over|srar_poll)
 	    soft_inject_verify_mcelog
 	    verify_klog $klog
 	    ;;
+        fatal_poll)
+            removes="$removes RIP"
+            soft_inject_verify_mcelog
+            verify_klog $klog
+            ;;
 	*)
 	    echo "!!! Unknown case: $this_case !!!"
     esac

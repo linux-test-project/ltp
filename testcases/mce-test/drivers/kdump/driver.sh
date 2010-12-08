@@ -1,4 +1,4 @@
-#!/bin/sh -xe
+#!/bin/bash -xe
 #
 # Kdump test driver: test case will trigger panic, and then crash
 # dump. The test result is collected via dumped vmcore. For more
@@ -33,7 +33,7 @@ setup_crontab ()
     # crontab in some distros will not read from STDIN.
 
     cat <<EOF > $WDIR/kdump.cron
-SHELL=/bin/sh
+SHELL=/bin/bash
 PATH=/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 MAILTO=root
 @reboot cd "$(pwd)"; ${0} $conf >> $WDIR/log 2>&1; cat $WDIR/log > /dev/console
@@ -63,16 +63,24 @@ EOF
 setup_kdump ()
 {
     echo "Start kdump daemon."
-    /etc/init.d/kdump restart
+
+    if [ -f /etc/init.d/kdump ]; then
+	    daemon=kdump
+    else
+	    #SLE11
+	    daemon=boot.kdump
+    fi
+
+    /etc/init.d/"${daemon}" restart
 
     echo "Enable kdump daemon by default."
     # Red Hat and SUSE.
     if [ -x "/sbin/chkconfig" ]; then
-        /sbin/chkconfig kdump on
+        /sbin/chkconfig "${daemon}" on
 
     # Debian and Ubuntu.
     elif [ -x "/sbin/update-rc.d" ]; then
-        /sbin/update-rc.d kdump defaults
+        /sbin/update-rc.d "${daemon}" defaults
     fi
 }
 
@@ -101,8 +109,9 @@ dump_gcov()
 	return
     fi
     if ! chk_gcov; then
-	echo "gcov is not supported by kernel, or there is no " \
-	    "gcov utility installed, disable gcov support."
+	echo "gcov is not supported by kernel or there is no " \
+	    "gcov utility installed"
+	echo "disabling gcov support"
 	unset GCOV
 	return
     fi
@@ -221,6 +230,15 @@ if [ ! -f $WDIR/stamps/setupped ]; then
     /sbin/shutdown -r now
     sleep 60
     exit -1
+fi
+
+#if mce_inject is a module, it is ensured to have been loaded
+if modinfo mce_inject > /dev/null 2>&1; then
+    if ! lsmod | grep -q mce_inject; then
+        if ! modprobe mce_inject; then
+	    die "module mce_inject isn't supported ?"
+        fi
+    fi
 fi
 
 for case_sh in ${CASES}; do
