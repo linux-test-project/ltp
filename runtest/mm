@@ -59,6 +59,11 @@ mmap10 mmap10
 mlock03 mlock03 -i 20
 
 mbind01 mbind01
+
+hugemmap05 hugemmap05
+hugemmap05_1 hugemmap05 -m
+hugemmap05_2 hugemmap05 -s
+hugemmap05_3 hugemmap05 -s -m
 mmap10_1 mmap10 -a
 mmap10_2 mmap10 -s
 mmap10_3 mmap10 -a -s
