@@ -25,7 +25,7 @@ top_srcdir		?= ../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-# NOTE (garrcoop): directories to traverse for building testcases.
+# NOTE (garrcoop): mce-test isn't integrated into the build.
 
 # Build syscalls in all scenarios.
 SUBDIRS			:= syscalls
