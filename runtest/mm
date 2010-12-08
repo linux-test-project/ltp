@@ -70,3 +70,5 @@ mmap10_3 mmap10 -a -s
 mmap10_4 mmap10 -a -s -c 60
 
 ksm01 ksm01
+
+cpuset01 cpuset01 -I 3600
