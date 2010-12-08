@@ -28,7 +28,7 @@ int main()
 
 	/* Try to destroy a NULL mutex attributes object using pthread_mutexattr_destroy()
 	 * It should return EINVAL */
-	if((rc=pthread_mutexattr_destroy(mta)) == EINVAL)
+	if ((rc=pthread_mutexattr_destroy(mta)) == EINVAL)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;

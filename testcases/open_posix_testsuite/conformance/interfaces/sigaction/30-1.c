@@ -107,7 +107,7 @@ int main()
 
 	ret = sigemptyset( &sa.sa_mask );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
@@ -119,13 +119,13 @@ int main()
 #endif
 	ret = sigaction( SIG_INVALID, &sa, 0 );
 
-	if ( ret == 0 )
+	if (ret == 0 )
 	{
 		output( "Is signal %d valid on this implementation?\n", SIG_INVALID );
 		FAILED( "Setting handler for invalid signal did not fail" );
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL )
 	{
 		output( "Got error %d (%s) instead of %d (%s)\n",
 		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
@@ -139,12 +139,12 @@ int main()
 #endif
 	ret = sigaction( SIGKILL, &sa, 0 );
 
-	if ( ret == 0 )
+	if (ret == 0 )
 	{
 		FAILED( "Setting handler for SIGKILL did not fail" );
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL )
 	{
 		output( "Got error %d (%s) instead of %d (%s)\n",
 		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
@@ -158,12 +158,12 @@ int main()
 #endif
 	ret = sigaction( SIGSTOP, &sa, 0 );
 
-	if ( ret == 0 )
+	if (ret == 0 )
 	{
 		FAILED( "Setting handler for SIGSTOP did not fail" );
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL )
 	{
 		output( "Got error %d (%s) instead of %d (%s)\n",
 		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
@@ -179,12 +179,12 @@ int main()
 #endif
 	ret = sigaction( SIGKILL, &sa, 0 );
 
-	if ( ret == 0 )
+	if (ret == 0 )
 	{
 		FAILED( "Ignoring SIGKILL did not fail" );
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL )
 	{
 		output( "Got error %d (%s) instead of %d (%s)\n",
 		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
@@ -198,12 +198,12 @@ int main()
 #endif
 	ret = sigaction( SIGSTOP, &sa, 0 );
 
-	if ( ret == 0 )
+	if (ret == 0 )
 	{
 		FAILED( "Ignoring SIGSTOP did not fail" );
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL )
 	{
 		output( "Got error %d (%s) instead of %d (%s)\n",
 		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );

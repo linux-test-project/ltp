@@ -31,7 +31,7 @@ int main()
 
 	/* Empty set of blocked signals */
 
-	if ( ( sigemptyset( &newmask ) == -1 ) ||
+	if (( sigemptyset( &newmask ) == -1 ) ||
 	        ( sigemptyset( &pendingset ) == -1 ) )
 	{
 		printf( "Error in sigemptyset()\n" );
@@ -39,21 +39,21 @@ int main()
 	}
 
 	/* Add SIGALRM to the set of blocked signals */
-	if ( sigaddset( &newmask, SIGALRM ) == -1 )
+	if (sigaddset( &newmask, SIGALRM ) == -1 )
 	{
 		perror( "Error in sigaddset()\n" );
 		return PTS_UNRESOLVED;
 	}
 
 	/* Block SIGALRM */
-	if ( sigprocmask( SIG_SETMASK, &newmask, NULL ) == -1 )
+	if (sigprocmask( SIG_SETMASK, &newmask, NULL ) == -1 )
 	{
 		printf( "Error in sigprocmask()\n" );
 		return PTS_UNRESOLVED;
 	}
 
 	/* Read clock */
-	if ( gettimeofday( &tv_ref, NULL ) != 0 )
+	if (gettimeofday( &tv_ref, NULL ) != 0 )
 	{
 		printf( "Failed to get time of day" );
 		return PTS_UNRESOLVED;
@@ -64,21 +64,21 @@ int main()
 
 	/* Call sigwait.  It should wait for 5 seconds and then move
 	 * along the rest of the process when it received the SIGALRM */
-	if ( sigwait( &newmask, &sig ) != 0 )
+	if (sigwait( &newmask, &sig ) != 0 )
 	{
 		printf( "Error in sigwait()\n" );
 		return PTS_UNRESOLVED;
 	}
 
 	/* Re-read clock */
-	if ( gettimeofday( &tv_cur, NULL ) != 0 )
+	if (gettimeofday( &tv_cur, NULL ) != 0 )
 	{
 		printf( "Failed to get time of day" );
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check the operation was blocking until the signal was generated */
-	if ( tv_cur.tv_sec - tv_ref.tv_sec < 2 )
+	if (tv_cur.tv_sec - tv_ref.tv_sec < 2 )
 	{
 		printf( "The operation lasted less than 3 seconds!\n" );
 		return PTS_FAIL;

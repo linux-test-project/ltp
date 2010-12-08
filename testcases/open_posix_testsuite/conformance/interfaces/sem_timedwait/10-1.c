@@ -37,7 +37,7 @@ int main() {
 	int rc;
 
 	/* Init the value to 0 */
-        if ( sem_init (&mysemp, 0, 0) == -1 ) {
+        if (sem_init (&mysemp, 0, 0) == -1 ) {
                 perror(ERROR_PREFIX "sem_init");
                 return PTS_UNRESOLVED;
         }
@@ -59,7 +59,7 @@ int main() {
 #endif
 	/* Lock Semaphore */
 	rc = sem_timedwait(&mysemp, &ts);
-        if ( rc != -1 || (rc == -1 && errno != ETIMEDOUT)) 
+        if (rc != -1 || (rc == -1 && errno != ETIMEDOUT)) 
 	{
 		perror(ERROR_PREFIX "sem_timedwait");
 		printf("Expect timedout\n");
@@ -76,7 +76,7 @@ int main() {
 #else
 	ts_2.tv_sec = time(NULL);
 #endif
-	if(ts_2.tv_sec == ts.tv_sec) {
+	if (ts_2.tv_sec == ts.tv_sec) {
 		puts("TEST PASSED");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

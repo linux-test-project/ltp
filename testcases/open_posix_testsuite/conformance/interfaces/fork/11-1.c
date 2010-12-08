@@ -88,7 +88,7 @@ void * threaded( void * arg )
 	int ret;
 	ret = ftrylockfile( stdout );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		FAILED( "The child process is owning the file lock." );
 	}
@@ -118,25 +118,25 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 
 		ret = pthread_create( &ch, NULL, threaded, NULL );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to create a thread" );
 		}
 
 		ret = pthread_join( ch, NULL );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to join the thread" );
 		}
@@ -153,12 +153,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}

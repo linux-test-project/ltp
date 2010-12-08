@@ -26,18 +26,18 @@ int main(int argc, char **argv)
 
 	result = sched_getparam(getpid(), &param);
 	
-	if(result == 0 &&
+	if (result == 0 &&
 	   param.sched_priority != -1 &&
 	   errno == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != 0) {
+	} else if (result != 0) {
 		printf("Return code is not zero.\n");
 		return PTS_FAIL;
-	} else if(errno != 0) {
+	} else if (errno != 0) {
 		perror("Unexpected error");
 		return PTS_FAIL;
-	} else if(param.sched_priority == -1) {
+	} else if (param.sched_priority == -1) {
 		printf("The 'sched_priority' member does not change.\n");
 		return PTS_FAIL;
 	}

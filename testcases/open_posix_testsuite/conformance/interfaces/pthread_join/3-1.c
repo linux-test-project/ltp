@@ -67,33 +67,33 @@ int main()
 	cleanup_flag = 0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Send cancel request to the thread.  */
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		perror("Couldn't cancel thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Wait for thread to return */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if(cleanup_flag == 0)
+	if (cleanup_flag == 0)
 	{
 		printf("Test FAILED: Thread did not finish execution when pthread_join returned. \n");
 		return PTS_FAIL;
 	}	
 
-	if(cleanup_flag == -1)
+	if (cleanup_flag == -1)
 	{
 		perror("Error in pthread_testcancel().  Cancel request timed out.\n");
 		return PTS_UNRESOLVED;

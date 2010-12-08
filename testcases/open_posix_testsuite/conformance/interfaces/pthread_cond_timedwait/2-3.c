@@ -88,7 +88,7 @@ int main()
 	alarm(5);
 
 	/* Wait for thread to end execution. */
-	if(pthread_join(thread1, (void*)&th_ret) != 0)
+	if (pthread_join(thread1, (void*)&th_ret) != 0)
 	{
 		fprintf(stderr, "Could not join the thread. \n");
 		return PTS_UNRESOLVED;
@@ -107,12 +107,12 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if(th_ret == PTS_PASS)
+	if (th_ret == PTS_PASS)
 	{
 		printf("Test PASSED\n"); 
 		return PTS_PASS;
 	}
-	else if(th_ret == PTS_FAIL)
+	else if (th_ret == PTS_FAIL)
 	{
 		printf("Test FAILED\n"); 
 		return PTS_FAIL;

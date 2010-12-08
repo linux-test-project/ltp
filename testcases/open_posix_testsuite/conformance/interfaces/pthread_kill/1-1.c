@@ -80,7 +80,7 @@ int main()
 
 	sem1=INTHREAD;
 
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -89,7 +89,7 @@ int main()
 	while(sem1==INTHREAD)
 		sleep(1);
 
-	if(pthread_kill(new_th, SIGTOTEST) != 0) 
+	if (pthread_kill(new_th, SIGTOTEST) != 0) 
 	{
 		printf("Test FAILED: Couldn't send signal to thread\n");
 		return PTS_FAIL;
@@ -100,7 +100,7 @@ int main()
 	while(handler_called==0)
 		sleep(1);
 
-	if(handler_called == -1) {
+	if (handler_called == -1) {
 		printf("Test FAILED: Kill request timed out\n");
 		return PTS_FAIL;
 	} else if (handler_called == 0) {

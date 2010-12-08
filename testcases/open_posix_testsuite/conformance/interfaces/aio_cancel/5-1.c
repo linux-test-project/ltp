@@ -138,12 +138,12 @@ int main()
 
 				/* check iocb is not modified */
 
-				if ( (aiocb[i]->aio_fildes != fd) ||
-				     (aiocb[i]->aio_buf != buf[i]) ||
-				     (aiocb[i]->aio_nbytes != BUF_SIZE) ||
-				     (aiocb[i]->aio_offset != 0) ||
-				     (aiocb[i]->aio_sigevent.sigev_notify 
-							!= SIGEV_NONE) )
+				if ((aiocb[i]->aio_fildes != fd) ||
+				    (aiocb[i]->aio_buf != buf[i]) ||
+				    (aiocb[i]->aio_nbytes != BUF_SIZE) ||
+				    (aiocb[i]->aio_offset != 0) ||
+				    (aiocb[i]->aio_sigevent.sigev_notify !=
+				     SIGEV_NONE))
 				{
 					printf(TNAME " aiocbp modified\n");
 					return PTS_FAIL;

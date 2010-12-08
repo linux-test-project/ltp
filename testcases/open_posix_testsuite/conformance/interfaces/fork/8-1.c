@@ -100,12 +100,12 @@ int main( int argc, char * argv[] )
 	/* Initialize first times */
 	st_time = times( &ini_tms );
 
-	if ( st_time == ( clock_t ) - 1 )
+	if (st_time == ( clock_t ) - 1 )
 	{
 		UNRESOLVED( errno, "times failed" );
 	}
 
-	if ( ( ini_tms.tms_cutime != 0 ) || ( ini_tms.tms_cstime != 0 ) )
+	if (( ini_tms.tms_cutime != 0 ) || ( ini_tms.tms_cstime != 0 ) )
 	{
 		FAILED( "The process is created with non-zero tms_cutime or tms_cstime" );
 	}
@@ -120,7 +120,7 @@ int main( int argc, char * argv[] )
 	{
 		cur_time = times( &parent_tms );
 
-		if ( cur_time == ( clock_t ) - 1 )
+		if (cur_time == ( clock_t ) - 1 )
 		{
 			UNRESOLVED( errno, "times failed" );
 		}
@@ -142,23 +142,23 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 
 		cur_time = times( &child_tms );
 
-		if ( cur_time == ( clock_t ) - 1 )
+		if (cur_time == ( clock_t ) - 1 )
 		{
 			UNRESOLVED( errno, "times failed" );
 		}
 
-		if ( child_tms.tms_utime + child_tms.tms_stime >= sysconf( _SC_CLK_TCK ) )
+		if (child_tms.tms_utime + child_tms.tms_stime >= sysconf( _SC_CLK_TCK ) )
 		{
 			FAILED( "The tms struct was not reset during fork() operation" );
 		}
@@ -167,7 +167,7 @@ int main( int argc, char * argv[] )
 		{
 			cur_time = times( &child_tms );
 
-			if ( cur_time == ( clock_t ) - 1 )
+			if (cur_time == ( clock_t ) - 1 )
 			{
 				UNRESOLVED( errno, "times failed" );
 			}
@@ -181,13 +181,13 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" )
 		;
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" )
 		;
@@ -212,12 +212,12 @@ int main( int argc, char * argv[] )
 
 #endif
 
-	if ( cur_time == ( clock_t ) - 1 )
+	if (cur_time == ( clock_t ) - 1 )
 	{
 		UNRESOLVED( errno, "times failed" );
 	}
 
-	if ( ( parent_tms.tms_cutime == 0 ) && ( parent_tms.tms_cstime == 0 ) )
+	if (( parent_tms.tms_cutime == 0 ) && ( parent_tms.tms_cstime == 0 ) )
 	{
 		FAILED( "The process is created with non-zero tms_cutime or tms_cstime" );
 	}

@@ -39,7 +39,7 @@ int main() {
 	struct passwd *pw;
 	
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
@@ -47,16 +47,16 @@ int main() {
 	/* search for the first user which is non root and which is not the
 	   current user */
 	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root") && pw->pw_uid != getuid())
+		if (strcmp(pw->pw_name, "root") && pw->pw_uid != getuid())
 			break;
 
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if(seteuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (seteuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
@@ -68,12 +68,12 @@ int main() {
 	       pw->pw_name, pw->pw_uid);
 
 	result = shm_unlink(SHM_NAME);
-	if(result == -1&& errno == EACCES) {
+	if (result == -1&& errno == EACCES) {
 		printf("Test PASSED\n");
 		seteuid(getuid());
 		shm_unlink(SHM_NAME);
 		return PTS_PASS;
-	} else if(result == -1) {
+	} else if (result == -1) {
 		perror("Unexpected error");		
 		seteuid(getuid());
 		shm_unlink(SHM_NAME);

@@ -21,13 +21,13 @@ int main(){
         int result, new_priority, old_priority, max_prio, policy;
 	struct sched_param param;
 
-	if(sched_getparam(getpid(), &param) != 0){
+	if (sched_getparam(getpid(), &param) != 0){
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 
 	policy = sched_getscheduler(getpid());
-	if(policy == -1) {
+	if (policy == -1) {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
@@ -42,18 +42,18 @@ int main(){
 
 	result = sched_setparam(0, &param);
 
-	if(sched_getparam(getpid(), &param) != 0){
+	if (sched_getparam(getpid(), &param) != 0){
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 
-	if(result == 0 && param.sched_priority == new_priority) {
+	if (result == 0 && param.sched_priority == new_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result == 0 && param.sched_priority == old_priority) {
+	} else if (result == 0 && param.sched_priority == old_priority) {
 		printf("The param does not change\n");
 		return PTS_FAIL;
-	} else if(result == -1 && errno == EPERM) {
+	} else if (result == -1 && errno == EPERM) {
 		printf("The process have not permission to change its own param.\n");
 		return PTS_UNRESOLVED;
 	}

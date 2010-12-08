@@ -34,7 +34,7 @@ int i;
 void *a_thread_func()
 {
 	/* Set the key to KEY_VALUE */
-	if(pthread_setspecific(keys[i], (void *)(KEY_VALUE)) != 0)
+	if (pthread_setspecific(keys[i], (void *)(KEY_VALUE)) != 0)
 	{
 		printf("Error: pthread_setspecific() failed\n");
 		pthread_exit((void*)PTS_FAIL);
@@ -51,7 +51,7 @@ int main()
 	/* Create a key */
 	for(i = 0;i<NUM_OF_THREADS;i++)
 	{
-		if(pthread_key_create(&keys[i], NULL) != 0)
+		if (pthread_key_create(&keys[i], NULL) != 0)
 		{
 			printf("Error: pthread_key_create() failed\n");
 			return PTS_UNRESOLVED;
@@ -63,20 +63,20 @@ int main()
 	for(i = 0;i<NUM_OF_THREADS;i++)
 	{
 		/* Create a thread */
-		if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+		if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 		{
 			perror("Error creating thread\n");
 			return PTS_UNRESOLVED;
 		}		
 		
 		/* Wait for thread to end */
-		if(pthread_join(new_th, &value_ptr) != 0)
+		if (pthread_join(new_th, &value_ptr) != 0)
 		{
 			perror("Error in pthread_join\n");
 			return PTS_UNRESOLVED;
 		}
 
-		if(value_ptr == (void*) PTS_FAIL)
+		if (value_ptr == (void*) PTS_FAIL)
 		{
 			printf("Test FAILED: Could not use a certain key value to set for many keys\n");
 			return PTS_FAIL;

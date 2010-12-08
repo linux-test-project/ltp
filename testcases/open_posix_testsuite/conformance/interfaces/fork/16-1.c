@@ -102,14 +102,14 @@ int main( int argc, char * argv[] )
 	/* Create the shared memory segment */
 	fd_s = shm_open( "/fork_16_1s", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR );
 
-	if ( fd_s == -1 )
+	if (fd_s == -1 )
 	{
 		UNRESOLVED( errno, "Failed to open shared memory segment" );
 	}
 
 	fd_ns = shm_open( "/fork_16_1ns", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR );
 
-	if ( fd_ns == -1 )
+	if (fd_ns == -1 )
 	{
 		UNRESOLVED( errno, "Failed to open shared memory segment" );
 	}
@@ -117,14 +117,14 @@ int main( int argc, char * argv[] )
 	/* Size the memory segment to 1 page size. */
 	ret = ftruncate( fd_s, sysconf( _SC_PAGESIZE ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to size the shared memory segment" );
 	}
 
 	ret = ftruncate( fd_ns, sysconf( _SC_PAGESIZE ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to size the shared memory segment" );
 	}
@@ -132,14 +132,14 @@ int main( int argc, char * argv[] )
 	/* Map these sengments in the process memory space */
 	buf_s = mmap( NULL, sysconf( _SC_PAGESIZE ), PROT_READ | PROT_WRITE, MAP_SHARED, fd_s, 0 );
 
-	if ( buf_s == MAP_FAILED )
+	if (buf_s == MAP_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to mmap the shared memory segment" );
 	}
 
 	buf_ns = mmap( NULL, sysconf( _SC_PAGESIZE ), PROT_READ | PROT_WRITE, MAP_PRIVATE, fd_ns, 0 );
 
-	if ( buf_ns == MAP_FAILED )
+	if (buf_ns == MAP_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to mmap the shared memory segment in MAP_PRIVATE mode" );
 	}
@@ -153,17 +153,17 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 		/* Check the values are read -- so that the mappings were inherited */
 
-		if ( ( *( long * ) buf_ns != 123456L ) || ( *( long * ) buf_s != 654321L ) )
+		if (( *( long * ) buf_ns != 123456L ) || ( *( long * ) buf_s != 654321L ) )
 		{
 			output( "Read values: %ld, %ld\n", *( long * ) buf_ns, *( long * ) buf_s );
 			FAILED( "The memory mappings were not inherited by the child process" );
@@ -181,18 +181,18 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}
 
 	/* Check that only the MAP_SHARED segment modification is visible */
-	if ( ( *( long * ) buf_ns != 123456L ) || ( *( long * ) buf_s != 200000L ) )
+	if (( *( long * ) buf_ns != 123456L ) || ( *( long * ) buf_s != 200000L ) )
 	{
 		output( "Read values: %ld, %ld\n", *( long * ) buf_ns, *( long * ) buf_s );
 		FAILED( "The memory mappings were not inherited by the child process" );
@@ -201,14 +201,14 @@ int main( int argc, char * argv[] )
 	/* Free resources (everything will be removed at destruction time) */
 	ret = shm_unlink( "/fork_16_1ns" );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to unlink the shared memory segment" );
 	}
 
 	ret = shm_unlink( "/fork_16_1s" );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to unlink the shared memory segment" );
 	}

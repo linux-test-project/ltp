@@ -64,14 +64,14 @@ int main()
            getpid());
   shm_unlink(tmpfname);
   shm_fd = shm_open(tmpfname, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-  if(shm_fd == -1)
+  if (shm_fd == -1)
   {
     printf(TNAME " Error at shm_open(): %s\n", strerror(errno));
 	  exit(PTS_UNRESOLVED);
   }
   
   /* Set the size of the shared memory object */
-  if(ftruncate(shm_fd, size) == -1) 
+  if (ftruncate(shm_fd, size) == -1) 
   {
     printf(TNAME " Error at ftruncate(): %s\n", strerror(errno));
     exit(PTS_UNRESOLVED);

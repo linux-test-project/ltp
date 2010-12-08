@@ -33,14 +33,14 @@ int main()
 
 	/* Lock the mutex */
 	rc = pthread_mutex_lock(&mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_mutex_lock\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Try to destroy the locked mutex */
 	rc = pthread_mutex_destroy(&mutex);
-	if(rc != EBUSY) {
+	if (rc != EBUSY) {
 		printf(ERROR_PREFIX "Test PASS: Expected %d(EBUSY) got %d, "
 			"though the standard states 'may' fail\n", EBUSY, rc);
 		exit(PTS_PASS);

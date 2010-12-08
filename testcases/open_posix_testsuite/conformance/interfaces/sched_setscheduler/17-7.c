@@ -33,14 +33,14 @@ int main(){
         int child_pid, stat_loc;
 	struct sched_param param;
 
-	if(sched_getparam(getpid(), &param) == -1) {
+	if (sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}	
 	old_priority = param.sched_priority;
 
 	old_policy = sched_getscheduler(getpid());
-	if(old_policy == -1) {
+	if (old_policy == -1) {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
@@ -56,7 +56,7 @@ int main(){
 
         /* Create a child process which exit immediately */
         child_pid = fork();
-        if(child_pid == -1){
+        if (child_pid == -1){
 		perror("An error occurs when calling fork()");
 		return PTS_UNRESOLVED;
         } else if (child_pid == 0){
@@ -64,7 +64,7 @@ int main(){
         }
 
         /* Wait for the child process to exit */
-        if(wait(&stat_loc) == -1){
+        if (wait(&stat_loc) == -1){
 		perror("An error occurs when calling wait()");
 		return PTS_UNRESOLVED;
         }
@@ -72,28 +72,28 @@ int main(){
         /* Assume the pid is not yet reatributed to an other process */
 	sched_setscheduler(child_pid, policy, &param);
 
-	if(sched_getparam(getpid(), &param) != 0) {
+	if (sched_getparam(getpid(), &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 
 	new_policy = sched_getscheduler(getpid());
-	if(new_policy == -1) {
+	if (new_policy == -1) {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
 		
 
-	if(old_policy == new_policy && 
+	if (old_policy == new_policy && 
 	   old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
-	if(param.sched_priority != old_priority) {
+	if (param.sched_priority != old_priority) {
 		printf("The param has changed\n");
 	}
-	if(new_policy != old_policy) {
+	if (new_policy != old_policy) {
 		printf("The policy has changed\n");
 	}
 	return PTS_FAIL;

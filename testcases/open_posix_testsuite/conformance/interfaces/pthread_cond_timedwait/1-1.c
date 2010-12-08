@@ -54,7 +54,7 @@ void *t1_func(void *arg)
 
 	fprintf(stderr,"Thread1 is waiting for the cond\n");
 	rc = pthread_cond_timedwait(&td.cond, &td.mutex, &timeout);
-	if(rc != 0) {
+	if (rc != 0) {
 		if (rc == ETIMEDOUT) {
 			fprintf(stderr,"Thread1 stops waiting when time is out\n");
 			exit(PTS_UNRESOLVED);
@@ -66,7 +66,7 @@ void *t1_func(void *arg)
 	}
 	
 	fprintf(stderr,"Thread1 wakened up\n");
-	if(signaled == 0) {
+	if (signaled == 0) {
 		fprintf(stderr,"Thread1 did not block on the cond at all\n");
                 printf("Test FAILED\n");
                 exit(PTS_FAIL);

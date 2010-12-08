@@ -43,7 +43,7 @@ int main()
 	sem=0;	
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -56,9 +56,9 @@ int main()
 	/* Send cancel request to thread */
 	ret=pthread_cancel(new_th);
 	
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == ESRCH)
+		if (ret == ESRCH)
 		{
 			perror("Could not cancel thread\n");
 			return PTS_UNRESOLVED;

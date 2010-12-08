@@ -76,14 +76,14 @@ int main()
 	i = 0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to end execution */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -91,7 +91,7 @@ int main()
 	
 	/* Verify that the cancellation handlers are popped in order, that is:
 	 * 3, 2, then 1. */
-	if((cleanup_flag[0] != 3) || (cleanup_flag[1] != 2) || (cleanup_flag[2] != 1))
+	if ((cleanup_flag[0] != 3) || (cleanup_flag[1] != 2) || (cleanup_flag[2] != 1))
 	{
 		printf("Test FAILED: Cleanup handlers not popped in order, expected 3,2,1, but got:\n");
 		printf("%d, %d, %d\n", cleanup_flag[0], cleanup_flag[1], cleanup_flag[2]);

@@ -115,7 +115,7 @@ void * runner(void * arg) {
 		/* If the value of nb_call has not change since the last call
 		   of sched_yield, that means that the thread does not 
 		   relinquish the processor */
-		if(nc == nb_call) {
+		if (nc == nb_call) {
 			result++;
 		}
 	}
@@ -148,7 +148,7 @@ void busy_process(int cpu){
         fprintf(stderr, "%d bind to cpu: %d\n", getpid(), cpu);
 #endif
         param.sched_priority = sched_get_priority_max(SCHED_FIFO);
-        if(sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
+        if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
                 perror("An error occurs when calling sched_setparam()");
                 return;
         }
@@ -172,7 +172,7 @@ int main() {
 
 
 	ncpu = get_ncpu();
-	if(ncpu == -1) {
+	if (ncpu == -1) {
 		printf("Can not get the number of CPUs of your machines.\n");
 		return PTS_UNRESOLVED;
 	}
@@ -180,8 +180,8 @@ int main() {
 	printf("System has %d processors\n", ncpu);
 
         param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 1;
-        if(sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
-		if(errno == EPERM){
+        if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
+		if (errno == EPERM){
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
@@ -193,7 +193,7 @@ int main() {
 
 	for(i=0; i<ncpu-1; i++) {
 		child_pid[i] = fork();
-		if(child_pid[i] == -1){
+		if (child_pid[i] == -1){
 			perror("An error occurs when calling fork()");
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0){
@@ -210,17 +210,17 @@ int main() {
         pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
 
         thread_cpu = ncpu -1;
-	if(pthread_create(&tid, &attr, busy_thread, &thread_cpu) != 0) {
+	if (pthread_create(&tid, &attr, busy_thread, &thread_cpu) != 0) {
 		perror("An error occurs when calling pthread_create()");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_create(&tid_runner, &attr, runner, &thread_cpu) != 0) {
+	if (pthread_create(&tid_runner, &attr, runner, &thread_cpu) != 0) {
 		perror("An error occurs when calling pthread_create()");
 		return PTS_UNRESOLVED;
 	}
 
-	if(pthread_join(tid_runner, &tmpresult) != 0) {
+	if (pthread_join(tid_runner, &tmpresult) != 0) {
 		perror("An error occurs when calling pthread_join()");
 		return PTS_UNRESOLVED;
 	}
@@ -229,7 +229,7 @@ int main() {
                 waitpid(child_pid[i], NULL, 0);
 	
         result = (long)tmpresult;
-	if(result){
+	if (result){
 		printf("A thread does not relinquish the processor.\n");
 		return PTS_FAIL;
 	}

@@ -97,7 +97,7 @@ int main( int argc, char * argv[] )
 	/* Test the RTS extension */
 	rts = sysconf( _SC_REALTIME_SIGNALS );
 
-	if ( rts < 0L )
+	if (rts < 0L )
 	{
 		UNTESTED( "This test needs the RTS extension" );
 	}
@@ -105,7 +105,7 @@ int main( int argc, char * argv[] )
 	/* Set the signal mask */
 	ret = sigemptyset( &set );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
@@ -116,7 +116,7 @@ int main( int argc, char * argv[] )
 
 		ret = sigaddset( &set, i );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "failed to add signal to signal set" );
 		}
@@ -125,7 +125,7 @@ int main( int argc, char * argv[] )
 	/* Block all RT signals */
 	ret = pthread_sigmask( SIG_BLOCK, &set, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to block RT signals" );
 	}
@@ -135,7 +135,7 @@ int main( int argc, char * argv[] )
 	{
 		ret = raise( i );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to raise the signal" );
 		}
@@ -145,7 +145,7 @@ int main( int argc, char * argv[] )
 	{
 		ret = raise( i );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to raise the signal" );
 		}
@@ -155,7 +155,7 @@ int main( int argc, char * argv[] )
 	{
 		ret = raise( i );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to raise the signal" );
 		}
@@ -169,12 +169,12 @@ int main( int argc, char * argv[] )
 	{
 		ret = sigwait( &set, &sig );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret , "Failed to sigwait for RT signal" );
 		}
 
-		if ( sig != i )
+		if (sig != i )
 		{
 			output( "SIGRTMIN: %d, SIGRTMAX: %d, i: %d, sig:%d\n",
 			        SIGRTMIN, SIGRTMAX, i, sig );

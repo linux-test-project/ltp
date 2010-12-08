@@ -65,27 +65,27 @@ int main(int argc, char **argv)
 
 		tmp = sched_setscheduler(getpid(), policy, &param);
 		
-		if(tmp == -1 || errno != 0) {
-			if(errno == EPERM){
+		if (tmp == -1 || errno != 0) {
+			if (errno == EPERM){
 				printf("  The process do not have permission to change its own scheduler\n  Try to run this test as root.\n");
 			} else {
 				printf("  Error calling sched_setscheduler() for %s policy\n", tst->name);
 			}
-			if(result != PTS_FAIL) result = PTS_UNRESOLVED;
+			if (result != PTS_FAIL) result = PTS_UNRESOLVED;
 			tst++;
 			continue;
 		}
 
-		if(sched_getparam(getpid(), &param) != 0) {
+		if (sched_getparam(getpid(), &param) != 0) {
 			perror("Error calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
 
-		if(policy != sched_getscheduler(getpid())){
+		if (policy != sched_getscheduler(getpid())){
 			printf("  sched_setscheduler() does not set the policy to %s.\n", tst->name);
 			result = PTS_FAIL;
 		}
-	        if(priority != param.sched_priority) {
+	        if (priority != param.sched_priority) {
 			printf("  sched_setscheduler() does not set the right param for %s policy.\n", tst->name);
 			result = PTS_FAIL;
 		}
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 		tst++;
 	}
 
-	if(result == PTS_PASS)
+	if (result == PTS_PASS)
 		printf("Test PASSED\n");
         return result;
 }

@@ -35,10 +35,10 @@ int main() {
 	
 	result = shm_unlink(shm_name);
 	
-	if(result == -1 && errno == ENAMETOOLONG) {
+	if (result == -1 && errno == ENAMETOOLONG) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("shm_unlink() success.\n");
 		return PTS_FAIL;
 	}

@@ -61,7 +61,7 @@ void signal_handler(int sig)
 	int	 rc = 0;
 
 	rc = pthread_cond_signal(&cond);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_cond_signal\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -75,27 +75,27 @@ void *hi_priority_thread(void *tmp)
 
 	param.sched_priority = HIGH_PRIORITY;
 	rc = pthread_setschedparam(pthread_self(), SCHED_RR, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_getschedparam(pthread_self(), &policy, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_getschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(policy != SCHED_RR) { 
+	if (policy != SCHED_RR) { 
 		printf(ERROR_PREFIX "The policy is not correct\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(param.sched_priority != HIGH_PRIORITY) {
+	if (param.sched_priority != HIGH_PRIORITY) {
 		printf(ERROR_PREFIX "The priority is not correct\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* acquire the mutex */
 	rc = pthread_mutex_lock(&mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_mutex_lock\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -103,11 +103,11 @@ void *hi_priority_thread(void *tmp)
 	/* This variable is unprotected because the scheduling removes 
 	 * the contention 
 	 */
-	if(low_done != 1)
+	if (low_done != 1)
 		woken_up = 1;
 
 	rc = pthread_mutex_unlock(&mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_mutex_unlock\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -123,20 +123,20 @@ void *low_priority_thread(void *tmp)
 
 	param.sched_priority = LOW_PRIORITY;
 	rc = pthread_setschedparam(pthread_self(), SCHED_RR, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_getschedparam(pthread_self(), &policy, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_getschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(policy != SCHED_RR) {
+	if (policy != SCHED_RR) {
 		printf(ERROR_PREFIX "Policy not correct\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(param.sched_priority != LOW_PRIORITY) {
+	if (param.sched_priority != LOW_PRIORITY) {
 		printf(ERROR_PREFIX "Priority not correct\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -145,7 +145,7 @@ void *low_priority_thread(void *tmp)
 	clock_gettime(CLOCK_REALTIME, &start_time);
 	while(1) {
 		clock_gettime(CLOCK_REALTIME, &current_time);
-		if(timediff(current_time, start_time) > RUNTIME)
+		if (timediff(current_time, start_time) > RUNTIME)
 			break;
 	}
 	low_done = 1;
@@ -162,122 +162,122 @@ int main()
 
 	param.sched_priority = MID_PRIORITY;
 	rc =  pthread_setschedparam(pthread_self(), SCHED_RR, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_getschedparam(pthread_self(), &policy, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_getschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(policy != SCHED_RR) {
+	if (policy != SCHED_RR) {
 		printf(ERROR_PREFIX "The policy is not correct\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(param.sched_priority != MID_PRIORITY) {
+	if (param.sched_priority != MID_PRIORITY) {
 		printf(ERROR_PREFIX "The priority is not correct\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_mutex_lock(&mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_mutex_lock\n");
 		exit(PTS_UNRESOLVED);
 	}
 	
 	/* create the higher priority */
 	rc = pthread_attr_init(&high_attr);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_attr_setschedpolicy(&high_attr, SCHED_RR);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	param.sched_priority = HIGH_PRIORITY;
 	rc = pthread_attr_setschedparam(&high_attr, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_create(&high_id, &high_attr, hi_priority_thread, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_create\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Create the low priority thread */
 	rc = pthread_attr_init(&low_attr);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_attr_setschedpolicy(&low_attr, SCHED_RR);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	param.sched_priority = LOW_PRIORITY;
 	rc = pthread_attr_setschedparam(&low_attr, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_create(&low_id, &low_attr, low_priority_thread, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_create\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* setup a signal handler which will wakeup main later */
-	if(signal(SIGALRM, signal_handler) == SIG_ERR) {
+	if (signal(SIGALRM, signal_handler) == SIG_ERR) {
 		perror(ERROR_PREFIX "signal");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_mutex_lock(&cond_mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_mutex_lock\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	alarm(2);
 	rc = pthread_cond_wait(&cond, &cond_mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_cond_wait\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_mutex_unlock(&cond_mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_mutex_unlock\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Wake the other high priority thread up */
 	rc = pthread_mutex_unlock(&mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_mutex_unlock\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Wait for the threads to exit */
 	rc = pthread_join(high_id, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_join\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_join(low_id, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_join\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Check the result */
-	if(woken_up == -1) {
+	if (woken_up == -1) {
 		printf("High priority was not woken up. Test FAILED.\n");
 		exit(PTS_FAIL);
 	}

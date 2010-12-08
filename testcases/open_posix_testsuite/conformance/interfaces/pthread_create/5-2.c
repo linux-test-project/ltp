@@ -43,7 +43,7 @@ int main()
 	for(j=0;j<NUM_THREADS;j++)
 		i[j] = j+1;
 
-	if(pthread_create(&new_th, NULL, a_thread_func, (void*)&i) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, (void*)&i) != 0)
 	{	
 		printf("Error creating thread\n");
 		return PTS_FAIL;

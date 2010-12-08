@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	if ( (0 == oits.it_value.tv_sec) &&
+	if ((0 == oits.it_value.tv_sec) &&
 		(0 == oits.it_value.tv_nsec) &&
 		(0 == oits.it_interval.tv_sec) &&
 		(0 == oits.it_interval.tv_nsec)) {

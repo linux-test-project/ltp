@@ -46,9 +46,9 @@ int main() {
 
 		fd = shm_open(shm_name[i], O_RDWR | O_CREAT, 0);
 		
-		if(fd == -1 && errno == EINVAL) {
+		if (fd == -1 && errno == EINVAL) {
 			printf("   OK: errno == EINVAL\n");
-		} else if(fd != -1) {
+		} else if (fd != -1) {
 			printf("   OK: open  with success.\n");
 		} else {
 			perror("   Unexpected error");
@@ -60,7 +60,7 @@ int main() {
 		i++;
 	}
 
-	if(result == PTS_PASS)
+	if (result == PTS_PASS)
 		printf("Test PASSED\n");
 	else 
 		printf("Test FAILED\n");

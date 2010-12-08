@@ -66,7 +66,7 @@ int main ()
 	child_val = HANDLER_NOTCALLED;
 	
 	/* Set up the fork handlers */
-	if(pthread_atfork(prepare_handler, parent_handler, child_handler) != 0)
+	if (pthread_atfork(prepare_handler, parent_handler, child_handler) != 0)
 	{
 		printf("Error in pthread_atfork\n");
 		return PTS_UNRESOLVED;
@@ -75,12 +75,12 @@ int main ()
 	/* Now call fork() */
 	pid = fork();
 	
-	if(pid < 0)
+	if (pid < 0)
 	{
 		perror("Error in fork()\n");
 		return PTS_UNRESOLVED;
 	} 
-	if(pid == 0)
+	if (pid == 0)
 	{
 		/* Child process */
 		pthread_exit(0);
@@ -91,11 +91,11 @@ int main ()
 	}
 
 	/* Check if fork handlers were called */
-	if(prep_val == 1)
+	if (prep_val == 1)
 	{
-		if(parent_val == 1)
+		if (parent_val == 1)
 		{
-			if(parent_val == 1)
+			if (parent_val == 1)
 			{
 				printf("Test PASSED\n");
 				return PTS_PASS;

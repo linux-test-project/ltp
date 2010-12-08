@@ -27,20 +27,20 @@ int main()
 	int rc;
 
 	/* Initialize a mutex attributes object */
-	if((rc=pthread_mutexattr_init(&mta)) != 0) {
+	if ((rc=pthread_mutexattr_init(&mta)) != 0) {
 		fprintf(stderr,"Error at pthread_mutexattr_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Initialize mutex1 with the default mutex attributes */
-	if((rc=pthread_mutex_init(&mutex1,&mta)) != 0) {
+	if ((rc=pthread_mutex_init(&mutex1,&mta)) != 0) {
 		fprintf(stderr,"Fail to initialize mutex1, rc=%d\n",rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* Initialize mutex2 with NULL attributes */
-	if((rc=pthread_mutex_init(&mutex2,NULL)) != 0) {
+	if ((rc=pthread_mutex_init(&mutex2,NULL)) != 0) {
 		fprintf(stderr,"Fail to initialize mutex2, rc=%d\n",rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;

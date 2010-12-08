@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 		 * allotted
 		 */
 
-		if ( tsafter.tv_sec < sleepuntilsec) {
+		if (tsafter.tv_sec < sleepuntilsec) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {

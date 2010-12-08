@@ -45,18 +45,18 @@ int main()
 		rc = pthread_key_create(&keys[i], NULL);
 		pthread_key_t key;
 		rc = pthread_key_create(&key, NULL);
-		if(i == PTHREAD_KEYS_MAX)
+		if (i == PTHREAD_KEYS_MAX)
 		{
-			if(rc != EAGAIN)
+			if (rc != EAGAIN)
 			{
 				printf("Test FAILED: Expected EAGAIN when exceeded the limit of keys in a single process, but got: %d\n", rc);
 				return PTS_FAIL;
 			}
 		}
 			
-		else if(rc != 0)
+		else if (rc != 0)
 		{
-			if(rc != EAGAIN)
+			if (rc != EAGAIN)
 			{
 				printf("Error: pthread_key_create() failed\n");
 				return PTS_UNRESOLVED;

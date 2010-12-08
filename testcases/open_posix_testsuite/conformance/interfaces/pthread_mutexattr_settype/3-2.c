@@ -49,35 +49,35 @@ int main()
 {
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	 /* Set the 'type' attribute to be PTHREAD_MUTEX_ERRORCHECK  */
-	if(pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_ERRORCHECK) != 0)
+	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_ERRORCHECK) != 0)
 	{
 		printf("Test FAILED: Error setting the attribute 'type'\n");
 		return PTS_FAIL;
 	}
 
 	/* Initialize the mutex with that attribute obj. */	
-	if(pthread_mutex_init(&mutex, &mta) != 0)
+	if (pthread_mutex_init(&mutex, &mta) != 0)
 	{
 		perror("Error intializing the mutex.\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Lock the mutex. */
-	if(pthread_mutex_lock(&mutex) != 0 )
+	if (pthread_mutex_lock(&mutex) != 0 )
 	{
 		perror("Error locking the mutex first time around.\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Create the thread that will try to unlock the mutex we just locked. */
-	if(pthread_create(&thread1, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&thread1, NULL, a_thread_func, NULL) != 0)
 	{
 		perror("Error creating a thread.\n");
 		return PTS_UNRESOLVED;
@@ -86,7 +86,7 @@ int main()
 	/* Wait for that thread to end execution */
 	pthread_join(thread1, NULL);
 
-	if(ret == 0)
+	if (ret == 0)
 	{
 		printf("Test FAILED: Expected an error when trying to unlock a mutex that was locked by another thread.  Returned 0 instead.\n");
 		return PTS_FAIL;
@@ -96,7 +96,7 @@ int main()
 	pthread_mutex_unlock(&mutex);	
 	pthread_mutex_destroy(&mutex);
 	
-	if(pthread_mutexattr_destroy(&mta))
+	if (pthread_mutexattr_destroy(&mta))
 	{
 		perror("Error at pthread_mutexattr_destory().\n");
 		return PTS_UNRESOLVED;

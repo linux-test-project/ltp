@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 	int failure = 0;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if(getuid() != 0)
+	if (getuid() != 0)
 	{
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;

@@ -56,13 +56,13 @@ int main()
 	/* Create shared object */
 	shm_unlink(shm_name);
 	shm_fd = shm_open(shm_name, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-	if(shm_fd == -1)
+	if (shm_fd == -1)
 	{
 		perror("Error at shm_open()");
 		return PTS_UNRESOLVED;
 	}
      
-        if(ftruncate(shm_fd, sizeof(struct shmstruct)) != 0) {
+        if (ftruncate(shm_fd, sizeof(struct shmstruct)) != 0) {
                 perror("Error at ftruncate()");
                 shm_unlink(shm_name);
                 return PTS_UNRESOLVED;
@@ -72,7 +72,7 @@ int main()
 	spinlock_data = mmap(NULL, sizeof(struct shmstruct), PROT_READ|PROT_WRITE, 
 				MAP_SHARED, shm_fd, 0);
 
-	if(spinlock_data == MAP_FAILED)
+	if (spinlock_data == MAP_FAILED)
 	{
 		perror("Error at first mmap()");
                 shm_unlink(shm_name);
@@ -80,14 +80,14 @@ int main()
 	}
 
 	/* Initialize spinlock */	
-	if((pthread_spin_init(&(spinlock_data->spinlock), pshared)) != 0)
+	if ((pthread_spin_init(&(spinlock_data->spinlock), pshared)) != 0)
 	{
 		printf("Test FAILED: Error at pthread_rwlock_init()\n");
 		return PTS_FAIL;
 	}
 	
 	printf("main: attempt spin lock\n");	
-	if((pthread_spin_lock(&(spinlock_data->spinlock))) != 0)
+	if ((pthread_spin_lock(&(spinlock_data->spinlock))) != 0)
 	{
 		printf("Error at pthread_spin_lock()\n");
 		return PTS_UNRESOLVED;
@@ -99,12 +99,12 @@ int main()
 
 	/* Fork a child process */	
 	pid = fork();
-	if(pid == -1)
+	if (pid == -1)
 	{
 		perror("Error at fork()");
 		return PTS_UNRESOLVED;
 	}
-	else if(pid > 0)
+	else if (pid > 0)
 	{
 		/* Parent */
 		/* wait until child writes to spinlock data */
@@ -112,7 +112,7 @@ int main()
 			sleep(1);
 		
 		printf("main: unlock spin lock\n");
-		if(pthread_spin_unlock(&(spinlock_data->spinlock)) != 0)
+		if (pthread_spin_unlock(&(spinlock_data->spinlock)) != 0)
 		{
 			printf("Parent: error at pthread_spin_unlock()\n");
 			return PTS_UNRESOLVED;
@@ -124,7 +124,7 @@ int main()
 		/* Wait until child ends */
 		wait(NULL);
 		
-		if((shm_unlink(shm_name)) != 0)
+		if ((shm_unlink(shm_name)) != 0)
 		{
 			perror("Error at shm_unlink()");
 			return PTS_UNRESOLVED;
@@ -140,14 +140,14 @@ int main()
 		spinlock_data = mmap(NULL, sizeof(struct shmstruct), PROT_READ|PROT_WRITE, 
 				MAP_SHARED, shm_fd, 0);
 
-		if(spinlock_data == MAP_FAILED)
+		if (spinlock_data == MAP_FAILED)
 		{
 			perror("child : Error at mmap()");
 			return PTS_UNRESOLVED;
 		}
 		
 		printf("child: attempt spin lock\n");
-		if((pthread_spin_trylock(&(spinlock_data->spinlock))) != EBUSY)
+		if ((pthread_spin_trylock(&(spinlock_data->spinlock))) != EBUSY)
 		{
 			printf("Test FAILED: Child expects EBUSY\n");
 			return PTS_FAIL;
@@ -164,7 +164,7 @@ int main()
 		/* Child tries to get spin lock after parent unlock, 
 		 * it should get the lock. */
 		printf("child: attempt spin lock\n");
-		if((pthread_spin_trylock(&(spinlock_data->spinlock))) != 0)
+		if ((pthread_spin_trylock(&(spinlock_data->spinlock))) != 0)
 		{
 			printf("Test FAILED: Child should get the lock\n");
 			return PTS_FAIL;
@@ -172,13 +172,13 @@ int main()
 		printf("child: acquired spin lock\n");	
 
 		printf("child: unlock spin lock\n");	
-		if(pthread_spin_unlock(&(spinlock_data->spinlock)) != 0)
+		if (pthread_spin_unlock(&(spinlock_data->spinlock)) != 0)
 		{
 			printf("Child: error at pthread_spin_unlock()\n");
 			return PTS_UNRESOLVED;
 		}
 
-		if(pthread_spin_destroy(&(spinlock_data->spinlock)) != 0)
+		if (pthread_spin_destroy(&(spinlock_data->spinlock)) != 0)
 		{
 			printf("Child: error at pthread_spin_destroy()\n");
 			return PTS_UNRESOLVED;

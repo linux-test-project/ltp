@@ -35,7 +35,7 @@ int main()
 	int rc;
 
 	/* Initialize a cond attributes object */
-	if((rc=pthread_condattr_init(&condattr)) != 0)
+	if ((rc=pthread_condattr_init(&condattr)) != 0)
 	{
 		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
 		printf("Test FAILED\n");
@@ -43,7 +43,7 @@ int main()
 	}
 	
 	rc = pthread_condattr_setclock(&condattr, INVALID_CLOCKID);
-	if(rc != EINVAL)
+	if (rc != EINVAL)
 	{
 		printf("Test PASSED: *NOTE: Test passed while passing an invalid clockid, but the standard says 'may' fail\n");
 		return PTS_PASS;

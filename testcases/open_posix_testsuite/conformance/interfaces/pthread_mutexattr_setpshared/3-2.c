@@ -40,9 +40,9 @@ int main()
 	
 	 /* Set the attribute to INVALID_PSHARED_VALUE.  */
 	ret=pthread_mutexattr_setpshared(&mta, INVALID_PSHARED_VALUE);
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == EINVAL)
+		if (ret == EINVAL)
 		{
 			printf("Test PASSED\n");
 			return PTS_PASS;

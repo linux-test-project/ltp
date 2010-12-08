@@ -37,27 +37,27 @@ int main()
 	int detach_state;
 
 	/* Initialize attribute */
-	if(pthread_attr_init(&new_attr) != 0)
+	if (pthread_attr_init(&new_attr) != 0)
 	{
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Set the attribute object to PTHREAD_CREATE_DETACHED. */
-	if(pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) != 0)
+	if (pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) != 0)
 	{
 		perror("Error in pthread_attr_setdetachstate()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Check to see if the detachstate is truly PTHREAD_CREATE_DETACHED. */
-	if(pthread_attr_getdetachstate(&new_attr, &detach_state) != 0)
+	if (pthread_attr_getdetachstate(&new_attr, &detach_state) != 0)
 	{
 		perror("Error in pthread_attr_getdetachstate.\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(detach_state == PTHREAD_CREATE_DETACHED)
+	if (detach_state == PTHREAD_CREATE_DETACHED)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;	

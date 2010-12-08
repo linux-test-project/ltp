@@ -35,13 +35,13 @@ int main()
 
 	for(i = 0;i<NUM_OF_KEYS;i++)
 	{
-		if(pthread_key_create(&keys[i], NULL) != 0)
+		if (pthread_key_create(&keys[i], NULL) != 0)
 		{
 			printf("Error: pthread_key_create() failed\n");
 			return PTS_UNRESOLVED;
 		} else
 		{
-			if(pthread_setspecific(keys[i], (void *)(long)(i + KEY_VALUE)) != 0)
+			if (pthread_setspecific(keys[i], (void *)(long)(i + KEY_VALUE)) != 0)
 			{
 				printf("Error: pthread_setspecific() failed\n");
 				return PTS_UNRESOLVED;
@@ -53,13 +53,13 @@ int main()
 	for(i = 0;i<NUM_OF_KEYS;++i)
 	{
 		rc = pthread_getspecific(keys[i]);
-		if(rc != (void *)(long)(i + KEY_VALUE))
+		if (rc != (void *)(long)(i + KEY_VALUE))
 		{
 			printf("Test FAILED: Did not return correct value of thread-specific key, expected %d, but got %ld\n", (i + KEY_VALUE), (long)rc);
 			return PTS_FAIL;
 		} else
 		{
-			if(pthread_key_delete(keys[i]) != 0)
+			if (pthread_key_delete(keys[i]) != 0)
 			{
 				printf("Error: pthread_key_delete() failed\n");
 				return PTS_UNRESOLVED;

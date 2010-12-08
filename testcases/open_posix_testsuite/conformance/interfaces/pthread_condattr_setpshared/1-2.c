@@ -46,7 +46,7 @@ int main()
 	for(i=0;i<NUM_OF_CONDATTR;i++)
 	{
 		/* Initialize a cond attributes object */
-		if(pthread_condattr_init(&attr[i]) != 0)
+		if (pthread_condattr_init(&attr[i]) != 0)
 		{
 			perror("Error at pthread_condattr_init()\n");
 			return PTS_UNRESOLVED;
@@ -54,27 +54,27 @@ int main()
 
 		/* Set 'pshared' to PTHREAD_PROCESS_SHARED. */
 		ret=pthread_condattr_setpshared(&attr[i], PTHREAD_PROCESS_SHARED);
-		if(ret != 0)
+		if (ret != 0)
 		{
 			printf("Test FAILED: Could not set pshared to PTHREAD_PROCESS_SHARED, error: %d\n", ret);
 			return PTS_FAIL;
 		}
 	
 		/* Get 'pshared'.  It should be PTHREAD_PROCESS_SHARED. */
-		if(pthread_condattr_getpshared(&attr[i], &pshared) != 0)
+		if (pthread_condattr_getpshared(&attr[i], &pshared) != 0)
 		{
 			printf("Test FAILED: obtaining the wrong process-shared attribute, expected PTHREAD_PROCESS_SHARED, but got: %d\n", pshared);
 			return PTS_FAIL;
 		}
 	
-		if(pshared != PTHREAD_PROCESS_SHARED)
+		if (pshared != PTHREAD_PROCESS_SHARED)
 		{
 			printf("Test FAILED: Incorrect pshared value: %d\n", pshared);
 			return PTS_FAIL;
 		}
 	
 		/* Destory the cond attributes object */
-		if(pthread_condattr_destroy(&attr[i]) != 0)
+		if (pthread_condattr_destroy(&attr[i]) != 0)
 		{
 			perror("Error at pthread_condattr_destroy()\n");
 			return PTS_UNRESOLVED;

@@ -49,7 +49,7 @@ int main()
 	sem=INTHREAD;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -60,7 +60,7 @@ int main()
 		sleep(1);
 
 	/* Wait for thread to return */
-	if(pthread_join(new_th, &value_ptr) != 0)
+	if (pthread_join(new_th, &value_ptr) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -68,7 +68,7 @@ int main()
 
 	/* Check to make sure that 'value_ptr' that was passed to pthread_join() and the
 	 * pthread_exit() return code that was used in the thread funciton are the same. */
-	if(value_ptr != RETURN_CODE)
+	if (value_ptr != RETURN_CODE)
 	{
 		printf("Test FAILED: pthread_join() did not return the pthread_exit value of the thread in 'value_ptr'.\n");
 		return PTS_FAIL;

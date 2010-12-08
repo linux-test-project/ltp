@@ -44,7 +44,7 @@ static void* fn_chld(void *arg)
 
 	printf("thread: attempt trylock\n");
 	rc = pthread_spin_trylock(&spinlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: thread failed to get spin lock," 
 			"Error code:%d\n" , rc);
@@ -53,7 +53,7 @@ static void* fn_chld(void *arg)
 	printf("thread: acquired spin lock\n");
 	
 	printf("thread: unlock spin lock\n");
-	if(pthread_spin_unlock(&spinlock))
+	if (pthread_spin_unlock(&spinlock))
 	{
 		printf("thread: Error at pthread_spin_unlock()\n");
 		exit(PTS_FAIL);
@@ -70,7 +70,7 @@ int main()
 	
 	pthread_t child_thread;
 	
-	if(pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
 	{
 		printf("main: Error at pthread_spin_init()\n");
 		return PTS_UNRESOLVED;
@@ -79,7 +79,7 @@ int main()
 	printf("main: attempt spin lock\n");
 
 	/* We should get the lock */	
-	if(pthread_spin_lock(&spinlock) != 0)
+	if (pthread_spin_lock(&spinlock) != 0)
 	{
 		printf("main: cannot get spin lock when no one owns the lock\n");
 		return PTS_UNRESOLVED;
@@ -88,7 +88,7 @@ int main()
 
 	printf("main: unlock spin lock\n");
 	rc = pthread_spin_unlock(&spinlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("main: Error at pthread_spin_unlock()\n");
 		return PTS_FAIL;
@@ -96,21 +96,21 @@ int main()
 
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread\n");
-	if(pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
+	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
 	{
 		printf("main: Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Wait for thread to end execution */
-	if(pthread_join(child_thread, NULL) != 0)
+	if (pthread_join(child_thread, NULL) != 0)
 	{
 		printf("main: Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	printf("main: try to lock again when thread unlocked\n");
-	if(pthread_spin_trylock(&spinlock) != 0)
+	if (pthread_spin_trylock(&spinlock) != 0)
 	{
 		printf("main: Should get spin lock\n");
 		return PTS_FAIL;
@@ -118,13 +118,13 @@ int main()
 	
 	printf("main: acquired spin lock\n");
 	printf("main: unlock spin lock\n");
-	if(pthread_spin_unlock(&spinlock) != 0)
+	if (pthread_spin_unlock(&spinlock) != 0)
 	{
 		printf("Test FAILED: main: Error at pthread_spin_unlock()\n");
 		return PTS_FAIL;
 	}	
 
-	if(pthread_spin_destroy(&spinlock) != 0)
+	if (pthread_spin_destroy(&spinlock) != 0)
 	{
 		printf("Error at pthread_spin_destroy()");
 		return PTS_UNRESOLVED;

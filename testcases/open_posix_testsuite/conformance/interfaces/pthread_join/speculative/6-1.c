@@ -52,7 +52,7 @@ int main()
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
 	/* Create a new thread. */
-	if(pthread_create(&new_th, &attr, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, &attr, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -61,7 +61,7 @@ int main()
 	/* Wait for thread to return */
 	ret=pthread_join(new_th, NULL);
 	
-	if(ret != EINVAL)
+	if (ret != EINVAL)
 	{
 		printf("Test FAILED: Return code should be EINVAL, but is: %d instead.\n", ret);
 		return PTS_FAIL;

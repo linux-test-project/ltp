@@ -102,7 +102,7 @@ void read_catalog( nl_catd cat, char * who )
 		{
 			msg = catgets( cat, i, j, "not found" );
 
-			if ( errno != 0 )
+			if (errno != 0 )
 			{
 				UNRESOLVED( errno, "catgets returned an error" );
 			}
@@ -135,17 +135,17 @@ int main( int argc, char * argv[] )
 
 	/* Generate the message catalog file from the text sourcefile */
 
-	if ( system( NULL ) )
+	if (system( NULL ) )
 	{
 		ret = system( "gencat mess.cat " PATH_OFFSET "messcat_src.txt" );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			output( "Unable to find messcat_src.txt in standard directory %s\n", PATH_OFFSET );
 			output( "Trying local dir\n" );
 			ret = system( "gencat mess.cat messcat_src.txt" );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				output( "Could not find the source file for message catalog.\n" \
 				        "You may need to execute gencat yourself.\n" );
@@ -156,7 +156,7 @@ int main( int argc, char * argv[] )
 	/* Try opening the message catalog file */
 	messcat = catopen( "./mess.cat", 0 );
 
-	if ( messcat == ( nl_catd ) - 1 )
+	if (messcat == ( nl_catd ) - 1 )
 	{
 		UNRESOLVED( errno, "Could not open ./mess.cat. You may need to do a gencat before executing this testcase" );
 	}
@@ -168,13 +168,13 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 		read_catalog( messcat, "child" );
 
@@ -185,12 +185,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}
@@ -198,7 +198,7 @@ int main( int argc, char * argv[] )
 	/* We can now clean up the message catalog file */
 	ret = catclose( messcat );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to close the message catalog" );
 	}

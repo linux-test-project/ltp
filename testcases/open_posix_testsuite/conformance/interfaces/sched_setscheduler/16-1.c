@@ -27,7 +27,7 @@ int main(){
 	struct sched_param param;
 
 	old_policy = sched_getscheduler(getpid());
-	if(old_policy == -1) {
+	if (old_policy == -1) {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
@@ -38,10 +38,10 @@ int main(){
 	param.sched_priority = sched_get_priority_max(new_policy);
 	result = sched_setscheduler(0, new_policy, &param);
 
-	if(result == old_policy){
+	if (result == old_policy){
 		printf("Test PASSED\n");
 		return PTS_PASS;	
-	} else if(result == -1 && errno == EPERM) {
+	} else if (result == -1 && errno == EPERM) {
 		printf("The process have not permission to change its own policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	}

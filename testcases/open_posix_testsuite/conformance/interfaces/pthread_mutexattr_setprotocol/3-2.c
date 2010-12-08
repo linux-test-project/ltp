@@ -28,7 +28,7 @@ int main()
 
 	/* Set the protocol to an invalid value. */
 	ret = pthread_mutexattr_setprotocol(&mta,PTHREAD_PRIO_NONE);
-	if(ret == EINVAL)
+	if (ret == EINVAL)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;

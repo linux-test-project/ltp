@@ -102,12 +102,12 @@ int main( int argc, char * argv[] )
 	/* Call the initializer */
 	ret = pthread_once( &myctl, my_init );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "pthread_once failed" );
 	}
 
-	if ( control != 1 )
+	if (control != 1 )
 	{
 		FAILED( "The initializer function did not execute" );
 	}

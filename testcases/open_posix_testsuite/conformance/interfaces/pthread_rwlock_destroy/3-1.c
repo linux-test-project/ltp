@@ -27,13 +27,13 @@ int main()
 	pthread_rwlock_t rwlock;
 	int rc;
 
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_rwlock_rdlock(&rwlock) != 0)
+	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
@@ -41,7 +41,7 @@ int main()
 	
 	/* Attempt to destroy an already locked rwlock */
 	rc = pthread_rwlock_destroy(&rwlock);
-	if(rc == EBUSY)
+	if (rc == EBUSY)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;

@@ -92,7 +92,7 @@ sig_atomic_t latest = 0;
 
 void handler( int sig, siginfo_t *info, void *context )
 {
-	if ( info->si_signo != SIGRTMAX )
+	if (info->si_signo != SIGRTMAX )
 	{
 		output( "Received unexpected signal %d\n", info->si_signo );
 	}
@@ -100,7 +100,7 @@ void handler( int sig, siginfo_t *info, void *context )
 	{
 		latest++;
 
-		if ( latest != info->si_value.sival_int )
+		if (latest != info->si_value.sival_int )
 		{
 			output( "Got signal %d, expected %d!\n", info->si_value.sival_int, latest );
 			FAILED( "Wrong signal delivered -- no FIFO order?" );
@@ -124,7 +124,7 @@ int main()
 	/* Test the RTS extension */
 	rts = sysconf( _SC_REALTIME_SIGNALS );
 
-	if ( rts < 0L )
+	if (rts < 0L )
 	{
 		UNTESTED( "This test needs the RTS extension" );
 	}
@@ -136,7 +136,7 @@ int main()
 
 	ret = sigemptyset( &sa.sa_mask );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
@@ -144,7 +144,7 @@ int main()
 	/* Install the signal handler for SIGRTMAX */
 	ret = sigaction( SIGRTMAX, &sa, 0 );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to set signal handler" );
 	}
@@ -152,21 +152,21 @@ int main()
 	/* Mask this signal */
 	ret = sigemptyset( &mask );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "An error occured while initializing mask" );
 	}
 
 	ret = sigaddset( &mask, SIGRTMAX );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to add SIGRTMAX to signal set" );
 	}
 
 	ret = sigprocmask( SIG_BLOCK, &mask, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to set process signal mask" );
 	}
@@ -177,13 +177,13 @@ int main()
 	{
 		ret = sigqueue( getpid(), SIGRTMAX, sv );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to queue the signal" );
 		}
 	}
 
-	if ( latest != 0 )
+	if (latest != 0 )
 	{
 		FAILED( "Signal was delivered while masked??" );
 	}
@@ -191,7 +191,7 @@ int main()
 	/* And finally unmask the signal so it is delivered */
 	ret = sigprocmask( SIG_UNBLOCK, &mask, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to set process signal mask" );
 	}
@@ -200,11 +200,11 @@ int main()
 
 	/* Check the signal has been delivered as expected */
 
-	if ( latest != QUEUELENGTH )
+	if (latest != QUEUELENGTH )
 	{
 		output( "Only %d signal delivered instead of %d\n", latest, QUEUELENGTH );
 
-		if ( latest == 1 )
+		if (latest == 1 )
 		{
 			UNTESTED( "It seems like SIGRTMAX is not a queuable signal here?" );
 		}

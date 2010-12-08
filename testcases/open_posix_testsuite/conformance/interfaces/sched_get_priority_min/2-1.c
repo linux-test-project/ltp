@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	
 	result = sched_get_priority_min(-1);
 	
-	if(result == -1 && errno == EINVAL ) {
+	if (result == -1 && errno == EINVAL ) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

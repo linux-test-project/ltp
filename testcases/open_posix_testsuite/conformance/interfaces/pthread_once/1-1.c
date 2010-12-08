@@ -48,7 +48,7 @@ int main()
 	 * called. */
 	pthread_once(&once_control, (void*)an_init_func);
 
-	if(init_flag != 1)
+	if (init_flag != 1)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

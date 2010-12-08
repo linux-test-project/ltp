@@ -139,12 +139,12 @@ int main ( int argc, char *argv[] )
 	/* Initialize output routine */
 	output_init();
 
-	if ( CHILD_MAX > 0 )
+	if (CHILD_MAX > 0 )
 		my_max = CHILD_MAX;
 
 	pr = ( pid_t * ) calloc( 1 + my_max, sizeof( pid_t ) );
 
-	if ( pr == NULL )
+	if (pr == NULL )
 	{
 		UNRESOLVED( errno, "Not enough memory for process IDs storage" );
 	}
@@ -162,7 +162,7 @@ int main ( int argc, char *argv[] )
 	/* Initilaize the semaphores */
 	sem_synchro = sem_open( "/fork_scal_sync", O_CREAT, O_RDWR, 0 );
 
-	if ( sem_synchro == SEM_FAILED )
+	if (sem_synchro == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to open a named semaphore\n" );
 	}
@@ -171,7 +171,7 @@ int main ( int argc, char *argv[] )
 
 	sem_ending = sem_open( "/fork_scal_end", O_CREAT, O_RDWR, 0 );
 
-	if ( sem_ending == SEM_FAILED )
+	if (sem_ending == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to open a named semaphore\n" );
 	}
@@ -186,7 +186,7 @@ int main ( int argc, char *argv[] )
 		/* read clock */
 		ret = clock_gettime( CLOCK_REALTIME, &ts_ref );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Unable to read clock" );
 		}
@@ -194,9 +194,9 @@ int main ( int argc, char *argv[] )
 		/* create a new child */
 		pr[ nprocesses ] = fork();
 
-		if ( pr[ nprocesses ] == ( pid_t ) - 1 )
+		if (pr[ nprocesses ] == ( pid_t ) - 1 )
 		{
-			if ( ( errno == EAGAIN ) || ( errno == ENOMEM ) )
+			if (( errno == EAGAIN ) || ( errno == ENOMEM ) )
 			{
 				break;
 			}
@@ -211,14 +211,14 @@ int main ( int argc, char *argv[] )
 				}
 				while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-				if ( ret != 0 )
+				if (ret != 0 )
 					output( "Failed to post the semaphore on termination: error %d\n", errno );
 
 				FAILED( "Failed to fork and received an unexpected error" );
 			}
 		}
 
-		if ( pr[ nprocesses ] == 0 )
+		if (pr[ nprocesses ] == 0 )
 		{
 			/* Child */
 			/* Post the synchro semaphore*/
@@ -229,7 +229,7 @@ int main ( int argc, char *argv[] )
 			}
 			while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				/* In this case the test will hang... */
 				UNRESOLVED( errno, "Failed post the sync semaphore" );
@@ -242,7 +242,7 @@ int main ( int argc, char *argv[] )
 			}
 			while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( errno, "Failed wait for the end semaphore" );
 			}
@@ -254,7 +254,7 @@ int main ( int argc, char *argv[] )
 			}
 			while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( errno, "Failed post the end semaphore" );
 			}
@@ -267,11 +267,11 @@ int main ( int argc, char *argv[] )
 		nprocesses++;
 
 		/* FAILED if nprocesses > CHILD_MAX */
-		if ( nprocesses > my_max )
+		if (nprocesses > my_max )
 		{
 			errno = 0;
 
-			if ( CHILD_MAX > 0 )
+			if (CHILD_MAX > 0 )
 			{
 #if VERBOSE > 0
 				output( "WARNING! We were able to create more than CHILD_MAX processes\n" );
@@ -289,7 +289,7 @@ int main ( int argc, char *argv[] )
 		}
 		while ( ( ret == -1 ) && ( errno == EINTR ) );
 
-		if ( ret == -1 )
+		if (ret == -1 )
 		{
 			sem_post( sem_ending );
 			UNRESOLVED( errno, "Failed to wait for the sync semaphore" );
@@ -298,18 +298,18 @@ int main ( int argc, char *argv[] )
 		/* read clock */
 		ret = clock_gettime( CLOCK_REALTIME, &ts_fin );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Unable to read clock" );
 		}
 
 		/* add to the measure list if nprocesses % resolution == 0 */
-		if ( ( ( nprocesses % RESOLUTION ) == 0 ) && ( nprocesses != 0 ) )
+		if (( ( nprocesses % RESOLUTION ) == 0 ) && ( nprocesses != 0 ) )
 		{
 			/* Create an empty new element */
 			m_tmp = ( mes_t * ) malloc( sizeof( mes_t ) );
 
-			if ( m_tmp == NULL )
+			if (m_tmp == NULL )
 			{
 				sem_post( sem_ending );
 				UNRESOLVED( errno, "Unable to alloc memory for measure saving" );
@@ -333,7 +333,7 @@ int main ( int argc, char *argv[] )
 	}
 #if VERBOSE > 3
 
-	if ( errno )
+	if (errno )
 		output( "Could not create anymore processes. Current count is %i\n", nprocesses );
 	else
 		output( "Should not create anymore processes. Current count is %i\n", nprocesses );
@@ -348,7 +348,7 @@ int main ( int argc, char *argv[] )
 	}
 	while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed post the end semaphore" );
 	}
@@ -362,12 +362,12 @@ int main ( int argc, char *argv[] )
 	{
 		pidctl = waitpid( pr[ i ], &status, 0 );
 
-		if ( pidctl != pr[ i ] )
+		if (pidctl != pr[ i ] )
 		{
 			UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 		}
 
-		if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+		if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 		{
 			FAILED( "Child exited abnormally" );
 		}
@@ -402,7 +402,7 @@ int main ( int argc, char *argv[] )
 	}
 
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		FAILED( "The function is not scalable, add verbosity for more information" );
 	}
@@ -513,7 +513,7 @@ int parse_measure( mes_t * measures )
 
 		N++;
 
-		if ( cur->_data != 0 )
+		if (cur->_data != 0 )
 		{
 			array_max = N;
 			Xavg += ( double ) cur->nprocess;
@@ -524,7 +524,7 @@ int parse_measure( mes_t * measures )
 	}
 
 	/* We have the sum; we can divide to obtain the average values */
-	if ( array_max != -1 )
+	if (array_max != -1 )
 	{
 		Xavg /= array_max;
 		LnXavg /= array_max;
@@ -542,7 +542,7 @@ int parse_measure( mes_t * measures )
 
 	Table = calloc( N, sizeof( struct row ) );
 
-	if ( Table == NULL )
+	if (Table == NULL )
 	{
 		UNRESOLVED( errno, "Unable to alloc space for results parsing" );
 	}
@@ -559,7 +559,7 @@ int parse_measure( mes_t * measures )
 		Table[ N ].X = ( long ) cur->nprocess;
 		Table[ N ].LnX = log( ( double ) cur->nprocess );
 
-		if ( array_max > N )
+		if (array_max > N )
 		{
 			Table[ N ]._x = Table[ N ].X - Xavg ;
 			Table[ N ]._lnx = Table[ N ].LnX - LnXavg;
@@ -680,11 +680,11 @@ int parse_measure( mes_t * measures )
 
 #endif
 
-	if ( array_max != -1 )
+	if (array_max != -1 )
 	{
 		/* Compare r1 to other values, with some ponderations */
 
-		if ( ( r1 > 1.1 * r2 ) || ( r1 > 1.2 * r3 ) || ( r1 > 1.3 * r4 ) )
+		if (( r1 > 1.1 * r2 ) || ( r1 > 1.2 * r3 ) || ( r1 > 1.3 * r4 ) )
 			ret++;
 
 #if VERBOSE > 1

@@ -41,7 +41,7 @@ int main()
 		}
 
 	if ((sem_unlink(semname)) == 0) {
-		if ( sem_close(mysemp) == -1)  {
+		if (sem_close(mysemp) == -1)  {
 			perror(ERROR_PREFIX "sem_close");
 			return PTS_UNRESOLVED;
 		}

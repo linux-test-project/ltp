@@ -93,7 +93,7 @@ int main( int argc, char * argv[] )
 	ctp = sysconf( _SC_CPUTIME );
 	ctt = sysconf( _SC_THREAD_CPUTIME );
 
-	if ( ( ctp == -1 ) && ( ctt == -1 ) )
+	if (( ctp == -1 ) && ( ctt == -1 ) )
 	{
 		UNTESTED( "The testcase needs CPUTIME or THREAD_CPUTIME support" );
 	}
@@ -106,11 +106,11 @@ int main( int argc, char * argv[] )
 	output( "  _POSIX_THREAD_CPUTIME : %ld\n", ctt );
 
 #endif
-	if ( ctp > 0 )
+	if (ctp > 0 )
 	{
 		ret = clock_getcpuclockid( 0, &clp );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Unable to get cpu-time clock id of the process" );
 		}
@@ -119,7 +119,7 @@ int main( int argc, char * argv[] )
 		{
 			ret = clock_gettime( clp, &tp );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( errno, "Failed to read CPU time clock" );
 			}
@@ -127,11 +127,11 @@ int main( int argc, char * argv[] )
 		while ( tp.tv_sec < 1 );
 	}
 
-	if ( ctt > 0 )
+	if (ctt > 0 )
 	{
 		ret = pthread_getcpuclockid( pthread_self(), &clt );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Unable to get cpu-time clock id of the thread" );
 		}
@@ -140,7 +140,7 @@ int main( int argc, char * argv[] )
 		{
 			ret = clock_gettime( clt, &tp );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( errno, "Failed to read thread CPU time clock" );
 			}
@@ -152,53 +152,53 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
-		if ( ctp > 0 )
+		if (ctp > 0 )
 		{
 			ret = clock_getcpuclockid( 0, &clp );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( ret, "Unable to get cpu-time clock id of the process" );
 			}
 
 			ret = clock_gettime( clp, &tp );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( errno, "Failed to read CPU time clock" );
 			}
 
-			if ( tp.tv_sec > 0 )
+			if (tp.tv_sec > 0 )
 			{
 				FAILED( "The process CPU-time clock was not reset in child\n" );
 			}
 		}
 
-		if ( ctt > 0 )
+		if (ctt > 0 )
 		{
 			ret = pthread_getcpuclockid( pthread_self(), &clt );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( ret, "Unable to get cpu-time clock id of the thread" );
 			}
 
 			ret = clock_gettime( clt, &tp );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( errno, "Failed to read thread CPU time clock" );
 			}
 
-			if ( tp.tv_sec > 0 )
+			if (tp.tv_sec > 0 )
 			{
 				FAILED( "The thread CPU-time clock was not reset in child\n" );
 			}
@@ -211,12 +211,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}

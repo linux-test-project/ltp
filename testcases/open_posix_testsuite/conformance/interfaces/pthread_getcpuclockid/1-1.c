@@ -55,7 +55,7 @@ int main()
         }
 
 	rc = pthread_join(new_th, NULL);
-        if(rc != 0)
+        if (rc != 0)
         {
                 perror(ERROR_PREFIX "pthread_join");
                 exit(PTS_UNRESOLVED);

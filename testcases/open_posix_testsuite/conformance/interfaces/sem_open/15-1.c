@@ -101,7 +101,7 @@ int main( int argc, char * argv[] )
 	{
 		sems[ i ] = sem_open( name, O_CREAT, 0777, 1 );
 
-		if ( sems[ i ] == SEM_FAILED )
+		if (sems[ i ] == SEM_FAILED )
 		{
 			UNRESOLVED( errno, "Failed to sem_open" );
 		}
@@ -111,7 +111,7 @@ int main( int argc, char * argv[] )
 	/* Check all calls returned the same @ */
 	for ( i = 0; i < 3; i++ )
 	{
-		if ( sems[ i ] != sems[ i + 1 ] )
+		if (sems[ i ] != sems[ i + 1 ] )
 		{
 			FAILED( "sem_open returned a different address" );
 		}
@@ -119,7 +119,7 @@ int main( int argc, char * argv[] )
 		/* Close some semaphores */
 		ret = sem_close( sems[ i ] );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to sem_close" );
 		}
@@ -130,7 +130,7 @@ int main( int argc, char * argv[] )
 	{
 		sems[ i ] = sem_open( name, O_CREAT, 0777, 1 );
 
-		if ( sems[ i ] == SEM_FAILED )
+		if (sems[ i ] == SEM_FAILED )
 		{
 			UNRESOLVED( errno, "Failed to sem_open" );
 		}
@@ -140,7 +140,7 @@ int main( int argc, char * argv[] )
 	/* Check all calls returned the same @ */
 	for ( i = 0; i < 3; i++ )
 	{
-		if ( sems[ i ] != sems[ i + 1 ] )
+		if (sems[ i ] != sems[ i + 1 ] )
 		{
 			FAILED( "sem_open returned a different address" );
 		}
@@ -152,7 +152,7 @@ int main( int argc, char * argv[] )
 	{
 		ret = sem_close( sems[ i ] );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to sem_close" );
 		}

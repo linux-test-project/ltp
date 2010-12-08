@@ -95,21 +95,21 @@ int main( int argc, char * argv[] )
 
 	sem_linked = sem_open( "/fork_14_1a", O_CREAT, O_RDWR, 0 );
 
-	if ( sem_linked == SEM_FAILED )
+	if (sem_linked == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to create the named semaphore" );
 	}
 
 	sem_unlinked = sem_open( "/fork_14_1b", O_CREAT, O_RDWR, 0 );
 
-	if ( sem_unlinked == SEM_FAILED )
+	if (sem_unlinked == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to create the named semaphore" );
 	}
 
 	ret = sem_unlink( "/fork_14_1b" );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to unlink the semaphore" );
 	}
@@ -117,13 +117,13 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 		do
 		{
@@ -131,7 +131,7 @@ int main( int argc, char * argv[] )
 		}
 		while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to post semaphore A" );
 		}
@@ -142,7 +142,7 @@ int main( int argc, char * argv[] )
 		}
 		while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to post semaphore B" );
 		}
@@ -155,12 +155,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}
@@ -172,9 +172,9 @@ int main( int argc, char * argv[] )
 	}
 	while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
-		if ( errno == EAGAIN )
+		if (errno == EAGAIN )
 		{
 			FAILED( "Child did not inherit the semaphore A" );
 		}
@@ -190,9 +190,9 @@ int main( int argc, char * argv[] )
 	}
 	while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
-		if ( errno == EAGAIN )
+		if (errno == EAGAIN )
 		{
 			FAILED( "Child did not inherit the semaphore B" );
 		}
@@ -204,21 +204,21 @@ int main( int argc, char * argv[] )
 
 	ret = sem_unlink( "/fork_14_1a" );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to unlink semaphore A" );
 	}
 
 	ret = sem_close( sem_linked );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to close semaphore A" );
 	}
 
 	ret = sem_close( sem_unlinked );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to close semaphore B" );
 	}

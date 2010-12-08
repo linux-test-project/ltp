@@ -53,45 +53,45 @@ void *a_thread_func()
 	act.sa_flags = 0;
 	sigemptyset( &act.sa_mask );
 
-	if ( sigaction( SIGABRT, &act, 0 ) == -1 )
+	if (sigaction( SIGABRT, &act, 0 ) == -1 )
 	{
 		perror( "Unexpected error while attempting to setup test "
 		        "pre-conditions" );
 		pthread_exit( ( void* ) 1 );
 	}
 
-	if ( pthread_sigmask( SIG_SETMASK, &blocked_set, NULL ) == -1 )
+	if (pthread_sigmask( SIG_SETMASK, &blocked_set, NULL ) == -1 )
 	{
 		perror( "Unexpected error while attempting to use pthread_sigmask.\n" );
 		pthread_exit( ( void* ) 1 );
 	}
 
-	if ( raise( SIGABRT ) == -1 )
+	if (raise( SIGABRT ) == -1 )
 	{
 		perror( "Unexpected error while attempting to setup test "
 		        "pre-conditions" );
 		pthread_exit( ( void* ) 1 );
 	}
 
-	if ( handler_called )
+	if (handler_called )
 	{
 		printf( "FAIL: Signal was not blocked\n" );
 		pthread_exit( ( void* ) - 1 );
 	}
 
-	if ( sigpending( &pending_set ) == -1 )
+	if (sigpending( &pending_set ) == -1 )
 	{
 		perror( "Unexpected error while attempting to use sigpending\n" );
 		pthread_exit( ( void* ) 1 );
 	}
 
-	if ( sigismember( &pending_set, SIGABRT ) == -1 )
+	if (sigismember( &pending_set, SIGABRT ) == -1 )
 	{
 		perror( "Unexpected error while attempting to use sigismember.\n" );
 		pthread_exit( ( void* ) - 1 );
 	}
 
-	if ( sigismember( &pending_set, SIGABRT ) != 1 )
+	if (sigismember( &pending_set, SIGABRT ) != 1 )
 	{
 		perror( "FAIL: sigismember did not return 1\n" );
 		pthread_exit( ( void* ) 1 );
@@ -100,7 +100,7 @@ void *a_thread_func()
 	sigemptyset( &blocked_set );
 	sigaddset( &blocked_set, SIGUSR1 );
 
-	if ( pthread_sigmask( SIG_SETMASK, &blocked_set, NULL ) == -1 )
+	if (pthread_sigmask( SIG_SETMASK, &blocked_set, NULL ) == -1 )
 	{
 		perror( "Unexpected error while attempting to use pthread_sigmask.\n" );
 		pthread_exit( ( void* ) 1 );
@@ -108,7 +108,7 @@ void *a_thread_func()
 
 	sched_yield();
 
-	if ( !handler_called )
+	if (!handler_called )
 	{
 		printf( "FAIL: Old signal was not removed from mask.\n" );
 		pthread_exit( ( void* ) - 1 );
@@ -126,26 +126,26 @@ int main()
 
 	pthread_t new_thread;
 
-	if ( pthread_create( &new_thread, NULL, a_thread_func, NULL ) != 0 )
+	if (pthread_create( &new_thread, NULL, a_thread_func, NULL ) != 0 )
 	{
 		perror( "Error creating new thread\n" );
 		return PTS_UNRESOLVED;
 	}
 
-	if ( pthread_join( new_thread, ( void* ) & thread_return_value ) != 0 )
+	if (pthread_join( new_thread, ( void* ) & thread_return_value ) != 0 )
 	{
 		perror( "Error in pthread_join()\n" );
 		return PTS_UNRESOLVED;
 	}
 
-	if ( ( long ) thread_return_value != 0 )
+	if (( long ) thread_return_value != 0 )
 	{
-		if ( ( long ) thread_return_value == 1 )
+		if (( long ) thread_return_value == 1 )
 		{
 			printf ( "Test UNRESOLVED\n" );
 			return PTS_UNRESOLVED;
 		}
-		else if ( ( long ) thread_return_value == -1 )
+		else if (( long ) thread_return_value == -1 )
 		{
 			printf ( "Test FAILED\n" );
 			return PTS_FAIL;

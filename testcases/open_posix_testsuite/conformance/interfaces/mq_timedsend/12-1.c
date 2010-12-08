@@ -135,7 +135,7 @@ int main()
 	errno_eintr=0;
 	sem = INTHREAD;
 
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{
 		perror("Error: in pthread_create\n");
 		return PTS_UNRESOLVED;
@@ -148,7 +148,7 @@ int main()
 	while((i != 10) && (sem==INMAIN))
 	{
 		/* signal thread while it's in mq_timedsend */
-		if(pthread_kill(new_th, SIGUSR1) != 0)	
+		if (pthread_kill(new_th, SIGUSR1) != 0)	
 		{
 			perror("Error: in pthread_kill\n");
 			return PTS_UNRESOLVED;
@@ -156,7 +156,7 @@ int main()
 		i++;
 	}
 
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error: in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -164,15 +164,15 @@ int main()
 
 	/* Test to see if the thread blocked correctly in mq_timedsend, and if it returned
 	 * EINTR when it caught the signal */
-	if(errno_eintr != 1)
+	if (errno_eintr != 1)
 	{
-		if(sem==INTHREAD)
+		if (sem==INTHREAD)
 		{
 			printf("Test FAILED: mq_timedsend() never blocked for any timeout period.\n");
 			return PTS_FAIL;
 		}
 
-		if(in_handler != 0)
+		if (in_handler != 0)
 		{
 			perror("Error: signal SIGUSR1 was never received, and/or the signal handler was never called.\n");
 			return PTS_UNRESOLVED;

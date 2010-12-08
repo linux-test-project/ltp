@@ -35,7 +35,7 @@ int main()
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mysemp = sem_open(semname, O_CREAT, 0777, 0);
-	if ( mysemp  == SEM_FAILED ) {
+	if (mysemp  == SEM_FAILED ) {
   		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}

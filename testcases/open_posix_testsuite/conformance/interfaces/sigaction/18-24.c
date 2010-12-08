@@ -103,7 +103,7 @@ int main()
 	sa.sa_handler = handler;
 	ret = sigemptyset( &sa.sa_mask );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
@@ -111,24 +111,24 @@ int main()
 	/* Install the signal handler for SIGVTALRM */
 	ret = sigaction( SIGNAL, &sa, 0 );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to set signal handler" );
 	}
 
-	if ( called )
+	if (called )
 	{
 		FAILED( "The signal handler has been called when no signal was raised" );
 	}
 
 	ret = raise( SIGNAL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to raise SIGVTALRM" );
 	}
 
-	if ( !called )
+	if (!called )
 	{
 		FAILED( "the sa_handler was not called whereas SA_SIGINFO was not set" );
 	}

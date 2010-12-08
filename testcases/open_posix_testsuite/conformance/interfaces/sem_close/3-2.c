@@ -102,13 +102,13 @@ int main( int argc, char * argv[] )
 	/* Create the semaphore */
 	sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 2 );
 
-	if ( ( sem == SEM_FAILED ) && ( errno == EEXIST ) )
+	if (( sem == SEM_FAILED ) && ( errno == EEXIST ) )
 	{
 		sem_unlink( SEM_NAME );
 		sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 2 );
 	}
 
-	if ( sem == SEM_FAILED )
+	if (sem == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to create the semaphore" );
 	}
@@ -120,7 +120,7 @@ int main( int argc, char * argv[] )
 	}
 	while ( ( ret != 0 ) && ( errno == EINTR ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to wait for the semaphore" );
 	}
@@ -128,7 +128,7 @@ int main( int argc, char * argv[] )
 	/* Here, count is 1. Now, close the semaphore */
 	ret = sem_close( sem );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to close the semaphore" );
 	}
@@ -136,7 +136,7 @@ int main( int argc, char * argv[] )
 	/* Open the semaphore again */
 	sem = sem_open( SEM_NAME, O_CREAT, 0777, 3 );
 
-	if ( sem == SEM_FAILED )
+	if (sem == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to re-open the semaphore" );
 	}
@@ -144,12 +144,12 @@ int main( int argc, char * argv[] )
 	/* Check current semaphore count */
 	ret = sem_getvalue( sem, &value );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to get semaphore value" );
 	}
 
-	if ( value != 1 )
+	if (value != 1 )
 	{
 		output( "Got value: %d\n", value );
 		FAILED( "The semaphore count has changed after sem_close" );
@@ -158,14 +158,14 @@ int main( int argc, char * argv[] )
 	/* Now, we can destroy all */
 	ret = sem_close( sem );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to close the semaphore" );
 	}
 
 	ret = sem_unlink( SEM_NAME );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to unlink the semaphore" );
 	}

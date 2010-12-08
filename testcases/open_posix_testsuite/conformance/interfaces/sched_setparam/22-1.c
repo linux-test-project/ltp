@@ -19,17 +19,17 @@ int main(){
 	int result;
 	struct sched_param param;
 
-	if(sched_getparam(0, &param) == -1) {
+	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 
 	result = sched_setparam(0, &param);
 
-	if(result == 0) {
+	if (result == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(errno == EPERM) {
+	} else if (errno == EPERM) {
 		printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {

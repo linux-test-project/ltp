@@ -42,7 +42,7 @@ int main()
 
 	/* Initialize attr */
 	rc = pthread_attr_init(&attr);
-	if( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_init");
 		exit(PTS_UNRESOLVED);
 	}
@@ -72,14 +72,14 @@ int main()
 	}		
 
 	rc = pthread_join(new_th, NULL);
-	if(rc != 0)
+	if (rc != 0)
         {
                 perror(ERROR_PREFIX "pthread_join");
 		exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_attr_destroy(&attr);
-	if(rc != 0)
+	if (rc != 0)
         {
                 perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);

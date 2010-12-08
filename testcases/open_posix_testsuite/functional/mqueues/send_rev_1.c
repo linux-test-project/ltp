@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	return PTS_UNRESOLVED;
 #endif */ 
   
-	if(((mqd_t) -1) == (mq = mq_open(MQ_NAME, oflag, 0777, &mqstat))) {
+	if (((mqd_t) -1) == (mq = mq_open(MQ_NAME, oflag, 0777, &mqstat))) {
 		perror("mq_open doesn't return success \n");
 		return PTS_UNRESOLVED;
 	}
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 		for (i = 0; i < MAX_MSG && ret_code == PTS_PASS; i++) {
 			printf("[%d] s_msg_ptr is '%s' \n", i+1, s_msg_ptr[i]);
 			printf("Prepare to send message...\n");
-			if ( -1 == mq_send(mq, s_msg_ptr[i], attr.mq_msgsize, 1)) {
+			if (-1 == mq_send(mq, s_msg_ptr[i], attr.mq_msgsize, 1)) {
 				perror("mq_send doesn't return success \n");
 				ret_code = PTS_UNRESOLVED;
 			} else {

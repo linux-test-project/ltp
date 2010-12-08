@@ -46,7 +46,7 @@ static int handler_called;
 
 
 static void sig_handler() {
-	if(pthread_equal(pthread_self(), sig_thread))
+	if (pthread_equal(pthread_self(), sig_thread))
 	{
 		printf("sig_handler: handled signal SIGUSR1\n");
 		handler_called = 1;
@@ -72,7 +72,7 @@ static void * th_fn(void *arg)
 	thread_state = ENTERED_THREAD;
 	printf("sig_thread: attemp read lock\n");
 	rc = pthread_rwlock_rdlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: sig_thread: Error at pthread_rwlock_rdlock(), Error code=%d\n", rc);
 		exit(PTS_FAIL);
@@ -80,7 +80,7 @@ static void * th_fn(void *arg)
 		printf("sig_thread: acquired read lock\n");
 	
 	printf("sig_thread: unlock read lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("sig_thread: Error release readlock\n");
 		exit(PTS_UNRESOLVED);	
@@ -95,14 +95,14 @@ int main()
 	int cnt;
 	handler_called = 0;
 
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	printf("main: attempt write lock\n");
-	if(pthread_rwlock_wrlock(&rwlock) != 0)
+	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_wrlock()\n");
 		return PTS_UNRESOLVED;
@@ -110,7 +110,7 @@ int main()
 		printf("main: acquired write lock\n");
 
 	thread_state = NOT_CREATED_THREAD;
-	if(pthread_create(&sig_thread, NULL, th_fn, NULL) != 0)
+	if (pthread_create(&sig_thread, NULL, th_fn, NULL) != 0)
 	{
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
@@ -122,12 +122,12 @@ int main()
 		sleep(1);
 	}while(thread_state != EXITING_THREAD && cnt++ < 3);
 	
-	if(thread_state == EXITING_THREAD)
+	if (thread_state == EXITING_THREAD)
 	{
 		printf("Test FAILED: thread did not block on read lock when a writer holds the lock\n");
 		exit(PTS_FAIL);		
 	}
-	else if(thread_state != ENTERED_THREAD) 
+	else if (thread_state != ENTERED_THREAD) 
 	{
 		printf("Unexpected thread state: %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
@@ -135,7 +135,7 @@ int main()
 
 	/* sig_thread is blocking */
 	printf("main: fire SIGUSR1 to sig_thread\n");
-	if(pthread_kill(sig_thread, SIGUSR1) != 0)
+	if (pthread_kill(sig_thread, SIGUSR1) != 0)
 	{
 		printf("main: failed to send SIGUSER to sig_thread\n");
 		exit(PTS_UNRESOLVED);
@@ -147,7 +147,7 @@ int main()
 		sleep(1);
 	}while(handler_called == 0 && cnt++ < 3);
 	
-	if(handler_called != 1)
+	if (handler_called != 1)
 	{
 		printf("SIGUSR1 was not caught by sig_thread\n");
 		exit(PTS_UNRESOLVED);
@@ -159,11 +159,11 @@ int main()
 		sleep(1);
 	}while(thread_state != EXITING_THREAD && cnt++ < 3);	
 
-	if(thread_state == EXITING_THREAD)
+	if (thread_state == EXITING_THREAD)
 	{
 		printf("Test FAILED: upon return from signal handler, sig_thread does not resume to block\n");
 		exit(PTS_FAIL);
-	}else if(thread_state != ENTERED_THREAD)
+	}else if (thread_state != ENTERED_THREAD)
 	{
 		printf("Unexpected thread state: %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
@@ -171,7 +171,7 @@ int main()
 	
 	printf("sig_thread: correctly still blocking after signal handler returns\n");	
 	printf("main: unlock write lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: Failed to release write lock\n");
 		exit(PTS_UNRESOLVED);
@@ -183,23 +183,23 @@ int main()
 		sleep(1);
 	}while(thread_state != EXITING_THREAD && cnt++ < 3);
 	
-	if(thread_state == ENTERED_THREAD)
+	if (thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: sig_thread blocked on read lock when writer release the lock\n");
 		exit(PTS_FAIL);	
-	}else if(thread_state != EXITING_THREAD)
+	}else if (thread_state != EXITING_THREAD)
 	{
 		printf("Unexpected thread state: %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
 	}
 	
-	if(pthread_join(sig_thread, NULL) != 0)
+	if (pthread_join(sig_thread, NULL) != 0)
 	{
 		printf("main: failed at pthread_join()\n");	
 		exit(PTS_UNRESOLVED);
 	}
 	
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("main: failed at pthread_rwlock_destroy()\n");
 		exit(PTS_UNRESOLVED);

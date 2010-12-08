@@ -45,16 +45,16 @@ int set_nonroot()
 	setpwent();
 	/* search for the first user which is non root */ 
 	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root"))
+		if (strcmp(pw->pw_name, "root"))
 			break;
 	endpwent();
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
 
-	if(seteuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (seteuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\n");
 			return 1;
 		}
@@ -114,13 +114,13 @@ int main()
   /* Create shared object */
 	shm_unlink(tmpfname);
 	shm_fd = shm_open(tmpfname, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-	if(shm_fd == -1)
+	if (shm_fd == -1)
 	{
 		printf(TNAME " Error at shm_open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
   shm_unlink(tmpfname);   
-  if(ftruncate(shm_fd, shm_size) == -1) {
+  if (ftruncate(shm_fd, shm_size) == -1) {
     printf(TNAME " Error at ftruncate(): %s\n", strerror(errno));
     return PTS_UNRESOLVED;
   }

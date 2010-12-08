@@ -47,7 +47,7 @@ int main()
 	alarm(5);
 	
 	/* Create a new thread. */
-	if(pthread_create(&a, NULL, a_thread_function, NULL) != 0)
+	if (pthread_create(&a, NULL, a_thread_function, NULL) != 0)
 	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;

@@ -137,7 +137,7 @@ void * threaded(void * arg)
 		output("Child location: %p\n", child_stack);
 		#endif
 		
-		if (  (((long)scenarii[sc].bottom) < ((long)child_stack)) 
+		if ( (((long)scenarii[sc].bottom) < ((long)child_stack)) 
 		   && (((long)child_stack) < (((long)scenarii[sc].bottom) + sz)))
 	   	{
 			FAILED("The new thread inherited th alternate stack from its parent"); 

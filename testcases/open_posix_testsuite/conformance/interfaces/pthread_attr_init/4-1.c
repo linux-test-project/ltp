@@ -26,13 +26,13 @@ int main()
 
 	/* Initialize attribute */
 	ret=pthread_attr_init(&new_attr);
-	if(ret == 0)
+	if (ret == 0)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 	/* There's insufficient memory, can't run test */
-	else if(ret == ENOMEM)
+	else if (ret == ENOMEM)
 	{
 		perror("Error in pthread_attr_init()\n");
 		return PTS_UNRESOLVED;

@@ -69,11 +69,11 @@ void sig_handler(int sig)
 {
 	/* If a segmentation fault occured when it was supposed to (i.e. when pthread_create()
 	 * was called with the invalid attributes object). */
-	if(segfault_flag == 1)
+	if (segfault_flag == 1)
 	{
 		/* check if the thread start routine was called. If yes, then the thread was
 		 * created, meaning the test fails. */
-		if(created_thread == 1)
+		if (created_thread == 1)
 		{
 			printf("Test FAILED: Created thread though an invalid attribute was passed to pthread_create().\n");
 			pthread_exit((void*)PTS_FAIL);
@@ -116,7 +116,7 @@ int main()
 
 	/* Manually send the SIGSEGV signal to the signal handler.  If this point is reached, 
 	 * the test fails. */
-	if(raise(SIGSEGV) != 0)
+	if (raise(SIGSEGV) != 0)
 	{
 		perror("Error in raise()\n");
 		return PTS_UNRESOLVED;

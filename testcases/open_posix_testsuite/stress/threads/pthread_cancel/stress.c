@@ -101,7 +101,7 @@ void * th( void * arg )
 	int ret = 0;
 	ret = pthread_barrier_wait( arg );
 
-	if ( ( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
+	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
 	{
 		UNRESOLVED( ret, "Failed to wait for the barrier" );
 	}
@@ -119,7 +119,7 @@ void * threaded( void * arg )
 	/* Initialize the barrier */
 	ret = pthread_barrier_init( arg, NULL, 2 );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to initialize a barrier" );
 	}
@@ -130,7 +130,7 @@ void * threaded( void * arg )
 		/* Create the thread */
 		ret = pthread_create( &child, NULL, th, arg );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Thread creation failed" );
 		}
@@ -139,7 +139,7 @@ void * threaded( void * arg )
 		/* Synchronize */
 		ret = pthread_barrier_wait( arg );
 
-		if ( ( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
+		if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
 		{
 			UNRESOLVED( ret, "Failed to wait for the barrier" );
 		}
@@ -148,7 +148,7 @@ void * threaded( void * arg )
 		/* Cancel the thread */
 		ret = pthread_cancel( child );
 
-		if ( ret == 0 )
+		if (ret == 0 )
 			canceled++;
 		else
 			ended++;
@@ -156,7 +156,7 @@ void * threaded( void * arg )
 		/* Join the thread */
 		ret = pthread_join( child, NULL );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Unable to join the child" );
 		}
@@ -167,7 +167,7 @@ void * threaded( void * arg )
 	/* Destroy the barrier */
 	ret = pthread_barrier_destroy( arg );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to destroy a barrier" );
 	}
@@ -196,12 +196,12 @@ int main ( int argc, char *argv[] )
 
 	sa.sa_handler = sighdl;
 
-	if ( ( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
 
-	if ( ( ret = sigaction ( SIGALRM, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ) )
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
@@ -215,7 +215,7 @@ int main ( int argc, char *argv[] )
 	{
 		ret = pthread_create( &th[ i ], NULL, threaded, &b[ i ] );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to create a thread" );
 		}
@@ -231,7 +231,7 @@ int main ( int argc, char *argv[] )
 	{
 		ret = pthread_join( th[ i ], NULL );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "Failed to join a thread" );
 		}
