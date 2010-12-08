@@ -115,14 +115,14 @@ int main(int argc, char * argv[])
 	}
 
 	/* Size the memory segment to 1 page size. */
-	ret = ftruncate(fd_s, sysconf(_SC_PAGESIZE) );
+	ret = ftruncate(fd_s, sysconf(_SC_PAGESIZE));
 
 	if (ret != 0)
 	{
 		UNRESOLVED(errno, "Failed to size the shared memory segment");
 	}
 
-	ret = ftruncate(fd_ns, sysconf(_SC_PAGESIZE) );
+	ret = ftruncate(fd_ns, sysconf(_SC_PAGESIZE));
 
 	if (ret != 0)
 	{
@@ -163,7 +163,7 @@ int main(int argc, char * argv[])
 	{
 		/* Check the values are read -- so that the mappings were inherited */
 
-		if ((*(long *) buf_ns != 123456L) || (*(long *) buf_s != 654321L) )
+		if ((*(long *) buf_ns != 123456L) || (*(long *) buf_s != 654321L))
 		{
 			output("Read values: %ld, %ld\n", *(long *) buf_ns, *(long *) buf_s);
 			FAILED("The memory mappings were not inherited by the child process");
@@ -186,13 +186,13 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}
 
 	/* Check that only the MAP_SHARED segment modification is visible */
-	if ((*(long *) buf_ns != 123456L) || (*(long *) buf_s != 200000L) )
+	if ((*(long *) buf_ns != 123456L) || (*(long *) buf_s != 200000L))
 	{
 		output("Read values: %ld, %ld\n", *(long *) buf_ns, *(long *) buf_s);
 		FAILED("The memory mappings were not inherited by the child process");

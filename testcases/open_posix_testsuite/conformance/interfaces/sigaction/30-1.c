@@ -128,7 +128,7 @@ int main()
 	if (errno != EINVAL)
 	{
 		output("Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror(errno), EINVAL, strerror(EINVAL) );
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
 		FAILED("Wrong error code returned");
 	}
 
@@ -147,7 +147,7 @@ int main()
 	if (errno != EINVAL)
 	{
 		output("Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror(errno), EINVAL, strerror(EINVAL) );
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
 		FAILED("Wrong error code returned");
 	}
 
@@ -166,7 +166,7 @@ int main()
 	if (errno != EINVAL)
 	{
 		output("Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror(errno), EINVAL, strerror(EINVAL) );
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
 		FAILED("Wrong error code returned");
 	}
 
@@ -187,7 +187,7 @@ int main()
 	if (errno != EINVAL)
 	{
 		output("Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror(errno), EINVAL, strerror(EINVAL) );
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
 		FAILED("Wrong error code returned");
 	}
 
@@ -206,7 +206,7 @@ int main()
 	if (errno != EINVAL)
 	{
 		output("Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror(errno), EINVAL, strerror(EINVAL) );
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
 		FAILED("Wrong error code returned");
 	}
 

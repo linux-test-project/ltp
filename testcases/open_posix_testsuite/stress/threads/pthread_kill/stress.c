@@ -111,12 +111,12 @@ void * flood_receiver(void *arg)
 	sa.sa_flags = 0;
 	sa.sa_handler = floodsighdl;
 
-	if ((ret = sigaction (SIGABRT, &sa, NULL) ))
+	if ((ret = sigaction (SIGABRT, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGBUS, &sa, NULL) ))
+	if ((ret = sigaction (SIGBUS, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
@@ -187,7 +187,7 @@ void * sync_rec(void * arg)
 	sa.sa_flags = 0;
 	sa.sa_handler = syncsighdl;
 
-	if ((ret = sigaction (SIGILL, &sa, NULL) ))
+	if ((ret = sigaction (SIGILL, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
@@ -259,12 +259,12 @@ int main (int argc, char * argv[])
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL) ))
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL) ))
+	if ((ret = sigaction (SIGALRM, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}

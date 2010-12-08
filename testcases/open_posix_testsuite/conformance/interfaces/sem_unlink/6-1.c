@@ -96,7 +96,7 @@ int main(int argc, char * argv[])
 	/* Create the semaphore */
 	sem1 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);
 
-	if ((sem1 == SEM_FAILED) && (errno == EEXIST) )
+	if ((sem1 == SEM_FAILED) && (errno == EEXIST))
 	{
 		sem_unlink(SEM_NAME);
 		sem1 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);
@@ -125,7 +125,7 @@ int main(int argc, char * argv[])
 
 	if (errno != ENOENT)
 	{
-		output("Error %d: %s\n", errno, strerror(errno) );
+		output("Error %d: %s\n", errno, strerror(errno));
 		FAILED("Reconnecting the unlinked semaphore failed with a wrong error");
 	}
 
@@ -134,7 +134,7 @@ int main(int argc, char * argv[])
 
 	if (sem2 == SEM_FAILED)
 	{
-		output("Gor error %d: %s\n", errno, strerror(errno) );
+		output("Gor error %d: %s\n", errno, strerror(errno));
 		FAILED("Failed to recreate the semaphore");
 	}
 

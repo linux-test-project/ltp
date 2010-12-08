@@ -151,7 +151,7 @@ void * threaded (void * arg)
 #if VERBOSE > 0
 		output("Setting to a wrong priority failed with error %d (%s).\n",
 		        ret,
-		        strerror(ret) );
+		        strerror(ret));
 	}
 	else
 	{

@@ -100,8 +100,8 @@ int set_nonroot()
 	setpwent();
 	/* search for the first user which is non root */
 
-	while (( pw = getpwent()) != NULL)
-		if (strcmp(pw->pw_name, "root") )
+	while ((pw = getpwent()) != NULL)
+		if (strcmp(pw->pw_name, "root"))
 			break;
 
 	endpwent();
@@ -145,7 +145,7 @@ int main(int argc, char * argv[])
 	/* Create the semaphore */
 	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0744, 1);
 
-	if ((sem == SEM_FAILED) && (errno == EEXIST) )
+	if ((sem == SEM_FAILED) && (errno == EEXIST))
 	{
 		sem_unlink(SEM_NAME);
 		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0744, 1);
@@ -159,19 +159,19 @@ int main(int argc, char * argv[])
 	/* fork */
 	ch = fork();
 
-	if (ch == (pid_t) - 1)
+	if (ch == -1)
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
-	if (ch == (pid_t) 0)         /* child */
+	if (ch == 0)         /* child */
 	{
 		/* connect to the semaphore */
 		sem = sem_open(SEM_NAME, 0);
 
 		if (sem == SEM_FAILED)
 		{
-			output("Failed to connect to the semaphore, error %d: %s\n", errno, strerror(errno) );
+			output("Failed to connect to the semaphore, error %d: %s\n", errno, strerror(errno));
 			exit(1);
 		}
 
@@ -195,7 +195,7 @@ int main(int argc, char * argv[])
 
 		if (errno != EACCES)
 		{
-			output("sem_unlink failed with unexpected error %d: %s\n", errno, strerror(errno) );
+			output("sem_unlink failed with unexpected error %d: %s\n", errno, strerror(errno));
 			exit(2);
 		}
 
@@ -211,7 +211,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (!WIFEXITED(status) )
+	if (!WIFEXITED(status))
 	{
 		FAILED("Child exited abnormally");
 	}

@@ -177,7 +177,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}

@@ -102,7 +102,7 @@ int main(int argc, char * argv[])
 		UNTESTED("There is no constraint on SEM_NSEMS_MAX");
 	}
 
-	sems = (sem_t *) calloc(max, sizeof(sem_t) );
+	sems = (sem_t *) calloc(max, sizeof(sem_t));
 
 	if (sems == NULL)
 	{
@@ -118,10 +118,10 @@ int main(int argc, char * argv[])
 		{
 			output("sem_init failed to initialize the %d nth semaphore.\n", i);
 			output("Tryed to initialize %ld.\n", max);
-			output("Error is %d: %s\n", errno, strerror(errno) );
+			output("Error is %d: %s\n", errno, strerror(errno));
 
 			for (; i > 0; i--)
-				sem_destroy(&sems[ i - 1 ]);
+				sem_destroy(&sems[ i -1 ]);
 
 			free(sems);
 
@@ -138,7 +138,7 @@ int main(int argc, char * argv[])
 
 	if (errno != ENOSPC)
 	{
-		output("Error is %d: %s\n", errno, strerror(errno) );
+		output("Error is %d: %s\n", errno, strerror(errno));
 	}
 
 	for (i = 0; i < max; i++)

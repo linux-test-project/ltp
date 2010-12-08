@@ -284,7 +284,7 @@ void scenar_init()
 #endif
 
 		/* Stack related attributes */
-		if ((tss > 0) && (tsa > 0) )     /* This routine is dependent on the Thread Stack Address Attribute
+		if ((tss > 0) && (tsa > 0))     /* This routine is dependent on the Thread Stack Address Attribute
 															                   and Thread Stack Size Attribute options */
 		{
 
@@ -454,7 +454,7 @@ int main (int argc, char *argv[])
 				}
 				else
 				{
-					output("Thread creation failed with the error: %s\n", strerror(ret) );
+					output("Thread creation failed with the error: %s\n", strerror(ret));
 				}
 
 #endif

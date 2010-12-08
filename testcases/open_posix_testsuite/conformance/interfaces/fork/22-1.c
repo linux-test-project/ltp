@@ -93,7 +93,7 @@ int main(int argc, char * argv[])
 	ctp = sysconf(_SC_CPUTIME);
 	ctt = sysconf(_SC_THREAD_CPUTIME);
 
-	if ((ctp == -1) && (ctt == -1) )
+	if ((ctp == -1) && (ctt == -1))
 	{
 		UNTESTED("The testcase needs CPUTIME or THREAD_CPUTIME support");
 	}
@@ -216,7 +216,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}

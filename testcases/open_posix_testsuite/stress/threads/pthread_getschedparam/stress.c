@@ -152,7 +152,7 @@ void * rt_thread(void * arg)
 	/* This thread does almost nothing but wait... */
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "Failed to wait for barrier");
 	}
@@ -196,12 +196,12 @@ int main (int argc, char * argv[])
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL) ))
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL) ))
+	if ((ret = sigaction (SIGALRM, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
@@ -310,7 +310,7 @@ int main (int argc, char * argv[])
 	/* Join the barrier to terminate the RT threads */
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "Failed to wait for the barrier");
 	}

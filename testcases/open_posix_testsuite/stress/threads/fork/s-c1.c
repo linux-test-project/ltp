@@ -142,7 +142,7 @@ int main (int argc, char *argv[])
 	if (CHILD_MAX > 0)
 		my_max = CHILD_MAX;
 
-	pr = (pid_t *) calloc(1 + my_max, sizeof(pid_t) );
+	pr = (pid_t *) calloc(1 + my_max, sizeof(pid_t));
 
 	if (pr == NULL)
 	{
@@ -196,7 +196,7 @@ int main (int argc, char *argv[])
 
 		if (pr[ nprocesses ] == (pid_t) - 1)
 		{
-			if ((errno == EAGAIN) || (errno == ENOMEM) )
+			if ((errno == EAGAIN) || (errno == ENOMEM))
 			{
 				break;
 			}
@@ -209,7 +209,7 @@ int main (int argc, char *argv[])
 				{
 					ret = sem_post(sem_ending);
 				}
-				while (( ret != 0) && (errno == EINTR) );
+				while ((ret != 0) && (errno == EINTR));
 
 				if (ret != 0)
 					output("Failed to post the semaphore on termination: error %d\n", errno);
@@ -227,7 +227,7 @@ int main (int argc, char *argv[])
 			{
 				ret = sem_post(sem_synchro);
 			}
-			while (( ret != 0) && (errno == EINTR) );
+			while ((ret != 0) && (errno == EINTR));
 
 			if (ret != 0)
 			{
@@ -240,7 +240,7 @@ int main (int argc, char *argv[])
 			{
 				ret = sem_wait(sem_ending);
 			}
-			while (( ret != 0) && (errno == EINTR) );
+			while ((ret != 0) && (errno == EINTR));
 
 			if (ret != 0)
 			{
@@ -252,7 +252,7 @@ int main (int argc, char *argv[])
 			{
 				ret = sem_post(sem_ending);
 			}
-			while (( ret != 0) && (errno == EINTR) );
+			while ((ret != 0) && (errno == EINTR));
 
 			if (ret != 0)
 			{
@@ -287,7 +287,7 @@ int main (int argc, char *argv[])
 		{
 			ret = sem_wait(sem_synchro);
 		}
-		while (( ret == -1) && (errno == EINTR) );
+		while ((ret == -1) && (errno == EINTR));
 
 		if (ret == -1)
 		{
@@ -304,10 +304,10 @@ int main (int argc, char *argv[])
 		}
 
 		/* add to the measure list if nprocesses % resolution == 0 */
-		if ((( nprocesses % RESOLUTION) == 0) && (nprocesses != 0) )
+		if (((nprocesses % RESOLUTION) == 0) && (nprocesses != 0))
 		{
 			/* Create an empty new element */
-			m_tmp = (mes_t *) malloc(sizeof(mes_t) );
+			m_tmp = (mes_t *) malloc(sizeof(mes_t));
 
 			if (m_tmp == NULL)
 			{
@@ -322,7 +322,7 @@ int main (int argc, char *argv[])
 
 			m_cur = m_cur->next;
 
-			m_cur->_data = (( ts_fin.tv_sec - ts_ref.tv_sec) * 1000000) + (( ts_fin.tv_nsec - ts_ref.tv_nsec) / 1000) ;
+			m_cur->_data = ((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000) + ((ts_fin.tv_nsec - ts_ref.tv_nsec) / 1000) ;
 
 #if VERBOSE > 5
 			output("Added the following measure: n=%i, v=%li\n", nprocesses, m_cur->_data);
@@ -346,7 +346,7 @@ int main (int argc, char *argv[])
 	{
 		ret = sem_post(sem_ending);
 	}
-	while (( ret != 0) && (errno == EINTR) );
+	while ((ret != 0) && (errno == EINTR));
 
 	if (ret != 0)
 	{
@@ -367,7 +367,7 @@ int main (int argc, char *argv[])
 			UNRESOLVED(errno, "Waitpid returned the wrong PID");
 		}
 
-		if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+		if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 		{
 			FAILED("Child exited abnormally");
 		}
@@ -430,7 +430,7 @@ int main (int argc, char *argv[])
  * The tested models are: -- X = # threads; Y = latency
  * -> Y = a;      -- Error is r1 = avg((Y - Yavg)²);
  * -> Y = aX + b; -- Error is r2 = avg((Y -aX -b)²);
- *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg(( X - Xavg)²)
+ *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg((X - Xavg)²)
  *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg)); 
  *                --                       and  _d = sum((X - Xavg)²);
  *                -- and   b = Yavg - a * Xavg
@@ -517,9 +517,9 @@ int parse_measure(mes_t * measures)
 		{
 			array_max = N;
 			Xavg += (double) cur->nprocess;
-			LnXavg += log(( double) cur->nprocess);
+			LnXavg += log((double) cur->nprocess);
 			Yavg += (double) cur->_data;
-			LnYavg += log(( double) cur->_data);
+			LnYavg += log((double) cur->_data);
 		}
 	}
 
@@ -540,7 +540,7 @@ int parse_measure(mes_t * measures)
 
 	/* We will now alloc the array ... */
 
-	Table = calloc(N, sizeof(struct row) );
+	Table = calloc(N, sizeof(struct row));
 
 	if (Table == NULL)
 	{
@@ -557,7 +557,7 @@ int parse_measure(mes_t * measures)
 		cur = cur->next;
 
 		Table[ N ].X = (long) cur->nprocess;
-		Table[ N ].LnX = log(( double) cur->nprocess);
+		Table[ N ].LnX = log((double) cur->nprocess);
 
 		if (array_max > N)
 		{
@@ -565,7 +565,7 @@ int parse_measure(mes_t * measures)
 			Table[ N ]._lnx = Table[ N ].LnX - LnXavg;
 			Table[ N ].Y = cur->_data;
 			Table[ N ]._y = Table[ N ].Y - Yavg ;
-			Table[ N ].LnY = log(( double) cur->_data);
+			Table[ N ].LnY = log((double) cur->_data);
 			Table[ N ]._lny = Table[ N ].LnY - LnYavg;
 		}
 
@@ -590,7 +590,7 @@ int parse_measure(mes_t * measures)
 #endif
 	for (r = 0; r < array_max; r++)
 	{
-		r1 += (( double) Table[ r ]._y / array_max) * (double) Table[ r ]._y;
+		r1 += ((double) Table[ r ]._y / array_max) * (double) Table[ r ]._y;
 
 		_q[ 0 ] += Table[ r ]._y * Table[ r ]._x;
 		_d[ 0 ] += Table[ r ]._x * Table[ r ]._x;
@@ -615,7 +615,7 @@ int parse_measure(mes_t * measures)
 	for (r = 0; r < array_max; r++)
 	{
 		/* r2 = avg((y - ax -b)²);  t = (y - ax - b) = (y - yavg) - a (x - xavg); */
-		t = (Table[ r ]._y - (( _q[ 0 ] * Table[ r ]._x) / _d[ 0 ]) );
+		t = (Table[ r ]._y - ((_q[ 0 ] * Table[ r ]._x) / _d[ 0 ]));
 		r2 += t * t / array_max ;
 
 		/* r3 = avg((y - c.x^a) ²);
@@ -624,7 +624,7 @@ int parse_measure(mes_t * measures)
 		*/
 		t = (Table[ r ].Y
 		      - (logl (LnYavg - (_q[ 1 ] / _d[ 1 ]) * LnXavg)
-		          * powl(Table[ r ].X, (_q[ 1 ] / _d[ 1 ]) )
+		          * powl(Table[ r ].X, (_q[ 1 ] / _d[ 1 ]))
 		        ));
 		r3 += t * t / array_max ;
 
@@ -634,7 +634,7 @@ int parse_measure(mes_t * measures)
 		      = y - exp(_q[2]/_d[2] * (x - Xavg) + LnYavg);
 		*/
 		t = (Table[ r ].Y
-		      - expl(( _q[ 2 ] / _d[ 2 ]) * Table[ r ]._x + LnYavg) );
+		      - expl((_q[ 2 ] / _d[ 2 ]) * Table[ r ]._x + LnYavg));
 		r4 += t * t / array_max ;
 
 	}
@@ -658,7 +658,7 @@ int parse_measure(mes_t * measures)
 
 	output("       a = %Lg\n", _q[ 0 ] / _d[ 0 ]);
 
-	output("       b = %Lg\n", Yavg - (( _q[ 0 ] / _d[ 0 ]) * Xavg) );
+	output("       b = %Lg\n", Yavg - ((_q[ 0 ] / _d[ 0 ]) * Xavg));
 
 	output("    Divergence %g\n", r2);
 
@@ -666,7 +666,7 @@ int parse_measure(mes_t * measures)
 
 	output("       a = %Lg\n", _q[ 1 ] / _d[ 1 ]);
 
-	output("       c = %Lg\n", logl (LnYavg - (_q[ 1 ] / _d[ 1 ]) * LnXavg) );
+	output("       c = %Lg\n", logl (LnYavg - (_q[ 1 ] / _d[ 1 ]) * LnXavg));
 
 	output("    Divergence %g\n", r2);
 
@@ -674,7 +674,7 @@ int parse_measure(mes_t * measures)
 
 	output("       a = %Lg\n", _q[ 2 ] / _d[ 2 ]);
 
-	output("       b = %Lg\n", LnYavg - (( _q[ 2 ] / _d[ 2 ]) * Xavg) );
+	output("       b = %Lg\n", LnYavg - ((_q[ 2 ] / _d[ 2 ]) * Xavg));
 
 	output("    Divergence %g\n", r2);
 
@@ -684,7 +684,7 @@ int parse_measure(mes_t * measures)
 	{
 		/* Compare r1 to other values, with some ponderations */
 
-		if ((r1 > 1.1 * r2) || (r1 > 1.2 * r3) || (r1 > 1.3 * r4) )
+		if ((r1 > 1.1 * r2) || (r1 > 1.2 * r3) || (r1 > 1.3 * r4))
 			ret++;
 
 #if VERBOSE > 1

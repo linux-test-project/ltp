@@ -101,7 +101,7 @@ void * th(void * arg)
 	int ret = 0;
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "Failed to wait for the barrier");
 	}
@@ -139,7 +139,7 @@ void * threaded(void * arg)
 		/* Synchronize */
 		ret = pthread_barrier_wait(arg);
 
-		if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+		if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 		{
 			UNRESOLVED(ret, "Failed to wait for the barrier");
 		}
@@ -196,12 +196,12 @@ int main (int argc, char *argv[])
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL) ))
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL) ))
+	if ((ret = sigaction (SIGALRM, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}

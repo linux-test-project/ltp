@@ -383,7 +383,7 @@ if (ret == ENOMEM)  break;
  * The tested models are: -- X = # threads; Y = latency
  * -> Y = a;      -- Error is r1 = avg((Y - Yavg)²);
  * -> Y = aX + b; -- Error is r2 = avg((Y -aX -b)²);
- *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg(( X - Xavg)²)
+ *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg((X - Xavg)²)
  *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg)); 
  *                --                       and  _d = sum((X - Xavg)²);
  *                -- and   b = Yavg - a * Xavg
@@ -590,7 +590,7 @@ int parse_measure(mes_t * measures)
 			      = y - exp(_q[2]/_d[2] * (x - Xavg) + LnYavg);
 			*/
 			t = (   Table[r].Y[i]
-			      - expl(( _q[2][i] / _d[2][i]) * Table[r]._x[i] + LnYavg[i]) );
+			      - expl((_q[2][i] / _d[2][i]) * Table[r]._x[i] + LnYavg[i]));
 			r4[i] += t * t / array_max[i] ;
 			
 		}

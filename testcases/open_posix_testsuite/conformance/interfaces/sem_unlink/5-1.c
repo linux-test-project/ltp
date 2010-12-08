@@ -109,7 +109,7 @@ int main(int argc, char * argv[])
 	if (PATH_MAX > 0)
 	{
 		/* create a semaphore with a name longer than PATH_MAX */
-		sem_name = calloc(PATH_MAX + 1, sizeof(char) );
+		sem_name = calloc(PATH_MAX + 1, sizeof(char));
 
 		if (sem_name == NULL)
 		{
@@ -121,7 +121,7 @@ int main(int argc, char * argv[])
 
 		sem_name[ PATH_MAX ] = '\0';
 
-		memset(sem_name + 1, 'P', PATH_MAX - 1);
+		memset(sem_name + 1, 'P', PATH_MAX -1);
 
 		/* Create the semaphore */
 		sem = sem_open(sem_name, O_CREAT, 0777, 1);
@@ -138,7 +138,7 @@ int main(int argc, char * argv[])
 			}
 			else
 			{
-				output("Error was %d: %s\n", error, strerror(error) );
+				output("Error was %d: %s\n", error, strerror(error));
 				FAILED("Unable to unlink a semaphore which we just created");
 			}
 		}
@@ -146,7 +146,7 @@ int main(int argc, char * argv[])
 #if VERBOSE > 0
 		else
 		{
-			output("Creation of the semaphore failed with error %d: %s\n", errno, strerror(errno) );
+			output("Creation of the semaphore failed with error %d: %s\n", errno, strerror(errno));
 		}
 
 #endif
@@ -164,7 +164,7 @@ int main(int argc, char * argv[])
 	if (NAME_MAX > 0)
 	{
 		/* create a semaphore with a name longer than NAME_MAX */
-		sem_name = calloc(NAME_MAX + 2, sizeof(char) );
+		sem_name = calloc(NAME_MAX + 2, sizeof(char));
 
 		if (sem_name == NULL)
 		{
@@ -193,7 +193,7 @@ int main(int argc, char * argv[])
 			}
 			else
 			{
-				output("Error was %d: %s\n", error, strerror(error) );
+				output("Error was %d: %s\n", error, strerror(error));
 				FAILED("Unable to unlink a semaphore which we just created");
 			}
 		}
@@ -201,7 +201,7 @@ int main(int argc, char * argv[])
 #if VERBOSE > 0
 		else
 		{
-			output("Creation of the semaphore failed with error %d: %s\n", errno, strerror(errno) );
+			output("Creation of the semaphore failed with error %d: %s\n", errno, strerror(errno));
 		}
 
 #endif

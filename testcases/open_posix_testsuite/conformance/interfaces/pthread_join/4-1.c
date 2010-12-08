@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					output("Thread creation failed with the error: %s\n", strerror(ret) );
+					output("Thread creation failed with the error: %s\n", strerror(ret));
 				}
 
 #endif

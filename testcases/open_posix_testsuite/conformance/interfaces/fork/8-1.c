@@ -105,7 +105,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "times failed");
 	}
 
-	if ((ini_tms.tms_cutime != 0) || (ini_tms.tms_cstime != 0) )
+	if ((ini_tms.tms_cutime != 0) || (ini_tms.tms_cstime != 0))
 	{
 		FAILED("The process is created with non-zero tms_cutime or tms_cstime");
 	}
@@ -125,7 +125,7 @@ int main(int argc, char * argv[])
 			UNRESOLVED(errno, "times failed");
 		}
 	}
-	while (( cur_time - st_time) < sysconf(_SC_CLK_TCK) );
+	while ((cur_time - st_time) < sysconf(_SC_CLK_TCK));
 
 #if VERBOSE > 1
 
@@ -135,7 +135,7 @@ int main(int argc, char * argv[])
 	        (long) (cur_time - st_time),
 	        (long) (parent_tms.tms_utime - ini_tms.tms_utime),
 	        (long) (parent_tms.tms_stime - ini_tms.tms_stime),
-	        sysconf(_SC_CLK_TCK) );
+	        sysconf(_SC_CLK_TCK));
 
 #endif
 
@@ -158,7 +158,7 @@ int main(int argc, char * argv[])
 			UNRESOLVED(errno, "times failed");
 		}
 
-		if (child_tms.tms_utime + child_tms.tms_stime >= sysconf(_SC_CLK_TCK) )
+		if (child_tms.tms_utime + child_tms.tms_stime >= sysconf(_SC_CLK_TCK))
 		{
 			FAILED("The tms struct was not reset during fork() operation");
 		}
@@ -172,7 +172,7 @@ int main(int argc, char * argv[])
 				UNRESOLVED(errno, "times failed");
 			}
 		}
-		while (( child_tms.tms_utime + child_tms.tms_stime) <= 0);
+		while ((child_tms.tms_utime + child_tms.tms_stime) <= 0);
 
 		/* We're done */
 		exit(PTS_PASS);
@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
 		;
 	}
 
-	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally")
 		;
@@ -217,7 +217,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "times failed");
 	}
 
-	if ((parent_tms.tms_cutime == 0) && (parent_tms.tms_cstime == 0) )
+	if ((parent_tms.tms_cutime == 0) && (parent_tms.tms_cstime == 0))
 	{
 		FAILED("The process is created with non-zero tms_cutime or tms_cstime");
 	}

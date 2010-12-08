@@ -174,13 +174,13 @@ void * threaded(void * arg)
 	/* fork */
 	child = fork();
 
-	if (child == (pid_t) - 1)
+	if (child == -1)
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 		if (nerrors)
 		{
@@ -199,7 +199,7 @@ void * threaded(void * arg)
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}

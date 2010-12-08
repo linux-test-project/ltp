@@ -121,7 +121,7 @@ void * controler (void * arg)
 	/* Wait until the policy has been changed. */
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -129,7 +129,7 @@ void * controler (void * arg)
 	/* check the thread attributes have been applied
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param(pthread_self(), SCHED_RR, sched_get_priority_min(SCHED_RR) );
+	check_param(pthread_self(), SCHED_RR, sched_get_priority_min(SCHED_RR));
 
 	return NULL;
 }
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 	/* let the controler control */
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}

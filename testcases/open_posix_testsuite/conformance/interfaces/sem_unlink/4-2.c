@@ -101,7 +101,7 @@ int main(int argc, char * argv[])
 
 	if (errno != ENOENT)
 	{
-		output("Error %d: %s\n", errno, strerror(errno) );
+		output("Error %d: %s\n", errno, strerror(errno));
 		FAILED("The error was not ENOENT");
 	}
 

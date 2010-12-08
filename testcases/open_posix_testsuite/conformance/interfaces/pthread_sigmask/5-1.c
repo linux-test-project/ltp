@@ -57,44 +57,44 @@ void *a_thread_func()
 	{
 		perror("Unexpected error while attempting to setup test "
 		        "pre-conditions");
-		pthread_exit(( void*) 1);
+		pthread_exit((void*) 1);
 	}
 
 	if (pthread_sigmask(SIG_SETMASK, &blocked_set, NULL) == -1)
 	{
 		perror("Unexpected error while attempting to use pthread_sigmask.\n");
-		pthread_exit(( void*) 1);
+		pthread_exit((void*) 1);
 	}
 
 	if (raise(SIGABRT) == -1)
 	{
 		perror("Unexpected error while attempting to setup test "
 		        "pre-conditions");
-		pthread_exit(( void*) 1);
+		pthread_exit((void*) 1);
 	}
 
 	if (handler_called)
 	{
 		printf("FAIL: Signal was not blocked\n");
-		pthread_exit(( void*) - 1);
+		pthread_exit((void*) - 1);
 	}
 
 	if (sigpending(&pending_set) == -1)
 	{
 		perror("Unexpected error while attempting to use sigpending\n");
-		pthread_exit(( void*) 1);
+		pthread_exit((void*) 1);
 	}
 
 	if (sigismember(&pending_set, SIGABRT) == -1)
 	{
 		perror("Unexpected error while attempting to use sigismember.\n");
-		pthread_exit(( void*) - 1);
+		pthread_exit((void*) - 1);
 	}
 
 	if (sigismember(&pending_set, SIGABRT) != 1)
 	{
 		perror("FAIL: sigismember did not return 1\n");
-		pthread_exit(( void*) 1);
+		pthread_exit((void*) 1);
 	}
 
 	sigemptyset(&blocked_set);
@@ -103,7 +103,7 @@ void *a_thread_func()
 	if (pthread_sigmask(SIG_SETMASK, &blocked_set, NULL) == -1)
 	{
 		perror("Unexpected error while attempting to use pthread_sigmask.\n");
-		pthread_exit(( void*) 1);
+		pthread_exit((void*) 1);
 	}
 
 	sched_yield();
@@ -111,10 +111,10 @@ void *a_thread_func()
 	if (!handler_called)
 	{
 		printf("FAIL: Old signal was not removed from mask.\n");
-		pthread_exit(( void*) - 1);
+		pthread_exit((void*) - 1);
 	}
 
-	pthread_exit(( void*) 0);
+	pthread_exit((void*) 0);
 	return NULL;
 
 }

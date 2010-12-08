@@ -124,11 +124,11 @@ void * threaded (void * arg)
 	/* check the thread attributes have been applied
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param(pthread_self(), SCHED_RR, sched_get_priority_min(SCHED_RR) );
+	check_param(pthread_self(), SCHED_RR, sched_get_priority_min(SCHED_RR));
 
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -137,7 +137,7 @@ void * threaded (void * arg)
 
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -145,11 +145,11 @@ void * threaded (void * arg)
 	/* Check the scheduling policy was changed
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param(pthread_self(), SCHED_FIFO, sched_get_priority_min(SCHED_FIFO) );
+	check_param(pthread_self(), SCHED_FIFO, sched_get_priority_min(SCHED_FIFO));
 
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -158,7 +158,7 @@ void * threaded (void * arg)
 
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -166,11 +166,11 @@ void * threaded (void * arg)
 	/* Check the scheduling parameter has been changed
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param(pthread_self(), SCHED_FIFO, sched_get_priority_max(SCHED_FIFO) );
+	check_param(pthread_self(), SCHED_FIFO, sched_get_priority_max(SCHED_FIFO));
 
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -245,12 +245,12 @@ int main(int argc, char *argv[])
 	/* Wait while the thread checks its policy
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param(child, SCHED_RR, sched_get_priority_min(SCHED_RR) );
+	check_param(child, SCHED_RR, sched_get_priority_min(SCHED_RR));
 
 
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
 
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -280,11 +280,11 @@ int main(int argc, char *argv[])
 	/* Wait while the thread checks its policy
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param(child, SCHED_FIFO, sched_get_priority_min(SCHED_FIFO) );
+	check_param(child, SCHED_FIFO, sched_get_priority_min(SCHED_FIFO));
 
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
 
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -314,11 +314,11 @@ int main(int argc, char *argv[])
 	/* The thread checks its priority
 	  (we only check what is reported, not the real behavior) 
 	 */
-	check_param(child, SCHED_FIFO, sched_get_priority_max(SCHED_FIFO) );
+	check_param(child, SCHED_FIFO, sched_get_priority_max(SCHED_FIFO));
 
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}

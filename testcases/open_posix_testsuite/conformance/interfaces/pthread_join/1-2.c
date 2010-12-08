@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					output("Thread creation failed with the error: %s\n", strerror(ret) );
+					output("Thread creation failed with the error: %s\n", strerror(ret));
 				}
 
 #endif
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
 
 			/* Now check that ts_pre <= ts_th <= ts_post */
 			if ((ts_th.tv_sec < ts_pre.tv_sec)
-			        || (( ts_th.tv_sec == ts_pre.tv_sec) && (ts_th.tv_nsec < ts_pre.tv_nsec) ))
+			        || ((ts_th.tv_sec == ts_pre.tv_sec) && (ts_th.tv_nsec < ts_pre.tv_nsec)))
 			{
 				output("Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec);
 				output("child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec);
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 			}
 
 			if ((ts_post.tv_sec < ts_th.tv_sec)
-			        || (( ts_post.tv_sec == ts_th.tv_sec) && (ts_post.tv_nsec < ts_th.tv_nsec) ))
+			        || ((ts_post.tv_sec == ts_th.tv_sec) && (ts_post.tv_nsec < ts_th.tv_nsec)))
 			{
 				output("Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec);
 				output("child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec);

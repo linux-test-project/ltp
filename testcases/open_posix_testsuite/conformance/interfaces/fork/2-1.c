@@ -132,7 +132,7 @@ int main(int argc, char * argv[])
 	output_init();
 
 	/* Initialize the memory pointer */
-	malloced = (void *) malloc(sysconf(_SC_PAGESIZE) );
+	malloced = (void *) malloc(sysconf(_SC_PAGESIZE));
 
 	if (malloced == NULL)
 	{
@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
 	{
 		/* Check the struct was copied */
 
-		if ((mystruct.one != 1) || (mystruct.two != 2) || (mystruct.three != 3) || (mystruct.four != (void *) 4) )
+		if ((mystruct.one != 1) || (mystruct.two != 2) || (mystruct.three != 3) || (mystruct.four != (void *) 4))
 		{
 			FAILED("The struct data was not copied to the child process");
 		}
@@ -232,14 +232,14 @@ int main(int argc, char * argv[])
 			UNRESOLVED(errno, "Unexpected return code from sigismember");
 		}
 
-		if ((( sa_child.sa_flags & SA_NOCLDSTOP) != SA_NOCLDSTOP)
+		if (((sa_child.sa_flags & SA_NOCLDSTOP) != SA_NOCLDSTOP)
 #ifndef WITHOUT_XOPEN
-		        || (( sa_child.sa_flags & SA_ONSTACK) != 0)
-		        || (( sa_child.sa_flags & SA_RESETHAND) != 0)
-		        || (( sa_child.sa_flags & SA_RESTART) != 0)
-		        || (( sa_child.sa_flags & SA_SIGINFO) != 0)
-		        || (( sa_child.sa_flags & SA_NOCLDWAIT) != 0)
-		        || (( sa_child.sa_flags & SA_NODEFER) != 0)
+		        || ((sa_child.sa_flags & SA_ONSTACK) != 0)
+		        || ((sa_child.sa_flags & SA_RESETHAND) != 0)
+		        || ((sa_child.sa_flags & SA_RESTART) != 0)
+		        || ((sa_child.sa_flags & SA_SIGINFO) != 0)
+		        || ((sa_child.sa_flags & SA_NOCLDWAIT) != 0)
+		        || ((sa_child.sa_flags & SA_NODEFER) != 0)
 #endif
 		   )
 		{
@@ -258,7 +258,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (!WIFEXITED(status) )
+	if (!WIFEXITED(status))
 	{
 		UNRESOLVED(status, "Child exited abnormally");
 	}

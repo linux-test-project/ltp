@@ -93,7 +93,7 @@ void * threaded(void * arg)
 	{
 		ret = sem_wait(sem);
 	}
-	while (( ret != 0) && (errno == EINTR) );
+	while ((ret != 0) && (errno == EINTR));
 
 	if (ret != 0)
 	{
@@ -153,7 +153,7 @@ int main(int argc, char * argv[])
 	{
 		ret = sem_post(sem);
 	}
-	while (( ret != 0) && (errno == EINTR) );
+	while ((ret != 0) && (errno == EINTR));
 
 	if (ret != 0)
 	{
@@ -178,7 +178,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}

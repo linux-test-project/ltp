@@ -63,11 +63,11 @@ void *a_thread_func()
 	if (test_failed != 0)
 	{
 		printf("Old set is invalid.\n");
-		pthread_exit(( void*) - 1);
+		pthread_exit((void*) - 1);
 	}
 
 	printf("Test PASSED: oactl did contain all signals that were added to the signal mask.\n");
-	pthread_exit(( void*) 0);
+	pthread_exit((void*) 0);
 
 	/* To please some compilers */
 	return NULL;

@@ -194,7 +194,7 @@ int main()
 
 	/* Register the signal handler with signal */
 
-	if (SIG_ERR == signal(SIGNAL, handler_1) )
+	if (SIG_ERR == signal(SIGNAL, handler_1))
 	{
 		UNRESOLVED(errno, "Failed to register signal handler with signal()");
 	}

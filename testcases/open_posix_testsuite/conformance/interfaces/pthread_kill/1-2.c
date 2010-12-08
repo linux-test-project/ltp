@@ -91,7 +91,7 @@ void handler(int sig)
 {
 	handler_called = sig;
 
-	if (!pthread_equal(pthread_self(), ch) )
+	if (!pthread_equal(pthread_self(), ch))
 	{
 		FAILED("The signal handler was not trigged in the killed thread");
 	}
@@ -104,7 +104,7 @@ void * threaded(void * arg)
 
 	/* sleep up to 3 seconds */
 
-	while (( !handler_called) && (rebours--) )
+	while ((!handler_called) && (rebours--))
 		sleep(1);
 
 	/* quit */

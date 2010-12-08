@@ -129,7 +129,7 @@ void * threaded(void * arg)
 	/* Wait for all threads being created */
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD) )
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
 		UNRESOLVED(ret, "Barrier wait failed");
 	}
@@ -176,12 +176,12 @@ int main (int argc, char *argv[])
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL) ))
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL) ))
+	if ((ret = sigaction (SIGALRM, &sa, NULL)))
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}

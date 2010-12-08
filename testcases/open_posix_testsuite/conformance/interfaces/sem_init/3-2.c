@@ -110,7 +110,7 @@ int main(int argc, char * argv[])
 	}
 
 	/* Size the memory segment to 1 page size. */
-	ret = ftruncate(fd, sysconf(_SC_PAGESIZE) );
+	ret = ftruncate(fd, sysconf(_SC_PAGESIZE));
 
 	if (ret != 0)
 	{
@@ -138,13 +138,13 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == (pid_t) - 1)
+	if (child == -1)
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 		/* Post the sempahore */
 		ret = sem_post(sem);
@@ -163,7 +163,7 @@ int main(int argc, char * argv[])
 	{
 		ret = sem_wait(sem);
 	}
-	while (( ret != 0) && (errno == EINTR) );
+	while ((ret != 0) && (errno == EINTR));
 
 	if (ret != 0)
 	{
@@ -178,7 +178,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status) ) || (WEXITSTATUS(status) != PTS_PASS) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}
