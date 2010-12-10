@@ -306,7 +306,7 @@ kill11 ulimit -c 1024;kill11
 kill12 kill12
 
 lchown01 lchown01
-lchown02 prep_create_link; lchown02
+lchown02 lchown02
 
 link01 symlink01 -T link01
 link02 link02

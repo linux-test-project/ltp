@@ -462,8 +462,8 @@ kill12 kill12
 
 lchown01 lchown01
 lchown01_16 lchown01_16
-lchown02 prep_create_link; lchown02
-lchown02_16 prep_create_link; lchown02_16
+lchown02  lchown02
+lchown02_16 lchown02_16
 
 link01 symlink01 -T link01
 link02 link02
