@@ -82,13 +82,14 @@
 # define _GNU_SOURCE
 #endif
 
-#include <errno.h>
-#include <sys/mount.h>
 #include <sys/types.h>
+#include <sys/mount.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <pwd.h>
+#include <assert.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <pwd.h>
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
@@ -97,7 +98,7 @@ static void help(void);
 static void setup(void);
 static void cleanup(void);
 static int test_rwflag(int, int);
-static void setup_uid(void);
+static int setup_uid(void);
 
 char *TCID = "mount03";		/* Test program identifier.    */
 int TST_TOTAL = 6;		/* Total number of test cases. */
@@ -106,13 +107,11 @@ extern char **environ;		/* pointer to this processes env */
 
 #define DEFAULT_FSTYPE	"ext2"
 #define TEMP_FILE	"temp_file"
-#define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define DIR_MODE	S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH
-#define SUID_MODE	S_ISUID|S_IRUSR|S_IXUSR|S_IXGRP|S_IXOTH
+#define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
+#define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)
+#define SUID_MODE	(S_ISUID|S_IRUSR|S_IXUSR|S_IXGRP|S_IXOTH)
 
 static char *Fstype;
-
-static unsigned long Flag;
 
 static char mntpoint[20];
 static char *fstype;
@@ -129,18 +128,13 @@ static char testhome_path[PATH_MAX];	/* Test home Path                */
 static char file[PATH_MAX];	/* Temporary file                */
 static char cmd[] = "cp";
 
-static struct test_case_t {
-	char *rwflag_desc;	/* error description            */
-	unsigned long rwflag;	/* Expected error no            */
-	char *rwdesc;		/* rwflag                       */
-} testcases[] = {
-	{
-	"mount read-only", MS_RDONLY, "MS_RDONLY"}, {
-	"disallow access to device special files", MS_NODEV, "MS_NODEV"}, {
-	"disallow program execution", MS_NOEXEC, "MS_NOEXEC"}, {
-	"writes are synced at once", MS_SYNCHRONOUS, "MS_SYNCHRONOUS"}, {
-	"alter flags of a mounted FS", MS_RDONLY, "MS_REMOUNT"}, {
-	"ignore suid and sgid bits", MS_NOSUID, "MS_NOSUID"}
+long rwflags[] = {
+	MS_RDONLY,
+	MS_NODEV,
+	MS_NOEXEC,
+	MS_SYNCHRONOUS,
+	MS_RDONLY,
+	MS_NOSUID,
 };
 
 static option_t options[] = {	/* options supported by mount03 test */
@@ -155,16 +149,14 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
+
 	/* Check for mandatory option of the testcase */
 	if (!Dflag) {
-		tst_resm(TWARN, "You must specifiy the device used for "
-			 " mounting with -D option, Run '%s  -h' for option "
-			 " information.", TCID);
-		tst_exit();
+		tst_brkm(TBROK, NULL,
+		    "you must specify the device used for mounting with -D "
+		    "option");
 	}
 
 	if (Tflag) {
@@ -202,36 +194,28 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
-			Flag = testcases[i].rwflag;
 
 			/* Call mount(2) */
-			TEST(mount(device, mntpoint, Fstype, Flag, NULL));
+			TEST(mount(device, mntpoint, Fstype, rwflags[i], NULL));
 
 			/* check return code */
 			if (TEST_RETURN != 0) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "mount(2) failed errno = %d : "
-					 "%s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "mount(2) failed");
 				continue;
 			}
 
 			/* Validate the rwflag */
 			if (test_rwflag(i, lc) == 1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "mount(2) Failed while"
-					 " validating %s", testcases[i].rwdesc);
+				tst_resm(TFAIL, "mount(2) failed while"
+				    " validating %ld", rwflags[i]);
 			} else {
-				tst_resm(TPASS, "mount(2) Passed for rwflag"
-					 " %s - %s", testcases[i].rwdesc,
-					 testcases[i].rwflag_desc);
+				tst_resm(TPASS, "mount(2) passed with "
+				    "rwflag = %ld", rwflags[i]);
 			}
 			TEST(umount(mntpoint));
 			if (TEST_RETURN != 0) {
-				tst_brkm(TBROK, cleanup, "umount(2) failed to "
-					 "to umount %s errno = %d : %s",
-					 mntpoint, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_brkm(TBROK|TTERRNO, cleanup,
+				    "umount(2) failed for %s", mntpoint);
 			}
 		}		/* End of TEST CASE LOOPING. */
 	}			/* End for TEST_LOOPING */
@@ -239,8 +223,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
-
+	tst_exit();
 }				/* End main */
 
 /*
@@ -263,9 +246,9 @@ int test_rwflag(int i, int cnt)
 			if (errno == EROFS) {
 				return 0;
 			} else {
-				tst_resm(TWARN, "open(%s) failed with "
-					 " error %d instead EACCES",
-					 file, errno);
+				tst_resm(TWARN|TERRNO,
+				    "open(%s) didn't fail with errno = %d",
+				    file, EROFS);
 				return 1;
 			}
 		}
@@ -281,17 +264,16 @@ int test_rwflag(int i, int cnt)
 				if (errno == EACCES) {
 					return 0;
 				} else {
-					tst_resm(TWARN, "open(%s) "
-						 "failed  with error %d instead "
-						 "EACCES", file, errno);
+					tst_resm(TWARN|TERRNO,
+					    "open(%s) didn't fail with errno "
+					    "= %d", file, EACCES);
 					return 1;
 				}
 			}
 			close(fd);
 		} else {
-			tst_resm(TWARN, "mknod(2) failed to creat "
-				 "device %s errno = %d : %s", file,
-				 errno, strerror(errno));
+			tst_resm(TWARN|TERRNO, "mknod(2) failed to create %s",
+			    file);
 			return 1;
 		}
 		return 1;
@@ -300,18 +282,12 @@ int test_rwflag(int i, int cnt)
 
 		snprintf(file, PATH_MAX, "%stmp1", Path_name);
 		if ((fd = open(file, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
-			tst_resm(TWARN,
-				 "open() of %s failed with error" " %d : %s",
-				 file, errno, strerror(errno));
-			return 1;
+			tst_resm(TWARN|TERRNO, "opening %s failed", file); 
 		} else {
 			close(fd);
-			if (execve(file, NULL, NULL) == -1) {
-				return 0;
-			} else {
-				return 1;
-			}
+			execlp(file, basename(file), NULL);
 		}
+		return 1;
 	case 3:
 		/*
 		 * Validate MS_SYNCHRONOUS flag of mount call.
@@ -324,17 +300,16 @@ int test_rwflag(int i, int cnt)
 		snprintf(file, PATH_MAX, "%s%s", Path_name, TEMP_FILE);
 		if ((fildes = open(file, O_RDWR | O_CREAT, FILE_MODE))
 		    == -1) {
-			tst_resm(TWARN, "open(%s, O_RDWR | O_CREAT,"
-				 " %#o) Failed, errno=%d :%s",
-				 file, FILE_MODE, errno, strerror(errno));
+			tst_resm(TWARN|TERRNO,
+			    "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			    file, FILE_MODE);
 			return 1;
 		}
 
 		/* Write the buffer data into file */
 		if (write(fildes, write_buffer, strlen(write_buffer)) !=
 		    strlen(write_buffer)) {
-			tst_resm(TWARN, "write() failed to write buffer"
-				 " data to %s", file);
+			tst_resm(TWARN|TERRNO, "writing to %s failed", file);
 			close(fildes);
 			return 1;
 		}
@@ -350,9 +325,8 @@ int test_rwflag(int i, int cnt)
 		/* Read the contents of file */
 		if (read(fildes, read_buffer, sizeof(read_buffer)) > 0) {
 			if (strcmp(read_buffer, write_buffer)) {
-				tst_resm(TWARN, "Data read "
-					 "from %s doesn't match with"
-					 " written data", file);
+				tst_resm(TWARN, "Data read from %s and written "
+				    "mismatch", file);
 				close(fildes);
 				return 1;
 			} else {
@@ -360,8 +334,7 @@ int test_rwflag(int i, int cnt)
 				return 0;
 			}
 		} else {
-			tst_resm(TWARN, "read() Fails on %s, error=%d",
-				 file, errno);
+			tst_resm(TWARN|TERRNO, "read() Fails on %s", file);
 			close(fildes);
 			return 1;
 		}
@@ -371,9 +344,7 @@ int test_rwflag(int i, int cnt)
 
 		TEST(mount(device, mntpoint, Fstype, MS_REMOUNT, NULL));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN, "mount(2) Failed to remount "
-				 "errno = %d : %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TWARN|TTERRNO, "mount(2) failed to remount");
 			return 1;
 		} else {
 			snprintf(file, PATH_MAX, "%stmp2", Path_name);
@@ -390,26 +361,30 @@ int test_rwflag(int i, int cnt)
 	case 5:
 		/* Validate MS_NOSUID flag of mount call */
 
-		setup_uid();
-		if ((pid = fork()) == 0) {
+		if (setup_uid() != 0) {
+			tst_resm(TBROK|TERRNO, "setup_uid failed");
+			return 1;
+		}
+		switch (pid = fork()) {
+		case -1:
+			tst_resm(TBROK|TERRNO, "fork failed");
+			return 1;
+		case 0:
 			snprintf(file, PATH_MAX, "%ssetuid_test", Path_name);
 			if (chmod(file, SUID_MODE) != 0) {
-				tst_resm(TWARN, "chmod() failed to "
-					 "change mode  %d errno = %d : %s",
-					 4511, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TWARN, "chmod(%s, %#o) failed",
+				    file, SUID_MODE);
 			}
 
 			ltpuser = getpwnam(nobody_uid);
 			if (setreuid(ltpuser->pw_uid, ltpuser->pw_uid) == -1) {
-				tst_resm(TWARN, "seteuid() failed to "
-					 "change euid to %d errno = %d : %s",
-					 ltpuser->pw_uid, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TWARN|TERRNO,
+				    "seteuid() failed to change euid to %d",
+				    ltpuser->pw_uid);
 			}
-			execve(file, NULL, NULL);
-			/* NOT REACHEAD */
-		} else {
+			execlp(file, basename(file), NULL);
+			exit(1);
+		default:
 			waitpid(pid, &status, 0);
 			if (WIFEXITED(status)) {
 				/* reset the setup_uid */
@@ -424,17 +399,15 @@ int test_rwflag(int i, int cnt)
 }
 
 /* setup_uid() - performs setup for NOUID test */
-void setup_uid()
+int setup_uid()
 {
 	int pid, status;
 	char command[PATH_MAX];
 
 	switch (pid = fork()) {
 	case -1:
-		tst_resm(TWARN, "Unable to fork a child process"
-			 " to exec over!  Errno:%d, :%s",
-			 errno, strerror(errno));
-		break;
+		tst_resm(TWARN|TERRNO, "fork failed");
+		return 1;
 	case 0:
 		Cmd_buffer[0] = cmd;
 		Cmd_buffer[1] = testhome_path;
@@ -443,18 +416,25 @@ void setup_uid()
 		/* Put command into string */
 		sprintf(command, "%s %s %s", cmd, testhome_path, Path_name);
 
-		/*Run command to cp file to right spot */
-		system(command);
-
-		/* Must kill child */
-		execve(file, NULL, NULL);
-
-		/* execve("/bin/cp", Cmd_buffer, environ); */
-		exit(errno);
+		/* Run command to cp file to right spot */
+		if (system(command) == 0) {
+			execlp(file, basename(file), NULL);
+		} else {
+			printf("call to %s failed\n", command);
+		}
+		exit(1);
 	default:
 		waitpid(pid, &status, 0);
+		if (WIFEXITED(status)) {
+			return WEXITSTATUS(status);
+		} else if (WIFSIGNALED(status)) {
+			return WTERMSIG(status);
+		} else {
+			/* Should be 0. */
+			assert (status == 0);
+			return 0;
+		}
 	}
-	return;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
@@ -482,19 +462,16 @@ void setup()
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE)) {
-		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
-			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
+		    mntpoint, DIR_MODE);
 	}
 	/* Get the current working directory of the process */
 	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
+		tst_brkm(TBROK, cleanup, "getcwd failed");
 	}
 	if (chmod(Path_name, DIR_MODE) != 0) {
-		tst_brkm(TBROK, cleanup, "chmod() failed to change mode %#o "
-			 "errno = %d : %s", DIR_MODE, TEST_ERRNO,
-			 strerror(TEST_ERRNO));
+		tst_brkm(TBROK, cleanup, "chmod(%s, %#o) failed",
+		    Path_name, DIR_MODE);
 	}
 	snprintf(file, PATH_MAX, "%ssetuid_test", Path_name);
 	if (stat(file, &setuid_test_stat) < 0) {
@@ -505,8 +482,8 @@ void setup()
 			tst_brkm(TBROK, cleanup,
 					"chown for setuid_test failed");
 		}
-		if (setuid_test_stat.st_mode != 04511 &&
-		    chmod(file, 04511) < 0) {
+		if (setuid_test_stat.st_mode != SUID_MODE &&
+		    chmod(file, SUID_MODE) < 0) {
 			tst_brkm(TBROK, cleanup,
 					"setuid for setuid_test failed");
 		}
@@ -519,7 +496,6 @@ void setup()
 	snprintf(Path_name, PATH_MAX, "%s/%s/", Path_name, mntpoint);
 
 	strcpy(testhome_path, test_home);
-
 	strcat(testhome_path, "/setuid_test");
 
 	/* Pause if that option was specified */
@@ -543,9 +519,6 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it  */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
 
 /*
