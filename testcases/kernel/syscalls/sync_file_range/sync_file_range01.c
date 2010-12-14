@@ -269,7 +269,7 @@ int main(int ac,		/* number of command line parameters		      */
  /***************************************************************
 	      parse standard options$
   ********************************************************************/
-	if ((msg = parse_opts(ac, av, NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 #if defined(__powerpc__) || defined(__powerpc64__)	/* for PPC, kernel version > 2.6.21 needed */

@@ -228,7 +228,7 @@ int main(int ac, char **av)
      * parse standard options, and exit if there is an error
      * the -t and -f options not support yet.
      ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}

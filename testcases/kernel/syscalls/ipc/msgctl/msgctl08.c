@@ -122,7 +122,7 @@ char *argv[];
 
 	/* parse standard options */
 	if ((msg =
-	     parse_opts(argc, argv, NULL) {
+	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 

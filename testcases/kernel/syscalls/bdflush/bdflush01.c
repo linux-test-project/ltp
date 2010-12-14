@@ -152,28 +152,21 @@ int main(int ac, char **av) {
 	char *msg;	      /* message returned from parse_opts */
 	
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-	     tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
 	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(syscall(__NR_bdflush,0,data));	//bdflush(0,data);
-			if (TEST_RETURN < 0) {
-				tst_brkm(TFAIL|TTERRNO, cleanup, "Call to bdflush() failed");
-			} else {
-				tst_brkm(TPASS, cleanup,
-				    "bdflush() = %ld", TEST_RETURN);
-			}
-
-	
+	Tst_count = 1;
+	for (testno = 0; testno < TST_TOTAL; ++testno) {
+		TEST(syscall(__NR_bdflush, 0, data));
+		if (TEST_RETURN < 0) {
+			tst_brkm(TFAIL|TTERRNO, cleanup, "bdflush failed");
+		} else {
+			tst_resm(TPASS, "bdflush() = %ld", TEST_RETURN);
 		}
-		Tst_count++;
 	}
 	cleanup();
 	tst_exit();
 }
-

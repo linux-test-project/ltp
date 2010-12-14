@@ -113,11 +113,8 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 	int i;
-	uid_t user_id;
-	gid_t group_id;
-	char *test_desc;
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();

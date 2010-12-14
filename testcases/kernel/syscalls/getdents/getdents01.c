@@ -94,7 +94,7 @@ int main(int ac, char **av)
 #define getdents(arg1, arg2, arg3) syscall(__NR_getdents, arg1, arg2, arg3)
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 

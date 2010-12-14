@@ -116,7 +116,7 @@ int main(int ac, char **av)
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-	if ((ptr = parse_opts(ac, av, NULL) {
+	if ((ptr = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", ptr);
 		tst_exit();
 	}

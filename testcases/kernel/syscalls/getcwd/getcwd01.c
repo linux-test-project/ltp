@@ -94,7 +94,7 @@ int main(int ac, char **av)
 	char *msg;		/* parse_opts() return message */
 	char *test_erg;
 
-	if ((msg = parse_opts(ac, av, NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 	setup();

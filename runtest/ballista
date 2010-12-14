@@ -1,1 +1,0 @@
-ballista_test cd $LTPROOT/testcases/ballista/ballista; perl ostest_new.pl 75
