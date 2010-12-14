@@ -63,7 +63,7 @@
  * use sysconf(_SC_CRAY_SYSTEM).  But since _SC_CRAY_SYSTEM
  * is not defined until 90, it will be define here if not already
  * defined.
- * if ( sysconf(_SC_CRAY_SYSTEM) == 1 )
+ * if (sysconf(_SC_CRAY_SYSTEM) == 1)
  *    on UMK
  * else   # returned 0 or -1
  *    on Unicos
@@ -192,11 +192,7 @@ void tst_resm(int ttype, char *arg_fmt, ...)
 	__attribute__ ((format (printf, 2, 3)));
 void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	__attribute__ ((format (printf, 4, 5)));
-void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
-	__attribute__ ((format (printf, 4, 5)));
 void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
-	__attribute__ ((format (printf, 3, 4)));
-void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...)
 	__attribute__ ((format (printf, 3, 4)));
 void tst_require_root(void (*func)(void));
 int  tst_environ(void);
