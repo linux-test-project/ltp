@@ -33,12 +33,12 @@
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 
-int main(){
+int main() {
 
     struct timespec ts;
     sem_t mysemp;
 
-	if ( sem_init (&mysemp, 0, 0) == -1 ) {
+	if (sem_init (&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
@@ -46,7 +46,7 @@ int main(){
 	ts.tv_sec=time(NULL);
 	ts.tv_nsec=0;
 
-	while (sem_timedwait(&mysemp, &ts) == -1 )
+	while (sem_timedwait(&mysemp, &ts) == -1)
 	{
 		if (errno == ETIMEDOUT)  {
 			puts("TEST PASSED");

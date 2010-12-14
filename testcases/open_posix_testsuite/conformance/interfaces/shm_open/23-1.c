@@ -61,10 +61,10 @@ int child_func(void)
 	
 	sleep(1);
 	srand(time(NULL));	
-	for(i=0; i<NLOOP; i++){
+	for (i=0; i<NLOOP; i++) {
 		sprintf(name, SHM_NAME, i);
 		fd = shm_open(name, O_RDONLY|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-		if(fd != -1)
+		if (fd != -1)
 		{
 			sem_wait(sem);
 			//fprintf(stderr, "%d: %d\n", getpid(), *create_cnt);
@@ -85,7 +85,7 @@ int main() {
 
 	snprintf(semname, 20, "/sem23-1_%d", getpid());
 	sem = sem_open(semname, O_CREAT, 0777, 1);
-	if( sem == SEM_FAILED || sem == NULL ) {
+	if ( sem == SEM_FAILED || sem == NULL ) {
 		perror("error at sem_open");
 		return PTS_UNRESOLVED;
 	}
@@ -94,12 +94,12 @@ int main() {
 	result_fd = shm_open(SHM_RESULT_NAME, 
 			     O_RDWR|O_CREAT, 
 			     S_IRUSR|S_IWUSR);
-	if(result_fd == -1){
+	if (result_fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 	shm_unlink(SHM_RESULT_NAME);
-	if(ftruncate(result_fd, sizeof(*create_cnt)) != 0) {
+	if (ftruncate(result_fd, sizeof(*create_cnt)) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_RESULT_NAME);
 		return PTS_UNRESOLVED;	
@@ -107,7 +107,7 @@ int main() {
 
 	create_cnt = mmap(NULL, sizeof(*create_cnt), PROT_WRITE, 
 		MAP_SHARED, result_fd, 0);
-	if( create_cnt == MAP_FAILED) {
+	if ( create_cnt == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_RESULT_NAME);
 		return PTS_UNRESOLVED;	
@@ -115,12 +115,12 @@ int main() {
 
 	*create_cnt = 0;
 
-	for(i=0; i<NPROCESS; i++) {
+	for (i=0; i<NPROCESS; i++) {
 	        pid = fork();
-		if(pid == -1){
+		if (pid == -1) {
 			perror("An error occurs when calling fork()");
 			return PTS_UNRESOLVED;
-		} else if(pid == 0){
+		} else if (pid == 0) {
 			child_func();
 			exit(0);
 		}
@@ -128,13 +128,13 @@ int main() {
 
 	while (wait(NULL) > 0);
 	
-	for(i=0; i<NLOOP; i++){
+	for (i=0; i<NLOOP; i++) {
 		sprintf(name, SHM_NAME, i);
 		shm_unlink(name);
 	}	
 
 	fprintf(stderr, "create_cnt: %d\n", *create_cnt);
-	if(*create_cnt != NLOOP){
+	if (*create_cnt != NLOOP) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

@@ -177,7 +177,7 @@ int main (int argc, char * argv[])
 		printf(ts);
 	else
 		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
-	if ( ! WIFEXITED(status))
+	if (! WIFEXITED(status))
 	{
 		printf("The stress sample did not exit\n");
 		if (WIFSIGNALED(status))

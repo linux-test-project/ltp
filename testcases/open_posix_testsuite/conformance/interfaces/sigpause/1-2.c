@@ -55,7 +55,7 @@ int main()
 	pthread_t new_th;
 	int i;
 
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -69,7 +69,7 @@ int main()
 		}
 	}
 
-	if(pthread_kill(new_th, SIGTOTEST) != 0) 
+	if (pthread_kill(new_th, SIGTOTEST) != 0) 
 	{
 		printf("Test UNRESOLVED: Couldn't send signal to thread\n");
 		return PTS_UNRESOLVED;
@@ -77,7 +77,7 @@ int main()
 
 	sleep(1);
 
-	if(returned != 1) {
+	if (returned != 1) {
 		printf("Test FAILED: signal was sent, but sigpause never returned.\n");
 		return PTS_FAIL;
 	}

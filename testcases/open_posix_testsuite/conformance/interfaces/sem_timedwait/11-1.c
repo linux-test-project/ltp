@@ -38,33 +38,33 @@ int main() {
 	int val[2], sts[2];
 	int i;
 	
-	for ( i = 0; i < 2; i++ ) {
-        	if ( sem_init (&mysemp[i], 0, 1) == -1 ) {
+	for (i = 0; i < 2; i++) {
+        	if (sem_init (&mysemp[i], 0, 1) == -1) {
                 	perror(ERROR_PREFIX "sem_init");
 	                return PTS_UNRESOLVED;
        		}
-		if ( i == 0 ) {
+		if (i == 0) {
 			ts[i].tv_sec=time(NULL) + TIMEOUT;
 		        ts[i].tv_nsec=0;
-		} else if ( i == 1 ) {
+		} else if (i == 1) {
 			ts[i].tv_sec=time(NULL) + INVALIDTIMEOUT;
 		        ts[i].tv_nsec=0;
 		}
 	/* Lock Semaphore */
 		sts[i] = sem_timedwait(&mysemp[i], &ts[i]);
-        	if ( sts[i] == -1 ) {
+        	if (sts[i] == -1) {
 			perror(ERROR_PREFIX "sem_timedwait");
 			return PTS_UNRESOLVED; 
 		}
 
 	/* Value of Semaphore */
-		if( sem_getvalue(&mysemp[i], &val[i]) == -1 ) {
+		if ( sem_getvalue(&mysemp[i], &val[i]) == -1 ) {
 			perror(ERROR_PREFIX "sem_getvalue");
 			return PTS_UNRESOLVED;
 		}
 
 	/* Checking if the value of the Semaphore decremented by one */
-		if(( val[i] == 0 ) && ( sts[i] == 0)) {
+		if (( val[i] == 0 ) && ( sts[i] == 0)) {
 			puts("TEST PASSED");
 			sem_destroy(&mysemp[i]);
 			return PTS_PASS;

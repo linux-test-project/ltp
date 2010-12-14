@@ -134,7 +134,7 @@ int main( int argc, char * argv[] )
 	/* Initialize the memory pointer */
 	malloced = ( void * ) malloc( sysconf( _SC_PAGESIZE ) );
 
-	if ( malloced == NULL )
+	if (malloced == NULL)
 	{
 		UNRESOLVED( errno, "Unable to alloc memory" );
 	}
@@ -144,7 +144,7 @@ int main( int argc, char * argv[] )
 	/* Initialize an environment variable */
 	ret = setenv( "OPTS_FORK_TC", "2-1.c", 1 );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to set the environment variable" );
 	}
@@ -154,14 +154,14 @@ int main( int argc, char * argv[] )
 
 	ret = sigemptyset( &sa_ori.sa_mask );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "sigemptyset failed" );
 	}
 
 	ret = sigaddset( &sa_ori.sa_mask, SIGUSR2 );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "sigaddset failed" );
 	}
@@ -169,7 +169,7 @@ int main( int argc, char * argv[] )
 	sa_ori.sa_flags = SA_NOCLDSTOP;
 	ret = sigaction( SIGUSR1, &sa_ori, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to set the signal handler" );
 	}
@@ -177,23 +177,23 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1)
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0)
 	{
 		/* Check the struct was copied */
 
-		if ( ( mystruct.one != 1 ) || ( mystruct.two != 2 ) || ( mystruct.three != 3 ) || ( mystruct.four != ( void * ) 4 ) )
+		if (( mystruct.one != 1 ) || ( mystruct.two != 2 ) || ( mystruct.three != 3 ) || ( mystruct.four != ( void * ) 4 ))
 		{
 			FAILED( "The struct data was not copied to the child process" );
 		}
 
 		/* Check the malloc'ed memory is copied */
-		if ( *( double * ) malloced != 2.3 )
+		if (*( double * ) malloced != 2.3)
 		{
 			FAILED( "Malloc'd block not copied in child process" );
 		}
@@ -202,7 +202,7 @@ int main( int argc, char * argv[] )
 		free( malloced );
 
 		/* Check the env variable */
-		if ( strncmp( "2-1.c", getenv( "OPTS_FORK_TC" ), 6 ) != 0 )
+		if (strncmp( "2-1.c", getenv( "OPTS_FORK_TC" ), 6 ) != 0)
 		{
 			FAILED( "The environment is not copied to the child" );
 		}
@@ -210,29 +210,29 @@ int main( int argc, char * argv[] )
 		/* Check the signal handler stuff */
 		ret = sigaction( SIGUSR1, NULL, &sa_child );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Failed to read sigaction information in child" );
 		}
 
-		if ( sa_child.sa_handler != handler )
+		if (sa_child.sa_handler != handler)
 		{
 			FAILED( "The child signal handler function is different from the parent's" );
 		}
 
 		ret = sigismember( &sa_child.sa_mask, SIGUSR2 );
 
-		if ( ret == 0 )
+		if (ret == 0)
 		{
 			FAILED( "The child signal handler mask is different from the parent's" );
 		}
 
-		if ( ret != 1 )
+		if (ret != 1)
 		{
 			UNRESOLVED( errno, "Unexpected return code from sigismember" );
 		}
 
-		if ( ( ( sa_child.sa_flags & SA_NOCLDSTOP ) != SA_NOCLDSTOP )
+		if (( ( sa_child.sa_flags & SA_NOCLDSTOP ) != SA_NOCLDSTOP)
 #ifndef WITHOUT_XOPEN
 		        || ( ( sa_child.sa_flags & SA_ONSTACK ) != 0 )
 		        || ( ( sa_child.sa_flags & SA_RESETHAND ) != 0 )
@@ -253,17 +253,17 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child)
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( !WIFEXITED( status ) )
+	if (!WIFEXITED( status ))
 	{
 		UNRESOLVED( status, "Child exited abnormally" );
 	}
 
-	if ( WEXITSTATUS( status ) == PTS_PASS )
+	if (WEXITSTATUS( status ) == PTS_PASS)
 	{
 
 		/* Test passed */
@@ -274,7 +274,7 @@ int main( int argc, char * argv[] )
 		PASSED;
 	}
 
-	if ( WEXITSTATUS( status ) == PTS_FAIL )
+	if (WEXITSTATUS( status ) == PTS_FAIL)
 	{
 
 		/* Test failed */

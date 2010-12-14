@@ -30,7 +30,7 @@ int main()
 	int detach_state;
 
 	/* Initialize attribute */
-	if(pthread_attr_init(&new_attr) != 0)
+	if (pthread_attr_init(&new_attr) != 0)
 	{
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
@@ -39,13 +39,13 @@ int main()
 	/* The test passes if the attribute object has a detachstate of 
 	 * PTHREAD_CREATE_JOINABLE, which is the default value for this
 	 * attribute. */
-	if(pthread_attr_getdetachstate(&new_attr, &detach_state) != 0)
+	if (pthread_attr_getdetachstate(&new_attr, &detach_state) != 0)
 	{
 		perror("Error obtaining the detachstate of the attribute\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(detach_state == PTHREAD_CREATE_JOINABLE)
+	if (detach_state == PTHREAD_CREATE_JOINABLE)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;	

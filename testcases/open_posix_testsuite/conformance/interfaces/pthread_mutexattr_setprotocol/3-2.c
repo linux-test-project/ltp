@@ -28,11 +28,11 @@ int main()
 
 	/* Set the protocol to an invalid value. */
 	ret = pthread_mutexattr_setprotocol(&mta,PTHREAD_PRIO_NONE);
-	if(ret == EINVAL)
+	if (ret == EINVAL)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if (ret == 0){
+	} else if (ret == 0) {
 		printf("Test PASSED: NOTE*: Expected error code EINVAL, got %d, though standard states 'may' fail.\n", ret);
 		return PTS_PASS;
 	} else {

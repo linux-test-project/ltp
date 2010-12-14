@@ -43,7 +43,7 @@ void *a_thread_func()
 
 	/* Wait until main() has sent out a cancel request, meaning until it
 	 * sets sem1==INTHREAD. */
-	while(sem1==INMAIN)
+	while (sem1==INMAIN)
 		sleep(1);
 	
 	/* If the thread incorrectly honors the cancel request, then the cancel_flag will
@@ -67,7 +67,7 @@ int main()
 	cancel_flag=0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -75,10 +75,10 @@ int main()
 	
 	/* Make sure thread is created before we cancel it. (wait for 
 	 * a_thread_func() to set sem1=INMAIN.) */
-	while(sem1==INTHREAD)
+	while (sem1==INTHREAD)
 		sleep(1);
 
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		perror("Error sending cancel request\n");
 		return PTS_UNRESOLVED;
@@ -89,7 +89,7 @@ int main()
 	sem1=INTHREAD;
 
 	/* Wait for thread to end execution. */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -97,7 +97,7 @@ int main()
 	
 	/* This means that the cancel request was honored rather than ignored, and 
 	 * the test fails. */
-	if(cancel_flag <= 0)
+	if (cancel_flag <= 0)
 	{
 		printf("Test FAILED: pthread_testcancel() was honored even though cancelability was disabled.\n");
 		return PTS_FAIL;

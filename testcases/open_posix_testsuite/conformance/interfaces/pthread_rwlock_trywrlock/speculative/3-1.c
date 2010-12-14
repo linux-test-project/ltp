@@ -32,21 +32,21 @@ int main()
 	rc = pthread_rwlock_trywrlock(&rwlock);
 
 	/* Clean up before checking return value */
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
 	}	
 
-	if(rc != 0)
+	if (rc != 0)
 	{
-		if(rc == EINVAL)
+		if (rc == EINVAL)
 		{
 			printf("Test PASSED\n");
 			return PTS_PASS;

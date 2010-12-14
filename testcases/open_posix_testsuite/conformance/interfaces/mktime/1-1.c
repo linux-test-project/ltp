@@ -33,7 +33,7 @@ int main(void)
 
 	tps = mktime(&tm_ptr);
 
-	if (tps != -1){
+	if (tps != -1) {
 		printf("%s", ctime(&tps));
 		puts("TEST PASSED");
 		return PTS_PASS;

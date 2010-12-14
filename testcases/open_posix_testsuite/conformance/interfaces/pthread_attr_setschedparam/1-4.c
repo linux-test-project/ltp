@@ -42,14 +42,14 @@ void * thread(void *tmp)
 	int                    rc = 0;
 
 	rc = pthread_getschedparam(pthread_self(), &policy, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_getschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(policy == POLICY) {
+	if (policy == POLICY) {
 		policy_correct = 1;
 	}
-	if(param.sched_priority == PRIORITY) {
+	if (param.sched_priority == PRIORITY) {
 		priority_correct = 1;
 	}
 	return NULL;
@@ -64,24 +64,24 @@ int main()
 
 	/* Initialze the attribute struct and set policy and priority in it*/
 	rc = pthread_attr_init(&attr);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_attr_setschedpolicy( &attr, POLICY);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	param.sched_priority = PRIORITY;
 	rc = pthread_attr_setschedparam(&attr, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setinheritsched\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -89,24 +89,24 @@ int main()
 
 	/* Create the thread with the attr */
 	rc = pthread_create(&thread_id, &attr, thread, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_create\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Wait for that thread to finish */
 	rc = pthread_join(thread_id, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_join\nn");
 		exit(PTS_PASS);
 	}
 
 	/* test the result */
-	if(priority_correct != 1) {
+	if (priority_correct != 1) {
 		printf("Test FAILED. Priority set incorrectly\n");
 		exit(PTS_FAIL);
 	}
-	if(policy_correct != 1) {
+	if (policy_correct != 1) {
 		printf("Test FAILED. Policy set incorrectly\n");
 		exit(PTS_FAIL);
 	}

@@ -130,10 +130,10 @@ void * overflow(void * arg)
 		
 	
 	/* we cast the pointers into long, which might be a problem on some architectures... */
-	if ( ((long)arg) < ((long)&current))
+	if (((long)arg) < ((long)&current))
 	{
 		/* the stack is growing up */
-		if ( ((long)&current) - ((long)arg) >= stacksize)
+		if (((long)&current) - ((long)arg) >= stacksize)
 		{
 			output("Growing up stack started below %p and we are currently up to %p\n", arg, &current);
 			return (void *)0;
@@ -142,7 +142,7 @@ void * overflow(void * arg)
 	else
 	{
 		/* the stack is growing down */
-		if ( ((long)arg) - ((long)&current) >= stacksize)
+		if (((long)arg) - ((long)&current) >= stacksize)
 		{
 			output("Growing down stack started upon %p and we are currently down to %p\n", arg, &current);
 			return (void *)0;

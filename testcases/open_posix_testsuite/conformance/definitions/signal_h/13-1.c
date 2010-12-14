@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 int main() {
-	if ( (0 == SIGABRT) ||
+	if ((0 == SIGABRT) ||
 		(0 == SIGALRM) ||
 		(0 == SIGBUS) ||
 		(0 == SIGCHLD) ||

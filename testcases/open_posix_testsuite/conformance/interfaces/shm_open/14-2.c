@@ -41,18 +41,18 @@ int main() {
 	char *buf;
 	
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(ftruncate(fd, BUF_SIZE) != 0) {
+	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		return PTS_UNRESOLVED;	
 	}
 
 	buf = mmap(NULL, BUF_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
-	if( buf == MAP_FAILED) {
+	if ( buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		return PTS_UNRESOLVED;	
 	}	
@@ -60,19 +60,19 @@ int main() {
 	strcpy(buf, str);
 
 	fd = shm_open(SHM_NAME, O_RDWR, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
 	buf = mmap(NULL, BUF_SIZE, PROT_READ, MAP_SHARED, fd, 0);
-	if( buf == MAP_FAILED) {
+	if ( buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		return PTS_UNRESOLVED;	
 	}	
 
 	shm_unlink(SHM_NAME);
-	if(strcmp(buf, str) == 0) {
+	if (strcmp(buf, str) == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

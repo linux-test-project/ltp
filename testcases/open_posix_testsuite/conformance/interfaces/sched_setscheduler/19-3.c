@@ -23,11 +23,11 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main(){
+int main() {
 	int policy, result;
 	struct sched_param param;
 
-	if(sched_getparam(0, &param) != 0) {
+	if (sched_getparam(0, &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}	
@@ -43,13 +43,13 @@ int main(){
 
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
       
-	if(result == -1 && errno == EINVAL){
+	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("The returned code is not -1.\n");
 		return PTS_FAIL;
-	} else if(errno == EPERM) {
+	} else if (errno == EPERM) {
 		printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	} 

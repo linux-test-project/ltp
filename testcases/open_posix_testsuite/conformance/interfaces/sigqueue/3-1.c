@@ -34,17 +34,17 @@ int set_nonroot()
 	struct passwd *pw;
 	setpwent();
 	/* search for the first user which is non root */ 
-	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root"))
+	while ((pw = getpwent()) != NULL)
+		if (strcmp(pw->pw_name, "root"))
 			break;
 	endpwent();
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
 
-	if(setuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (setuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\n");
 			return 1;
 		}

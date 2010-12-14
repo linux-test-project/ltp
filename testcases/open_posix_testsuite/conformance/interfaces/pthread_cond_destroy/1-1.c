@@ -24,45 +24,45 @@ int main()
 	int rc;
 
 	/* Initialize a condition variable attribute object */
-	if((rc=pthread_condattr_init(&condattr)) != 0) {
+	if ((rc=pthread_condattr_init(&condattr)) != 0) {
 		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Initialize cond1 with the default condition variable attribute */
-	if((rc=pthread_cond_init(&cond1,&condattr)) != 0) {
+	if ((rc=pthread_cond_init(&cond1,&condattr)) != 0) {
 		fprintf(stderr,"Fail to initialize cond1, rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 
 	/* Initialize cond2 with NULL attributes */
-	if((rc=pthread_cond_init(&cond2,NULL)) != 0) {
+	if ((rc=pthread_cond_init(&cond2,NULL)) != 0) {
 		fprintf(stderr,"Fail to initialize cond2, rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy the condition variable attribute object */
-	if((rc=pthread_condattr_destroy(&condattr)) != 0) {
+	if ((rc=pthread_condattr_destroy(&condattr)) != 0) {
 		fprintf(stderr,"Error at pthread_condattr_destroy(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy cond1 */
-	if((rc=pthread_cond_destroy(&cond1)) != 0) {
+	if ((rc=pthread_cond_destroy(&cond1)) != 0) {
 		fprintf(stderr,"Fail to destroy cond1, rc=%d\n",rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* Destroy cond2 */
-	if((rc=pthread_cond_destroy(&cond2)) != 0) {
+	if ((rc=pthread_cond_destroy(&cond2)) != 0) {
 		fprintf(stderr,"Fail to destroy cond2, rc=%d\n",rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* Destroy cond3 */
-	if((rc=pthread_cond_destroy(&cond3)) != 0) {
+	if ((rc=pthread_cond_destroy(&cond3)) != 0) {
 		fprintf(stderr,"Fail to destroy cond3, rc=%d\n",rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;

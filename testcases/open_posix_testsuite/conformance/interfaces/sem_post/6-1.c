@@ -38,7 +38,7 @@ sem_t *gsemp;
 
 void handler(int signo)
 {
-	if( sem_post(gsemp) == -1 ) {
+	if ( sem_post(gsemp) == -1 ) {
 		perror(ERROR_PREFIX "sem_post");
 		exit(PTS_UNRESOLVED); 
 	}
@@ -65,7 +65,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if( gsemp == SEM_FAILED || gsemp == NULL ) {
+	if ( gsemp == SEM_FAILED || gsemp == NULL ) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
@@ -74,7 +74,7 @@ int main() {
 	sleep(2);
 
 	/* Checking if the value of the Semaphore incremented by one */
-	if( sem_getvalue(gsemp, &val) == -1 ) {
+	if ( sem_getvalue(gsemp, &val) == -1 ) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 	}

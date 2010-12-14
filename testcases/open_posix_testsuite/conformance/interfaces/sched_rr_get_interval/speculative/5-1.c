@@ -26,11 +26,11 @@ int main(int argc, char **argv)
 	
 	result = sched_rr_get_interval(0, NULL);	
 
-	if(result == -1 && errno == EFAULT) {
+	if (result == -1 && errno == EFAULT) {
 		printf("sched_rr_get_interval() sets errno == EFAULT when interval argument points to NULL\n");
 		return PTS_PASS;
 	}
-	if(result == -1 && errno == EINVAL) {
+	if (result == -1 && errno == EINVAL) {
 		printf("sched_rr_get_interval() sets errno == EINVAL when interval argument points to NULL\n");
 		return PTS_PASS;
 	}

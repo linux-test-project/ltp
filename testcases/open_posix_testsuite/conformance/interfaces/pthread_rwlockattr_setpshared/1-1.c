@@ -33,51 +33,51 @@ int main()
 	#endif
 	
 	/* Initialize a rwlock attributes object */
-	if(pthread_rwlockattr_init(&rwla) != 0)
+	if (pthread_rwlockattr_init(&rwla) != 0)
 	{
 		printf("Error at pthread_rwlockattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	rc = pthread_rwlockattr_setpshared(&rwla, PTHREAD_PROCESS_PRIVATE);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_rwlockattr_setpshared(), return error: %d\n", rc);
 		return PTS_FAIL;
 	}
 	
-	if(pthread_rwlockattr_getpshared(&rwla, &pshared) != 0)
+	if (pthread_rwlockattr_getpshared(&rwla, &pshared) != 0)
 	{
 		printf("Error at pthread_rwlockattr_getpshared()\n");
 		return PTS_UNRESOLVED;		
 	}
 
-	if(pshared != PTHREAD_PROCESS_PRIVATE)
+	if (pshared != PTHREAD_PROCESS_PRIVATE)
 	{
 		printf("Test FAILED: Expect PTHREAD_PROCESS_PRIVATE, but got %d\n", pshared);
 		return PTS_FAIL;
 	}
 	
 	rc = pthread_rwlockattr_setpshared(&rwla, PTHREAD_PROCESS_SHARED);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_rwlockattr_setpshared(), return error: %d\n", rc);
 		return PTS_FAIL;
 	}
 	
-	if(pthread_rwlockattr_getpshared(&rwla, &pshared) != 0)
+	if (pthread_rwlockattr_getpshared(&rwla, &pshared) != 0)
 	{
 		printf("Error at pthread_rwlockattr_getpshared()\n");
 		return PTS_UNRESOLVED;		
 	}
 
-	if(pshared != PTHREAD_PROCESS_SHARED)
+	if (pshared != PTHREAD_PROCESS_SHARED)
 	{
 		printf("Test FAILED: Expect PTHREAD_PROCESS_SHARED, but got %d\n", pshared);
 		return PTS_FAIL;
 	}
 	
-	if(pthread_rwlockattr_destroy(&rwla) != 0)
+	if (pthread_rwlockattr_destroy(&rwla) != 0)
 	{
 		printf("Error at pthread_rwlockattr_destroy()");
 		return PTS_UNRESOLVED;

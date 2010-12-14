@@ -31,7 +31,7 @@ int main()
 	int sig;
 
 	/* Empty set of blocked signals */
-	if ( (sigemptyset(&newmask) == -1) || 
+	if ((sigemptyset(&newmask) == -1) || 
 		(sigemptyset(&pendingset) == -1) )
 	{
 		printf("Error in sigemptyset()\n");

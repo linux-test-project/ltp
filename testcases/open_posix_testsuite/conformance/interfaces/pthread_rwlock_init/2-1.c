@@ -34,11 +34,11 @@ static void* fn_rd(void *arg)
 
 	printf("child: lock for reading\n");	
 	rc = pthread_rwlock_rdlock(&rwlock);
-	if(rc == 0)
+	if (rc == 0)
 	{
 		printf("child: get read lock\n");
 		printf("child: unlock\n");
-		if(pthread_rwlock_unlock(&rwlock) != 0)
+		if (pthread_rwlock_unlock(&rwlock) != 0)
 		{
 			printf("child: release read lock\n");
 			exit(PTS_UNRESOLVED);
@@ -63,7 +63,7 @@ int main()
 	pthread_t thread;
 
 	rc = pthread_rwlock_init(&rwlock, NULL);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_rwlock_init(), returns %d\n", rc);
 		return PTS_FAIL;
@@ -71,7 +71,7 @@ int main()
 	
 	thread_state = 1;
 	printf("main: create thread\n");
-	if(pthread_create(&thread, NULL, fn_rd, NULL) != 0)
+	if (pthread_create(&thread, NULL, fn_rd, NULL) != 0)
 	{
 		printf("main: failed to create thread\n");
 		return PTS_UNRESOLVED;
@@ -85,24 +85,24 @@ int main()
 		sleep(1);
 	}while (thread_state !=3 && cnt++ < 3); 
 	
-	if(thread_state == 2)
+	if (thread_state == 2)
 	{
 		printf("Test FAILED: thread blocked on read lock\n");
 		exit(PTS_FAIL);
 	}
-	else if(thread_state != 3)
+	else if (thread_state != 3)
 	{
 		printf("main: Unexpected thread state\n");
 		exit(PTS_UNRESOLVED);
 	}
 		
-	if(pthread_join(thread, NULL) != 0)
+	if (pthread_join(thread, NULL) != 0)
 	{
 		printf("main: Error at pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
 	
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;

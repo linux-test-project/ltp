@@ -82,7 +82,7 @@ int main() {
     tst = sym;
     
     while (tst->name) {
-	for(i = 0; sym[i].name; i++) {
+	for (i = 0; sym[i].name; i++) {
 	    if (tst->value == sym[i].value 
 		&& tst->duplicate != sym[i].value
 		&& strcmp(tst->name,sym[i].name)) {//In case EAGAIN is not equal to EWOULDBLOCK,compare the name

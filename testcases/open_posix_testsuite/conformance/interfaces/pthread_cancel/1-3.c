@@ -65,7 +65,7 @@ void *a_thread_func()
 
 	/* Lock the mutex. It should have already been locked in main, so the thread
 	 * should block. */
-	if(pthread_mutex_lock(&mutex) != 0)
+	if (pthread_mutex_lock(&mutex) != 0)
         {
 		perror("Error in pthread_mutex_lock()\n");
 		pthread_exit((void*)PTS_UNRESOLVED);
@@ -95,14 +95,14 @@ int main()
 	cleanup_flag=0;
 	
 	/* Lock the mutex */
-	if(pthread_mutex_lock(&mutex) != 0)
+	if (pthread_mutex_lock(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_lock()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -110,25 +110,25 @@ int main()
 	
 	/* Make sure thread is created before we cancel it. (wait for 
 	 * a_thread_func() to set sem1=INMAIN.) */
-	while(sem1==INTHREAD)
+	while (sem1==INTHREAD)
 		sleep(1);
 
 	/* Send cancel request to the thread.  */
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		printf("Test FAILED: Couldn't cancel thread\n");
 		return PTS_FAIL;
 	}
 
 	/* Cancel request has been sent, unlock the mutex */
-	if(pthread_mutex_unlock(&mutex) != 0)
+	if (pthread_mutex_unlock(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_unlock()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait 'till the thread has been canceled or has ended execution. */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -136,13 +136,13 @@ int main()
 	
 	/* This means that the cleanup function wasn't called, so the cancel
 	 * request was not honord immediately like it should have been. */
-	if(cleanup_flag == -1)
+	if (cleanup_flag == -1)
 	{
 		printf("Test FAILED: Cancel request was not deferred.\n");
 		return PTS_FAIL;
 	}	
 	
-	if(cleanup_flag == -2)
+	if (cleanup_flag == -2)
 	{
 		printf("Test FAILED: (1) Cancel request not honored at cancelation point pthread_testcancel() OR (2) pthread_testcancel() not treated as a cancelation point.\n");
 		return PTS_FAIL;

@@ -33,9 +33,9 @@ int main ()
 
 	/* Set up the fork handlers */
 	ret = pthread_atfork(NULL, NULL, NULL);
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == ENOMEM)
+		if (ret == ENOMEM)
 		{
 			printf("Error: ran out of memory\n");
 			return PTS_UNRESOLVED;
@@ -48,12 +48,12 @@ int main ()
 	/* Now call fork() to make sure everything goes smoothly */
 	pid = fork();
 	
-	if(pid < 0)
+	if (pid < 0)
 	{
 		perror("Error in fork()\n");
 		return PTS_UNRESOLVED;
 	} 
-	if(pid == 0)
+	if (pid == 0)
 	{
 		/* Child process */
 		pthread_exit(0);

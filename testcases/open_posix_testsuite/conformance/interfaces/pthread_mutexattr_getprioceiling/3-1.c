@@ -33,12 +33,12 @@ int main()
 	pthread_mutexattr_t mta;
 
 	/* Get the prioceiling of an unintialized mutex attr. */
-	if((ret=pthread_mutexattr_getprioceiling(&mta, &prioceiling)) == 0)
+	if ((ret=pthread_mutexattr_getprioceiling(&mta, &prioceiling)) == 0)
 	{
 		printf("Test PASSED: *Note: Returned 0 instead of EINVAL when passed an uninitialized mutex attribute object to pthread_mutexattr_getprioceiling, but standard says 'may' fail.\n");
 		return PTS_PASS;		
 	      	  
-	}else if(ret != EINVAL)
+	}else if (ret != EINVAL)
 	{
 		printf("Test FAILED: Invalid return code %d. Expected EINVAL or 0.\n", ret);
 		return PTS_FAIL;

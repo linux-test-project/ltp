@@ -34,12 +34,12 @@ int main() {
 
 	/* Initial value of Semaphore is 0 */
 	mysemp = sem_open(semname, O_CREAT, 0777, 0);
-	if( mysemp == SEM_FAILED || mysemp == NULL ) {
+	if ( mysemp == SEM_FAILED || mysemp == NULL ) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
-	if(  sem_post(mysemp) == 0 ) {
+	if (  sem_post(mysemp) == 0 ) {
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);

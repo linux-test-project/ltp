@@ -51,12 +51,12 @@ int main(int argc, char *argv[])
 	act2.sa_handler=handler_alrm;
 	act2.sa_flags=0;
 
-	if ( (sigemptyset(&act1.sa_mask) != 0) ||
+	if ((sigemptyset(&act1.sa_mask) != 0) ||
        		(sigemptyset(&act2.sa_mask) != 0) )	{
 		perror("sigemptyset() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
-	if ( (sigaction(SIGABRT, &act1, 0) != 0) ||
+	if ((sigaction(SIGABRT, &act1, 0) != 0) ||
        		(sigaction(SIGALRM, &act2, 0) != 0) )	{
 		perror("sigaction() did not return success\n");
 		return PTS_UNRESOLVED;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	ev1.sigev_signo = SIGABRT;
 	ev2.sigev_notify = SIGEV_SIGNAL;
 	ev2.sigev_signo = SIGALRM;
-	if ( (timer_create(CLOCK_REALTIME, &ev1, &tid1) != 0) ||
+	if ((timer_create(CLOCK_REALTIME, &ev1, &tid1) != 0) ||
 		(timer_create(CLOCK_REALTIME, &ev2, &tid2) != 0) ) {
 		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 
 	sleep(EXPIREDELTA+1);
 
-	if ( (caughtalarm == 1) && (caughtabort == 1) ) { 
+	if ((caughtalarm == 1) && (caughtabort == 1)) { 
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

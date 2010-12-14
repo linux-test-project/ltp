@@ -47,7 +47,7 @@ int main()
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGTERM,  &act, 0);     
 
-		while(wakeup == 1) {
+		while (wakeup == 1) {
 			tv.tv_sec = 3;
 			tv.tv_usec = 0;
 			if (select(0, NULL, NULL, NULL, &tv)== -1 && 

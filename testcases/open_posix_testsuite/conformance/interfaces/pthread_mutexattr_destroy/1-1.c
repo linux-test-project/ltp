@@ -26,14 +26,14 @@ int main()
 	int rc;
 
 	/* Initialize a mutex attributes object */
-	if((rc=pthread_mutexattr_init(&mta)) != 0)
+	if ((rc=pthread_mutexattr_init(&mta)) != 0)
 	{
 		fprintf(stderr,"Cannot initialize mutex attributes object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy the mutex attributes object */
-	if(pthread_mutexattr_destroy(&mta) != 0)
+	if (pthread_mutexattr_destroy(&mta) != 0)
 	{
 		fprintf(stderr,"Error at pthread_mutexattr_destroy(), rc=%d\n", rc);
 		printf("Test FAILED\n");

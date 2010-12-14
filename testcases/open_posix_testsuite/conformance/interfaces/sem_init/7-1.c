@@ -96,7 +96,7 @@ int main( int argc, char * argv[] )
 
 	max = sysconf( _SC_SEM_NSEMS_MAX );
 
-	if ( max <= 0 )
+	if (max <= 0)
 	{
 		output( "sysconf( _SC_SEM_NSEMS_MAX ) = %ld\n", max );
 		UNTESTED( "There is no constraint on SEM_NSEMS_MAX" );
@@ -104,23 +104,23 @@ int main( int argc, char * argv[] )
 
 	sems = ( sem_t * ) calloc( max, sizeof( sem_t ) );
 
-	if ( sems == NULL )
+	if (sems == NULL)
 	{
 		UNRESOLVED( errno, "Failed to alloc space" );
 	}
 
 
-	for ( i = 0; i < max; i++ )
+	for (i = 0; i < max; i++)
 	{
 		ret = sem_init( &sems[ i ], 0, 0 );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			output( "sem_init failed to initialize the %d nth semaphore.\n", i );
 			output( "Tryed to initialize %ld.\n", max );
 			output( "Error is %d: %s\n", errno, strerror( errno ) );
 
-			for ( ; i > 0; i-- )
+			for (; i > 0; i--)
 				sem_destroy( &sems[ i - 1 ] );
 
 			free( sems );
@@ -131,17 +131,17 @@ int main( int argc, char * argv[] )
 
 	ret = sem_init( &sem_last, 0, 1 );
 
-	if ( ret == 0 )
+	if (ret == 0)
 	{
 		FAILED( "We were able to sem_init more than SEM_NSEMS_MAX semaphores" );
 	}
 
-	if ( errno != ENOSPC )
+	if (errno != ENOSPC)
 	{
 		output( "Error is %d: %s\n", errno, strerror( errno ) );
 	}
 
-	for ( i = 0; i < max; i++ )
+	for (i = 0; i < max; i++)
 		sem_destroy( &sems[ i ] );
 
 	free( sems );

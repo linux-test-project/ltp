@@ -160,9 +160,9 @@ void *thread_tl(void *param)
 	while (!tp->stop)
 	{
 		do_work(5, &tp->progress);
-		if (unlock_mutex == 1){ 
+		if (unlock_mutex == 1) { 
 			rc = pthread_mutex_unlock(&mutex);
-			if(rc == 0){
+			if (rc == 0) {
 				unlock_mutex = 0;
 				DPRINTF(stdout, "#EVENT %f TL unlock the mutex\n", 
 					seconds_read() - base_time);

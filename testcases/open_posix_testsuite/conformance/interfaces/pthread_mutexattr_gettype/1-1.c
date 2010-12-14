@@ -31,20 +31,20 @@ int main()
 	int type;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	 /* The default 'type' attribute should be PTHREAD_MUTEX_DEFAULT  */
-	if(pthread_mutexattr_gettype(&mta, &type) != 0)
+	if (pthread_mutexattr_gettype(&mta, &type) != 0)
 	{
 		fprintf(stderr,"pthread_mutexattr_gettype(): Error obtaining the attribute 'type'\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(type != PTHREAD_MUTEX_DEFAULT)
+	if (type != PTHREAD_MUTEX_DEFAULT)
 	{
 		printf("Test FAILED: Incorrect default mutexattr 'type' value: %d\n", type);
 		return PTS_FAIL;

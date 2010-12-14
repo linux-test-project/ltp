@@ -87,18 +87,18 @@ void handler( int sig )
 	sigset_t pending;
 	called++;
 
-	if ( called == 2 )
+	if (called == 2)
 	{
 		FAILED( "Signal was not masked in signal handler" );
 	}
 
-	if ( called == 1 )
+	if (called == 1)
 	{
 
 		/* Raise the signal again. It should be masked */
 		ret = raise( SIGNAL );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to raise SIGPOLL again" );
 		}
@@ -106,14 +106,14 @@ void handler( int sig )
 		/* check the signal is pending */
 		ret = sigpending( &pending );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to get pending signal set" );
 		}
 
 		ret = sigismember( &pending, SIGNAL );
 
-		if ( ret != 1 )
+		if (ret != 1)
 		{
 			FAILED( "signal is not pending" );
 		}
@@ -139,7 +139,7 @@ int main()
 
 	ret = sigemptyset( &sa.sa_mask );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
@@ -147,19 +147,19 @@ int main()
 	/* Install the signal handler for SIGPOLL */
 	ret = sigaction( SIGNAL, &sa, 0 );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to set signal handler" );
 	}
 
 	ret = raise( SIGNAL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to raise SIGPOLL" );
 	}
 
-	while ( called != 4 )
+	while (called != 4)
 		sched_yield();
 
 	/* Test passed */

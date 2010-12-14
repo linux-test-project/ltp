@@ -21,7 +21,7 @@
 
 #if !defined(_POSIX_MEMLOCK) || _POSIX_MEMLOCK == -1
 
-int main(){
+int main() {
 	printf("Does not support ML (Memory Lock).\n");
 	return PTS_UNSUPPORTED;
 }
@@ -29,15 +29,15 @@ int main(){
 #else
 
 #if _POSIX_MEMLOCK != 0
-int main(){
+int main() {
 	int result;
 	
 	result = munlockall();
 	
-	if(result == 0){
+	if (result == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(errno == EPERM){
+	} else if (errno == EPERM) {
 		printf("You don't have permission to unlock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {
@@ -50,22 +50,22 @@ int main(){
 
 #else
 
-int main(){
+int main() {
 	int result;
 	long memlock;
 
 	memlock = sysconf(_SC_MEMLOCK);
-	if(errno){
+	if (errno) {
 		perror("An errno occurs when calling sysconf().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	result = munlockall();
 	
-	if( (result == 0 && memlock > 0) || (result == -1 && memlock <=0) ){
+	if ( (result == 0 && memlock > 0) || (result == -1 && memlock <=0) ) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(errno == EPERM){
+	} else if (errno == EPERM) {
 		printf("You don't have permission to unlock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {

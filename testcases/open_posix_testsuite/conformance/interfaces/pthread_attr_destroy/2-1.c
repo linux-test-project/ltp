@@ -28,21 +28,21 @@ int main()
 	pthread_attr_t new_attr;
 
 	/* Initialize attribute */
-	if(pthread_attr_init(&new_attr) != 0)
+	if (pthread_attr_init(&new_attr) != 0)
 	{
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy attribute */
-	if(pthread_attr_destroy(&new_attr) != 0)
+	if (pthread_attr_destroy(&new_attr) != 0)
 	{
 		perror("Cannot destroy the attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Initialize attribute.  This shouldn't result in an error. */
-	if(pthread_attr_init(&new_attr) != 0)
+	if (pthread_attr_init(&new_attr) != 0)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

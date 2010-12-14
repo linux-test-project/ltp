@@ -96,7 +96,7 @@ void sighdl( int sig )
 	{
 		do_it = 0;
 	}
-	while ( do_it );
+	while (do_it);
 }
 
 
@@ -110,7 +110,7 @@ void * threaded( void * arg )
 		/* sem_post */
 		ret = sem_post( arg );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Failed to post the semaphore" );
 		}
@@ -120,15 +120,15 @@ void * threaded( void * arg )
 		{
 			ret = sem_wait( arg );
 		}
-		while ( ( ret != 0 ) && ( errno == EINTR ) );
+		while (( ret != 0 ) && ( errno == EINTR ));
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Failed to wait for the semaphore" );
 		}
 
 	}
-	while ( do_it );
+	while (do_it);
 
 	return NULL;
 }
@@ -154,12 +154,12 @@ int main ( int argc, char *argv[] )
 
 	sa.sa_handler = sighdl;
 
-	if ( ( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
 
-	if ( ( ret = sigaction ( SIGALRM, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
@@ -172,21 +172,21 @@ int main ( int argc, char *argv[] )
 	/* Initialize the semaphores */
 	named = sem_open( SEM_NAME, O_CREAT, 0777, INIT_VAL );
 
-	if ( named == SEM_FAILED )
+	if (named == SEM_FAILED)
 	{
 		UNRESOLVED( errno, "Failed to sem_open" );
 	}
 
 	ret = sem_unlink( SEM_NAME );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to sem_unlink" );
 	}
 
 	ret = sem_init( &unnamed, 0, INIT_VAL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to sem_init" );
 	}
@@ -194,30 +194,30 @@ int main ( int argc, char *argv[] )
 	/* Create the threads */
 	ret = pthread_create( &child1, NULL, threaded, named );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to create a thread" );
 	}
 
 	ret = pthread_create( &child2, NULL, threaded, &unnamed );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to create a thread" );
 	}
 
 
 	/* loop */
-	while ( do_it )
+	while (do_it)
 	{
 		ret = sem_getvalue( named, &value );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Failed to get sem value" );
 		}
 
-		if ( ( value != INIT_VAL ) && ( value != INIT_VAL + 1 ) )
+		if (( value != INIT_VAL ) && ( value != INIT_VAL + 1 ))
 		{
 			output( "Got value %d, expected %d or %d only\n",
 			        value, INIT_VAL, INIT_VAL + 1 );
@@ -226,12 +226,12 @@ int main ( int argc, char *argv[] )
 
 		ret = sem_getvalue( &unnamed, &value );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( errno, "Failed to get sem value" );
 		}
 
-		if ( ( value != INIT_VAL ) && ( value != INIT_VAL + 1 ) )
+		if (( value != INIT_VAL ) && ( value != INIT_VAL + 1 ))
 		{
 			output( "Got value %d, expected %d or %d only\n",
 			        value, INIT_VAL, INIT_VAL + 1 );
@@ -244,14 +244,14 @@ int main ( int argc, char *argv[] )
 	/* Join the threads */
 	ret = pthread_join( child1, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join a thread" );
 	}
 
 	ret = pthread_join( child2, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join a thread" );
 	}
@@ -260,14 +260,14 @@ int main ( int argc, char *argv[] )
 	/* Destroy the semaphores */
 	ret = sem_close( named );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to close the semaphore" );
 	}
 
 	ret = sem_destroy( &unnamed );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( errno, "Failed to destroy the semaphore" );
 	}

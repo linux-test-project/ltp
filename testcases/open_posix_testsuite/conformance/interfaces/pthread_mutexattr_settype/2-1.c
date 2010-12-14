@@ -46,28 +46,28 @@ int main()
 	int ret;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	 /* Set the 'type' attribute to be PTHREAD_MUTEX_NORMAL  */
-	if(pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_NORMAL) != 0)
+	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_NORMAL) != 0)
 	{
 		printf("Test FAILED: Error setting the attribute 'type'\n");
 		return PTS_FAIL;
 	}
 
 	/* Initialize the mutex with that attribute obj. */	
-	if(pthread_mutex_init(&mutex, &mta) != 0)
+	if (pthread_mutex_init(&mutex, &mta) != 0)
 	{
 		perror("Error intializing the mutex.\n");
 		return PTS_UNRESOLVED;
 	}
 
 	ret=pthread_mutex_lock(&mutex);
-	if(ret != 0)
+	if (ret != 0)
 	{
 		printf("Test Unresolved: Error at pthread_mutex_lock, "
 			"error code %d\n", ret);

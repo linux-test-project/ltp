@@ -150,7 +150,7 @@ int main()
 
 	close(fd);
 
-	while(countdown);
+	while (countdown);
 
 	if (!canceled)
 		return PTS_UNRESOLVED;

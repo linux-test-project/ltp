@@ -103,7 +103,7 @@ int main(void)
     
     ch = pa;
     /* Read acess */
-    if(*ch != 'a')
+    if (*ch != 'a')
     {
       printf ("Test Fail: " TNAME 
               " The file did not mapped to memory\n");    

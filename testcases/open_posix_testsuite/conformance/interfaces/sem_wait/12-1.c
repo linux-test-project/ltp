@@ -35,14 +35,14 @@ int main() {
 
 	/* Initial value of Semaphore is 1 */
 	mysemp = sem_open(semname, O_CREAT, 0777, 0);
-	if( mysemp == SEM_FAILED || mysemp == NULL ) {
+	if ( mysemp == SEM_FAILED || mysemp == NULL ) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
 
 	/* Try to Lock Semaphore by sem_trywait*/
-	if( sem_trywait(mysemp) == -1 ) {
+	if ( sem_trywait(mysemp) == -1 ) {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		sem_close(mysemp);

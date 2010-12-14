@@ -27,20 +27,20 @@ int main()
 	int rc;
 
 	/* Initialize a condition variable attributes object */
-	if((rc=pthread_condattr_init(&condattr)) != 0) {
+	if ((rc=pthread_condattr_init(&condattr)) != 0) {
 		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Initialize cond1 with the default condition variable attributes */
-	if((rc=pthread_cond_init(&cond1,&condattr)) != 0) {
+	if ((rc=pthread_cond_init(&cond1,&condattr)) != 0) {
 		fprintf(stderr,"Fail to initialize cond1, rc=%d\n",rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* Initialize cond2 with NULL attributes */
-	if((rc=pthread_cond_init(&cond2,NULL)) != 0) {
+	if ((rc=pthread_cond_init(&cond2,NULL)) != 0) {
 		fprintf(stderr,"Fail to initialize cond2, rc=%d\n",rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;

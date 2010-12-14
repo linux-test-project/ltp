@@ -67,18 +67,18 @@ int main()
 	cleanup_flag = CLEANUP_NOTCALLED;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to call the pthread_cleanup_pop */
-	while(sem1==INTHREAD)
+	while (sem1==INTHREAD)
 		sleep(1);
 	
 	/* Check to verify that the cleanup handler was called */
-	if(cleanup_flag == CLEANUP_CALLED)
+	if (cleanup_flag == CLEANUP_CALLED)
 	{
 		printf("Test FAILED: Cleanup was incorrectly called\n");
 		return PTS_FAIL;
@@ -88,7 +88,7 @@ int main()
 	sem1=INTHREAD;
 	
 	/* Wait for thread to end execution */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;

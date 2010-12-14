@@ -49,7 +49,7 @@ struct unique {
 	}
 };
 
-int main(){
+int main() {
 	int policy, invalid_priority, result = PTS_PASS;
 	int old_priority, old_policy, new_policy;
 	struct sched_param param;
@@ -64,21 +64,21 @@ int main(){
 		printf("Policy: %s\n", tst->name);
 		fflush(stdout);
 
-		if(sched_getparam(getpid(), &param) != 0) {
+		if (sched_getparam(getpid(), &param) != 0) {
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
 		old_priority = param.sched_priority;
 
 		old_policy = sched_getscheduler(getpid());
-		if(old_policy == -1) {
+		if (old_policy == -1) {
 			perror("An error occurs when calling sched_getscheduler()");
 			return PTS_UNRESOLVED;
 		}
 
 
 		invalid_priority = sched_get_priority_max(policy);
-		if(invalid_priority == -1){
+		if (invalid_priority == -1) {
 			perror("An error occurs when calling sched_get_priority_max()");
 			return PTS_UNRESOLVED;
 		}
@@ -89,26 +89,26 @@ int main(){
 
 		sched_setscheduler(0, policy, &param);
 
-		if(sched_getparam(getpid(), &param) != 0) {
+		if (sched_getparam(getpid(), &param) != 0) {
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
 
 		new_policy = sched_getscheduler(getpid());
-		if(new_policy == -1) {
+		if (new_policy == -1) {
 			perror("An error occurs when calling sched_getscheduler()");
 			return PTS_UNRESOLVED;
 		}
 		
 
-		if(old_policy == new_policy && 
+		if (old_policy == new_policy && 
 		   old_priority == param.sched_priority) {
 			printf("  OK\n");
 		} else {
-			if(param.sched_priority != old_priority) {
+			if (param.sched_priority != old_priority) {
 				printf("  The param has changed\n");
 			}
-			if(new_policy != old_policy) {
+			if (new_policy != old_policy) {
 				printf("  The policy has changed\n");
 			}
 			result = PTS_FAIL;
@@ -117,7 +117,7 @@ int main(){
 		tst++;
 	}
 
-	if(result == PTS_PASS) {
+	if (result == PTS_PASS) {
 		printf("Test PASSED\n");
 	}
 	return result;

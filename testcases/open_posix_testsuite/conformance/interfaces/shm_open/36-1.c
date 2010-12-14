@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main(){
+int main() {
 	printf("It is very difficult to test that the shm_open() function sets errno = EINTR\nwhen it is interrupted by a signal.\n");
 	return PTS_UNTESTED;
 }

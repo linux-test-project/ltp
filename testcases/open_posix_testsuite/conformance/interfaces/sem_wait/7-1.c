@@ -42,12 +42,12 @@ int main()
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
         mysemp = sem_open(semname, O_CREAT, 0, 1);
-        if( mysemp == SEM_FAILED || mysemp == NULL ) {
+        if ( mysemp == SEM_FAILED || mysemp == NULL ) {
                 perror(ERROR_PREFIX "sem_open");
                 return PTS_UNRESOLVED;
         }
 
-        if( sem_wait(mysemp) == -1 ) {
+        if ( sem_wait(mysemp) == -1 ) {
                 perror(ERROR_PREFIX "sem_wait");
                 return PTS_UNRESOLVED;
         }

@@ -43,13 +43,13 @@ int main()
         int pid, status;
 
 
-        if ( sem_init (&mysemp, 0, 1) == -1 ) {
+        if (sem_init (&mysemp, 0, 1) == -1) {
                 perror(ERROR_PREFIX "sem_init");
                 return PTS_UNRESOLVED;
         }
 
 
-        if( sem_wait(&mysemp) == -1 ) {
+        if ( sem_wait(&mysemp) == -1 ) {
                 perror(ERROR_PREFIX "sem_wait");
                 return PTS_UNRESOLVED;
         }

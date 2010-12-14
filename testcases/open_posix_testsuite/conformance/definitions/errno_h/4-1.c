@@ -74,8 +74,8 @@ struct unique {
 int main() {
     struct unique *tst=sym;
     int ret = PTP_PASS;
-    while(tst->name){
-	if (tst->value < 0){
+    while (tst->name) {
+	if (tst->value < 0) {
 	    printf("Value of symbol %s is less than zero\n",tst->name);
 	    ret = PTP_FAIL;
 	}

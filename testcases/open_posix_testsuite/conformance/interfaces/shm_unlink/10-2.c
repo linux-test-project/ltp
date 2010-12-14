@@ -32,22 +32,22 @@ int main() {
 	char *shm_name;
 
 	path_max = pathconf("/", _PC_PATH_MAX);
-	if(path_max == -1) {
+	if (path_max == -1) {
 		perror("An error occurs when calling pathconf()");
 		return PTS_UNRESOLVED;
         }
 	shm_name = malloc(path_max+1);
 
-	for(i=0; i<path_max; i++)
+	for (i=0; i<path_max; i++)
 		shm_name[i] = (i+1)%COMPONENT_SIZE ? 'a' : '/';
 	shm_name[path_max+1] = 0;
 	
 	result = shm_unlink(shm_name);
 	
-	if(result == -1 && errno == ENAMETOOLONG) {
+	if (result == -1 && errno == ENAMETOOLONG) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("shm_unlink() success.\n");
 		return PTS_FAIL;
 	}

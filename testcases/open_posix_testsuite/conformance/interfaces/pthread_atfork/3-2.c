@@ -109,14 +109,14 @@ void * threaded( void * arg )
 	/* Wait main thread has registered the handler */
 	ret = pthread_mutex_lock( &mtx );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to lock mutex" );
 	}
 
 	ret = pthread_mutex_unlock( &mtx );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to unlock mutex" );
 	}
@@ -124,20 +124,20 @@ void * threaded( void * arg )
 	/* fork */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1)
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0)
 	{
-		if ( controls[ 0 ] != 10000 )
+		if (controls[ 0 ] != 10000)
 		{
 			FAILED( "prepare handler skipped some rounds" );
 		}
 
-		if ( controls[ 2 ] != 10000 )
+		if (controls[ 2 ] != 10000)
 		{
 			FAILED( "child handler skipped some rounds" );
 		}
@@ -146,12 +146,12 @@ void * threaded( void * arg )
 		exit( PTS_PASS );
 	}
 
-	if ( controls[ 0 ] != 10000 )
+	if (controls[ 0 ] != 10000)
 	{
 		FAILED( "prepare handler skipped some rounds" );
 	}
 
-	if ( controls[ 1 ] != 10000 )
+	if (controls[ 1 ] != 10000)
 	{
 		FAILED( "parent handler skipped some rounds" );
 	}
@@ -159,12 +159,12 @@ void * threaded( void * arg )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child)
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
 	{
 		FAILED( "Child exited abnormally" );
 	}
@@ -185,49 +185,49 @@ int main( int argc, char * argv[] )
 
 	ret = pthread_mutex_lock( &mtx );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to lock mutex" );
 	}
 
 	ret = pthread_create( &ch, NULL, threaded, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to create a thread" );
 	}
 
 	/* Register the handlers */
-	for ( i = 0; i < 10000; i++ )
+	for (i = 0; i < 10000; i++)
 	{
 		ret = pthread_atfork( prepare, parent, child );
 
-		if ( ret == ENOMEM )
+		if (ret == ENOMEM)
 		{
 			output( "ENOMEM returned after %i iterations\n", i );
 			break;
 		}
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to register the atfork handlers" );
 		}
 	}
 
-	if ( ret == 0 )
+	if (ret == 0)
 	{
 
 		/* Let the child go on */
 		ret = pthread_mutex_unlock( &mtx );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to unlock mutex" );
 		}
 
 		ret = pthread_join( ch, NULL );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to join the thread" );
 		}
