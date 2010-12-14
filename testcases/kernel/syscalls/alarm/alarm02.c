@@ -120,23 +120,11 @@ int main(int ac, char **av)
 	int exp[] = { 0, 0, 0 };
 	int i;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 
 	setup();
 
-   /***************************************************************
-    * check looping state
-    ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
@@ -157,11 +145,7 @@ int main(int ac, char **av)
 					 "alarm(%lu) returned %ld, when %u was expected for value %s",
 					 sec[i], TEST_RETURN, exp[i], buf[i]);
 
-			}
-	    /***************************************************************
-             * only perform functional verification if flag set (-f not given)
-             ***************************************************************/
-			else if (STD_FUNCTIONAL_TEST) {
+			} else if (STD_FUNCTIONAL_TEST) {
 				if (received_alarm == 1) {
 					tst_resm(TFAIL,
 						 "alarm(%lu) returned %ldu but an alarm signal was received for value %s",
@@ -187,10 +171,6 @@ int main(int ac, char **av)
 	return 0;
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-
 void setup()
 {
 
@@ -203,11 +183,6 @@ void setup()
 	/* End setup() */
 
 }
-
-/***********************************************************
- * Cleanup:
- *  exit using tst_exit.
- ***********************************************************/
 
 void cleanup()
 {
