@@ -103,8 +103,6 @@
 					/* If not set, TOUT_VERBOSE_S is assumed */
 
 #define TOUT_VERBOSE_S  "VERBOSE"	/* All test cases reported */
-#define TOUT_CONDENSE_S "CONDENSE"	/* ranges are used where identical messages*/
-					/* occur for sequential test cases */
 #define TOUT_NOPASS_S   "NOPASS"	/* No pass test cases are reported */
 #define TOUT_DISCARD_S  "DISCARD"	/* No output is reported */
 
