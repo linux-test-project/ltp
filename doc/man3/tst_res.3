@@ -41,10 +41,6 @@ tst_brk \- Print result message and break remaining test cases
 .sp
 tst_brkm \- Print result message, including file contents, and break remaining test cases
 .sp
-tst_brkloop \- Print result message, include file contents, and break remaining test cases in loop
-.sp
-tst_brkloopm \- Print result message and break remaining test cases in loop
-.sp
 tst_flush \- Print any messages pending because of CONDENSE mode, and flush output stream
 .sp
 tst_exit \- Exit test with a meaningful exit value
@@ -64,12 +60,6 @@ char *\fItmesg, [arg ...]\fR)
 \fBvoid tst_brkm(int \fIttype\fB, void (*\fIfunc\fB)(), char *\fItmesg,
 [arg ...]\fR)
 .P
-\fBvoid tst_brkloop(int \fIttype\fB, char *\fIfname\fB, void (*\fIfunc\fB)(),
-char *\fItmesg, [arg ...]\fR)
-.P
-\fBvoid tst_brkloopm(int \fIttype\fB, void (*\fIfunc\fB)(), char *\fItmesg,
-[arg ...]\fR)
-.P
 \fBvoid tst_flush()
 .P
 \fBvoid tst_exit()
@@ -80,9 +70,6 @@ char *\fItmesg, [arg ...]\fR)
 .br
 extern int Tst_range;
 .br
-extern int Tst_lpstart;
-.br
-extern int Tst_lptotal;
 \fR
 .SH DESCRIPTION
 .SS Introduction
@@ -91,11 +78,11 @@ standard out in a consistent manner.  It is assumed that tests using this
 library have a distinct number of test cases, and that each test case is
 distinct and uniquely identified by the test case number.  It is also assumed
 that test case results are printed in consecutive order, starting with 1.
-The library maintains a set of global variables (\fBTCID, TST_TOTAL,
-Tst_count, Tst_range, Tst_lpstart\fR, \fBTst_lptotal\fR), which are used by
-the various functions to format the results and to keep track of the current
-result reporting state (i.e. how many total test cases there are, and how
-many have been reported so far) for the calling test.
+The library maintains a set of global variables (\fBTCID\fR, \fBTST_TOTAL\fR,
+\fBTst_count\fR), which are used by the various functions to format the
+results and to keep track of the current result reporting state (i.e. how many
+total test cases there are, and how many have been reported so far) for the
+calling test.
 .P
 The \fBTCID\fR and \fBTST_TOTAL\fR global variables are externed in the
 library, and MUST be defined/initialized by tests using the library.
@@ -106,9 +93,7 @@ reported.
 The other global variables are available as externs to tests linked with
 tst_res.o.  \fBTst_count\fR is the running count of the number of test
 results that have been reported so far.  The library initializes it to 0, and
-it should not be modified by the test.  \fBTst_range\fR, \fBTst_lpstart\fR,
-and \fBTst_lptotal\fR are used by to control how many test results are
-reported under certain conditions, by some of the functions in this library.
+it should not be modified by the test.
 The details are described below under the appropriate functions.
 .SS Arguments
 .RS 5
@@ -202,21 +187,6 @@ after all results have been printed.  If \fBtst_brk()\fR is called with a
 first reported result.  \fBtst_brk()\fR takes the \fIfname\fR argument
 whereas \fBtst_brkm()\fR does not.
 .P
-\fBtst_brkloop()\fR and \fBtst_brkloopm()\fR work just like \fBtst_brk()\fR
-and \fBtst_brkm()\fR, except they only report results for a the test cases
-remaining in the current loop.  The \fBTst_lpstart\fR and \fBTst_lptotal\fR
-global variables are used to determine how many test cases to report results
-for.  Prior to the start of the loop, the test must set \fBTst_lpstart\fR to
-\fBTst_count\fR, and \fBTst_lptotal\fR to the number of test cases in the
-loop.  If a test calls \fBtst_brkloop()\fR or \fBtst_brkloopm()\fR without
-first setting \fBTst_lpstart\fR and \fBTst_lptotal\fR to meaningful values, a
-WARN result will be reported and control will be immediately returned to the
-caller.  This will most likely cause the result messages to be out of order.
-Unlike the \fBtst_brk()\fR functions, \fBtst_brkloop()\fR and
-\fBtst_brkloopm()\fR will not call \fBtst_exit()\fR if the \fIfunc\fR
-argument is not NULL and returns.  \fBtst_brkloop()\fR takes the \fIfname\fR
-argument whereas \fBtst_brkloopm()\fR does not.
-.P
 \fBtst_flush()\fR is used to print any results pending because of
 \fBCONDENSE\fR or \fBNOPASS\fR modes (described below), and flushes the
 output stream.
@@ -293,9 +263,6 @@ All output lines are discarded.
 
 char *TCID = "tsttcs01"; /* set test case identifier */
 int TST_TOTAL = 15;      /* set total number of test results */
-extern int Tst_count;    /* access count of results completed */
-extern int Tst_lpstart;  /* holds value for start of loop */
-extern int Tst_lptotal;  /* holds the number of test cases in loop */
 
 main()
 {
@@ -308,24 +275,14 @@ main()
 		.
 		.
 
-   /* break all remaining test results */
+	/* break all remaining test results */
 	tst_brkm(TBROK, cleanup, "\fIwhat didn't work\fR");
 		/* or */
 	tst_brk(TBROK, file, cleanup, "\fIwhat didn't work\fR");
 		.
 		.
 
-	/* Break all remaining tests in loop */
-	Tst_lpstart = Tst_count;
-	Tst_lptotal = 5;
-
-	tst_brkloopm(TBROK, loop_setup, "\fIsetup did not work.\fR");
-		/* or */
-	tst_brkloop(TBROK, file, loop_setup, "\fIsetup did not work.\fR");
-		.
-		.
-
-   /* exit after all test results have been passed to tst_res */
+	/* exit after all test results have been passed to tst_res */
 	tst_exit();
 }
 .fi
@@ -336,8 +293,6 @@ Sample output:
 tsttcs01    1       PASS  :  Able to create MAXUP processes
 tsttcs01    2       FAIL  :  Too many processes (MAXUP+1) created
 tsttcs01    3       BROK  :  tabinfo(PROCTAB, &tbs) failed; errno = 13: Permission denied
-tsttcs01    4-10    BROK  :  Remaining cases broken
-tsttcs01    0       WARN  :  cleanup(): kill(0, SIGALRM) failed; errno = 3: No such process
 .fi
 .SH "SEE ALSO"
 utst_res(1),
@@ -353,16 +308,8 @@ If an invalid test type is specified.
 .P
 If \fBTst_count\fR is negative.
 .P
-If \fBTst_range\fR is non-positive.
-.P
-If \fBTst_range\fR is > 1, and the test type is \fBTINFO\fR or \fBTWARN\fR.
-.P
-If one of the \fBtst_brk[loop][m]()\fR routines is called with a test type
+If one of the \fBtst_brk[m]()\fR routines is called with a test type
 other than \fBTFAIL, TBROK, TCONF\fR, or \fBTRETR\fR.
-.P
-If \fBTst_lpstart\fR is negative.
-.P
-If \fBTst_lptotal\fR is non-positive.
 .P
 If there are any problems opening/reading/writing the contents of \fIfname\fR.
 .RE
@@ -374,4 +321,3 @@ it is not advised.
 .P
 The programmer is free to alter the value of \fBTst_count\fR causing possible
 test result order problems.
-
