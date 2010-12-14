@@ -90,7 +90,7 @@ int main(int ac, char **av)
 	int i;
 
        /* Disable test if the version of the kernel is less than 2.6.16 */
-        if((tst_kvercmp(2,6,16)) < 0)
+        if ((tst_kvercmp(2,6,16)) < 0)
           {
              tst_resm(TWARN, "This test can only run on kernels that are ");
              tst_resm(TWARN, "2.6.16 and higher");
@@ -101,7 +101,7 @@ int main(int ac, char **av)
 	/***************************************************************
 	 * parse standard options
 	 ***************************************************************/
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+	if ((msg = parse_opts(ac, av, NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	/***************************************************************

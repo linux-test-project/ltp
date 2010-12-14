@@ -67,7 +67,7 @@ int main(void)
 		pid = fork();
 		if (pid == -1)
 			err(1, "fork()");
-		else if (pid == 0){
+		else if (pid == 0) {
 			return 0;
 		} else {
 			wait(&status);

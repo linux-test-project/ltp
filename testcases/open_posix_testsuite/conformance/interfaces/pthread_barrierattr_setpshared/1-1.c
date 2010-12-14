@@ -6,7 +6,7 @@
  *
  * pthread_barrierattr_setpshared() 
  *
- * The pthread_barrierattr_setpshared( ) function shall
+ * The pthread_barrierattr_setpshared() function shall
  * set the process-shared attribute in an initialized attributes object referenced by attr.
  */
 

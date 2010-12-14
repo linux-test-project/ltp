@@ -233,7 +233,7 @@ void *signal_sending_thread(void *arg)
 	      (int)PTHREADOF(target_thread));
 
 	/* Wait for the receiving thread to initialize */
-	while(!atomic_get(&flag)) {usleep(100);};
+	while (!atomic_get(&flag)) {usleep(100);};
 	atomic_set(0, &flag);
 
 	/* Warm up */
@@ -245,7 +245,7 @@ void *signal_sending_thread(void *arg)
 			printf("pthread_kill returned %d\n", ret);
 		}
 		/* Wait till the receiving thread processes the signal */
-		while(!atomic_get(&flag)) {usleep(100);};
+		while (!atomic_get(&flag)) {usleep(100);};
 		atomic_set(0, &flag);
 	}
 	for (i=0; i<ITERATIONS; i++) {

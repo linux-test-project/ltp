@@ -326,7 +326,7 @@ write_pattern(void)
 	int i, j;
 
 	for (i = 0; i < chunks; i++) {
-		for(j = 0; j < chunk_size / record_size; j++)
+		for (j = 0; j < chunk_size / record_size; j++)
 			mem[i][j] = (record_t) j;
 		/* Prevent coalescing by alternating permissions */
 		if (use_permissions && (i % 2) == 0)
@@ -342,7 +342,7 @@ linear_search(record_t key, record_t *base, size_t size)
 	record_t *p;
 	record_t *end = base + (size / record_size);
 
-	for(p = base; p < end; p++)
+	for (p = base; p < end; p++)
 		if (*p == key)
 			return p;
 	return NULL;
@@ -401,7 +401,7 @@ search_mem(void)
 				     + 1) * record_size;
 		copy = alloc_mem(copy_size);
 
-		if ( touch_pages ) {
+		if (touch_pages) {
 			touch_mem((char *) copy, copy_size);
 		} else {
 		

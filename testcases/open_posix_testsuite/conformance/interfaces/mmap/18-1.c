@@ -5,9 +5,9 @@
  * source tree.
 
  *
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * ML [EAGAIN] The mapping could not be locked in memory,
- * if required by mlockall ( ), due toa lack of resources.
+ * if required by mlockall (), due toa lack of resources.
  *
  * Test Step:
  * 1. Call mlockall(), setting MCL_FUTURE;

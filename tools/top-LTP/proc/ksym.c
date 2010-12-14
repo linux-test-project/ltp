@@ -139,17 +139,17 @@ static unsigned    idx_room;
  * /proc/ksyms and System.map data files.
  */
 #if 0
-static void chop_version(char *arg){
+static void chop_version(char *arg) {
   char *cp;
   cp = strchr(arg,'\t');
-  if(cp) *cp = '\0';  /* kill trailing module name first */
-  for(;;){
+  if (cp) *cp = '\0';  /* kill trailing module name first */
+  for (;;) {
     char *p;
     int len = 0;
     cp = strrchr(arg, 'R');
-    if(!cp || cp<=arg+1 || cp[-1]!='_') break;
-    for(p=cp; *++p; ){
-      switch(*p){
+    if (!cp || cp<=arg+1 || cp[-1]!='_') break;
+    for (p=cp; *++p; ) {
+      switch(*p) {
       default:
         return;
       case '0' ... '9':
@@ -162,45 +162,45 @@ static void chop_version(char *arg){
         continue;
       }
     }
-    if(len<8) break;
+    if (len<8) break;
     cp[-1] = '\0';
   }
 }
 #endif
-static void chop_version(char *arg){
+static void chop_version(char *arg) {
   char *cp;
   cp = strchr(arg,'\t');
-  if(cp) *cp = '\0';  /* kill trailing module name first */
-  for(;;){
+  if (cp) *cp = '\0';  /* kill trailing module name first */
+  for (;;) {
     int len;
     cp = strrchr(arg, 'R');
-    if(!cp || cp<=arg+1 || cp[-1]!='_') break;
+    if (!cp || cp<=arg+1 || cp[-1]!='_') break;
     len=strlen(cp);
-    if(len<9) break;
-    if(strpbrk(cp+1,"ABCDEFGHIJKLMNOPQRSTUVWXYZ")) break;
-    if(strspn(cp+len-8,"0123456789abcdef")!=8) break;
+    if (len<9) break;
+    if (strpbrk(cp+1,"ABCDEFGHIJKLMNOPQRSTUVWXYZ")) break;
+    if (strspn(cp+len-8,"0123456789abcdef")!=8) break;
     cp[-1] = '\0';
   }
 }
 
 /***********************************/
 
-static const symb *search(unsigned long address, symb *idx, unsigned count){
+static const symb *search(unsigned long address, symb *idx, unsigned count) {
   unsigned left;
   unsigned mid;
   unsigned right;
-  if(!idx) return NULL;   /* maybe not allocated */
-  if(address < idx[0].addr) return NULL;
-  if(address >= idx[count-1].addr) return idx+count-1;
+  if (!idx) return NULL;   /* maybe not allocated */
+  if (address < idx[0].addr) return NULL;
+  if (address >= idx[count-1].addr) return idx+count-1;
   left  = 0;
   right = count-1;
-  for(;;){
+  for (;;) {
     mid = (left + right) / 2;
-    if(address >= idx[mid].addr) left  = mid;
-    if(address <= idx[mid].addr) right = mid;
-    if(right-left <= 1) break;
+    if (address >= idx[mid].addr) left  = mid;
+    if (address <= idx[mid].addr) right = mid;
+    if (right-left <= 1) break;
   }
-  if(address == idx[right].addr) return idx+right;
+  if (address == idx[right].addr) return idx+right;
   return idx+left;
 }
 
@@ -214,13 +214,13 @@ static void read_file(const char *restrict filename, char **bufp, unsigned *rest
   ssize_t total = 0;
   unsigned room = *roomp;
 
-  if(!room) goto hell;     /* failed before */
-  if(!buf) buf = malloc(room);
-  if(!buf) goto hell;
+  if (!room) goto hell;     /* failed before */
+  if (!buf) buf = malloc(room);
+  if (!buf) goto hell;
 open_again:
   fd = open(filename, O_RDONLY|O_NOCTTY|O_NONBLOCK);
-  if(fd<0){
-    switch(errno){
+  if (fd<0) {
+    switch(errno) {
     case EINTR:  goto open_again;
     default:     _exit(101);
     case EACCES:   /* somebody screwing around? */
@@ -229,25 +229,25 @@ open_again:
     }
     goto hell;
   }
-  for(;;){
+  for (;;) {
     done = read(fd, buf+total, room-total-1);
-    if(done==0) break;  /* nothing left */
-    if(done==-1){
-      if(errno==EINTR) continue;  /* try again */
+    if (done==0) break;  /* nothing left */
+    if (done==-1) {
+      if (errno==EINTR) continue;  /* try again */
       perror("");
       goto hell;
     }
-    if(done==(ssize_t)room-total-1){
+    if (done==(ssize_t)room-total-1) {
       char *tmp;
       total += done;
       /* more to go, but no room in buffer */
       room *= 2;
       tmp = realloc(buf, room);
-      if(!tmp) goto hell;
+      if (!tmp) goto hell;
       buf = tmp;
       continue;
     }
-    if(done>0 && done<(ssize_t)room-total-1){
+    if (done>0 && done<(ssize_t)room-total-1) {
       total += done; 
       continue;   /* OK, we read some. Go do more. */
     }
@@ -260,7 +260,7 @@ open_again:
   close(fd);
   return;
 hell:
-  if(buf) free(buf);
+  if (buf) free(buf);
   *bufp = NULL;
   *roomp = 0;   /* this function will never work again */
   total = 0;
@@ -272,49 +272,49 @@ hell:
 
 static int parse_ksyms(void) {
   char *endp;
-  if(!ksyms_room || !ksyms_data) goto quiet_goodbye;
+  if (!ksyms_room || !ksyms_data) goto quiet_goodbye;
   endp = ksyms_data;
   ksyms_count = 0;
-  if(idx_room) goto bypass;  /* some space already allocated */
+  if (idx_room) goto bypass;  /* some space already allocated */
   idx_room = 512;
-  for(;;){
+  for (;;) {
     void *vp;
     idx_room *= 2;
     vp = realloc(ksyms_index, sizeof(symb)*idx_room);
-    if(!vp) goto bad_alloc;
+    if (!vp) goto bad_alloc;
     ksyms_index = vp;
 bypass:
-    for(;;){
+    for (;;) {
       char *saved;
-      if(!*endp) return 1;
+      if (!*endp) return 1;
       saved = endp;
       ksyms_index[ksyms_count].addr = strtoul(endp, &endp, 16);
-      if(endp==saved || *endp != ' ') goto bad_parse;
+      if (endp==saved || *endp != ' ') goto bad_parse;
       endp++;
       ksyms_index[ksyms_count].name = endp;
       saved = endp;
       endp = strchr(endp,'\n');
-      if(!endp) goto bad_parse;   /* no newline */
+      if (!endp) goto bad_parse;   /* no newline */
       *endp = '\0';
       chop_version(saved);
       ++endp;
-      if(++ksyms_count >= idx_room) break;  /* need more space */
+      if (++ksyms_count >= idx_room) break;  /* need more space */
     }
   }
 
-  if(0){
+  if (0) {
 bad_alloc:
     fprintf(stderr, "Warning: not enough memory available\n");
   }
-  if(0){
+  if (0) {
 bad_parse:
     fprintf(stderr, "Warning: "KSYMS_FILENAME" not normal\n");
   }
 quiet_goodbye:
   idx_room = 0;
-  if(ksyms_data) free(ksyms_data) , ksyms_data = NULL;
+  if (ksyms_data) free(ksyms_data) , ksyms_data = NULL;
   ksyms_room = 0;
-  if(ksyms_index) free(ksyms_index) , ksyms_index = NULL;
+  if (ksyms_index) free(ksyms_index) , ksyms_index = NULL;
   ksyms_count = 0;
   return 0;
 }
@@ -329,39 +329,39 @@ static int sysmap_mmap(const char *restrict const filename, void (*message)(cons
   int fd;
   char Version[32];
   fd = open(filename, O_RDONLY|O_NOCTTY|O_NONBLOCK);
-  if(fd<0) return 0;
-  if(fstat(fd, &sbuf) < 0) goto bad_open;
-  if(!S_ISREG(sbuf.st_mode)) goto bad_open;
-  if(sbuf.st_size < 5000) goto bad_open;  /* if way too small */
+  if (fd<0) return 0;
+  if (fstat(fd, &sbuf) < 0) goto bad_open;
+  if (!S_ISREG(sbuf.st_mode)) goto bad_open;
+  if (sbuf.st_size < 5000) goto bad_open;  /* if way too small */
   /* Would be shared read-only, but we want '\0' after each name. */
   endp = mmap(0, sbuf.st_size + 1, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
   sysmap_data = endp;
-  while(*endp==' '){  /* damn Alpha machine types */
-    if(strncmp(endp,"                 w ", 19)) goto bad_parse;
+  while (*endp==' ') {  /* damn Alpha machine types */
+    if (strncmp(endp,"                 w ", 19)) goto bad_parse;
     endp += 19;
     endp = strchr(endp,'\n');
-    if(!endp) goto bad_parse;   /* no newline */
-    if(strncmp(endp-3, "_mv\n", 4)) goto bad_parse;
+    if (!endp) goto bad_parse;   /* no newline */
+    if (strncmp(endp-3, "_mv\n", 4)) goto bad_parse;
     endp++;
   }
-  if(sysmap_data == (caddr_t) -1) goto bad_open;
+  if (sysmap_data == (caddr_t) -1) goto bad_open;
   close(fd);
   fd = -1;
   sprintf(Version, "Version_%d", linux_version_code);
   sysmap_room = 512;
-  for(;;){
+  for (;;) {
     void *vp;
     sysmap_room *= 2;
     vp = realloc(sysmap_index, sizeof(symb)*sysmap_room);
-    if(!vp) goto bad_alloc;
+    if (!vp) goto bad_alloc;
     sysmap_index = vp;
-    for(;;){
+    for (;;) {
       char *vstart;
-      if(endp - sysmap_data >= sbuf.st_size){   /* if we reached the end */
+      if (endp - sysmap_data >= sbuf.st_size) {   /* if we reached the end */
         int i = VCNT;            /* check VCNT times to verify this file */
-        if(*Version) goto bad_version;
-        if(!ksyms_index) return 1; /* if can not verify, assume success */
-        while(i--){
+        if (*Version) goto bad_version;
+        if (!ksyms_index) return 1; /* if can not verify, assume success */
+        while (i--) {
 #if 1
           const symb *findme;
           const symb *map_symb;
@@ -369,15 +369,15 @@ static int sysmap_mmap(const char *restrict const filename, void (*message)(cons
           findme = ksyms_index + (ksyms_count*i/VCNT);
           /* Search for them in the System.map */
           map_symb = search(findme->addr, sysmap_index, sysmap_count);
-          if(map_symb){
-            if(map_symb->addr != findme->addr) continue;
+          if (map_symb) {
+            if (map_symb->addr != findme->addr) continue;
             /* backup to first matching address */
-            while (map_symb != sysmap_index){
+            while (map_symb != sysmap_index) {
               if (map_symb->addr != (map_symb-1)->addr) break;
               map_symb--;
             }
             /* search for name in symbols with same address */
-            while (map_symb != (sysmap_index+sysmap_count)){
+            while (map_symb != (sysmap_index+sysmap_count)) {
               if (map_symb->addr != findme->addr) break;
               if (!strcmp(map_symb->name,findme->name)) goto good_match;
               map_symb++;
@@ -392,60 +392,60 @@ good_match:;
         return 1; /* success */
       }
       sysmap_index[sysmap_count].addr = strtoul(endp, &endp, 16);
-      if(*endp != ' ') goto bad_parse;
+      if (*endp != ' ') goto bad_parse;
       endp++;
-      if(!strchr(SYMBOL_TYPE_CHARS, *endp)) goto bad_parse;
+      if (!strchr(SYMBOL_TYPE_CHARS, *endp)) goto bad_parse;
       endp++;
-      if(*endp != ' ') goto bad_parse;
+      if (*endp != ' ') goto bad_parse;
       endp++;
       sysmap_index[sysmap_count].name = endp;
       vstart = endp;
       endp = strchr(endp,'\n');
-      if(!endp) goto bad_parse;   /* no newline */
+      if (!endp) goto bad_parse;   /* no newline */
       *endp = '\0';
       ++endp;
       chop_version(vstart);
-      if(*vstart=='V' && *Version && !strcmp(Version,vstart)) *Version='\0';
-      if(++sysmap_count >= sysmap_room) break;  /* need more space */
+      if (*vstart=='V' && *Version && !strcmp(Version,vstart)) *Version='\0';
+      if (++sysmap_count >= sysmap_room) break;  /* need more space */
     }
   }
 
-  if(0){
+  if (0) {
 bad_match:
     message("Warning: %s does not match kernel data.\n", filename);
   }
-  if(0){
+  if (0) {
 bad_version:
     message("Warning: %s has an incorrect kernel version.\n", filename);
   }
-  if(0){
+  if (0) {
 bad_alloc:
     message("Warning: not enough memory available\n");
   }
-  if(0){
+  if (0) {
 bad_parse:
     message("Warning: %s not parseable as a System.map\n", filename);
   }
-  if(0){
+  if (0) {
 bad_open:
     message("Warning: %s could not be opened as a System.map\n", filename);
   }
 
   sysmap_room=0;
   sysmap_count=0;
-  if(sysmap_index) free(sysmap_index);
+  if (sysmap_index) free(sysmap_index);
   sysmap_index = NULL;
-  if(fd>=0) close(fd);
-  if(sysmap_data) munmap(sysmap_data, sbuf.st_size + 1);
+  if (fd>=0) close(fd);
+  if (sysmap_data) munmap(sysmap_data, sbuf.st_size + 1);
   sysmap_data = NULL;
   return 0;
 }
 
 /*********************************/
 
-static void read_and_parse(void){
+static void read_and_parse(void) {
   static time_t stamp;    /* after data gets old, load /proc/ksyms again */
-  if(time(NULL) != stamp){
+  if (time(NULL) != stamp) {
     read_file(KSYMS_FILENAME, &ksyms_data, &ksyms_room);
     parse_ksyms();
     memset((void*)hashtable,0,sizeof(hashtable)); /* invalidate cache */
@@ -487,21 +487,21 @@ int open_psdb_message(const char *restrict override, void (*message)(const char 
 #endif
 
   // first allow for a user-selected System.map file
-  if(
+  if (
     (sm=override)
     ||
     (sm=getenv("PS_SYSMAP"))
     ||
     (sm=getenv("PS_SYSTEM_MAP"))
-  ){
+  ) {
     read_and_parse();
-    if(sysmap_mmap(sm, message)) return 0;
+    if (sysmap_mmap(sm, message)) return 0;
     /* failure is better than ignoring the user & using bad data */
     return -1;           /* ought to return "Namelist not found." */
   }
 
   // next try the Linux 2.5.xx method
-  if(!stat("/proc/self/wchan", &sbuf)){
+  if (!stat("/proc/self/wchan", &sbuf)) {
     use_wchan_file = 1; // hack
     return 0;
   }
@@ -511,11 +511,11 @@ int open_psdb_message(const char *restrict override, void (*message)(const char 
   do{
     int did_ksyms = 0;
     snprintf(path, sizeof path, *fmt, uts.release);
-    if(!stat(path, &sbuf)){
+    if (!stat(path, &sbuf)) {
       if (did_ksyms++) read_and_parse();
       if (sysmap_mmap(path, message)) return 0;
     }
-  }while(*++fmt);
+  }while (*++fmt);
   /* TODO: Without System.map, no need to keep ksyms loaded. */
   return -1;
 }
@@ -528,7 +528,7 @@ int open_psdb(const char *restrict override) {
 
 /***************************************/
 
-const char * read_wchan_file(unsigned pid){
+const char * read_wchan_file(unsigned pid) {
   static char buf[64];
   const char *ret = buf;
   ssize_t num;
@@ -536,20 +536,20 @@ const char * read_wchan_file(unsigned pid){
 
   snprintf(buf, sizeof buf, "/proc/%d/wchan", pid);
   fd = open(buf, O_RDONLY);
-  if(fd==-1) return "?";
+  if (fd==-1) return "?";
   num = read(fd, buf, sizeof buf - 1);
   close(fd);
-  if(num<1) return "?"; // allow for "0"
+  if (num<1) return "?"; // allow for "0"
   buf[num] = '\0';
 
-  if(buf[0]=='0' && buf[1]=='\0') return "-";
+  if (buf[0]=='0' && buf[1]=='\0') return "-";
 
   // would skip over numbers if they existed -- but no
 
-  switch(*ret){
-    case 's': if(!strncmp(ret, "sys_", 4)) ret += 4;   break;
-    case 'd': if(!strncmp(ret, "do_",  3)) ret += 3;   break;
-    case '_': while(*ret=='_') ret++;                  break;
+  switch(*ret) {
+    case 's': if (!strncmp(ret, "sys_", 4)) ret += 4;   break;
+    case 'd': if (!strncmp(ret, "do_",  3)) ret += 3;   break;
+    case '_': while (*ret=='_') ret++;                  break;
   }
   return ret;
 }
@@ -567,33 +567,33 @@ const char * wchan(unsigned long address, unsigned pid) {
   unsigned hash;
 
   // can't cache it due to a race condition :-(
-  if(use_wchan_file) return read_wchan_file(pid);
+  if (use_wchan_file) return read_wchan_file(pid);
 
-  if(!address) return dash;
+  if (!address) return dash;
 
   read_and_parse();
   hash = (address >> 4) & 0xff;  /* got 56/63 hits & 7/63 misses */
-  if(hashtable[hash].addr == address) return hashtable[hash].name;
+  if (hashtable[hash].addr == address) return hashtable[hash].name;
   mod_symb = search(address, ksyms_index,  ksyms_count);
-  if(!mod_symb) mod_symb = &fail;
+  if (!mod_symb) mod_symb = &fail;
   map_symb = search(address, sysmap_index, sysmap_count);
-  if(!map_symb) map_symb = &fail;
+  if (!map_symb) map_symb = &fail;
 
   /* which result is closest? */
   good_symb = (mod_symb->addr > map_symb->addr)
             ? mod_symb
             : map_symb
   ;
-  if(address > good_symb->addr + MAX_OFFSET) good_symb = &fail;
+  if (address > good_symb->addr + MAX_OFFSET) good_symb = &fail;
 
   /* good_symb->name has the data, but needs to be trimmed */
   ret = good_symb->name;
-  switch(*ret){
-    case 's': if(!strncmp(ret, "sys_", 4)) ret += 4;   break;
-    case 'd': if(!strncmp(ret, "do_",  3)) ret += 3;   break;
-    case '_': while(*ret=='_') ret++;                  break;
+  switch(*ret) {
+    case 's': if (!strncmp(ret, "sys_", 4)) ret += 4;   break;
+    case 'd': if (!strncmp(ret, "do_",  3)) ret += 3;   break;
+    case '_': while (*ret=='_') ret++;                  break;
   }
-  /* if(!*ret) ret = fail.name; */  /* not likely (name was "sys_", etc.) */
+  /* if (!*ret) ret = fail.name; */  /* not likely (name was "sys_", etc.) */
 
   /* cache name after abbreviation */
   hashtable[hash].addr = address;

@@ -58,13 +58,13 @@ int main() {
 		}
 
 	/* Value of Semaphore */
-		if ( sem_getvalue(&mysemp[i], &val[i]) == -1 ) {
+		if (sem_getvalue(&mysemp[i], &val[i]) == -1) {
 			perror(ERROR_PREFIX "sem_getvalue");
 			return PTS_UNRESOLVED;
 		}
 
 	/* Checking if the value of the Semaphore decremented by one */
-		if (( val[i] == 0 ) && ( sts[i] == 0)) {
+		if ((val[i] == 0) && (sts[i] == 0)) {
 			puts("TEST PASSED");
 			sem_destroy(&mysemp[i]);
 			return PTS_PASS;

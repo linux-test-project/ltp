@@ -56,7 +56,7 @@ PROCTAB* openproc(int flags, ...) {
 /* terminate a process table scan
  */
 void closeproc(PROCTAB* PT) {
-    if (PT){
+    if (PT) {
         if (PT->procfs) closedir(PT->procfs);
         free(PT);
     }
@@ -85,56 +85,56 @@ void freeproc(proc_t* p) {
 // "PPid:\t%d\n"
 // "TracerPid:\t%d\n"
 
-static void status2proc(const char *S, proc_t *restrict P){
+static void status2proc(const char *S, proc_t *restrict P) {
     char* tmp;
     unsigned i;
 
     // The cmd is escaped, with \\ and \n for backslash and newline.
     // It certainly may contain "VmSize:" and similar crap.
-    if(unlikely(strncmp("Name:\t",S,6))) fprintf(stderr, "Internal error!\n");
+    if (unlikely(strncmp("Name:\t",S,6))) fprintf(stderr, "Internal error!\n");
     S += 6;
     i = 0;
-    while(i < sizeof P->cmd - 1){
+    while (i < sizeof P->cmd - 1) {
       int c = *S++;
-      if(unlikely(c=='\n')) break;
-      if(unlikely(c=='\0')) return; // should never happen
-      if(unlikely(c=='\\')){
+      if (unlikely(c=='\n')) break;
+      if (unlikely(c=='\0')) return; // should never happen
+      if (unlikely(c=='\\')) {
         c = *S++;
-        if(c=='\n') break; // should never happen
-        if(!c) break; // should never happen
-        if(c=='n') c='\n'; // else we assume it is '\\'
+        if (c=='\n') break; // should never happen
+        if (!c) break; // should never happen
+        if (c=='n') c='\n'; // else we assume it is '\\'
       }
       P->cmd[i++] = c;
     }
     P->cmd[i] = '\0';
 
     tmp = strstr (S,"State:\t");
-    if(likely(tmp)) P->state = tmp[7];
+    if (likely(tmp)) P->state = tmp[7];
     else fprintf(stderr, "Internal error!\n");
 
     tmp = strstr (S,"PPid:");
-    if(likely(tmp)) sscanf (tmp,
+    if (likely(tmp)) sscanf (tmp,
         "PPid:\t%d\n",
         &P->ppid
     );
     else fprintf(stderr, "Internal error!\n");
 
     tmp = strstr (S,"Uid:");
-    if(likely(tmp)) sscanf (tmp,
+    if (likely(tmp)) sscanf (tmp,
         "Uid:\t%d\t%d\t%d\t%d",
         &P->ruid, &P->euid, &P->suid, &P->fuid
     );
     else fprintf(stderr, "Internal error!\n");
 
     tmp = strstr (S,"Gid:");
-    if(likely(tmp)) sscanf (tmp,
+    if (likely(tmp)) sscanf (tmp,
         "Gid:\t%d\t%d\t%d\t%d",
         &P->rgid, &P->egid, &P->sgid, &P->fgid
     );
     else fprintf(stderr, "Internal error!\n");
 
     tmp = strstr (S,"VmSize:");
-    if(likely(tmp)) sscanf (tmp,
+    if (likely(tmp)) sscanf (tmp,
         "VmSize: %lu kB\n"
         "VmLck: %lu kB\n"
         "VmRSS: %lu kB\n"
@@ -157,7 +157,7 @@ static void status2proc(const char *S, proc_t *restrict P){
     }
 
     tmp = strstr (S,"SigPnd:");
-    if(likely(tmp)) sscanf (tmp,
+    if (likely(tmp)) sscanf (tmp,
 #ifdef SIGNAL_STRING
         "SigPnd: %s SigBlk: %s SigIgn: %s %*s %s",
         P->signal, P->blocked, P->sigignore, P->sigcatch
@@ -186,7 +186,7 @@ static void stat2proc(const char* S, proc_t *restrict P) {
     S = strchr(S, '(') + 1;
     tmp = strrchr(S, ')');
     num = tmp - S;
-    if(unlikely(num >= sizeof P->cmd)) num = sizeof P->cmd - 1;
+    if (unlikely(num >= sizeof P->cmd)) num = sizeof P->cmd - 1;
     memcpy(P->cmd, S, num);
     P->cmd[num] = '\0';
     S = tmp + 2;                 // skip ") "
@@ -237,9 +237,9 @@ static int file2str(const char *directory, const char *what, char *ret, int cap)
 
     sprintf(filename, "%s/%s", directory, what);
     fd = open(filename, O_RDONLY, 0);
-    if(unlikely(fd==-1)) return -1;
+    if (unlikely(fd==-1)) return -1;
     num_read = read(fd, ret, cap - 1);
-    if(unlikely(num_read<=0)) num_read = -1;
+    if (unlikely(num_read<=0)) num_read = -1;
     else ret[num_read] = 0;
     close(fd);
     return num_read;
@@ -253,7 +253,7 @@ static char** file2strvec(const char* directory, const char* what) {
 
     sprintf(buf, "%s/%s", directory, what);
     fd = open(buf, O_RDONLY, 0);
-    if(fd==-1) return NULL;
+    if (fd==-1) return NULL;
 
     /* read whole file into a memory buffer, allocating as we go */
     while ((n = read(fd, buf, sizeof buf - 1)) > 0) {
@@ -300,32 +300,32 @@ static char** file2strvec(const char* directory, const char* what) {
 }
 
 // warning: interface may change
-int read_cmdline(char *restrict const dst, unsigned sz, unsigned pid){
+int read_cmdline(char *restrict const dst, unsigned sz, unsigned pid) {
     char name[32];
     int fd;
     unsigned n = 0;
     dst[0] = '\0';
     snprintf(name, sizeof name, "/proc/%u/cmdline", pid);
     fd = open(name, O_RDONLY);
-    if(fd==-1) return 0;
-    for(;;){
+    if (fd==-1) return 0;
+    for (;;) {
         ssize_t r = read(fd,dst+n,sz-n);
-        if(r==-1){
-            if(errno==EINTR) continue;
+        if (r==-1) {
+            if (errno==EINTR) continue;
             break;
         }
         n += r;
-        if(n==sz) break; // filled the buffer
-        if(r==0) break;  // EOF
+        if (n==sz) break; // filled the buffer
+        if (r==0) break;  // EOF
     }
-    if(n){
+    if (n) {
         int i;
-        if(n==sz) n--;
+        if (n==sz) n--;
         dst[n] = '\0';
         i=n;
-        while(i--){
+        while (i--) {
           int c = dst[i];
-          if(c<' ' || c>'~') dst[i]=' ';
+          if (c<' ' || c>'~') dst[i]=' ';
         }
     }
     return n;
@@ -384,8 +384,8 @@ next_proc:				/* get next PID for consideration */
     } else {					/* get next numeric /proc ent */
 	for (;;) {
 	    ent = readdir(PT->procfs);
-	    if(unlikely(unlikely(!ent) || unlikely(!ent->d_name))) return NULL;
-	    if(likely( likely(*ent->d_name > '0') && likely(*ent->d_name <= '9') )) break;
+	    if (unlikely(unlikely(!ent) || unlikely(!ent->d_name))) return NULL;
+	    if (likely( likely(*ent->d_name > '0') && likely(*ent->d_name <= '9') )) break;
 	}
 	pid = strtoul(ent->d_name, NULL, 10);
 	memcpy(path, "/proc/", 6);
@@ -393,7 +393,7 @@ next_proc:				/* get next PID for consideration */
 //	snprintf(path, sizeof path, "/proc/%s", ent->d_name);
     }
 #ifdef FLASK_LINUX
-    if ( stat_secure(path, &sb, &secsid) == -1 ) /* no such dirent (anymore) */
+    if (stat_secure(path, &sb, &secsid) == -1 ) /* no such dirent (anymore) */
 #else
     if (unlikely(stat(path, &sb) == -1))	/* no such dirent (anymore) */
 #endif
@@ -423,15 +423,15 @@ next_proc:				/* get next PID for consideration */
     }						/* statm fields just zero */
 
     if (flags & PROC_FILLSTATUS) {         /* read, parse /proc/#/status */
-       if (likely( file2str(path, "status", sbuf, sizeof sbuf) != -1 )){
+       if (likely( file2str(path, "status", sbuf, sizeof sbuf) != -1 )) {
            status2proc(sbuf, p);
        }
     }
 
     /* some number->text resolving which is time consuming */
-    if (flags & PROC_FILLUSR){
+    if (flags & PROC_FILLUSR) {
 	strncpy(p->euser,   user_from_uid(p->euid), sizeof p->euser);
-        if(flags & PROC_FILLSTATUS) {
+        if (flags & PROC_FILLSTATUS) {
             strncpy(p->ruser,   user_from_uid(p->ruid), sizeof p->ruser);
             strncpy(p->suser,   user_from_uid(p->suid), sizeof p->suser);
             strncpy(p->fuser,   user_from_uid(p->fuid), sizeof p->fuser);
@@ -439,9 +439,9 @@ next_proc:				/* get next PID for consideration */
     }
 
     /* some number->text resolving which is time consuming */
-    if (flags & PROC_FILLGRP){
+    if (flags & PROC_FILLGRP) {
         strncpy(p->egroup, group_from_gid(p->egid), sizeof p->egroup);
-        if(flags & PROC_FILLSTATUS) {
+        if (flags & PROC_FILLSTATUS) {
             strncpy(p->rgroup, group_from_gid(p->rgid), sizeof p->rgroup);
             strncpy(p->sgroup, group_from_gid(p->sgid), sizeof p->sgroup);
             strncpy(p->fgroup, group_from_gid(p->fgid), sizeof p->fgroup);
@@ -490,8 +490,8 @@ next_proc:				/* get next PID for consideration */
 
     for (;;) {
 	ent = readdir(PT->procfs);
-	if(unlikely(unlikely(!ent) || unlikely(!ent->d_name))) return NULL;
-	if(likely( likely(*ent->d_name > '0') && likely(*ent->d_name <= '9') )) break;
+	if (unlikely(unlikely(!ent) || unlikely(!ent->d_name))) return NULL;
+	if (likely( likely(*ent->d_name > '0') && likely(*ent->d_name <= '9') )) break;
     }
     pid = strtoul(ent->d_name, NULL, 10);
     memcpy(path, "/proc/", 6);
@@ -519,20 +519,20 @@ next_proc:				/* get next PID for consideration */
     stat2proc(sbuf, p);				/* parse /proc/#/stat */
 
     if (flags & PROC_FILLMEM) {				/* read, parse /proc/#/statm */
-	if ((file2str(path, "statm", sbuf, sizeof sbuf)) != -1 )
+	if ((file2str(path, "statm", sbuf, sizeof sbuf)) != -1)
 	    statm2proc(sbuf, p);		/* ignore statm errors here */
     }						/* statm fields just zero */
 
   /*  if (flags & PROC_FILLSTATUS) { */        /* read, parse /proc/#/status */
-       if ((file2str(path, "status", sbuf, sizeof sbuf)) != -1 ){
+       if ((file2str(path, "status", sbuf, sizeof sbuf)) != -1) {
            status2proc(sbuf, p);
        }
 /*    }*/
 
     /* some number->text resolving which is time consuming */
-    if (flags & PROC_FILLUSR){
+    if (flags & PROC_FILLUSR) {
 	strncpy(p->euser,   user_from_uid(p->euid), sizeof p->euser);
-/*        if(flags & PROC_FILLSTATUS) { */
+/*        if (flags & PROC_FILLSTATUS) { */
             strncpy(p->ruser,   user_from_uid(p->ruid), sizeof p->ruser);
             strncpy(p->suser,   user_from_uid(p->suid), sizeof p->suser);
             strncpy(p->fuser,   user_from_uid(p->fuid), sizeof p->fuser);
@@ -540,9 +540,9 @@ next_proc:				/* get next PID for consideration */
     }
 
     /* some number->text resolving which is time consuming */
-    if (flags & PROC_FILLGRP){
+    if (flags & PROC_FILLGRP) {
         strncpy(p->egroup, group_from_gid(p->egid), sizeof p->egroup);
-/*        if(flags & PROC_FILLSTATUS) { */
+/*        if (flags & PROC_FILLSTATUS) { */
             strncpy(p->rgroup, group_from_gid(p->rgid), sizeof p->rgroup);
             strncpy(p->sgroup, group_from_gid(p->sgid), sizeof p->sgroup);
             strncpy(p->fgroup, group_from_gid(p->fgid), sizeof p->fgroup);

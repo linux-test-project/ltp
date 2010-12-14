@@ -122,17 +122,17 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	for(j=0; j < INTERVALS; j++){
+	for (j=0; j < INTERVALS; j++) {
 		/* Collect samples */
-		for(i = 0; i < ITERATIONS; i++)
+		for (i = 0; i < ITERATIONS; i++)
 			rdtscll(sample_list[i]);
 
 		/* Process samples */
-		for(i = 0; i < (ITERATIONS-1); i++) {
+		for (i = 0; i < (ITERATIONS-1); i++) {
 			delta = sample_list[i+1] - sample_list[i];
 			if (delta < min) min = delta;
 			if (delta > max) max = delta;
-			if(delta > 100000)
+			if (delta > 100000)
 				printf("maxd(%llu:%llu): %llu %llu = %llu\n", j, i,
 					sample_list[i], sample_list[i+1],
 					delta);

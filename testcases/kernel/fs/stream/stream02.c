@@ -58,7 +58,7 @@ int main(int ac, char *av[])
          /*
           * parse standard options
           */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL) {
                          tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
                  tst_exit();
                  /*NOTREACHED*/
@@ -72,18 +72,18 @@ int main(int ac, char *av[])
 		sprintf(tempfile1, "stream1.%d", getpid());
 	/*--------------------------------------------------------------------*/
 	//block0:
-		if(mknod(tempfile1, (S_IFIFO|0666), 0) != 0) {
+		if (mknod(tempfile1, (S_IFIFO|0666), 0) != 0) {
 			tst_resm(TFAIL,"mknod failed in block0: %s", strerror(errno));
 			local_flag = FAILED;
 			goto block1;
 		}
-		if((stream=fopen(tempfile1,"w+")) == NULL) {
+		if ((stream=fopen(tempfile1,"w+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) w+ failed for pipe file: %s", tempfile1, strerror(errno));
 			local_flag = FAILED;
 		} else {
 			fclose(stream);
 		}
-		if((stream=fopen(tempfile1,"a+")) == NULL) {
+		if ((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			local_flag = FAILED;
 		} else {
@@ -99,10 +99,10 @@ int main(int ac, char *av[])
 
 	/*--------------------------------------------------------------------*/
 	block1 :
-		if(( fd = open("/dev/tty",O_WRONLY)) >= 0 )
+		if (( fd = open("/dev/tty",O_WRONLY)) >= 0 )
 		{
 			close(fd);
-			if(( stream = fopen("/dev/tty","w"))==NULL) {
+			if (( stream = fopen("/dev/tty","w"))==NULL) {
 				tst_resm(TFAIL,"fopen(/dev/tty) write failed: %s", strerror(errno));
 				local_flag = FAILED;
 			} else {

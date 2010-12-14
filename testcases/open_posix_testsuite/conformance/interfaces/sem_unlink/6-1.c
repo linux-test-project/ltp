@@ -84,7 +84,7 @@
 /******************************************************************************/
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, value;
 
@@ -94,104 +94,104 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Create the semaphore */
-	sem1 = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 1 );
+	sem1 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);
 
-	if (( sem1 == SEM_FAILED ) && ( errno == EEXIST ))
+	if ((sem1 == SEM_FAILED) && (errno == EEXIST))
 	{
-		sem_unlink( SEM_NAME );
-		sem1 = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 1 );
+		sem_unlink(SEM_NAME);
+		sem1 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);
 	}
 
 	if (sem1 == SEM_FAILED)
 	{
-		UNRESOLVED( errno, "Failed to create the semaphore" );
+		UNRESOLVED(errno, "Failed to create the semaphore");
 	}
 
 	/* Unlink */
-	ret = sem_unlink( SEM_NAME );
+	ret = sem_unlink(SEM_NAME);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to unlink the semaphore" );
+		UNRESOLVED(errno, "Failed to unlink the semaphore");
 	}
 
 	/* Try reconnect */
-	sem2 = sem_open( SEM_NAME, 0 );
+	sem2 = sem_open(SEM_NAME, 0);
 
 	if (sem2 != SEM_FAILED)
 	{
-		FAILED( "Reconnecting the unlinked semaphore did not failed" );
+		FAILED("Reconnecting the unlinked semaphore did not failed");
 	}
 
 	if (errno != ENOENT)
 	{
-		output( "Error %d: %s\n", errno, strerror( errno ) );
-		FAILED( "Reconnecting the unlinked semaphore failed with a wrong error" );
+		output("Error %d: %s\n", errno, strerror(errno));
+		FAILED("Reconnecting the unlinked semaphore failed with a wrong error");
 	}
 
 	/* Reopen the semaphore */
-	sem2 = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 3 );
+	sem2 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 3);
 
 	if (sem2 == SEM_FAILED)
 	{
-		output( "Gor error %d: %s\n", errno, strerror( errno ) );
-		FAILED( "Failed to recreate the semaphore" );
+		output("Gor error %d: %s\n", errno, strerror(errno));
+		FAILED("Failed to recreate the semaphore");
 	}
 
 	/* Check the semaphore have different values */
-	ret = sem_getvalue( sem1, &value );
+	ret = sem_getvalue(sem1, &value);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to read sem1 value" );
+		UNRESOLVED(errno, "Failed to read sem1 value");
 	}
 
 	if (value != 1)
 	{
-		output( "Read: %d\n", value );
-		FAILED( "Semaphore value is not as expected" );
+		output("Read: %d\n", value);
+		FAILED("Semaphore value is not as expected");
 	}
 
-	ret = sem_getvalue( sem2, &value );
+	ret = sem_getvalue(sem2, &value);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to read sem1 value" );
+		UNRESOLVED(errno, "Failed to read sem1 value");
 	}
 
 	if (value != 3)
 	{
-		output( "Read: %d\n", value );
-		FAILED( "Semaphore value is not as expected" );
+		output("Read: %d\n", value);
+		FAILED("Semaphore value is not as expected");
 	}
 
 	/* Unlink */
-	ret = sem_unlink( SEM_NAME );
+	ret = sem_unlink(SEM_NAME);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to unlink the semaphore" );
+		UNRESOLVED(errno, "Failed to unlink the semaphore");
 	}
 
 	/* close both */
-	ret = sem_close( sem1 );
+	ret = sem_close(sem1);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close the semaphore" );
+		UNRESOLVED(errno, "Failed to close the semaphore");
 	}
 
-	ret = sem_close( sem2 );
+	ret = sem_close(sem2);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close the semaphore" );
+		UNRESOLVED(errno, "Failed to close the semaphore");
 	}
 
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

@@ -9,7 +9,7 @@
  * This case will always PASS.
  * 
  * The functions may fail if:
- * The pthread_spin_unlock( ) function may fail if:
+ * The pthread_spin_unlock() function may fail if:
  *	[EPERM] The calling thread does not hold the lock.
  *
  * Steps:
@@ -113,7 +113,7 @@ int main()
 	}
 	
 	/* Test to see the return code of pthread_spin_unlock */
-	if ( rc == EPERM)
+	if (rc == EPERM)
 	{
 		printf("main: correctly got EPERM when unlocking a spinlock we didn't have permission to unlock\n");
 		printf("Test PASSED\n");

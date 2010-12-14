@@ -196,7 +196,7 @@ void multiply_matrices ()
 	 * Now multiply the two matrices
 	 */
 	for (i=0; i < MATRIX_SIZE; i++) {
-		for ( j=0; j < MATRIX_SIZE; j++) {
+		for (j=0; j < MATRIX_SIZE; j++) {
 			matrix_3 [i][j] = 0.0;	/* clear the element first */
 			for (k=0; k < MATRIX_SIZE; k++)
 				matrix_3 [i][j] +=

@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 	printf("_POSIX_MESSAGE_PASSING is not defined \n");
 	return PTS_UNRESOLVED;
 #endif */
-	if ((2 != argc) || (( num = atoi(argv[1])) <= 0)) {
+	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		fprintf(stderr, "Usage: %s number_of_threads\n", argv[0]);
                 return PTS_FAIL;
         }
@@ -102,9 +102,9 @@ int main(int argc, char *argv[])
 	mqstat.mq_flags = 0;
   
 	for (i = 0; i < num; i++) {
-	  	if ( ((mqd_t) -1) == (mq[i] = mq_open(MQ_NAME[i],oflag,0777, &mqstat)) ) {
-		perror("mq_open doesn't return success \n");
-		return PTS_UNRESOLVED;
+	  	if ((mq[i] = mq_open(MQ_NAME[i],oflag,0777, &mqstat)) != -1) {
+			perror("mq_open doesn't return success \n");
+			return PTS_UNRESOLVED;
 		}
 		printf("mq[%i] created \n", i);
 	}
@@ -127,4 +127,3 @@ int main(int argc, char *argv[])
 	}
 	return PTS_PASS;
 }
-

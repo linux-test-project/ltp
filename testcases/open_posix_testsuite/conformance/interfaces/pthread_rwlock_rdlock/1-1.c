@@ -6,7 +6,7 @@
 
  * Test that pthread_rwlock_rdlock(pthread_rwlock_t *rwlock)
  *
- * pthread_rwlock_rdlock( ) function shall apply a read lock to the 
+ * pthread_rwlock_rdlock() function shall apply a read lock to the 
  * read-write lock referenced by rwlock. The calling thread acquires 
  * the read lock if a writer does not hold the lock and there are
  * no writers blocked on the lock.

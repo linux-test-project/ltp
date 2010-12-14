@@ -84,11 +84,11 @@ void *threaded(void * arg)
 	int ret;
 
 	do {
-		ret = sem_wait( arg );
-	} while (( ret != 0 ) && (errno == EINTR));
+		ret = sem_wait(arg);
+	} while ((ret != 0) && (errno == EINTR));
 
 	if (ret != 0) {
-		UNRESOLVED( errno, "Failed to wait for the semaphore" );
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}
 
 	return NULL;
@@ -109,14 +109,14 @@ int main(int argc, char *argv[])
 	ret = sem_init(&sem, 0, 0);
 
 	if (ret != 0) {
-		UNRESOLVED( errno, "Failed to init semaphore" );
+		UNRESOLVED(errno, "Failed to init semaphore");
 	}
 
 	/* Create the thread */
 	ret = pthread_create(&th, NULL, threaded, &sem);
 
 	if (ret != 0) {
-		UNRESOLVED( ret, "Failed to create the thread" );
+		UNRESOLVED(ret, "Failed to create the thread");
 	}
 
 	/* Sleep 1 sec so the thread enters the sem_wait call */
@@ -126,11 +126,11 @@ int main(int argc, char *argv[])
 	ret = sem_getvalue(&sem, &val);
 
 	if (ret != 0) {
-		UNRESOLVED( errno, "Failed to get semaphore value" );
+		UNRESOLVED(errno, "Failed to get semaphore value");
 	}
 
 	if ((val != 0) && (val != -1)) {
-		output("Val: %d\n", val );
+		output("Val: %d\n", val);
 		FAILED("Semaphore count is neither 0 nor # of waiting processes");
 	}
 
@@ -145,14 +145,14 @@ int main(int argc, char *argv[])
 	ret = pthread_join(th, NULL);
 
 	if (ret != 0) {
-		UNRESOLVED( ret, "Failed to join the thread" );
+		UNRESOLVED(ret, "Failed to join the thread");
 	}
 
 	/* Destroy the semaphore */
 	ret = sem_destroy(&sem);
 
 	if (ret != 0) {
-		UNRESOLVED( errno, "Failed to sem_destroy" );
+		UNRESOLVED(errno, "Failed to sem_destroy");
 	}
 
 	/* Test passed */

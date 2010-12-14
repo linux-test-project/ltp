@@ -79,7 +79,7 @@
 
 int control;
 
-void my_init( void )
+void my_init(void)
 {
 
 	control = 1;
@@ -88,7 +88,7 @@ void my_init( void )
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret;
 
@@ -100,16 +100,16 @@ int main( int argc, char * argv[] )
 	control = 0;
 
 	/* Call the initializer */
-	ret = pthread_once( &myctl, my_init );
+	ret = pthread_once(&myctl, my_init);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "pthread_once failed" );
+		UNRESOLVED(ret, "pthread_once failed");
 	}
 
 	if (control != 1)
 	{
-		FAILED( "The initializer function did not execute" );
+		FAILED("The initializer function did not execute");
 	}
 
 	PASSED;

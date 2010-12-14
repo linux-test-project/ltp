@@ -56,7 +56,7 @@ char *sprint_uptime(void) {
   uphours = upminutes / 60;
   uphours = uphours % 24;
   upminutes = upminutes % 60;
-  if(uphours)
+  if (uphours)
     pos += sprintf(buf + pos, "%2d:%02d, ", uphours, upminutes);
   else
     pos += sprintf(buf + pos, "%d min, ", upminutes);

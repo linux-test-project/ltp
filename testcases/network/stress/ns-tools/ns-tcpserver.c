@@ -179,7 +179,7 @@ delete_zombies(struct server_info *info_p)
     int status;		/* exit value of a child */
     pid_t zombie_pid;   /* process id of a zombie */
 
-    while(info_p->current_connection) {
+    while (info_p->current_connection) {
 	zombie_pid = waitpid((pid_t)-1, &status, WNOHANG);
 	if (zombie_pid == (pid_t)-1)
 	    fatal_error("waitpid()");
@@ -321,7 +321,7 @@ communicate_client(struct server_info *info_p, int sock_fd)
 	    return EXIT_FAILURE;
 	}
     }
-    if(debug)
+    if (debug)
 	fprintf(stderr, "sndbuf size is %d\n", sndbuf_size);
 
     /* Define the message */
@@ -341,7 +341,7 @@ communicate_client(struct server_info *info_p, int sock_fd)
 	fatal_error("sigaction()");
 
     /* Send the message */
-    for(;;) {
+    for (;;) {
 	sntbyte_size = send(sock_fd, sendmsg, sndbuf_size, 0);
 
 	/* Catch SIGPIPE */
@@ -407,7 +407,7 @@ handle_client(struct server_info *info_p)
 	fatal_error("sigaction()");
 
     /* Loop to wait a new connection */
-    for(;;) {
+    for (;;) {
 	if (do_accept) {
 	    int data_sd;	/* socket descriptor for send/recv data */
 	    socklen_t client_addr_len;	/* length of `client_addr' */

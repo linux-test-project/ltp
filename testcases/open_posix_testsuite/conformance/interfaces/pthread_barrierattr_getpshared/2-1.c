@@ -192,7 +192,7 @@ int main()
 	if (pid > 0)
 	{
 		/* parent */
-		if ( wait(&status) != pid)
+		if (wait(&status) != pid)
 		{
 			printf("parent: error at waitpid()\n");
 			return PTS_UNRESOLVED;

@@ -48,7 +48,7 @@ int main()
 	fd = open(filename, O_CREAT|O_WRONLY, 0666);
 
 	memset(buf, 0xaa, sizeof(buf));
-	for ( i = 0 ; i < 3000; i++)
+	for (i = 0 ; i < 3000; i++)
 		write(fd, buf, sizeof(buf));
 	fsync(fd);
 	close(fd);

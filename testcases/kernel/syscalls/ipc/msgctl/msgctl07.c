@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
-		(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+		(void)msgctl(msqid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
 		tst_exit();
 	} else if (pid == 0) {
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 			tst_resm(TFAIL|TERRNO, "signal failed");
 			kill(pid, SIGKILL);
-			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
 		}
 		ready = 0;
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
 			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
-			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
 		}
 		wait(&status);
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
-		(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+		(void)msgctl(msqid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
 		tst_exit();
 	} else if (pid == 0) {
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 			tst_resm(TFAIL|TERRNO, "signal failed");
 			kill(pid, SIGKILL);
-			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
 		}
 		ready = 0;
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
 			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
-			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
 		}
 		for (j = 0; j < BYTES; j++)
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 		if (msgsnd(msqid, &p2_msgp, BYTES, 0) == -1) {
 			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
-			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
 		}
 		for (k = 0; k < BYTES; k++)
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 		if (msgsnd(msqid, &p3_msgp, BYTES, 0) == -1) {
 			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
-			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
 		}
 		wait(&status);
@@ -225,9 +225,9 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "Removing the message queue");
 #endif
 	fflush(stdout);
-	(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-	if ((status = msgctl(msqid, IPC_STAT, (struct msqid_ds *)NULL)) != -1) {
-		(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+	(void)msgctl(msqid, IPC_RMID, NULL);
+	if ((status = msgctl(msqid, IPC_STAT, NULL)) != -1) {
+		(void)msgctl(msqid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed");
 		tst_exit();
 

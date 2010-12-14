@@ -58,7 +58,7 @@
 #include <unistd.h>
 #include <string.h>
 
-void noprintf(char* string, ...){
+void noprintf(char* string, ...) {
 }
 
 #ifdef DEBUG		/* compile with this flag for debug, use dprt in code */
@@ -90,7 +90,7 @@ void noprintf(char* string, ...){
                                usage(prog); \
                                    } while (0)
 
-#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+#define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 
 typedef struct {        /* contains priority and CPU info of the task.        */
     int exp_prio;	/* priority that we wish to set.                      */
@@ -409,7 +409,7 @@ main(int  argc,		/* number of input parameters.			      */
                    
     /* create num_thrd number of threads. */
     args_table = malloc(num_thrd * sizeof(thread_sched_t*));
-    if(!args_table)
+    if (!args_table)
     {
             perror("main(): malloc failed");
             exit(-1);
@@ -417,7 +417,7 @@ main(int  argc,		/* number of input parameters.			      */
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
         args_table[thrd_ndx] = malloc(sizeof(thread_sched_t));
-        if(!args_table[thrd_ndx])
+        if (!args_table[thrd_ndx])
         {
             perror("main(): malloc failed");
             exit(-1);
@@ -439,7 +439,7 @@ main(int  argc,		/* number of input parameters.			      */
 
     /* wait for the children to terminate */
     status_table = malloc(num_thrd * sizeof(thread_sched_t*));
-    if(!status_table)
+    if (!status_table)
     {
             perror("main(): malloc failed");
             exit(-1);
@@ -447,7 +447,7 @@ main(int  argc,		/* number of input parameters.			      */
     for (thrd_ndx = 0; thrd_ndx<num_thrd; thrd_ndx++)
     {
         status_table[thrd_ndx] = malloc(sizeof(thread_sched_t));
-        if(!status_table[thrd_ndx])
+        if (!status_table[thrd_ndx])
         {
             perror("main(): malloc failed");
             exit(-1);

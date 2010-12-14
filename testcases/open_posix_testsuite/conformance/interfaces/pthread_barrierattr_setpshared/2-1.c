@@ -6,7 +6,7 @@
  *
  * pthread_barrierattr_setpshared() 
  *
- * The pthread_barrierattr_setpshared( ) function may fail if:
+ * The pthread_barrierattr_setpshared() function may fail if:
  * [EINVAL] The new value specified for the process-shared attribute is not one of 
  * the legal values PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE.
  * This case will always pass

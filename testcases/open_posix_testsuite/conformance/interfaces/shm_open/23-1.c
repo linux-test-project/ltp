@@ -85,7 +85,7 @@ int main() {
 
 	snprintf(semname, 20, "/sem23-1_%d", getpid());
 	sem = sem_open(semname, O_CREAT, 0777, 1);
-	if ( sem == SEM_FAILED || sem == NULL ) {
+	if (sem == SEM_FAILED || sem == NULL) {
 		perror("error at sem_open");
 		return PTS_UNRESOLVED;
 	}
@@ -107,7 +107,7 @@ int main() {
 
 	create_cnt = mmap(NULL, sizeof(*create_cnt), PROT_WRITE, 
 		MAP_SHARED, result_fd, 0);
-	if ( create_cnt == MAP_FAILED) {
+	if (create_cnt == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_RESULT_NAME);
 		return PTS_UNRESOLVED;	

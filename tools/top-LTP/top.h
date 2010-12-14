@@ -97,12 +97,12 @@
                  highly optimized to save them ol' precious cycles! */
 #define SCB_NUM1(f,n) \
    static int sort_ ## f (const proc_t **P, const proc_t **Q) { \
-      if (        (*P)->n < (*Q)->n  ) return SORT_lt; \
+      if ((*P)->n < (*Q)->n) return SORT_lt; \
       if (likely( (*P)->n > (*Q)->n )) return SORT_gt; \
       return SORT_eq; }
 #define SCB_NUM2(f,n1,n2) \
    static int sort_ ## f (const proc_t **P, const proc_t **Q) { \
-      if (        ((*P)->n1 - (*P)->n2) < ((*Q)->n1 - (*Q)->n2)  ) return SORT_lt; \
+      if (((*P)->n1 - (*P)->n2) < ((*Q)->n1 - (*Q)->n2)) return SORT_lt; \
       if (likely( ((*P)->n1 - (*P)->n2) > ((*Q)->n1 - (*Q)->n2) )) return SORT_gt; \
       return SORT_eq; }
 #define SCB_NUMx(f,n) \

@@ -115,7 +115,7 @@ static char *maxsemstring;
 #ifdef UCLINUX
 	char *msg;
 	if ((msg =
-	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
+	     parse_opts(argc, argv, NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 

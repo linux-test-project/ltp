@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL|TTERRNO,
 			 "msgctl(msqid, IPC_STAT, &buf) failed");
-		(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+		(void)msgctl(msqid, IPC_RMID, NULL);
 		tst_exit();
 	}
 
@@ -173,9 +173,9 @@ void cleanup()
 	tst_resm(TINFO, "Remove the message queue");
 #endif
 	fflush(stdout);
-	(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+	(void)msgctl(msqid, IPC_RMID, NULL);
 	if ((status = msgctl(msqid, IPC_STAT, &buf)) != -1) {
-		(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
+		(void)msgctl(msqid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed");
 		tst_exit();
 	}

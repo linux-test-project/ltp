@@ -124,8 +124,8 @@ main(int ac, char **av)
 	};
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL))
+		!= NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -166,12 +166,12 @@ main(int ac, char **av)
 				break;
 			case 4:
 				/* Produce an invalid timer_id address. */
-				if(tst_kvercmp(2, 6, 12) >= 0)
+				if (tst_kvercmp(2, 6, 12) >= 0)
 					temp_id = (kernel_timer_t *) -1;
 				break;
 			case 5:
 				/* Produce an invalid event address. */
-				if(tst_kvercmp(2, 6, 12) >= 0)
+				if (tst_kvercmp(2, 6, 12) >= 0)
 					temp_ev = (struct sigevent *) -1;
 			}
 

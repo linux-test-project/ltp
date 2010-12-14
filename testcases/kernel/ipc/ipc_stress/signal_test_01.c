@@ -235,7 +235,7 @@ int main (int argc, char **argv)
         sigaddset (&newmask, SIGTERM);
         sigaddset (&newmask, SIGINT);
 	sigemptyset (&oldmask);
-	if ( sigprocmask (SIG_BLOCK, &newmask, &oldmask) < 0) {
+	if (sigprocmask (SIG_BLOCK, &newmask, &oldmask) < 0) {
 		perror ("sigprocmask failed");
 		exit (-1);
 	}

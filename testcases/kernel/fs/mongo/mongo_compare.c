@@ -59,7 +59,7 @@ main(int argc, char **argv)
     char   html_line[500];
     int	   i, k;
    
-    if( argc < 3) {
+    if ( argc < 3) {
       printf("\nUsage: mongo_compare file1 file2 res_file\n\n");
       printf("\t<file1> should contain reiserfs or ext2 results of mogo benchmark\n");
       printf("\t<file2> should contain reiserfs or ext2 results of mogo benchmark\n");
@@ -75,64 +75,64 @@ main(int argc, char **argv)
     strcpy(out2,argv[3]);
     strcat(out2,".html");
 
-    if( (f1=fopen(argv[1],"r")) == NULL) {
+    if ( (f1=fopen(argv[1],"r")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], argv[1] );
     	return 1;
     }
 
-    if( (f2=fopen(argv[2],"r")) == NULL) {
+    if ( (f2=fopen(argv[2],"r")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], argv[2] );
     	return 1;
     }
 
-    if( (f3=fopen(out1,"wr")) == NULL) {
+    if ( (f3=fopen(out1,"wr")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], out1 );
     	return 1;
     }
 
-    if( (f4=fopen(out2,"wr")) == NULL) {
+    if ( (f4=fopen(out2,"wr")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], out2 );
     	return 1;
     }
 
     write_html_head(f4);
     i=0;
-    while( fgets(line1, 100, f1) ){
+    while ( fgets(line1, 100, f1) ) {
 	   fgets(line2, 100, f2);
 
-	 if ( p=strstr(line1,"\n")) *(p+1)=0;
-	 if ( p=strstr(line2,"\n")) *(p+1)=0;
+	 if (p=strstr(line1,"\n")) *(p+1)=0;
+	 if (p=strstr(line2,"\n")) *(p+1)=0;
 
 	 strcpy(line3,line1);
 	 line3[strlen(line3)-1]=0;
 
-	 while ( strlen(line3) < 40 ){
+	 while (strlen(line3) < 40) {
 	     strcat(line3," ");
 	 }
 
-	 if (strstr(line3,"MONGO_")){
+	 if (strstr(line3,"MONGO_")) {
 	    fprintf(f4,"</table>\n<table BORDER NOSAVE >\n");
 	    fprintf(f4,"<tr BGCOLOR=\"#CCFFFF\" NOSAVE>");
 	    fprintf(f4,"<td NOSAVE>\n");
 	    i=0;
 	 }
-	 if(i<20) strcpy(tmp_str[i],line2);
+	 if (i<20) strcpy(tmp_str[i],line2);
 
 	 if (strstr(line3,"FSYS=")) {
 	     fprintf(f4, "</td><td>\n");
-	     for (k=0; k<i; k++){
+	     for (k=0; k<i; k++) {
 	         fprintf(f4, "<tt>%s</tt><br>\n", tmp_str[k]);
 	     }
 	     fprintf (f4, "</td>\n <tr BGCOLOR=\"#CCFFFF\" NOSAVE><td COLSPAN=\"2\"><tt><B> %s %s </B></tt>\n", line3, line2);
 	     i=20;
 	 }    
-	 else if ( NULL == strstr(line3, " :" )) {
+	 else if (NULL == strstr(line3, " :" )) {
 
 	     if (strstr(line3, "(time") ) fprintf(f4,"<br><tt><center>%s</center></tt>\n",line3);
 	     else {
 	         k=0; p=line3;
-	         while ( *p++ != 0) {
-	             if( (*p != ' ') && (*p != '\n') ) k++;
+	         while (*p++ != 0) {
+	             if ( (*p != ' ') && (*p != '\n') ) k++;
 	         }
 	         if (k > 0) {
 	             fprintf(f4, "<tt>%s</tt><br>\n", line3);
@@ -144,7 +144,7 @@ main(int argc, char **argv)
 	 else if (strstr(line3,"Create")) fprintf (f4, "</td>\n");
 
 	 line2[strlen(line2)-1]=0;
-	 while ( strlen(line2) < 40 ){
+	 while (strlen(line2) < 40) {
 	     strcat(line2," ");
 	 }
 
@@ -155,11 +155,11 @@ main(int argc, char **argv)
 	 strcat(out_line, "\n"); 	 
 	 name_str1[0]=0;
 
-	 if ( p1=strstr(line1, " :" )) {
+	 if (p1=strstr(line1, " :" )) {
 	      strcpy(time_str1, p1+2);	      	 	
 	      strncpy(name_str1, line1, p1-line1);
 	     
-	      if ( p2=strstr(line2, " :" )) {
+	      if (p2=strstr(line2, " :" )) {
 	          strcpy(time_str2, p2+2);	      	 			     
 	         
 		  time_str1[strlen(time_str1)-1]=0;

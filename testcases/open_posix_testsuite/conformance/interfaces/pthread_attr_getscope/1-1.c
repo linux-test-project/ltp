@@ -33,7 +33,7 @@ int verify_scope(pthread_attr_t *attr, int scopetype) {
 	int scope;
 
 	rc = pthread_attr_getscope(attr, &scope);
-	if ( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_getscope");
 		exit(PTS_UNRESOLVED);
 	}
@@ -60,26 +60,26 @@ int main()
 	pthread_attr_t        attr;
 
 	rc = pthread_attr_init(&attr);
-	if ( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_init");
 		exit(PTS_UNRESOLVED);
 	}
 
   	rc = pthread_attr_setscope(&attr, SYSTEMSCOPE);
-	if ( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "PTHREAD_SCOPE_SYSTEM is not supported");
 	} else {
   		verify_scope(&attr, SYSTEMSCOPE);
 	}
   	rc = pthread_attr_setscope(&attr, PROCESSSCOPE);
-	if ( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "PTHREAD_SCOPE_SYSTEM is not supported");
 	} else {
   		verify_scope(&attr, PROCESSSCOPE);
 	}
 
   	rc = pthread_attr_destroy(&attr);
-	if ( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
 	}

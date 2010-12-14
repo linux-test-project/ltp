@@ -37,14 +37,14 @@ int main()
 
 	/* Initialize attr */
 	rc = pthread_attr_init(&attr);
-	if ( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_init");
 		exit(PTS_UNRESOLVED);
 	}
 	
 	/* Get the default stack_addr and stack_size value */	
 	rc = pthread_attr_getstacksize(&attr, &stack_size); 	
-	if ( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_getstacksize");
 		exit(PTS_UNRESOLVED);
 	}

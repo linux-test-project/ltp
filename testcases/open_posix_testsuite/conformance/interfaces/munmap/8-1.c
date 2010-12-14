@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The munmap( ) function shall fail if:
+ * The munmap() function shall fail if:
  * [EINVAL] Addresses in the range [addr,addr+len) 
  * are outside the valid range for the
  * address space of a process.

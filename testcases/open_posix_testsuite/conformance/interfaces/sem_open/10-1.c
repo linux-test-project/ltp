@@ -51,7 +51,7 @@ int main()
                 return PTS_UNRESOLVED;
 	}
 
-        if ( sem_getvalue(mysemp, &val) == -1 ) {
+        if (sem_getvalue(mysemp, &val) == -1) {
                 perror(ERROR_PREFIX "sem_getvalue");
                 return PTS_UNRESOLVED;
         }

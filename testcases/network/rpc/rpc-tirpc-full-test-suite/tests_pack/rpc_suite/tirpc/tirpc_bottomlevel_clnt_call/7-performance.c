@@ -130,7 +130,7 @@ int main(int argn, char *argc[])
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	/* if malloc() failed, print error messages and exit */
 		printf("5\n");
@@ -151,7 +151,7 @@ int main(int argn, char *argc[])
 	client = clnt_dg_create(RPC_ANYFD, &svcaddr,
 			 				progNum, VERSNUM, 1024, 1024);
 			 				
-	if (client == (CLIENT *)NULL)
+	if (client == NULL)
 	{
 		clnt_pcreateerror("ERR");
 		exit(1);

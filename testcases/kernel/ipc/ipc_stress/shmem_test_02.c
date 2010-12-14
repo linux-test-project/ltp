@@ -352,7 +352,7 @@ static int create_lock_file (char *lock_name)
 {
 	int	fd;
 
-        if ((fd = open (lock_name, O_RDWR)) < 0){
+        if ((fd = open (lock_name, O_RDWR)) < 0) {
 		if ((fd = open (lock_name, O_RDWR|O_CREAT|O_EXCL, 0666)) < 0) {
 			perror ("cannot create lock file");
 			exit (-1);

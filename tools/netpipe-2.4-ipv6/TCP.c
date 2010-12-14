@@ -43,34 +43,34 @@ int Setup(ArgStruct *p)
  memset(&p->prot.sin1, 0, sizeof(p->prot.sin1));
  memset(&p->prot.sin2, 0, sizeof(p->prot.sin2));
 
- if ( (sockfd = socket(AF_INET6, SOCK_STREAM, 0)) < 0){
+ if ((sockfd = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
    printf("NetPIPE: can't open stream socket! errno=%d\n", errno);
    exit(-4);
  }
 
- if(!(proto = getprotobyname("tcp"))){
+ if (!(proto = getprotobyname("tcp"))) {
    printf("NetPIPE: protocol 'tcp' unknown!\n");
    exit(555);
  }
 
  /* Attempt to set TCP_NODELAY */
- if(setsockopt(sockfd, proto->p_proto, TCP_NODELAY, &one, sizeof(one)) < 0)
+ if (setsockopt(sockfd, proto->p_proto, TCP_NODELAY, &one, sizeof(one)) < 0)
  {
    printf("NetPIPE: setsockopt: TCP_NODELAY failed! errno=%d\n", errno);
    exit(556);
  }
 
  /* If requested, set the send and receive buffer sizes */
- if(p->prot.sndbufsz > 0)
+ if (p->prot.sndbufsz > 0)
  {
       printf("Send and Receive Buffers set to %d bytes\n", p->prot.sndbufsz);
-     if(setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz),
+     if (setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz),
                                        sizeof(p->prot.sndbufsz)) < 0)
      {
           printf("NetPIPE: setsockopt: SO_SNDBUF failed! errno=%d\n", errno);
           exit(556);
      }
-     if(setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz),
+     if (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz),
                                        sizeof(p->prot.rcvbufsz)) < 0)
      {
           printf("NetPIPE: setsockopt: SO_RCVBUF failed! errno=%d\n", errno);
@@ -78,13 +78,13 @@ int Setup(ArgStruct *p)
      }
  }
 
- if (tr){                                  /* if client i.e., Sender */
+ if (tr) {                                  /* if client i.e., Sender */
 
    if (host) {
      getaddrinfo(host, NULL, &hints, &addr);
      memcpy(&p->prot.sin1, addr->ai_addr, addr->ai_addrlen);
    } else {
-     if ((getaddrinfo(host,NULL,&hints,&addr)) != 0){
+     if ((getaddrinfo(host,NULL,&hints,&addr)) != 0) {
        printf("NetPIPE: invalid hostname '%s'\n", host);
        exit(-5);
    }
@@ -94,11 +94,11 @@ int Setup(ArgStruct *p)
 } else {                                 /* we are the receiver (server) */
 
    memset(&p->prot.sin1, 0, sizeof(p->prot.sin1));
-   if (sr==0){
+   if (sr==0) {
      p->prot.sin1.sin6_addr = in6addr_any;
      p->prot.sin1.sin6_port = htons(p->port);
      lsin1=(struct sockaddr*)&p->prot.sin1;
-     if (bind(sockfd, (struct sockaddr*)lsin1, sizeof(p->prot.sin1)) < 0){
+     if (bind(sockfd, (struct sockaddr*)lsin1, sizeof(p->prot.sin1)) < 0) {
        printf("NetPIPE: server: bind on local address failed! errno=%d", errno);
        exit(-6);
      }
@@ -106,21 +106,21 @@ int Setup(ArgStruct *p)
    else{
        getaddrinfo(server_host, NULL, NULL, &server_addr);
        memcpy(&p->prot.sin1, server_addr->ai_addr, server_addr->ai_addrlen);
-       if ((getaddrinfo(server_host, NULL, NULL, &server_addr)) != 0){
+       if ((getaddrinfo(server_host, NULL, NULL, &server_addr)) != 0) {
   	  printf("NetPIPE: invalid hostname '%s'\n", host);
 	  exit(-5);
        }
        memcpy(&p->prot.sin1, server_addr->ai_addr, server_addr->ai_addrlen);
        p->prot.sin1.sin6_port = htons(p->port);
        lsin1=(struct sockaddr*)&p->prot.sin1;
-       if (bind(sockfd, (struct sockaddr*)lsin1, sizeof(p->prot.sin1)) < 0){
+       if (bind(sockfd, (struct sockaddr*)lsin1, sizeof(p->prot.sin1)) < 0) {
          printf("NetPIPE: server: bind on %s failed! errno=%d", server_host, errno);
          exit(-6);
        }
    }
  }
 
- if(tr)
+ if (tr)
    p->commfd = sockfd;
  else
    p->servicefd = sockfd;
@@ -305,9 +305,9 @@ int Establish(ArgStruct *p)
  struct protoent *proto;
 
  clen = sizeof(p->prot.sin2);
- if(p->tr){
-   if(connect(p->commfd, (struct sockaddr *) &(p->prot.sin1),
-	      sizeof(p->prot.sin1)) < 0){
+ if (p->tr) {
+   if (connect(p->commfd, (struct sockaddr *) &(p->prot.sin1),
+	      sizeof(p->prot.sin1)) < 0) {
      printf("Client: Cannot Connect! errno=%d\n",errno);
      exit(-10);
    }
@@ -318,7 +318,7 @@ int Establish(ArgStruct *p)
     p->commfd = accept(p->servicefd, (struct sockaddr *) &(p->prot.sin2),
 		       &clen);
 
-    if(p->commfd < 0){
+    if (p->commfd < 0) {
       printf("Server: Accept Failed! errno=%d\n",errno);
       exit(-12);
     }
@@ -327,12 +327,12 @@ int Establish(ArgStruct *p)
       Attempt to set TCP_NODELAY. TCP_NODELAY may or may not be propagated
       to accepted sockets.
      */
-    if(!(proto = getprotobyname("tcp"))){
+    if (!(proto = getprotobyname("tcp"))) {
       printf("unknown protocol!\n");
       exit(555);
     }
 
-    if(setsockopt(p->commfd, proto->p_proto, TCP_NODELAY,
+    if (setsockopt(p->commfd, proto->p_proto, TCP_NODELAY,
 		  &one, sizeof(one)) < 0)
     {
       printf("setsockopt: TCP_NODELAY failed! errno=%d\n", errno);
@@ -340,17 +340,17 @@ int Establish(ArgStruct *p)
     }
 
     /* If requested, set the send and receive buffer sizes */
-    if(p->prot.sndbufsz > 0)
+    if (p->prot.sndbufsz > 0)
     {
       printf("Send and Receive Buffers on accepted socket set to %d bytes\n",
 	     p->prot.sndbufsz);
-      if(setsockopt(p->commfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz),
+      if (setsockopt(p->commfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz),
                                        sizeof(p->prot.sndbufsz)) < 0)
       {
 	printf("setsockopt: SO_SNDBUF failed! errno=%d\n", errno);
 	exit(556);
       }
-      if(setsockopt(p->commfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz),
+      if (setsockopt(p->commfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz),
                                        sizeof(p->prot.rcvbufsz)) < 0)
       {
 	printf("setsockopt: SO_RCVBUF failed! errno=%d\n", errno);

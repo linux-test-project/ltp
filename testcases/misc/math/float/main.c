@@ -27,7 +27,7 @@
 
 #include "test.h"
 
-#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+#define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 /* LTP status reporting */
 char *TCID;	 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
@@ -119,12 +119,12 @@ int main(int argc, char *argv[])
 	else
 	  TCID = argv[0];
 	ltproot = getenv("LTPROOT");
-	if(!ltproot || !strlen(ltproot)){
+	if (!ltproot || !strlen(ltproot)) {
                 tst_resm (TFAIL, "Not set the $LTPROOT, Please set it firstly.");
                 tst_exit();
         }
 	bin_path = malloc (strlen(ltproot) + 16);
-	if(!bin_path){
+	if (!bin_path) {
                 tst_resm (TFAIL, "malloc error.");
                 tst_exit();
 	}
@@ -137,9 +137,9 @@ int main(int argc, char *argv[])
 	datadir[0] = '.';
 	datadir[1] = '\0';
 
-	if(argc != 1)
+	if (argc != 1)
 	{
- 	while ( (opt = getopt( argc, argv, "vn:l:D:?" )) != EOF ) {
+ 	while ((opt = getopt( argc, argv, "vn:l:D:?" )) != EOF) {
        	 switch ( opt ) {
                 case 'v':
 			++debug; /* verbose mode */
@@ -162,37 +162,37 @@ int main(int argc, char *argv[])
         }
 	}
 	pid=fork();
-        if ( pid == 0 ){                    /*Child*/
+        if (pid == 0) {                    /*Child*/
 		generate(datadir,bin_path);          
 		return(0);} 
 	else                                /*Parent*/
 		waitpid(pid,NULL,0);
 	SAFE_FREE(bin_path);
 
-	if(debug)
+	if (debug)
 		tst_resm(TINFO, "%s: will run for %d loops", argv[0], num_loops);
 
-	if(debug)
+	if (debug)
 		tst_resm(TINFO, "%s: using %s as data directory", argv[0], datadir);
 
-	if(num_threads <= 0) {
+	if (num_threads <= 0) {
 		tst_resm(TWARN, "WARNING: num_threads undefined or incorrect, using \"1\"");
 		num_threads = 1;
 	}
 
-	if(nb_func * num_threads > PTHREAD_THREADS_MAX-2) {
-		while(nb_func * num_threads > PTHREAD_THREADS_MAX-2)
+	if (nb_func * num_threads > PTHREAD_THREADS_MAX-2) {
+		while (nb_func * num_threads > PTHREAD_THREADS_MAX-2)
 			--num_threads;
 	}
-	if(debug)
+	if (debug)
 		tst_resm(TINFO, "%s: will run %d functions, %d threads per function",
 			argv[0], nb_func, num_threads);
 
-        retval = pthread_mutex_init (&sig_mutex, (pthread_mutexattr_t *)NULL);
-        if (retval != 0 )
+        retval = pthread_mutex_init (&sig_mutex, NULL);
+        if (retval != 0)
                 sys_error("main : mutex_init(&sig_mutex) FAILED",__LINE__);
 
-        retval = pthread_create (&sig_hand, (pthread_attr_t *)NULL,
+        retval = pthread_create (&sig_hand, NULL,
                                  handle_signals, (void *) NULL);
         if (retval != 0)
                 sys_error("main : create(&sig_hand) FAILED",__LINE__);
@@ -202,14 +202,14 @@ int main(int argc, char *argv[])
          */
         threads = (pthread_t * ) malloc ((size_t) (nb_func 
                                   * num_threads * sizeof (pthread_t)));
-	if(!threads){
+	if (!threads) {
                 tst_resm (TFAIL, "malloc error.");
                 tst_exit();
 	}
 
 	tabcom  = (TH_DATA **) malloc ( (size_t)(sizeof (TH_DATA *)
                                        * nb_func*num_threads));
-	if(!tabcom){
+	if (!tabcom) {
                 tst_resm (TFAIL, "malloc error.");
                 tst_exit();
 	}
@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
 
 		/* allocate struct of commucation  with the thread */
 		pcom =  calloc ((size_t)1, (size_t)sizeof(TH_DATA));
-		if(!pcom){
+		if (!pcom) {
                 	tst_resm (TFAIL, "calloc error.");
 	                tst_exit();
 		}
@@ -286,7 +286,7 @@ finished:
 
 		/* test the result in TH_DATA : communication buffer */
 		pcom = * tabcour++; 
-		if(pcom->th_result !=0 ) {
+		if (pcom->th_result !=0 ) {
 	           error++;
                    tst_resm(TFAIL, "thread %d (%s) terminated unsuccessfully %d errors/%d loops", th_num,pcom->th_func.fident,pcom->th_nerror,pcom->th_nloop);
                    tst_resm(TFAIL, "%s", pcom->detail_data);

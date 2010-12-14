@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 	}
 
 	wi = 0;
-	while(test_stop != 1) {
+	while (test_stop != 1) {
 		rc = clock_gettime(CLOCK_TO_USE, &p_ts);
 		rc = clock_gettime(CLOCK_TO_USE, &ts);
 		if (rc) {

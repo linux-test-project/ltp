@@ -328,7 +328,7 @@ int main (int argc, char * argv[])
 		ps = (size_t)sysconf(_SC_PAGESIZE);
 		sz= ((sizeof(testdata_t) / ps) + 1) * ps; /* # pages needed to store the testdata */
 		
-		tmp = calloc( 1 , sz);
+		tmp = calloc(1 , sz);
 		if (tmp == NULL)
 		{ UNRESOLVED(errno, "Memory allocation failed"); }
 				

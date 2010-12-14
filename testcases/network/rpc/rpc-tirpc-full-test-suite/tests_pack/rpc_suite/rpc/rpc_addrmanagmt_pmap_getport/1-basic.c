@@ -53,7 +53,7 @@ int main(int argn, char *argc[])
 	struct sockaddr_in sin;
 	
 	//Initialization    
-	if ((hp = gethostbyname(argc[1])) == (struct hostent *)NULL)
+	if ((hp = gethostbyname(argc[1])) == NULL)
 	{
 		fprintf(stderr, "gethostbyname failed\n");
 		exit(1);

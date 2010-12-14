@@ -33,7 +33,7 @@
 static int valid_framesize_type(__u32 type) {
 	int valid = 0;
 
-	if ( (type == V4L2_FRMSIZE_TYPE_DISCRETE) ||
+	if ((type == V4L2_FRMSIZE_TYPE_DISCRETE) ||
 	     (type == V4L2_FRMSIZE_TYPE_CONTINUOUS) ||
 	     (type == V4L2_FRMSIZE_TYPE_STEPWISE) ) {
 		valid = 1;

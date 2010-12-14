@@ -126,7 +126,7 @@ int main(int ac, char **av) {
 	int i, succeed=0, fail=0;
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL) {
              tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -138,10 +138,10 @@ int main(int ac, char **av) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for(i=0; i<2; i++){
+			for (i=0; i<2; i++) {
 		                TEST(syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
-		     		if(TEST_RETURN == -1) {
-			            	if(TEST_ERRNO == test_cases[i].exp_errno){
+		     		if (TEST_RETURN == -1) {
+			            	if (TEST_ERRNO == test_cases[i].exp_errno) {
 						tst_resm(TINFO, "%s() call with tid:%d got expected errno:%d", TCID, test_cases[i].tid,TEST_ERRNO);
 						succeed++;
 					}
@@ -154,7 +154,7 @@ int main(int ac, char **av) {
 				}
 			}
 		
-		if(fail != 0){
+		if (fail != 0) {
 			tst_resm(TFAIL, "tkill() call FAILED");
 			cleanup();
 			tst_exit();

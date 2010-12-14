@@ -210,7 +210,7 @@ logdump(void)
 		i = logptr;
 		count = LOGSIZE;
 	}
-	for ( ; count > 0; count--) {
+	for (; count > 0; count--) {
 		int opnum;
 
 		opnum = i+1 + (logcount/LOGSIZE)*LOGSIZE;

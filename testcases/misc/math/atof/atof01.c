@@ -194,7 +194,7 @@ int main (int argc, char *argv[])
 			fprintf(temp, "\tcompare fails, %.15f vs %.15f\n",
 			  r1, r2);
 			x = r1 - r2;
-			if ( x == 0.0)
+			if (x == 0.0)
 				fprintf(temp, "\tx == 0.0)\n");
 			else
 				fprintf(temp, "\tx != 0.0\n");

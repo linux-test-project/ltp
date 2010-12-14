@@ -47,7 +47,7 @@ struct statstore {
 } aclstat;
 
 
-int do_file_op(char* filename){
+int do_file_op(char* filename) {
 	int exe;
 	int result;
 	uid_t uid;

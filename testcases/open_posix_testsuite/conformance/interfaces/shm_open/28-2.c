@@ -54,7 +54,7 @@ int main() {
 	}
 
 	buf = mmap(NULL, BUF_SIZE, PROT_WRITE|PROT_READ, MAP_SHARED, fd, 0);
-	if ( buf == MAP_FAILED) {
+	if (buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;	

@@ -59,13 +59,13 @@ int main() {
 	}
 
 	/* Value of Semaphore */
-	if ( sem_getvalue(&mysemp, &val) == -1 ) {
+	if (sem_getvalue(&mysemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Checking if the value of the Semaphore after lock & unlock */
-	if ( val == 0 )  {
+	if (val == 0)  {
 		puts("TEST PASSED: Sem unlocked after 5 timeouts");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

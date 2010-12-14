@@ -858,7 +858,7 @@ void sg_print_asc_ascq(unsigned char asc, unsigned char ascq)
     if (found)
 	return;
 
-    for(k=0; additional2[k].text; k++) {
+    for (k=0; additional2[k].text; k++) {
 	if ((additional2[k].code1 == asc) &&
 	    (ascq >= additional2[k].code2_min)  &&
 	    (ascq <= additional2[k].code2_max)) {
@@ -893,7 +893,7 @@ void sg_print_sense(const char * leadin, const unsigned char * sense_buffer,
 
     if (sense_class == 7) {     /* extended sense data */
         s = sense_buffer[7] + 8;
-        if(s > sb_len) {
+        if (s > sb_len) {
 	    fprintf(OUTP, "Sense buffer too small (at %d bytes), %d bytes "
 		    "truncated\n", sb_len, s - sb_len);
 	    s = sb_len;
@@ -948,7 +948,7 @@ void sg_print_sense(const char * leadin, const unsigned char * sense_buffer,
 		fprintf(OUTP, "Sense Key Specific: Error in %s byte %d",
 			(sense_buffer[15]&0x40)?"Command":"Data",
 			(sense_buffer[16]<<8)|sense_buffer[17]);
-		if(sense_buffer[15]&0x08) {
+		if (sense_buffer[15]&0x08) {
 		    fprintf(OUTP, " bit %d\n", sense_buffer[15]&0x07);
 		} else {
 		    fprintf(OUTP, "\n");
@@ -1001,12 +1001,12 @@ void sg_print_host_status(int host_status)
 {   static int maxcode=0;
     int i;
 
-    if(! maxcode) {
-        for(i = 0; hostbyte_table[i]; i++) ;
+    if (! maxcode) {
+        for (i = 0; hostbyte_table[i]; i++) ;
         maxcode = i-1;
     }
     fprintf(OUTP, "Host_status=0x%02x", host_status);
-    if(host_status > maxcode) {
+    if (host_status > maxcode) {
         fprintf(OUTP, "is invalid ");
         return;
     }
@@ -1029,10 +1029,10 @@ void sg_print_driver_status(int driver_status)
     int dr = driver_status & SG_ERR_DRIVER_MASK;
     int su = (driver_status & SG_ERR_SUGGEST_MASK) >> 4;
 
-    if(! driver_max) {
-        for(i = 0; driverbyte_table[i]; i++) ;
+    if (! driver_max) {
+        for (i = 0; driverbyte_table[i]; i++) ;
         driver_max = i;
-        for(i = 0; driversuggest_table[i]; i++) ;
+        for (i = 0; driversuggest_table[i]; i++) ;
         suggest_max = i;
     }
     fprintf(OUTP, "Driver_status=0x%02x",driver_status);
@@ -1150,7 +1150,7 @@ int sg_err_category_new(int scsi_status, int host_status, int driver_status,
 		asc = (sb_len > 12) ? sense_buffer[12] : 0;
 	    }
 
-            if(RECOVERED_ERROR == sense_key)
+            if (RECOVERED_ERROR == sense_key)
                 return SG_ERR_CAT_RECOVERED;
             else if (UNIT_ATTENTION == sense_key) {
                 if (0x28 == asc)

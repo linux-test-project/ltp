@@ -148,7 +148,7 @@ int main() {
 
 
 	/* make test calls */
-	if(ki_generic(tmod_fd, LTP_OPTION1))
+	if (ki_generic(tmod_fd, LTP_OPTION1))
 		printf("Failed on option 1 test\n");
 	else
 		printf("Success on option 1 test\n");

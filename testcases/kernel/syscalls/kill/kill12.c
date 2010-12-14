@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
 	/* parse standard options */
 	if ((msg =
-	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
+	     parse_opts(argc, argv, NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -101,8 +101,7 @@ int main(int argc, char **argv)
 
 	setup();
 	//tempdir();            /* move to new directory */ 12/20/2003
-/*--------------------------------------------------------------------*/
-	blenter();		/*<<<<<ENTER DATA HERE<<<<<<<< */
+	blenter();
 
 	exno = 1;
 

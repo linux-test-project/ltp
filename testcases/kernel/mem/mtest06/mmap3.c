@@ -394,7 +394,7 @@ main(int  argc,		/* number of input parameters.			      */
  		    "\tmap_private?(T=1 F=0): [%d]\n\n\n\n", exec_time,
 			num_thrd, num_iter, map_private);
 
-    for(;;)
+    for (;;)
     {
         /* create num_thrd number of threads. */
         for (thrd_ndx = 0; thrd_ndx<num_thrd; thrd_ndx++)

@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 	 //Create both client and server handle
      svc = svcraw_create();
 	 
-     if (svc == (SVCXPRT *)NULL) 
+     if (svc == NULL) 
      {
           fprintf(stderr,"Could not create server handle\n");
           exit(5);
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
      
      clnt = clntraw_create(progNum, VERSNUM);
 
-     if (clnt == (CLIENT *)NULL) 
+     if (clnt == NULL) 
      {
           clnt_pcreateerror("raw");
           exit(1);

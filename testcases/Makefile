@@ -28,8 +28,8 @@ include $(top_srcdir)/include/mk/env_pre.mk
 # 1. kdump shouldn't be compiled by default, because it's runtime based and
 #    WILL crash the build host (the tests need to be fixed to just build, not
 #    run).
-# 2. mce-test doesn't fit cleanly in the build, yet.
-FILTER_OUT_DIRS		:= kdump mce-test
+# 2. ballista doesn't fit in the build.
+FILTER_OUT_DIRS		:= ballista kdump
 
 ifneq ($(WITH_OPEN_POSIX_TESTSUITE),yes)
 FILTER_OUT_DIRS		+= open_posix_testsuite

@@ -506,7 +506,7 @@ int init_buffs(char *pbufs[])
 {
 	int i;
 
-	for (i = 0; pbufs[i] != (char *)NULL; i++) {
+	for (i = 0; pbufs[i] != NULL; i++) {
 		switch (i) {
 		case 0:
 

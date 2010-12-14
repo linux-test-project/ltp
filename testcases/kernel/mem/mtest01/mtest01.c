@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
   for (i=0;i<1000;i++)
    pid_list[i]=(pid_t)0;
 
-  while((c=getopt(argc, argv, "c:b:p:wvh")) != EOF) {
+  while ((c=getopt(argc, argv, "c:b:p:wvh")) != EOF) {
     switch((char)c) {
       case 'c':
         chunksize = atoi(optarg);
@@ -87,10 +87,10 @@ int main(int argc, char* argv[]) {
         break;
       case 'p':
         maxpercent = atoi(optarg);
-	if (maxpercent <= 0){
+	if (maxpercent <= 0) {
 	  tst_resm(TFAIL, "ERROR: -p option requires number greater than 0");
 	  exit(1);}
-	if (maxpercent > 99){
+	if (maxpercent > 99) {
 	  tst_resm(TFAIL, "ERROR: -p option cannot be greater than 99");
 	  exit(1);}
         break;
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
   }
 
   sysinfo(&sstats);
-  if(maxpercent) {
+  if (maxpercent) {
     unsigned long long total_ram, total_free, D, C;
     percent=(float)maxpercent/100.00;
 
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
     pre_mem = sstats.mem_unit*total_free;
 
     /* Are we already using more than maxpercent? */
-    if(C>D) {
+    if (C>D) {
       tst_resm(TFAIL, "More memory than the maximum amount you specified is already being used");
       exit(1);
     }
@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
     pid_list[i]=pid;
 
 #if defined (_s390_) /* s390's 31bit addressing requires smaller chunks */
-  while( (pid!=0) && (maxbytes > 500*1024*1024) )
+  while ( (pid!=0) && (maxbytes > 500*1024*1024) )
   {
     i++;
     maxbytes=maxbytes-(500*1024*1024);
@@ -166,13 +166,13 @@ int main(int argc, char* argv[]) {
       pid_cntr++;
       pid_list[i]=pid;
   }
-  if( maxbytes > 500*1024*1024 )
+  if ( maxbytes > 500*1024*1024 )
     alloc_bytes=500*1024*1024;
   else
     alloc_bytes=(unsigned long)maxbytes;
 
 #elif __WORDSIZE==32
-  while( (pid!=0) && (maxbytes > 1024*1024*1024) )
+  while ( (pid!=0) && (maxbytes > 1024*1024*1024) )
   {
     i++;
     maxbytes=maxbytes-(1024*1024*1024);
@@ -181,13 +181,13 @@ int main(int argc, char* argv[]) {
       pid_cntr++;
       pid_list[i]=pid;
   }
-  if( maxbytes > 1024*1024*1024 )
+  if ( maxbytes > 1024*1024*1024 )
     alloc_bytes=1024*1024*1024;
   else
     alloc_bytes=(unsigned long)maxbytes;
 
 #elif __WORDSIZE==64
-  while( (pid!=0) && (maxbytes > (unsigned long long)3*1024*1024*1024) )
+  while ( (pid!=0) && (maxbytes > (unsigned long long)3*1024*1024*1024) )
   {
     i++;
     maxbytes=maxbytes-(unsigned long long)3*1024*1024*1024;
@@ -196,27 +196,27 @@ int main(int argc, char* argv[]) {
       pid_cntr++;
       pid_list[i]=pid;
   }
-  if( maxbytes > (unsigned long long)3*1024*1024*1024 )
+  if ( maxbytes > (unsigned long long)3*1024*1024*1024 )
     alloc_bytes=(unsigned long long)3*1024*1024*1024;
   else
     alloc_bytes=(unsigned long)maxbytes;
 #endif
  
-  if ( pid == 0)			/** CHILD **/
+  if (pid == 0)			/** CHILD **/
   {
     bytecount=chunksize;
-    while(1) {
-      if((mem = (char*)malloc(chunksize)) == NULL) {
+    while (1) {
+      if ((mem = (char*)malloc(chunksize)) == NULL) {
         tst_resm(TINFO, "stopped at %lu bytes", bytecount);
         exit(1);
       }
-      if(dowrite)
-        for(j=0; j<chunksize; j++)
+      if (dowrite)
+        for (j=0; j<chunksize; j++)
           *(mem+j)='a';
-      if(verbose)
+      if (verbose)
 	tst_resm(TINFO, "allocated %lu bytes chunksize is %d", bytecount, chunksize);
       bytecount+=chunksize;
-      if(alloc_bytes && (bytecount >= alloc_bytes))
+      if (alloc_bytes && (bytecount >= alloc_bytes))
         break;
     }
     if (dowrite)
@@ -224,7 +224,7 @@ int main(int argc, char* argv[]) {
     else
       tst_resm(TINFO, "... %lu bytes allocated only.", bytecount);
     kill(getppid(),SIGRTMIN);
-    while(1)
+    while (1)
       sleep(1);
   }
   else					/** PARENT **/
@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
       post_mem = (unsigned long long)sstats.mem_unit*sstats.freeram;
       post_mem = post_mem+((unsigned long long)sstats.mem_unit*sstats.freeswap);
 	   
-      while ( (((unsigned long long)pre_mem - post_mem) < (unsigned long long)original_maxbytes) &&
+      while ((((unsigned long long)pre_mem - post_mem) < (unsigned long long)original_maxbytes) &&
               (pid_count < pid_cntr) )
       {
        sleep(1);

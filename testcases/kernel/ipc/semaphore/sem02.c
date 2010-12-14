@@ -123,7 +123,7 @@ int main(int argc, char **argv)
     sleep(20);
     semunion.val = 1;
     semctl(sem_id, 0, IPC_RMID, semunion);
-    if ( err_ret == 1 )
+    if (err_ret == 1)
 	tst_resm(TFAIL, "failed");
     else
 	tst_resm(TPASS, "passed");

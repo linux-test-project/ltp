@@ -86,7 +86,7 @@ int main(int ac, char **av)
 	struct timeval tv1, tv2;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, opts, help)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, opts, help)) != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 

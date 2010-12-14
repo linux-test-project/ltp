@@ -63,7 +63,7 @@ int main(int argn, char *argc[])
 	int i;
 	
 	//Initialization
-	if ((hp = gethostbyname(argc[1])) == (struct hostent *)NULL)
+	if ((hp = gethostbyname(argc[1])) == NULL)
 	{
 		fprintf(stderr, "gethostbyname failed\n");
 		exit(1);
@@ -88,7 +88,7 @@ int main(int argn, char *argc[])
 	                  (xdrproc_t)xdr_int, (char *)&var_rec,
 	                  tv, &port);
                              
-		if(cs == RPC_SUCCESS)
+		if (cs == RPC_SUCCESS)
 			nbOk++;
 	}
 	

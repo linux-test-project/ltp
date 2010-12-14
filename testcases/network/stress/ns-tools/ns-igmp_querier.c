@@ -212,7 +212,7 @@ create_query(uint8_t code, char *maddr, char *saddrs)
 
     /* substitute source addresses */
     sp = saddrs;
-    for(idx = 0; idx < numsrc; idx++) {
+    for (idx = 0; idx < numsrc; idx++) {
 	ep = strchr(sp, ',');
 	if (ep != NULL)
 	    *ep = '\0';
@@ -263,7 +263,7 @@ parse_options(int argc, char *argv[], struct igmp_info *info_p, int *bg_p)
     maddr = NULL;
     saddrs = NULL;
 
-    while ((optc = getopt(argc, argv, "I:m:s:r:t:i:obdh")) != EOF ) {
+    while ((optc = getopt(argc, argv, "I:m:s:r:t:i:obdh")) != EOF) {
 	switch (optc) {
 	    case 'I':
 		info_p->ifindex = if_nametoindex(optarg);
@@ -439,7 +439,7 @@ send_query(struct igmp_info *info_p)
     if (debug)
 	fprintf (stderr, "query size is %zu\n", query_size);
 
-    for(;;) {
+    for (;;) {
 	retval = sendto(sd, info_p->query, query_size, 0,
 			(struct sockaddr *)&to, sizeof(struct sockaddr_in));
 	if (retval != query_size) {

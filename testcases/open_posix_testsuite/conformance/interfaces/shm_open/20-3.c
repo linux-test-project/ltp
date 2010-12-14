@@ -54,7 +54,7 @@ int main() {
 	}
 
 	ptr = mmap(NULL, BUF_SIZE, PROT_NONE, MAP_SHARED, fd, 0);
-	if ( ptr != MAP_FAILED) {
+	if (ptr != MAP_FAILED) {
 		printf("Test PASSED\n");
 		shm_unlink(SHM_NAME);
 		return PTS_PASS;

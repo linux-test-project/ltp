@@ -74,7 +74,7 @@ void chngdir(char *name)
 {
   int i;
 
-  if ( name[0] == '.' && name[1] == '.') {
+  if (name[0] == '.' && name[1] == '.') {
     for (i=strlen(path); i>0; i--) {
       if (path[i] == '/') {
 	path[i]=0;
@@ -160,7 +160,7 @@ void make_file(int size)
  
   /* open the file, and deal with the various errors that can occur */
 
-  if ((fd = open(fname, O_CREAT|O_EXCL|O_RDWR, 0777)) == -1 ) {
+  if ((fd = open(fname, O_CREAT|O_EXCL|O_RDWR, 0777)) == -1) {
     if (errno == ENOSPC) {
       if (!already_whined) {
 	printf("reiser-2021A: out of disk (or inodes) space, will keep trying\n");
@@ -173,7 +173,7 @@ void make_file(int size)
 	inside the same directory, and that means skipping over filenames that
 	already exist.  Thus we ignore EEXIST, and pay attention to all
 	else. */
-    if ( errno == EEXIST) {	/* just skip existing file */
+    if (errno == EEXIST) {	/* just skip existing file */
       return;
     }
     perror ("open");
@@ -232,7 +232,7 @@ long determine_nr_of_files(int median_file_size, double max_file_size, long byte
   /* the next line is not necessary as 1 is the default, it is just cautious
      coding */
   srand(1);
-  while (byte_total < bytes_to_consume )
+  while (byte_total < bytes_to_consume)
     {
       byte_total += determine_size(median_file_size, max_file_size);
       nr_of_files++;
@@ -290,7 +290,7 @@ int make_directory(char * dirname)
     /*  it is sometimes useful to be able to run this program more than once
 	inside the same directory, and that means skipping over filenames that
 	already exist.  Thus we ignore EEXIST, and pay attention to all else. */
-    if ( errno != EEXIST ) {
+    if (errno != EEXIST) {
       perror ("mkdir");
       exit (errno);		
     }

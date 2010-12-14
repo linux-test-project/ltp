@@ -122,8 +122,8 @@ int main(int ac, char **av) {
 	char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
-	if (msg != (char *)NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -184,7 +184,7 @@ int main(int ac, char **av) {
 		getpid(), pgid = __getpgid(0));
 
 	TEST(waitid(P_PGID, pgid, &infop, WEXITED));
-	if(TEST_RETURN == 0){				
+	if (TEST_RETURN == 0) {				
 		tst_resm(TPASS, "Success3 ... 0 is returned.");
 		tst_resm(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
 		infop.si_pid, infop.si_code, infop.si_status);

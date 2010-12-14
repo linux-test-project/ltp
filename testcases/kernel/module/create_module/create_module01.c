@@ -90,7 +90,7 @@ main(int argc, char **argv)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 			(char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -114,7 +114,7 @@ main(int argc, char **argv)
 		} else {
 			tst_resm(TPASS, "create_module() returned 0x%x",
 				TEST_RETURN);
-			if(delete_module(modname) != 0) {
+			if (delete_module(modname) != 0) {
 				tst_brkm(TBROK, tst_exit, "Failed to delete"
 					"loadable module entry for %s",
 					modname);
@@ -153,7 +153,7 @@ setup(void)
 	TEST_PAUSE;
 
 	/* Initialize unique module name for each child process */
-	if( sprintf(modname, "%s_%d",BASEMODNAME, getpid()) == -1) {
+	if ( sprintf(modname, "%s_%d",BASEMODNAME, getpid()) == -1) {
 		tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
 	}
 }
@@ -171,9 +171,9 @@ cleanup(void)
 	 * succeeds and signal is caught before execution of delete_module())
 	 * attempt to remove it here
 	 */
-	if(delete_module(modname) == -1) {
+	if (delete_module(modname) == -1) {
 		/* With errno, check module exists, if so send msg */
-		if(errno != ENOENT) {
+		if (errno != ENOENT) {
 			tst_resm(TWARN, "Failed to delete loadable module"
 				"entry for %s errno returned %d", modname,
 				errno);

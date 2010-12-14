@@ -96,7 +96,7 @@ int main(int ac, char *av[])
         /*
          * parse standard options
          */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
                 tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
                 tst_exit();
         }
@@ -276,7 +276,7 @@ static void dotest(int testers, int me, int fd)
 			tst_exit();
 		}
 
-		if ((val0_iovec[i].iov_base = malloc(w_ioveclen)) == NULL){
+		if ((val0_iovec[i].iov_base = malloc(w_ioveclen)) == NULL) {
 			tst_resm(TBROK, "\tmalloc failed(val0_iovec)");
 			tst_exit();
 		}
@@ -288,7 +288,7 @@ static void dotest(int testers, int me, int fd)
 			tst_exit();
 		}
 
-		if ((val_iovec[i].iov_base = malloc(w_ioveclen)) == NULL){
+		if ((val_iovec[i].iov_base = malloc(w_ioveclen)) == NULL) {
 			tst_resm(TBROK, "\tmalloc failed(iov_base)");
 			tst_exit();
 		}
@@ -432,7 +432,7 @@ static void dotest(int testers, int me, int fd)
 		if (count < nchunks) {
 			//tst_resm(TINFO, "\tTest{%d} val %d stopping @ %d, collide = {%d}.",
 			//		me, val, count, collide);
-			for(i = 0; i < nchunks; i++) {
+			for (i = 0; i < nchunks; i++) {
 				if ((bits[i/8] & (1<<(i%8))) == 0) {
 					if (lseek64(fd, CHUNK(i), 0) < (off64_t)0) {
 						tst_resm(TFAIL, "\tTest[%d]: lseek64 fail at %"PRIx64"x, errno = %d.",
@@ -452,7 +452,7 @@ static void dotest(int testers, int me, int fd)
 		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "\tTest[%d] val %d done, count = %d, collide = %d.",
 		//		me, val, count, collide);
-		//for(i = 0; i < NMISC; i++)
+		//for (i = 0; i < NMISC; i++)
 		//	tst_resm(TINFO, "\t\tTest[%d]: %d %s's.", me, misc_cnt[i], m_str[i]);
 		val0 = val++;
 	}

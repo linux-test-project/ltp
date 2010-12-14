@@ -28,6 +28,8 @@ ifeq ($(UCLINUX),1)
 CFLAGS			+= -D_USC_LIB_
 endif
 
+#CPPFLAGS		+= -DGARRETT_IS_A_PEDANTIC_BASTARD
+
 FILTER_OUT_LIBSRCS	:= mount_utils.c
 
 LIB			:= libltp.a

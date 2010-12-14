@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
 	num_nodes = ram_size / sizeof(void *);
 
 	/* Parse command line args */
-	while ( (c = getopt(argc, argv, "a:p:n:d:s:t")) != -1) {
+	while ((c = getopt(argc, argv, "a:p:n:d:s:t")) != -1) {
 		switch (c) {
 			case 'p':
 				num_forks = atoi(optarg);

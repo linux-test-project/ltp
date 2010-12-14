@@ -126,7 +126,7 @@ int main(int ac, char **av)
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -273,7 +273,7 @@ void setup()
 	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
-	if(access(device,F_OK)) {
+	if (access(device,F_OK)) {
 		tst_brkm(TBROK, cleanup1,
 			"Device '%s' does not exist", device);
 	}

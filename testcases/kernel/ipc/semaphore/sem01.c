@@ -57,7 +57,7 @@ int semup(int semid) {
   semops.sem_num = 0;
   semops.sem_op = 1;
   semops.sem_flg = SEM_UNDO;
-  if(semop(semid, &semops, 1) == -1) {
+  if (semop(semid, &semops, 1) == -1) {
     perror("semup");
     errors++;
     return 1;
@@ -70,7 +70,7 @@ int semdown(int semid) {
   semops.sem_num = 0;
   semops.sem_op = -1;
   semops.sem_flg = SEM_UNDO;
-  if(semop(semid, &semops, 1) == -1) {
+  if (semop(semid, &semops, 1) == -1) {
     perror("semdown");
     errors++;
     return 1;
@@ -81,24 +81,24 @@ int semdown(int semid) {
 void delayloop() {
   int delay;
   delay = 1+((100.0*rand())/RAND_MAX);
-  if(verbose)
+  if (verbose)
     printf("in delay function for %d microseconds\n",delay);
   usleep(delay);
 }
 
 void mainloop(int semid) {
   int i;
-  for(i=0;i<loops;i++) {
-    if(semdown(semid)) {
+  for (i=0;i<loops;i++) {
+    if (semdown(semid)) {
       printf("semdown failed\n");
     }
-    if(verbose)
+    if (verbose)
       printf("sem is down\n");
     delayloop();
-    if(semup(semid)) {
+    if (semup(semid)) {
       printf("semup failed\n");
     }
-    if(verbose)
+    if (verbose)
       printf("sem is up\n");
   }
 }
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
   pid_t pid;
   int chstat;
 
-  while((opt=getopt(argc, argv, "l:vh")) !=EOF) {
+  while ((opt=getopt(argc, argv, "l:vh")) !=EOF) {
     switch((char)opt) {
       case 'l':
         loops = atoi(optarg);
@@ -128,32 +128,32 @@ int main(int argc, char *argv[]) {
 
 
   /* set up the semaphore */
-  if((semid = semget((key_t)9142, 1, 0666 | IPC_CREAT)) < 0) {
+  if ((semid = semget((key_t)9142, 1, 0666 | IPC_CREAT)) < 0) {
     printf("error in semget()\n");
     exit(-1);
   }
   semunion.val = 1;
-  if(semctl(semid, 0, SETVAL, semunion) == -1) {
+  if (semctl(semid, 0, SETVAL, semunion) == -1) {
     printf("error in semctl\n");
   }
 
-  if((pid = fork()) < 0) {
+  if ((pid = fork()) < 0) {
     printf("fork error\n");
     exit(-1);
   }
-  if(pid) {
+  if (pid) {
     /* parent */
     srand(pid);
     mainloop(semid);
     waitpid(pid, &chstat, 0);
-    if(!WIFEXITED(chstat)) {
+    if (!WIFEXITED(chstat)) {
       printf("child exited with status\n");
       exit(-1);
     }
-    if(semctl(semid, 0, IPC_RMID, semunion) == -1) {
+    if (semctl(semid, 0, IPC_RMID, semunion) == -1) {
       printf("error in semctl\n");
     }
-    if(errors) {
+    if (errors) {
       printf("FAIL: there were %d errors\n",errors);
     } else {
       printf("PASS: error count is 0\n");

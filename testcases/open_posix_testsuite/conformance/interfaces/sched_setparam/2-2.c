@@ -92,7 +92,7 @@ void child_process(int id) {
 	int i;
 	struct sched_param param;
 
-	if (id == nb_child-1) {
+	if (id == (nb_child-1)) {
 		param.sched_priority = sched_get_priority_min(SCHED_RR);
 		sched_setparam(getpid(), &param);
 	}
@@ -126,9 +126,12 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 	child_pid = malloc(nb_child);
-
-	param.sched_priority = ( sched_get_priority_min(SCHED_RR) +
-				 sched_get_priority_max(SCHED_RR) ) / 2;
+	if (child_pid == NULL) {
+		printf("malloc failed\n");
+		return PTS_UNRESOLVED;
+	}
+	param.sched_priority = (sched_get_priority_min(SCHED_RR) +
+				 sched_get_priority_max(SCHED_RR)) / 2;
 	
 	if (sched_setscheduler(getpid(), SCHED_RR, &param) == -1) {
 		if (errno == EPERM) {
@@ -188,7 +191,7 @@ int main() {
 	while (scanf("*%i*",&child_count) == 0) 
 		sched_yield();
 
-	for (i=0; i<nb_child-1; i++) {
+	for (i = 0; i < (nb_child-1); i++) {
 		if (kill(child_pid[i], SIGKILL) != 0) {
 			perror("An error occurs when calling kill()");
 			return PTS_UNRESOLVED;

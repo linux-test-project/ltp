@@ -130,7 +130,7 @@ void cleanUpTestChildren(test_ll_t *test)
 {
 	thread_struct_t *pTmpThread = NULL, *pTmpThreadLast = NULL;
 
-	while(test->env->pThreads) {
+	while (test->env->pThreads) {
 		pTmpThread = test->env->pThreads->next;
 		pTmpThreadLast = test->env->pThreads;
 
@@ -154,8 +154,8 @@ void CreateTestChild(void *function, test_ll_t *test)
 
 	hTmpThread = spawnThread(function, test);
 
-	if(ISTHREADVALID(hTmpThread)) {
-		if((pNewThread = (thread_struct_t *) ALLOC(sizeof(thread_struct_t))) == NULL) {
+	if (ISTHREADVALID(hTmpThread)) {
+		if ((pNewThread = (thread_struct_t *) ALLOC(sizeof(thread_struct_t))) == NULL) {
 			pMsg(ERR, test->args, "%d : Could not allocate memory for child thread...\n", GETLASTERROR());
 			exit(GETLASTERROR());
 		}
@@ -176,7 +176,7 @@ void createChild(void *function, test_ll_t *test) {
 
 	hTmpThread = spawnThread(function, test);
 
-	if(ISTHREADVALID(hTmpThread)) {
+	if (ISTHREADVALID(hTmpThread)) {
 		test->hThread = hTmpThread;
 	} else {
 		pMsg(ERR, test->args, "%d : Could not create child thread...\n", GETLASTERROR());
@@ -204,7 +204,7 @@ hThread_t spawnThread(void *function, void *param) {
 #ifdef WINDOWS
 	hTmpThread = CreateThread(NULL, 0, function, param, 0, NULL);
 #else
-	if(pthread_create(&hTmpThread, NULL, function, param) != 0) {
+	if (pthread_create(&hTmpThread, NULL, function, param) != 0) {
 		hTmpThread = 0;
 	}
 #endif
@@ -222,8 +222,8 @@ void closeThread(hThread_t hThread) {
 		 * Sleep(0) will force this thread to
 		 * relinquish the remainder of its time slice
 		 */
-		if(dwExitCode == STILL_ACTIVE) Sleep(0);
-	} while(dwExitCode == STILL_ACTIVE);
+		if (dwExitCode == STILL_ACTIVE) Sleep(0);
+	} while (dwExitCode == STILL_ACTIVE);
 #else
 	pthread_join(hThread, NULL);
 #endif

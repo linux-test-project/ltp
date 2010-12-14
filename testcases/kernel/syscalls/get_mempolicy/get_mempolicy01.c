@@ -333,7 +333,7 @@ static int do_test (struct test_case *tc)
 		if (tc->ttype == INVALID_POINTER)
 			p = NULL;
 
-		if (tc->ttype == INVALID_FLAGS){
+		if (tc->ttype == INVALID_FLAGS) {
 			flags = -1;
 			break;
 		}
@@ -402,7 +402,7 @@ int main(int argc, char **argv) {
 	progname = basename(argv[0]);
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(argc, argv, NULL) {
 	     tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	     tst_exit();
 	}

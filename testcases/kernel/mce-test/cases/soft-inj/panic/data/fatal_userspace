@@ -1,0 +1,7 @@
+# WARNING
+# this will panic your machine!
+# don't try casually
+CPU 1 BANK 4
+MCGSTATUS MCIP EIPV
+STATUS FATAL S
+RIP 0x73:0x12343434

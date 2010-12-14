@@ -59,7 +59,7 @@ static int (*sort_function[10])(void* a, void* b);
 
 int mult_lvl_cmp(void* a, void* b) {
     int i, cmp_val;
-    for(i = 0; i < sort_depth; i++) {
+    for (i = 0; i < sort_depth; i++) {
         cmp_val = sort_direction[i] * (*sort_function[i])(a,b);
         if (cmp_val != 0)
             return cmp_val;
@@ -205,7 +205,7 @@ static struct cmp_fun_struct {
 */
 const char *parse_sort_opt(const char* opt) {
     int i, next_dir=1;
-    for(; *opt ; ++opt) {
+    for (; *opt ; ++opt) {
         if (*opt == '-' || *opt == '+') {
             if (*opt == '-')
                 next_dir = -1;
@@ -217,7 +217,7 @@ const char *parse_sort_opt(const char* opt) {
                 break;
         if (!cmp[i].letter) { /* failed, clear and return */
             sort_depth=0;
-            for (i=0;i<10;i++){
+            for (i=0;i<10;i++) {
               sort_direction[i]=0;
               sort_function[i]=(cmp_t)NULL;
             }
@@ -251,12 +251,12 @@ const char *parse_long_sort(const char* opt) {
 	                      /* keys are ',' delimited */
         if (more_keys)
             *comma='\0';      /* terminate for strcmp() */
-        for(i = 0; cmp[i].letter; ++i)
+        for (i = 0; cmp[i].letter; ++i)
             if (strcmp(opt, cmp[i].name) == 0)
                 break;
         if (!cmp[i].letter) { /* failed, clear and return */
             sort_depth=0;
-            for (i=0;i<10;i++){
+            for (i=0;i<10;i++) {
               sort_direction[i]=0;
               sort_function[i]=(cmp_t)NULL;
             }
@@ -281,7 +281,7 @@ void reset_sort_options (void)
   int i;
 
   sort_depth=0;
-  for (i=0;i<10;i++){
+  for (i=0;i<10;i++) {
     sort_direction[i]=0;
     sort_function[i]=(cmp_t)NULL;
   }

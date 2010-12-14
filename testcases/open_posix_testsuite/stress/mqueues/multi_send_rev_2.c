@@ -50,7 +50,7 @@ int *send(void * ID)
 	pthread_exit((void *)0);
 
 }
-int *receive(void * ID ) 
+int *receive(void * ID) 
 {
 	int i;
 	int ThreadID = *(int *)ID;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 	printf("_POSIX_MESSAGE_PASSING is not defined \n");
 	return PTS_UNRESOLVED;
 #endif */
-	if ((2 != argc) || (( num = atoi(argv[1])) <= 0)) {
+	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		fprintf(stderr, "Usage: %s number_of_threads\n", argv[0]);
                 return PTS_FAIL;
         }
@@ -92,8 +92,8 @@ int main(int argc, char *argv[])
 	mqstat.mq_msgsize = MSG_SIZE;
 	mqstat.mq_flags = 0;
   
-  	if ( ((mqd_t) -1) == (mq = mq_open(MQ_NAME,oflag,0777, &mqstat)) ) {
-		printf("mq_open doesn't return success \n");
+  	if ((mq = mq_open(MQ_NAME,oflag,0777, &mqstat)) == -1) {
+		printf("mq_open doesn't return success\n");
 		return PTS_UNRESOLVED;
 	}
 	

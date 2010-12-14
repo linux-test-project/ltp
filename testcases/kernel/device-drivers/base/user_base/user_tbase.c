@@ -143,110 +143,110 @@ int main() {
 
 
 	/* test bus rescan */
-	if(ki_generic(tbase_fd, BUS_RESCAN))
+	if (ki_generic(tbase_fd, BUS_RESCAN))
                 printf("Failed on bus rescan\n");
         else
                 printf("Success on bus rescan\n");
 
 	/* test get driver */
-	if(ki_generic(tbase_fd, GET_DRV))
+	if (ki_generic(tbase_fd, GET_DRV))
                 printf("Failed on get driver\n");
         else
                 printf("Success on get driver\n");
 
 	/* test put driver */
-	if(ki_generic(tbase_fd, PUT_DRV))
+	if (ki_generic(tbase_fd, PUT_DRV))
                 printf("Failed on put driver\n");
         else
                 printf("Success on put driver\n");
 
 	/* test register firmware, should return not 0 */
-	if(ki_generic(tbase_fd, REG_FIRM))
+	if (ki_generic(tbase_fd, REG_FIRM))
                 printf("Failed on register firmware\n\tPossibly because parent nodes already set\n");
         else
                 printf("Success on register firmware\n");
 
 	/* test create driver file sysfs */
-        if(ki_generic(tbase_fd, CREATE_FILE))
+        if (ki_generic(tbase_fd, CREATE_FILE))
                 printf("Failed on creating driver file\n");
         else
                 printf("Success on creating driver file\n");
 
 	/* test device suspend and resume */
-	if(ki_generic(tbase_fd, DEV_SUSPEND))
+	if (ki_generic(tbase_fd, DEV_SUSPEND))
                 printf("Failed on suspending device\n");
         else
                 printf("Success on suspending device\n");
 
 	/* test device create file sysfs */
-	if(ki_generic(tbase_fd, DEV_FILE))
+	if (ki_generic(tbase_fd, DEV_FILE))
                 printf("Failed on creating device file\n");
         else
                 printf("Success on creating device file\n");
 
 	/* test bus create file sysfs */
-        if(ki_generic(tbase_fd, BUS_FILE))
+        if (ki_generic(tbase_fd, BUS_FILE))
                 printf("Failed on creating bus file\n");
         else
                 printf("Success on creating bus file\n");
 
 	/* test register class */
-        if(ki_generic(tbase_fd, CLASS_REG))
+        if (ki_generic(tbase_fd, CLASS_REG))
                 printf("Failed on registering class\n");
         else
                 printf("Success on registering class\n");
 
 	/* test get class */
-	if(ki_generic(tbase_fd, CLASS_GET))
+	if (ki_generic(tbase_fd, CLASS_GET))
                 printf("Failed on get class\n");
         else
                 printf("Success on get class\n");
 
 	/* test class create file sysfs */
-	if(ki_generic(tbase_fd, CLASS_FILE))
+	if (ki_generic(tbase_fd, CLASS_FILE))
                 printf("Failed on creating class file\n");
         else
                 printf("Success on creating class file\n");
 
 	/* test unregistering class */
-        if(ki_generic(tbase_fd, CLASS_UNREG))
+        if (ki_generic(tbase_fd, CLASS_UNREG))
                 printf("Failed on unregistering class\n");
         else
                 printf("Success on unregistering class\n");
 
 	/* test register class device */
-	if(ki_generic(tbase_fd, CLASSDEV_REG))
+	if (ki_generic(tbase_fd, CLASSDEV_REG))
                 printf("Failed on registering class device and creating sysfs file\n");
         else
                 printf("Success on registering class device and creating sysfs file\n");
 
 	/* test register class interface */
-        if(ki_generic(tbase_fd, CLASSINT_REG))
+        if (ki_generic(tbase_fd, CLASSINT_REG))
                 printf("Failed on registering class interface\n");
         else
                 printf("Success on registering class interface\n");
 
 	/* test register sysdev_class */
-        if(ki_generic(tbase_fd, SYSDEV_CLS_REG))
+        if (ki_generic(tbase_fd, SYSDEV_CLS_REG))
                 printf("Failed on registering sysdev_class\n");
         else
                 printf("Success on registering sysdev_class\n");
 
 	/* test register sysdev */
-        if(ki_generic(tbase_fd, SYSDEV_REG))
+        if (ki_generic(tbase_fd, SYSDEV_REG))
                 printf("Failed on registering sysdev\n");
         else
                 printf("Success on registering sysdev\n");
 
         /* test unregister sysdev */
-        if(ki_generic(tbase_fd, SYSDEV_UNREG))
+        if (ki_generic(tbase_fd, SYSDEV_UNREG))
                 printf("Failed on unregistering sysdev\n");
         else
                 printf("Success on unregistering sysdev\n");
 
 
 	/* test unregister sysdev_class */
-        if(ki_generic(tbase_fd, SYSDEV_CLS_UNREG))
+        if (ki_generic(tbase_fd, SYSDEV_CLS_UNREG))
                 printf("Failed on unregistering sysdev_class\n");
         else
                 printf("Success on unregistering sysdev_class\n");

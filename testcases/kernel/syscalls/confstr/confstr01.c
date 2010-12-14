@@ -105,7 +105,7 @@ int main()
 
 	errno = 0;
 	for (i = 0; confstr_vars[i]; i++) {
-		len = confstr(confstr_var_vals[i], (char *)NULL, (size_t) 0);
+		len = confstr(confstr_var_vals[i], NULL, (size_t) 0);
 		if (len != 0) {
 			/* Allocate space for the buffer with size len */
 			if ((buf = (char *)malloc(len)) == NULL) {

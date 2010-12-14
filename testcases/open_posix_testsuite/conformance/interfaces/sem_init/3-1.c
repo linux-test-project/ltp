@@ -55,7 +55,7 @@ int main()
         return PTS_UNRESOLVED;
    }
 
-   if (( pthread_join(prod, NULL) == 0) && ( pthread_join(cons, NULL) == 0)) {
+   if ((pthread_join(prod, NULL) == 0) && (pthread_join(cons, NULL) == 0)) {
 	   puts("TEST PASS");
 	   	pthread_exit(NULL);
    		sem_destroy(&psem);

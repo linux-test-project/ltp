@@ -52,7 +52,7 @@ int main() {
         /* Now, SHM_NAME is unlinked but there are open references on it */
 
 	buf = mmap(NULL, BUF_SIZE, PROT_READ, MAP_SHARED, fd, 0);
-	if ( buf == MAP_FAILED && errno == EBADF) {
+	if (buf == MAP_FAILED && errno == EBADF) {
 		printf("The shared memory object was removed.\n");
 		return PTS_FAIL;
 	} else if (buf == MAP_FAILED) {

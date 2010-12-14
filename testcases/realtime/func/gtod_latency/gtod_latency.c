@@ -103,7 +103,7 @@ int stats_cmdline(int argc, char *argv[])
 	if (argc == 1)
 		return 0;
 
-	for(i = 1; i < argc; i++) {
+	for (i = 1; i < argc; i++) {
 		if (*argv[i] != '-') {
 			printf("missing flag indicator\n");
 			return -1;

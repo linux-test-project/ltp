@@ -101,18 +101,15 @@ int main(int argc, char **argv)
 
 #ifdef UCLINUX
 	/* parse standard options */
-	if ((msg =
-	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	maybe_run_child(&do_child, "dd", &temp, &sig);
 #endif
 
 	setup();
 	// tempdir();           /* move to new directory */
-/*--------------------------------------------------------------------*/
-	blenter();		/*<<<<<ENTER DATA HERE<<<<<<<< */
+	blenter();
 
 	exno = 1;
 	unlink("core");

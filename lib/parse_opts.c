@@ -102,6 +102,9 @@
 /* The timing information block. */
 struct tblock tblock={0,((long) -1)>>1,0,0};
 
+#ifdef GARRETT_IS_A_PEDANTIC_BASTARD
+extern pid_t	spawned_program_pid;
+#endif
 
 /* Define flags and args for standard options */
 int STD_FUNCTIONAL_TEST=1,	/* flag indicating to do functional testing code */
@@ -220,7 +223,15 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * vector.
      */
 
+<<<<<<< HEAD
     if (STD_opt_arr != NULL) {
+=======
+#ifdef GARRETT_IS_A_PEDANTIC_BASTARD
+    spawned_program_pid = getpid();
+#endif
+
+    if ( STD_opt_arr != NULL ) {
+>>>>>>> f4b7b4f00f2c5def7898c62f58d09b454eabd2ca
 	free(STD_opt_arr);
 	STD_opt_arr=NULL;
     }

@@ -50,12 +50,12 @@ int main (int argc, char * argv [])
 	  }
 	 
 	  // stat data of symlink itself
-	  if (lstat(new_path, &statbuf)== -1){
+	  if (lstat(new_path, &statbuf)== -1) {
 		  perror ("checklink: lstat failed");
 		  return 1;
 	  }
 	 
-	  if (! (S_ISLNK (statbuf.st_mode))){
+	  if (! (S_ISLNK (statbuf.st_mode))) {
 		  printf ("checklink : file %s is not a symbol link\n", new_path);
 		  return 1;
 	  }
@@ -66,7 +66,7 @@ int main (int argc, char * argv [])
 	  // Increase size of buffer to readlink untile whole symlink body will be read.
 	  // Check readlink result on every iteration.
 	 
-	  while (1){
+	  while (1) {
 		  memset (buffer, 0, size+1);
 		  num = readlink (new_path, buffer, size);
 		  if (num < 1 || num > size) {

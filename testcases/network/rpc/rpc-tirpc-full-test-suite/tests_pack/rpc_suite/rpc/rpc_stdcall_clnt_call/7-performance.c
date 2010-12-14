@@ -112,7 +112,7 @@ int main(int argn, char *argc[])
 	to.tv_usec = 100;
 	
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		clnt_pcreateerror("err");
 		printf("5\n");

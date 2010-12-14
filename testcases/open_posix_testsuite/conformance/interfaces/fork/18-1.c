@@ -86,19 +86,19 @@
 int notified;
 
 /* Notification routine */
-void notification( union sigval sv )
+void notification(union sigval sv)
 {
 	if (sv.sival_int != SIGUSR1)
 	{
-		output( "Got signal %d, expected %d\n", sv.sival_int, SIGUSR1 );
-		UNRESOLVED( 1, "Unexpected notification" );
+		output("Got signal %d, expected %d\n", sv.sival_int, SIGUSR1);
+		UNRESOLVED(1, "Unexpected notification");
 	}
 
-	notified = ( int ) getpid();
+	notified = (int) getpid();
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -121,11 +121,11 @@ int main( int argc, char * argv[] )
 	se.sigev_notify_function = &notification;
 	se.sigev_notify_attributes = NULL; /* default detached thread */
 
-	ret = timer_create( CLOCK_REALTIME, &se, &tmr );
+	ret = timer_create(CLOCK_REALTIME, &se, &tmr);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to create a timer" );
+		UNRESOLVED(errno, "Failed to create a timer");
 	}
 
 	/* Arm the timer */
@@ -137,60 +137,60 @@ int main( int argc, char * argv[] )
 
 	it.it_value.tv_nsec = 500000000; /* 0.5 sec */
 
-	ret = timer_settime( tmr, 0, &it, NULL );
+	ret = timer_settime(tmr, 0, &it, NULL);
 
 	/* Create the child */
 	child = fork();
 
-	if (child == ( pid_t ) - 1)
+	if (child == -1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == ( pid_t ) 0)
+	if (child == 0)
 	{
 
-		sleep( 1 );
+		sleep(1);
 
 		if (notified != 0)
 		{
-			if (notified == ( int ) getpid())
+			if (notified == (int) getpid())
 			{
-				FAILED( "Per-Process Timer was inherited in child" );
+				FAILED("Per-Process Timer was inherited in child");
 			}
 			else
 			{
-				output( "Notification occured before the child forked" );
+				output("Notification occured before the child forked");
 			}
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
-	if (notified != ( int ) getpid())
+	if (notified != (int) getpid())
 	{
-		output( "Notified value: %d\n", notified );
-		UNRESOLVED( -1, "No notification occured -- per process timers do not work?" );
+		output("Notified value: %d\n", notified);
+		UNRESOLVED(-1, "No notification occured -- per process timers do not work?");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

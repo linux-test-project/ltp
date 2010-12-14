@@ -6,9 +6,9 @@
  *
  * pthread_barrier_destroy()
  *
- * The pthread_barrier_destroy( ) function may fail if:
+ * The pthread_barrier_destroy() function may fail if:
  * [EBUSY] The implementation has detected an attempt to destroy a barrier while it is in
- * use (for example, while being used in a pthread_barrier_wait( ) call) by another
+ * use (for example, while being used in a pthread_barrier_wait() call) by another
  * thread.
  *
  * Note: This case will always PASS

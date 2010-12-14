@@ -92,10 +92,10 @@ int main(int argc, char * argv[])
 	
 	/* Create the child */
 	child = fork();
-	if (child == (pid_t) -1)  {  UNRESOLVED(errno, "Failed to fork");  }
+	if (child == -1)  {  UNRESOLVED(errno, "Failed to fork");  }
 	
 	/* child */
-	if (child == (pid_t) 0)
+	if (child == 0)
 	{
 		/* The child stops immediatly */
 		exit(PTS_PASS);
@@ -116,7 +116,7 @@ int main(int argc, char * argv[])
 		FAILED("Another process with the same PID as the child exists");
 	}
 
-	ret = kill((pid_t) (0 - (int)child), 0);
+	ret = kill((0 - (int)child), 0);
 	if ((ret == 0) || (errno != ESRCH))
 	{
 		output("Kill returned %d (%d: %s)\n", ret, errno, strerror(errno));

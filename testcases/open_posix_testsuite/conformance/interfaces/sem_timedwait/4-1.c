@@ -32,32 +32,32 @@
 int main() {
 	sem_t mysemp;
 	struct timespec ts;
-	int unresolved=0, sts;
+	int unresolved = 0, sts;
 
 
         if (sem_init (&mysemp, 0, 1) == -1) {
                 perror(ERROR_PREFIX "sem_init");
-		unresolved=1;
+		unresolved = 1;
         }
 
-	ts.tv_sec=time(NULL)+1;
-        ts.tv_nsec=0;
+	ts.tv_sec = time(NULL) + 1;
+        ts.tv_nsec = 0;
 
 	/* Lock Semaphore */
 	sts = sem_timedwait(&mysemp, &ts);
         if (sts == -1) {
 		perror(ERROR_PREFIX "sem_timedwait");
-		unresolved=1;
+		unresolved = 1;
 	}
 
 
 	/* unlock Semaphore */
-	if ( sem_post(&mysemp) == -1 ) {
+	if (sem_post(&mysemp) == -1) {
 		perror(ERROR_PREFIX "sem_post");
-		unresolved=1;
+		unresolved = 1;
 	}
 
-	if (( sts == 0) && (unresolved == 0)) {
+	if ((sts == 0) && (unresolved == 0)) {
 		puts("TEST PASSED");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

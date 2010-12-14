@@ -117,7 +117,7 @@ void display_status(siginfo_t *infop)
 {
         tst_resm(TINFO,"Process %d terminated:", infop->si_pid);
         tst_resm(TINFO,"code = %d",infop->si_code);
-        if(infop->si_code == CLD_EXITED)
+        if (infop->si_code == CLD_EXITED)
                 tst_resm(TINFO,"exit value = %d",infop->si_status);
         else
 		tst_resm(TINFO,"signal = %d",infop->si_status);
@@ -130,7 +130,7 @@ int main(int ac, char **av) {
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL) {
              tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -143,12 +143,12 @@ int main(int ac, char **av) {
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
                      
 	TEST(fork());
-	if(TEST_RETURN == 0){
+	if (TEST_RETURN == 0) {
                 exit(123);
         }
         else{
                 TEST(waitid(P_ALL,getpid(),&infop,WEXITED));
-		if(TEST_RETURN == -1){
+		if (TEST_RETURN == -1) {
                         tst_resm(TFAIL|TTERRNO, "waitid(getpid()) failed");
                         tst_exit();
 		}else 
@@ -156,13 +156,13 @@ int main(int ac, char **av) {
         }
 
         TEST(fork());
-        if(TEST_RETURN == 0){
+        if (TEST_RETURN == 0) {
 		int a, b = 0;
                 a = 1/b;
                 tst_exit();
         } else{
                 TEST(waitid(P_ALL,0,&infop,WEXITED));
-		if(TEST_RETURN == -1) {
+		if (TEST_RETURN == -1) {
                         tst_resm(TFAIL|TTERRNO, "waitid(0) failed");
                         tst_exit();
                 } else
@@ -170,13 +170,13 @@ int main(int ac, char **av) {
         }
 
         TEST(pid = fork());
-	if(TEST_RETURN == 0){
+	if (TEST_RETURN == 0) {
                 TEST(sleep(10));
                 tst_exit();
         }
         TEST(kill(pid,SIGHUP));
         TEST(waitid(P_ALL,0,&infop,WEXITED));
-	if(TEST_RETURN == -1) {
+	if (TEST_RETURN == -1) {
                 tst_resm(TFAIL|TTERRNO, "waitid(0) failed");
                 tst_exit();
         } else 

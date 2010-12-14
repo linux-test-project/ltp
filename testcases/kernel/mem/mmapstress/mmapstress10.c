@@ -679,7 +679,7 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
                         anyfail();
 		}
 	}
-	if ( munmap(maddr_mapper,mapsize_mapper) == -1 ) {
+	if (munmap(maddr_mapper,mapsize_mapper) == -1) {
 		perror("munmap failed");
 		anyfail();
 	}

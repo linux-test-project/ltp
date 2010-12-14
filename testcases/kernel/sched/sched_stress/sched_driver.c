@@ -448,7 +448,7 @@ float *t2;       /* if sched_tc6:  second time returned from testcase */
 	 * Open the temporary file to get the returned number of seconds
 	 */
 
-	if ( (datafile = fopen ("sch.measure", "r")) == (FILE *) NULL) {
+	if ((datafile = fopen ("sch.measure", "r")) == (FILE *) NULL) {
 		sys_error ("cannot open sch.measure", __FILE__, __LINE__);
 	}
 

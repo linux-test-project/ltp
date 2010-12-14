@@ -24,7 +24,7 @@
 #if __GNUC__ > 2 || __GNUC_MINOR__ >= 96
 // won't alias anything, and aligned enough for anything
 #define MALLOC __attribute__ ((__malloc__))
-// tell gcc what to expect:   if(unlikely(err)) die(err);
+// tell gcc what to expect:   if (unlikely(err)) die(err);
 #define likely(x)       __builtin_expect(!!(x),1)
 #define unlikely(x)     __builtin_expect(!!(x),0)
 #define expected(x,y)   __builtin_expect((x),(y))

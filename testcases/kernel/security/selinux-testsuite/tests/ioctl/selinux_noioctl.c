@@ -46,21 +46,21 @@ int main(int argc, char **argv) {
 
   fd = open(argv[1], O_RDONLY, 0);
  
-  if(fd == -1) {
+  if (fd == -1) {
     perror("test_noioctl:open");
     exit(1);
   }
 
   /* This one should hit the FILE__IOCTL test and fail. */
   rc = ioctl(fd, FIGETBSZ, &val);
-  if( rc == 0 ) {
+  if ( rc == 0 ) {
       printf("test_noioctl:FIGETBSZ");
       exit(1);
   }
 
   /* This one should hit the FILE__IOCTL test and fail. */
   rc = ioctl(fd, FIOCLEX);
-  if( rc == 0 ) {
+  if ( rc == 0 ) {
     printf("test_noioctl:FIOCLEX");
     exit(1);
   }
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
    * Old:  Should only check FD__USE and succeed.
    */
   rc = ioctl(fd, FIONBIO, &val);
-  if( !rc == !oldkernel ) {
+  if ( !rc == !oldkernel ) {
     printf("test_noioctl:FIONBIO");
     exit(1);
   }
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
    * Old:  Should hit the FILE__GETATTR test and fail.
    */
   rc = ioctl(fd, EXT2_IOC_GETVERSION, &val);
-  if( !rc != !oldkernel ) {
+  if ( !rc != !oldkernel ) {
     perror("test_noioctl:EXT2_IOC_GETVERSION");
     exit(1);
   }
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
   /* This one should hit the FILE__WRITE test and fail. */
   val = 0;
   rc = ioctl(fd, EXT2_IOC_SETVERSION, &val);
-  if( rc == 0 ) {
+  if ( rc == 0 ) {
     perror("test_noioctl:EXT2_IOC_SETVERSION");
     exit(1);
   }

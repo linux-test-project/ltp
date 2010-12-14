@@ -131,7 +131,7 @@
                         fprintf(stderr, "%s: option -%c ", prog, opt); \
                         fprintf(stderr, "requires an argument\n");\
 						usage(prog); \
-                            } while(0)
+                            } while (0)
 
 
 
@@ -313,7 +313,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
             pthread_exit((void *)exit_val);
         }
        
-        if(verbose_print)
+        if (verbose_print)
             tst_resm(TINFO, "map address = %p", map_address);
 
 	prtln();
@@ -564,7 +564,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
         else
         {
-            if(verbose_print)
+            if (verbose_print)
                 tst_resm(TINFO, "Tmp file created");
         }
 

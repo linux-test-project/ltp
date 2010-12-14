@@ -121,16 +121,16 @@ pid_t create_sig_proc(unsigned long usec, int sig, unsigned count)
 
 	pid = getpid();
 	WITH_SIGNALS_BLOCKED(
-			if((cpid = fork()) == 0) {
+			if ((cpid = fork()) == 0) {
 				tst_sig(NOFORK, SIG_DFL, NULL);
 				signal(SIGTERM, sigterm_handler);
 			}
 	);
 	switch (cpid) {
 	case 0:
-		while(count-- > 0) {
+		while (count-- > 0) {
 			usleep(usec);
-			if(kill(pid, sig) == -1)
+			if (kill(pid, sig) == -1)
 				break;
 		}
 		_exit(0);

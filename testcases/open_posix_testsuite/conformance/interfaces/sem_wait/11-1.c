@@ -36,26 +36,26 @@ int main() {
 
 	/* Initial value of Semaphore is 1 */
 	mysemp = sem_open(semname, O_CREAT, 0777, 1);
-	if ( mysemp == SEM_FAILED || mysemp == NULL ) {
+	if (mysemp == SEM_FAILED || mysemp == NULL) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
 
 	/* Lock Semaphore by sem_trywait*/
-	if ( sem_trywait(mysemp) == -1 ) {
+	if (sem_trywait(mysemp) == -1) {
 		perror(ERROR_PREFIX "sem_wait");
 		return PTS_UNRESOLVED; 
 	}
 
 
 	/* Value of Semaphore */
-	if ( sem_getvalue(mysemp, &val) == -1 ) {
+	if (sem_getvalue(mysemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 
 	/* Checking if the value of the Semaphore decremented by one */
-	} else if ( val == 0 ) {
+	} else if (val == 0) {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		sem_close(mysemp);

@@ -156,7 +156,7 @@ main(int argc, char **argv)
 	char *msg; 		 /* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	     (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -169,7 +169,7 @@ main(int argc, char **argv)
 		Tst_count = 0;
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if( (tdat[testno].setup) && (tdat[testno].setup()) ) {
+			if ( (tdat[testno].setup) && (tdat[testno].setup()) ) {
 		 		/* setup() failed, skip this test */
 		 		continue;
 		 	}
@@ -178,7 +178,7 @@ main(int argc, char **argv)
 		 	TEST_ERROR_LOG(TEST_ERRNO);
 		 	printf("TEST_RETURN is %d, TEST_ERRNO is %d\n",
 				TEST_RETURN, TEST_ERRNO);
-		 	if ( (TEST_RETURN == EXP_RET_VAL) &&
+		 	if ((TEST_RETURN == EXP_RET_VAL) &&
 		 	     (TEST_ERRNO == tdat[testno].experrno) ) {
 		 		tst_resm(TPASS, "Expected results for %s, "
 		 				"errno: %d", tdat[testno].desc,
@@ -192,7 +192,7 @@ main(int argc, char **argv)
 						TEST_ERRNO,
 						tdat[testno].experrno);
 			}
-			if(tdat[testno].cleanup) {
+			if (tdat[testno].cleanup) {
 				tdat[testno].cleanup();
 			}
 		}
@@ -248,7 +248,7 @@ setup(void)
 	 */
 
 	/* Check for nobody_uid user id */
-	if( (ltpuser = getpwnam(nobody_uid)) == NULL) {
+	if ( (ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "Required user %s doesn't exists",
 			 nobody_uid);
 		/*NOTREACHED*/
@@ -266,7 +266,7 @@ setup(void)
 	TEST_PAUSE;
 
 	/* Get unique module name for each child process */
-	if( sprintf(modname, "%s_%d", BASEMODNAME, getpid()) <= 0) {
+	if ( sprintf(modname, "%s_%d", BASEMODNAME, getpid()) <= 0) {
 		tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
 	}
         bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);

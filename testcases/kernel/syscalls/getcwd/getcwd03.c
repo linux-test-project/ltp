@@ -82,7 +82,7 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* parse_opts() return message */
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -242,7 +242,7 @@ char *getpwd()
 		tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
 	 /*NOTREACHED*/}
 	while (fgets(buf, BUFSIZ, fin) != NULL) {
-		if ((cp = strchr(buf, '\n')) == (char *)NULL) {
+		if ((cp = strchr(buf, '\n')) == NULL) {
 			tst_brkm(TBROK, cleanup, "pwd output too long");
 		 /*NOTREACHED*/}
 		*cp = 0;

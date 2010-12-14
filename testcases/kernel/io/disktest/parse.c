@@ -53,7 +53,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 	signed char c;
 	char *leftovers;
 
-	while((c = getopt(argc, argv, "?a:A:B:cC:dD:E:f:Fh:I:K:L:m:M:nN:o:p:P:qQrR:s:S:t:T:wvV:z")) != -1) {
+	while ((c = getopt(argc, argv, "?a:A:B:cC:dD:E:f:Fh:I:K:L:m:M:nN:o:p:P:qQrR:s:S:t:T:wvV:z")) != -1) {
 		switch(c) {
 			case ':' :
 				pMsg(WARN, args, "Missing argument for perameter.\n");
@@ -61,11 +61,11 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				return(-1);
 			case 'V' :
 #ifdef _DEBUG
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					exit(1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c argument is non numeric.\n", c);
 					exit(1);
 				}
@@ -80,18 +80,18 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->flags |= CLD_FLG_DUMP;
 				break;
 			case 'a' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 					return(-1);
 				}
 				args->seed = (unsigned int) strtol(optarg, NULL, 0);
 				break;
 			case 'A' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					exit(1);
 				}
@@ -133,11 +133,11 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				pMsg(INFO, args, "Version %s\n", VER_STR);
 				exit(0);
 			case 'p' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(args->flags & (CLD_FLG_LINEAR|CLD_FLG_RANDOM)) {
+				if (args->flags & (CLD_FLG_LINEAR|CLD_FLG_RANDOM)) {
 					pMsg(WARN, args, "Only one seek type, -p, can be specified.\n");
 					return(-1);
 				}
@@ -156,40 +156,40 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 					return(-1);
 				}
 				if (strchr(optarg,'U') || strchr(optarg,'u'))
-					if((args->flags & (CLD_FLG_LINEAR)) &&
+					if ((args->flags & (CLD_FLG_LINEAR)) &&
 							!(args->flags & CLD_FLG_LUND))
 						args->flags |= CLD_FLG_LUNU;
 				if (strchr(optarg,'D') || strchr(optarg,'d'))
-					if((args->flags & (CLD_FLG_LINEAR)) &&
+					if ((args->flags & (CLD_FLG_LINEAR)) &&
 							!(args->flags & CLD_FLG_LUNU))
 						args->flags |= CLD_FLG_LUND;
 				break;
 			case 'B' :
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 					return(-1);
 				}
-				if(strchr(optarg,':') != NULL) { /* we are given a range of transfer sizes */
+				if (strchr(optarg,':') != NULL) { /* we are given a range of transfer sizes */
 					args->flags |= CLD_FLG_RTRSIZ;
 					args->ltrsiz = strtoul(optarg, &leftovers, 10);
-					if(leftovers == strchr(leftovers,'k')) { /* first value had a 'k' */
+					if (leftovers == strchr(leftovers,'k')) { /* first value had a 'k' */
 						args->ltrsiz *= 2;
 						leftovers++;
-					} else if(leftovers == strchr(leftovers, 'm')) {	/* first value had a 'm' */
+					} else if (leftovers == strchr(leftovers, 'm')) {	/* first value had a 'm' */
 						args->ltrsiz *= (2 * 1024);
 						leftovers++;
 					} else {
 						if (args->ltrsiz > 256)
 							args->ltrsiz /= BLK_SIZE;
 					}
-					if(!isdigit(leftovers[1])) {
+					if (!isdigit(leftovers[1])) {
 						pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 						return(-1);
 					}
 					args->htrsiz = atol((char *)strchr(leftovers,':')+1);
-					if((strchr(leftovers,'k')) != NULL) {/* second value had a 'k' */
+					if ((strchr(leftovers,'k')) != NULL) {/* second value had a 'k' */
 						args->htrsiz *= 2;
-					} else if((strchr(leftovers,'m')) != NULL) {	/* second value had a 'm' */
+					} else if ((strchr(leftovers,'m')) != NULL) {	/* second value had a 'm' */
 						args->htrsiz *= (2 * 1024);
 					} else {
 						if (args->htrsiz > 256)
@@ -197,9 +197,9 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 					}
 				} else { /* only a single value given for transfer size */
 					args->ltrsiz = atoi(optarg);
-					if(strchr(optarg,'k')) {
+					if (strchr(optarg,'k')) {
 						args->ltrsiz *= 2;
-					} else if(strchr(optarg,'m')) {
+					} else if (strchr(optarg,'m')) {
 						args->ltrsiz *= (2 * 1024);
 					} else {
 						if (args->ltrsiz > 256)
@@ -212,7 +212,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 #endif
 				break;
 			case 'c' :
-				if(args->flags & CLD_FLG_PTYPS) {
+				if (args->flags & CLD_FLG_PTYPS) {
 					pMsg(WARN, args, "Please specify only one pattern type\n");
 					usage();
 					return(-1);
@@ -220,7 +220,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->flags |= CLD_FLG_CPTYPE;
 				break;
 			case 'n' :
-				if(args->flags & CLD_FLG_PTYPS) {
+				if (args->flags & CLD_FLG_PTYPS) {
 					pMsg(WARN, args, "Please specify only one pattern type\n");
 					usage();
 					return(-1);
@@ -228,11 +228,11 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->flags |= CLD_FLG_LPTYPE;
 				break;
 			case 'f' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(args->flags & CLD_FLG_PTYPS) {
+				if (args->flags & CLD_FLG_PTYPS) {
 					pMsg(WARN, args, "Please specify only one pattern type\n");
 					usage();
 					return(-1);
@@ -245,7 +245,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->flags |= CLD_FLG_FSLIST;
 				break;
 			case 'z' :
-				if(args->flags & CLD_FLG_PTYPS) {
+				if (args->flags & CLD_FLG_PTYPS) {
 					pMsg(WARN, args, "Please specify only one pattern type\n");
 					usage();
 					return(-1);
@@ -253,31 +253,31 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->flags |= CLD_FLG_RPTYPE;
 				break;
 			case 'h' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 					usage();
 					return(-1);
 				}
 				args->flags |= CLD_FLG_HBEAT;
 				args->hbeat = atoi(optarg);
-				if(strchr(optarg,'m')) {	/* multiply by sec */
+				if (strchr(optarg,'m')) {	/* multiply by sec */
 					args->hbeat *= 60;
-				} else if(strchr(optarg,'h')) { /* multiply sec*min */
+				} else if (strchr(optarg,'h')) { /* multiply sec*min */
 					args->hbeat *= (time_t) (60*60);
-				} else if(strchr(optarg,'d')) { /* multiply by sec*min*hours */
+				} else if (strchr(optarg,'d')) { /* multiply by sec*min*hours */
 					args->hbeat *= (time_t) (60*60*24);
 				}
 				break;
 			case 'D' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 					usage();
 					return(-1);
@@ -293,7 +293,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->flags |= CLD_FLG_W;
 				break;
 			case 'o' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
@@ -301,11 +301,11 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->flags |= CLD_FLG_OFFSET;
 				break;
 			case 'R' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(strchr(optarg,':') != NULL) { /* we are given a retry delay */
+				if (strchr(optarg,':') != NULL) { /* we are given a retry delay */
 					args->retries = strtol(optarg, &leftovers, 10);
 					args->retry_delay = (time_t) atol((char *)strchr(leftovers,':')+1);
 				} else { /* only a retry count given */
@@ -313,7 +313,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				}
 				break;
 			case 'M' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
@@ -322,7 +322,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				break;
 			case 'm' :
 				args->flags |= CLD_FLG_MBLK;
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
@@ -359,54 +359,54 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				}
 				break;
 			case 'E' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments are non numeric.\n", c);
 					usage();
 					return(-1);
 				}
 				args->flags |= CLD_FLG_CMPR;
 				args->cmp_lng = strtol(optarg,NULL,0);
-				if(strchr(optarg,'k')) {	/* multiply by 2^10 */
+				if (strchr(optarg,'k')) {	/* multiply by 2^10 */
 					args->cmp_lng <<= 10;
-				} else if(strchr(optarg,'K')) { /* multiply 10^3 */
+				} else if (strchr(optarg,'K')) { /* multiply 10^3 */
 					args->cmp_lng *= 1000;
-				} else if(strchr(optarg,'m')) { /* multiply by 2^20 */
+				} else if (strchr(optarg,'m')) { /* multiply by 2^20 */
 					args->cmp_lng <<= 20;
-				} else if(strchr(optarg,'M')) { /* multiply by 10^6 */
+				} else if (strchr(optarg,'M')) { /* multiply by 10^6 */
 					args->cmp_lng *= 1000000;
 				}
 				break;
 			case 'N' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments are non numeric.\n", c);
 					return(-1);
 				}
 				args->flags |= CLD_FLG_VSIZ;
 				args->vsiz = my_strtofft(optarg);
-				if(strchr(optarg,'k')) {	/* multiply by 2^10 */
+				if (strchr(optarg,'k')) {	/* multiply by 2^10 */
 					args->vsiz <<= 10;
-				} else if(strchr(optarg,'K')) { /* multiply 10^3 */
+				} else if (strchr(optarg,'K')) { /* multiply 10^3 */
 					args->vsiz *= 1000;
-				} else if(strchr(optarg,'m')) { /* multiply by 2^20 */
+				} else if (strchr(optarg,'m')) { /* multiply by 2^20 */
 					args->vsiz <<= 20;
-				} else if(strchr(optarg,'M')) { /* multiply by 10^6 */
+				} else if (strchr(optarg,'M')) { /* multiply by 10^6 */
 					args->vsiz *= 1000000;
-				} else if(strchr(optarg,'g')) { /* multiply by 2^30 */
+				} else if (strchr(optarg,'g')) { /* multiply by 2^30 */
 					args->vsiz <<= 30;
-				} else if(strchr(optarg,'G')) { /* multiply by 10^9 */
+				} else if (strchr(optarg,'G')) { /* multiply by 10^9 */
 					args->vsiz *= 1000000000;
 				}
 				break;
 			case 'I' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
@@ -445,7 +445,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 #ifdef _DEBUG
 					PDBG3(DBUG, args, "Parsed sync interval: %ld\n", args->sync_interval);
 #endif
-					if((args->flags & CLD_FLG_DIRECT)) {
+					if ((args->flags & CLD_FLG_DIRECT)) {
 						pMsg(ERR, args, "Can't specify sync with Direct IO\n");
 						return(-1);
 					}
@@ -453,15 +453,15 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				}
 				break;
 			case 't' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
 
-				if(strchr(optarg,':') != NULL) { /* we are given a option for delay & timeout */
+				if (strchr(optarg,':') != NULL) { /* we are given a option for delay & timeout */
 					args->delayTimeMin = strtoul(optarg, &leftovers, 10);
 					/* check to see if we have one or more then one ':' */
-					if((char *)strchr(optarg,':') == (char *)strrchr(optarg,':')) {
+					if ((char *)strchr(optarg,':') == (char *)strrchr(optarg,':')) {
 						/* only one ':', assume no random delayTime, and ioTimeout */
 						args->delayTimeMax = args->delayTimeMin;
 						args->ioTimeout = (time_t) atol((char *)strchr(leftovers,':')+1);
@@ -470,11 +470,11 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 						args->delayTimeMax = strtoul(leftovers+1, &leftovers, 10);
 						args->ioTimeout = (time_t) atol((char *)strchr(leftovers,':')+1);
 					}
-					if(strchr(leftovers,'m')) {	/* multiply by sec */
+					if (strchr(leftovers,'m')) {	/* multiply by sec */
 						args->ioTimeout *= 60;
-					} else if(strchr(leftovers,'h')) { /* multiply sec*min */
+					} else if (strchr(leftovers,'h')) { /* multiply sec*min */
 						args->ioTimeout *= (time_t) (60*60);
-					} else if(strchr(leftovers,'d')) { /* multiply by sec*min*hours */
+					} else if (strchr(leftovers,'d')) { /* multiply by sec*min*hours */
 						args->ioTimeout *= (time_t) (60*60*24);
 					}
 				} else {
@@ -483,47 +483,47 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				}
 				break;
 			case 'T' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
 				args->run_time = atoi(optarg);
 				args->flags |= CLD_FLG_TMD;
-				if(strchr(optarg,'m')) {	/* multiply by sec */
+				if (strchr(optarg,'m')) {	/* multiply by sec */
 					args->run_time *= 60;
-				} else if(strchr(optarg,'h')) { /* multiply sec*min */
+				} else if (strchr(optarg,'h')) { /* multiply sec*min */
 					args->run_time *= (time_t) (60*60);
-				} else if(strchr(optarg,'d')) { /* multiply by sec*min*hours */
+				} else if (strchr(optarg,'d')) { /* multiply by sec*min*hours */
 					args->run_time *= (time_t) (60*60*24);
 				}
 				break;
 			case 'L' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
 				args->seeks = atoi(optarg);
 				args->flags |= CLD_FLG_SKS;
-				if(strchr(optarg,'k')) {	/* multiply by 2^10 */
+				if (strchr(optarg,'k')) {	/* multiply by 2^10 */
 					args->seeks <<= 10;
-				} else if(strchr(optarg,'K')) { /* multiply 10^3 */
+				} else if (strchr(optarg,'K')) { /* multiply 10^3 */
 					args->seeks *= 1000;
-				} else if(strchr(optarg,'m')) { /* multiply by 2^20 */
+				} else if (strchr(optarg,'m')) { /* multiply by 2^20 */
 					args->seeks <<= 20;
-				} else if(strchr(optarg,'M')) { /* multiply by 10^6 */
+				} else if (strchr(optarg,'M')) { /* multiply by 10^6 */
 					args->seeks *= 1000000;
-				} else if(strchr(optarg,'g')) { /* multiply by 2^30 */
+				} else if (strchr(optarg,'g')) { /* multiply by 2^30 */
 					args->seeks <<= 30;
-				} else if(strchr(optarg,'G')) { /* multiply by 10^9 */
+				} else if (strchr(optarg,'G')) { /* multiply by 10^9 */
 					args->seeks *= 1000000000;
 				}
 				break;
 			case 'C' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 					usage();
 					return(-1);
@@ -532,23 +532,23 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->cycles = atol(optarg);
 				break;
 			case 'K' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
-				if(!isdigit(optarg[0])) {
+				if (!isdigit(optarg[0])) {
 					pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 					usage();
 					return(-1);
 				}
-				if(atoi(optarg) > MAX_THREADS) {
+				if (atoi(optarg) > MAX_THREADS) {
 					pMsg(WARN, args, "%u exceeds max of %u threads.\n", atoi(optarg), MAX_THREADS);
 					return(-1);
 				}
 				args->t_kids = atoi(optarg);
 				break;
 			case 'P' :
-				if(optarg == NULL) {
+				if (optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
 				}
@@ -581,127 +581,127 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				}
 				break;
 			case 'S' :
-				if(!isdigit((int)optarg[0])) {
+				if (!isdigit((int)optarg[0])) {
 					pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 					return(-1);
 				}
 				args->flags |= CLD_FLG_BLK_RNG;
-				if(strchr(optarg,':') != NULL) { /* we are given a range */
+				if (strchr(optarg,':') != NULL) { /* we are given a range */
 					args->start_blk = (OFF_T) strtoul(optarg, &leftovers, 0);
-					if(leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
+					if (leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
 						args->start_blk <<= 10;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
+					} else if (leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
 						args->start_blk *= 1000;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
+					} else if (leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
 						args->start_blk <<= 20;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
+					} else if (leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
 						args->start_blk *= 1000000;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
+					} else if (leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
 						args->start_blk <<= 30;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
+					} else if (leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
 						args->start_blk *= 1000000000;
 						leftovers++;  /* at the ':' */
 					}
 					leftovers++;  /* should be at the next value */
-					if(!isdigit((int) leftovers[0])) {
+					if (!isdigit((int) leftovers[0])) {
 						pMsg(WARN, args, "-%c arguments is non numeric.\n", c);
 						return(-1);
 					}
 					args->stop_blk = (OFF_T) strtoul(leftovers, &leftovers, 0);
-					if(leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
+					if (leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
 						args->stop_blk <<= 10;
-					} else if(leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
+					} else if (leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
 						args->stop_blk *= 1000;
-					} else if(leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
+					} else if (leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
 						args->stop_blk <<= 20;
-					} else if(leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
+					} else if (leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
 						args->stop_blk *= 1000000;
-					} else if(leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
+					} else if (leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
 						args->stop_blk <<= 30;
-					} else if(leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
+					} else if (leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
 						args->stop_blk *= 1000000000;
 					}
 				} else { /* only a single value given */
 					args->start_blk = (OFF_T) strtoul(optarg, &leftovers, 0);
-					if(leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
+					if (leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
 						args->start_blk <<= 10;
-					} else if(leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
+					} else if (leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
 						args->start_blk *= 1000;
-					} else if(leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
+					} else if (leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
 						args->start_blk <<= 20;
-					} else if(leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
+					} else if (leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
 						args->start_blk *= 1000000;
-					} else if(leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
+					} else if (leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
 						args->start_blk <<= 30;
-					} else if(leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
+					} else if (leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
 						args->start_blk *= 1000000000;
 					}
 				}
 				break;
 			case 's' :
-				if(!isdigit((int)optarg[0])) {
+				if (!isdigit((int)optarg[0])) {
 					pMsg(WARN, args, "-%c argument is non numeric.\n", c);
 					return(-1);
 				}
 				args->flags |= CLD_FLG_LBA_RNG;
-				if(strchr(optarg,':') != NULL) { /* we are given a range */
+				if (strchr(optarg,':') != NULL) { /* we are given a range */
 					args->start_lba = (OFF_T) strtoul(optarg, &leftovers, 0);
-					if(leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
+					if (leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
 						args->start_lba <<= 10;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
+					} else if (leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
 						args->start_lba *= 1000;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
+					} else if (leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
 						args->start_lba <<= 20;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
+					} else if (leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
 						args->start_lba *= 1000000;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
+					} else if (leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
 						args->start_lba <<= 30;
 						leftovers++;  /* at the ':' */
-					} else if(leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
+					} else if (leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
 						args->start_lba *= 1000000000;
 						leftovers++;  /* at the ':' */
 					}
 					leftovers++;  /* should be at the next value */
-					if(!isdigit((int) leftovers[0])) {
+					if (!isdigit((int) leftovers[0])) {
 						pMsg(WARN, args, "-%c second argument is non numeric.\n", c);
 						return(-1);
 					}
 					args->stop_lba = (OFF_T) strtoul(leftovers, &leftovers, 0);
-					if(leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
+					if (leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
 						args->stop_lba <<= 10;
-					} else if(leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
+					} else if (leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
 						args->stop_lba *= 1000;
-					} else if(leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
+					} else if (leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
 						args->stop_lba <<= 20;
-					} else if(leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
+					} else if (leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
 						args->stop_lba *= 1000000;
-					} else if(leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
+					} else if (leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
 						args->stop_lba <<= 30;
-					} else if(leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
+					} else if (leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
 						args->stop_lba *= 1000000000;
 					}
 				} else { /* only a single value given */
 					args->start_lba = (OFF_T) strtoul(optarg, &leftovers, 0);
-					if(leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
+					if (leftovers == strchr(leftovers,'k')) { /* multiply by 2^10 */
 						args->start_lba <<= 10;
-					} else if(leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
+					} else if (leftovers == strchr(leftovers,'K')) { /* multiply 10^3 */
 						args->start_lba *= 1000;
-					} else if(leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
+					} else if (leftovers == strchr(leftovers,'m')) { /* multiply by 2^20 */
 						args->start_lba <<= 20;
-					} else if(leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
+					} else if (leftovers == strchr(leftovers,'M')) { /* multiply by 10^6 */
 						args->start_lba *= 1000000;
-					} else if(leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
+					} else if (leftovers == strchr(leftovers,'g')) { /* multiply by 2^30 */
 						args->start_lba <<= 30;
-					} else if(leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
+					} else if (leftovers == strchr(leftovers,'G')) { /* multiply by 10^9 */
 						args->start_lba *= 1000000000;
 					}
 				}
@@ -712,7 +712,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				return(-1);
 		}
 	}
-	if(argv[optind] == NULL) {
+	if (argv[optind] == NULL) {
 		pMsg(WARN, args, "Unspecified target.\n");
 		return(-1);
 	}
@@ -726,18 +726,18 @@ int make_assumptions(child_args_t *args)
 	struct stat stat_buf;
 	int rv;
 
-	if(!(args->flags & CLD_FLG_IOTYPS)) {
+	if (!(args->flags & CLD_FLG_IOTYPS)) {
 		/* use stat to get file properties, and use to set -I */
 		rv = stat(args->device, &stat_buf);
-		if(0 == rv) {
-			if(IS_FILE(stat_buf.st_mode) ) {
+		if (0 == rv) {
+			if (IS_FILE(stat_buf.st_mode) ) {
 				strncat(args->argstr, "(-I f) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 				args->flags |= CLD_FLG_FILE;
-			} else if(IS_BLK(stat_buf.st_mode)) {
+			} else if (IS_BLK(stat_buf.st_mode)) {
 				strncat(args->argstr, "(-I b) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 				args->flags |= CLD_FLG_BLK;
 #ifndef WINDOWS
-			} else if(S_ISCHR(stat_buf.st_mode)) {
+			} else if (S_ISCHR(stat_buf.st_mode)) {
 				strncat(args->argstr, "(-I r) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 				args->flags |= CLD_FLG_RAW;
 #endif
@@ -748,71 +748,71 @@ int make_assumptions(child_args_t *args)
 			args->flags |= CLD_FLG_FILE;
 		}
 	}
-	if((args->flags & CLD_FLG_WFSYNC) && (0 == args->sync_interval)) {
+	if ((args->flags & CLD_FLG_WFSYNC) && (0 == args->sync_interval)) {
 		pMsg(INFO, args, "Sync interval set to zero, assuming interval of 1.\n");
 		args->sync_interval = 1;
 	}
 
-	if(args->ltrsiz <= 0) {
+	if (args->ltrsiz <= 0) {
 		sprintf(TmpStr, "(-B %d) ", TRSIZ*BLK_SIZE);
 		strncat(args->argstr, TmpStr, (MAX_ARG_LEN-1)-strlen(args->argstr));
 		args->ltrsiz=TRSIZ;
 		args->htrsiz=TRSIZ;
 	}
-	if(args->flags & CLD_FLG_LBA_RNG) {
+	if (args->flags & CLD_FLG_LBA_RNG) {
 		args->start_blk = args->start_lba / args->htrsiz;
-		if(!(args->stop_lba < 0))
+		if (!(args->stop_lba < 0))
 			args->stop_blk = args->stop_lba / args->htrsiz;
 	}
-	if(args->flags & CLD_FLG_BLK_RNG) {
+	if (args->flags & CLD_FLG_BLK_RNG) {
 		args->start_lba = args->start_blk * args->htrsiz;
-		if(!(args->stop_blk < 0))
+		if (!(args->stop_blk < 0))
 			args->stop_lba = (args->stop_blk * args->htrsiz) + (args->htrsiz - 1);
 	}
 	/* if vsiz is still not set, try and get it from the file */
-	if((args->vsiz <=0) && (args->flags & CLD_FLG_FILE)) {
-		if(0 != get_file_size(args->device)) { /* file size retrieved */
+	if ((args->vsiz <=0) && (args->flags & CLD_FLG_FILE)) {
+		if (0 != get_file_size(args->device)) { /* file size retrieved */
 			args->vsiz=get_file_size(args->device);
 		}
 	}
 	/* if vsiz is still not set, try and get it from the device */
-	if((args->vsiz <= 0) && !(args->flags & CLD_FLG_FILE)) {
+	if ((args->vsiz <= 0) && !(args->flags & CLD_FLG_FILE)) {
 		args->vsiz=get_vsiz(args->device);
 	}
 	/* if vsiz is still not set, set based on given range */
-	if((args->vsiz <=0) && (args->flags & (CLD_FLG_LBA_RNG|CLD_FLG_BLK_RNG))) {
-		if(!(args->stop_lba < 0))
+	if ((args->vsiz <=0) && (args->flags & (CLD_FLG_LBA_RNG|CLD_FLG_BLK_RNG))) {
+		if (!(args->stop_lba < 0))
 			args->vsiz=args->stop_lba+1;
 		else
 			args->vsiz=args->start_lba+1;
 	}
 	/* if vsiz is still not set, then set it to the default size */
-	if(args->vsiz <= 0) {
+	if (args->vsiz <= 0) {
 		args->vsiz=VSIZ;
 	}
-	if(!(args->flags & CLD_FLG_VSIZ)) {
+	if (!(args->flags & CLD_FLG_VSIZ)) {
 		sprintf(TmpStr, N_ASSUME, args->vsiz);
 		strncat(args->argstr, TmpStr, (MAX_ARG_LEN-1)-strlen(args->argstr));
 	}
 
-	if(args->stop_lba == -1) {
+	if (args->stop_lba == -1) {
 		args->stop_lba=args->vsiz-1;
 	}
-	if(args->stop_blk == -1) {
+	if (args->stop_blk == -1) {
 		args->stop_blk=(args->stop_lba / (OFF_T) args->htrsiz);
 	}
-	if(args->t_kids == 0) {
+	if (args->t_kids == 0) {
 		sprintf(TmpStr, "(-K %d) ", KIDS);
 		strncat(args->argstr, TmpStr, (MAX_ARG_LEN-1)-strlen(args->argstr));
 		args->t_kids=KIDS;
 	}
-	if((args->flags & (CLD_FLG_W|CLD_FLG_R)) == 0) {
-		if(args->flags & CLD_FLG_DUTY) { /* no read/write but duty cycle specified */
-			if(args->rperc > 0) {
+	if ((args->flags & (CLD_FLG_W|CLD_FLG_R)) == 0) {
+		if (args->flags & CLD_FLG_DUTY) { /* no read/write but duty cycle specified */
+			if (args->rperc > 0) {
 				args->flags |= CLD_FLG_R;
 				strncat(args->argstr, "(-r) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 			}
-			if(args->wperc > 0) {
+			if (args->wperc > 0) {
 				args->flags |= CLD_FLG_W;
 				strncat(args->argstr, "(-w) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 			}
@@ -821,51 +821,51 @@ int make_assumptions(child_args_t *args)
 			args->flags |= CLD_FLG_R;
 		}
 	}
-	if(!(args->flags & CLD_FLG_PTYPS)) {
+	if (!(args->flags & CLD_FLG_PTYPS)) {
 		strncat(args->argstr, "(-c) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 		args->flags |= CLD_FLG_CPTYPE;
 	}
-	if(!(args->flags & CLD_FLG_SKTYPS)) {
+	if (!(args->flags & CLD_FLG_SKTYPS)) {
 		strncat(args->argstr, "(-p R) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 		args->flags |= CLD_FLG_RANDOM;
 	}
-	if(!(args->flags & CLD_FLG_SKS)) {
-		if(args->start_blk == args->stop_blk) { /* diskcache test, w/ no seek count set */
+	if (!(args->flags & CLD_FLG_SKS)) {
+		if (args->start_blk == args->stop_blk) { /* diskcache test, w/ no seek count set */
 			args->seeks = SEEKS;
-		} else if(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG)) { /* range set, w/ no seek count */
+		} else if (args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG)) { /* range set, w/ no seek count */
 			args->seeks = args->stop_blk - args->start_blk + 1;
 		} else {
 			/* if vsiz is available, calculated seeks are in terms of the largest transfer size */
 			args->seeks = (args->vsiz > 0) ? (args->vsiz / args->htrsiz) : SEEKS;
 		}
-		if((args->flags & CLD_FLG_LINEAR) && (args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
+		if ((args->flags & CLD_FLG_LINEAR) && (args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
 			args->seeks *= 2;
 		}
 
-		if(!(args->flags & CLD_FLG_TMD)) {
+		if (!(args->flags & CLD_FLG_TMD)) {
 			sprintf(TmpStr, L_ASSUME, args->seeks);
 			strncat(args->argstr, TmpStr, (MAX_ARG_LEN-1)-strlen(args->argstr));
 		}
 	}
-	if(!(args->flags & (CLD_FLG_SKS|CLD_FLG_TMD)) || ((args->flags & CLD_FLG_CYC) && !(args->flags & (CLD_FLG_SKS|CLD_FLG_TMD)))) {
+	if (!(args->flags & (CLD_FLG_SKS|CLD_FLG_TMD)) || ((args->flags & CLD_FLG_CYC) && !(args->flags & (CLD_FLG_SKS|CLD_FLG_TMD)))) {
 		args->flags |= CLD_FLG_SKS;
 	}
-	if(args->flags & (CLD_FLG_LINEAR)) {
-		if(!(args->flags & (CLD_FLG_LUNU|CLD_FLG_LUND))) {
+	if (args->flags & (CLD_FLG_LINEAR)) {
+		if (!(args->flags & (CLD_FLG_LUNU|CLD_FLG_LUND))) {
 			strncat(args->argstr, "(-p u) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 			args->flags |= CLD_FLG_LUNU;
 		}
 	}
 	normalize_percs(args);
-	if(!(args->flags & CLD_FLG_DUTY) && (args->flags & CLD_FLG_RANDOM) && !(args->flags & CLD_FLG_NTRLVD)) {
+	if (!(args->flags & CLD_FLG_DUTY) && (args->flags & CLD_FLG_RANDOM) && !(args->flags & CLD_FLG_NTRLVD)) {
 		sprintf(TmpStr, "(-D %d:%d) ", args->rperc, args->wperc);
 		strncat(args->argstr, TmpStr, (MAX_ARG_LEN-1)-strlen(args->argstr));
 		args->flags |= CLD_FLG_DUTY;
 	}
-	if((args->delayTimeMin == 0) && (args->delayTimeMax == 0) && (args->ioTimeout == DEFAULT_IO_TIMEOUT)) {
+	if ((args->delayTimeMin == 0) && (args->delayTimeMax == 0) && (args->ioTimeout == DEFAULT_IO_TIMEOUT)) {
 		strncat(args->argstr, "(-t 0:2m) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 	}
-	if(!(args->flags & CLD_FLG_OFFSET)) {
+	if (!(args->flags & CLD_FLG_OFFSET)) {
 		strncat(args->argstr, "(-o 0) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 	}
 
@@ -883,89 +883,89 @@ int check_conclusions(child_args_t *args)
 	struct stat stat_buf;
 	int rv;
 
-	if((args->flags & CLD_FLG_DUTY) && ((args->flags & CLD_FLG_LINEAR) || (args->flags & CLD_FLG_NTRLVD))) {
+	if ((args->flags & CLD_FLG_DUTY) && ((args->flags & CLD_FLG_LINEAR) || (args->flags & CLD_FLG_NTRLVD))) {
 		pMsg(WARN, args, "Duty cycle testing is supported for random (-pR) tests only.\n");
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_BLK_RNG) && (args->flags & CLD_FLG_RTRSIZ)) {
+	if ((args->flags & CLD_FLG_BLK_RNG) && (args->flags & CLD_FLG_RTRSIZ)) {
 		pMsg(WARN, args, "Can't have unfixed block sizes and specify seek range in terms of blocks.\n");
 		return(-1);
 	}
-	if((args->vsiz < 0) || (args->ltrsiz < 1) || (args->htrsiz < 1)) {
+	if ((args->vsiz < 0) || (args->ltrsiz < 1) || (args->htrsiz < 1)) {
 		pMsg(WARN, args, "Bounds exceeded for transfer size and/or volume size.\n");
 		pMsg(WARN, args, MAXTRSIZ, (args->htrsiz*BLK_SIZE),args->vsiz);
 		return(-1);
 	}
-	if(args->htrsiz < args->ltrsiz) {
+	if (args->htrsiz < args->ltrsiz) {
 		pMsg(ERR, args, "Min transfer size, %lu, greater then Max transfer size, %lu.\n", args->ltrsiz, args->htrsiz);
 		return(-1);
 	}
-	if(args->vsiz < (args->stop_lba-args->start_lba+1)) {
+	if (args->vsiz < (args->stop_lba-args->start_lba+1)) {
 		pMsg(ERR, args, "Volume stop block/lba exceeds volume size.\n");
 		return(-1);
 	}
-	if(args->vsiz < args->htrsiz) {
+	if (args->vsiz < args->htrsiz) {
 		pMsg(WARN, args, VSIZETS, args->vsiz, args->htrsiz);
 		return(-1);
 	}
-	if((!args->flags & CLD_FLG_TMD) && (args->seeks <= 0)) {
+	if ((!args->flags & CLD_FLG_TMD) && (args->seeks <= 0)) {
 		pMsg(WARN,args, TSEEK, args->seeks);
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_SKS) && (args->t_kids > args->seeks)) {
+	if ((args->flags & CLD_FLG_SKS) && (args->t_kids > args->seeks)) {
 		pMsg(WARN, args, "Can't have more children then max number of seeks, use -K/-L to adjust.\n");
 		return(-1);
 	}
-	if((args->start_blk > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
+	if ((args->start_blk > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
 		pMsg(WARN, args, STBGTTLBA, args->start_blk, (args->vsiz / args->htrsiz));
 		return(-1);
 	}
-	if((args->stop_blk > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
+	if ((args->stop_blk > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
 		pMsg(WARN, args, SBGTTLBA, args->stop_blk, (args->vsiz / args->htrsiz));
 		return(-1);
 	}
-	if((args->start_lba > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
+	if ((args->start_lba > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
 		pMsg(WARN, args, STLBAGTLBA, args->start_lba, args->vsiz);
 		return(-1);
 	}
-	if((args->stop_lba > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
+	if ((args->stop_lba > args->vsiz) && !(args->flags & (CLD_FLG_BLK_RNG|CLD_FLG_LBA_RNG))) {
 		pMsg(WARN, args, SLBAGTLBA, args->stop_lba, args->vsiz);
 		return(-1);
 	}
-	if(args->start_blk > args->stop_blk) {
+	if (args->start_blk > args->stop_blk) {
 		pMsg(WARN, args, SBRSB, args->stop_blk, args->start_blk);
 		return(-1);
 	}
-	if(args->start_lba > args->stop_lba) {
+	if (args->start_lba > args->stop_lba) {
 		pMsg(ERR, args, SLBARSLBA, args->stop_lba, args->start_lba);
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_LBA_RNG) && (args->flags & CLD_FLG_BLK_RNG)) {
+	if ((args->flags & CLD_FLG_LBA_RNG) && (args->flags & CLD_FLG_BLK_RNG)) {
 		pMsg(ERR, args, "Can't specify range in both block and LBA, use -s or -S.\n");
 		return(-1);
 	}
 
 	/* use stat to get file properties, and test then agains specified -I */
 	rv = stat(args->device, &stat_buf);
-	if(0 == rv) { /* no error on call to stat, compare against -I option */
+	if (0 == rv) { /* no error on call to stat, compare against -I option */
 		/* files are usually file type */
-		if((args->flags & CLD_FLG_FILE) && !IS_FILE(stat_buf.st_mode) ) {
+		if ((args->flags & CLD_FLG_FILE) && !IS_FILE(stat_buf.st_mode) ) {
 			pMsg(ERR, args, "Can't open non-file filespec with file device type, -If.\n");
 			return(-1);
 		}
 		/* block devices, are usually block type */
-		if((args->flags & CLD_FLG_BLK) && !IS_BLK(stat_buf.st_mode)) {
+		if ((args->flags & CLD_FLG_BLK) && !IS_BLK(stat_buf.st_mode)) {
 			pMsg(ERR, args, "Can't open non-block filespec with block device type, -Ib.\n");
 			return(-1);
 		}
 #ifndef WINDOWS
 		/* raw devices, are usually character type */
-		if((args->flags & CLD_FLG_RAW) && !S_ISCHR(stat_buf.st_mode)) {
+		if ((args->flags & CLD_FLG_RAW) && !S_ISCHR(stat_buf.st_mode)) {
 			pMsg(ERR, args, "Can't open non-raw filespec with raw device type, -Ir.\n");
 			return(-1);
 		}
 #else
-		if(args->flags & CLD_FLG_RAW) {
+		if (args->flags & CLD_FLG_RAW) {
 			pMsg(ERR, args, "RAW IO type not supported in Windows, use direct IO instead.\n");
 			return(-1);
 		}
@@ -976,46 +976,46 @@ int check_conclusions(child_args_t *args)
 #endif
 	}
 
-	if((args->hbeat > 0) && (args->flags & CLD_FLG_TMD) && (args->hbeat > args->run_time)) {
+	if ((args->hbeat > 0) && (args->flags & CLD_FLG_TMD) && (args->hbeat > args->run_time)) {
 		pMsg(ERR, args, "Heartbeat should be at least equal to runtime, use -h/-T to adjust.\n");
 		return(-1);
 	}
-	if((args->hbeat > 0) && !(args->flags & CLD_FLG_PRFTYPS)) {
+	if ((args->hbeat > 0) && !(args->flags & CLD_FLG_PRFTYPS)) {
 		pMsg(ERR, args, "At least one performance option, -P, must be specified when using -h.\n");
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_W) && !(args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_CMPR)) {
+	if ((args->flags & CLD_FLG_W) && !(args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_CMPR)) {
 		pMsg(ERR, args, "Write only, ignoring option -E.\n");
 	}
-	if((args->flags & CLD_FLG_TMD) && (args->flags & CLD_FLG_SKS)) {
+	if ((args->flags & CLD_FLG_TMD) && (args->flags & CLD_FLG_SKS)) {
 		pMsg(ERR, args, "Can't specify both -L and -T they are mutually exclusive.\n");
 		return(-1);
 	}
-	if(((args->flags & CLD_FLG_R) && !(args->flags & CLD_FLG_W)) && (args->flags & CLD_FLG_ERR_MARK)) {
+	if (((args->flags & CLD_FLG_R) && !(args->flags & CLD_FLG_W)) && (args->flags & CLD_FLG_ERR_MARK)) {
 		pMsg(ERR, args, "Can't specify mark on error, -Am, in read only mode.\n");
 		return(-1);
 	}
-	if(!(args->flags & CLD_FLG_ALLDIE) && (args->flags & CLD_FLG_ERR_MARK)) {
+	if (!(args->flags & CLD_FLG_ALLDIE) && (args->flags & CLD_FLG_ERR_MARK)) {
 		pMsg(ERR, args, "Can't specify mark on error, -Am, when continue on error is set.\n");
 		return(-1);
 	}
-	if((glb_flags & GLB_FLG_KILL) && !(args->flags & CLD_FLG_ALLDIE)) {
+	if ((glb_flags & GLB_FLG_KILL) && !(args->flags & CLD_FLG_ALLDIE)) {
 		pMsg(ERR, args, "Can't specify global kill, -Ag, when continue on error is set, -Ac.\n");
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD) && (args->flags & CLD_FLG_TMD)) {
+	if ((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD) && (args->flags & CLD_FLG_TMD)) {
 		pMsg(ERR, args, "Linear read / write test can not be timed.\n");
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_CMPR) && (args->cmp_lng > (args->ltrsiz*BLK_SIZE))) {
+	if ((args->flags & CLD_FLG_CMPR) && (args->cmp_lng > (args->ltrsiz*BLK_SIZE))) {
 		pMsg(ERR, args, "Compare length, %lu, is greater then transfer size, %lu\n", args->cmp_lng, args->ltrsiz*BLK_SIZE);
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_OFFSET) && (args->offset > args->stop_lba)) {
+	if ((args->flags & CLD_FLG_OFFSET) && (args->offset > args->stop_lba)) {
 		pMsg(ERR, args, LBAOFFGSLBA, args->offset, args->stop_lba);
 		return(-1);
 	}
-	if((args->flags & CLD_FLG_OFFSET) && ((args->offset+args->ltrsiz-1) > args->stop_lba)) {
+	if ((args->flags & CLD_FLG_OFFSET) && ((args->offset+args->ltrsiz-1) > args->stop_lba)) {
 		pMsg(ERR, args, LBAOTSGSLBA, args->offset, args->ltrsiz, args->stop_lba);
 		return(-1);
 	}

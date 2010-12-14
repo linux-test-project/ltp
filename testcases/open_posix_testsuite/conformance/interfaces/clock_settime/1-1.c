@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 			printf("Test PASSED\n");
 			setBackTime(tpreset);
 			return PTS_PASS;
-		} else if ( (nsdelta <= tpres.tv_nsec) && (delta == -1 )) {
+		} else if ((nsdelta <= tpres.tv_nsec) && (delta == -1)) {
 			printf("Test PASSED\n");
 			setBackTime(tpreset);
 			return PTS_PASS;

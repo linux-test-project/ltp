@@ -105,7 +105,7 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-	    != (char *)NULL) {
+	    != NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -118,7 +118,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
                                /* Allocate stack for child */
-                if((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
+                if ((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
                         tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
                 }
 

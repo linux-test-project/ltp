@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 
   aport = IPPORT_RESERVED - 1;
   fd = rresvport(&aport);
-  if(fd == -1) {
+  if (fd == -1) {
     perror("test_bind:rresvport");
     exit(1);
   }

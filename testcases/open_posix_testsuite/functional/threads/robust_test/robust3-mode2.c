@@ -153,7 +153,7 @@ int main()
 			rc, strerror(rc));	
 		return UNRESOLVED;
 	}
-	pthread_join(threads[1], NULL );
+	pthread_join(threads[1], NULL);
 	DPRINTF(stdout, "Thread 2 exit ...\n");
 
 	DPRINTF(stdout,"PASS: Test PASSED\n");

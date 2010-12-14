@@ -6,7 +6,7 @@
  *
  * pthread_barrierattr_init()
  *
- * The pthread_barrierattr_init( ) function shall initialize a barrier attributes 
+ * The pthread_barrierattr_init() function shall initialize a barrier attributes 
  * object attr with the default value for all of the attributes defined 
  * by the implementation.
  *

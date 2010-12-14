@@ -226,7 +226,7 @@ static void do_test_disable_int(void)
        local_irq_save(flags);
        preempt_disable();
        time1 = get_cycles();
-       for ( i = 0; i < NR_LOOPS; i++) {
+       for (i = 0; i < NR_LOOPS; i++) {
        local_irq_save(flags2);
        }
        time2 = get_cycles();

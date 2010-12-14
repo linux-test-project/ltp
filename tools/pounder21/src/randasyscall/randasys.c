@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-d"))
 			debug = 1;
-		else if(!strcmp(argv[i], "-z"))
+		else if (!strcmp(argv[i], "-z"))
 			zero_mode = 1;
 	}
 
@@ -221,7 +221,7 @@ int main(int argc, char *argv[]) {
 
 	install_signal_handlers();
 
-	while(1) {
+	while (1) {
 		callnum = find_syscall();
 		if (!zero_mode)
 			get_big_randnum(&args[0], sizeof(unsigned long) * 6);

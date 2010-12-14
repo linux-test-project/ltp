@@ -6,9 +6,9 @@
  *
  * pthread_barrier_init()
  *
- * The pthread_barrier_init( ) function may fail if:
+ * The pthread_barrier_init() function may fail if:
  * [EBUSY] The implementation has detected an attempt to reinitialize a barrier while it is
- * in use (for example, while being used in a pthread_barrier_wait( ) call) by
+ * in use (for example, while being used in a pthread_barrier_wait() call) by
  * another thread.
  *
  * NOTE: This case will always pass.

@@ -318,7 +318,7 @@ main(int argc, char *argv[])
     handler.sa_handler = set_signal_flag;
     if (sigaction(SIGHUP, &handler, NULL) < 0)
 	fatal_error("sigaction()");
-    for(;;) {
+    for (;;) {
 	recvbyte_size = recv(sock_fd, recvbuf, recvbuf_size, 0);
 	if (recvbyte_size < (ssize_t)0) {
 	    if (catch_sighup)

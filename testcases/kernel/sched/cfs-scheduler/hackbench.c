@@ -61,7 +61,7 @@
 #include <limits.h>
 
 
-#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+#define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 #define DATASIZE 100
 static struct sender_context ** snd_ctx_tab;      /*Table for sender context pointers.*/
 static struct receiver_context ** rev_ctx_tab;    /*Table for receiver context pointers.*/
@@ -242,7 +242,7 @@ static unsigned int group(pthread_t *pth,
 	unsigned int i;
 	struct sender_context* snd_ctx = malloc (sizeof(struct sender_context)
 			+num_fds*sizeof(int));
-	if(!snd_ctx)
+	if (!snd_ctx)
 	    barf("malloc()");
         else
             snd_ctx_tab[gr_num] = snd_ctx;
@@ -315,9 +315,9 @@ int main(int argc, char *argv[])
 	fflush(NULL);
 
 	if (argc > 2) {
-		if ( !strcmp(argv[2], "process") )
+		if (!strcmp(argv[2], "process"))
 			process_mode = 1;
-		else if ( !strcmp(argv[2], "thread") )
+		else if (!strcmp(argv[2], "thread"))
 			process_mode = 0;
 		else
 			print_usage_exit();
@@ -361,8 +361,8 @@ int main(int argc, char *argv[])
         printf("Time: %lu.%03lu\n", diff.tv_sec, diff.tv_usec/1000);
 
         /* free the memory */
-        for (i = 0; i < num_groups; i++){
-            for (j = 0; j < num_fds; j++){
+        for (i = 0; i < num_groups; i++) {
+            for (j = 0; j < num_fds; j++) {
                 SAFE_FREE(rev_ctx_tab[i*num_fds+j])
             }
             SAFE_FREE(snd_ctx_tab[i]);

@@ -107,8 +107,8 @@ main(int ac, char **av)
 	};
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL))
+		!= NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -117,7 +117,7 @@ main(int ac, char **av)
 	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
 	 * kernel versions lower than 2.6.12
 	 */
-	if((tst_kvercmp(2, 6, 12)) < 0) {
+	if ((tst_kvercmp(2, 6, 12)) < 0) {
 		testcase[4] = EINVAL;
 		testcase[5] = EINVAL;
 	}

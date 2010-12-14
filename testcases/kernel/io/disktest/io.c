@@ -115,10 +115,10 @@ fd_t Open(const char *filespec, const OFF_T flags)
 #ifdef WINDOWS
 	unsigned long OPEN_FLAGS = 0, OPEN_DISPO = 0, OPEN_READ_WRITE = 0, OPEN_SHARE = 0;
 
-	if((flags & CLD_FLG_R) && !(flags & CLD_FLG_W)) {
+	if ((flags & CLD_FLG_R) && !(flags & CLD_FLG_W)) {
 		OPEN_READ_WRITE |= GENERIC_READ;
 		OPEN_SHARE |= FILE_SHARE_READ;
-	} else if(!(flags & CLD_FLG_R) && (flags & CLD_FLG_W)) {
+	} else if (!(flags & CLD_FLG_R) && (flags & CLD_FLG_W)) {
 		OPEN_READ_WRITE |= GENERIC_WRITE;
 		OPEN_SHARE |= FILE_SHARE_WRITE;
 	} else {
@@ -127,20 +127,20 @@ fd_t Open(const char *filespec, const OFF_T flags)
 	}
 
 #ifdef CLD_FLG_DIRECT
-	if(flags & CLD_FLG_DIRECT) OPEN_FLAGS = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
+	if (flags & CLD_FLG_DIRECT) OPEN_FLAGS = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
 #endif
 	OPEN_DISPO = OPEN_EXISTING;
 
 #ifdef CLD_FLG_RANDOM
-	if(flags & CLD_FLG_RANDOM) OPEN_FLAGS |= FILE_FLAG_RANDOM_ACCESS;
+	if (flags & CLD_FLG_RANDOM) OPEN_FLAGS |= FILE_FLAG_RANDOM_ACCESS;
 #endif
 #ifdef CLD_FLG_LINEAR
-	if(flags & CLD_FLG_LINEAR) OPEN_FLAGS |= FILE_FLAG_SEQUENTIAL_SCAN;
+	if (flags & CLD_FLG_LINEAR) OPEN_FLAGS |= FILE_FLAG_SEQUENTIAL_SCAN;
 #endif
 #ifdef CLD_FLG_FILE
-	if(flags & CLD_FLG_FILE) {
+	if (flags & CLD_FLG_FILE) {
 		OPEN_FLAGS |= FILE_ATTRIBUTE_ARCHIVE;
-		if(flags & CLD_FLG_W)
+		if (flags & CLD_FLG_W)
 			OPEN_DISPO = OPEN_ALWAYS;
 	}
 #endif
@@ -153,14 +153,14 @@ fd_t Open(const char *filespec, const OFF_T flags)
 		NULL);
 #else
 	int OPEN_MASK = O_LARGEFILE;
-	if((flags & CLD_FLG_R) && !(flags & CLD_FLG_W)) OPEN_MASK |= O_RDONLY;
-	else if(!(flags & CLD_FLG_R) && (flags & CLD_FLG_W)) OPEN_MASK |= O_WRONLY;
+	if ((flags & CLD_FLG_R) && !(flags & CLD_FLG_W)) OPEN_MASK |= O_RDONLY;
+	else if (!(flags & CLD_FLG_R) && (flags & CLD_FLG_W)) OPEN_MASK |= O_WRONLY;
 	else OPEN_MASK |= O_RDWR;
 #ifdef CLD_FLG_FILE
-	if(flags & CLD_FLG_FILE) OPEN_MASK |= O_CREAT;
+	if (flags & CLD_FLG_FILE) OPEN_MASK |= O_CREAT;
 #endif
 #ifdef CLD_FLG_DIRECT
-	if(flags & CLD_FLG_DIRECT) OPEN_MASK |= O_DIRECT;
+	if (flags & CLD_FLG_DIRECT) OPEN_MASK |= O_DIRECT;
 #endif
 	fd = open(filespec,OPEN_MASK,00600);
 #endif
@@ -169,7 +169,7 @@ fd_t Open(const char *filespec, const OFF_T flags)
 
 int Sync (fd_t fd) {
 #ifdef WINDOWS
-	if(FlushFileBuffers(fd) != TRUE) {
+	if (FlushFileBuffers(fd) != TRUE) {
 		return -1;
 	}
 	return 0;

@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The munmap( ) function shall fail if:
+ * The munmap() function shall fail if:
  * [EINVAL] The len argument is 0.
  *
  */

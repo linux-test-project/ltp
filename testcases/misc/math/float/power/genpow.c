@@ -52,7 +52,7 @@ int create_Result_file()
 
 	fpi = open(F_namei,O_RDONLY,0777);
 	fpi1 = open(F_namei1,O_RDONLY,0777);
-        if ( !fpi || !fpi1 )
+        if (!fpi || !fpi1)
         {
             	printf("error opening file");
 		close(fpi);
@@ -71,7 +71,7 @@ int create_Result_file()
 		close(fpi1);
 
 		fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
-        	if ( !fp)
+        	if (!fp)
         	{
         	    	printf("error opening file");
 			close(fp);
@@ -79,7 +79,7 @@ int create_Result_file()
 		}
 		else
 		{
-			for (i = 0; i<nbVal; i++ ) 
+			for (i = 0; i<nbVal; i++) 
 			{
 				write(fp,&tabR[i],sizeof(double));
 			}
@@ -122,7 +122,7 @@ int create_Data_file()
         }
         else
         {	
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabD[i],sizeof(double));
 			write(fp2,&tabD_pow[i],sizeof(double));

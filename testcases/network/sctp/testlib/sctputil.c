@@ -113,7 +113,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 		 * are NUL terminated...
 		 */
 		printf("DATA(%zi):  ", msg_len);
-		while ( msg_len > 0 ) {
+		while (msg_len > 0) {
 			char *text;
 			int len;
 
@@ -121,11 +121,11 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 			len = msg->msg_iov[index].iov_len;
 
                         save = text[msg_len-1];
-			if ( len > msg_len ) {
+			if (len > msg_len) {
                                 text[(len = msg_len) - 1] = '\0';
                         }
 
-			if ( (msg_len -= len) > 0 ) { index++; }
+			if ((msg_len -= len) > 0) { index++; }
 
 			for (i = 0; i < len - 1; ++i) {
                                 if (!isprint(text[i])) text[i] = '.';
@@ -134,7 +134,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 			printf("%s", text);
 			text[msg_len-1] = save;
 
-			if ( (done = !strcmp(text, "exit")) ) { break; }
+			if ((done = !strcmp(text, "exit"))) { break; }
 		}
 	} else {
 		printf("NOTIFICATION: ");
@@ -200,7 +200,7 @@ test_check_buf_notification(void *buf, int datalen, int msg_flags,
 			 "expected:%d", sn->sn_header.sn_type,
 			  expected_sn_type);
 	
-	switch(sn->sn_header.sn_type){
+	switch(sn->sn_header.sn_type) {
 	case SCTP_ASSOC_CHANGE:
 		if (sn->sn_assoc_change.sac_state != expected_additional)
 			tst_brkm(TBROK, tst_exit, "Unexpected sac_state:%d "
@@ -279,11 +279,11 @@ test_check_msg_data(struct msghdr *msg, int datalen, int expected_datalen,
 
 	/* Receive auxiliary data in msgh. */
 	for (cmsg = CMSG_FIRSTHDR(msg); cmsg != NULL;
-				 cmsg = CMSG_NXTHDR(msg, cmsg)){
+				 cmsg = CMSG_NXTHDR(msg, cmsg)) {
 		if (IPPROTO_SCTP == cmsg->cmsg_level &&
 		    SCTP_SNDRCV == cmsg->cmsg_type)
 			break;
-	} /* for( all cmsgs) */
+	} /* for (all cmsgs) */
 
 	if ((!cmsg) ||
 	    (cmsg->cmsg_len < CMSG_LEN(sizeof(struct sctp_sndrcvinfo))))

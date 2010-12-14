@@ -155,7 +155,7 @@ int main(int ac, char **av) {
 	char *msg;	/* message returned from parse_opts */
 	
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -165,14 +165,14 @@ int main(int ac, char **av) {
 	Tst_count = 0;
 
 	TEST(sigfillset(&s));
-	if (TEST_RETURN == -1){
+	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL | TTERRNO,
 			"Call to sigfillset() failed.");
 		cleanup();
 		tst_exit();
 	}
 
-	for(i=0; i < test_count; i++) {
+	for (i=0; i < test_count; i++) {
 		TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK,
 				&s, test_cases[i].ss,
 				test_cases[i].sssize));

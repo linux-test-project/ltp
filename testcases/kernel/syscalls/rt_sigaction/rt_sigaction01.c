@@ -154,7 +154,7 @@ int main(int ac, char **av) {
 	char *msg;              /* message returned from parse_opts */
 	
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -167,13 +167,13 @@ int main(int ac, char **av) {
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++){//signal for 34 to 65 
+			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++) {//signal for 34 to 65 
 
 #ifdef __x86_64__
 				sig_initial(signal);
 #endif
 
-				for(flag = 0; flag < (sizeof(test_flags) / sizeof(test_flags[0])); flag++) {
+				for (flag = 0; flag < (sizeof(test_flags) / sizeof(test_flags[0])); flag++) {
 
 					TEST(set_handler(signal, 0, test_flags[flag]));
 

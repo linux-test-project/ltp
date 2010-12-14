@@ -56,7 +56,7 @@ int main()
 	}
 
 	/* Unlock an already unlocked mutex.  Here, an error should be returned. */
-	if (pthread_mutex_unlock(&mutex) == 0 )
+	if (pthread_mutex_unlock(&mutex) == 0)
 	{
 		perror("Test FAILED: Did not return error when unlocking an already unlocked mutex.\n");
 		return PTS_FAIL;

@@ -30,7 +30,7 @@
 #if 0
 /* sanitize a string, without the nice BSD library function:     */
 /* strvis(vis_args, k->ki_args, VIS_TAB | VIS_NL | VIS_NOSLASH)  */
-int octal_escape_str(char *restrict dst, const char *restrict src, size_t n){
+int octal_escape_str(char *restrict dst, const char *restrict src, size_t n) {
   unsigned char c;
   char d;
   size_t i;
@@ -43,10 +43,10 @@ int octal_escape_str(char *restrict dst, const char *restrict src, size_t n){
   "********************************"
   "********************************"
   "********************************";
-  for(i=0; i<n;){
+  for (i=0; i<n;) {
     c = (unsigned char) *(src++);
     d = codes[c];
-    switch(d){
+    switch(d) {
     case 'Z':
       goto leave;
     case '*':
@@ -54,7 +54,7 @@ int octal_escape_str(char *restrict dst, const char *restrict src, size_t n){
       *(dst++) = c;
       break;
     case '-':
-      if(i+4 > n) goto leave;
+      if (i+4 > n) goto leave;
       i += 4;
       *(dst++) = '\\';
       *(dst++) = "01234567"[c>>6];
@@ -62,7 +62,7 @@ int octal_escape_str(char *restrict dst, const char *restrict src, size_t n){
       *(dst++) = "01234567"[c&07];
       break;
     default:
-      if(i+2 > n) goto leave;
+      if (i+2 > n) goto leave;
       i += 2;
       *(dst++) = '\\';
       *(dst++) = d;
@@ -76,7 +76,7 @@ leave:
 #endif
 
 /* sanitize a string via one-way mangle */
-int escape_str(char *restrict dst, const char *restrict src, int bufsize, int maxglyphs){
+int escape_str(char *restrict dst, const char *restrict src, int bufsize, int maxglyphs) {
   unsigned char c;
   int my_glyphs = 0;
   int my_bytes = 0;
@@ -90,14 +90,14 @@ int escape_str(char *restrict dst, const char *restrict src, int bufsize, int ma
   "********************************"
   "********************************";
 
-  if(bufsize > maxglyphs+1) bufsize=maxglyphs+1; // FIXME: assumes 8-bit locale
+  if (bufsize > maxglyphs+1) bufsize=maxglyphs+1; // FIXME: assumes 8-bit locale
 
-  for(;;){
-    if(my_glyphs >= maxglyphs) break;
-    if(my_bytes+1 >= bufsize) break;
+  for (;;) {
+    if (my_glyphs >= maxglyphs) break;
+    if (my_bytes+1 >= bufsize) break;
     c = (unsigned char) *(src++);
-    if(!c) break;
-    if(codes[c]=='-') c='?';
+    if (!c) break;
+    if (codes[c]=='-') c='?';
     my_glyphs++;
     my_bytes++;
     *(dst++) = c;
@@ -111,18 +111,18 @@ int escape_str(char *restrict dst, const char *restrict src, int bufsize, int ma
 // escape an argv or environment string array
 //
 // bytes arg means sizeof(buf)
-int escape_strlist(char *restrict dst, const char *restrict const *restrict src, size_t bytes){
+int escape_strlist(char *restrict dst, const char *restrict const *restrict src, size_t bytes) {
   size_t i = 0;
 
-//if(!*src){        just never call this function without checking first
+//if (!*src) {        just never call this function without checking first
 //  do something nice
 //}
 
-  for(;;){
+  for (;;) {
     i += escape_str(dst+i, *src, bytes-i, bytes-i);   // FIXME: byte/glyph
-    if(bytes-i < 3) break;  // need room for space, a character, and the NUL
+    if (bytes-i < 3) break;  // need room for space, a character, and the NUL
     src++;
-    if(!*src) break;  // need something to print
+    if (!*src) break;  // need something to print
     dst[i++] = ' ';
   }
   return i;    // bytes of text, excluding the NUL
@@ -130,39 +130,39 @@ int escape_strlist(char *restrict dst, const char *restrict const *restrict src,
 
 ///////////////////////////////////////////////////
 
-int escape_command(char *restrict const outbuf, const proc_t *restrict const pp, int bytes, int glyphs, unsigned flags){
+int escape_command(char *restrict const outbuf, const proc_t *restrict const pp, int bytes, int glyphs, unsigned flags) {
   int overhead = 1;  // the trailing NUL
   int end = 0;
 
-  if(bytes > glyphs+1) bytes=glyphs+1; // FIXME: assumes 8-bit locale
+  if (bytes > glyphs+1) bytes=glyphs+1; // FIXME: assumes 8-bit locale
 
-  if(flags & ESC_ARGS){
+  if (flags & ESC_ARGS) {
     const char **lc = (const char**)pp->cmdline;
-    if(lc && *lc) return escape_strlist(outbuf, lc, bytes);
+    if (lc && *lc) return escape_strlist(outbuf, lc, bytes);
   }
-  if(flags & ESC_BRACKETS){
+  if (flags & ESC_BRACKETS) {
     overhead += 2;
   }
-  if(flags & ESC_DEFUNCT){
-    if(pp->state=='Z') overhead += 10;    // chars in " <defunct>"
+  if (flags & ESC_DEFUNCT) {
+    if (pp->state=='Z') overhead += 10;    // chars in " <defunct>"
     else flags &= ~ESC_DEFUNCT;
   }
-  if(overhead >= bytes){  // if no room for even one byte of the command name
+  if (overhead >= bytes) {  // if no room for even one byte of the command name
     // you'd damn well better have _some_ space
     outbuf[0] = '-';
     outbuf[1] = '\0';
     return 1;
   }
-  if(flags & ESC_BRACKETS){
+  if (flags & ESC_BRACKETS) {
     outbuf[end++] = '[';
   }
   end += escape_str(outbuf+end, pp->cmd, bytes-overhead, glyphs-overhead+1);
 
   // Hmmm, do we want "[foo] <defunct>" or "[foo <defunct>]"?
-  if(flags & ESC_BRACKETS){
+  if (flags & ESC_BRACKETS) {
     outbuf[end++] = ']';
   }
-  if(flags & ESC_DEFUNCT){
+  if (flags & ESC_DEFUNCT) {
     memcpy(outbuf+end, " <defunct>", 10);
     end += 10;
   }

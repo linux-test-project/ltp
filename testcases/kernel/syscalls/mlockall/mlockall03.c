@@ -116,7 +116,7 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	struct utsname *buf;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}

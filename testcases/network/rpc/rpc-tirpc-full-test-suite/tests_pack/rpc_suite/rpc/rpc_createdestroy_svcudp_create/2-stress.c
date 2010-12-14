@@ -61,7 +61,7 @@ int main(int argn, char *argc[])
 	for (i = 0; i < nbCall; i++)
 	{
 		svcr = svcudp_create(sock);
-		if (svcr != (SVCXPRT *)NULL)
+		if (svcr != NULL)
 			nbOk++;
 	}
 	

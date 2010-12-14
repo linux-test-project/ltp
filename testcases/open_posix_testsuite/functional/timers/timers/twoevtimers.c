@@ -52,12 +52,12 @@ int main(int argc, char *argv[])
 	act2.sa_flags=0;
 
 	if ((sigemptyset(&act1.sa_mask) != 0) ||
-       		(sigemptyset(&act2.sa_mask) != 0) )	{
+       		(sigemptyset(&act2.sa_mask) != 0))	{
 		perror("sigemptyset() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 	if ((sigaction(SIGABRT, &act1, 0) != 0) ||
-       		(sigaction(SIGALRM, &act2, 0) != 0) )	{
+       		(sigaction(SIGALRM, &act2, 0) != 0))	{
 		perror("sigaction() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	ev2.sigev_notify = SIGEV_SIGNAL;
 	ev2.sigev_signo = SIGALRM;
 	if ((timer_create(CLOCK_REALTIME, &ev1, &tid1) != 0) ||
-		(timer_create(CLOCK_REALTIME, &ev2, &tid2) != 0) ) {
+		(timer_create(CLOCK_REALTIME, &ev2, &tid2) != 0)) {
 		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}

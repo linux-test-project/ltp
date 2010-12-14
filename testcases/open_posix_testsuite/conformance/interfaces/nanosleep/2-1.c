@@ -53,8 +53,7 @@ int main(int argc, char *argv[])
 			slepts = slepts-1;
 		}
 
-		if ((slepts >= 1) ||
-			(sleptns > sleepnsec[i]) ) {
+		if (slepts >= 1 || sleptns > sleepnsec[i]) {
 			printf("PASS slept %ds %dns >= %d\n", 
 				slepts, sleptns, sleepnsec[i]);
 		} else {

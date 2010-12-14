@@ -156,7 +156,7 @@ int main()
 		
 		printf("child: attempt spin lock\n");
 		rc = pthread_spin_trylock(&(spinlock_data->spinlock));
-		if ( rc != EBUSY)
+		if (rc != EBUSY)
 			printf("child: get return code %d, %s\n", rc, strerror(rc));
 		else
 			printf("child: correctly got EBUSY\n");	

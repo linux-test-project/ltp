@@ -6,8 +6,8 @@
 
  * Test that pthread_rwlock_timedwrlock(pthread_rwlock_t *rwlock)
  *
- *	pthread_rwlock_timedwrlock( ) function shall apply a write lock to the 
- *	read-write lock referenced by rwlock as in the pthread_rwlock_wrlock( ) function. 
+ *	pthread_rwlock_timedwrlock() function shall apply a write lock to the 
+ *	read-write lock referenced by rwlock as in the pthread_rwlock_wrlock() function. 
  *	However, if the lock cannot be acquired without waiting for other threads to 
  *	unlock the lock, this wait shall be terminate when the specified timeout expires. 
  *

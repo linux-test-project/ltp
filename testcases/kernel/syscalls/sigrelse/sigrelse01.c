@@ -128,7 +128,7 @@ static void child();
 static void timeout();
 static int setup_sigs();
 static void handler();
-static void wait_a_while();
+static void wait_a_while ();
 static char *read_pipe();
 static int write_pipe();
 static int set_timeout();
@@ -169,7 +169,7 @@ static int pipe_fd2[2];		/* file descriptors for pipe child read */
 static int phase;		/* flag for phase1 or phase2 of */
 				/* signal handler */
 static int sig_caught;		/* flag TRUE if signal caught */
-				/* (see wait_a_while()) */
+				/* (see wait_a_while ()) */
 
 /* ensure that NUMSIGS is defined. */
 #ifndef NUMSIGS
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 	 * parse standard options
 	 */
 	if ((msg =
-	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
+	     parse_opts(argc, argv, NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -498,7 +498,7 @@ static void child()
 			}
 
 			/* give signal handler some time to process signal */
-			wait_a_while();
+			wait_a_while ();
 		}
 
 	}			/* endfor */
@@ -589,7 +589,7 @@ int sig;			/* the signal causing the execution of this handler */
 
 		/* increment the array element for this signal */
 		++sig_array[sig];
-		sig_caught = TRUE;	/* flag for wait_a_while() */
+		sig_caught = TRUE;	/* flag for wait_a_while () */
 		--s;
 	}
 
@@ -702,9 +702,9 @@ static void timeout()
 }
 
 /*****************************************************************************
- *  wait_a_while() : wait a while before returning.
+ *  wait_a_while () : wait a while before returning.
  ****************************************************************************/
-static void wait_a_while()
+static void wait_a_while ()
 {
 	long btime;
 

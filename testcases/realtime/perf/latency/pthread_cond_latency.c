@@ -78,7 +78,7 @@ double d_gettimeofday(void)
 	int retval;
 	struct timeval tv;
 
-	retval = gettimeofday(&tv, (struct timezone *)NULL);
+	retval = gettimeofday(&tv, NULL);
 	if (retval != 0) {
 		perror("gettimeofday");
 		exit(-1);

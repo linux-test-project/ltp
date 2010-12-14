@@ -89,7 +89,7 @@ void test1A(void)
 	}
 
 	for (i = 0; i < visit; i++) {
-		if (dirlist[i] != (char *)NULL) {
+		if (dirlist[i] != NULL) {
 			free(dirlist[i]);
 			fprintf(temp, "ERROR: Unexpected visit to %s\n",
 				dirlist[i]);
@@ -138,7 +138,7 @@ void test2A(void)
 	}
 
 	for (i = 0; i < visit; i++) {
-		if (dirlist[i] != (char *)NULL)
+		if (dirlist[i] != NULL)
 			free(dirlist[i]);
 	}
 }

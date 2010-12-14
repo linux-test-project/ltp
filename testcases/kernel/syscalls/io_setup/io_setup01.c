@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	int expected_return;
 
 	if ((msg =
-	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
+	     parse_opts(argc, argv, NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	 /*NOTREACHED*/}
 

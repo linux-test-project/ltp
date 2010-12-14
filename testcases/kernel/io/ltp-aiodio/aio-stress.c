@@ -536,9 +536,9 @@ static int io_oper_wait(struct thread_info *t, struct io_oper *oper) {
      * more than one event at a time
      */
 #ifdef NEW_GETEVENTS
-    while(io_getevents(t->io_ctx, 1, 1, &event, NULL) > 0) {
+    while (io_getevents(t->io_ctx, 1, 1, &event, NULL) > 0) {
 #else
-    while(io_getevents(t->io_ctx, 1, &event, NULL) > 0) {
+    while (io_getevents(t->io_ctx, 1, &event, NULL) > 0) {
 #endif
 	struct timeval tv_now;
         event_io = (struct io_unit *)((unsigned long)event.obj);
@@ -704,7 +704,7 @@ int build_oper(struct thread_info *t, struct io_oper *oper, int num_ios,
     if ((oper->started_ios + num_ios) > oper->total_ios)
         num_ios = oper->total_ios - oper->started_ios;  
 
-    for( i = 0 ; i < num_ios ; i++) {
+    for ( i = 0 ; i < num_ios ; i++) {
 	io = build_iocb(t, oper);
 	if (!io) {
 	    return -1;   
@@ -859,7 +859,7 @@ static int run_active_list(struct thread_info *t,
     int num_built = 0;
 
     oper = t->active_opers;
-    while(oper) {
+    while (oper) {
 	if (!oper_runnable(oper)) {
 	    oper = oper->next;
 	    if (oper == t->active_opers)
@@ -884,7 +884,7 @@ static int run_active_list(struct thread_info *t,
 	    fprintf(stderr, "error %d on run_built\n", ret);
 	    exit(1);
 	}
-	while(built_opers) {
+	while (built_opers) {
 	    oper = built_opers;
 	    oper_list_del(oper, &built_opers);
 	    oper_list_add(oper, &t->active_opers);
@@ -1119,7 +1119,7 @@ restart:
 
     cnt = 0;
     /* first we send everything through aio */
-    while(t->active_opers && (cnt < iterations || iterations == RUN_FOREVER)) {
+    while (t->active_opers && (cnt < iterations || iterations == RUN_FOREVER)) {
 	if (stonewall && threads_ending) {
 	    oper = t->active_opers;
 	    oper->stonewalled = 1;
@@ -1143,13 +1143,13 @@ restart:
 		break;
 	io_oper_wait(t, oper);
 	oper = oper->next;
-    } while(oper != t->finished_opers);
+    } while (oper != t->finished_opers);
 
     /* then we do an fsync to get the timing for any future operations
      * right, and check to see if any of these need to get restarted
      */
     oper = t->finished_opers;
-    while(oper) {
+    while (oper) {
 	if (fsync_stages)
             fsync(oper->fd);
 	t->stage_mb_trans += oper_mb_trans(oper);
@@ -1179,7 +1179,7 @@ restart:
 	    pthread_cond_broadcast(&stage_cond);
 	    global_thread_throughput(t, this_stage);
 	}
-	while(threads_ending != num_threads)
+	while (threads_ending != num_threads)
 	    pthread_cond_wait(&stage_cond, &stage_mutex);
 	pthread_mutex_unlock(&stage_mutex);
     }
@@ -1191,7 +1191,7 @@ restart:
     }
 
     /* finally, free all the ram */
-    while(t->finished_opers) {
+    while (t->finished_opers) {
 	oper = t->finished_opers;
 	oper_list_del(oper, &t->finished_opers);
 	status = finish_oper(t, oper);
@@ -1212,14 +1212,14 @@ int run_workers(struct thread_info *t, int num_threads)
     int thread_ret;
     int i;
 
-    for(i = 0 ; i < num_threads ; i++) {
+    for (i = 0 ; i < num_threads ; i++) {
         ret = pthread_create(&t[i].tid, NULL, (start_routine)worker, t + i);
 	if (ret) {
 	    perror("pthread_create");
 	    exit(1);
 	}
     }
-    for(i = 0 ; i < num_threads ; i++) {
+    for (i = 0 ; i < num_threads ; i++) {
         ret = pthread_join(t[i].tid, (void *)&thread_ret);
         if (ret) {
 	    perror("pthread_join");
@@ -1310,7 +1310,7 @@ int main(int ac, char **av)
 
     page_size_mask = getpagesize() - 1;
 
-    while(1) {
+    while (1) {
 	c = getopt(ac, av, "a:b:c:C:m:s:r:d:i:I:o:t:lLnhOSxvu");
 	if  (c < 0)
 	    break;
@@ -1466,7 +1466,7 @@ int main(int ac, char **av)
 	    open_fds++;
 
 	    rwfd = open(av[i], O_CREAT | O_RDWR | o_direct | o_sync, 0600);
-	    if(rwfd == -1) {
+	    if (rwfd == -1) {
 		fprintf(stderr, "error while creating file %s: %s", av[i], strerror(errno));
 		exit(1);
 	    }
@@ -1492,7 +1492,7 @@ int main(int ac, char **av)
 	if (setup_ious(&t[i], t[i].num_files, depth, rec_len, max_io_submit))
 		exit(1);
     }
-    if (num_threads > 1){
+    if (num_threads > 1) {
         printf("Running multi thread version num_threads:%d\n", num_threads);
         run_workers(t, num_threads);
     } else {

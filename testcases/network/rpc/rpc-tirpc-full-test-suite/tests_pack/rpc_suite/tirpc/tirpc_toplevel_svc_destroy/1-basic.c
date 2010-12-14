@@ -59,7 +59,7 @@ int main(int argn, char *argc[])
         struct netconfig *nconf;
 
         //Test initialization
-        if ((nconf = getnetconfigent("tcp")) == (struct netconfig *)NULL){
+        if ((nconf = getnetconfigent("tcp")) == NULL) {
         	fprintf(stderr, "Cannot get netconfig entry for TCP\n");
 		exit(1);
         }

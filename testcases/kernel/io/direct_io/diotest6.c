@@ -307,7 +307,7 @@ main(int argc, char *argv[])
 	setup();
 
 	/* Testblock-1: Read with Direct IO, Write without */
-	if (forkchldrn(&pidlst, numchild, READ_DIRECT, child_function) < 0 ) {
+	if (forkchldrn(&pidlst, numchild, READ_DIRECT, child_function) < 0) {
 		failed = TRUE;
 		fail_count++;
 		tst_resm (TFAIL, "Read with Direct IO, Write without");
@@ -392,7 +392,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if(fd1 != -1)
+	if (fd1 != -1)
 		unlink(filename);
 
 	tst_rmdir();

@@ -77,7 +77,7 @@ int create_net_namespace(char *p1, char *c1)
 	/* This code will be executed in parent */
 	ltproot = getenv("LTPROOT");
 
-	if ( !ltproot) {
+	if (!ltproot) {
 		printf("LTPROOT env variable is not set\n");
 		printf("Please set LTPROOT and re-run the test.. Thankyou\n");
 		return -1;
@@ -95,7 +95,7 @@ int create_net_namespace(char *p1, char *c1)
 
 	ret = system(par);
 	status = WEXITSTATUS(ret);
-	if ( ret == -1 || status != 0) {
+	if (ret == -1 || status != 0) {
 		printf("Error while running the script\n");
 		fflush(stdout);
 		exit(1);
@@ -104,7 +104,7 @@ int create_net_namespace(char *p1, char *c1)
 
 	ret = waitpid(pid, &status, __WALL);
 	status = WEXITSTATUS(status);
-	if ( ret  == -1 || status != 0) {
+	if (ret  == -1 || status != 0) {
 		printf("Error: waitpid() returns %d, status %d\n", ret, status);
 	}
 

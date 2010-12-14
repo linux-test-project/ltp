@@ -179,7 +179,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 			"page fault at [%#lx] - ignore\n", scp->edi);
 	    siglongjmp(jmpbuf, 1);
         }
-        else if (scp->esi == (int)map_address )
+        else if (scp->esi == (int)map_address)
 	{
 	    fprintf(stdout,
 			"page fault at [%#lx] - ignore\n", scp->esi);
@@ -367,7 +367,7 @@ write_to_mem(void *args)
     while (write_ndx++ < (int)locargs[0])
     {
 	/* wait for the thread to shmat, and dont sleep on the processor. */
-        while(!done_shmat)
+        while (!done_shmat)
         usleep(0);
 
         if (sigsetjmp(jmpbuf,1) == 1)
@@ -410,7 +410,7 @@ read_from_mem(void *args)
     while (read_ndx++ < (int)locargs[0])
     {
 	    /* wait for the shmat to happen */
-	while(!done_shmat)
+	while (!done_shmat)
         usleep(0);
 
 	fprintf(stdout,

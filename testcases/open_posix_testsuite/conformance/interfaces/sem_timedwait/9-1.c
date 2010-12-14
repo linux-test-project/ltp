@@ -33,68 +33,68 @@
 
 void handler(int signo)
 {
-        printf("In handler\n");
+	printf("In handler\n");
 }
 
 int main()
 {
-        sem_t mysemp;
+	sem_t mysemp;
 	struct timespec ts;
-        int pid, status;
+	int pid, status;
 
 
-        if (sem_init (&mysemp, 0, 1) == -1) {
-                perror(ERROR_PREFIX "sem_init");
-                return PTS_UNRESOLVED;
-        }
+	if (sem_init (&mysemp, 0, 1) == -1) {
+		perror(ERROR_PREFIX "sem_init");
+		return PTS_UNRESOLVED;
+	}
 
 
-        if ( sem_wait(&mysemp) == -1 ) {
-                perror(ERROR_PREFIX "sem_wait");
-                return PTS_UNRESOLVED;
-        }
+	if (sem_wait(&mysemp) == -1) {
+		perror(ERROR_PREFIX "sem_wait");
+		return PTS_UNRESOLVED;
+	}
 
-        pid = fork();
-        if (pid == 0) { // child create the semaphore.
-                struct sigaction act;
+	pid = fork();
+	if (pid == 0) { // child create the semaphore.
+		struct sigaction act;
 
-                act.sa_handler=handler;
-                act.sa_flags=0;
-                if (sigemptyset(&act.sa_mask) == -1) {
-                        perror("Error calling sigemptyset\n");
-                        return CHILDFAIL;
-                }
-                if (sigaction(SIGABRT, &act, 0) == -1) {
-                        perror("Error calling sigaction\n");
-                        return CHILDFAIL;
-                }
+		act.sa_handler=handler;
+		act.sa_flags=0;
+		if (sigemptyset(&act.sa_mask) == -1) {
+			perror("Error calling sigemptyset\n");
+			return CHILDFAIL;
+		}
+		if (sigaction(SIGABRT, &act, 0) == -1) {
+			perror("Error calling sigaction\n");
+			return CHILDFAIL;
+		}
 
 		ts.tv_sec = time(NULL)+3;
 		ts.tv_nsec = 0;
 
-        	sem_timedwait(&mysemp, &ts);
+		sem_timedwait(&mysemp, &ts);
 
-               if (errno == EINTR) {
-                        printf("Test PASSED\n");
-                        return (CHILDPASS);
-                }
-                puts("TEST FAILED: errno != EINTR");
-                return (CHILDFAIL);
+	       if (errno == EINTR) {
+			printf("Test PASSED\n");
+			return (CHILDPASS);
+		}
+		puts("TEST FAILED: errno != EINTR");
+		return (CHILDFAIL);
 
-        } else { // parent to send a signal to child
-                int i;
-                sleep(1);
-                status = kill(pid,SIGABRT);  // send signal to child
-                if (wait(&i) == -1) {
-                        perror("Error waiting for child to exit\n");
-                        return PTS_UNRESOLVED;
-                }
+	} else { // parent to send a signal to child
+		int i;
+		sleep(1);
+		status = kill(pid,SIGABRT);  // send signal to child
+		if (wait(&i) == -1) {
+			perror("Error waiting for child to exit\n");
+			return PTS_UNRESOLVED;
+		}
 
-                if (!WEXITSTATUS(i)) {
-                        return PTS_FAIL;
-                }
+		if (!WEXITSTATUS(i)) {
+			return PTS_FAIL;
+		}
 		puts("TEST PASSED");
-                return PTS_PASS;
-        }
-        return PTS_UNRESOLVED;
+		return PTS_PASS;
+	}
+	return PTS_UNRESOLVED;
 }

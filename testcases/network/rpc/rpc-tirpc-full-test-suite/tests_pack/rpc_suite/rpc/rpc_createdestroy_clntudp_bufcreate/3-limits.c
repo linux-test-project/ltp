@@ -104,7 +104,7 @@ int main(int argn, char *argc[])
 								 &sock, paramList[i].bufsnd, paramList[i].bufrec);
 		
 		//Check result
-		if (clnt == (CLIENT *)NULL)
+		if (clnt == NULL)
 		{
 			//test has failed
 			test_status = 1;

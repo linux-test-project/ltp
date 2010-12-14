@@ -85,7 +85,7 @@
 /******************************************************************************/
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, i;
 	char * name = "/sem_open_15_1";
@@ -99,11 +99,11 @@ int main( int argc, char * argv[] )
 
 	for (i = 0; i < 4; i++)
 	{
-		sems[ i ] = sem_open( name, O_CREAT, 0777, 1 );
+		sems[ i ] = sem_open(name, O_CREAT, 0777, 1);
 
 		if (sems[ i ] == SEM_FAILED)
 		{
-			UNRESOLVED( errno, "Failed to sem_open" );
+			UNRESOLVED(errno, "Failed to sem_open");
 		}
 
 	}
@@ -113,26 +113,26 @@ int main( int argc, char * argv[] )
 	{
 		if (sems[ i ] != sems[ i + 1 ])
 		{
-			FAILED( "sem_open returned a different address" );
+			FAILED("sem_open returned a different address");
 		}
 
 		/* Close some semaphores */
-		ret = sem_close( sems[ i ] );
+		ret = sem_close(sems[ i ]);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to sem_close" );
+			UNRESOLVED(errno, "Failed to sem_close");
 		}
 	}
 
 	/* Now, reopen, we should still get the same address */
 	for (i = 0; i < 3; i++)
 	{
-		sems[ i ] = sem_open( name, O_CREAT, 0777, 1 );
+		sems[ i ] = sem_open(name, O_CREAT, 0777, 1);
 
 		if (sems[ i ] == SEM_FAILED)
 		{
-			UNRESOLVED( errno, "Failed to sem_open" );
+			UNRESOLVED(errno, "Failed to sem_open");
 		}
 
 	}
@@ -142,7 +142,7 @@ int main( int argc, char * argv[] )
 	{
 		if (sems[ i ] != sems[ i + 1 ])
 		{
-			FAILED( "sem_open returned a different address" );
+			FAILED("sem_open returned a different address");
 		}
 	}
 
@@ -150,20 +150,20 @@ int main( int argc, char * argv[] )
 	/* Close all semaphores */
 	for (i = 0; i < 4; i++)
 	{
-		ret = sem_close( sems[ i ] );
+		ret = sem_close(sems[ i ]);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to sem_close" );
+			UNRESOLVED(errno, "Failed to sem_close");
 		}
 	}
 
-	sem_unlink( name );
+	sem_unlink(name);
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

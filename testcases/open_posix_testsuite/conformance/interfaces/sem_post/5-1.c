@@ -49,7 +49,7 @@ int main() {
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	gsemp = sem_open(semname, O_CREAT, 0777, SEMINITVAL);
-	if ( gsemp == SEM_FAILED || gsemp == NULL ) {
+	if (gsemp == SEM_FAILED || gsemp == NULL) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
@@ -57,13 +57,13 @@ int main() {
 	sleep(1);
         alarm(1);
 
-	if ( sem_post(gsemp) == -1 ) {
+	if (sem_post(gsemp) == -1) {
 		perror(ERROR_PREFIX "sem_post");
 		exit(PTS_UNRESOLVED); 
 	}
 
 	/* Checking if the value of the Semaphore incremented by one */
-	if ( sem_getvalue(gsemp, &val) == -1 ) {
+	if (sem_getvalue(gsemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 	}

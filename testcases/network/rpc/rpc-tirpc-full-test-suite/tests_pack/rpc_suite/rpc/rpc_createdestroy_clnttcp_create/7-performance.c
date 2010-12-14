@@ -141,7 +141,7 @@ int main(int argn, char *argc[])
 		diff = (tv2.tv_sec-tv1.tv_sec) * 1000000L + (tv2.tv_usec-tv1.tv_usec);
 		rslt = (double)diff / 1000;
     	
-    	if (clnt != (CLIENT *)NULL)
+    	if (clnt != NULL)
     	{
     		resultTbl[i] = rslt;
     	}

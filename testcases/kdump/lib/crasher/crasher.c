@@ -50,7 +50,7 @@ static int crasher_write(struct file *file, const char *buffer,
 	spinlock_t mylock = SPIN_LOCK_UNLOCKED;
 
 	/* grab the first byte the user gave us, ignore the rest */
-	if(copy_from_user(&value,buffer, 1))
+	if (copy_from_user(&value,buffer, 1))
 		return -EFAULT;
 
 	switch ( value )
@@ -90,7 +90,7 @@ int crasher_init(void)
 	printk("loaded crasher module\n");
 
 	/* build a crasher file that can be set */
-	if ( (crasher_proc = create_proc_entry(CRASH,0,NULL)) == NULL){
+	if ((crasher_proc = create_proc_entry(CRASH,0,NULL)) == NULL) {
 		return -ENOMEM;
 	}
 

@@ -148,7 +148,7 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -252,7 +252,7 @@ int setup_test(int i, int cnt)
 	switch (i) {
 	case 0:
 		/* Setup for umount(2) returning errno EBUSY. */
-		if(access(Device,F_OK)) {
+		if (access(Device,F_OK)) {
 			tst_brkm(TBROK, cleanup,
 				"Device %s does not exist", Device);
 			return 1;

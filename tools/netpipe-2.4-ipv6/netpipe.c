@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 
     strcpy(s, "NetPIPE.out");
 #ifndef MPI
-    if(argc < 2)
+    if (argc < 2)
      PrintUsage();
 #endif
     /* Parse the arguments. See Usage for description */
@@ -343,13 +343,13 @@ int main(int argc, char *argv[])
 
             /* Allocate the buffer */
             args.bufflen = len + pert;
-            if((args.buff=(char *)malloc(args.bufflen+bufalign))==(char *)NULL)
+            if ((args.buff=(char *)malloc(args.bufflen+bufalign))==(char *)NULL)
             {
                 fprintf(stderr,"Couldn't allocate memory\n");
 		errFlag = -1;
                 break;
             }
-            if((args.buff1=(char *)malloc(args.bufflen+bufalign))==(char *)NULL)
+            if ((args.buff1=(char *)malloc(args.bufflen+bufalign))==(char *)NULL)
             {
                 fprintf(stderr,"Couldn't allocate memory\n");
 		errFlag = -1;

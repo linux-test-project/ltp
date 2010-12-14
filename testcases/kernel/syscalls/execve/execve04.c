@@ -100,7 +100,7 @@ int main(int ac, char **av)
 	char *argv[1], *env[1];
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 #ifdef UCLINUX

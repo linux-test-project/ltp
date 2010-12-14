@@ -84,7 +84,7 @@ int main(int argn, char *argc[])
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	printf("5\n");
   		exit(5);
@@ -101,7 +101,7 @@ int main(int argn, char *argc[])
 	client = clnt_tli_create(RPC_ANYFD, nconf, &svcaddr,
 	                         progNum, VERSNUM, 0, 0);
 	                         
-	if (client == (CLIENT *)NULL)
+	if (client == NULL)
 	{
     	printf("5\n");
     	exit(5);

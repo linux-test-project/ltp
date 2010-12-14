@@ -32,7 +32,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (shm_unlink(SHM_NAME) != 0 ) {
+	if (shm_unlink(SHM_NAME) != 0) {
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
 	}

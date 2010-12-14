@@ -24,7 +24,7 @@ int main()
 
 	if ((sigemptyset(&blockset) == -1) ||
 		(sigemptyset(&prevset) == -1) ||
-		(sigemptyset(&pendingset) == -1) ) {
+		(sigemptyset(&pendingset) == -1)) {
 		printf("Could not call sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}

@@ -92,7 +92,7 @@ required_arg(char *arg, char *arg_name)
 {
 	glctx_t *gcp = &glctx;
 
-	if(*arg != '\0')
+	if (*arg != '\0')
 		return true;
 
 	fprintf(stderr, "%s:  command '%s' missing required argument: %s\n\n",
@@ -218,9 +218,9 @@ get_access(char *args)
 	int axcs = 1;
 	int  len = strlen(args);
 
-	if(tolower(*args) == 'w')
+	if (tolower(*args) == 'w')
 		axcs = 2;
-	else if(len != 0 && tolower(*args) != 'r') {
+	else if (len != 0 && tolower(*args) != 'r') {
 		fprintf(stderr, "%s:  segment access must be 'r[ead]' or 'w[rite]'\n",
 			 gcp->program_name);
 		return 0;
@@ -271,7 +271,7 @@ get_mbind_policy(char *args, char **nextarg)
 	pol = args;
 	args += strcspn(args, " 	+");
 
-	for( polp = policies; polp->pol_name != NULL; ++polp) {
+	for ( polp = policies; polp->pol_name != NULL; ++polp) {
 		size_t plen = args - pol;
 
 		if (strncmp(pol, polp->pol_name, plen))
@@ -526,10 +526,10 @@ numa_info(char *args)
 
 	nodeids   = calloc(gcp->numa_max_node, sizeof(*nodeids));
 	nr_nodes  = get_current_nodeid_list(nodeids);
-	if(nr_nodes < 0)
+	if (nr_nodes < 0)
 		return CMD_ERROR;
 
-	for(i=0; i < nr_nodes; ++i) {
+	for (i=0; i < nr_nodes; ++i) {
 		int  node = nodeids[i];
 		long node_size, node_free;
 
@@ -579,7 +579,7 @@ migrate_process(char *args)
 	/*
 	 * <to-node-id[s]>
 	 */
-	if(!required_arg(args, "<to-node-id[s]>"))
+	if (!required_arg(args, "<to-node-id[s]>"))
 		return CMD_ERROR;
 	idlist = strtok_r(args, whitespace, &nextarg);
 	nr_to = get_arg_nodeid_list(idlist, toids);
@@ -607,21 +607,21 @@ migrate_process(char *args)
 		 * no <from-node-id[s]>, nr_to must == 1,
 		 * get fromids from memory policy.
 		 */
-		if(nr_to > 1) {
+		if (nr_to > 1) {
 			fprintf(stderr, "%s:  # to ids must = 1"
 				" when no 'from' ids specified\n",
 				gcp->program_name);
 			goto out_free;
 		}
 		nr_from = get_current_nodeid_list(fromids);
-		if(nr_from <= 0)
+		if (nr_from <= 0)
 			goto out_free;
 
 		/*
 		 * remove 'to' node from 'from' list.  to and from
 		 * lists can't intersect.
 		 */
-		for(i = nr_from-1; i >= 0; --i) {
+		for (i = nr_from-1; i >= 0; --i) {
 			if (*toids == *(fromids + i)) {
 				while (i <= nr_from) {
 					*(fromids + i) = *(fromids + i+1);
@@ -635,7 +635,7 @@ migrate_process(char *args)
 		/*
 		 * fill out nr_from toids with the single 'to' node
 		 */
-		for(; nr_to < nr_from; ++nr_to)
+		for (; nr_to < nr_from; ++nr_to)
 			*(toids + nr_to) = *toids;	/* toids[0] */
 	}
 
@@ -690,12 +690,12 @@ anon_seg(char *args)
 
 	args += strspn(args, whitespace);
 
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 	segname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
 
-	if(!required_arg(args, "<size>"))
+	if (!required_arg(args, "<size>"))
 		return CMD_ERROR;
 	args = strtok_r(args, whitespace, &nextarg);
 	range.length = get_scaled_value(args, "size");
@@ -729,7 +729,7 @@ file_seg(char *args)
 
 	args += strspn(args, whitespace);
 
-	if(!required_arg(args, "<path-name>"))
+	if (!required_arg(args, "<path-name>"))
 		return CMD_ERROR;
 	pathname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
@@ -762,7 +762,7 @@ remove_seg(char *args)
 	glctx_t *gcp = &glctx;
 
 	args += strspn(args, whitespace);
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 
 	while (*args != '\0') {
@@ -789,7 +789,7 @@ touch_seg(char *args)
 	int axcs;
 
 	args += strspn(args, whitespace);
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 	segname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
@@ -821,12 +821,12 @@ unmap_seg(char *args)
 	char *segname, *nextarg;
 
 	args += strspn(args, whitespace);
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 	segname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
 
-	if(!segment_unmap(segname))
+	if (!segment_unmap(segname))
 		return CMD_ERROR;
 
 
@@ -847,7 +847,7 @@ map_seg(char *args)
 	int      segflag = MAP_PRIVATE;
 
 	args += strspn(args, whitespace);
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 	segname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
@@ -892,7 +892,7 @@ mbind_seg(char *args)
 		return CMD_ERROR;
 
 	args += strspn(args, whitespace);
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 	segname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
@@ -905,7 +905,7 @@ mbind_seg(char *args)
 	args = nextarg;
 
 
-	if(!required_arg(args, "<policy>"))
+	if (!required_arg(args, "<policy>"))
 		return CMD_ERROR;
 	policy = get_mbind_policy(args, &nextarg);
 	if (policy < 0)
@@ -920,7 +920,7 @@ mbind_seg(char *args)
 	args = nextarg + strspn(nextarg, whitespace);
 
 
-	if(policy != MPOL_DEFAULT) {
+	if (policy != MPOL_DEFAULT) {
 		if (!required_arg(args, "<node/list>"))
 			return CMD_ERROR;
 		nodemask = get_nodemask(args);
@@ -953,12 +953,12 @@ shmem_seg(char *args)
 
 	args += strspn(args, whitespace);
 
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 	segname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
 
-	if(!required_arg(args, "<size>"))
+	if (!required_arg(args, "<size>"))
 		return CMD_ERROR;
 	args = strtok_r(args, whitespace, &nextarg);
 	range.length = get_scaled_value(args, "size");
@@ -994,7 +994,7 @@ where_seg(char *args)
 		return CMD_ERROR;
 
 	args += strspn(args, whitespace);
-	if(!required_arg(args, "<seg-name>"))
+	if (!required_arg(args, "<seg-name>"))
 		return CMD_ERROR;
 	segname = strtok_r(args, whitespace, &nextarg);
 	args = nextarg + strspn(nextarg, whitespace);
@@ -1007,7 +1007,7 @@ where_seg(char *args)
 	if (args == nextarg)
 		range.length = 64 * gcp->pagesize;	/* default length */
 
-	if(!segment_location(segname, &range))
+	if (!segment_location(segname, &range))
 		return CMD_ERROR;
 
 	return CMD_SUCCESS;
@@ -1200,7 +1200,7 @@ help_me(char *args)
 		cmdlen = 0;
 	}
 
-	for( cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
+	for ( cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
 		if (cmd == NULL ||
 				!strncmp(cmd, cmdp->cmd_name, cmdlen)) {
 			printf("%s\n", cmdp->cmd_help);
@@ -1225,8 +1225,8 @@ help_me(char *args)
 static bool
 unique_abbrev(char *cmd, size_t clen, struct command *cmdp)
 {
-	for(; cmdp->cmd_name != NULL; ++cmdp) {
-		if(!strncmp(cmd, cmdp->cmd_name, clen))
+	for (; cmdp->cmd_name != NULL; ++cmdp) {
+		if (!strncmp(cmd, cmdp->cmd_name, clen))
 			return false;	/* match: not unique */
 	}
 	return true;
@@ -1243,7 +1243,7 @@ parse_command(char *cmdline)
 
 	cmd = strtok_r(cmdline, whitespace, &args);
 
-	for( cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
+	for ( cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
 		size_t clen = strlen(cmd);
 		int ret;
 
@@ -1277,7 +1277,7 @@ process_commands()
 		size_t cmdlen;
 
 	
-		if(is_option(INTERACTIVE))
+		if (is_option(INTERACTIVE))
 			printf("%s>", gcp->program_name);
 
 		cmdline = fgets(cmdbuf, CMDBUFSZ, stdin);
@@ -1310,7 +1310,7 @@ process_commands()
 		/*
 		 * trim trailing whitespace for ease of parsing
 		 */
-		while(strchr(whitespace, cmdline[cmdlen-1]))
+		while (strchr(whitespace, cmdline[cmdlen-1]))
 			cmdline[--cmdlen] = '\0';
 
 		if (cmdlen == 0)
@@ -1320,8 +1320,8 @@ process_commands()
 		 * reset signals just before parsing a command.
 		 * non-interactive:  exit on SIGQUIT
 		 */
-		if(signalled(gcp)) {
-			if(!is_option(INTERACTIVE) &&
+		if (signalled(gcp)) {
+			if (!is_option(INTERACTIVE) &&
 			   gcp->siginfo->si_signo == SIGQUIT)
 				exit(0);
 			reset_signal();
@@ -1330,9 +1330,9 @@ process_commands()
 		/*
 		 * non-interactive:  errors are fatal
 		 */
-		if(!is_option(INTERACTIVE)) {
+		if (!is_option(INTERACTIVE)) {
 			vprint("%s>%s\n", gcp->program_name, cmdline);
-			if(parse_command(cmdline) == CMD_ERROR) {
+			if (parse_command(cmdline) == CMD_ERROR) {
 				fprintf(stderr, "%s:  command error\n",
 					gcp->program_name);
 				exit(4);
@@ -1340,6 +1340,6 @@ process_commands()
 		} else
 			parse_command(cmdline);
 
-	} while(1);
+	} while (1);
 }
 #endif

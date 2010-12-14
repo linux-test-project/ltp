@@ -126,10 +126,10 @@ int main(int argc, char **argv)
 
         setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
 
-        if(set_loopback)
+        if (set_loopback)
                 setsockopt(s, SOL_CAN_RAW, CAN_RAW_LOOPBACK, &loopback, sizeof(loopback));
 
-        if(set_recv_own_msgs)
+        if (set_recv_own_msgs)
                 setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs, sizeof(recv_own_msgs));
 
         strcpy(ifr.ifr_name, ifname);
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
                 return 1;
         }
 
-        if(send_one_frame) {
+        if (send_one_frame) {
 
                 frame.can_id  = 0x123;
                 frame.can_dlc = 2;

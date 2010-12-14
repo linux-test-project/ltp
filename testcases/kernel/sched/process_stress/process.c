@@ -222,9 +222,9 @@ int send_message(int id, mtyp_t type, char *text)
 
 	strcpy(sndbuf.mtext, text);
 	sndbuf.mtyp = type;
-	while ( TRUE ) {
+	while (TRUE) {
 		rc = msgsnd(id, &sndbuf, sizeof(struct messagebuf), IPC_NOWAIT);
-		if ( rc == -1 && errno == EAGAIN ) {
+		if (rc == -1 && errno == EAGAIN) {
 			debugout("msgqueue %d of mtyp %d not ready to send\n",msgid,type);
 			errno = 0;
 		}
@@ -408,7 +408,7 @@ Pinfo * put_proc_info(int tval)
 
 	/* calculate and store sibling slot numbers of current process */
 	for (sibslot = *smp->list * BVAL + 1; listp < smp->list + BVAL; sibslot++) {
-		if ( tval != sibslot)
+		if (tval != sibslot)
 			*(listp++) = sibslot;
 	}
 	return(smp);
@@ -543,9 +543,9 @@ int spawn(int val)
 
     for (i = 1; i <= BVAL; i++) {
         tval = (val * BVAL) + i;
-        if ( !lvlflg ) {
+        if (!lvlflg) {
 			pid = fork();
-			if ( !pid ) { /* CHILD */
+			if (!pid) { /* CHILD */
 				if (AUSDEBUG) {
 					sprintf(foo, "%sslot%d", SLOTDIR, tval);
 					debugfp = fopen(foo, "a+");
@@ -555,8 +555,8 @@ int spawn(int val)
         		debugout("pid: %-6d ppid: %-6d lev: %-2d i: %-2d val: %-3d\n",pinfo->pid, pinfo->ppid, level, i, tval);
 
 				set_timer();	/* set up signal handlers and initialize pgrp */
-				if ( level < DVAL ) {
-					if ( spawn(tval) == -1 ) {
+				if (level < DVAL) {
+					if (spawn(tval) == -1) {
 						pslot = semoper(tval, sem_lock, -1);
 						semarg.val = 0; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
 						semval = semctl(sem_count, pslot, GETVAL, semarg);
@@ -573,9 +573,9 @@ int spawn(int val)
 				}
 			}
 #ifdef __64LDT__
-                        else if ( pid > 0 && i >= BVAL) { /* PARENT */
+                        else if (pid > 0 && i >= BVAL) { /* PARENT */
 #else
-                        else if ( pid > (pid_t)0 && i >= BVAL) { /* PARENT */
+                        else if (pid > (pid_t)0 && i >= BVAL) { /* PARENT */
 #endif
                                 pslot = semoper(tval, sem_count, 0);
 				pslot = semoper(pslot, sem_lock, -1);
@@ -613,7 +613,7 @@ void setup_msgqueue(void)
 
 	msgid = msgget(IPC_PRIVATE,
 				   IPC_CREAT|IPC_EXCL|S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
-	if ( msgid == -1 ) {
+	if (msgid == -1) {
 		perror("msgget msgid failed");
 		fprintf( stderr, " SEVERE : msgget msgid failed: errno %d\n", errno);
 		exit( 1 );
@@ -621,7 +621,7 @@ void setup_msgqueue(void)
 
 	msgerr = msgget(IPC_PRIVATE,
 				   IPC_CREAT|IPC_EXCL|S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
-	if ( msgerr == -1 ) {
+	if (msgerr == -1) {
 		perror("msgget msgerr failed");
 		fprintf( stderr, " SEVERE : msgget msgerr failed: errno %d\n", errno);
 		exit( 1 );
@@ -717,7 +717,7 @@ void setup_shm(void)
 
 	/* allocate shared memory */
 
-	if ((shmad = (Pinfo *)shmat(shmid, (char *)shmad, 0)) == -1 ) {
+	if ((shmad = (Pinfo *)shmat(shmid, (char *)shmad, 0)) == -1) {
 		printf("SEVERE : shmat failed\n");
 		exit( 1 );
 	}
@@ -797,7 +797,7 @@ void set_signals(void *sighandler())
 #else
 		SIGADDSET(action.sa_mask, siginfo[i].signum);
 #endif
-		rc = sigaction(siginfo[i].signum, &action, (struct sigaction *)NULL);
+		rc = sigaction(siginfo[i].signum, &action, NULL);
 		if (rc == -1) {
 			sprintf(tmpstr, "sigaction: %s\n", siginfo[i].signame);
 			perror(tmpstr);
@@ -816,7 +816,7 @@ void set_timer(void)
 {
 	struct itimerstruc_t    itimer, old_itimer;
 
-	if ( (timer = gettimerid( TIMERID_REAL, DELIVERY_SIGNALS )) == -1 ) {
+	if ((timer = gettimerid( TIMERID_REAL, DELIVERY_SIGNALS )) == -1) {
 		perror( "gettimerid" );
 		fprintf( stderr, " SEVERE : Could not get timer id, errno=%d.",errno );
 		exit( 1 );
@@ -875,16 +875,16 @@ void parse_args( int argc, char *argv[] )
 	/* DVAL:	0  1     2      3   4  5  6  7  8  9  10 11 */
 	int limits[] = {-1,-1, MAXBVAL, 17, 8, 5, 4, 3, 2, 2, 2, 2};
 
-	while ( (opt = getopt( argc, argv, "b:d:ft:D?" )) != EOF ) {
+	while ((opt = getopt( argc, argv, "b:d:ft:D?" )) != EOF) {
 		switch ( opt ) {
 			case 'b':
-				if ( bflag )
+				if (bflag)
 					errflag++;
 				else {
 					bflag++;
 					errno = 0;
     				BVAL = atoi(optarg);
-					if ( errno ) {
+					if (errno) {
 						perror( "atoi" );
 						fprintf( stderr, " ERROR : atoi - errno %d.", errno );
 						errflag++;
@@ -892,13 +892,13 @@ void parse_args( int argc, char *argv[] )
 				}
 				break;
 			case 'd':
-				if ( dflag )
+				if (dflag)
 					errflag++;
 				else {
 					dflag++;
 					errno = 0;
 					DVAL = atoi(optarg);
-					if ( errno ) {
+					if (errno) {
 						perror( "atoi" );
 						fprintf( stderr, " ERROR : atoi - errno %d.", errno );
 						errflag++;
@@ -912,13 +912,13 @@ void parse_args( int argc, char *argv[] )
 				AUSDEBUG = 1;
 				break;
 			case 't':
-				if ( tflag )
+				if (tflag)
 					errflag++;
 				else {
 					tflag++;
 					errno = 0;
 					TVAL = atoi(optarg);
-					if ( !TVAL || errno ) {
+					if (!TVAL || errno) {
 						perror( "atoi" );
 						fprintf( stderr, " ERROR : atoi - errno %d.", errno );
 						errflag++;
@@ -937,17 +937,17 @@ void parse_args( int argc, char *argv[] )
 	} else if (DVAL < 2) {
 		errflag++;
 		fprintf(stderr,"The depth value must be greater than 1\n");
-	} else if (!fflag && (DVAL > MAXDVAL) ) {
+	} else if (!fflag && (DVAL > MAXDVAL)) {
 /* || BVAL > limits[DVAL])) { */
 		fprintf( stderr, "\tExceeded process creation limits.   \
 \n\tParameters will generate %lu processes.  \n\tThe preset limits are as \
 follows:\n\t\tdepth\tbreadth\ttotal\n", sumit(BVAL,DVAL));
-		for ( i = 2; i <= MAXDVAL; i++)
+		for (i = 2; i <= MAXDVAL; i++)
 			fprintf(stderr,"\t\t %-3d\t  %-5d\t%-5lu\n", i, limits[i], sumit(limits[i],i));
 		exit ( 1 );
 	}
 
-	if ( errflag ) {
+	if (errflag) {
 		fprintf( stderr, "usage: %s [-b number] [-d number] [-t number] \n", argv[0] );
 		fprintf( stderr, "where:\n" );
 		fprintf( stderr, "\t-b number\tnumber of children each parent will spawn ( > 1)\n");
@@ -976,14 +976,14 @@ int getenv_val(void)
 	 * variable value if present.
 	 */
 	for (; *envd->env_name != '\0'; envd++) {
-		if ( (val.chptr = getenv(envd->env_name) ) == NULL)
+		if ((val.chptr = getenv(envd->env_name) ) == NULL)
 			val.chptr = envd->eval.chptr;
 
 		c = val.chptr;
-		while ( isdigit(*c) )
+		while (isdigit(*c))
 			c++;
 
-		if ( *c == '\0') {
+		if (*c == '\0') {
 			(envd->eval.vint) = (int *) malloc(sizeof(int));
 			*(envd->eval.vint) = atoi(val.chptr);
 		}
@@ -1015,7 +1015,7 @@ void messenger(void) /* AKA Assassin */
 	 *  Infinite loop used to receive error messages from children and
 	 *  to terminate process tree.
 	 */
-	while( TRUE ) {
+	while ( TRUE ) {
 		rc = msgrcv(msgerr, &rcvbuf, sizeof(struct messagebuf), 0, 0);
 		if (rc == -1) {
 			switch (errno) {

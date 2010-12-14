@@ -25,14 +25,14 @@ int main()
 
 	if ((sigemptyset(&blockset) == -1) ||
 		(sigemptyset(&prevset) == -1) ||
-		(sigemptyset(&pendingset) == -1) ) {
+		(sigemptyset(&pendingset) == -1)) {
 		printf("Could not call sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if ((sigaddset(&blockset, SIGALRM) == -1) ||
 		(sigaddset(&blockset, SIGHUP) == -1) ||
-		(sigaddset(&blockset, SIGQUIT) == -1) ) {
+		(sigaddset(&blockset, SIGQUIT) == -1)) {
 		perror("Error calling sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}

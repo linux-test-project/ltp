@@ -59,15 +59,15 @@ int main(int argc, char **argv)
 		fflush(stdout);
 
 		policy = tst->value;
-		priority = ( sched_get_priority_min(policy) + 
-			     sched_get_priority_max(policy) ) / 2;
+		priority = (sched_get_priority_min(policy) + 
+			     sched_get_priority_max(policy)) / 2;
 		param.sched_priority = priority;
 
 		tmp = sched_setscheduler(getpid(), policy, &param);
 		
 		if (tmp == -1 || errno != 0) {
 			if (errno == EPERM) {
-				printf("  The process do not have permission to change its own scheduler\n  Try to run this test as root.\n");
+				printf("  The process does not have permission to change its own scheduler\n  Try to run this test as root.\n");
 			} else {
 				printf("  Error calling sched_setscheduler() for %s policy\n", tst->name);
 			}

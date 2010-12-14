@@ -490,7 +490,7 @@ int main(int ac, char **av) {
         progname = progname ? progname + 1 : av[0];
 
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL) {
              tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -502,7 +502,7 @@ int main(int ac, char **av) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
 			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while(TEST_RETURN != -1) {
+			 while (TEST_RETURN != -1) {
 		                switch (c) {
                 		case 'd':
 		                        opt_debug = 1;

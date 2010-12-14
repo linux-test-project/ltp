@@ -72,8 +72,8 @@ int main() {
 	 * are set and thoses of UMASK_FLAGS are not, i.e.:
 	 * ALL_MOD_FLAGS & (stat_buf.st_mode ^ (MOD_FLAGS & ~UMASK_FLAGS)) == 0
 	 */
-	if ( !(ALL_MOD_FLAGS & 
-	      (stat_buf.st_mode ^ (MOD_FLAGS & ~UMASK_FLAGS))) ) {
+	if (!(ALL_MOD_FLAGS & 
+	      (stat_buf.st_mode ^ (MOD_FLAGS & ~UMASK_FLAGS)))) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

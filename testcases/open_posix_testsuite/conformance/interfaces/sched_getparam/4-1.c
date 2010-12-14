@@ -31,16 +31,16 @@ int main(int argc, char **argv)
 	/* Create a child process which exit immediately */
 	child_pid = fork();
 	if (child_pid == -1) {
-	  perror("An error occurs when calling fork()");
-	  return PTS_UNRESOLVED;
+		perror("An error occurs when calling fork()");
+		return PTS_UNRESOLVED;
 	} else if (child_pid == 0) {
-	  exit(0);
+		exit(0);
 	}
 
 	/* Wait for the child process to exit */
 	if (wait(&stat_loc) == -1) {
-	  perror("An error occurs when calling wait()");
-	  return PTS_UNRESOLVED;
+		perror("An error occurs when calling wait()");
+		return PTS_UNRESOLVED;
 	}
 	
 	/* Assume the pid is not yet reatributed to an other process */
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 		printf("returned code is not -1.\n");
 		return PTS_FAIL;
 	}
-	if (errno != ESRCH ) {
+	if (errno != ESRCH) {
 		perror("errno is not ESRCH");
 		return PTS_FAIL;
 	} else {
@@ -63,5 +63,3 @@ int main(int argc, char **argv)
 	}        
 
 }
-
-

@@ -67,7 +67,7 @@ int main()
 
 	/* Initialize attr */
 	rc = pthread_attr_init(&attr);
-	if ( rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init");
 		exit(PTS_UNRESOLVED);
 	}

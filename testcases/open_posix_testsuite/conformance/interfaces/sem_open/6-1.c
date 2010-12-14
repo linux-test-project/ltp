@@ -33,7 +33,7 @@ int main()
 
 	mysemp = sem_open(semname, 0);
 
-	if ((mysemp  == SEM_FAILED ) && ( errno == ENOENT ))  {
+	if ((mysemp  == SEM_FAILED) && (errno == ENOENT))  {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

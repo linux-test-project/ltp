@@ -7,7 +7,7 @@
  * pthread_barrier_init()
  *
  *
- * The pthread_barrier_init( ) function shall allocate any resources 
+ * The pthread_barrier_init() function shall allocate any resources 
  * required to use the barrier referenced by barrier and shall initialize 
  * the barrier with attributes referenced by attr. If attr is NULL, 
  * the default barrier attributes shall be used; 

@@ -112,7 +112,7 @@ char *argv[];
 
 	init();
 
-	while ( (ev=nextevent()) != (struct event *)NULL) {
+	while ((ev=nextevent()) != NULL) {
 		doevent(ev);
 	}
 
@@ -217,7 +217,7 @@ struct event *nextevent()
 	int i;
 
 	for (i=1; i<=nproc; i++) {
-          if ((eventtab[i].type!=NULLEVENT) && (eventtab[i].time<mintime) ) {
+          if ((eventtab[i].type!=NULLEVENT) && (eventtab[i].time<mintime)) {
 		imin=i;
 		mintime=eventtab[i].time;
 		}

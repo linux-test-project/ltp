@@ -1,0 +1,75 @@
+MCE Stress Test Suite 
+=====================
+
+Oct 10th, 2009
+
+Haicheng Li
+
+
+About the MCE stress test suite
+-------------------------------
+
+The MCE stress test suite is a collection of tools and test scripts, which
+intends to achieve stress testing for Linux kernel MCA high level handlers
+that include HWPosion page recovery, soft page offline, and so on.
+
+In general, this test suite is designed to do stress testing thru various
+test interfaces, i.e. madvise syscall, HWPoison page injector, and APEI
+injector (see ACPI4.0 spec). And it's able to support most of popular
+Linux File Systems (FS), that is, there is an option (i.e. -f) for user to
+specify which FS type they want the test to be running on.
+
+
+Test Dependencies
+-----------------
+MCE stress test suite has following dependencies on kernel and other tools:
+
+* Linux Kernel:
+  Version 2.6.32 or newer, with MCA high level handlers enabled.
+
+* ltp-pan: 
+  A test harness of Linux Test Project, http://ltp.sf.net.
+
+* page-types:
+  A tool to query page types, which is accompanied with Linux kernel
+  source (2.6.32 or newer, $KERNEL_SRC/Documentation/vm/page-types.c).
+
+Pls. refer to the HOWTO doc (../doc/stress-howto.txt) to setup your test
+enviroment.
+
+
+In the package
+---------------
+Here is a short description of what is included in this test suite. 
+
+README
+        This document.
+
+../doc/stress-howto.txt
+	HOWTO doc, including design details and usage guide.
+
+Makefile
+        Makefile for MCE stress test suite.
+
+hwposion.sh
+	Test driver.
+
+tools/*
+	Test workloads.		
+
+
+Get Started
+-----------
+Pls. read through the HOWTO doc (../doc/stress-howto.txt) before you start
+the stress testing on your system.
+
+You can also get help on specific test options in following way:
+# ./hwpoison.sh -h
+
+
+Warning!
+--------
+Be careful with these tests!
+
+Don't run them on production systems. They should not cause problems on 
+properly functioning systems, they are intended to find (or cause) problems.

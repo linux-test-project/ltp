@@ -54,7 +54,7 @@ int main() {
 	}
 
 	foo = mmap(NULL, BUF_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
-	if ( foo == MAP_FAILED) {
+	if (foo == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;	
@@ -69,7 +69,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	page_ptr = (void*) ( (long)foo - ((long)foo % page_size) );
+	page_ptr = (void*) ((long)foo - ((long)foo % page_size));
 
 	result = msync(page_ptr, page_size, MS_SYNC|MS_INVALIDATE);
 	if (result == -1 && errno == EBUSY) {

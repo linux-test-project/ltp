@@ -73,7 +73,7 @@ void *my_thread_process (void * arg)
     client = clnt_tp_create_timed(hostname, progNum,
                                   VERSNUM, (struct netconfig *)nconf, &tv);
                                   
-    if (client == (CLIENT *)NULL)
+    if (client == NULL)
     {
     	printf("5\n");
     	pthread_exit((void *)5);
@@ -177,7 +177,7 @@ int main(int argn, char *argc[])
 		//Clean threads
 		for (j = 0; j < curThd; j++)
 		{
-			if ((pthread_t *)pThreadArray[j] != (pthread_t *)NULL)
+			if ((pthread_t *)pThreadArray[j] != NULL)
 			{
 				(void)pthread_join (pThreadArray[j], &ret);
 			}

@@ -48,7 +48,7 @@ int main()
 		ts.tv_sec=time(NULL)+2;
 		ts.tv_nsec=0;
 
-	       	if ( sem_timedwait(&mysemp, &ts) == -1 ) {
+	       	if (sem_timedwait(&mysemp, &ts) == -1) {
 			puts ("TEST FAILED");
 			return PTS_FAIL;
 		} else {

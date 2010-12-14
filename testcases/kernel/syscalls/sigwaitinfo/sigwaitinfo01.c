@@ -32,7 +32,7 @@
 #define SUCCEED_OR_DIE(syscall, message, ...)														\
 	(errno = 0,																														\
 		({int ret=syscall(__VA_ARGS__);																			\
-			if(ret==-1)																												\
+			if (ret==-1)																												\
 				tst_brkm(TBROK|TERRNO, cleanup, message);												\
 			ret;}))
 
@@ -44,11 +44,11 @@ static void report_success_cond(const char *func, const char* file, int line,
 													 long exp_return, int exp_errno, int condition, char* condition_errmsg)
 {
 	if (exp_return == TEST_RETURN && (exp_return != -1 || exp_errno == TEST_ERRNO))
-		if(condition)
+		if (condition)
 			tst_resm(TPASS, "Test passed");
 		else
 			tst_resm(TFAIL, "%s (%s: %d): %s", func, file, line, condition_errmsg);
-	else if(TEST_RETURN != -1)
+	else if (TEST_RETURN != -1)
 		tst_resm(TFAIL, "%s (%s: %d): Unexpected return value; expected %ld, got %ld",
 						 func, file, line, exp_return, TEST_RETURN);
 	else
@@ -95,7 +95,7 @@ static int my_sigwait(const sigset_t* set, siginfo_t* info, struct timespec* tim
 	int ret;
 	int err=sigwait(set, &ret);
 
-	if(err == 0)
+	if (err == 0)
 		return ret;
 	errno = err;
 	return -1;
@@ -214,7 +214,7 @@ void test_masked_matching(swi_func sigwaitinfo, int signo)
 
 	Tst_count--;
 
-	if(sigismember(&oldmask, signo))
+	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
 	else
 		tst_resm(TFAIL, "sigwaitinfo failed to restore the original mask");
@@ -255,7 +255,7 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo)
 
 	Tst_count--;
 
-	if(sigismember(&oldmask, signo))
+	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
 	else
 		tst_resm(TFAIL, "sigwaitinfo failed to restore the original mask");
@@ -286,7 +286,7 @@ void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo)
 
 	Tst_count--;
 
-	if(sigismember(&oldmask, signo))
+	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
 	else
 		tst_resm(TFAIL, "sigwaitinfo failed to restore the original mask");
@@ -418,10 +418,10 @@ int main(int argc, char** argv)
 
 	setup();
 
-	for(lc = 0; TEST_LOOPING(lc); ++lc) {
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 
-		for(i=0; i<sizeof(tests)/sizeof(*tests); i++) {
+		for (i=0; i<sizeof(tests)/sizeof(*tests); i++) {
 			alarm(10); /* arrange a 10 second timeout */
 			tests[i].tf(tests[i].swi, tests[i].signo);
 		}

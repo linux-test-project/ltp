@@ -165,7 +165,7 @@ main(int ac, char **av)
 			tst_resm(TPASS, "huge mmap() correctly succeeded for 64-bit");
 		}
 #else /* 32-bit process */
-                if (addr2 > 0){
+                if (addr2 > 0) {
                         tst_resm(TCONF, "huge mmap() failed to test the scenario");
                         continue;
                 } else if (addr == 0) {

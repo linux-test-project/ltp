@@ -43,7 +43,7 @@ void output_init()
 	/* do nothing */
 	return;
 }
-void output( char * string, ... )
+void output(char * string, ...)
 {
    va_list ap;
    char *ts="[??:??:??]";
@@ -57,7 +57,7 @@ void output( char * string, ... )
       printf(ts);
    else
       printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
-   va_start( ap, string);
+   va_start(ap, string);
    vprintf(string, ap);
    va_end(ap);
    pthread_mutex_unlock(&m_trace);

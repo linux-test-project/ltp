@@ -375,7 +375,7 @@ int main(int argc, char **argv)
 			break; 
 		}
 	}
-        while ( (loopcntr <= loops) || (loops == 0) ) 
+        while ((loopcntr <= loops) || (loops == 0)) 
         {
 		if (no_xfs && errtag) { 
 			fprintf(stderr, "error injection only works on XFS\n");
@@ -411,7 +411,7 @@ int main(int argc, char **argv)
 		dcache_init();
 		setlinebuf(stdout);
 		if (!seed) {
-			gettimeofday(&t, (void *)NULL);
+			gettimeofday(&t, NULL);
 			seed = (int)t.tv_sec ^ (int)t.tv_usec;
 			printf("seed = %ld\n", seed);
 		}
@@ -476,7 +476,7 @@ int main(int argc, char **argv)
 		if (errtag != 0) {
 			err_inj.errtag = 0;
 			err_inj.fd = fd;
-			if((srval = ioctl(fd, XFS_IOC_ERROR_CLEARALL, &err_inj)) != 0) {
+			if ((srval = ioctl(fd, XFS_IOC_ERROR_CLEARALL, &err_inj)) != 0) {
 				fprintf(stderr, "Bad ej clear on %d (%d).\n", fd, errno);
 				perror("fsstress - XFS_SYSSGI clear error injection call");
 				close(fd);

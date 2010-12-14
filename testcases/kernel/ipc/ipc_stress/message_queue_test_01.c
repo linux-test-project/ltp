@@ -83,7 +83,7 @@
 #define	FIRST_MSG	0
 #define BUF_SIZE        256
 
-#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+#define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 
 /*
  * Function prototypes
@@ -150,7 +150,7 @@ int main (int argc, char **argv)
 	 */
 	buf = (struct msgbuf *)calloc ((size_t)(sizeof(struct msgbuf) + BUF_SIZE),
 		sizeof (char));
-	if(!buf)
+	if (!buf)
 		sys_error ("calloc failed", __LINE__);
 
 	if (msgrcv (msqid, (void *)buf, (size_t)BUF_SIZE, FIRST_MSG, 0) < 0) {
@@ -204,7 +204,7 @@ static void child (int fd[])
 	 */
 	buf = (struct msgbuf *)calloc ((size_t)(sizeof(struct msgbuf) + BUF_SIZE),
 		sizeof (char));
-	if(!buf)
+	if (!buf)
 		sys_error ("calloc failed", __LINE__);
 
 	buf->mtype = 1;

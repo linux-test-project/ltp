@@ -77,7 +77,7 @@ int main()
 
 /*----------------------------------------------------------------*/
 
-	cp = (char *)shmat(shmid, (void *)NULL, 0);
+	cp = (char *)shmat(shmid, NULL, 0);
 
 	if (cp == (char *)-1) {
 		perror("shmat");

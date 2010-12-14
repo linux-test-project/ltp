@@ -34,12 +34,12 @@ int main(int argc, char **argv)
 		return PTS_PASS;
 	}
 
-	if ( interval.tv_sec == -1 ) {
+	if (interval.tv_sec == -1) {
 		printf("interval.tv_sec  not updated.\n");
 		return PTS_FAIL;
 	}
 	
-	if ( interval.tv_nsec == -1 ) {
+	if (interval.tv_nsec == -1) {
 		printf("interval.tv_nsec  not updated.\n");
 		return PTS_FAIL;
 	}
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 		return PTS_FAIL;
 	}
 
-	if (errno != 0 ) {
+	if (errno != 0) {
 		perror("Unexpected error");
 		return PTS_FAIL;
 	} else {
@@ -58,5 +58,3 @@ int main(int argc, char **argv)
 	}
 	
 }
-
-

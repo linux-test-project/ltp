@@ -12,6 +12,7 @@
  * (Linux 2.6.9 and later) and its RLIMIT_MEMLOCK soft resource limit set to 0.
  */
 
+#define _GNU_SOURCE 1 /* XXX: Read baloney below about CAP_* */
 #define _XOPEN_SOURCE 600
 
 #include <sys/mman.h>

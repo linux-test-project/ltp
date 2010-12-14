@@ -83,7 +83,7 @@
 
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, i;
 	sem_t *sems;
@@ -94,63 +94,63 @@ int main( int argc, char * argv[] )
 	/* Initialize output */
 	output_init();
 
-	max = sysconf( _SC_SEM_NSEMS_MAX );
+	max = sysconf(_SC_SEM_NSEMS_MAX);
 
 	if (max <= 0)
 	{
-		output( "sysconf( _SC_SEM_NSEMS_MAX ) = %ld\n", max );
-		UNTESTED( "There is no constraint on SEM_NSEMS_MAX" );
+		output("sysconf(_SC_SEM_NSEMS_MAX) = %ld\n", max);
+		UNTESTED("There is no constraint on SEM_NSEMS_MAX");
 	}
 
-	sems = ( sem_t * ) calloc( max, sizeof( sem_t ) );
+	sems = (sem_t *) calloc(max, sizeof(sem_t));
 
 	if (sems == NULL)
 	{
-		UNRESOLVED( errno, "Failed to alloc space" );
+		UNRESOLVED(errno, "Failed to alloc space");
 	}
 
 
 	for (i = 0; i < max; i++)
 	{
-		ret = sem_init( &sems[ i ], 0, 0 );
+		ret = sem_init(&sems[ i ], 0, 0);
 
 		if (ret != 0)
 		{
-			output( "sem_init failed to initialize the %d nth semaphore.\n", i );
-			output( "Tryed to initialize %ld.\n", max );
-			output( "Error is %d: %s\n", errno, strerror( errno ) );
+			output("sem_init failed to initialize the %d nth semaphore.\n", i);
+			output("Tryed to initialize %ld.\n", max);
+			output("Error is %d: %s\n", errno, strerror(errno));
 
 			for (; i > 0; i--)
-				sem_destroy( &sems[ i - 1 ] );
+				sem_destroy(&sems[i-1]);
 
-			free( sems );
+			free(sems);
 
 			PASSED;
 		}
 	}
 
-	ret = sem_init( &sem_last, 0, 1 );
+	ret = sem_init(&sem_last, 0, 1);
 
 	if (ret == 0)
 	{
-		FAILED( "We were able to sem_init more than SEM_NSEMS_MAX semaphores" );
+		FAILED("We were able to sem_init more than SEM_NSEMS_MAX semaphores");
 	}
 
 	if (errno != ENOSPC)
 	{
-		output( "Error is %d: %s\n", errno, strerror( errno ) );
+		output("Error is %d: %s\n", errno, strerror(errno));
 	}
 
 	for (i = 0; i < max; i++)
-		sem_destroy( &sems[ i ] );
+		sem_destroy(&sems[i]);
 
-	free( sems );
+	free(sems);
 
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

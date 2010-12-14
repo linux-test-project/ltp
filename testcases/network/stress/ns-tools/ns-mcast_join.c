@@ -182,7 +182,7 @@ parse_options(int argc, char *argv[])
     int optc;			/* option */
     unsigned long opt_ul;	/* option value in unsigned long */
 
-    while ((optc = getopt(argc, argv, "f:I:p:F:s:n:ml:i:a:dh")) != EOF ) {
+    while ((optc = getopt(argc, argv, "f:I:p:F:s:n:ml:i:a:dh")) != EOF) {
 	switch (optc) {
 	    case 'f':
 		if (optarg[0] == '4') {
@@ -339,7 +339,7 @@ join_group(void)
 	    fprintf(stderr, "multicast address is %s\n", maddr);
     }
 
-    for(idx = 0; idx < num_group; idx++) {
+    for (idx = 0; idx < num_group; idx++) {
 	if (is_multi_socket)
 	    sd = sock_array[idx];
 
@@ -416,7 +416,7 @@ join_group(void)
     if (sigaction(SIGHUP, &handler, NULL) < 0)
 	fatal_error("sigfillset()");
 
-    for(;;)
+    for (;;)
 	if (catch_sighup)
 	    break;
 }
@@ -459,13 +459,13 @@ join_leave_group(void)
     if (sigaction(SIGHUP, &handler, NULL) < 0)
 	fatal_error("sigfillset()");
 
-    for(cnt = 0; cnt < join_leave_times ; cnt++) {
+    for (cnt = 0; cnt < join_leave_times ; cnt++) {
 	/* Join */
 	if (setsockopt(sd, level, MCAST_JOIN_GROUP, grp_info,
 		    sizeof(struct group_req)) == -1)
 	    fatal_error("setsockopt(): Failed to join a group");
 
-	if(gsf)
+	if (gsf)
 	    if (setsockopt(sd, level, MCAST_MSFILTER, gsf,
 			GROUP_FILTER_SIZE(gsf->gf_numsrc)) == -1)
 		fatal_error("setsockopt(): Failed to add a group filter");
@@ -484,7 +484,7 @@ join_leave_group(void)
     }
 
     free(grp_info);
-    if(gsf)
+    if (gsf)
 	free(gsf);
     freeaddrinfo(maddr_info);
 }

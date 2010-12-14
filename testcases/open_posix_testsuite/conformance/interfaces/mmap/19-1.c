@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * [EBADF] The fildes argument is not a valid open file descriptor.
  * 
  */

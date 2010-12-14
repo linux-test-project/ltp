@@ -86,7 +86,7 @@ main(int argc, char *argv[])
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, 0, 0);
-	if (msg != (char *)NULL) {
+	if (msg != NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -290,7 +290,7 @@ so_test(struct soent *psoe)
 	static int sr = -1;
 	int st;
 
-	if (psoe->so_opt == -1 ) {
+	if (psoe->so_opt == -1) {
 		tst_resm(TBROK, "%s not present at compile time",
 			psoe->so_tname);
 		return;
@@ -313,7 +313,7 @@ so_test(struct soent *psoe)
 			strerror(errno));
 	}
 	if (setsockopt(sr, SOL_IPV6, psoe->so_opt, &psoe->so_clrval,
-	    psoe->so_valsize) < 0){
+	    psoe->so_valsize) < 0) {
 		tst_resm(TBROK, "%s: setsockopt: %s", psoe->so_tname,
 			strerror(errno));
 		return;

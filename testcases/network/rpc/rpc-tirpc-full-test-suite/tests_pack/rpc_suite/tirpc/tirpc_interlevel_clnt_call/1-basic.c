@@ -74,7 +74,7 @@ int main(int argn, char *argc[])
     client = clnt_tp_create_timed(argc[1], progNum,
                                   VERSNUM, (struct netconfig *)nconf, &tv);
                                   
-    if (client == (CLIENT *)NULL)
+    if (client == NULL)
     {
     	printf("5\n");
     	return 5;
