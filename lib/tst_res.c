@@ -641,8 +641,8 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	 */
 	if (func != NULL) {
 		(*func)();
+		tst_exit();
 	}
-	tst_exit();
 }
 
 
