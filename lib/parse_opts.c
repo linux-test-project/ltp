@@ -223,15 +223,11 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * vector.
      */
 
-<<<<<<< HEAD
-    if (STD_opt_arr != NULL) {
-=======
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD
     spawned_program_pid = getpid();
 #endif
 
     if ( STD_opt_arr != NULL ) {
->>>>>>> f4b7b4f00f2c5def7898c62f58d09b454eabd2ca
 	free(STD_opt_arr);
 	STD_opt_arr=NULL;
     }
