@@ -636,13 +636,12 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 
 	/*
 	 * If no cleanup function was specified, just return to the caller.
-	 * Otherwise call the specified function.  If specified function
-	 * returns, call tst_exit().
+	 * Otherwise call the specified function.
 	 */
 	if (func != NULL) {
 		(*func)();
-		tst_exit();
 	}
+	tst_exit();
 }
 
 
