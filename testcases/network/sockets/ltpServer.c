@@ -75,9 +75,9 @@ char hostname [MAX_HOSTNAME_LEN];
 char ServerProg [MAX_HOSTNAME_LEN];
 
 
-void ltp_udp_server_queue (void);
-void ltp_tcp_server_queue (void);
-void ltp_multi_server_queue (void);
+void* ltp_udp_server_queue (void*);
+void* ltp_tcp_server_queue (void*);
+void* ltp_multi_server_queue (void*);
 int  tcp_receive_buffer(int, char *);
 
 int main(int argc, char *argv[]) {
@@ -149,7 +149,8 @@ int main(int argc, char *argv[]) {
         }
 
         rc = pthread_attr_init(&multithread_attr);
-        rc = pthread_create(&multi_server_queue, &multithread_attr, NULL);
+        rc = pthread_create(&multi_server_queue, &multithread_attr,
+		ltp_multi_server_queue, NULL);
     }
 
 
@@ -203,14 +204,14 @@ int main(int argc, char *argv[]) {
     }
 
     rc = pthread_attr_init(&udpthread_attr);
-    rc = pthread_create(&udp_server_queue, &udpthread_attr, NULL);
+    rc = pthread_create(&udp_server_queue, &udpthread_attr,
+	    ltp_udp_server_queue, NULL);
 
     rc = pthread_attr_init(&tcpthread_attr);
-    rc = pthread_create(&tcp_server_queue, &tcpthread_attr, NULL);
+    rc = pthread_create(&tcp_server_queue, &tcpthread_attr,
+	    ltp_tcp_server_queue, NULL);
 
     while (1);
-
-
 
     return 0;
 }
@@ -218,7 +219,7 @@ int main(int argc, char *argv[]) {
  * Function:     ltp_udp_server_queue
  * Description:  This function grabs the udp message from the queue and outputs to stdio
  */
-void ltp_udp_server_queue ()
+void* ltp_udp_server_queue (void *junk)
 {
 
   printf("%s: waiting for data on port UDP %u\n", 
@@ -249,13 +250,15 @@ void ltp_udp_server_queue ()
     
   }/* end of server infinite loop */
 
+  return NULL;
+
 }
 
 /*
  * Function:     ltp_tcp_server_queue
  * Description:  This function grabs the tcp message from the queue and outputs to stdio
  */
-void ltp_tcp_server_queue ()
+void* ltp_tcp_server_queue (void *junk)
 {
 
     listen(tcpSocketHandle,5);
@@ -293,6 +296,8 @@ void ltp_tcp_server_queue ()
       printf("looping in TCP \n");
 
     } /* while (1) */
+
+    return NULL;
 
 }
 /*
@@ -365,12 +370,13 @@ int tcp_receive_buffer(int newSocket, char *return_buffer) {
     } 
 
   } /* while */
+
 }
 /*
  * Function:     ltp_multi_server_queue
  * Description:  This function grabs the multiCast message from the queue and outputs to stdio
  */
-void ltp_multi_server_queue ()
+void* ltp_multi_server_queue (void *junk)
 {
 
     printf("%s: waiting for data on port Multicast %u\n", 
@@ -394,5 +400,7 @@ void ltp_multi_server_queue ()
                message);
 
     }/* end of infinite server loop */
+
+    return NULL;
 
 }
