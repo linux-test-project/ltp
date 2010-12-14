@@ -121,7 +121,7 @@ EOF
 	fi
 
 	cat >> "$makefile.2" <<EOF
-INSTALL_TARGETS+=	${prereq_cache}
+INSTALL_TARGETS+=	${tests}
 MAKE_TARGETS+=		${make_target_prereq_cache}
 
 EOF
