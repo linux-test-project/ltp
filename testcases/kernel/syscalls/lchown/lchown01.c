@@ -79,7 +79,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define TESTFILE	"testfile"
 #define SFILE		"slink_file"
 
@@ -110,16 +110,13 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int ind;		/* counter variable for chmod(2) tests */
-	uid_t User_id;		/* user id of the user set for testfile */
-	gid_t Group_id;		/* group id of the user set for testfile */
+	uid_t user_id;		/* user id of the user set for testfile */
+	gid_t group_id;		/* group id of the user set for testfile */
 	char *test_desc;	/* test specific message */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	/* Perform global setup for test */
 	setup();
@@ -131,15 +128,15 @@ int main(int ac, char **av)
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			test_desc = Test_cases[ind].desc;
-			User_id = Test_cases[ind].user_id;
-			Group_id = Test_cases[ind].group_id;
+			user_id = Test_cases[ind].user_id;
+			group_id = Test_cases[ind].group_id;
 
 			/*
 			 * Call lchwon(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * symlink of testfile.
 			 */
-			TEST(lchown(SFILE, User_id, Group_id));
+			TEST(lchown(SFILE, user_id, group_id));
 
 			/* check return code of lchown(2) */
 			if (TEST_RETURN == -1) {
@@ -162,23 +159,23 @@ int main(int ac, char **av)
 						 "%s failed, errno:%d",
 						 SFILE, TEST_ERRNO);
 				}
-				if (User_id == -1) {
-					User_id = Test_cases[ind - 1].user_id;
+				if (user_id == -1) {
+					user_id = Test_cases[ind-1].user_id;
 				}
-				if (Group_id == -1) {
-					Group_id = Test_cases[ind - 1].group_id;
+				if (group_id == -1) {
+					group_id = Test_cases[ind-1].group_id;
 				}
 
 				/*
 				 * Check for expected Ownership ids
 				 * set on testfile.
 				 */
-				if ((stat_buf.st_uid != User_id) ||
-				    (stat_buf.st_gid != Group_id)) {
+				if ((stat_buf.st_uid != user_id) ||
+				    (stat_buf.st_gid != group_id)) {
 					tst_resm(TFAIL,
 						 "%s: Incorrect ownership set, "
 						 "Expected %d %d", SFILE,
-						 User_id, Group_id);
+						 user_id, group_id);
 				} else {
 					tst_resm(TPASS, "lchown() succeeds to "
 						 "%s of %s", test_desc, SFILE);
@@ -192,7 +189,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -221,21 +218,16 @@ void setup()
 	tst_tmpdir();
 
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK, cleanup, "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE, FILE_MODE);
 	}
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
 	}
 
 	/* Create a symlink for testfile created */
 	if (symlink(TESTFILE, SFILE) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "symlink() of %s Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
+		tst_brkm(TBROK, cleanup, "symlink() of %s failed", TESTFILE);
 	}
 }
 
@@ -253,7 +245,4 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
