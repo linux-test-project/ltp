@@ -97,5 +97,5 @@ int main(int argc, char **argv)
 	printf (" %d", error);
 
 	printf("\n");
-	return 0;
+	tst_exit();
 }

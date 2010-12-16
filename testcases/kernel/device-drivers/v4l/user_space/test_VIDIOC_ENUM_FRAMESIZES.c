@@ -293,7 +293,6 @@ static void do_test_VIDIOC_ENUM_FRAMESIZES_type_invalid_index(enum v4l2_buf_type
 
 }
 
-
 void test_VIDIOC_ENUM_FRAMESIZES_invalid_index() {
 	do_test_VIDIOC_ENUM_FRAMESIZES_type_invalid_index(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_test_VIDIOC_ENUM_FRAMESIZES_type_invalid_index(V4L2_BUF_TYPE_VIDEO_OUTPUT);

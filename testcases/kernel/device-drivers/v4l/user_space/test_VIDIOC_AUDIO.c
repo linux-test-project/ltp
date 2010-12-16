@@ -397,7 +397,6 @@ void test_VIDIOC_S_AUDIO_S32_MAX_1() {
 	}
 }
 
-
 void test_VIDIOC_S_AUDIO_U32_MAX() {
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;

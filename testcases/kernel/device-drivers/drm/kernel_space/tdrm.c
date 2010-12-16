@@ -46,7 +46,6 @@
 #define DRIVER_DESC		"drm test mode"
 #define DRIVER_DATE		"20030903"
 
-
 static drm_pci_list_t DRM(idlist)[] = {
 	{ PCI_ANY_ID, PCI_ANY_ID },
 	{ 0, 0 }
@@ -183,5 +182,3 @@ __setup(DRIVER_NAME "=", tdrm_options);
 #include "drm_vm.h"
 #include "drm_stub.h"
 #include "drm_agpsupport.h"
-
-

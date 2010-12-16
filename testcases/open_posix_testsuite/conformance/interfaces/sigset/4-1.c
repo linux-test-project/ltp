@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program tests the assertion that the signal will be added to the
@@ -37,10 +37,10 @@ int main()
         }
 
 	raise(SIGCHLD);
-	
+
 	if (signal_blocked != 1) {
 		printf("Test FAILED: handler was called even though default was expected\n");
 		return PTS_FAIL;
-	}		
+	}
 	return PTS_PASS;
-} 
+}

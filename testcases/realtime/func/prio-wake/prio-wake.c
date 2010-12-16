@@ -26,11 +26,11 @@
  *        (by default, num worker threads = num cpus)
  *      - Create a master thread
  *      - The time the worker thread starts running is noted. Each of the
- *	  worker threads then waits on the same _condvar_. The time it 
+ *	  worker threads then waits on the same _condvar_. The time it
  *	  wakes up also noted.
  *      - Once all the threads finish execution, the start and wakeup times
  *        of all the threads is displayed.
- *      - The output must indicate that the thread wakeup happened in a 
+ *      - The output must indicate that the thread wakeup happened in a
  *	  priority order.
  *
  * USAGE:
@@ -113,7 +113,6 @@ void *master_thread(void* arg)
 	 * in the unlocked broadcast case. */
 	usleep(1000);
 
-
 	start = rt_gettime() - beginrun;
 
 	printf("%08lld us: Master thread about to wake the workers\n", start/NS_PER_US);
@@ -136,7 +135,6 @@ void *worker_thread(void* arg)
 	int j;
 	nsec_t start, wake;
 	j = (intptr_t)arg;
-
 
 	if (pthread_getschedparam(pthread_self(), &policy, &sched_param) != 0)  {
 		printf("ERR: Couldn't get pthread info. Priority value wrong\n");
@@ -161,7 +159,6 @@ void *worker_thread(void* arg)
 
 	return NULL;
 }
-
 
 int main(int argc, char* argv[])
 {

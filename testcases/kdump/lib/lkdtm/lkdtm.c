@@ -325,7 +325,6 @@ int lkdtm_module_init(void)
 #endif /* USE_SYMBOL_NAME */
 		break;
 
-
 	case INT_HW_IRQ_EN:
 
 #ifdef USE_SYMBOL_NAME

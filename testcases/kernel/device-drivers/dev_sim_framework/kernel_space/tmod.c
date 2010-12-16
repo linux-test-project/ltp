@@ -63,7 +63,6 @@ static struct file_operations tmod_fops = {
         ioctl: tmod_ioctl,
 };
 
-
 /*
  * open and close operations, just return 0 for
  * your test modules, need them for the file
@@ -77,13 +76,12 @@ static int tmod_close(struct inode *ino, struct file *f) {
         return 0;
 }
 
-
 /*
  * tmod_ioctl:
  *      a user space program can drive the test functions
  *      through a call to ioctl once the correct file
  *      descriptor has been attained
- * 
+ *
  * 	in user space the file descriptor that you attain
  * 	will represent the inode and file pointers in
  * 	the kernel ioctl function, and only 3 variables
@@ -138,7 +136,6 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
                         return(-ENOMEM);
                 }
         }
-
 
 	/*
 	 * Use a switch statement to determine which function
@@ -195,7 +192,6 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	return rc;
 }
 
-
 /*
  * test functions can go here or in a seperate file,
  * remember that the makefile will have to be  modified
@@ -222,9 +218,6 @@ static int test_option() {
 
 	return 0;
 }
-
-
-
 
 /*
  * tmod_init_module
@@ -269,7 +262,6 @@ static void tmod_exit_module(void) {
                 printk("tmod: unregister success\n");
 
 }
-
 
 /* specify what that init is run when the module is first
 loaded and that exit is run when it is removed */

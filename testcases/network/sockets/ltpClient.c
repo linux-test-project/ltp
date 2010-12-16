@@ -40,7 +40,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
-#include <string.h> 
+#include <string.h>
 #include <sys/time.h>
 
 #define LOCAL_UDP_SERVER_PORT   10000
@@ -84,12 +84,12 @@ void ltp_traceroute           (struct sockaddr_in *rawTraceAddr, char * hostName
 ********************************************************************/
 int main(int argc, char *argv[]) {
 
-    int udpSocketHandle, 
+    int udpSocketHandle,
         tcpSocketHandle,
         mcastSocketHandle,
         rc, i;
 
-    struct sockaddr_in   udpClientAddr, 
+    struct sockaddr_in   udpClientAddr,
                          udpRemoteServerAddr,
                          tcpClientAddr,
                          tcpRemoteServerAddr,
@@ -228,8 +228,8 @@ int main(int argc, char *argv[]) {
     for (i = 3; i < argc; i++) {
 
         if (udpSocketHandle > 0) {
-            rc = sendto(udpSocketHandle, argv[i], strlen(argv[i])+1, 0, 
-                        (struct sockaddr *) &udpRemoteServerAddr, 
+            rc = sendto(udpSocketHandle, argv[i], strlen(argv[i])+1, 0,
+                        (struct sockaddr *) &udpRemoteServerAddr,
                         sizeof(udpRemoteServerAddr));
 
             if (rc < 0) {
@@ -274,9 +274,6 @@ int main(int argc, char *argv[]) {
 
     ltp_run_ping_tests(hostName);
 
-
-
-
     return 0;
 
 }
@@ -287,12 +284,11 @@ int main(int argc, char *argv[]) {
 ******************************************************************************/
 int ltp_run_traceroute_tests(char * hostName)
 
-{ 
+{
 
     struct hostent    *hostEntry;
     struct sockaddr_in rawTraceAddr;
     int    pid = -1;
-
 
     pid = getpid();
 
@@ -310,17 +306,16 @@ int ltp_run_traceroute_tests(char * hostName)
     return 0;
 }
 /**********************************************************************
-* Function: ltp_run_ping_tests - host look up and start ping processes 
+* Function: ltp_run_ping_tests - host look up and start ping processes
 *
 ***********************************************************************/
 int ltp_run_ping_tests(char * hostName)
 
-{ 
+{
 
     struct hostent    *hostEntry;
     struct sockaddr_in rawAddr;
     int    pid = -1;
-
 
     pid = getpid();
 
@@ -340,7 +335,6 @@ int ltp_run_ping_tests(char * hostName)
 
     }
 
-
     return 0;
 }
 
@@ -349,7 +343,7 @@ int ltp_run_ping_tests(char * hostName)
 *
 *******************************************************************************/
 int network_listener(char * hostName, int pid)
-{   
+{
 
     int                  rawSocket,
                          count,
@@ -367,9 +361,9 @@ int network_listener(char * hostName, int pid)
     }
 
     while (1)  /* loop forever */
-    {   
+    {
 
-        int bytes; 
+        int bytes;
         socklen_t len = sizeof(rawAddr);
 
         memset(packet, 0, sizeof(packet));
@@ -393,11 +387,11 @@ int network_listener(char * hostName, int pid)
 }
 
 /****************************************************************
-* Function: checksum - standard 1s complement checksum                   
+* Function: checksum - standard 1s complement checksum
 *
 *****************************************************************/
 unsigned short checksum(void *netPacket, int len)
-{	
+{
 
     unsigned short *packetPtr = netPacket,
                     result;
@@ -421,11 +415,11 @@ unsigned short checksum(void *netPacket, int len)
 }
 
 /*****************************************************************
-* Function: output_to_display - Output to display info. from the                        
+* Function: output_to_display - Output to display info. from the
 *                               listener
 ******************************************************************/
 void output_to_display(void *netPacket, int bytes, int pid)
-{	
+{
 
     int i;
 	struct iphdr *ip = netPacket;
@@ -436,7 +430,7 @@ void output_to_display(void *netPacket, int bytes, int pid)
 
 	for (i = 0; i < bytes; i++)
 	{
-		if (!(i & 15)) { 
+		if (!(i & 15)) {
             printf("\n[%d]:  ", i);
         }
 
@@ -463,16 +457,16 @@ void output_to_display(void *netPacket, int bytes, int pid)
 	}
 }
 /***********************************************************************
-* Function: ping_network - Build a message and send it.                          
+* Function: ping_network - Build a message and send it.
 *
 *
 ***********************************************************************/
 void ping_network(struct sockaddr_in *rawAddr, int pid)
-{	
+{
 
     const int value = TIMETOLIVE;
-	int       i, 
-              rawSocket, 
+	int       i,
+              rawSocket,
               count = 1;
 
 	struct packet rawPacket;
@@ -498,7 +492,7 @@ void ping_network(struct sockaddr_in *rawAddr, int pid)
 		printf("ERROR: Failed request nonblocking I/O");
     }
 
-	while (1) {	
+	while (1) {
 
         socklen_t       msgLength=sizeof(r_addr);
 
@@ -534,8 +528,8 @@ void ping_network(struct sockaddr_in *rawAddr, int pid)
 }
 
 /**********************************************************************
-*  Function: ltp_traceroute 
-*                      try to reach the destination       
+*  Function: ltp_traceroute
+*                      try to reach the destination
 *                      while outputting hops along the route
 ***********************************************************************/
 void ltp_traceroute(struct sockaddr_in *rawTraceAddr, char * hostName, int pid)
@@ -551,7 +545,6 @@ void ltp_traceroute(struct sockaddr_in *rawTraceAddr, char * hostName, int pid)
     struct hostent     *hostEntry2;
     struct in_addr      tmp_addr;
 
-
     printf("\n************** -- Trace Route Tests - **********************************************\n");
 
     rawTraceSocket = socket(PF_INET, SOCK_RAW, protocol->p_proto);
@@ -566,7 +559,7 @@ void ltp_traceroute(struct sockaddr_in *rawTraceAddr, char * hostName, int pid)
         printf("ERROR: Setting socket options");
 
     do
-    {   
+    {
         struct iphdr       *ip;
         length = sizeof(rawReceiveAddr);
 
@@ -588,14 +581,13 @@ void ltp_traceroute(struct sockaddr_in *rawTraceAddr, char * hostName, int pid)
         rawTracePacket.hdr.un.echo.sequence = count++;
         rawTracePacket.hdr.checksum = checksum(&rawTracePacket, sizeof(rawTracePacket));
 
-        
         if (sendto(rawTraceSocket, &rawTracePacket, sizeof(rawTracePacket), 0, (struct sockaddr*)rawTraceAddr, sizeof(*rawTraceAddr)) <= 0) {
 			printf("ERROR: sendto failed !!");
         }
         sleep(1);
-        
+
         if (recvfrom(rawTraceSocket, tracePacket, sizeof(tracePacket), MSG_DONTWAIT, (struct sockaddr*)&rawReceiveAddr, &length) > 0)
-        {   
+        {
             ip = (void*)tracePacket;
 
             tmp_addr.s_addr = ip->saddr;
@@ -619,5 +611,3 @@ void ltp_traceroute(struct sockaddr_in *rawTraceAddr, char * hostName, int pid)
 
     close(rawTraceSocket);
 }
-
-

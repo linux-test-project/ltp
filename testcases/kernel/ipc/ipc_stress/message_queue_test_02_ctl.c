@@ -50,7 +50,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -66,7 +65,6 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 
-
 /*
  * Defines
  *
@@ -75,7 +73,6 @@
 #define DEFAULT_PROJECT_NAME 	"/tmp/message_queue_test"
 #define DEFAULT_PROJECT_ID	20
 #define USAGE	"\nUsage: %s [-f project_name ] [-i project_id ] {-r | -s}\n\n"
-
 
 /*
  * Function prototypes
@@ -87,7 +84,6 @@
 static void parse_args (int, char **);
 static void sys_error (const char *, int);
 static void error (const char *, int);
-
 
 /*
  * Global variables
@@ -159,7 +155,6 @@ int main (int argc, char **argv)
 	exit(0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
 | ==================================================================== |
@@ -219,7 +214,6 @@ static void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -234,7 +228,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

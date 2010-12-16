@@ -31,7 +31,6 @@ static unsigned invalidpri[NUMINVALID] = {
 		MQ_PRIO_MAX, MQ_PRIO_MAX+1, MQ_PRIO_MAX+5
 };
 
-
 int main()
 {
         char qname[NAMESIZE];
@@ -51,7 +50,7 @@ int main()
 	ts.tv_sec=time(NULL)+1;
 	ts.tv_nsec=0;
 	for (i=0; i<NUMINVALID; i++) {
-        	if (mq_timedsend(queue, msgptr, 
+        	if (mq_timedsend(queue, msgptr,
 				strlen(msgptr), invalidpri[i], &ts)== 0) {
                 	printf("mq_timedsend() ret success on invalid %d\n",
 				invalidpri[i]);
@@ -87,4 +86,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

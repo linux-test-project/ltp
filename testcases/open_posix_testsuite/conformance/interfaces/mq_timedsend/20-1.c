@@ -71,7 +71,7 @@ int main()
 
 	currsec = time(NULL);
 
-	ts.tv_sec=currsec+TIMEOUT; 
+	ts.tv_sec=currsec+TIMEOUT;
 	ts.tv_nsec=0;
 
 	/*
@@ -85,7 +85,7 @@ int main()
 	alarm(TIMEOUT+1);
 
 	for (i=0; i<MAXMSG+1; i++) {
-        	if (mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts) 
+        	if (mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts)
 								== -1) {
 			maxreached=1;
 			if (errno != ETIMEDOUT) {
@@ -121,4 +121,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

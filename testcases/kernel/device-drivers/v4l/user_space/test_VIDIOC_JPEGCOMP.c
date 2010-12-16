@@ -45,7 +45,6 @@ static int valid_jpeg_markers(__u32 jpeg_markers) {
 	return valid;
 }
 
-
 void test_VIDIOC_G_JPEGCOMP() {
 	struct v4l2_jpegcompression jpegcomp;
 	int ret_get, errno_get;

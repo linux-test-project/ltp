@@ -70,7 +70,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Call statvfs(2) */
@@ -84,7 +83,7 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "statvfs(%s, ...) passed");
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	tst_resm(TINFO, "This call is similar to statfs");
 	tst_resm(TINFO, "Extracting info about the '%s' file system",
@@ -98,7 +97,7 @@ int main(int ac, char **av)
 	tst_resm(TINFO, "file system max filename length = %lu", buf.f_namemax);
 
 	cleanup();
-	tst_exit();
+
 }
 
 /***************************************************************
@@ -106,10 +105,9 @@ int main(int ac, char **av)
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

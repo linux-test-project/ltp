@@ -40,7 +40,7 @@ int main()
 	/*
 	 * Open queue qname again with O_CREAT and O_EXCL set
 	 */
-	queue2 = mq_open(qname, O_CREAT |O_EXCL|O_RDWR, 
+	queue2 = mq_open(qname, O_CREAT |O_EXCL|O_RDWR,
 			S_IRUSR | S_IWUSR, NULL);
         if (queue2 != (mqd_t)-1) {
                 printf("mq_open() should have failed with O_CREAT and \n");
@@ -55,7 +55,7 @@ int main()
 #ifdef DEBUG
 	printf("mq_open() failed as expected\n");
 #endif
-	
+
 	if (errno != EEXIST) {
 		printf("errno != EEXIST\n");
 		printf("Test FAILED\n");
@@ -74,4 +74,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

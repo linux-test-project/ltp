@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * Test that timers are not allowed to expire before their scheduled
@@ -36,7 +36,7 @@
 
 #define NUMTESTS 6
 
-static int timeroffsets[NUMTESTS][2] = { {0, 90000000}, {1, 0}, 
+static int timeroffsets[NUMTESTS][2] = { {0, 90000000}, {1, 0},
 					{1, 30000000}, {2, 0},
 					{3, 5000}, {4, 5} };
 
@@ -92,38 +92,38 @@ int main(int argc, char *argv[])
 		}
 
 		if (tsbefore.tv_nsec + timeroffsets[i][1] < 1000000000) {
-			its.it_value.tv_sec = tsbefore.tv_sec + 
+			its.it_value.tv_sec = tsbefore.tv_sec +
 						timeroffsets[i][0];
-			its.it_value.tv_nsec = tsbefore.tv_nsec + 
+			its.it_value.tv_nsec = tsbefore.tv_nsec +
 						timeroffsets[i][1];
 		} else {
-			its.it_value.tv_sec = tsbefore.tv_sec + 
+			its.it_value.tv_sec = tsbefore.tv_sec +
 						timeroffsets[i][0] + 1;
-			its.it_value.tv_nsec = tsbefore.tv_nsec + 
+			its.it_value.tv_nsec = tsbefore.tv_nsec +
 						timeroffsets[i][1] -
 						1000000000;
 		}
 
-		printf("Test for value %d sec %d nsec\n", 
+		printf("Test for value %d sec %d nsec\n",
 				(int) its.it_value.tv_sec,
 				(int) its.it_value.tv_nsec);
-		
+
 		if (timer_settime(tid, flags, &its, NULL) != 0) {
 			perror("timer_settime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
-	
+
 		if (sigwait(&set, &sig) == -1) {
 			perror("sigwait() failed\n");
 			return PTS_UNRESOLVED;
 		}
-	
+
 		if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
 			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
-	
-		printf("Timer expired %d sec %d nsec\n", 
+
+		printf("Timer expired %d sec %d nsec\n",
 				(int) tsafter.tv_sec,
 				(int) tsafter.tv_nsec);
 		if (tsafter.tv_sec < its.it_value.tv_sec) {

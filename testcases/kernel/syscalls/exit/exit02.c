@@ -190,15 +190,13 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(filen, "tfile_%d", getpid());
@@ -224,5 +222,5 @@ void cleanup(void)
 	/*
 	 * exit with return code appropriate for results
 	 */
-	tst_exit();
+
 }

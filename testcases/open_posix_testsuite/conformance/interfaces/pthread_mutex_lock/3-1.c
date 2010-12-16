@@ -14,35 +14,33 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
- 
- 
- * This sample test aims to check the following assertion:
- * The function does not return an error code of EINTR 
 
+ * This sample test aims to check the following assertion:
+ * The function does not return an error code of EINTR
 
  * The steps are:
- * 
+ *
  * -> Create a thread which loops on pthread_mutex_lock and pthread_mutex_unlock
  *      operations.
  * -> Create another thread which loops on sending a signal to the first thread.
- * 
- * 
+ *
+ *
  */
 
- /* 
+ /*
   * - adam.li@intel.com 2004-05-13
-  *   Add to PTS. Please refer to http://nptl.bullopensource.org/phpBB/ 
+  *   Add to PTS. Please refer to http://nptl.bullopensource.org/phpBB/
   *   for general information
   */
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
 #endif
- 
+
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -54,27 +52,27 @@
  #include <stdlib.h>
  #include <stdio.h>
  #include <stdarg.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -83,7 +81,7 @@
 /********************************************************************************************/
 #define WITH_SYNCHRO
 #ifndef VERBOSE
-#define VERBOSE 1 
+#define VERBOSE 1
 #endif
 
 /********************************************************************************************/
@@ -99,7 +97,7 @@ unsigned long count_sig=0;
 #endif
 sem_t semsync;
 
-typedef struct 
+typedef struct
 {
 	pthread_t   	*thr;
 	int	sig;
@@ -124,9 +122,9 @@ void * sendsig (void * arg)
 
 		if ((ret = pthread_kill (*(thearg->thr), thearg->sig)))
 		{ UNRESOLVED(ret, "Pthread_kill in sendsig"); }
-		
+
 	}
-	
+
 	return NULL;
 }
 
@@ -143,7 +141,7 @@ void sighdl2(int sig)
 #ifdef WITH_SYNCHRO
 	if ((sem_post(&semsig2)))
 	{ UNRESOLVED(errno, "Sem_post in signal handler 2"); }
-#endif	
+#endif
 }
 
 /* The following function loops on init/destroy some mutex (with different attributes)
@@ -155,7 +153,7 @@ void * threaded(void * arg)
 	pthread_mutex_t m[5];
 	int i;
 	int ret;
-	
+
 	/* We need to register the signal handlers */
 	struct sigaction sa;
 	sigemptyset (&sa.sa_mask);
@@ -166,17 +164,17 @@ void * threaded(void * arg)
 	sa.sa_handler = sighdl2;
 	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
 	{ UNRESOLVED(ret, "Unable to register signal handler2"); }
- 	
+
 	/* Initialize the different mutex */
 	pma[4]=NULL;
-	
+
 	for (i=0; i<4; i++)
 	{
 		pma[i]=&ma[i];
 		if ((ret = pthread_mutexattr_init(pma[i])))
 		{ UNRESOLVED(ret, "pthread_mutexattr_init"); }
 	}
-	
+
 	#ifndef WITHOUT_XOPEN
 		if ((ret = pthread_mutexattr_settype(pma[0], PTHREAD_MUTEX_NORMAL)))
 		{ UNRESOLVED(ret, "pthread_mutexattr_settype (normal)"); }
@@ -208,7 +206,7 @@ void * threaded(void * arg)
 		}
 	}
 	/* The mutex are ready, we will loop on lock/unlock now */
-		
+
 	while (do_it)
 	{
 		for (i=0; i<5; i++)
@@ -271,13 +269,13 @@ void * threaded(void * arg)
 			UNRESOLVED(ret, "pthread_mutex_destroy failed");
 		}
 	}
-	
+
 	do {
 		ret = sem_wait(&semsync);
 	} while (ret && (errno ==  EINTR));
 	if (ret)
 	{ UNRESOLVED(errno, "Could not wait for sig senders termination"); }
-	
+
 	return NULL;
 }
 
@@ -287,7 +285,7 @@ int main (int argc, char * argv[])
 	int ret;
 	pthread_t th_work, th_sig1, th_sig2;
 	thestruct arg1, arg2;
-	
+
 	output_init();
 
 	#ifdef WITH_SYNCHRO
@@ -299,7 +297,7 @@ int main (int argc, char * argv[])
 	if ((sem_init(&semsig2, 0, 1)))
 	{ UNRESOLVED(errno, "Semsig2  init"); }
 	#endif
-	
+
 	if ((sem_init(&semsync, 0, 0)))
 	{ UNRESOLVED(errno, "semsync init"); }
 
@@ -308,7 +306,7 @@ int main (int argc, char * argv[])
 	#endif
 	if ((ret = pthread_create(&th_work, NULL, threaded, NULL)))
 	{ UNRESOLVED(ret, "Worker thread creation failed"); }
-	
+
 	arg1.thr = &th_work;
 	arg2.thr = &th_work;
 	arg1.sig = SIGUSR1;
@@ -317,7 +315,7 @@ int main (int argc, char * argv[])
 	arg1.sem = &semsig1;
 	arg2.sem = &semsig2;
 #endif
-	
+
 	#if VERBOSE >1
 	output("Starting the signal sources\n");
 	#endif
@@ -325,20 +323,20 @@ int main (int argc, char * argv[])
 	{ UNRESOLVED(ret, "Signal 1 sender thread creation failed"); }
 	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *)&arg2)))
 	{ UNRESOLVED(ret, "Signal 2 sender thread creation failed"); }
-	
+
 	/* Let's wait for a while now */
 	#if VERBOSE >1
 	output("Let the worker be killed for a second\n");
 	#endif
 	sleep(1);
-	
+
 	/* Now stop the threads and join them */
 	#if VERBOSE >1
 	output("Stop everybody\n");
 	#endif
 	do { do_it=0; }
 	while (do_it);
-	
+
 	if ((ret = pthread_join(th_sig1, NULL)))
 	{ UNRESOLVED(ret, "Signal 1 sender thread join failed"); }
 	if ((ret = pthread_join(th_sig2, NULL)))
@@ -349,7 +347,7 @@ int main (int argc, char * argv[])
 	#endif
 	if ((sem_post(&semsync)))
 	{ UNRESOLVED(errno, "could not post semsync"); }
-	
+
 	if ((ret = pthread_join(th_work, NULL)))
 	{ UNRESOLVED(ret, "Worker thread join failed"); }
 
@@ -358,7 +356,7 @@ int main (int argc, char * argv[])
 	output("  %d mutex lock and unlock were done.\n", count_ope);
 	#ifdef WITH_SYNCHRO
 	output("  %d signals were sent meanwhile.\n", count_sig);
-	#endif 
-	#endif	
+	#endif
+	#endif
 	PASSED;
 }

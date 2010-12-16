@@ -1,4 +1,4 @@
-/* 
+/*
    Test for the existence and valid prototype
    of the mq_getattr function as specified on
    line 9685 of the Base Definitions document

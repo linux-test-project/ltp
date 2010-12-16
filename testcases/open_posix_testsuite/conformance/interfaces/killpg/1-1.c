@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002-3, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- *  Test that the killpg() function shall send signal sig to the process 
+ *  Test that the killpg() function shall send signal sig to the process
     group specified by prgp.
     Steps:
  *  1. Set up a signal handler for the signal that says we have caught the
@@ -61,4 +61,3 @@ int main()
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
-

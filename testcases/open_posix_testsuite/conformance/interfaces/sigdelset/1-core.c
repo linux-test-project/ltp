@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
    Test that sigdelset() will remove signo to the set signal set.
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	if ('0' == argv[1][0]) {
 		if (sigemptyset(&signalset) == -1) {
 			perror("sigemptyset failed -- test aborted");
-			return PTS_UNRESOLVED;		
+			return PTS_UNRESOLVED;
 		}
 	} else if ('1' == argv[1][0]) {
 			if (sigfillset(&signalset) == -1) {

@@ -37,7 +37,6 @@
 #include "test.h"
 #include "usctest.h"
 
-
 char *TCID="hangup01";            /* Test program identifier.    */
 int TST_TOTAL=5;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
@@ -83,8 +82,6 @@ cleanup(void)
 		}
 
 	}
-
-	tst_exit();
 
 }
 
@@ -145,7 +142,7 @@ parent(int masterfd, int childpid)
 			default:
 				tst_brkm(TFAIL, cleanup,
 					"unexpected data message");
-				
+
 			}
 		}
 	}
@@ -157,7 +154,6 @@ parent(int masterfd, int childpid)
 	tst_resm((status == 0 ? TPASS : TFAIL),
 		"child process exited with status %d", status);
 }
-
 
 /*
  * Child process for hangup test.  Write three messages to the slave
@@ -250,6 +246,6 @@ int main(int argc, char **argv)
 	}
 /*--------------------------------------------------------------------*/
 	cleanup();
-	
-	return 0;
+
+	tst_exit();
 }

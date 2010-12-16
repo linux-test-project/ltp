@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * Test that timer_settime() sets errno = EINVAL if:
@@ -26,14 +26,14 @@
 #define SIGTOTEST SIGALRM
 #define NUMTESTS 20
 
-/*   
+/*
  * Each test listed in the multidimensional array.
  * element 0 - value.it_value.tv_sec
  * element 1 - value.it_value.tv_nsec
  * element 2 - value.it_interval.tv_sec
  * element 3 - value.it_interval.tv_nsec
  */
-static int testlist[NUMTESTS][4] = { 
+static int testlist[NUMTESTS][4] = {
 	{1, -1, 0, 0},			// value.it_value.tv_nsec < 0
 	{1, -2147483647, 0, 0},		// value.it_value.tv_nsec < 0
 	{1, -1073743192, 0, 0},		// value.it_value.tv_nsec < 0
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		its.it_value.tv_nsec = testlist[i][1];
 		its.it_interval.tv_sec = testlist[i][2];
 		its.it_interval.tv_nsec = testlist[i][3];
-	
+
 		printf("it_value: %d sec %d nsec\n",
 				(int) its.it_value.tv_sec,
 				(int) its.it_value.tv_nsec);

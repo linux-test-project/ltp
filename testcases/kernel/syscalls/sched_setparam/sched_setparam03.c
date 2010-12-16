@@ -98,13 +98,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		switch (child_pid = FORK_OR_VFORK()) {
@@ -148,24 +145,20 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "Test Failed");
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 	struct sched_param p = { 1 };
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Change scheduling policy to SCHED_FIFO */
@@ -173,7 +166,7 @@ void setup()
 		tst_brkm(TBROK, cleanup, "sched_setscheduler() failed");
 	}
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -   performs all ONE TIME cleanup for this test at
@@ -187,7 +180,7 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-}				/* End cleanup() */
+}
 
 /*
  * verify_priority() -  This function checks whether the priority is

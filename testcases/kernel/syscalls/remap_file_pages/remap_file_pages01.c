@@ -134,13 +134,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		test_nonlinear(fd1);
@@ -153,7 +150,6 @@ int main(int ac, char **av)
 	/* clean up and exit */
 	cleanup();
 
-	tst_exit();
 }
 
 /* test case function, that runs remap_file_pages */
@@ -231,13 +227,11 @@ static void test_nonlinear(int fd)
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get page size */
@@ -271,7 +265,7 @@ void setup()
 			 "cache", errno, strerror(errno));
 	}
 
-}				/* End setup() */
+}
 
 /*
 * cleanup() - Performs one time cleanup for this test at
@@ -295,10 +289,6 @@ void cleanup(char *data)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files inside it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}				/* End cleanup() */
+}

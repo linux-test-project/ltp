@@ -36,8 +36,8 @@
  *    Sridhar Samudrala <sri@us.ibm.com>
  */
 
-/* This is a Functional test to verify the new SCTP interface sctp_peeloff() 
- * that can be used to branch off an association into a separate socket. 
+/* This is a Functional test to verify the new SCTP interface sctp_peeloff()
+ * that can be used to branch off an association into a separate socket.
  */
 
 #include <stdio.h>
@@ -62,7 +62,7 @@ int
 main(int argc, char *argv[])
 {
 	int svr_sk, clt_sk[MAX_CLIENTS], peeloff_sk[MAX_CLIENTS];
-	sctp_assoc_t svr_associd[MAX_CLIENTS], clt_associd[MAX_CLIENTS]; 
+	sctp_assoc_t svr_associd[MAX_CLIENTS], clt_associd[MAX_CLIENTS];
 	sockaddr_storage_t svr_loop, clt_loop[MAX_CLIENTS];
 	struct iovec iov;
 	struct msghdr inmessage;
@@ -81,10 +81,10 @@ main(int argc, char *argv[])
         char *message = "hello, world!\n";
 	int pf_class;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 #if TEST_V6
 	pf_class = PF_INET6;
@@ -125,8 +125,8 @@ main(int argc, char *argv[])
 		test_enable_assoc_change(clt_sk[i]);
 	}
 
-        /* Send the first message from all the clients to the server.  This 
-	 * will create the associations.  
+        /* Send the first message from all the clients to the server.  This
+	 * will create the associations.
 	 */
 	outmessage.msg_name = &svr_loop;
 	outmessage.msg_namelen = sizeof(svr_loop);
@@ -143,7 +143,7 @@ main(int argc, char *argv[])
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
 	ppid = rand(); /* Choose an arbitrary value. */
-	stream = 1; 
+	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
 	outmessage.msg_iov->iov_base = message;
@@ -151,10 +151,10 @@ main(int argc, char *argv[])
 	for (i = 0; i < MAX_CLIENTS; i++)
 		test_sendmsg(clt_sk[i], &outmessage, 0,
 					  strlen(message)+1);
-       
-	/* Initialize inmessage for all receives. */ 
+
+	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-	memset(&inmessage, 0, sizeof(inmessage));	
+	memset(&inmessage, 0, sizeof(inmessage));
 	iov.iov_base = big_buffer;
 	iov.iov_len = REALLY_BIG;
 	inmessage.msg_iov = &iov;
@@ -167,20 +167,20 @@ main(int argc, char *argv[])
 		error = test_recvmsg(clt_sk[i], &inmessage, MSG_WAITALL);
 		test_check_msg_notification(&inmessage, error,
 					    sizeof(struct sctp_assoc_change),
-					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 		sac = (struct sctp_assoc_change *)iov.iov_base;
 		clt_associd[i] = sac->sac_assoc_id;
 	}
 
 	/* Get the communication up message and the data message on the
-	 * server sockets for all the clients.  
+	 * server sockets for all the clients.
 	 */
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		inmessage.msg_controllen = sizeof(incmsg);
 		error = test_recvmsg(svr_sk, &inmessage, MSG_WAITALL);
 		test_check_msg_notification(&inmessage, error,
 					    sizeof(struct sctp_assoc_change),
-					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 		sac = (struct sctp_assoc_change *)iov.iov_base;
 		svr_associd[i] = sac->sac_assoc_id;
 
@@ -192,9 +192,9 @@ main(int argc, char *argv[])
 
 	/* Branch off all the associations on the server socket to separate
 	 * individual sockets.
-	 */ 
+	 */
 	for (i = 0; i < MAX_CLIENTS; i++)
-		peeloff_sk[i] = test_sctp_peeloff(svr_sk, svr_associd[i]); 
+		peeloff_sk[i] = test_sctp_peeloff(svr_sk, svr_associd[i]);
 
 	tst_resm(TPASS, "sctp_peeloff");
 
@@ -203,7 +203,7 @@ main(int argc, char *argv[])
 	error = listen(peeloff_sk[0], 1);
 	if (error != -1)
 		tst_brkm(TBROK, NULL, "listen on a peeled off socket "
-			 "error: %d, errno: %d", error, errno); 
+			 "error: %d, errno: %d", error, errno);
 
 	tst_resm(TPASS, "listen on a peeled off socket");
 
@@ -223,7 +223,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < MAX_CLIENTS; i++)
 		test_sendmsg(clt_sk[i], &outmessage, 0, strlen(message)+1);
 
-	/* Receive the sent messages on the peeled off server sockets.  */    
+	/* Receive the sent messages on the peeled off server sockets.  */
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		inmessage.msg_controllen = sizeof(incmsg);
 		error = test_recvmsg(peeloff_sk[i], &inmessage, MSG_WAITALL);
@@ -233,8 +233,8 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "Receive msgs on peeled off sockets");
 
-	/* Send a message from all the peeled off server sockets to the client 
-	 * sockets. 
+	/* Send a message from all the peeled off server sockets to the client
+	 * sockets.
 	 */
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		outmessage.msg_name = &clt_loop[i];
@@ -242,7 +242,7 @@ main(int argc, char *argv[])
 		test_sendmsg(peeloff_sk[i], &outmessage, 0, strlen(message)+1);
 	}
 
-	/* Receive the messages sent from the peeled of server sockets on 
+	/* Receive the messages sent from the peeled of server sockets on
 	 * the client sockets.
 	 */
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -255,12 +255,12 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "Send msgs on peeled off sockets");
 
 	errno = 0;
-	/* Verify that a peeled-off socket cannot initialize a new 
+	/* Verify that a peeled-off socket cannot initialize a new
 	 * association by trying to send a message to a client that is not
 	 * associated with the peeled-off socket.
 	 * The message is sent to the client that is associated with the
 	 * socket.
-	 */ 
+	 */
 	outmessage.msg_name = &clt_loop[1];
 	outmessage.msg_namelen = sizeof(clt_loop[1]);
 	test_sendmsg(peeloff_sk[0], &outmessage, 0, strlen(message)+1);
@@ -278,8 +278,8 @@ main(int argc, char *argv[])
 	for (i = 0; i < MAX_CLIENTS; i++)
 		close(peeloff_sk[i]);
 
-	/* Get the shutdown complete notification from all the client 
-	 * sockets.  
+	/* Get the shutdown complete notification from all the client
+	 * sockets.
 	 */
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		inmessage.msg_controllen = sizeof(incmsg);
@@ -287,11 +287,11 @@ main(int argc, char *argv[])
 		test_check_msg_notification(&inmessage, error,
 					    sizeof(struct sctp_assoc_change),
 					    SCTP_ASSOC_CHANGE,
-					    SCTP_SHUTDOWN_COMP);	
+					    SCTP_SHUTDOWN_COMP);
 
 		close(clt_sk[i]);
 	}
 
         /* Indicate successful completion.  */
-       	return 0; 
+       	tst_exit();
 }

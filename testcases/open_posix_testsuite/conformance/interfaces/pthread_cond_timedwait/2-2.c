@@ -2,16 +2,16 @@
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_cond_timedwait()
- *   shall be equivalent to pthread_cond_wait(), except that an error is returned 
- *   if the absolute time specified by abstime passes before the condition cond is 
+ *   shall be equivalent to pthread_cond_wait(), except that an error is returned
+ *   if the absolute time specified by abstime passes before the condition cond is
  *   signaled or broadcasted.
- * 
+ *
  */
- 
+
 #define _XOPEN_SOURCE 600
 
 #include <pthread.h>
@@ -31,7 +31,6 @@ struct testdata
 	pthread_cond_t  cond;
 } td;
 
-
 int t1_start = 0;
 
 void *t1_func(void *arg)
@@ -39,15 +38,15 @@ void *t1_func(void *arg)
 	int rc;
 	struct timeval  curtime;
 	struct timespec timeout;
-	
+
 	fprintf(stderr,"Thread1 started\n");
-	
+
 	/* Lock the mutex */
 	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"Thread1 failed to acquire the mutex\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	/* Tell main it may continue running now that the thread started. */
 	t1_start = 1;
 
@@ -58,7 +57,7 @@ void *t1_func(void *arg)
 	}
 	timeout.tv_sec = curtime.tv_sec + TIMEOUT;
 	timeout.tv_nsec = curtime.tv_usec * 1000;
-	
+
 	/* Thread will now release the mutex and wait on the condition variable */
 	/* The condition variable will not be signaled until AFTER the timeout
 	 * period, so we should receive an ETIMEDOUT error. */
@@ -95,9 +94,9 @@ int main()
 
 	while (!t1_start)	/* wait for thread1 started */
 		usleep(100);
-	
+
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */
-	if (pthread_mutex_lock(&td.mutex) != 0) {	
+	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"Main failed to acquire mutex\n");
 		return PTS_UNRESOLVED;
 	}
@@ -116,7 +115,7 @@ int main()
 		fprintf(stderr, "Could not join the thread.\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (th_ret == PTS_PASS)
 	{
 		printf("Test PASSED\n");

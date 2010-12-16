@@ -122,7 +122,6 @@ int main(int ac, char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -223,7 +222,6 @@ void setup()
 	char *cmd, *dirc, *basec, *bname, *dname, *path, *pwd = NULL;
 	int res;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Get file name of the passed test file and the absolute path to it.
@@ -267,7 +265,7 @@ void setup()
 	}
 
 	test_name = bname;
-	/* Pause if that option was specified */
+
 	TEST_PAUSE;
 }
 
@@ -283,11 +281,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 /*

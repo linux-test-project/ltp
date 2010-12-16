@@ -174,7 +174,6 @@ void test_VIDIOC_ENUM_FMT_S32_MAX_1() {
 	CU_ASSERT_EQUAL(memcmp(&format, &format2, sizeof(format)), 0);
 }
 
-
 void test_VIDIOC_ENUM_FMT_U32_MAX() {
 	int ret_enum, errno_enum;
 	struct v4l2_fmtdesc format;
@@ -206,7 +205,7 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	struct v4l2_fmtdesc format2;
 	int i;
 
-	/* In this test case the .index is valid (0) and only the .type 
+	/* In this test case the .index is valid (0) and only the .type
 	 * is invalid. The .type filed is an enum which is stored in an 'int'.
 	 */
 
@@ -228,7 +227,6 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	format2.index = 0;
 	format2.type = 0;
 	CU_ASSERT_EQUAL(memcmp(&format, &format2, sizeof(format)), 0);
-
 
 	/* test invalid .type=SINT_MIN */
 	memset(&format, 0xff, sizeof(format));

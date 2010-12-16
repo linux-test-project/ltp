@@ -87,7 +87,7 @@ int main(int ac, char **av)
 
         if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
              tst_brkm(TCONF, NULL, "Not enough available Hugepages");
-        else             
+        else
              huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
 
 	setup();			/* global setup */
@@ -128,8 +128,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -196,11 +195,9 @@ sighandler(sig)
 void
 setup(void)
 {
-	/* capture signals */
 
 	tst_sig(NOFORK, sighandler, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -241,7 +238,6 @@ cleanup(void)
 	/* if it exists, delete the shared memory resource */
 	rm_shm(shm_id_1);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -250,7 +246,4 @@ cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
-

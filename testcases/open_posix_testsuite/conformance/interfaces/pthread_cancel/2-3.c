@@ -1,22 +1,22 @@
-/*   
+/*
  * Copyright (c) 2004, QUALCOMM Inc. All rights reserved.
  * Created by:  abisain REMOVE-THIS AT qualcomm DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_cancel()
- *  
- * Any destructors for thread_specific data will be called after 
+ *
+ * Any destructors for thread_specific data will be called after
  * all cleanup handlers return
- * 
+ *
  * Steps:
  * 1.  Create a new thread.
  * 2.  Create a thread specific object in the thread with a destructor
  * 3.  Add a cleanup function in the thread
  * 4.  Call pthread_cancel on the thread.
  * 5.  Make sure that the destructor was called after the cleanup handler
- * 
+ *
  */
 
 #include <pthread.h>
@@ -44,7 +44,7 @@ void destructor(void *tmp)
 }
 
 /*
-   Cleanup Handler for the Thread 
+   Cleanup Handler for the Thread
  */
 void cleanup_function()
 {
@@ -62,23 +62,23 @@ void *a_thread_func(void *tmp)
 	/* To enable thread immediate cancelation, since the default
 	 * is PTHREAD_CANCEL_DEFERRED. */
 	rc = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	if (rc != 0) {	
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setcanceltype\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_key_create(&key, destructor);
-	if (rc != 0) {	
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_key_create\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_setspecific(key, &value);
-	if (rc != 0) {	
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setspecific\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	pthread_cleanup_push(cleanup_function, NULL);
 
 	/* Tell main that the key is created */
@@ -98,10 +98,10 @@ int main()
 	int       rc = 0;
 	double     diff;
 	sem = 0;
-	
+
 	/* Create a new thread. */
 	rc = pthread_create(&new_th, NULL, a_thread_func, NULL);
-	if (rc != 0) {	
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_create\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -109,10 +109,10 @@ int main()
 	/* Wait for the thread to be ready */
 	while (sem == 0)
 		sleep(1);
-	
+
 	/* Cancel the thread. */
 	rc = pthread_cancel(new_th);
-	if (rc != 0) {	
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_cancel\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -140,5 +140,3 @@ int main()
 	printf("Test PASS\n");
 	exit(PTS_PASS);
 }
-
-

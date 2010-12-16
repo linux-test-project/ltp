@@ -208,10 +208,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

@@ -37,7 +37,7 @@
 /* History:     Porting from Crackerjack to LTP is done by		      */
 /*			Manas Kumar Nayak maknayak@in.ibm.com>		      */
 /******************************************************************************/
-#define _GNU_SOURCE 
+#define _GNU_SOURCE
 #define __USE_GNU
 #include <sys/types.h>
 #include <errno.h>
@@ -55,7 +55,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -82,12 +82,10 @@ int  TST_TOTAL = 1;		     /* total number of tests in this file.   */
 /*									      */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -146,7 +144,6 @@ int main(int ac, char **av) {
 	TEST(num=sysconf(_SC_NPROCESSORS_CONF));  //the number of processor(s)
 	tst_resm(TINFO,"system has %d processor(s).", num);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 
 		Tst_count = 0;
@@ -209,7 +206,7 @@ realloc:
 			QUICK_TEST(sched_getaffinity(0, len, (cpu_set_t *)-1));
 			QUICK_TEST(sched_getaffinity(0, 0, mask));
 			QUICK_TEST(sched_getaffinity(getpid() + 1, len, mask));
-			/* 
+			/*
 			 * pid_t -> int -- the actual kernel limit is lower
 			 * though, but this is a negative test, not a positive
 			 * one.
@@ -244,7 +241,7 @@ realloc:
 	}
 
 	cleanup();
-	
+
 	return (1);
 
 }

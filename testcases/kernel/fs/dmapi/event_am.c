@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -322,7 +322,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -415,7 +415,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : close - enabled on fs
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -527,7 +527,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -592,7 +592,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -726,7 +726,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -793,7 +793,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-		
+
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -826,7 +826,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : close - enabled on file
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -1092,7 +1092,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : close - disabled
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -1774,8 +1774,8 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }
 
 void *Thread(void *parm)
@@ -1827,7 +1827,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	   
+
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			/*rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
@@ -1874,7 +1874,7 @@ void *Thread(void *parm)
 		} else if (type == DM_EVENT_UNMOUNT) {
 			/* SPECIAL CASE: need to set response and bMounted */
 			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
-		
+
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_UNMOUNT\n");
 			DMLOG_PRINT(DMLVL_DEBUG, "  Unmount mode: %x\n", nse->ne_mode);
 			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n", DM_GET_VALUE(nse, ne_handle1, void *));

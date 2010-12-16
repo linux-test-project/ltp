@@ -50,7 +50,6 @@
 #include "libcontrollers.h"
 #include "test.h"
 
-
 extern int Tst_count;
 char *TCID = "memory_controller_test01-03";
 int TST_TOTAL = 3;
@@ -115,7 +114,6 @@ int main(int argc, char *argv[])
 
 	ret = allocate_memory();	/*should i check ret?*/
 
-	return 0;
 }
 
 /*
@@ -160,7 +158,6 @@ void signal_handler_sigusr2 (int signal)
 	}
 	allocate_memory();
 }
-
 
 int allocate_memory()
 {

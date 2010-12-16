@@ -119,7 +119,7 @@ int child_fn(void *c1)
 #if HAVE_UNSHARE
 	int ret;
 #endif
-	
+
 	/* Flags to unshare different Namespaces */
 	flags |= CLONE_NEWNS;
 	flags |= CLONE_NEWNET;

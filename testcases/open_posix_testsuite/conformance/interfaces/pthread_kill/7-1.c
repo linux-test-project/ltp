@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- *  Test that when the null signal is sent to pthread_kill(), error 
+ *  Test that when the null signal is sent to pthread_kill(), error
     checking is still performed.
  */
 

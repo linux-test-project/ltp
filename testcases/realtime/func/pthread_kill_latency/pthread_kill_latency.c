@@ -69,7 +69,6 @@ int fail;
 
 atomic_t flag;
 
-
 void usage(void)
 {
 	rt_help();
@@ -94,7 +93,6 @@ int parse_args(int c, char *v)
 	}
 	return handled;
 }
-
 
 #if 0
 /* Set up a signal handler */
@@ -219,7 +217,6 @@ void *signal_receiving_thread(void *arg)
 	printf("Criteria: Time < %d us\n", (int)pass_criteria);
 	printf("Result: %s", fail ? "FAIL" : "PASS");
 	printf("\n\n");
-
 
 	return NULL;
 }

@@ -468,7 +468,7 @@ int main(int argc, char **argv)
 				if (fork() == 0) {
 					procid = i;
 					doproc();
-					return 0;
+					tst_exit();
 				}
 			}
 			while (wait(&stat) > 0)
@@ -500,7 +500,7 @@ int main(int argc, char **argv)
 		}
 		loopcntr++;
 	}
-	return 0;
+	tst_exit();
 }
 
 void
@@ -530,7 +530,7 @@ append_pathname(pathname_t *name, char *str)
 		fprintf(stderr, "fsstress: append_pathname failure\n");
 		chdir(homedir);
 		abort();
-		
+
 	}
 #endif
 	name->path = realloc(name->path, name->len + 1 + len);
@@ -612,7 +612,7 @@ check_cwd(void)
 	chdir(homedir);
 	fprintf(stderr, "fsstress: check_cwd failure\n");
 	abort();
-	
+
 #endif
 }
 
@@ -731,7 +731,6 @@ doproc(void)
 	for (opno = 0; opno < operations; opno++) {
 		p = &ops[freq_table[random() % freq_table_size]];
 		if ((unsigned long)p->func < 4096) abort();
-
 
 		p->func(opno, random());
 		/*
@@ -873,7 +872,7 @@ get_fname(int which, long r, pathname_t *name, flist_t **flpp, fent_t **fepp,
 	abort();
 #endif
 	return -1;
-	
+
 }
 
 void
@@ -1589,7 +1588,6 @@ bulkstat1_f(int opno, long r)
 	int		v;
 	xfs_fsop_bulkreq_t bsr;
 
-
 	good = random() & 1;
 	if (good) {
 		/* use an inode we know exists */
@@ -1718,8 +1716,6 @@ creat_f(int opno, long r)
 			esz, e, e1);
 	free_pathname(&f);
 }
-
-
 
 int
 setdirect(int fd)

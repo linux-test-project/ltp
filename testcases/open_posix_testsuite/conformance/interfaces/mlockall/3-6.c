@@ -14,7 +14,7 @@
  */
 
 /* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base 
+   avoid warning if the implementation does not program ftruncate as a base
    interface */
 #define _XOPEN_SOURCE 600
 
@@ -46,19 +46,19 @@ int main() {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_NAME);
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
 	foo = mmap(NULL, BUF_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
 	if (foo == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_NAME);
-		return PTS_UNRESOLVED;	
-	}	
+		return PTS_UNRESOLVED;
+	}
 
 	if (mlockall(MCL_CURRENT) == -1) {
 		if (errno == EPERM) {
@@ -82,4 +82,3 @@ int main() {
 	perror("Unexpected error");
 	return PTS_UNRESOLVED;
 }
-

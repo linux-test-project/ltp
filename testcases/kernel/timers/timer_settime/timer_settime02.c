@@ -95,13 +95,10 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -118,8 +115,8 @@ main(int ac, char **av)
 				);
 			}
 
-		}	/* End of TEST CASE LOOPING */
-	}		/* End for TEST_LOOPING */
+		}
+	}
 
 	cleanup();
 	tst_exit();
@@ -164,7 +161,7 @@ setup_test(int option)
 		 * absolute time for timer
 		 */
 		flag = TIMER_ABSTIME;
-		/* 
+		/*
 		 * Let's not use the linux_syscall_number syscall(2)
 		 * wrapper here because our primary test focus is
 		 * timer_create, not clock_gettime. That's covered in
@@ -186,10 +183,9 @@ setup_test(int option)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0)

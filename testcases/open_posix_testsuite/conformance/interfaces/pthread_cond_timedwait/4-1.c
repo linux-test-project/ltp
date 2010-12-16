@@ -2,12 +2,12 @@
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_cond_timedwait()
- *   shall return ETIMEDOUT if the time specified by 'abstime' has passed. 
- * 
+ *   shall return ETIMEDOUT if the time specified by 'abstime' has passed.
+ *
  */
 
 #define _XOPEN_SOURCE 600
@@ -33,13 +33,13 @@ void *t1_func(void *arg)
 	int rc;
 	struct timespec timeout;
 	struct timeval  curtime;
-	
+
 	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"Thread1 failed to acquire the mutex\n");
 		exit(PTS_UNRESOLVED);
 	}
 	fprintf(stderr,"Thread1 started\n");
-	
+
 	if (gettimeofday(&curtime, NULL) !=0) {
 		fprintf(stderr,"Fail to get current time\n");
 		exit(PTS_UNRESOLVED);
@@ -79,9 +79,9 @@ int main()
 		fprintf(stderr,"Fail to create thread 1\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	fprintf(stderr,"Main: no condition is going to be met\n");
-	
+
 	pthread_join(thread1, (void*)&th_ret);
 	return th_ret;
 }

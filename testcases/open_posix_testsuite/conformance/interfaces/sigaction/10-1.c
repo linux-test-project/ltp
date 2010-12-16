@@ -22,12 +22,11 @@ int child_stopped = 0;
 int child_continued = 0;
 int notification;
 
-void handler(int signo, siginfo_t *info, void *context) 
+void handler(int signo, siginfo_t *info, void *context)
 {
 		if (!info)
 		return;
 
-		
 		notification = info->si_code;
 
 		switch (notification) {
@@ -63,21 +62,21 @@ int main(void)
 	act.sa_sigaction = handler;
 	act.sa_flags = SA_SIGINFO;
 	sigemptyset(&act.sa_mask);
-	sigaction(SIGCHLD,  &act, 0);     
+	sigaction(SIGCHLD,  &act, 0);
 
 	if ((pid = fork()) == 0) {
 		/* child */
 		while (1) {
-			/* wait forever, or until we are 
+			/* wait forever, or until we are
 			   interrupted by a signal */
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			select(0, NULL, NULL, NULL, &tv);
 		}
-		return 0;
+		tst_exit();
 	} else {
 		/* parent */
-		int s; 		
+		int s;
 		int i;
 
 		for (i = 0; i < NUMSTOPS; i++) {
@@ -101,7 +100,7 @@ int main(void)
 			 */
 			 wait_for_notification(CLD_CONTINUED);
 		}
-		
+
 		/* POSIX specifies default action to be abnormal termination */
 		kill(pid, SIGHUP);
 		waitpid(pid, &s, 0);
@@ -109,7 +108,7 @@ int main(void)
 
 	if (child_stopped == NUMSTOPS && child_continued == NUMSTOPS) {
 		printf("Test PASSED\n");
-		return 0;
+		tst_exit();
 	}
 
 	printf("Test FAILED\n");

@@ -51,5 +51,5 @@ int main(int argc, char **argv)
 	}
 
 	dlclose(handle);
-	return 0;
+	tst_exit();
 }

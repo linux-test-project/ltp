@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}				
+				}
 			}
 		} else {
 			rc = -1;
@@ -124,14 +124,14 @@ int main(int argc, char **argv)
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
-	
+
 		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_ERR, "creating dummy dir failed! (rc = %d, errno = %d)\n", rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
-	
+
 		DMEV_ZERO(maxEvents);
 		DMEV_SET(DM_EVENT_PREUNMOUNT, maxEvents);
 		DMEV_SET(DM_EVENT_UNMOUNT, maxEvents);
@@ -445,7 +445,7 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_config_events(DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_EVENT_MAX, &eventset, &nelem);
@@ -1597,7 +1597,7 @@ int main(int argc, char **argv)
 	 * Global handle dm_set_eventlist variations
 	 *
 	 * This variation uncovered XFS BUG #15 (EBADF errno returned instead
-	 * of EINVAL)              
+	 * of EINVAL)
 	 */
 	for (i = 0, varNum = SET_EVENTLIST_BASE + 10; i < DM_EVENT_MAX; i++, varNum++) {
 		if (DMVAR_EXEC(varNum)) {
@@ -1968,7 +1968,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EINVAL
 	 *
 	 * This variation uncovered XFS BUG #16 (0 returned instead of -1 and
-	 * errno EINVAL)              
+	 * errno EINVAL)
 	 */
 	if (DMVAR_EXEC(GET_EVENTLIST_BASE + 6)) {
 		dm_sessid_t newsid;
@@ -2014,7 +2014,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = E2BIG
 	 *
 	 * This variation uncovered XFS BUG #17 (EINVAL errno returned instead
-	 * of E2BIG, nelemp not updated)              
+	 * of E2BIG, nelemp not updated)
 	 */
 	if (DMVAR_EXEC(GET_EVENTLIST_BASE + 7)) {
 		dm_sessid_t newsid;
@@ -2780,7 +2780,7 @@ int main(int argc, char **argv)
 			   ((rc = dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1, &region, &exactflag)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
-		} 
+		}
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -2839,7 +2839,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 			rc = dm_get_eventlist(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
-	
+
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
@@ -2935,8 +2935,8 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }
 
 void *Thread(void *parm)
@@ -2988,7 +2988,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	   
+
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
@@ -3046,7 +3046,7 @@ void *Thread(void *parm)
 			case DM_EVENT_CLOSE:
 				response = DM_RESP_INVALID;
 				break;
-			
+
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");

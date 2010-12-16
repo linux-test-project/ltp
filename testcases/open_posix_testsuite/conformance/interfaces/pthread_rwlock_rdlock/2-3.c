@@ -1,16 +1,16 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_rwlock_rdlock(pthread_rwlock_t *rwlock)
  *
- * 	If the Thread Execution Scheduling option is supported, 
- *	and the threads involved in the lock are executing with the 
+ * 	If the Thread Execution Scheduling option is supported,
+ *	and the threads involved in the lock are executing with the
  *	scheduling policies SCHED_FIFO or SCHED_RR, the calling thread shall not
- *	acquire the lock if a writer holds the lock or if writers of 
- *	higher or equal priority are blocked on the lock; 
+ *	acquire the lock if a writer holds the lock or if writers of
+ *	higher or equal priority are blocked on the lock;
  *	otherwise, the calling thread shall acquire the lock.
  *
  * In this case, reader has higher priority than the writer
@@ -18,7 +18,7 @@
  Steps:
  * We have three threads, main(also a reader), writer, reader
  *
- * 1.  Main thread set its shcedule policy as "SCHED_FIFO", with highest priority 
+ * 1.  Main thread set its shcedule policy as "SCHED_FIFO", with highest priority
  *     the three: sched_get_priority_min()+2.
  * 2.  Main thread read lock 'rwlock'
  * 3.  Create a writer thread, with schedule policy as "SCHED_FIFO", and priority
@@ -48,10 +48,10 @@
 
 static pthread_rwlock_t rwlock;
 static int rd_thread_state;
-static int wr_thread_state; 
+static int wr_thread_state;
 
-/* thread states: 
-	1: not in thread yet; 
+/* thread states:
+	1: not in thread yet;
 	2: just entered thread ;
 	3: just before thread exits;
 */
@@ -75,11 +75,11 @@ static int set_priority(pthread_t pid, unsigned policy, unsigned prio)
 }
 
 static void* fn_rd(void *arg)
-{ 
+{
 	int rc = 0;
 	int priority;
 	rd_thread_state = ENTERED_THREAD;
-	
+
 	priority = (int)(long)arg;
 	set_priority(pthread_self(), TRD_POLICY, priority);
 
@@ -93,7 +93,6 @@ static void* fn_rd(void *arg)
 	} else
 		printf("rd_thread: acquired read lock\n");
 
-
 	sleep(1);
 
 	printf("rd_thread: unlock read lock\n");
@@ -106,13 +105,13 @@ static void* fn_rd(void *arg)
 	pthread_exit(0);
 	return NULL;
 }
- 
+
 static void* fn_wr(void *arg)
-{ 
+{
 	int rc = 0;
 	int priority;
 	wr_thread_state = ENTERED_THREAD;
-	
+
 	priority = (long)arg;
 	set_priority(pthread_self(), TRD_POLICY, priority);
 
@@ -138,7 +137,7 @@ static void* fn_wr(void *arg)
 	pthread_exit(0);
 	return NULL;
 }
- 
+
 int main()
 {
 
@@ -150,7 +149,7 @@ int main()
 	int cnt = 0;
 	pthread_t rd_thread, wr_thread;
 	int priority;
-	
+
 	/* main thread needs to have the highest priority*/
 	priority = sched_get_priority_min(TRD_POLICY) + 2;
 	set_priority(pthread_self(), TRD_POLICY, priority);
@@ -162,14 +161,14 @@ int main()
 	}
 
 	printf("main: attempt read lock\n");
-	/* We have no lock, this read lock should succeed */	
+	/* We have no lock, this read lock should succeed */
 	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("Test FAILED: main cannot get read lock when no one owns the lock\n");
 		return PTS_FAIL;
 	} else
 		printf("main: acquired read lock\n");
-	
+
 	wr_thread_state = NOT_CREATED_THREAD;
 	priority = sched_get_priority_min(TRD_POLICY);
 	printf("main: create wr_thread, with priority: %d\n", priority);
@@ -178,15 +177,15 @@ int main()
 		printf("main: Error at 1st pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* If the shared data is not altered by child after 3 seconds,
 	   we regard it as blocked */
-	
+
 	/* We expect the wr_thread to block */
 	cnt = 0;
 	do {
 		sleep(1);
-	} while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
+	} while (wr_thread_state !=EXITING_THREAD && cnt++ < 3);
 
 	if (wr_thread_state == EXITING_THREAD)
 	{
@@ -198,7 +197,7 @@ int main()
 		printf("Unexpected wr_thread state\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	rd_thread_state = NOT_CREATED_THREAD;
 	priority = sched_get_priority_min(TRD_POLICY) + 1;
 	printf("main: create rd_thread, with priority: %d\n", priority);
@@ -207,13 +206,13 @@ int main()
 		printf("main: failed at creating rd_thread\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* We expect the rd_thread get the read lock*/
 	cnt = 0;
 	do {
 		sleep(1);
-	} while (rd_thread_state != EXITING_THREAD && cnt++ < 3); 
-	
+	} while (rd_thread_state != EXITING_THREAD && cnt++ < 3);
+
 	if (rd_thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: rd_thread blocked on read lock\n");
@@ -231,13 +230,13 @@ int main()
 		printf("main: failed to release read lock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	/* we expect the writer get the lock */
 	cnt = 0;
 	do {
 		sleep(1);
-	} while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
-	
+	} while (wr_thread_state !=EXITING_THREAD && cnt++ < 3);
+
 	if (wr_thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: higher priority wr_thread still blocked on write lock, when a reader release the lock\n");
@@ -254,7 +253,7 @@ int main()
 		printf("main: Error at 1st pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	if (pthread_join(rd_thread, NULL) != 0)
 	{
 		printf("main: Error at 2nd pthread_join()\n");
@@ -265,7 +264,7 @@ int main()
 	{
 		printf("Error at pthread_rwlockattr_destroy()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

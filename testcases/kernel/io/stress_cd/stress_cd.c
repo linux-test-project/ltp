@@ -55,7 +55,6 @@
 #include <unistd.h>
 #include <string.h>
 
-
 /* Defines
  *
  * DEFAULT_NUM_THREADS: Default number of threads to create,
@@ -88,7 +87,6 @@ int num_bytes = DEFAULT_NUM_BYTES;
 char *file = DEFAULT_FILE;
 unsigned long checksum = 0;
 int debug = 0;
-
 
 /*-------------------------------------------------------------------+
 |                               main ()                              |
@@ -149,7 +147,7 @@ int main (int argc, char **argv)
 	    /*if (pthread_join ((pthread_t*) array [i], (void **) &exit_value))*/
 	    if (pthread_join ((pthread_t) array [i], (void **) &exit_value))
 	       sys_error ("pthread_join failed", __LINE__);
-	
+
 	    if (debug)
 	       printf("\tThread [%d]: return %d\n", i + 1, exit_value);
 	    rc += exit_value;
@@ -169,7 +167,6 @@ int main (int argc, char **argv)
 	exit (0);
 }
 
-
 /*-------------------------------------------------------------------+
 |                               thread ()                            |
 | ================================================================== |
@@ -181,7 +178,6 @@ void *thread (int *parm)
 {
 	int num = *parm;
 	unsigned long cksum = 0;
-
 
 	if (debug)
            printf("\tThread [%d]: begin\n", num);
@@ -200,7 +196,6 @@ void *thread (int *parm)
 	return (NULL);
 }
 
-
 /*-------------------------------------------------------------------+
 |                           read_data ()                             |
 | ================================================================== |
@@ -216,7 +211,6 @@ int read_data (int num, unsigned long cksum)
 	int bytes_read = 0;
 	int n;
 	char *p;
-
 
 	if (debug)
 	   printf("\tThread [%d]: read_data()\n", num);
@@ -256,7 +250,6 @@ int read_data (int num, unsigned long cksum)
 	return (0);
 }
 
-
 /*-------------------------------------------------------------------+
 |                             parse_args ()                          |
 | ================================================================== |
@@ -277,7 +270,6 @@ static void parse_args (int argc, char **argv)
 	int		errflag = 0;
 	char		*program_name = *argv;
 	extern char 	*optarg;	/* Command line option */
-
 
 	while ((i = getopt(argc, argv, "df:n:b:m:?")) != EOF)
         {
@@ -323,7 +315,6 @@ static void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*-------------------------------------------------------------------+
 |                             sys_error ()                           |
 | ================================================================== |
@@ -338,7 +329,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror(errno));
 	error (syserr_msg, line);
 }
-
 
 /*-------------------------------------------------------------------+
 |                               error ()                             |

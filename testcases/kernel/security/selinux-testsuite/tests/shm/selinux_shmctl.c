@@ -53,7 +53,6 @@ int main(int argc, char **argv)
 	error = shmctl(id, IPC_SET, &buf);
 	printf (" %d", error);
 
-
 	/*
 	 * Equivalent: SHM_LOCK, SHM_UNLOCK
 	 * Tests:      SHM__LOCK
@@ -69,5 +68,5 @@ int main(int argc, char **argv)
 	printf (" %d", error);
 
 	printf("\n");
-	return 0;
+	tst_exit();
 }

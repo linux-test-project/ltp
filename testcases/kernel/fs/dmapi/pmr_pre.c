@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 		DM_EXIT();
 	} else {
 		int fd;
-	
+
 		sprintf(DummyFile, "%s/%s", mountPt, DUMMY_FILE);
 		sprintf(DummySubdir, "%s/%s", mountPt, DUMMY_SUBDIR);
 
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}				
+				}
 			}
 		} else {
 			rc = -1;
@@ -751,7 +751,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with MULTIPLE_REGIONS defined\n");
-		DMVAR_SKIP();	
+		DMVAR_SKIP();
 #endif
 	}
 
@@ -782,7 +782,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = 1000;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -858,7 +858,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = 1000;
 		regbuf[0].rg_flags = DM_REGION_WRITE;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -886,7 +886,7 @@ int main(int argc, char **argv)
 			regbuf[0].rg_offset = 0;
 			regbuf[0].rg_size = 1000;
 			regbuf[0].rg_flags = DM_REGION_READ;
-		
+
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(replace)\n", szFuncName);
 			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
 			if (rc == 0) {
@@ -895,7 +895,7 @@ int main(int argc, char **argv)
 				if ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) < xattrlen) {
 #else
 				if ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) == xattrlen) {
-#endif				
+#endif
 					DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = 0\n", szFuncName);
 					DMVAR_PASS();
 				} else {
@@ -944,7 +944,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1001,12 +1001,12 @@ int main(int argc, char **argv)
 		regbuf[1].rg_offset = PAGE_SIZE;
 		regbuf[1].rg_size = PAGE_SIZE/2;
 		regbuf[1].rg_flags = DM_REGION_WRITE;
-#else	
+#else
 		nelem = 1;
 		regbuf[0].rg_offset = PAGE_SIZE;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_WRITE;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1068,7 +1068,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = PAGE_SIZE;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_WRITE;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1130,7 +1130,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1192,7 +1192,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1254,7 +1254,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = PAGE_SIZE;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_WRITE;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1316,7 +1316,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = PAGE_SIZE;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_WRITE;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1378,7 +1378,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1440,7 +1440,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = PAGE_SIZE;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_WRITE;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1502,7 +1502,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1564,7 +1564,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1626,7 +1626,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1688,7 +1688,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = PAGE_SIZE;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_WRITE;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1750,7 +1750,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1812,7 +1812,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1874,7 +1874,7 @@ int main(int argc, char **argv)
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = PAGE_SIZE/2;
 		regbuf[0].rg_flags = DM_REGION_READ;
-#endif	
+#endif
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -1946,11 +1946,11 @@ int main(int argc, char **argv)
 				if ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) >= (PMR_NUM_REGIONS * sizeof(dm_region_t))) {
 					DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = 0\n", szFuncName);
 					DMVAR_PASS();
-				
+
 					printf("********************************************************\n");
 					printf("* PLEASE REBOOT AND RUN pmr_post TO COMPLETE VARIATION *\n");
 					printf("********************************************************\n");
-	
+
 				} else {
 					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected getxattr(%s) rc (%d vs %d), errno %d\n", szFuncName, 0, PMR_AttrName, rc, PMR_NUM_REGIONS * sizeof(dm_region_t), errno);
 					DMVAR_FAIL();
@@ -1986,8 +1986,8 @@ int main(int argc, char **argv)
 	remove(DUMMY_FILE);
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }
 
 void *Thread(void *parm)

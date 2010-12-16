@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_unlock()
@@ -25,7 +25,7 @@ int main()
 		fprintf(stderr,"Error at pthread_mutex_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if ((rc=pthread_mutex_lock(&mutex)) != 0) {
 		fprintf(stderr,"Error at pthread_mutex_lock(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
@@ -36,7 +36,7 @@ int main()
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
-	
+
 	/* Check if returned values are tolerable */
 	else if (rc == EPERM) {
 		fprintf(stderr,"Current thread does not own the mutex\n");

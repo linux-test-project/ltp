@@ -2,10 +2,10 @@
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- * 
- 
+ *
+
    Testing sending invalid signals to sigdelset().
    After invalid signal sent, sigdelset() should return -1 and set
    errno to indicate the error.
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
 	if (sigfillset(&signalset) == -1) {
 		perror("sigemptyset failed -- test aborted");
-		return PTS_UNRESOLVED;		
+		return PTS_UNRESOLVED;
 	}
 
 	if (argc < 2) {
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (sigismember(&signalset, signo) != -1) {
-		printf("sigismember did not return -1\n");	
+		printf("sigismember did not return -1\n");
 		return PTS_FAIL;
 	} else if (EINVAL != errno) {
 		printf("errno was not set to EINVAL\n");
@@ -66,5 +66,5 @@ int main(int argc, char *argv[])
 	}
 
 	printf ("errno set to EINVAL and sigismember returned -1\n");
-	return PTS_PASS;		
+	return PTS_PASS;
 }

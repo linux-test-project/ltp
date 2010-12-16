@@ -14,14 +14,12 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertion:
 *
-* The function gets the scheduling policy and parameter of 
-* the specified thread. The priority value is the one last 
-* set with pthread_setschedparam, pthread_setschedprio or 
+* The function gets the scheduling policy and parameter of
+* the specified thread. The priority value is the one last
+* set with pthread_setschedparam, pthread_setschedprio or
 * pthread_create
-
 
 * The steps are:
 * -> create a new thread with a known scheduling policy & param.
@@ -50,23 +48,23 @@
 /***********************   Test framework   ***********************************/
 /******************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c" 
+ #include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
- *    where descr is a description of the error and ret is an int 
+ * UNRESOLVED(ret, descr);
+ *    where descr is a description of the error and ret is an int
  *   (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -122,7 +120,7 @@ void * threaded (void * arg)
 	int ret = 0;
 
 	/* check the thread attributes have been applied
-	  (we only check what is reported, not the real behavior) 
+	  (we only check what is reported, not the real behavior)
 	 */
 	check_param(pthread_self(), SCHED_RR, sched_get_priority_min(SCHED_RR));
 
@@ -143,7 +141,7 @@ void * threaded (void * arg)
 	}
 
 	/* Check the scheduling policy was changed
-	  (we only check what is reported, not the real behavior) 
+	  (we only check what is reported, not the real behavior)
 	 */
 	check_param(pthread_self(), SCHED_FIFO, sched_get_priority_min(SCHED_FIFO));
 
@@ -164,7 +162,7 @@ void * threaded (void * arg)
 	}
 
 	/* Check the scheduling parameter has been changed
-	  (we only check what is reported, not the real behavior) 
+	  (we only check what is reported, not the real behavior)
 	 */
 	check_param(pthread_self(), SCHED_FIFO, sched_get_priority_max(SCHED_FIFO));
 
@@ -243,10 +241,9 @@ int main(int argc, char *argv[])
 	}
 
 	/* Wait while the thread checks its policy
-	  (we only check what is reported, not the real behavior) 
+	  (we only check what is reported, not the real behavior)
 	 */
 	check_param(child, SCHED_RR, sched_get_priority_min(SCHED_RR));
-
 
 	ret = pthread_barrier_wait(&bar);
 
@@ -278,7 +275,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Wait while the thread checks its policy
-	  (we only check what is reported, not the real behavior) 
+	  (we only check what is reported, not the real behavior)
 	 */
 	check_param(child, SCHED_FIFO, sched_get_priority_min(SCHED_FIFO));
 
@@ -312,7 +309,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* The thread checks its priority
-	  (we only check what is reported, not the real behavior) 
+	  (we only check what is reported, not the real behavior)
 	 */
 	check_param(child, SCHED_FIFO, sched_get_priority_max(SCHED_FIFO));
 
@@ -332,5 +329,3 @@ int main(int argc, char *argv[])
 
 	PASSED;
 }
-
-

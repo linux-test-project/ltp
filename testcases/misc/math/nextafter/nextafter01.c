@@ -20,10 +20,9 @@
 /* 01/02/2003	Port to LTP	avenkat@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
-
 /*
  * NAME
- *      scalb 
+ *      scalb
  *
  * CALLS
  *      nextafter(3C)
@@ -115,19 +114,16 @@ void setup()
   temp = stderr;
 }
 
-
 int blenter()
 {
   local_flag = PASSED;
   return(0);
 }
 
-
 int blexit()
 {
   (local_flag == PASSED ) ? tst_resm(TPASS, "Test passed") : tst_resm(TFAIL, "Test failed");
   return(0);
 }
-
 
 /*****	*****		*****/

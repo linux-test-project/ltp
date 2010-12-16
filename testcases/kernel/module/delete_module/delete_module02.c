@@ -161,7 +161,6 @@ main(int argc, char **argv)
 
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -221,7 +220,6 @@ cleanup1(void)
 	}
 }
 
-
 /*
  * setup()
  *	performs all ONE TIME setup for this test
@@ -229,13 +227,13 @@ cleanup1(void)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether it is root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
-		
+
 	}
 
 	/*if (tst_kvercmp(2,5,48) >= 0)

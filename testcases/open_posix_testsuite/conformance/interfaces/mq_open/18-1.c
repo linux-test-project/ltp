@@ -31,7 +31,7 @@ int main()
 
         sprintf(qname, "/mq_open_18-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR | O_NONBLOCK, 
+        queue = mq_open(qname, O_CREAT |O_RDWR | O_NONBLOCK,
 			S_IRUSR | S_IWUSR, NULL);
         if (queue == (mqd_t)-1) {
                 perror("mq_open() did not return success w/O_NONBLOCK set");
@@ -54,4 +54,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

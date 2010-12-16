@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 int main() {
 	int policy, invalid_priority, result;
@@ -39,7 +38,7 @@ int main() {
 	param.sched_priority = invalid_priority;
 
 	result = sched_setparam(0,&param);
-	
+
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

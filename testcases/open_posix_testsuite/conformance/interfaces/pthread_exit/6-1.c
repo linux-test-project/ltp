@@ -14,28 +14,26 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This sample test aims to check the following assertion:
  *
- * If the calling thread is the last thread in the process, 
+ * If the calling thread is the last thread in the process,
  * the effect are as if an implicit call to exit(0) had been made.
- 
+
  * The steps are:
  *
  * -> main creates a thread.
  * -> this thread forks(). The new process contains only 1 thread.
  * -> the thread in the new process calls pthread_exit(non-0 value).
- * -> main process joins the child process and checks the behavior 
+ * -> main process joins the child process and checks the behavior
  *     is as if exit(0) had been called.
  *     The checked items are:
  *       -> the return value.
  *       -> the atexit() routines have been called.
   */
- 
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -47,7 +45,7 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <string.h>
  #include <unistd.h>
 
@@ -64,20 +62,20 @@
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -118,13 +116,13 @@ void clnp(void)
 void * threaded (void * arg)
 {
 	int ret = 0;
-	
+
 	pid_t pid, chk;
 	int status;
-	
+
 	if (mf > 0)
 		*ctl = 0;
-	
+
 	pid = fork();
 	if (pid == (pid_t)-1)
 	{
@@ -138,27 +136,27 @@ void * threaded (void * arg)
 			ret = atexit(clnp);
 			if (ret != 0)  {  UNRESOLVED(ret, "Failed to register atexit function");  }
 		}
-		
+
 		/* exit the last (and only) thread */
 		pthread_exit(&ret);
-		
-		FAILED("pthread_exit() did not terminate the process when there was only 1 thread"); 
+
+		FAILED("pthread_exit() did not terminate the process when there was only 1 thread");
 	}
-	
+
 	/* Only the parent process goes this far */
 	chk = waitpid(pid, &status, 0);
 	if (chk != pid)
 	{
 		output("Expected pid: %i. Got %i\n", (int)pid, (int)chk);
-		UNRESOLVED(errno, "Waitpid failed"); 
+		UNRESOLVED(errno, "Waitpid failed");
 	}
-	
+
 	if (WIFSIGNALED(status))
-	{ 
-		output("Child process killed with signal %d\n",WTERMSIG(status)); 
-		UNRESOLVED(-1 , "Child process was killed"); 
+	{
+		output("Child process killed with signal %d\n",WTERMSIG(status));
+		UNRESOLVED(-1 , "Child process was killed");
 	}
-	
+
 	if (WIFEXITED(status))
 	{
 		ret = WEXITSTATUS(status);
@@ -167,23 +165,22 @@ void * threaded (void * arg)
 	{
 		UNRESOLVED(-1, "Child process was neither killed nor exited");
 	}
-	
+
 	if (ret != 0)
 	{
 		output("Exit status was: %i\n", ret);
 		FAILED("The child process did not exit with 0 status.");
 	}
-	
+
 	if (mf > 0)
 		if (*ctl != 1)
 			FAILED("pthread_exit() in the last thread did not execute atexit() routines");
-	
-	
+
 	/* Signal we're done (especially in case of a detached thread) */
 	do { ret = sem_post(&scenarii[sc].sem); }
 	while ((ret == -1) && (errno == EINTR));
 	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
-	
+
 	return NULL;
 }
 
@@ -192,13 +189,13 @@ int main (int argc, char *argv[])
 {
 	int ret=0;
 	pthread_t child;
-	
+
 	mf =sysconf(_SC_MAPPED_FILES);
-	
+
 	output_init();
-	
+
 	scenar_init();
-	
+
 	/* We want to share some memory with the child process */
 	if (mf> 0)
 	{
@@ -208,62 +205,62 @@ int main (int argc, char *argv[])
 		void * mmaped;
 		int fd;
 		char * tmp;
-		
+
 		/* We now create the temp files */
 		fd = mkstemp(filename);
 		if (fd == -1)
 		{ UNRESOLVED(errno, "Temporary file could not be created"); }
-		
+
 		/* and make sure the file will be deleted when closed */
 		unlink(filename);
-		
+
 		#if VERBOSE > 1
 		output("Temp file created (%s).\n", filename);
 		#endif
-		
+
 		sz= (size_t)sysconf(_SC_PAGESIZE);
-		
+
 		tmp = calloc(1, sz);
 		if (tmp == NULL)
 		{ UNRESOLVED(errno, "Memory allocation failed"); }
-		
+
 		/* Write the data to the file.  */
 		if (write (fd, tmp, sz) != (ssize_t) sz)
 		{ UNRESOLVED(sz, "Writting to the file failed"); }
-		
+
 		free(tmp);
-		
+
 		/* Now we can map the file in memory */
 		mmaped = mmap(NULL, sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (mmaped == MAP_FAILED)
 		{ UNRESOLVED(errno, "mmap failed"); }
-		
+
 		ctl = (int *) mmaped;
-		
+
 		/* Our datatest structure is now in shared memory */
 		#if VERBOSE > 1
 		output("Testdata allocated in shared memory.\n");
 		#endif
 	}
-	
+
 	for (sc=0; sc < NSCENAR; sc++)
 	{
 		#if VERBOSE > 0
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n", sc, scenarii[sc].descr);
 		#endif
-		
+
 		ret = pthread_create(&child, &scenarii[sc].ta, threaded, &ctl);
 		switch (scenarii[sc].result)
 		{
 			case 0: /* Operation was expected to succeed */
 				if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
 				break;
-			
+
 			case 1: /* Operation was expected to fail */
 				if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
 				break;
-			
+
 			case 2: /* We did not know the expected result */
 			default:
 				#if VERBOSE > 0
@@ -289,14 +286,13 @@ int main (int argc, char *argv[])
 			}
 		}
 	}
-	
+
 	scenar_fini();
 	#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
 	#endif
-	
+
 	PASSED;
 }
-

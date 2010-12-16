@@ -1,4 +1,4 @@
-/*   
+/*
  * Copyright (c) 2010, Garrett Cooper.
  *
  * Test that pthread_mutex_getprioceiling() fails because:
@@ -13,7 +13,7 @@
  * 1.  Initialize a mutex via pthread_mutex_init.
  * 2.  Do not modify the mutex.
  * 3.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -37,7 +37,7 @@ main(void)
 	pthread_mutex_t mutex;
 	int error, prioceiling;
 
-	/* 
+	/*
 	 * The default protocol is PTHREAD_PRIO_NONE according to
 	 * pthread_mutexattr_getprotocol.
 	 */

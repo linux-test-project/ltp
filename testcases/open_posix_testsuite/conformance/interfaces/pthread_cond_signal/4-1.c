@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_cond_signal()
@@ -38,7 +38,7 @@ void alarm_handler(int signo)
 	int i;
 	printf("Error: failed to wakeup all threads\n");
 	for (i=0; i<THREAD_NUM; i++) {	/* cancel threads */
-	    	pthread_cancel(thread[i]); 
+	    	pthread_cancel(thread[i]);
 	}
 
 	exit(PTS_UNRESOLVED);
@@ -47,14 +47,14 @@ void *thr_func(void *arg)
 {
 	int rc;
 	pthread_t self = pthread_self();
-	
+
 	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"[Thread 0x%p] failed to acquire the mutex\n", (void*)self);
 		exit(PTS_UNRESOLVED);
 	}
 	fprintf(stderr,"[Thread 0x%p] started\n", (void*)self);
 	start_num ++;
-	
+
 	fprintf(stderr,"[Thread 0x%p] is waiting for the cond\n", (void*)self);
 	rc = pthread_cond_wait(&td.cond, &td.mutex);
 	if (rc != 0) {
@@ -114,8 +114,8 @@ int main()
 			exit(PTS_FAIL);
 		}
 		usleep(100);
-	}		
-	
+	}
+
 	for (i=0; i<THREAD_NUM; i++) {
 	    	if (pthread_join(thread[i], NULL) != 0) {
 			fprintf(stderr,"Fail to join thread[%d]\n", i);

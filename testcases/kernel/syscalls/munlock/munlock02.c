@@ -109,13 +109,11 @@ int main(int ac, char **av)
 		tst_exit();
 	}
 
-	/* perform global setup for test */
 	setup();
 
 	/* check looping state */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 		for (i = 0; i < TST_TOTAL; i++) {
 #ifdef __ia64__
@@ -146,13 +144,13 @@ int main(int ac, char **av)
 					 TEST_RETURN);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 /* setup() - performs all ONE TIME setup for this test. */
 
@@ -161,7 +159,6 @@ void setup()
 
 	char *address;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -197,7 +194,7 @@ void setup()
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -209,9 +206,6 @@ int main()
 void cleanup()
 {
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 
 	return;
 }

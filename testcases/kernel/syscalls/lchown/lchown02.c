@@ -205,12 +205,12 @@ int main(int argc, char *argv[])
 	}
 
 	cleanup();
-	tst_exit();
+
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *	
+ *
  *	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
  *	Invoke individual test setup functions.
@@ -225,7 +225,7 @@ void setup(void)
 	tst_require_root(tst_exit);
 
 	TEST_PAUSE;
-	
+
 	/* change euid and gid to nobody */
 	ltpuser = getpwnam(TEST_USER);
 
@@ -245,7 +245,7 @@ void setup(void)
 		         "seteuid(2) failed to set the effective uid to %d",
 			 ltpuser->pw_uid);
 	}
-	
+
 	tst_tmpdir();
 
 	/* call individual setup functions */
@@ -275,7 +275,7 @@ void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
 		tst_brkm(TBROK | TERRNO, cleanup, "close(2) %s failed",
 		         TEST_FILE1);
 	}
-	
+
 	/* become root once more */
 	if (seteuid(0) == -1) {
 		tst_resm(TBROK | TERRNO,
@@ -320,7 +320,7 @@ void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 		tst_brkm(TBROK | TERRNO, cleanup,
 		         "open(2) %s failed", TEST_FILE2);
 	}
-	
+
 	if (close(fd) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "close(2) %s failed", TEST_FILE2);
@@ -349,7 +349,7 @@ void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 static void setup_efault(int pos)
 {
 	char *bad_addr = 0;
-	
+
 	bad_addr = mmap(NULL, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, -1, 0);
 
@@ -412,7 +412,7 @@ void setup_longpath(int pos)
 void cleanup(void)
 {
 	TEST_CLEANUP;
-	
+
 	/* become root again */
 	if (seteuid(0) == -1) {
 		tst_resm(TINFO | TERRNO,

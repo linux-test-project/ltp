@@ -43,7 +43,7 @@
  *		    Setup signal handling.
  *		    Pause for SIGUSR1 if option specified.
  *		   1. For testing error on invalid user, change the effective uid
- * 		  	
+ *
  * 		  Test:
  *		    Loop if the proper options are given.
  *		    Execute system call.
@@ -64,7 +64,7 @@
  *		  -p   : Pause for SIGUSR1 before starting
  *		  -P x : Pause for x seconds between iterations.
  *		  -t   : Turn on syscall timing.
- *		 	
+ *
  *RESTRICTIONS:
  *Incompatible with kernel versions below 2.1.35.
  *Incompatible if MAX_SWAPFILES definition in later kernels is changed
@@ -146,16 +146,14 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* perform global setup for test */
 	uname(&uval);
 	kmachine = uval.machine;
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 		for (i = 0; i < TST_TOTAL; i++) {
-			/* reset Tst_count in case we are looping. */
+
 			/* do the setup if the test have one */
 			if (testcase[i].setupfunc
 			    && testcase[i].setupfunc() == -1) {
@@ -355,7 +353,6 @@ int cleanup03()
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -366,7 +363,6 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	if (tst_is_cwd_tmpfs()) {
@@ -379,10 +375,9 @@ void setup()
 			 "Cannot do swapon on a file located on a nfs filesystem");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
 * cleanup() - Performs one time cleanup for this test at
@@ -396,6 +391,5 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files inside it */
 	tst_rmdir();
-}				/* End cleanup() */
+}

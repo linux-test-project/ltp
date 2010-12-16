@@ -87,7 +87,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* rename a directory to a file */
@@ -107,10 +106,9 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "rename() returned ENOTDIR");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
-	tst_exit();
 
 }
 
@@ -119,10 +117,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -143,7 +140,7 @@ void setup()
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s "
 			 "in rename()", fdir);
-		
+
 	}
 
 	/* save "old"'s dev and ino */
@@ -158,7 +155,7 @@ void setup()
 	if (stat(mname, &buf2) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s in rename()",
 			 mname);
-		
+
 	}
 
 	/* save "new"'s dev and ino */

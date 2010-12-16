@@ -265,13 +265,10 @@ void setup(void)
 {
 	umask(0);
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 }
 
@@ -289,9 +286,6 @@ void cleanup(void)
 	close(fd1);
 	close(fd2);
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

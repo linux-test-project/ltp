@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  majid.awad REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content 
- * of this license, see the COPYING file at the top level of this 
+ * This file is licensed under the GPL license.  For the full content
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -10,7 +10,6 @@
  * sem_wait shall lock the unlocked semaphore and decrement the semaphore
  * value by one.
  */
-
 
 #include <stdio.h>
 #include <errno.h>
@@ -20,12 +19,9 @@
 #include <fcntl.h>
 #include "posixtest.h"
 
-
 #define TEST "1-1"
 #define FUNCTION "sem_wait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
-
-
 
 int main() {
 	sem_t *mysemp;
@@ -41,13 +37,11 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-
 	/* Lock Semaphore */
 	if (sem_wait(mysemp) == -1) {
 		perror(ERROR_PREFIX "sem_wait");
-		return PTS_UNRESOLVED; 
+		return PTS_UNRESOLVED;
 	}
-
 
 	/* Value of Semaphore */
 	if (sem_getvalue(mysemp, &val) == -1) {
@@ -60,9 +54,8 @@ int main() {
 		sem_close(mysemp);
 		sem_unlink(semname);
 		return PTS_PASS;
-	} else { 
+	} else {
 		puts("TEST FAILED");
 		return PTS_FAIL;
 	}
 }
-

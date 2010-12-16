@@ -165,7 +165,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -180,10 +179,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root.");
 	}
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */

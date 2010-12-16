@@ -2,14 +2,14 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * This program tests the assertion that if sigwaitinfo() was called and that
    no signal in set was pending at the time of the call, then sigwaitinfo()
    shall be suspended until a signal in set becomes pending.
 
-  Steps: 
+  Steps:
   1. In the child process, register SIGTOTEST with handler.
   2. call sigwaitinfo() with SIGTOTEST in set.
   3. From the parent process, send a SIGTOTEST using kill.
@@ -66,13 +66,13 @@ int main()
 		return PTS_PASS;
 
 	} else {
-		int s; 
+		int s;
 		int exit_status;
 
 		/* parent */
 		sleep(1);
 
-		printf("parent sending child a SIGUSR1 signal\n");		
+		printf("parent sending child a SIGUSR1 signal\n");
 		kill (pid, SIGUSR1);
 
 		if (wait(&s) == -1) {
@@ -83,9 +83,9 @@ int main()
 
 		if (!WIFEXITED(s)) {
 			printf("Test FAILED: Did not exit normally\n");
-			return PTS_FAIL;	
+			return PTS_FAIL;
 		}
-		
+
 		exit_status = WEXITSTATUS(s);
 
 		printf("Exit status from child is %d\n", exit_status);

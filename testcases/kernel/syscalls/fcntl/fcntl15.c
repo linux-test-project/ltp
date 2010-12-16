@@ -91,8 +91,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 void alarm_sig()
@@ -366,10 +364,9 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -597,5 +594,5 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exiting block 3");
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }

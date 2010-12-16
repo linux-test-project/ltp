@@ -57,14 +57,13 @@
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
-
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -91,12 +90,10 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -126,7 +123,6 @@ void setup() {
 	tst_tmpdir();
 }
 
-
 /*
  * Macros
  */
@@ -137,7 +133,6 @@ enum test_type {
 	FILE_NOT_EXIST,
 	NO_FNAME,
 };
-
 
 /*
  * Data Structure
@@ -151,7 +146,6 @@ struct test_case {
 	int err;
 
 };
-
 
 /* Test cases
  *
@@ -340,8 +334,6 @@ EXIT2:
  * main()
  */
 
-
-
 int main(int ac, char **av) {
 	int result = RESULT_OK;
 <<<<<<< HEAD
@@ -355,7 +347,6 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -384,8 +375,8 @@ int main(int ac, char **av) {
         };
 
 	progname = strchr(av[0], '/');
-        progname = progname ? progname + 1 : av[0];	
-	
+        progname = progname ? progname + 1 : av[0];
+
         /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -394,7 +385,6 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -406,15 +396,14 @@ int main(int ac, char **av) {
                 		        break;
 		                default:
                 		        usage(progname);
-                        		
+
                 		}
 		        }
-
 
 		if (ac != optind) {
         	        tst_resm(TINFO,"Options are not match.");
                 	usage(progname);
-                	
+
 	        }
 
 		/*
@@ -428,7 +417,7 @@ int main(int ac, char **av) {
 	                result |= ret;
         	}
 >>>>>>> master
-		
+
 			/*
 			 * Check results
 		 	 */
@@ -443,7 +432,7 @@ int main(int ac, char **av) {
 			}
 
 		}
-	}	
+	}
 	cleanup();
 	tst_exit();
 }

@@ -65,9 +65,8 @@ void setup(void)
 void cleanup(void)
 {
 	tst_rmdir();
-	tst_exit();
-}
 
+}
 
 /* Procedures */
 void *threads(void* thread_id);
@@ -261,4 +260,3 @@ void * threads(void* thread_id_) {
 	unlink(filename);
 	pthread_exit((void*) 0);
 }
-

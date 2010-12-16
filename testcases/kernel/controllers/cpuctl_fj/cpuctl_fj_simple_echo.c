@@ -68,5 +68,5 @@ int main(int argc, char **argv)
 			err(errno, "close error");
 	}
 
-	return 0;
+	tst_exit();
 }

@@ -62,7 +62,7 @@ int main()
     tst_resm(TCONF, "System doesn't support unshare.");
     tst_exit();
 #endif
-    
+
     /* Checking for Kernel Version */
     if (tst_kvercmp(2,6,19) < 0)
 	return 1;

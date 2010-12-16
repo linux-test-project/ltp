@@ -14,6 +14,6 @@ int main(void)
 
 	printf(" the end \n");
 
-	return 0;
+	tst_exit();
 
 }

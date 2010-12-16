@@ -53,7 +53,7 @@ void LogExtents(dm_extent_t *pext, u_int nelem)
 		DMLOG_PRINT(DMLVL_DEBUG, "  extent %d: type %d, offset %lld, length %lld\n", i + 1, pext->ex_type, pext->ex_offset, pext->ex_length);
 	}
 
-}	
+}
 
 int main(int argc, char **argv)
 {
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}				
+				}
 			}
 		} else {
 			rc = -1;
@@ -1100,7 +1100,7 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_allocinfo(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
@@ -1741,7 +1741,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();	
+		DMVAR_SKIP();
 #endif
 	}
 
@@ -1804,7 +1804,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();	
+		DMVAR_SKIP();
 #endif
 	}
 
@@ -1867,7 +1867,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();	
+		DMVAR_SKIP();
 #endif
 	}
 
@@ -1912,7 +1912,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();	
+		DMVAR_SKIP();
 #endif
 	}
 
@@ -1999,7 +1999,7 @@ int main(int argc, char **argv)
 		dm_size_t inlen = 0, outlen;
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_probe_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
@@ -2699,7 +2699,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();	
+		DMVAR_SKIP();
 #endif
 	}
 
@@ -2766,7 +2766,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();	
+		DMVAR_SKIP();
 #endif
 	}
 
@@ -2853,7 +2853,7 @@ int main(int argc, char **argv)
 		dm_size_t len = 0;
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_punch_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, off, len);
@@ -3646,6 +3646,6 @@ int main(int argc, char **argv)
 	remove(DUMMY_TMP);
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }

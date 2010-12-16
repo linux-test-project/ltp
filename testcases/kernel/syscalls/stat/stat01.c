@@ -107,15 +107,13 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -124,7 +122,6 @@ int main(int ac, char **av)
 		 */
 		TEST(stat(TESTFILE, &stat_buf));
 
-		/* check return code of stat(2) */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
@@ -158,13 +155,11 @@ int main(int ac, char **av)
 			}
 		}
 		Tst_count++;	/* incr. TEST_LOOP counter */
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	tst_exit();
 
-}				/* End main */
+}
 
 /*
  * void
@@ -180,7 +175,6 @@ void setup()
 	int wbytes;
 	int write_len = 0;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -201,7 +195,6 @@ void setup()
 	 */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
@@ -236,7 +229,7 @@ void setup()
 	user_id = getuid();
 	group_id = getgid();
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -251,6 +244,5 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-}				/* End cleanup() */
+}

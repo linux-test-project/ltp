@@ -218,7 +218,7 @@ int main(int ac, char **av)
 
 	}
 	cleanup();
-	return 0;
+
 }
 
 /*
@@ -245,10 +245,9 @@ int create_segment(void *seg, size_t size)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -264,8 +263,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 #elif HAVE_MODIFY_LDT
@@ -273,14 +270,14 @@ int main()
 {
 	tst_resm(TCONF,
 		 "modify_ldt is available but not tested on the platform than __i386__");
-	return 0;
+	tst_exit();
 }
 
 #else
 int main()
 {
 	tst_resm(TINFO, "modify_ldt01 test only for ix86");
-	return 0;
+	tst_exit();
 }
 
 #endif /* defined(__i386__) */

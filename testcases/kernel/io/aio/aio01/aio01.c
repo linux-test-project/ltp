@@ -362,7 +362,7 @@ int main(int argc, char **argv)
 
 	cleanup();
 
-	return 0;
+	tst_exit();
 }
 
 static void help(void)
@@ -423,7 +423,7 @@ static void cleanup(void) {
 	close(fd);
 	io_queue_release(io_ctx);
 	tst_rmdir();
-	tst_exit();
+
 }
 
 #else

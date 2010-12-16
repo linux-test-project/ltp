@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
 int main() {
@@ -30,12 +29,12 @@ int main() {
 	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
 	/* test when sched_ss_max_repl < 1 */
-	param.sched_ss_max_repl = 0;	
+	param.sched_ss_max_repl = 0;
 	result = sched_setparam(0,&param);
-	
+
 	if (result != -1) {
 		printf("The returned code is not -1 when sched_ss_max_repl < 1.\n");
 		result_code = PTS_FAIL;
@@ -69,7 +68,6 @@ int main() {
 	        perror("Unknow error");
 		return PTS_FAIL;
 	}
-	
 
 }
 

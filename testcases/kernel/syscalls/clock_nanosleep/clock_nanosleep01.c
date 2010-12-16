@@ -63,7 +63,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -79,7 +79,7 @@ void sighandler(int sig)
 {
 	if (sig == SIGINT)
 		return;
-	
+
 	return;
 }
 
@@ -102,12 +102,10 @@ void sighandler(int sig)
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -139,7 +137,6 @@ void setup() {
 	tst_tmpdir();
 }
 
-
 /*
  * Macros
  */
@@ -150,7 +147,6 @@ enum test_type {
 		NULL_POINTER,
 		SEND_SIGINT,
 };
-
 
 /*
  * Data Structure
@@ -165,7 +161,6 @@ struct test_case {
 	int err;
 };
 
-
 /* Test cases
  *
  *   test status of errors on man page
@@ -175,7 +170,6 @@ struct test_case {
  *   ENOTSUP	    can't check because not supported clk_id generates
  *		      EINVAL
  */
-
 
 static struct test_case tcase[] = {
 	{ // case00
@@ -245,7 +239,6 @@ static struct test_case tcase[] = {
 #endif
 };
 
-
 /*
  * chk_difftime()
  *   Return : OK(0), NG(-1)
@@ -272,7 +265,6 @@ static int chk_difftime(struct timespec *bef, struct timespec *aft,
 		return -1;
 	return 0;
 }
-
 
 /*
  * do_test()
@@ -322,7 +314,7 @@ static int do_test(struct test_case *tc)
 	sys_errno = errno;
 	if (sys_ret != 0)
 		goto TEST_END;
-	
+
 	 /*
 	 * Check after sleep time
 	 */
@@ -368,8 +360,6 @@ EXIT:
  * main()
  */
 
-
-
 int main(int ac, char **av) {
 	int result = RESULT_OK;
 <<<<<<< HEAD
@@ -410,8 +400,8 @@ int main(int ac, char **av) {
         };
 
 	progname = strchr(av[0], '/');
-        progname = progname ? progname + 1 : av[0];	
-	
+        progname = progname ? progname + 1 : av[0];
+
         /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -420,7 +410,6 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -432,15 +421,14 @@ int main(int ac, char **av) {
                 		        break;
 		                default:
                 		        usage(progname);
-                        		
+
                 		}
 		        }
-
 
 		if (ac != optind) {
         	        tst_resm(TINFO,"Options are not match.");
                 	usage(progname);
-                	
+
 	        }
 
 		/*
@@ -454,7 +442,7 @@ int main(int ac, char **av) {
 	                result |= ret;
         	}
 >>>>>>> master
-		
+
 			switch (result) {
 			case RESULT_OK:
 				tst_resm(TPASS, "clock_nanosleep call succeeded");

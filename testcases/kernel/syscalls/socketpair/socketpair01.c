@@ -104,7 +104,6 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -138,7 +137,7 @@ int main(int argc, char *argv[])
 	cleanup();
 
 	tst_exit();
-}				/* End main */
+}
 
 void setup(void)
 {

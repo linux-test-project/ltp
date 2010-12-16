@@ -12,13 +12,13 @@
  * General Public License for more details.
  *
  * You should find a copy of v2 of the GNU General Public License somewhere
- * on your Linux system; if not, write to the Free Software Foundation, 
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * on your Linux system; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * This program helps you to generate a k-tree in recusive.
  *
- * A k-tree is a tranformation of binary tree, A binary has 2 
- * children at most in each node, but a k-tree has k sub-nodes. 
+ * A k-tree is a tranformation of binary tree, A binary has 2
+ * children at most in each node, but a k-tree has k sub-nodes.
  * We test both file and directory entries, So we do some changes.
  * We create k sub directories and k text file in each parent.
  *
@@ -92,5 +92,5 @@ int main(int argc, char **argv)
 	k_tree_gen(atoi(argv[1]), atoi(argv[2]));
 	printf("Generate k tree (depth: %s, width: %s), done\n", argv[1],
 	       argv[2]);
-	return 0;
+	tst_exit();
 }

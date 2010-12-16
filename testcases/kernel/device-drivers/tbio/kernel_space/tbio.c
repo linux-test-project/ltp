@@ -33,7 +33,7 @@
  *  the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; 
+ *  along with this program;
  *
  *  FILE        : tbio.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -49,7 +49,6 @@
  *  CODE COVERAGE: 74.9% - fs/bio.c (Total Coverage)
  *
  */
-
 
 #ifndef __KERNEL__
 #define __KERNEL__
@@ -148,7 +147,6 @@ out_request:
 
 }
 
-
 static int tbio_io(struct block_device *bdev,
 		 struct tbio_interface  *uptr)
 {
@@ -160,12 +158,10 @@ static int tbio_io(struct block_device *bdev,
 	request_queue_t *q;
 	q = bdev_get_queue(Device.bdev);
 
-
 	if (copy_from_user(&inter , uptr , sizeof(tbio_interface_t))) {
 		printk("tbio: copy_from_user\n");
 		return -EFAULT;
 	}
-
 
 	if (inter.data_len > (q->max_sectors << 9)) {
 		printk("tbio: inter.in_len > q->max_sectors << 9\n");
@@ -173,7 +169,7 @@ static int tbio_io(struct block_device *bdev,
 	}
 
 	if (inter.data_len) {
-	
+
 		switch (inter.direction) {
 			default:
 				return -EINVAL;
@@ -187,7 +183,7 @@ static int tbio_io(struct block_device *bdev,
 
 		bio = bio_map_user(bdev , (unsigned long )inter.data ,
 					inter.data_len , reading);
-	
+
 		if (!bio) {
 			printk("tbio : bio_map_user failed\n");
 			buffer = kmalloc (inter.data_len , q->bounce_gfp | GFP_USER);
@@ -203,12 +199,10 @@ static int tbio_io(struct block_device *bdev,
 
 	send_request(q, bio ,bdev,&inter , writing);
 
-	
 	if (bio)
 		bio_unmap_user(bio, reading);
 	return 0;
 }
-
 
 static int test_bio_put(struct bio *biop)
 {
@@ -218,7 +212,6 @@ static int test_bio_put(struct bio *biop)
 
 	return 0;
 }
-
 
 static int test_bio_clone(void)
 {
@@ -240,7 +233,7 @@ static int test_bio_add_page(void)
 	struct page *ppage = NULL;
 
 	for (i = 0 ; i < 128 ; i ++) {
-	
+
 		addr = get_zeroed_page(GFP_KERNEL);
 
 		if (addr == 0) {
@@ -265,7 +258,6 @@ static int test_bio_add_page(void)
 	return 0;
 }
 
-
 static int test_do_bio_alloc(int num)
 {
 	tbiop = bio_alloc(GFP_KERNEL , num);
@@ -277,7 +269,6 @@ static int test_do_bio_alloc(int num)
 
 	return 0;
 }
-
 
 static int test_bio_alloc(void)
 {
@@ -309,7 +300,6 @@ static int test_bio_alloc(void)
 		return -1;
 	}
 
-
 	tbiop = bio_alloc(GFP_KERNEL , BIO_MAX_PAGES);
 	if (tbiop == NULL) {
 		printk("tbio: bio_alloc failed\n");
@@ -318,9 +308,6 @@ static int test_bio_alloc(void)
 
 	return 0;
 }
-
-
-
 
 static int test_bio_split(struct block_device *bdev,
 		 struct tbio_interface  *uptr)
@@ -344,7 +331,7 @@ static int test_bio_split(struct block_device *bdev,
 	}
 
 	if (inter.data_len) {
-	
+
 		switch (inter.direction) {
 			default:
 				return -EINVAL;
@@ -358,7 +345,7 @@ static int test_bio_split(struct block_device *bdev,
 
 		bio = bio_map_user(bdev , (unsigned long )inter.data ,
 					inter.data_len , reading);
-	
+
 		if (!bio) {
 			printk("tbio : bio_map_user failed\n");
 			buffer = kmalloc (inter.data_len , q->bounce_gfp | GFP_USER);
@@ -373,7 +360,7 @@ static int test_bio_split(struct block_device *bdev,
 	//		printk("tbio: bio sectors %d\n", bio_sectors(bio));
 	//		printk("tbio: split now\n");
 			bio_pairp = bio_split(bio , bio_split_pool, 2);
-		
+
 			if (bio_pairp == NULL) {
 				printk("tbio: bio_split failed\n");
 				bio_unmap_user(bio,reading);
@@ -436,7 +423,7 @@ static int tbio_ioctl(struct inode *ino, struct file *file,
 			printk("tbio:bd_claim\n");
 			break;
 		}
-	
+
 		err = tbio_io( Device.bdev, (struct tbio_interface *) arg);
 		bd_release(Device.bdev);
 	    }
@@ -447,26 +434,24 @@ static int tbio_ioctl(struct inode *ino, struct file *file,
 	  case LTP_TBIO_ALLOC:            err = test_bio_alloc(); break;
 	  case LTP_TBIO_GET_NR_VECS:      err = test_bio_get_nr_vecs();break;
 	  case LTP_TBIO_PUT:              err = test_bio_put(tbiop);break;
-	  case LTP_TBIO_SPLIT:           
+	  case LTP_TBIO_SPLIT:
 	    {
 	    	err = bd_claim(Device.bdev, current);
 		if (err) {
 			printk("tbio:bd_claim\n");
 			break;
 		}
-	
+
 		err = test_bio_split( Device.bdev, (struct tbio_interface *) arg);
 		bd_release(Device.bdev);
-	   
+
 	    }
 	    break;
 	  //case LTP_TBIO_PAIR_RELEASE:     err = test_bio_pair_release();break;
-	
-	
+
 	}
 	return 0;
 }
-
 
 static void tbio_transfer(struct request *req , struct tbio_device *dev )
 {
@@ -530,7 +515,6 @@ static struct block_device_operations tbio_ops = {
 	.revalidate_disk	=tbio_revalidate
 };
 
-
 static int __init tbio_init(void)
 {
 	Device.size = nsectors*hardsect_size ;
@@ -587,5 +571,3 @@ static void tbio_exit(void)
 
 module_init(tbio_init);
 module_exit(tbio_exit);
-
-

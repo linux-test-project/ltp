@@ -113,7 +113,6 @@ int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
-
 int main(argc, argv)
 	int argc;
 	char *argv[];
@@ -210,20 +209,16 @@ int main(argc, argv)
 		local_flag = FAILED;
 	}
 
-
-
 	/************************************************/
 	/*						*/
 	/*  And report the results..........		*/
 	/*						*/
 	/************************************************/
 
-
 	anyfail();
 	/** NOT REACHED **/
-	return 0;
+	tst_exit();
 }
-
 
 int bd_arg(str)
 	char *str;
@@ -258,7 +253,6 @@ int tree()
 	slash[0] = '/';
 	slash[1] = '\0';
 
-
 	/********************************/
 	/*				*/
 	/*  make the root directory for */
@@ -290,7 +284,6 @@ int tree()
 	/*  may be checked			*/
 	/*					*/
 	/****************************************/
-
 
 	strcpy(path_list_string, path_string);
 	strcat(path_list_string, slash);
@@ -453,14 +446,13 @@ int level;    	/* the tree depth variable */
 				file_id = creat(new_string, FILE_MODE);
 				if (file_id == -1) {
 					fprintf(temp,"\nImpossible to create file %s, errno=%d\n",
-						new_string, errno);	
+						new_string, errno);
 					return(-2);
 				}
 
 #ifdef DEBUG
 				tst_resm(TINFO,"%d  %s F\n", level, new_string);
 #endif
-
 
 				/****************************************/
 				/*					*/
@@ -475,7 +467,7 @@ int level;    	/* the tree depth variable */
 						fprintf(temp,"\nUnsuccessful write to file %s, errno=%d\n",
 						  new_string, errno);
 						return(-3);
-					}	
+					}
 				}
 				close(file_id);
 
@@ -502,7 +494,6 @@ int level;    	/* the tree depth variable */
 				/*   super user mode)			*/
 				/*					*/
 				/****************************************/
-
 
 				ret_val = mkdir(new_string, DIRECTORY_MODE);
 
@@ -580,13 +571,12 @@ int check()
 		/*					*/
 		/****************************************/
 
-	
 		if (fscanf(list_stream, "%s", path_string) == EOF) {
 
 #ifdef DEBUG
 			tst_resm(TINFO,"\nEnd of path_list file reached \n");
 #endif
-	
+
 			return 0;
 		}
 
@@ -611,14 +601,14 @@ int check()
 					path_string, errno);
 				return(-1);
 			}
-			
+
 			else {
 				/********************************/
 				/*				*/
 				/*    check its contents	*/
 				/*				*/
 				/********************************/
-		
+
 				ret_len=0;
 				len = strlen(path_string);
 				for (j = 1; j <= file_length; j++) {
@@ -832,7 +822,6 @@ setup()
     temp = stderr;
 }
 
-
 /*
  * fail_exit()
  *
@@ -913,4 +902,3 @@ instress()
                                 " etc are likely to fail.\n");
         return 1;
 }
-

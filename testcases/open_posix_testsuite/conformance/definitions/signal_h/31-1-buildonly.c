@@ -2,7 +2,7 @@
   Test that the function:
    int sigaltstack(const stack_t *restrict, stack_t *restrict);
   is declared.
-  
+
   Removed restrict keyword from typedef.
   */
 

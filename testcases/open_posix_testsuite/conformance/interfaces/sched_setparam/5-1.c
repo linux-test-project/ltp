@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -35,7 +35,7 @@ int main() {
 	/* Make sure new_priority != old_priority */
 	max_prio = sched_get_priority_max(policy);
 	old_priority = param.sched_priority;
-	new_priority = (old_priority == max_prio) ? 
+	new_priority = (old_priority == max_prio) ?
 		sched_get_priority_min(policy) :
 		max_prio;
 	param.sched_priority = new_priority;

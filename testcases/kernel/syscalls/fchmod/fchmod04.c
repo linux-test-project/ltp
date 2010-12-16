@@ -115,15 +115,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -132,7 +130,6 @@ int main(int ac, char **av)
 		 */
 		TEST(fchmod(fd, PERMS));
 
-		/* check return code of fchmod(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "fchmod(%d, %#o) Failed, errno=%d : %s",
 				 fd, PERMS, TEST_ERRNO, strerror(TEST_ERRNO));
@@ -166,13 +163,11 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	tst_exit();
-}				/* End main */
+}
 
 /*
  * void
@@ -183,7 +178,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -197,10 +192,8 @@ void setup()
 		perror("seteuid");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/*
@@ -215,7 +208,7 @@ void setup()
 			 "open(%s, O_RDONLY) failed, errno=%d : %s",
 			 TESTDIR, errno, strerror(errno));
 	}
-}				/* End setup() */
+}
 
 /*
  * void
@@ -238,9 +231,6 @@ void cleanup()
 			 TESTDIR, errno, strerror(errno));
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

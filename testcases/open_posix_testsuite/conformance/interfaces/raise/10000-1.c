@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  General API test of the raise() function.
@@ -14,7 +14,7 @@
  *  Item with POSIX default action as I - SIGCHLD
  *  Item with POSIX default action as S - SIGTSTP
  *  Item with POSIX default action as C - SIGCONT
- *  
+ *
  *  Error conditions:
  *  Boundary values for int
  *  MIN INT = INT32_MIN
@@ -105,4 +105,3 @@ int main()
 		return PTS_PASS;
 	}
 }
-

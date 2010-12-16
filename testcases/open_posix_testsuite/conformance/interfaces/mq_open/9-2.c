@@ -57,7 +57,7 @@ int main()
 		unsigned pri;
 
 		/* child here */
-		
+
 		/* Set up handler for SIGUSR1 */
         	act.sa_handler = handler;
 		act.sa_flags = 0;
@@ -72,7 +72,7 @@ int main()
 		/* once parent has finished, open next queue */
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	rdwrqueuechild = mq_open(qname, O_RDWR, 
+        	rdwrqueuechild = mq_open(qname, O_RDWR,
 				S_IRUSR | S_IWUSR, &attr);
         	if (rdwrqueuechild == (mqd_t)-1) {
                 	perror("mq_open() read only failed");
@@ -113,7 +113,7 @@ int main()
 
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	rdwrqueue = mq_open(qname, O_CREAT |O_RDWR, 
+        	rdwrqueue = mq_open(qname, O_CREAT |O_RDWR,
 				S_IRUSR | S_IWUSR, &attr);
         	if (rdwrqueue == (mqd_t)-1) {
                 	perror("mq_open() did not return success");
@@ -181,4 +181,3 @@ int main()
 
 	return PTS_UNRESOLVED;
 }
-

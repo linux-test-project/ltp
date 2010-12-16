@@ -169,7 +169,7 @@ int main(int ac, char **av)
 	tst_resm(TINFO, "Exit block 3");
 
 	cleanup();
-	return 0;
+
 }
 
 /*
@@ -178,15 +178,13 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(string, "./fcntl18.%d.1", getpid());
@@ -208,10 +206,8 @@ void cleanup()
 
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
 	unlink("temp.dat");
-	tst_exit();
+
 }

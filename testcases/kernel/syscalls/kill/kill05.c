@@ -253,7 +253,6 @@ void setup(void)
 		tst_brkm(TBROK, cleanup, "Test must be run as root");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Make a temp directory and cd to it.
@@ -288,7 +287,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -296,6 +294,4 @@ void cleanup(void)
 	 */
 	rm_shm(shmid1);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

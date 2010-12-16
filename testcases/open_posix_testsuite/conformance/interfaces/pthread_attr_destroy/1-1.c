@@ -1,22 +1,22 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Test that pthread_attr_destroy()
  *  shall destory a thread attributes object.  An implementation may cause
  *  pthread_attr_destroy() to set 'attr' to an implementation-defined invalid
- *  value.  
- * 
+ *  value.
+ *
  * Steps:
  * 1.  Initialize a pthread_attr_t object using pthread_attr_init()
  * 2.  Destroy that initialized attribute using pthread_attr_destroy()
  * 3.  Using pthread_attr_create(), pass to it the destroyed attribute. It
  *     should return the error EINVAL, the value specified by 'attr' is
- *     is invalid.      
- * 
+ *     is invalid.
+ *
  */
 
 #include <pthread.h>
@@ -24,10 +24,9 @@
 #include <errno.h>
 #include "posixtest.h"
 
-
 void *a_thread_func()
 {
-	
+
 	pthread_exit(0);
 	return NULL;
 }
@@ -75,7 +74,5 @@ int main()
 	       printf("Test FAILED: (1) Incorrect return code from pthread_create(); %d not EINVAL  or  (2) Error in pthread_create()'s behavior in returning error codes \n", ret);
 	       return PTS_FAIL;
        }
-	
+
 }
-
-

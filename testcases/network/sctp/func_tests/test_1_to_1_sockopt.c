@@ -54,11 +54,11 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
- * 
+ *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
  *
- */ 
+ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -134,7 +134,7 @@ main(void)
 	tst_resm(TPASS, "setsockopt() with an invalid level - ENOPROTOOPT");
 
 	/*setsockopt() TEST4: Invalid option buffer EFAULT, Expected error*/
-        error = setsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO, 
+        error = setsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO,
 		(const struct sctp_rtoinfo *)-1, sizeof(struct sctp_rtoinfo));
 	if (error != -1 || errno != EFAULT)
 		tst_brkm(TBROK, NULL, "setsockopt with invalid option "
@@ -170,7 +170,7 @@ main(void)
 	/*I have commented this test case because it is returning EOPNOTSUPP.
 	When I checked the code there also it is returning EOPNOTSUPP. As this
 	is not specific to TCP style, I do not want to do the code change*/
-	
+
         error = getsockopt(sk, -1, SCTP_RTOINFO, 0, 0);
 	if (error != -1 || errno != ENOPROTOOPT)
 		tst_brkm(TBROK, NULL, "getsockopt with invalid level "
@@ -181,7 +181,7 @@ main(void)
 	len = sizeof(struct sctp_rtoinfo);
 
 	/*getsockopt() TEST8: Invalid option buffer EFAULT, Expected error*/
-        error = getsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO, 
+        error = getsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO,
 			   (struct sctp_rtoinfo *)-1, &len);
 	if (error != -1 || errno != EFAULT)
 		tst_brkm(TBROK, NULL, "getsockopt with invalid option "
@@ -273,11 +273,11 @@ main(void)
 
 	tst_resm(TPASS, "getsockopt() SO_LINGER - SUCCESS");
 
-	if (slinger.l_onoff != glinger.l_onoff || 
+	if (slinger.l_onoff != glinger.l_onoff ||
 	    slinger.l_linger != glinger.l_linger)
 		tst_brkm(TBROK, NULL, "setsockopt/getsockopt SO_LINGER "
 			 "compare failed");
-	
+
 	/*First gets the default SO_RCVBUF value and comapres with the
 	value obtained from SCTP_STATUS*/
 	len = sizeof(int);
@@ -342,7 +342,6 @@ main(void)
 			 "got value differs Set Value=%d Get Value=%d\n",
 			 (2*sndbuf_val_set), sndbuf_val_get);
 
-            
 	/* Getting the primary address using SCTP_PRIMARY_ADDR */
         len = sizeof(struct sctp_prim);
 	/* TEST19: Test case for getsockopt SCTP_PRIMARY_ADDR */
@@ -410,5 +409,5 @@ main(void)
 	close(sk1);
 	close(acpt_sk);
 
-	return 0;
+	tst_exit();
 }

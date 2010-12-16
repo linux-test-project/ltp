@@ -177,4 +177,3 @@ int Sync (fd_t fd) {
 	return fsync(fd);
 #endif
 }
-

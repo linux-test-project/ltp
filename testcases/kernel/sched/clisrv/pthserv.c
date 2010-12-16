@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 	    }
 	    prtln();
 	}
-    close(sockfd); 
+    close(sockfd);
 }
 
 void *
@@ -177,7 +177,7 @@ new_thread(void* arg_)
 	printf("mutex_lock failed");
     if (str_echo(arg) < 0) /* process the request */
        printf("new_thread: str_echo returned error");
-    close(arg); /* i.e. newsockfd*/ 
+    close(arg); /* i.e. newsockfd*/
     if (pthread_mutex_unlock (&current_mutex))
 	printf("mutex_unlock failed");
 #ifndef _LINUX
@@ -187,4 +187,3 @@ new_thread(void* arg_)
 #endif
     pthread_exit ( (void *) 0);
 }
-

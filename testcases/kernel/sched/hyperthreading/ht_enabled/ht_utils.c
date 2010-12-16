@@ -67,9 +67,6 @@ int check_ht_capability()
 	return result;
 }
 
-
-
-
 #define PROCFS_PATH "/proc/"
 #define CPUINFO_PATH "/proc/cpuinfo"
 #define CPU_NAME "processor"
@@ -127,4 +124,3 @@ int get_current_cpu(pid_t pid)
 
 	return cpu;
 }
-

@@ -628,5 +628,5 @@ int main(int argc, char *argv[])
 	rmdir("/tmp/mount/");
 
 	clear_status();
-	return 0;
+	tst_exit();
 }

@@ -1,7 +1,7 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * pthread_barrier_wait()
@@ -34,7 +34,7 @@ void sig_handler()
 int main()
 {
 	pthread_barrier_t barrier;
-	struct sigaction act;	
+	struct sigaction act;
 
 	/* Set up main thread to handle SIGALRM */
 	act.sa_flags = 0;
@@ -43,15 +43,15 @@ int main()
 	sigaction(SIGALRM, &act, 0);
 
 	/* Intialize return code */
-	rc = 1;	
-	
+	rc = 1;
+
 	/* Call pthread_barrier_wait while refering to an un-initialized barrier object */
-	
+
 	/* Just in case we are blocked, send a SIGALRM after 2 sec. */
 	alarm(2);
-	
+
 	rc = pthread_barrier_wait(&barrier);
-	
+
 	if (rc == EINVAL)
 	{
 		printf("Test PASSED\n");
@@ -60,7 +60,7 @@ int main()
 	{
 		printf("return code : %d, %s\n" , rc, strerror(rc));
 		printf("Test PASSED: Note*: Expected EINVAL when calling this funtion with an un-initialized barrier object, but standard says 'may' fail.\n");
-	} 
-	
+	}
+
 	return PTS_PASS;
 }

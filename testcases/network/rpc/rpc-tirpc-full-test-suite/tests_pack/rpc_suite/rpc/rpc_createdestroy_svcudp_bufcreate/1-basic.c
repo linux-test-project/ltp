@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +42,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -50,21 +50,21 @@ int main(int argn, char *argc[])
 	int test_status = 1; //Default test result set to FAILED
 	int sock = 600;
 	SVCXPRT *svcr = NULL;
-	
+
 	//create a server
 	//
 	sock = socket(AF_UNIX, SOCK_SEQPACKET, IPPROTO_UDP);
 	svcr = svcudp_bufcreate(sock, 1500, 1500);
-	
+
 	//check returned value
 	test_status = ((SVCXPRT *)svcr != NULL) ? 0 : 1;
-	
+
 	//clean up
 	svc_destroy(svcr);
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

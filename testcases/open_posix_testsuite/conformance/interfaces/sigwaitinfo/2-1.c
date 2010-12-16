@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- This program tests the assertion that the lowest pending signal will be 
+ This program tests the assertion that the lowest pending signal will be
  selected by sigwaitinfo() if there are any multiple pending signals in the
  range SIGRTMIN to SIGRTMAX.
 
@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 void myhandler(int signo, siginfo_t *info, void *context) {
 	printf ("Inside dummy handler\n");
@@ -70,4 +69,3 @@ int main()
 
 	return PTS_PASS;
 }
-

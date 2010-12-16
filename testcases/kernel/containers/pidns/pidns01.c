@@ -87,7 +87,6 @@ int child_fn1(void *ttype)
 	}
 	cleanup();
 
-	/* NOT REACHED */
 	return 0;
 }
 
@@ -126,10 +125,9 @@ int main(int argc, char *argv[])
         /* cleanup and exit */
 	cleanup();
 
-	
-	return 0;
+	tst_exit();
 
-}	/* End main */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -139,6 +137,5 @@ static void cleanup()
 {
 	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
-	/* exit with return code appropriate for results */
-	tst_exit();
+
 }

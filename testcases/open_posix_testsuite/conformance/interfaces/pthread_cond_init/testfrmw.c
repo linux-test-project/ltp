@@ -14,19 +14,18 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
- 
- 
+
  * This file is a wrapper to use the tests from the NPTL Test & Trace Project
  * with either the Linux Test Project or the Open POSIX Test Suite.
- 
+
  * The following function are defined:
  * void output_init()
  * void output_fini()
  * void output(char * string, ...)
- * 
+ *
  * The are used to output informative text (as a printf).
  */
- 
+
 /* We use a mutex to avoid conflicts in traces */
 static pthread_mutex_t m_trace = PTHREAD_MUTEX_INITIALIZER;
 
@@ -55,4 +54,3 @@ void output_fini()
 	return;
 }
 #endif
-

@@ -115,13 +115,10 @@ void setup(void)
 {
 	umask(0);
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that options was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(pfilname, "./open3.%d", getpid());
@@ -139,9 +136,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

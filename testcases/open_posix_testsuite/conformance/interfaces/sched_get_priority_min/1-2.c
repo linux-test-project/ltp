@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -17,11 +17,11 @@
 #include "posixtest.h"
 
 int main(int argc, char **argv)
-{	       
+{
 	int result = -1;
-	
+
 	result = sched_get_priority_min(SCHED_FIFO);
-	
+
 	if (result != -1 && errno == 0) {
 		printf("The minimum priority for policy SCHED_FIFO is %i.\n",
 		       result);
@@ -31,9 +31,7 @@ int main(int argc, char **argv)
 		perror("An error occurs");
 		return PTS_FAIL;
 	}
-		
+
 	printf("This code should not be executed.\n");
         return PTS_UNRESOLVED;
 }
-
-

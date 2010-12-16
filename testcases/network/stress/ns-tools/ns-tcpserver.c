@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-tcpserver.c
@@ -55,14 +54,12 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-
 /*
  * Gloval variables
  */
 struct sigaction handler;    /* Behavior for a signal */
 int catch_sighup;       /* When catch the SIGHUP, set to non-zero */
 int catch_sigpipe;      /* When catch the SIGPIPE, set to non-zero */
-
 
 /*
  * Structure: server_info
@@ -82,10 +79,9 @@ struct server_info {
     size_t window_scaling;	/* if non-zero, in the window scaling mode */
 };
 
-
 /*
  * Function: usage()
- * 
+ *
  * Descripton:
  *  Print the usage of this program. Then, terminate this program with
  *  the specified exit value.
@@ -121,7 +117,6 @@ usage(char *program_name, int exit_value)
 			, program_name);
     exit (exit_value);
 }
-
 
 /*
  * Function: set_signal_flag()
@@ -160,10 +155,9 @@ set_signal_flag(int type)
     }
 }
 
-
 /*
  * Function: delete_zombies()
- * 
+ *
  * Descripton:
  *  Delete the zombies
  *
@@ -197,10 +191,9 @@ delete_zombies(struct server_info *info_p)
     }
 }
 
-
 /*
  * Function: create_listen_socket()
- * 
+ *
  * Descripton:
  *  Create a socket to listen for connections on a socket.
  *  The socket discripter is stored info_p->listen_sd.
@@ -225,7 +218,7 @@ create_listen_socket(struct server_info *info_p)
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
-    
+
     /* Translate the network and service information of the server */
     err = getaddrinfo(NULL, info_p->portnum, &hints, &res);
     if (err) {
@@ -248,7 +241,7 @@ create_listen_socket(struct server_info *info_p)
     if (res->ai_family == PF_INET6) {
 	on = 1;
 	if (setsockopt(info_p->listen_sd,
-		    IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(int))) 
+		    IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(int)))
 	    fatal_error("setsockopt()");
     }
 #endif
@@ -256,7 +249,7 @@ create_listen_socket(struct server_info *info_p)
     /* Enable to reuse the socket */
     on = 1;
     if (setsockopt(info_p->listen_sd,
-		SOL_SOCKET, SO_REUSEADDR, &on, sizeof(int))) 
+		SOL_SOCKET, SO_REUSEADDR, &on, sizeof(int)))
 	fatal_error("setsockopt()");
 
     /* Disable the Nagle algorithm, when small sending mode */
@@ -275,7 +268,7 @@ create_listen_socket(struct server_info *info_p)
 	maximize_sockbuf(info_p->listen_sd);
 
     /* Bind to the local address */
-    if (bind(info_p->listen_sd, res->ai_addr, res->ai_addrlen) < 0) 
+    if (bind(info_p->listen_sd, res->ai_addr, res->ai_addrlen) < 0)
 	fatal_error("bind()");
     freeaddrinfo(res);
 
@@ -284,10 +277,9 @@ create_listen_socket(struct server_info *info_p)
 	fatal_error("listen()");
 }
 
-
 /*
  * Function: communicate_client()
- * 
+ *
  * Descripton:
  *  Communicate with the connectted client.
  *  Currently, this function sends tcp segment in the specified second
@@ -374,10 +366,9 @@ communicate_client(struct server_info *info_p, int sock_fd)
     return ret;
 }
 
-
 /*
  * Function: handle_client()
- * 
+ *
  * Descripton:
  *  Accept a connection from a client, then fork to communicate the client
  *
@@ -488,7 +479,7 @@ handle_client(struct server_info *info_p)
 		    } else {				/* case of the parent */
 			if (close(data_sd))
 			    fatal_error("close()");
-			
+
 			++info_p->current_connection;
 			if (info_p->max_connection < info_p->current_connection) {
 			    info_p->max_connection = info_p->current_connection;
@@ -499,7 +490,7 @@ handle_client(struct server_info *info_p)
 		    }
 		} else {			/* repeat server */
 		    ret = communicate_client(info_p, data_sd);
-		    if (ret != EXIT_SUCCESS) 
+		    if (ret != EXIT_SUCCESS)
 		      if (close(info_p->listen_sd))
 			fatal_error("close()");
 		    break;
@@ -509,13 +500,12 @@ handle_client(struct server_info *info_p)
 	    /* case where new connection isn't accepted. */
 	    if (info_p->concurrent)
 		delete_zombies(info_p);
-	    if (info_p->current_connection == 0) 
+	    if (info_p->current_connection == 0)
 		break;
 	}
     }
     return ret;
 }
-
 
 /*
  *
@@ -538,7 +528,7 @@ main(int argc, char *argv[])
     memset(&server, '\0', sizeof(struct server_info));
     server.family = PF_UNSPEC;
     server.portnum = NULL;
-    
+
     /* Retrieve the options */
     while ((optc = getopt(argc, argv, "f:p:bcswo:dh")) != EOF) {
 	switch (optc) {
@@ -615,7 +605,7 @@ main(int argc, char *argv[])
     }
 
     /* If -b option is specified, work as a daemon */
-    if (background) 
+    if (background)
 	if (daemon(0, 0) < 0)
 	    fatal_error("daemon()");
 
@@ -634,7 +624,7 @@ main(int argc, char *argv[])
     /* Output any server information to the information file */
     fprintf(info_fp, "PID: %u\n", getpid());
     fflush(info_fp);
-    if (info_fp != stdout) 
+    if (info_fp != stdout)
 	if (fclose(info_fp))
 	    fatal_error("fclose()");
 

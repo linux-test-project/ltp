@@ -58,7 +58,6 @@ int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
-
 #define MAXCHILD	100	/* max number of children to allow */
 int allchild[MAXCHILD +1];
 #define K_1		1024
@@ -162,7 +161,6 @@ int runtest()
 	int	status;
 	int	count;
 
-
 	for (i = 0; i < nchild; i++)
 	{
 		chld_flag = 0;
@@ -239,7 +237,6 @@ int dotest(testers, me)
 	int	collide;
 	char	val;
 	int	chunk;
-
 
 	/*
 	 * Do the mondo-test.
@@ -367,8 +364,6 @@ int dotest(testers, me)
 return 0;
 }
 
-
-
 void bfill(buf, val, size)
 	register char *buf;
 	char	val;
@@ -456,8 +451,6 @@ void dumpbits(bits, size)
 #endif
 }
 
-
-
 /* term()
  *
  *	Parent - kill kids and return when signal arrives.
@@ -518,4 +511,3 @@ int okexit(me)
 
 	return 0;
 }
-

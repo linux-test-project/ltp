@@ -27,7 +27,7 @@
  *		Setup signal handling.
  *		Pause for SIGUSR1 if option specified.
  * 		Create MAX_SWAPFILES - 2 (to support latest kernels) swapfiles
- * 		  	
+ *
  *	Test:
  *		Loop if the proper options are given.
  *		Execute system call.
@@ -190,12 +190,12 @@ int main(int ac, char **av)
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-	}			/* End of TEST LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
 
-}				/* End of main */
+}
 
 /***************************************************************
  * setup_swap() - Create 33 and activate 30 swapfiles.
@@ -424,7 +424,7 @@ int check_and_swapoff(char *filename)
 						"is recommended");
 				rc = -1;
 
-			} 
+			}
 
 		} /* else nothing to clean up. */
 
@@ -440,7 +440,7 @@ int check_and_swapoff(char *filename)
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -451,7 +451,6 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	if (tst_is_cwd_tmpfs()) {
@@ -464,10 +463,9 @@ void setup()
 			 "Cannot do swapon on a file located on a nfs filesystem");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -484,10 +482,6 @@ void cleanup()
 	/* Remove any remaining swap files */
 	clean_swap();
 
-	/* Remove tmp dir and all files inside it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}	/* End cleanup() */
+}

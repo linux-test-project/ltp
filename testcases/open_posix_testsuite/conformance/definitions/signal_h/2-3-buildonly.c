@@ -1,6 +1,6 @@
   /*
   @pt:CX
-  
+
   Test the definition of SIG_HOLD.
   */
 

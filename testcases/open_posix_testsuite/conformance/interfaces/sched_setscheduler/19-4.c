@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -32,14 +32,14 @@ int main() {
 	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
 	param.sched_priority = sched_get_priority_max(SCHED_SPORADIC);
 
 	/* test when sched_ss_max_repl < 1 */
-	param.sched_ss_max_repl = 0;		
+	param.sched_ss_max_repl = 0;
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
-	
+
 	if (result != -1) {
 		printf("The returned code is not -1 when sched_ss_max_repl < 1.\n");
 		result_code = PTS_FAIL;
@@ -73,7 +73,6 @@ int main() {
 		perror("Unknow error when testing sched_ss_max_repl > SS_REPL_MAX");
 		return PTS_FAIL;
 	}
-	
 
 }
 #else

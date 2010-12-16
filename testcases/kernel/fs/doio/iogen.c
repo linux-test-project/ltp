@@ -366,13 +366,11 @@ char	Byte_Patterns[26] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 			      'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
 			      'Y', 'Z' };
 
-
 int form_iorequest(struct io_req *);
 int init_output();
 int parse_cmdline(int argc, char **argv, char *opts);
 int help(FILE *stream);
 int usage(FILE *stream);
-
 
 int
 main(argc, argv)
@@ -382,7 +380,7 @@ char	**argv;
     int	    	    rseed, outfd, infinite;
     time_t  	    start_time;
     struct io_req   req;
-   
+
     umask(0);
 
 #ifdef CRAY
@@ -395,7 +393,7 @@ char	**argv;
     parse_cmdline(argc, argv, OPTS);
 
     /*
-     * Initialize output descriptor. 
+     * Initialize output descriptor.
      */
     if (! p_opt) {
 	outfd = 1;
@@ -571,7 +569,6 @@ init_output()
     return(outfd);
 }
 
-
 /*
  * Main io generation function.  form_iorequest() selects a system call to
  * do based on cmdline arguments, and proceeds to select parameters for that
@@ -714,7 +711,7 @@ struct io_req   *req;
 	    offset -= offset % mult;
 
 	break;
-   
+
     case M_RANDOM:
 	length = random_range(Mintrans, Maxtrans, mult, NULL);
 
@@ -1151,7 +1148,7 @@ int 	nbytes;
 	    f.l_whence = SEEK_SET;
 	    f.l_start = 0;
 	    f.l_len = nbytes;
-	   
+
 	    /*fprintf(stderr,
 		    "create_file: fcntl(%d, F_RESVSP, { %d, %lld, %lld })\n",
 		   fd, f.l_whence, (long long)f.l_start, (long long)f.l_len);*/
@@ -1239,7 +1236,7 @@ int 	nbytes;
 	    if (((long)buf % finfo.d_mem != 0)) {
 		buf += finfo.d_mem - ((long)buf % finfo.d_mem);
 	    }
-	   
+
 	    memset(buf, 0, finfo.d_miniosz);
 
 	    if ((rval=write(fd, buf, finfo.d_miniosz)) != finfo.d_miniosz) {
@@ -1313,7 +1310,7 @@ char	    	*str;
 
     return mp->m_value;
 }
-   
+
 /*
  * Function to convert a string to its corresponding entry in a strmap array.
  * If the string is not found in the array, a NULL is returned.
@@ -1332,7 +1329,6 @@ char	    	*str;
 
     return((mp->m_string == NULL) ? NULL : mp);
 }
-   
 
 /*
  * Function to convert a value to its corresponding string in a strmap array.
@@ -1845,18 +1841,18 @@ char	*opts;
 			fptr->f_lastoffset = 0;
 			fptr->f_lastlength = 0;
 			break;
-		
+
 		    case M_REVERSE:
 			fptr->f_lastoffset = fptr->f_length;
 			fptr->f_lastlength = 0;
 			break;
-		
+
 		    case M_RANDOM:
 			fptr->f_lastoffset = fptr->f_length / 2;
 			fptr->f_lastlength = 0;
 			break;
 		    }
-		   
+
 		    Nfiles++;
 		}
 	    }

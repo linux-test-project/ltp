@@ -99,7 +99,7 @@ main(int argc, char **argv)
 
 	for (signum = start_signum; signum <= end_signum; signum++) {
 
-		switch (child = fork()) { 
+		switch (child = fork()) {
 		case -1:
 			tst_resm(TBROK | TERRNO, "Failed to fork properly.");
 			break;
@@ -190,13 +190,13 @@ main(int argc, char **argv)
 				break;
 
 			}
-				
+
 		}
 		/* Make sure the child dies a quick and painless death ... */
 		kill(child, 9);
 
 	}
-		
+
 	tst_exit();
 
 }

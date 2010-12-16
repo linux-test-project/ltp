@@ -128,13 +128,10 @@ int main(int ac, char **av)
 			&timerem.tv_sec, &timerem.tv_nsec);
 #endif
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -176,14 +173,11 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "child process exited abnormally; "
 					"status = %d", status);
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /*
  * do_child()
@@ -244,7 +238,6 @@ void do_child()
 		/* Record the time after suspension */
 		gettimeofday(&ntime, NULL);
 
-		/* check return code of nanosleep() */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "nanosleep() failed");
 		}
@@ -294,10 +287,9 @@ void do_child()
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Setup signal handler */
@@ -338,6 +330,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

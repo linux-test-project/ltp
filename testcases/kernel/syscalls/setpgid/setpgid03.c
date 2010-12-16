@@ -79,7 +79,6 @@ int main(int ac, char **av)
 	 */
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -135,7 +134,7 @@ int main(int ac, char **av)
 		 */
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_resm(TFAIL, "Fork failed");
-			tst_exit();
+
 		}
 		if (pid == 0) {
 			if (execlp("sleep", "sleep", "3", NULL) < 0) {
@@ -163,7 +162,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	return 0;
+
 }
 
 /*
@@ -187,12 +186,11 @@ void do_child()
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -209,6 +207,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

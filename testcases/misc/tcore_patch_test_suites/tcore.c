@@ -16,14 +16,13 @@
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
 
 // Use gcc -o xmm xmm.c -pthread -lm to compile.
 #include "test.h"
 #include "usctest.h"
 
 /* Extern Global Variables */
-extern int  Tst_count;               /* counter for tst_xxx routines.         */
+extern int  Tst_count;
 extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID     = "tcore";            /* test program identifier.              */
@@ -199,7 +198,7 @@ main (void)
   /* Create the threads */
   pthread_create (&th_a, NULL, producer, 0);
   pthread_create (&th_b, NULL, consumer, 0);
-  
+
   c1 = exp(pid);
   /* Wait until producer and consumer finish. */
   pthread_join (th_a, &retval);
@@ -208,7 +207,6 @@ main (void)
 }
 
 #else /* Not __i386__ */
-
 
 int TST_TOTAL = 0;              /* Total number of test cases. */
 

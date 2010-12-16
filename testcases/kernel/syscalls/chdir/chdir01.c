@@ -139,7 +139,6 @@ int main(int ac, char **av)
 	close(fd);
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -147,12 +146,11 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -180,8 +178,6 @@ void cleanup(void)
 	/* Delete the test directory created in setup(). */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 void checknames(pfilnames, fnamecount, ddir)

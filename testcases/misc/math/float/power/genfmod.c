@@ -35,15 +35,14 @@
 #include        <sys/signal.h>
 #include        <math.h>
 
-
 /* **************************************
  *   create result file
  *
- *  the result is divided into 2 files 
+ *  the result is divided into 2 files
  * 1 double frationnal part of the input result of modf
  * 1 double which is the integral part of the input: tabRI
  *
- */ 
+ */
 int create_Result_file()
 {
 
@@ -55,7 +54,7 @@ int create_Result_file()
 	F_name =  "fmod_out.ref";
 	F_namei =  "fmod_inp.ref";
 	F_namei1 =  "1fmod_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	fpi = open(F_namei,O_RDONLY,0777);
 	fpi1 = open(F_namei1,O_RDONLY,0777);
@@ -86,17 +85,16 @@ int create_Result_file()
 		}
 		else
 		{
-			for (i = 0; i<nbVal; i++) 
+			for (i = 0; i<nbVal; i++)
 			{
 		    	    write(fp,&tabR[i],sizeof(double));
 			}
-	
+
 			close(fp);
 			return 0;
 		}
 	}
 }
-
 
 int create_Data_file()
 {
@@ -107,7 +105,7 @@ int create_Data_file()
 
 	F_name = "fmod_inp.ref";
 	F_name1 = "1fmod_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc =  exp(1)/10;
 
@@ -127,8 +125,8 @@ int create_Data_file()
 	    	return -1;
         }
         else
-        {	
-		for (i = 0; i<nbVal; i++) 
+        {
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabD[i],sizeof(double));
 			write(fp1,&tabD1[i],sizeof(double));
@@ -139,11 +137,10 @@ int create_Data_file()
 	}
 }
 
-
 int main(int argc, char  *argv[])
 {
 
-	if (argc > 1) 
+	if (argc > 1)
 	{
 		switch ( atoi(argv[1]) )
 		{

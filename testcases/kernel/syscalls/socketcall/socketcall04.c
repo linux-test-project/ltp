@@ -111,13 +111,11 @@ int main(int ac, char **av)
 		tst_exit();
 	}
 
-	/* perform global setup for test */
 	setup();
 
 	/* check looping state */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		TC.setupfunc();
@@ -140,8 +138,8 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 /*setup1()*/
 void setup1(void)
@@ -157,10 +155,8 @@ void setup1(void)
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -172,8 +168,6 @@ void cleanup()
 {
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 #else
@@ -184,7 +178,7 @@ int main()
 {
 	tst_resm(TPASS, "socket call test on this architecture disabled.");
 	tst_exit();
-	return 0;
+	tst_exit();
 }
 
 #endif

@@ -18,4 +18,3 @@ int main()
         printf("Will not test whether the file offset is set because it is unspecified.\n");
         return PTS_UNTESTED;
 }
-

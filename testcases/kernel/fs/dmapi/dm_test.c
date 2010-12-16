@@ -174,7 +174,7 @@ void dm_StartLogging(void) {
 			fprintf(dm_fpLogFile, "\n%s starting at %02u:%02u:%02u on %02u/%02u/%04u\n", dm_TestCaseName, pDT->tm_hour, pDT->tm_min, pDT->tm_sec, pDT->tm_mon+1, pDT->tm_mday, pDT->tm_year+1900);
 		else
 			fprintf(dm_fpLogFile, "\n%s starting\n", dm_TestCaseName);
-			
+
 	}
 
 	if (dm_TerminalLoggingLevel) {
@@ -205,7 +205,7 @@ void dm_StopLogging(void) {
 
 	if (dm_PassedVariations)
 		percentSuccess = (dm_PassedVariations * 100)/ranVariations;
-	
+
 	if (gettimeofday(&tv, NULL) != -1)
 		pDT = (struct tm *)localtime_r(&tv.tv_sec, &sDT);
 
@@ -214,7 +214,7 @@ void dm_StopLogging(void) {
 			fprintf(dm_fpLogFile, "%s stopping at %02u:%02u:%02u on %02u/%02u/%04u\n", dm_TestCaseName, pDT->tm_hour, pDT->tm_min, pDT->tm_sec, pDT->tm_mon+1, pDT->tm_mday, pDT->tm_year+1900);
 		else
 			fprintf(dm_fpLogFile, "%s stopping\n", dm_TestCaseName);
-			
+
 		fprintf(dm_fpLogFile, "%s status: %u executed, %u passed, %u failed, %u skipped (%u%%)\n", dm_TestCaseName, ranVariations, dm_PassedVariations, dm_FailedVariations, dm_SkippedVariations, percentSuccess);
 	}
 
@@ -223,7 +223,7 @@ void dm_StopLogging(void) {
 			printf("%s stopping at %02u:%02u:%02u on %02u/%02u/%04u\n", dm_TestCaseName, pDT->tm_hour, pDT->tm_min, pDT->tm_sec, pDT->tm_mon+1, pDT->tm_mday, pDT->tm_year+1900);
 		else
 			printf("%s stopping\n", dm_TestCaseName);
-			
+
 		printf("%s status: %u executed, %u passed, %u failed, %u skipped (%u%%)\n", dm_TestCaseName, ranVariations, dm_PassedVariations, dm_FailedVariations, dm_SkippedVariations, percentSuccess);
 	}
 

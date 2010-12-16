@@ -127,13 +127,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -174,14 +171,14 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
 
-}				/* End main */
+}
 
 /* setup1() - set up non-super user for second test case */
 int setup1(void)
@@ -208,7 +205,6 @@ void cleanup1()
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root  */
@@ -254,10 +250,9 @@ void setup()
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 void cleanup()
 {
@@ -268,10 +263,7 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}				/* End cleanup() */
+}
 
 #else /* __i386__ */
 
@@ -285,7 +277,7 @@ int main()
 	tst_resm(TPASS,
 		 "LSB v1.3 does not specify ioperm() for this architecture.");
 	tst_exit();
-	return 0;
+	tst_exit();
 }
 
 #endif /* __i386__ */

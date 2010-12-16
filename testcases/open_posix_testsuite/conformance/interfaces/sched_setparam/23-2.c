@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -41,8 +41,7 @@ int main() {
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
-	}	
-
+	}
 
 	invalid_priority = sched_get_priority_max(SCHED_SPORADIC);
 	if (invalid_priority == -1) {
@@ -60,7 +59,7 @@ int main() {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (param.sched_priority == old_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

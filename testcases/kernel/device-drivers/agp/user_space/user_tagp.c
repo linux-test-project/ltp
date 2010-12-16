@@ -73,7 +73,6 @@ int tagpopen() {
         }
     }
 
-
     /*
      * Check for the /dev/tbase node, and create if it does not
      * exist.
@@ -116,7 +115,6 @@ int tagpopen() {
 
 }
 
-
 int
 tagpclose() {
 
@@ -124,7 +122,7 @@ tagpclose() {
 		close (tagp_fd);
 		tagp_fd = -1;
 	}
-	
+
 	return 0;
 }
 
@@ -142,7 +140,6 @@ int agpgart_io_test()
 
 	return 0;
 }
-
 
 int main() {
 	int rc;
@@ -182,7 +179,7 @@ int main() {
 		printf("Fail on agp_alloc_bridge \n");
 	else
 		printf("Success on agp_alloc_bridge\n");
-	
+
 	/* make test calls for and agp_put_bridge */
 	if (ki_generic(tagp_fd, TEST_PUT_BRIDGE))
 		printf("Fail on agp_put_bridge\n");
@@ -205,7 +202,7 @@ int main() {
 		printf("Fail on agp_num_entries\n");
 	else
 		printf("Success on agp_num_entries\n");
-	
+
 	/* make test calls for agp_copy_info */
 	if (ki_generic(tagp_fd, TEST_COPY_INFO))
 		printf("Fail on agp_copy_info\n");
@@ -217,69 +214,67 @@ int main() {
 //		printf("Fail on agp_alloc_memory_and_band_unband\n");
 //	else
 //		printf("Success on agp_alloc_memory_and_band_unband\n");
-	
+
 	/* make test calls for agp_get_version */
 	if (ki_generic(tagp_fd, TEST_GET_VERSION))
 		printf("Fail on agp_get_version\n");
 	else
 		printf("Success on agp_get_version\n");
-	
+
 	/* make test calls for agp_generic_enable */
 	if (ki_generic(tagp_fd, TEST_GENERIC_ENABLE))
 		printf("Fail on agp_generic_enable\n");
 	else
 		printf("Success on agp_generic_enable\n");
-	
+
 	/* make test calls for agp_generic_create_gatt_table */
 	if (ki_generic(tagp_fd, TEST_GENERIC_CREATE_GATT_TABLE))
 		printf("Fail on agp_generic_create_gatt_table\n");
 	else
 		printf("Success on agp_generic_create_gatt_table\n");
-	
-	
+
 	/* make test calls for agp_generic_free_gatt_table */
 	if (ki_generic(tagp_fd, TEST_GENERIC_FREE_GATT_TABLE))
 		printf("Fail on agp_generic_free_gatt_table\n");
 	else
 		printf("Success on agp_generic_free_gatt_table\n");
-	
-	
+
 	/* make test calls for agp_generic_insert_memory */
 	if (ki_generic(tagp_fd, TEST_GENERIC_INSERT_MEMROY))
 		printf("Fail on agp_generic_insert_memory\n");
 	else
 		printf("Success on agp_generic_insert_memory\n");
-	
+
 	/* make test calls for agp_generic_alloc_by_type */
 	if (ki_generic(tagp_fd, TEST_GENERIC_ALLOC_BY_TYPE))
 		printf("Fail on agp_generic_alloc_by_type\n");
 	else
 		printf("Success on agp_generic_alloc_by_type\n");
-	
+
 	/* make test calls for agp_generic_alloc_page */
 	if (ki_generic(tagp_fd, TEST_GENERIC_ALLOC_PAGE))
 		printf("Fail on agp_generic_alloc_page\n");
 	else
 		printf("Success on agp_generic_alloc_page\n");
-	
+
 	/* make test calls for agp_generic_destory_page */
 	if (ki_generic(tagp_fd, TEST_GENERIC_ALLOC_PAGE))
 		printf("Fail on agp_generic_destory_page\n");
 	else
 		printf("Success on agp_generic_destory_page\n");
-			
+
 	/* make test calls for agp_enable */
 	if (ki_generic(tagp_fd, TEST_ENABLE))
 		printf("Fail on agp_enable\n");
 	else
 		printf("Success on agp_enable\n");
-			
+
 	/* make test calls for agp_global_cache_flush */
 	if (ki_generic(tagp_fd, TEST_GLOBAL_CACHE_FLUSH))
 		printf("Fail on agp_global_cache_flush\n");
 	else
 		printf("Success on agp_gloabl_cache_flush\n");
-			
+
 	/* make test calls for agp_generic_mask_memory */
 	if (ki_generic(tagp_fd, TEST_GENERIC_MASK_MEMORY))
 		printf("Fail on agp_generic_mask_memory\n");

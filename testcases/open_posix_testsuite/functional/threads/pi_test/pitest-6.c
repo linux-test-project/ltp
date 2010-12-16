@@ -8,28 +8,28 @@
  */
 
 /* There are n TF threads, n is equal to the processors in the system minus
- * one. TFs are used to keep busy these CPUs, which have priority 3. A 
- * TL thread with lower priority 1 is created, which locks a mutex and 
+ * one. TFs are used to keep busy these CPUs, which have priority 3. A
+ * TL thread with lower priority 1 is created, which locks a mutex and
  * does workload. A TB thread with higher priority 4 is created and try
  * to lock TL's mutex. A TP thread with priority 2 is created to reflect the
- * priority change of TL. Main thread has the highest priority 6, which will 
- * control the running steps of those threads, including creating threads, 
+ * priority change of TL. Main thread has the highest priority 6, which will
+ * control the running steps of those threads, including creating threads,
  * stopping threads. There is another thread to collect the sample data with
  * priority 5.
- * 
+ *
  * Steps:
- * 1.	Create n TF threads, n is equal to processors number minus one. TF 
+ * 1.	Create n TF threads, n is equal to processors number minus one. TF
  * 	will do workload.
- * 2.	Create 1 TP thread and do workload. The thread will keep running when 
- * 	TL is created. 
- * 3.	Create 1 TL thread to lock a mutex. TL will get a chance to run 
+ * 2.	Create 1 TP thread and do workload. The thread will keep running when
+ * 	TL is created.
+ * 3.	Create 1 TL thread to lock a mutex. TL will get a chance to run
  *      when TP sleep a wee bit in between.
- * 4.	Create 1 TB thread to lock the mutex. TL's priority will boost to 
+ * 4.	Create 1 TB thread to lock the mutex. TL's priority will boost to
  *  	TB's priority, which will cause TP having no chance to run.
- * 5.	Set TB's prioirty to 1, TL's priority will decrease. So TP and TL 
+ * 5.	Set TB's prioirty to 1, TL's priority will decrease. So TP and TL
  * 	will keep working as before.
  * 6.	Stop these threads.
- * 
+ *
  * NOTE: Most of the code is ported from test-11 written by inkay.
  */
 
@@ -80,11 +80,11 @@ void do_work(unsigned granularity_top, volatile unsigned *progress)
 	unsigned granularity_cnt, i;
 	unsigned top = 5 * 1000 * 1000;
 	unsigned dummy = do_work_dummy;
-	
-	for (granularity_cnt = 0; granularity_cnt < granularity_top; 
+
+	for (granularity_cnt = 0; granularity_cnt < granularity_top;
 	     granularity_cnt++)
 	{
-		for (i = 0; i < top; i++) 
+		for (i = 0; i < top; i++)
 			dummy = i | dummy;
 		(*progress)++;
 	}
@@ -107,9 +107,9 @@ void *thread_fn(void *param)
 #endif
 	test_set_priority(pthread_self(), SCHED_FIFO, tp->priority);
 	DPRINTF(stderr,"Thread %s index %d: started\n", tp->name, tp->index);
-	DPRINTF(stdout, "#EVENT %f Thread %s Started\n", 
+	DPRINTF(stdout, "#EVENT %f Thread %s Started\n",
 		seconds_read() - base_time, tp->name);
-	
+
 	tp->progress = 0;
 	ts.tv_sec = 0;
 	ts.tv_nsec = tp->sleep_ms * 1000 * 1000;
@@ -125,8 +125,8 @@ void *thread_fn(void *param)
 			exit(UNRESOLVED);
 		}
 	}
-	
-	DPRINTF(stdout, "#EVENT %f Thread %s Started\n", 
+
+	DPRINTF(stdout, "#EVENT %f Thread %s Started\n",
 		seconds_read() - base_time, tp->name);
 	return NULL;
 }
@@ -146,9 +146,9 @@ void *thread_tl(void *param)
 #endif
 
 	test_set_priority(pthread_self(), SCHED_FIFO, tp->priority);
-	
+
 	DPRINTF(stderr,"Thread %s index %d: started\n", tp->name, tp->index);
-	DPRINTF(stdout, "#EVENT %f Thread %s Started\n", 
+	DPRINTF(stdout, "#EVENT %f Thread %s Started\n",
 		seconds_read() - base_time, tp->name);
 	tp->progress = 0;
 	pthread_mutex_lock(&mutex);
@@ -157,7 +157,7 @@ void *thread_tl(void *param)
 		do_work(5, &tp->progress);
 	}
 	pthread_mutex_unlock(&mutex);
-	DPRINTF(stdout, "#EVENT %f Thread %s Stopted\n", 
+	DPRINTF(stdout, "#EVENT %f Thread %s Stopted\n",
 		seconds_read() - base_time, tp->name);
 	return NULL;
 }
@@ -179,12 +179,12 @@ void *thread_sample(void *arg)
 	DPRINTF(stdout, "\n");
 	ts.tv_sec = 0;
 	ts.tv_nsec = period * 1000 * 1000;
-	
-	while (!ts_stop) 
+
+	while (!ts_stop)
 	{
-		size = snprintf(buffer, 1023, "%f ", seconds_read() - base_time); 
-		for (i = 0; i < cpus + 1; i++) 
-			size += snprintf(buffer + size, 1023 - size, "%u ", tp[i].progress); 
+		size = snprintf(buffer, 1023, "%f ", seconds_read() - base_time);
+		for (i = 0; i < cpus + 1; i++)
+			size += snprintf(buffer + size, 1023 - size, "%u ", tp[i].progress);
 		DPRINTF(stdout,"%s\n", buffer);
 		rc = nanosleep(&ts, NULL);
 		if (rc < 0)
@@ -202,26 +202,26 @@ void *thread_tb(void *arg)
 
 	test_set_priority(pthread_self(), SCHED_FIFO, 4);
 	DPRINTF(stderr,"Thread TB: started\n");
-	
-	DPRINTF(stdout, "#EVENT %f TB Started, waiting for mutex for %lu s\n", 
+
+	DPRINTF(stdout, "#EVENT %f TB Started, waiting for mutex for %lu s\n",
 		seconds_read() - base_time, *(time_t *)arg);
 
 	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 
 	t0 = seconds_read();
-	rc = pthread_mutex_timedlock(&mutex, &boost_time);	
+	rc = pthread_mutex_timedlock(&mutex, &boost_time);
 	t1 = seconds_read();
-	DPRINTF(stdout, "#EVENT %f TB Thread Waited for %.2f s\n", 
+	DPRINTF(stdout, "#EVENT %f TB Thread Waited for %.2f s\n",
 		seconds_read() - base_time, t1 - t0);
-	
+
 	if (rc != ETIMEDOUT && rc != 0) {
 		EPRINTF("FAIL: Thread TB: lock returned %d %s, "
 			"slept %f", rc, strerror(rc), t1 - t0);
 		exit(FAIL);
 	}
-	
-	DPRINTF(stdout, "#EVENT %f TB Stopped\n", 
+
+	DPRINTF(stdout, "#EVENT %f TB Stopped\n",
 		seconds_read() - base_time);
 	return NULL;
 }
@@ -236,13 +236,13 @@ int main(int argc, char **argv)
 	time_t multiplier = 1;
 	int i;
 	int rc;
-	
+
 	test_set_priority(pthread_self(), SCHED_FIFO, 6);
 	base_time = seconds_read();
 	cpus = sysconf(_SC_NPROCESSORS_ONLN);
 
 	/* Initialize a mutex with PTHREAD_PRIO_INHERIT protocol */
-	mutex_attr_init(&mutex_attr); 
+	mutex_attr_init(&mutex_attr);
 	mutex_init(&mutex, &mutex_attr);
 
 	/* Initialize thread attr */
@@ -259,9 +259,9 @@ int main(int argc, char **argv)
 
 	/* Start the TF threads */
 	DPRINTF(stderr,"Main Thread: Creating %d TF threads\n", cpus-1);
-	for (i = 0; i < cpus - 1; i++) 
+	for (i = 0; i < cpus - 1; i++)
 	{
-		rc = pthread_create(&threads[i], &threadattr, thread_fn, 
+		rc = pthread_create(&threads[i], &threadattr, thread_fn,
 				    &tp[i + 2]);
 	        if (rc != 0) {
 	                EPRINTF("UNRESOLVED: pthread_create: %d %s",
@@ -294,7 +294,7 @@ int main(int argc, char **argv)
 
 	/* Start TB thread (boosting thread) */
 	unsigned long timeout = multiplier * 20;
-	rc = pthread_create(&threadtb, &threadattr, thread_tb, 
+	rc = pthread_create(&threadtb, &threadattr, thread_tb,
 			    &timeout);
         if (rc != 0) {
                 EPRINTF("UNRESOLVED: pthread_create: %d %s",
@@ -303,7 +303,7 @@ int main(int argc, char **argv)
         }
 	sleep(base_time + multiplier * 40 - seconds_read());
 
-	/* Decrease TB's priority */ 
+	/* Decrease TB's priority */
 	DPRINTF(stderr,"Main Thread: decrease TB's priority to 1\n");
 	test_set_priority(threadtb, SCHED_FIFO, 1);
 	DPRINTF(stdout, "#EVENT %f TB's priority decreased\n",
@@ -327,6 +327,5 @@ int main(int argc, char **argv)
 	/* Stop sampler */
 	ts_stop = 1;
 	DPRINTF(stderr,"Main Thread: stop sampler thread\n");
-	return 0;
+	tst_exit();
 }
-

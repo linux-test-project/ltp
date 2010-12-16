@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -11,14 +11,14 @@
  *  If one or more process have the message queue open, destruction of the
  *  message queue will be postponed until all reference to the message queue
  *  have been closed. At this time, call to mq_open() with O_CREAT flag may fail
- *  until the message queue is actually removed. 
+ *  until the message queue is actually removed.
  *  Steps:
  *  1. Create 2 pipes to communicate with parent and child processes.
  *  2. Parent uses mq_open to create a new mq and tell child to open it using pipe.
  *  3. Child open the mq and tell Parent, so mq has 2 reference now.
- *  4. Parent mq_unlink the mq and tell Child to close this mq. 
+ *  4. Parent mq_unlink the mq and tell Child to close this mq.
  *  5. Child close the mq and tell parent.
- *  6. Parent recreate the mq using mq_open, if the mq is actually removed, this operation 
+ *  6. Parent recreate the mq using mq_open, if the mq is actually removed, this operation
  *     will succeed, if not, it may fail.
  */
 
@@ -173,7 +173,7 @@ int child_process(char *mqname, int read_pipe, int write_pipe)
 	return 0;
 }
 
-int send_receive(int read_pipe, int write_pipe, char send, char *reply) 
+int send_receive(int read_pipe, int write_pipe, char send, char *reply)
 {
         ssize_t bytes;
         if (send) {

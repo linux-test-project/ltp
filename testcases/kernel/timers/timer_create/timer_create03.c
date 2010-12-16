@@ -93,7 +93,7 @@ cleanup(void)
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-}	/* End cleanup() */
+}
 
 int
 main(int ac, char **av)
@@ -113,13 +113,10 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -133,9 +130,9 @@ main(int ac, char **av)
 				(TEST_RETURN == 0 ? "passed" : "failed"),
 				message[i]);
 
-		}	/* End of TEST CASE LOOPING */
+		}
 
-	}		/* End for TEST_LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
@@ -168,9 +165,8 @@ setup_test(int option)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }

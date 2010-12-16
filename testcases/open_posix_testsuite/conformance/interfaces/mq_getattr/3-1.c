@@ -2,17 +2,17 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 /*
  *  mq_getattr() test plan:
- *  mq_getattr gets mq_maxmsg, mq_msgsize, which are set when message queue 
+ *  mq_getattr gets mq_maxmsg, mq_msgsize, which are set when message queue
  *  was opened.
- *  
- *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq
  *		resources
- *  
+ *
  */
 
 #include <stdio.h>
@@ -44,7 +44,7 @@ int main()
 
 	memset(&mqstat,0,sizeof(mqstat));
 	mqstat.mq_msgsize = MSGSIZE;
-	mqstat.mq_maxmsg = MAXMSG; 
+	mqstat.mq_maxmsg = MAXMSG;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &mqstat);
 	if (mqdes == (mqd_t)-1) {
 		perror(ERROR_PREFIX "mq_open()");
@@ -55,7 +55,7 @@ int main()
 		perror(ERROR_PREFIX "mq_getattr");
 		unresolved = 1;
 	}
-	if ((mqstat.mq_maxmsg != nmqstat.mq_maxmsg) || 
+	if ((mqstat.mq_maxmsg != nmqstat.mq_maxmsg) ||
             (mqstat.mq_msgsize != nmqstat.mq_msgsize)) {
 		printf("FAIL: mq_getattr didn't get the correct mq_maxmsg, "
                        "mq_msgsize set by mq_open\n");

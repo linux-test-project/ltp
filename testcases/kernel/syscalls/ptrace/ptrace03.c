@@ -64,7 +64,7 @@
  *			Test Passed
  *	 	else
  *			Test failed
- *	
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *
@@ -135,13 +135,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -212,7 +209,7 @@ int main(int ac, char **av)
 
 	tst_exit();
 
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
@@ -224,10 +221,9 @@ void setup()
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -242,6 +238,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

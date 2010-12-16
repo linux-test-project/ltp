@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_key_create()
@@ -17,7 +17,7 @@
  * 1. Define an array of keys
  * 2. Use pthread_key_create() and create those keys
  * 3. Verify that you can set and get specific values for those keys without errors.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -49,7 +49,7 @@ int main()
 				printf("Error: pthread_setspecific() failed\n");
 				return PTS_UNRESOLVED;
 			}
-			
+
 		}
 	}
 

@@ -169,7 +169,7 @@ int main(int ac, char **av)
 		close(fd);
 	}
 	cleanup();
-	return 0;
+	tst_exit();
  }
 
 #else
@@ -177,7 +177,7 @@ int main(int ac, char **av)
 int main()
 {
 	tst_resm(TINFO, "Ignore this test on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* UCLINUX */
@@ -227,10 +227,9 @@ void setup3()
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -246,6 +245,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

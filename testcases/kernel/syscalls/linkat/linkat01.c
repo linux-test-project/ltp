@@ -227,7 +227,6 @@ int main(int ac, char **av)
 	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -238,7 +237,7 @@ int main(int ac, char **av)
 			mylinkat_test(&test_desc[i]);
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/***************************************************************
 	 * cleanup and exit
@@ -246,7 +245,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return (0);
-}				/* End main */
+}
 
 static void setup_every_copy()
 {
@@ -330,7 +329,6 @@ void setup()
 {
 	char *cwd;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();
@@ -362,12 +360,11 @@ void setup()
 
 		free(cwd);
 
-		/* Pause if that option was specified */
 		TEST_PAUSE;
 
 	}
 
-} /* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -382,6 +379,4 @@ static void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

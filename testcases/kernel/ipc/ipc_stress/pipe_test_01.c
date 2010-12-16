@@ -65,13 +65,11 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-
 /* Function prototypes */
 void sys_error (const char *, int);	/* System error message function */
 void error (const char *, int);	/* Error message function */
 void setup_handler ();		/* Sets up signal catching function */
 void handler (int, int, struct sigcontext *);	/* Signal catching function */
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -112,7 +110,7 @@ int main (int argc, char **argv)
 	if ((pid [childA] = fork()) < 0)
 		sys_error ("fork failed", __LINE__);
 
-	if (pid [childA] == 0) { 
+	if (pid [childA] == 0) {
 		/* Child process */
 
 		close (fd [READ]);
@@ -173,7 +171,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                          setup_handler ()                            |
 | ==================================================================== |
@@ -193,7 +190,6 @@ void setup_handler ()
 		sys_error ("sigaction failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             handler ()                               |
 | ==================================================================== |
@@ -207,7 +203,6 @@ void handler (int sig, int code, struct sigcontext *scp)
 {
 	error ("wrote to pipe with closed read end", __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
@@ -223,7 +218,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

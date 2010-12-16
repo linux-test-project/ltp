@@ -196,4 +196,3 @@ void signal_handler_alarm (int signal)
 {
 	timer_expired = 1;
 }
-

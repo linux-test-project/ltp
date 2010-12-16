@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 	int offset;
 	struct sctp_send_failed *ssf;
 	socklen_t len; /* Really becomes 2xlen when set. */
-	int orig_len; 
+	int orig_len;
 	struct sctp_status gstatus;
 
         /* Rather than fflush() throughout the code, set stdout to
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 	 * 1) Reduce the rcvbuf size on the socket
 	 * 2) create an association so that we advertize rcvbuf/2 as
 	 *    our initial rwnd
-	 * 3) raise the rcvbuf value so that we don't drop data wile 
+	 * 3) raise the rcvbuf value so that we don't drop data wile
 	 *    receiving later data
 	 */
 	len = SMALL_RCVBUF;
@@ -258,13 +258,13 @@ int main(int argc, char *argv[])
 	memset(&gstatus,0,sizeof(struct sctp_status));
 	gstatus.sstat_assoc_id = associd1;
 	error = getsockopt(sk1, IPPROTO_SCTP, SCTP_STATUS, &gstatus, &len);
-	
+
 	if (error)
 		tst_brkm(TBROK, NULL, "can't get rwnd size: %s",
 			strerror(errno));
 	tst_resm(TINFO, "Creating fillmsg of size %d",
 		 gstatus.sstat_rwnd+RWND_SLOP);
-	fillmsg = malloc(gstatus.sstat_rwnd+RWND_SLOP);	
+	fillmsg = malloc(gstatus.sstat_rwnd+RWND_SLOP);
 
 	/* Send a fillmsg */
         outmessage.msg_controllen = sizeof(outcmsg);

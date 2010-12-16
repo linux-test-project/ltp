@@ -26,13 +26,11 @@
 #include <unistd.h>
 #include <signal.h>
 
-
 int main (int argc, char **argv)
 {
 	struct timeval start, now;
 	pid_t child_root;
 	unsigned int duration = 1, num_tasks = 0;
-
 
 	if (argc > 1) {
 		int i;

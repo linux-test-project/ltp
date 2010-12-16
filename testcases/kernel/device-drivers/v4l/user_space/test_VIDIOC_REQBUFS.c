@@ -341,7 +341,6 @@ void test_VIDIOC_REQBUFS_invalid_memory_output() {
 	do_VIDIOC_REQBUFS_invalid_memory(V4L2_BUF_TYPE_VIDEO_OUTPUT, SINT_MAX);
 }
 
-
 static void do_VIDIOC_REQBUFS_invalid_type(enum v4l2_memory memory, enum v4l2_buf_type type) {
 	int ret_req, errno_req;
 	struct v4l2_requestbuffers reqbuf;

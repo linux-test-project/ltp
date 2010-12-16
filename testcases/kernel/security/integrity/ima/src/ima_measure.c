@@ -182,7 +182,6 @@ main(int argc, char *argv[])
 		SHA1_Update(&c, template.header.digest, 20);
 		SHA1_Final(pcr, &c);
 
-
 		print_info("%3d %03u ", count++, template.header.pcr);
 		display_sha1_digest(template.header.digest);
 		if (template.header.name_len > TCG_EVENT_NAME_LEN_MAX) {

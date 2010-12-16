@@ -1,24 +1,23 @@
-/* 
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Test that pthread_condattr_destroy()
  *    shall destroy a condition variable attributes object.
- * 
+ *
  * Steps:
  * 1.  Initialize a pthread_condattr_t object using pthread_condattr_init()
  * 2.  Destroy the attributes object using pthread_condattr_destroy()
- * 
+ *
  */
 
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 int main()
 {
@@ -41,7 +40,5 @@ int main()
 	}
 
 	printf("Test PASSED\n");
-	return PTS_PASS;	
+	return PTS_PASS;
 }
-
-

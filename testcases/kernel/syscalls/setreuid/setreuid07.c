@@ -95,7 +95,7 @@ int main(int ac, char **av)
 
 	if (pid == 0) {
 		do_master_child();
-		return 0;
+
 	} else {
 		waitpid(pid, &status, 0);
 		if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
@@ -104,7 +104,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -116,7 +116,6 @@ void do_master_child()
 	int pid;
 	int status;
 
-	/* Check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int tst_fd;
 
@@ -215,7 +214,6 @@ void setup(void)
 
 	ltpuser = getpwnam(nobody_uid);
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(testfile, "setreuid07file%d.tst", getpid());
@@ -225,10 +223,8 @@ void setup(void)
 	if (fd < 0)
 		tst_brkm(TBROK, cleanup, "cannot creat test file");
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -246,9 +242,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

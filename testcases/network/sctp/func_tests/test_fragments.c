@@ -40,16 +40,16 @@
  *    Sridhar Samudrala <sri@us.ibm.com>
  */
 
-/* This is a functional test to verify the data fragmentation, reassembly 
- * support and SCTP_DISABLE_FRAGMENTS socket option. 
+/* This is a functional test to verify the data fragmentation, reassembly
+ * support and SCTP_DISABLE_FRAGMENTS socket option.
  * The following tests are done in sequence.
  * - Verify SCTP_DISABLE_FRAGMENTS socket option by doing a setsockopt()
  *   followed by a getsockopt().
  * - Verify that a message size exceeding the association fragmentation
  *   point cannot be sent when fragmentation is disabled.
- * - Send and receive a set of messages that are bigger than the path mtu. 
- *   The different message sizes to be tested are specified in the array 
- *   msg_sizes[]. 
+ * - Send and receive a set of messages that are bigger than the path mtu.
+ *   The different message sizes to be tested are specified in the array
+ *   msg_sizes[].
  */
 
 #include <stdio.h>
@@ -96,10 +96,10 @@ main(int argc, char *argv[])
 	int disable_frag;
 	socklen_t optlen;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered. 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
 	 */
-	setvbuf(stdout, NULL, _IONBF, 0); 
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	/* Set some basic values which depend on the address family. */
 #if TEST_V6
@@ -157,19 +157,18 @@ main(int argc, char *argv[])
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
 	ppid = rand(); /* Choose an arbitrary value. */
-	stream = 1; 
+	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
-	msg_len = 10;	
+	msg_len = 10;
 	msg_buf = test_build_msg(10);
         outmessage.msg_iov->iov_base = msg_buf;
         outmessage.msg_iov->iov_len = msg_len;
         test_sendmsg(sk1, &outmessage, 0, msg_len);
-        
 
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-        memset(&inmessage, 0, sizeof(inmessage));	
+        memset(&inmessage, 0, sizeof(inmessage));
         iov.iov_base = big_buffer;
         iov.iov_len = REALLY_BIG;
         inmessage.msg_iov = &iov;
@@ -181,7 +180,7 @@ main(int argc, char *argv[])
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	associd2 = sac->sac_assoc_id;
 
@@ -190,7 +189,7 @@ main(int argc, char *argv[])
         error = test_recvmsg(sk1, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	associd1 = sac->sac_assoc_id;
 
@@ -208,7 +207,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "setsockopt(SCTP_DISABLE_FRAGMENTS)");
 
-	/* Do a getsockopt() and verify that fragmentation is disabled. */ 
+	/* Do a getsockopt() and verify that fragmentation is disabled. */
 	disable_frag = 0;
 	optlen = sizeof(disable_frag);
 	error = test_getsockopt(sk1, SCTP_DISABLE_FRAGMENTS, &disable_frag,
@@ -251,12 +250,12 @@ main(int argc, char *argv[])
         	outmessage.msg_iov->iov_base = msg_buf;
         	outmessage.msg_iov->iov_len = msg_len;
         	bytes_sent = test_sendmsg(sk1, &outmessage, 0, msg_len);
-		
+
 		tst_resm(TINFO, "Sent %d byte message", bytes_sent);
 
         	inmessage.msg_controllen = sizeof(incmsg);
         	error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
-		/* Handle Partial Reads. */ 
+		/* Handle Partial Reads. */
 		if (inmessage.msg_flags & MSG_EOR) {
 	        	test_check_msg_data(&inmessage, error, bytes_sent,
 					    MSG_EOR, stream, ppid);
@@ -291,9 +290,9 @@ main(int argc, char *argv[])
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
 				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);
-				
+
         close(sk2);
 
         /* Indicate successful completion.  */
-       	return 0; 
+       	tst_exit();
 }

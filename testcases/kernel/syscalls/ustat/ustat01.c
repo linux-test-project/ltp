@@ -99,12 +99,10 @@ int main(int argc, char *argv[])
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -118,21 +116,18 @@ int main(int argc, char *argv[])
 			} else {
 				tst_resm(TPASS, "ustat(2) passed");
 			}
-		}		/* End of the test case loop */
-	}			/* End of tests loop */
+		}
+	}
 	cleanup();
 
-	/* NOT REACHED */
-	return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Allocate memory for stat and ustat structure variables */
@@ -153,7 +148,7 @@ void setup()
 	}
 
 	dev_num = buf->st_dev;
-}				/* End setup() */
+}
 
 /*
  * cleanup() - Performs one time cleanup for this test at
@@ -168,6 +163,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -122,7 +122,7 @@ int main(int ac, char *av[])
 
 	if (signal(SIGTERM, term) == SIG_ERR) {
 		tst_resm(TBROK,"first signal failed");
-		tst_exit();
+
 	}
 
 	/* use the default values for run conditions */
@@ -162,7 +162,7 @@ int main(int ac, char *av[])
 		for (k = 0; k < nchild; k++) {
 			if ((child = fork()) == 0) {
 				dotest(k, iterations);
-				tst_exit();
+
 			}
 			if (child < 0) {
 				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
@@ -216,7 +216,7 @@ int main(int ac, char *av[])
 
 		if (pid == 0) {
 			execl("/bin/rm", "rm", "-rf", homedir, NULL);
-			tst_exit();
+
 		} else
 			wait(&status);
 
@@ -382,7 +382,6 @@ static void fussdir(int me, int count)
 	strcpy(dirname, savedir);
 }
 
-
 /*
  * dotest()
  *	Children execute this.
@@ -422,7 +421,6 @@ static void dotest(int me, int count)
 
 	//tst_resm(TINFO,"Test %d pid %d exiting.", me, getpid());
 }
-
 
 static void dowarn(int me, char *m1, char *m2)
 {
@@ -480,5 +478,5 @@ static void cleanup(void)
 		}
 	}
 	tst_rmdir();
-	tst_exit();
+
 }

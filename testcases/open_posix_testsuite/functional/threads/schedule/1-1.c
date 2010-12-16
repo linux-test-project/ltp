@@ -48,7 +48,7 @@ float timediff(struct timespec t2, struct timespec t1)
 	return diff;
 }
 
-/* This signal handler will wakeup the high priority thread by 
+/* This signal handler will wakeup the high priority thread by
  * calling barrier wait
  */
 void signal_handler(int sig)
@@ -63,7 +63,7 @@ void signal_handler(int sig)
 }
 
 void *hi_priority_thread(void *tmp)
-{	
+{
 	struct sched_param   param;
 	int                  policy;
 	int                  rc = 0;
@@ -100,8 +100,8 @@ void *hi_priority_thread(void *tmp)
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* This variable is unprotected because the scheduling removes 
-	 * the contention 
+	/* This variable is unprotected because the scheduling removes
+	 * the contention
 	 */
 	if (low_done != 1)
 		woken_up = 1;
@@ -140,7 +140,7 @@ void *low_priority_thread(void *tmp)
 			break;
 	}
 	low_done = 1;
-	
+
 	pthread_exit((void *) 0);
 }
 
@@ -150,7 +150,7 @@ int main()
 	pthread_attr_t            low_attr, high_attr;
 	struct sched_param        param;
 	int                       rc = 0;
-	
+
 	/* Initialize the barrier */
 	rc = pthread_barrier_init(&barrier, NULL, 2);
 	if (rc != 0) {

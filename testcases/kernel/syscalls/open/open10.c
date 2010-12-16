@@ -502,7 +502,7 @@ int main(int ac, char *av[])
 
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }
 
 void cleanup(void)
@@ -513,9 +513,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

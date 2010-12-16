@@ -36,17 +36,17 @@ main (int argc, char *argv[])
 		perror("createfile");
 	if (fsize >= BUFSIZ) {
 		count = fsize / BUFSIZ;
-		remain = fsize % BUFSIZ; 
+		remain = fsize % BUFSIZ;
 	} else
 		remain = fsize;
 	while (count-- !=0) {
-		if ((n = write(fd, buf, BUFSIZ)) != BUFSIZ) 
+		if ((n = write(fd, buf, BUFSIZ)) != BUFSIZ)
 			perror("createfile");
 	}
 	if ((n = write(fd, buf, remain)) != remain)
 		perror("createfile");
 	close(fd);
 
-	return 0;
+	tst_exit();
 
 }

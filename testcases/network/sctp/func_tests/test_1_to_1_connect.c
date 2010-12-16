@@ -13,7 +13,7 @@
  * TEST7: Connect when accept queue is full
  * TEST8: On a listening socket
  * TEST9: On established socket
- * TEST10: Connect to re-establish a closed association. 
+ * TEST10: Connect to re-establish a closed association.
  *
  * The SCTP reference implementation is free software;
  * you can redistribute it and/or modify it under the terms of
@@ -109,7 +109,6 @@ main(int argc, char *argv[])
 	/*Listening the socket*/
 	test_listen(lstn_sk, SK_MAX-1);
 
-
 	/*connect () TEST1: Bad socket descriptor, EBADF Expected error*/
 	len = sizeof(struct sockaddr_in);
 	error = connect(-1, (const struct sockaddr *) &conn_addr, len);
@@ -118,7 +117,7 @@ main(int argc, char *argv[])
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() with bad socket descriptor - EBADF");
-	
+
 	/*connect () TEST2: Invalid socket, ENOTSOCK Expected error*/
 	error = connect(0, (const struct sockaddr *) &conn_addr, len);
 	if (error != -1 || errno != ENOTSOCK)
@@ -155,7 +154,7 @@ main(int argc, char *argv[])
 	conn_addr.sin_family = AF_INET;
 
 	/*connect () TEST6: Blocking connect, should pass*/
-	/*All the be below blocking connect should pass as socket will be 
+	/*All the be below blocking connect should pass as socket will be
 	listening SK_MAX clients*/
 	for (i = 0 ; i < SK_MAX ; i++) {
 		error = connect(clnt_sk[i], (const struct sockaddr *)&conn_addr,
@@ -176,7 +175,7 @@ main(int argc, char *argv[])
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() when accept queue is full - ECONNREFUSED");
-	
+
 	/*Calling a accept first to estblish the pending connections*/
 	for (i=0 ; i < SK_MAX ; i++)
 		acpt_sk[i] = test_accept(lstn_sk,
@@ -202,7 +201,7 @@ main(int argc, char *argv[])
 	for (i = 0 ; i < 4 ; i++) {
 		close(clnt_sk[i]);
 		close(acpt_sk[i]);
-	} 
+	}
 
 	/* connect() TEST10: Re-establish an association that is closed.
 	 * should succeed.
@@ -219,5 +218,5 @@ main(int argc, char *argv[])
 	close(sk1);
 	close(lstn_sk);
 
-	return 0;
+	tst_exit();
 }

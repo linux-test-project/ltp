@@ -91,7 +91,6 @@ int main(int ac, char **av)
 
 	setup();		/* set "tstdir", and "fname" vars */
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -108,8 +107,6 @@ int main(int ac, char **av)
 		test4();
 	}
 	cleanup();
-
-	tst_exit();
 
 }
 
@@ -352,10 +349,8 @@ void setup()
 
 	umask(0);
 
-	/* capture signals */
 	tst_sig(FORK, sighandler, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -376,10 +371,7 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	unlink(filename);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -143,7 +143,6 @@ void test_VIDIOC_ENUMAUDOUT_S32_MAX_1() {
 	CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
 }
 
-
 void test_VIDIOC_ENUMAUDOUT_U32_MAX() {
 	int ret_enum, errno_enum;
 	struct v4l2_audioout audioout;

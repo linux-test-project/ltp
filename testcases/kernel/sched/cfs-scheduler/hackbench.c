@@ -22,7 +22,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /******************************************************************************/
 /*                                                                            */
 /* File:        hackbench.c                                                   */
@@ -60,7 +59,6 @@
 #include <sys/poll.h>
 #include <limits.h>
 
-
 #define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 #define DATASIZE 100
 static struct sender_context ** snd_ctx_tab;      /*Table for sender context pointers.*/
@@ -87,7 +85,6 @@ struct receiver_context {
 	int ready_out;
 	int wakefd;
 };
-
 
 static void barf(const char *msg)
 {
@@ -153,7 +150,6 @@ again:
 
 	return NULL;
 }
-
 
 /* One receiver per fd */
 static void *receiver(struct receiver_context* ctx)

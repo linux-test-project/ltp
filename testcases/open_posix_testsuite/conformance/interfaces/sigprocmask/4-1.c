@@ -3,12 +3,12 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- The resulting set shall be the union of the current set and the signal 
+ The resulting set shall be the union of the current set and the signal
  set pointed to by set, if the value of the argument how is SIG_BLOCK.
-  
+
 */
 
 #include <signal.h>
@@ -81,4 +81,3 @@ int main()
 	printf("Test PASSED: signal was added to the process's signal mask\n");
 	return PTS_PASS;
 }
-

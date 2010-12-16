@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -8,7 +8,7 @@
  *  GNU General Public License for more details.
  *
  *
- * Test that the scheduling policy is returned for the calling process when 
+ * Test that the scheduling policy is returned for the calling process when
  * pid = 0
  */
 #include <stdio.h>
@@ -18,14 +18,14 @@
 #include "posixtest.h"
 
 int main(int argc, char **argv)
-{	       
+{
 
 	int result0 = -1;
 	int result1 = -1;
 
 	result0 = sched_getscheduler(0);
 	result1 = sched_getscheduler(getpid());
-	
+
 	if (result0 == result1 &&
 	   errno == 0) {
 		printf("Test PASSED\n");
@@ -41,5 +41,3 @@ int main(int argc, char **argv)
 	printf("This code should not be executed.\n");
         return PTS_UNRESOLVED;
 }
-
-

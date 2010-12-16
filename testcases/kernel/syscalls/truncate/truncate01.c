@@ -108,18 +108,16 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -128,7 +126,6 @@ int main(int ac, char **av)
 		 */
 		TEST(truncate(TESTFILE, TRUNC_LEN));
 
-		/* check return code of truncate(2) */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
@@ -172,13 +169,12 @@ int main(int ac, char **av)
 			}
 		}
 		Tst_count++;	/* incr TEST_LOOP counter */
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 	  return 0;
 
-}				/* End main */
+}
 
 /*
  * void
@@ -194,7 +190,6 @@ void setup()
 	int c, c_total = 0;	/* no. bytes to be written to file */
 	char tst_buff[BUF_SIZE];	/* buffer to hold data */
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified
@@ -204,7 +199,6 @@ void setup()
 	 */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Fill the test buffer with the known data */
@@ -236,7 +230,7 @@ void setup()
 			 "close(%s) Failed, errno=%d : %s",
 			 TESTFILE, errno, strerror(errno));
 	 }
-}				/* End setup() */
+}
 
 /*
  * void
@@ -251,9 +245,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

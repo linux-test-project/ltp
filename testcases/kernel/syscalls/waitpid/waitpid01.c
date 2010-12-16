@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 
 	setup();
@@ -158,7 +158,7 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/*
@@ -167,6 +167,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

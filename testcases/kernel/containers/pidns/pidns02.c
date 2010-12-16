@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 	CLEANUP();
 	tst_exit();
 
-}	/* End main */
+}
 
 /*
  * cleanup() - performs all ONE TIME CLEANUP for this test at

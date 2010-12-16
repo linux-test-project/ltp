@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * Test that timer_settime() resets the time until the next timer
@@ -94,17 +94,17 @@ int main(int argc, char *argv[])
 			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
-		
+
 		if (timer_settime(tid, 0, &its, NULL) != 0) {
 			perror("timer_settime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
-	
+
 		if (sigwait(&set, &sig) == -1) {
 			perror("sigwait() failed\n");
 			return PTS_UNRESOLVED;
 		}
-	
+
 		if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
 			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 			perror("clock_gettime inconsistent\n");
 			return PTS_UNRESOLVED;
 		}
-	
+
 		delta = timeelapsed-its.it_value.tv_sec;
 		if ((delta > ACCEPTABLEDELTA) || (delta < 0)) {
 			printf("FAIL:  timer_settime() invalid on %d\n",

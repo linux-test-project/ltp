@@ -317,5 +317,5 @@ main(int argc, char *argv[])
 	test_signal(iterations, nthreads);
 	printf("\nCriteria: latencies < %d us\n", PASS_US);
 	printf("Result: %s\n", fail ? "FAIL" : "PASS");
-	return 0;
+	tst_exit();
 }

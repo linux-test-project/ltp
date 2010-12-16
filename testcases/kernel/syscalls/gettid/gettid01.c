@@ -92,13 +92,12 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -111,4 +110,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-}				/* End cleanup() */
+}

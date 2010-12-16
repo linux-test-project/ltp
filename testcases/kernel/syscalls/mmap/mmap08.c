@@ -101,15 +101,13 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -139,11 +137,11 @@ int main(int ac, char **av)
 			tst_resm(TFAIL|TERRNO,
 				"mmap failed with an invalid errno");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
-	tst_exit();
-}				/* End main */
+
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -155,10 +153,8 @@ void setup()
 {
 	char *tst_buff;		/* test buffer to hold known data */
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get the system page size */
@@ -175,7 +171,6 @@ void setup()
 	/* Fill the test buffer with the known data */
 	memset(tst_buff, 'A', page_sz);
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Creat a temporary file used for mapping */
@@ -212,6 +207,5 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 }

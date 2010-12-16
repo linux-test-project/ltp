@@ -145,7 +145,6 @@ void cleanup_mqueue(int result, int step, mqd_t mqd)
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
 	tst_exit();
 }
 
@@ -323,6 +322,5 @@ int main(int argc, char *argv[])
 
 	cleanup_mqueue(result, F_STEP_3, mqd);
 
-	/* NOT REACHED */
-	return 0;
-}    /* End main */
+	tst_exit();
+}

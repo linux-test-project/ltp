@@ -5,6 +5,5 @@ int main(void)
 {
 	printf("%d\n", getpagesize());
 
-	return 0;
+	tst_exit();
 }
-

@@ -3,17 +3,17 @@
 #include "posixtest.h"
 
 /*
- 
+
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- 
+
  *  Test that the sigwait() function.
- *  If prior to the call to sigwait() there are multiple pending instances of 
- *  a single signal number (and it is implementation-defined that the signal 
- *  number supports queued signals), then there should be remaining 
+ *  If prior to the call to sigwait() there are multiple pending instances of
+ *  a single signal number (and it is implementation-defined that the signal
+ *  number supports queued signals), then there should be remaining
  *  pending signals for that signal number.
  *  Steps are:
  *  1)  Block a signal that supports queueing (the realtime signal SIGRTMIN).
@@ -23,9 +23,8 @@
  *      set.
  *  5) Call sigwait() again to clear the second instance of the signal in the
  *     pending list.
- *  6) Verify that there are no more instances for SIGRTMIN in the pending list. *     
+ *  6) Verify that there are no more instances for SIGRTMIN in the pending list. *
  */
-
 
 int main()
 {
@@ -128,7 +127,7 @@ int main()
 	}
 
 	/* Make sure SIGRTMIN is NOT in the pending list anymore, since
-	 * the previous sigwait() should have taken it out of the 
+	 * the previous sigwait() should have taken it out of the
 	 * pending list. */
 	if (sigpending(&pendingset) == -1)
 	{

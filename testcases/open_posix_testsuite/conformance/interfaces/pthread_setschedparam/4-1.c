@@ -14,10 +14,9 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertion:
 *
-* If the function fails, the policy and parameter of the target thread 
+* If the function fails, the policy and parameter of the target thread
 * shall not be modified.
 
 * The steps are:
@@ -27,7 +26,6 @@
 
 * The test fails if the priority is changed and an error returned.
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -49,23 +47,23 @@
 /***********************   Test framework   ***********************************/
 /******************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c" 
+ #include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
- *    where descr is a description of the error and ret is an int 
+ * UNRESOLVED(ret, descr);
+ *    where descr is a description of the error and ret is an int
  *   (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -133,7 +131,7 @@ void * threaded (void * arg)
 	}
 
 	/* check the thread attributes have been applied
-	  (we only check what is reported, not the real behavior) 
+	  (we only check what is reported, not the real behavior)
 	 */
 	check_param(pthread_self(), SCHED_RR, sp.sched_priority);
 
@@ -145,7 +143,7 @@ void * threaded (void * arg)
 	if (ret != 0)
 	{
 		/* check the thread attributes have been applied
-		  (we only check what is reported, not the real behavior) 
+		  (we only check what is reported, not the real behavior)
 		 */
 		check_param(pthread_self(), SCHED_RR, sp.sched_priority - 1);
 #if VERBOSE > 0
@@ -162,7 +160,6 @@ void * threaded (void * arg)
 
 	return NULL;
 }
-
 
 /* The main test function. */
 int main(int argc, char *argv[])
@@ -195,5 +192,3 @@ int main(int argc, char *argv[])
 
 	PASSED;
 }
-
-

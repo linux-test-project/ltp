@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 
 	/* cleanup and exit */
 	CLEANUP();
-}	/* End main */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -151,6 +151,5 @@ void cleanup()
 {
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
-	tst_exit();
-	
+
 }

@@ -57,7 +57,6 @@ int valid_capabilities(__u32 capabilities) {
 	return valid;
 }
 
-
 void test_VIDIOC_QUERYCAP() {
 	int ret;
 	struct v4l2_capability cap;

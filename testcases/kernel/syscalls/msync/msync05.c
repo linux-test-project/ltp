@@ -99,15 +99,12 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -136,14 +133,12 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "msync() fails, unexpected errno:%d, "
 				 "expected: ENOMEM", TEST_ERRNO);
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* Call test cleanup to exit the test */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /*
  * void
@@ -154,10 +149,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get the system page size */
@@ -187,8 +181,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 #else
@@ -196,7 +188,7 @@ void cleanup()
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */

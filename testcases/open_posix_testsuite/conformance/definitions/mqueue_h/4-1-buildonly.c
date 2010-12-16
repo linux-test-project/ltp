@@ -1,4 +1,4 @@
-/* 
+/*
    Test for the existence and valid prototype
    of the mq_notify function as specified on
    line 9686 of the Base Definitions document

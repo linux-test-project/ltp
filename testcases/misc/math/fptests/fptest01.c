@@ -19,7 +19,7 @@
 
 /* Group Bull & IBM Corporation */
 /* 11/20/2002	Port to LTP	robbiew@us.ibm.com */
-/*                                               jacky.malcles@bull.net */                   
+/*                                               jacky.malcles@bull.net */
 /* IBM Corporation */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
@@ -66,7 +66,6 @@ char *TCID="fptest01";          /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
-
 
 int init();
 int doevent();
@@ -216,7 +215,7 @@ double t;
 			break;
 			}
 		}
-	if (ok) 
+	if (ok)
 		return(0);
 	else{
 		tst_resm(TBROK,"No room for event");
@@ -239,7 +238,7 @@ struct event *nextevent()
 		mintime=eventtab[i].time;
 		}
 	  }
-	
+
 	if (imin) {
 		rtrevent.type = eventtab[imin].type;
 		rtrevent.proc = eventtab[imin].proc;
@@ -299,7 +298,7 @@ struct event *ev;
 
 	switch (ev->type) {
 		case TRYCRIT :
-			if (critfree==TRUE) 
+			if (critfree==TRUE)
 				addevent(ENTERCRIT,proc,global_time);
 			else
 				addwaiting(proc);
@@ -361,7 +360,7 @@ double m,s;
 	u2 = twopi / 500.0;
 	return;
 }
-	
+
 double gauss()
 {
 	double x1,x2;
@@ -386,4 +385,3 @@ double gauss()
 		return(mean + stdev*x2);
 		}
 }
-

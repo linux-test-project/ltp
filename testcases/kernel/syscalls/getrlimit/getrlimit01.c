@@ -140,7 +140,7 @@ int main(int ac, char **av)
 	/* do cleanup and exit */
 	cleanup();
 
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -167,6 +167,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -124,8 +124,8 @@ int main(int argc, char *argv[])
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 /***************************************************************
  *  * setup() - performs all ONE TIME setup for this test.
@@ -137,7 +137,6 @@ void setup()
 	 */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
@@ -177,14 +176,11 @@ void cleanup()
 	if ((status = msgctl(msqid, IPC_STAT, &buf)) != -1) {
 		(void)msgctl(msqid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed");
-		tst_exit();
+
 	}
 
 	fflush(stdout);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -210,5 +210,4 @@ void cleanup()
 	 */
 	tst_rmdir();
 
-	tst_exit();
 }

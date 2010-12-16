@@ -8,12 +8,12 @@
  */
 
 /* In x-mode
- * There are several threads that shared a mutex, when the owner of the mutex 
- * is dead, a waiter that locks the mutex shall get EOWNERDEAD. In 
- * PTHREAD_MUTEX_ROBUST_NP Mode, if the owner didn't call 
- * pthread_mutex_setconsistency_np, the mutex will not transit state to 
- * ENOTRECOVERABLE state after unlock. 
- */ 
+ * There are several threads that shared a mutex, when the owner of the mutex
+ * is dead, a waiter that locks the mutex shall get EOWNERDEAD. In
+ * PTHREAD_MUTEX_ROBUST_NP Mode, if the owner didn't call
+ * pthread_mutex_setconsistency_np, the mutex will not transit state to
+ * ENOTRECOVERABLE state after unlock.
+ */
 
 /*
  * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_NP isn't POSIX.
@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include "test.h"
 
-#define THREAD_NUM		2	
+#define THREAD_NUM		2
 
 pthread_mutex_t	mutex;
 
@@ -37,7 +37,7 @@ void *thread_1(void *arg)
 	pthread_exit(NULL);
 	return NULL;
 }
-void *thread_2(void *arg) 
+void *thread_2(void *arg)
 {
 	int rc;
 	pthread_t self = pthread_self();
@@ -48,7 +48,7 @@ void *thread_2(void *arg)
 
 	rc = pthread_setschedparam(self, policy, &param);
 	if (rc != 0) {
-	    EPRINTF("UNRESOLVED: pthread_setschedparam %d %s", 
+	    EPRINTF("UNRESOLVED: pthread_setschedparam %d %s",
 	            rc, strerror(rc));
 	    exit(UNRESOLVED);
 	}
@@ -73,7 +73,7 @@ void *thread_2(void *arg)
 	return NULL;
 }
 
-int main() 
+int main()
 {
 	pthread_mutexattr_t attr;
 	pthread_t threads[THREAD_NUM];
@@ -87,7 +87,7 @@ int main()
 		return UNRESOLVED;
 	}
 #if __linux__
-	rc = pthread_mutexattr_setrobust_np(&attr, 
+	rc = pthread_mutexattr_setrobust_np(&attr,
 			    PTHREAD_MUTEX_ROBUST_NP);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_mutexattr_setrobust_np %d %s",

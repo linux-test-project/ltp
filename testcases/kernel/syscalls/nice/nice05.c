@@ -136,7 +136,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
     /***************************************************************
@@ -149,7 +149,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		val = lc % 39;
@@ -174,15 +173,14 @@ int main(int ac, char **av)
 					 TEST_RETURN);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -190,13 +188,11 @@ int main(int ac, char **av)
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -210,6 +206,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

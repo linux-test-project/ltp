@@ -47,7 +47,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	tst_exit();
 }
 
 /*
@@ -55,13 +54,12 @@ void cleanup(void)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 int main(int argc, char **argv)
 {
@@ -132,12 +130,12 @@ int main(int argc, char **argv)
 	}
 	cleanup();
 
-	return 0;
+	tst_exit();
 }
 #else
 int main(int argc, char **argv)
 {
 	tst_resm(TCONF, "System doesn't support execution of the test");
-	return 0;
+	tst_exit();
 }
 #endif

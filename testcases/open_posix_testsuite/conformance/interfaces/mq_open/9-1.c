@@ -11,7 +11,7 @@
  * send messages and receive messages.
  *
  * Test for a message queue opened twice in the same process.
- * 
+ *
  * Note:  Not testing that the message sent/received is the one expected
  * (that would be part of mq_send(), mq_receive() testing).  Just testing
  * it can be sent/received.
@@ -117,4 +117,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

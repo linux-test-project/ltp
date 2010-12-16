@@ -22,7 +22,7 @@ int main() {
 	int result;
 	void *ptr;
 
-	ptr = malloc(BUFSIZE);       
+	ptr = malloc(BUFSIZE);
 	if (ptr == NULL) {
                 printf("Can not allocate memory.\n");
                 return PTS_UNRESOLVED;
@@ -45,8 +45,7 @@ int main() {
 		printf("mlock did not return a value of zero\n");
 		return PTS_FAIL;
 	}
-	
+
 	perror("Unexpected error");
 	return PTS_UNRESOLVED;
 }
-

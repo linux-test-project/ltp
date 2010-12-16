@@ -84,7 +84,6 @@ static void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	tst_exit();
 }
 
 typedef int (*swi_func)(const sigset_t* set, siginfo_t* info, struct timespec* timeout);
@@ -413,7 +412,7 @@ int main(int argc, char** argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 			NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		/*NOT REACHED */
+
 	}
 
 	setup();

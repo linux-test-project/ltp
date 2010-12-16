@@ -64,7 +64,7 @@
  *	-p   : Pause for SIGUSR1 before starting
  *	-P x : Pause for x seconds between iterations.
  *	-t   : Turn on syscall timing.
- *	
+ *
  *RESTRICTIONS:
  *for lib4 and lib5 reboot(2) system call is implemented as
  *int reboot(int magic, int magic2, int flag, void *arg); This test case
@@ -121,15 +121,12 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			/* reset Tst_count in case we are looping. */
 			Tst_count = 0;
 			if (i == 0) {
 				TEST(reboot(INVALID_PARAMETER));
@@ -167,7 +164,7 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}		/*End of TEST LOOPS */
-	}			/* End of TEST_LOOPING */
+	}
 
 	/*Clean up and exit */
 	cleanup();
@@ -196,7 +193,7 @@ int setup_test()
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -207,10 +204,9 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
 * cleanup() - Performs one time cleanup for this test at
@@ -224,6 +220,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

@@ -21,4 +21,3 @@ int main()
 	printf("not possible to predictably interrupt an mq_open().\n");
 	return PTS_UNTESTED;
 }
-

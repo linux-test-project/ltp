@@ -163,13 +163,12 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* create a temporary filename */
 	sprintf(fname, "%s.%d", fname, getpid());
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	if ((fd2 = open("/tmp", O_DIRECTORY)) == -1) {
@@ -209,5 +208,5 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 	unlink(fname);
-	tst_exit();
+
 }

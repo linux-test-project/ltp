@@ -7,10 +7,9 @@
  *
  *
  * This test case shall return PASS on converting the broken down July 4th 2001
- * into a time since the Epoch, which is the same encoding as of the value 
+ * into a time since the Epoch, which is the same encoding as of the value
  * returned by time(), otherwise it fails with -1.
  */
-
 
 #include <stdio.h>
 #include <time.h>
@@ -19,8 +18,7 @@
 struct tm tm_ptr;
 time_t tps;
 
-
-int main(void) 
+int main(void)
 {
 	/* Break down July 4th, 2001 */
 	tm_ptr.tm_year = 2001 - 1900;
@@ -42,5 +40,3 @@ int main(void)
 		return PTS_FAIL;
 	}
 }
-
-

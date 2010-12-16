@@ -7,7 +7,7 @@
  */
 
 /*
- * Test that if the message queue is full and O_NONBLOCK is not set, 
+ * Test that if the message queue is full and O_NONBLOCK is not set,
  * mq_timedsend() will block until abs_timeout is reached.
  *
  * Test by sending messages in a child process until the message queue is full.
@@ -75,18 +75,18 @@ int main()
 		struct timespec ts;
 		sigset_t mask;
 
-		/* wait for parent to set up handler */ 
+		/* wait for parent to set up handler */
 		sigemptyset(&mask);
 		sigaddset(&mask, SIGUSR1);
 		sigprocmask(SIG_BLOCK,&mask,NULL);
 		sigwait(&mask, &sig);
 
 		/* child should block in < TIMEOUT seconds */
-		ts.tv_sec=time(NULL)+TIMEOUT; 
+		ts.tv_sec=time(NULL)+TIMEOUT;
 		ts.tv_nsec=0;
 
 		for (i=0; i<MAXMSG+1; i++) {
-        		if (mq_timedsend(gqueue, msgptr, 
+        		if (mq_timedsend(gqueue, msgptr,
 						strlen(msgptr), 1, &ts) != 0) {
 				/* send will fail after timeout occurs*/
 				kill(getppid(), SIGABRT);
@@ -114,7 +114,7 @@ int main()
 		kill(pid, SIGUSR1);
 
 		/* wait for heartbeats from child */
-		for (j=0; j<MAXMSG+1; j++) { 
+		for (j=0; j<MAXMSG+1; j++) {
 			if (sleep(3) == 0) {
 			/* If sleep finished, child is probably blocking */
 				break;
@@ -133,7 +133,7 @@ int main()
 		/*
 		 * Wait for timeout to complete.
 		 */
-		if (sleep(TIMEOUT) == 0) { 
+		if (sleep(TIMEOUT) == 0) {
 			/*
 		 	* If sleep lasted the full time, child never timed out
 		 	*/
@@ -153,4 +153,3 @@ int main()
 
 	return PTS_UNRESOLVED;
 }
-

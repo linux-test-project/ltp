@@ -30,14 +30,14 @@ int main() {
                 return PTS_UNRESOLVED;
         }
 
-	ptr = malloc(page_size);       
+	ptr = malloc(page_size);
 	if (ptr == NULL) {
                 printf("Can not allocate memory.\n");
                 return PTS_UNRESOLVED;
         }
 
 	notpage_ptr = ((long)ptr % page_size) ? ptr : ptr+1;
-	
+
 	result = munlock(notpage_ptr, page_size - 1);
 
 	if (result == 0) {

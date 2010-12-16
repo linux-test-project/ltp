@@ -72,7 +72,7 @@ static inline int nodemask_isset(nodemask_t *mask, int node)
 static inline void nodemask_set(nodemask_t *mask, int node)
 {
 	mask->n[node / (8*sizeof(unsigned long))] |=
-		(1UL<<(node%(8*sizeof(unsigned long))));	
+		(1UL<<(node%(8*sizeof(unsigned long))));
 }
 
 static char *whitespace = " \t";
@@ -101,7 +101,6 @@ required_arg(char *arg, char *arg_name)
 
 	return false;
 }
-
 
 /*
  *  size_kmgp() -- convert ascii arg to numeric and scale as requested
@@ -833,7 +832,6 @@ unmap_seg(char *args)
 	if (!segment_unmap(segname))
 		return CMD_ERROR;
 
-
 	return CMD_SUCCESS;
 }
 
@@ -908,7 +906,6 @@ mbind_seg(char *args)
 		return CMD_ERROR;
 	args = nextarg;
 
-
 	if (!required_arg(args, "<policy>"))
 		return CMD_ERROR;
 	policy = get_mbind_policy(args, &nextarg);
@@ -922,7 +919,6 @@ mbind_seg(char *args)
 			return CMD_ERROR;
 	}
 	args = nextarg + strspn(nextarg, whitespace);
-
 
 	if (policy != MPOL_DEFAULT) {
 		if (!required_arg(args, "<node/list>"))
@@ -1023,7 +1019,6 @@ command(char *args)
 {
 	glctx_t *gcp = &glctx;
 
-
 	return CMD_SUCCESS;
 }
 
@@ -1034,7 +1029,7 @@ command(char *args)
 typedef int (*cmd_func_t)(char *);
 
 struct command {
-	char       *cmd_name;   
+	char       *cmd_name;
 	cmd_func_t  cmd_func;    /* */
 	char       *cmd_help;
 
@@ -1288,7 +1283,6 @@ process_commands()
 		char  *cmdline;
 		size_t cmdlen;
 
-	
 		if (is_option(INTERACTIVE))
 			printf("%s>", gcp->program_name);
 

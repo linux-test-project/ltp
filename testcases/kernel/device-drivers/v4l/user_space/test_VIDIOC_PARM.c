@@ -181,7 +181,7 @@ static void do_get_param(enum v4l2_buf_type type) {
 			default:
 				;
 		}
-		
+
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
 		CU_ASSERT_EQUAL(errno_get, EINVAL);

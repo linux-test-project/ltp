@@ -13,7 +13,7 @@
  * 1. Create a mutex and lock
  * 2. Create a high priority thread and make it wait on the mutex
  * 3. Create a low priority thread and let it busy-loop
- * 4. Unlock the mutex and make sure that the higher priority thread 
+ * 4. Unlock the mutex and make sure that the higher priority thread
  *    got woken up
  *
  */
@@ -36,11 +36,11 @@
 #define RUNTIME 5
 
 /* mutex  high priority thread will wait on*/
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;    
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 /* mutex required by the cond variable */
-pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;    
+pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* condition variable that threads block on*/
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;       
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 volatile int woken_up = -1;
 volatile int low_done = -1;
@@ -53,7 +53,7 @@ float timediff(struct timespec t2, struct timespec t1)
 	return diff;
 }
 
-/* This signal handler will wakeup the main thread by sending a signal 
+/* This signal handler will wakeup the main thread by sending a signal
  * to a condition variable that the main thread is waiting on.
  */
 void signal_handler(int sig)
@@ -68,7 +68,7 @@ void signal_handler(int sig)
 }
 
 void *hi_priority_thread(void *tmp)
-{	
+{
 	struct sched_param        param;
 	int                       policy;
 	int                       rc = 0;
@@ -84,7 +84,7 @@ void *hi_priority_thread(void *tmp)
 		printf(ERROR_PREFIX "pthread_getschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if (policy != SCHED_RR) { 
+	if (policy != SCHED_RR) {
 		printf(ERROR_PREFIX "The policy is not correct\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -100,8 +100,8 @@ void *hi_priority_thread(void *tmp)
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* This variable is unprotected because the scheduling removes 
-	 * the contention 
+	/* This variable is unprotected because the scheduling removes
+	 * the contention
 	 */
 	if (low_done != 1)
 		woken_up = 1;
@@ -185,7 +185,7 @@ int main()
 		printf(ERROR_PREFIX "pthread_mutex_lock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	/* create the higher priority */
 	rc = pthread_attr_init(&high_attr);
 	if (rc != 0) {

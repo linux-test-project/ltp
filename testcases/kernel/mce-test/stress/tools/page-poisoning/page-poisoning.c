@@ -16,8 +16,8 @@
  * General Public License for more details.
  *
  * You should find a copy of v2 of the GNU General Public License somewhere
- * on your Linux system; if not, write to the Free Software Foundation, 
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * on your Linux system; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * Authors: Andi Kleen, Fengguang Wu, Haicheng Li
  *
@@ -316,7 +316,7 @@ static void expecterr(char *msg, int err)
 	}
 }
 
-/* 
+/*
  * Any optional error is really a deficiency in the kernel VFS error reporting
  * and should be eventually fixed and turned into a expecterr
  */
@@ -578,13 +578,13 @@ static void anon_clean(void)
 	shmdt(ipc);
 }
 
-/* TBD 
+/* TBD
 static void survival(void)
 {
 	struct ipc *ipc;
 	char page;
 
-	if ((ipc = shmat(ipc_entry, 0, 0)) == (void *)-1) 
+	if ((ipc = shmat(ipc_entry, 0, 0)) == (void *)-1)
 		err("shmat error\n");
 	ipc->test[instance].id = testid;
 	testmem("survial", &page, MNOTHING);
@@ -844,7 +844,7 @@ int main(int argc, char **argv)
 			break;
 		case 'h':
 			help();
-			return 0;
+			tst_exit();
 		case 'i':
 			child_num = strtol(optarg, NULL, 0);
 			if (child_num > INSTANCE_NUM)
@@ -867,7 +867,7 @@ int main(int argc, char **argv)
 			break;
 		default:
 			help();
-			return 0;
+			tst_exit();
 		}
 	}
 

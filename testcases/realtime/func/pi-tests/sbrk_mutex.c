@@ -54,7 +54,6 @@
 
 static pthread_mutex_t *mutexes[NUM_MUTEXES];
 
-
 void usage(void)
 {
         rt_help();
@@ -119,7 +118,6 @@ int main(int argc, char* argv[])
                 printf("robust in mutexattr is %d\n", robust);
         }
 
-
 	/* malloc and initialize the mutexes */
 	printf("allocating and initializing %d mutexes\n", NUM_MUTEXES);
 	for (m = 0; m < NUM_MUTEXES; m++) {
@@ -147,7 +145,7 @@ int main(int argc, char* argv[])
 			free(mutexes[m]);
 		}
 	}
-	return 0;
+	tst_exit();
 }
 
 #else

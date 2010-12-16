@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program verifies that sigpause() restores sig to the signal mask before
@@ -10,11 +10,11 @@
 
  Steps:
  1. From the main() function, create a new thread. Give the new thread a
-    a second to set up for receiving a signal, add SIGTOTEST to its signal 
+    a second to set up for receiving a signal, add SIGTOTEST to its signal
     mask and to suspend itself using sigpause(SIGTOTEST).
- 2. Have main() send the signal indicated by SIGTOTEST to the new thread, 
+ 2. Have main() send the signal indicated by SIGTOTEST to the new thread,
     using pthread_kill(), and using the concept of semaphores, have the main()
- 3. Once the new thread returns from sigpause, have the new thread raise 
+ 3. Once the new thread returns from sigpause, have the new thread raise
     SIGTOTEST. At this point, SIGTOTEST should be restored to the signal mask, so the
     signal handler should not be called yet, and the signal should be pending.
     If it is not, set the variable return_value to 1, indicating a test failure.
@@ -74,7 +74,7 @@ void *a_thread_func()
 		printf("Test PASSED: signal mask was restored when sigpause returned.");
 		return_value = 0;
 	}
-	
+
 	sem = INMAIN;
 	return NULL;
 }
@@ -100,7 +100,7 @@ int main()
 	sem = INTHREAD;
 	while (sem == INTHREAD)
 		sleep(1);
-	
+
 	if (handler_called != 1) {
 		printf("Test UNRESOLVED: signal wasn't removed from signal mask\n");
 		return PTS_UNRESOLVED;
@@ -113,7 +113,7 @@ int main()
 			return PTS_UNRESOLVED;
 		return PTS_UNRESOLVED;
 	}
-	
+
 	printf("Test PASSED\n");
-	return PTS_PASS;	
+	return PTS_PASS;
 }

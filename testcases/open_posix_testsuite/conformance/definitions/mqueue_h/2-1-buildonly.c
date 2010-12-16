@@ -1,6 +1,6 @@
 /*
   Test for the existence and valid prototype
-  of the mq_close function as specified on 
+  of the mq_close function as specified on
   line 9684 of the Base Definitions document
 */
 

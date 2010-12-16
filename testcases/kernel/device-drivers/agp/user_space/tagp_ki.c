@@ -71,16 +71,11 @@ int ki_generic(int fd, int flag) {
         return rc;
 }
 
-
-
-
-
 #if 0
 An example of using in_data to pass in a structure:
 
 ki_write_t      wif;
 tagp_interface_t tif;
-
 
 //fill out wif structure
 
@@ -93,12 +88,11 @@ tif.out_len = 0;
 tif.out_data = 0;
 tif.out_rc = 0;
 
-
 //make ioctl call
 
 An example of using out_data to get back a structure:
 
-ki_read_t       rif;      
+ki_read_t       rif;
 tagp_interface_t tif;
 
 //fill out rif structure
@@ -115,9 +109,6 @@ tif.out_len = 0;
 tif.out_data = 0;
 tif.out_rc = 0;
 
-
 //make ioctl call
-
-
 
 #endif

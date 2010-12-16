@@ -1,17 +1,17 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * Test that if clock_settime() changes the time for CLOCK_REALTIME, 
+ * Test that if clock_settime() changes the time for CLOCK_REALTIME,
  * then any threads blocked on clock_nanosleep() for the CLOCK_REALTIME
  * clock that would now have expired in the past will expire immediately.
  *
  * Steps:
  * - get time T0
- * - in child:  set clock_nanosleep() to sleep until time 
+ * - in child:  set clock_nanosleep() to sleep until time
  *              T1 = T0 + SLEEPOFFSET
  * - in parent:  set time forward to T2 = T1 + SMALLTIME
  * - in child:  ensure clock_nanosleep() expires within ACCEPTABLEDELTA of
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
 	struct timespec tsT0, tsT1, tsT2;
 	int pid;
-	
+
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if (getuid() != 0)
 	{

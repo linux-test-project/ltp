@@ -2,7 +2,7 @@
 * Copyright (c) 2003, Intel Corporation. All rights reserved.
 * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
 * This file is licensed under the GPL license.  For the full content
-* of this license, see the COPYING file at the top level of this 
+* of this license, see the COPYING file at the top level of this
 * source tree.
 
 Go through all the signals (with the exception of SIGKILL and SIGSTOP
@@ -10,7 +10,7 @@ since they cannot be added to a process's signal mask) and add each one
 to the signal mask. Every time a signal gets added to the signal mask
 (using the pthread_sigmask() function),  make sure that all signals added
 before it in preceding iterations before it, exist in the old signal set
-returned by the pthread_sigmask functions. 
+returned by the pthread_sigmask functions.
 
 */
 
@@ -72,7 +72,6 @@ void *a_thread_func()
 	/* To please some compilers */
 	return NULL;
 }
-
 
 int main()
 {

@@ -49,7 +49,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 
-        queue = mq_open(qname, O_CREAT |O_RDWR|O_NONBLOCK, 
+        queue = mq_open(qname, O_CREAT |O_RDWR|O_NONBLOCK,
 			S_IRUSR | S_IWUSR, &attr);
         if (queue == (mqd_t)-1) {
                 perror("mq_open() did not return success");
@@ -99,4 +99,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

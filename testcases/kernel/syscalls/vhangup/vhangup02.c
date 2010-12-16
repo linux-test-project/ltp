@@ -73,7 +73,6 @@ int main(int argc, char **argv)
 
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -129,6 +128,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

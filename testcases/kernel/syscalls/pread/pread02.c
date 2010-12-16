@@ -132,15 +132,12 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* loop through the test cases */
@@ -184,10 +181,9 @@ int main(int ac, char **av)
 					 "errno:%d, expected:%d", test_desc,
 					 TEST_ERRNO, Test_cases[i].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING */
-	}			/* End of TEST_LOOPOING. */
+		}
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	tst_exit();
@@ -200,12 +196,10 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int i;			/* counter for setup functions */
+	int i;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Allocate/Initialize the read/write buffer with known data */
@@ -259,7 +253,7 @@ int setup1()
  */
 int setup2()
 {
-	/* make a temp directory and cd to it */
+
 	tst_tmpdir();
 
 	/* Creat a temporary file used for mapping */
@@ -326,8 +320,6 @@ void cleanup()
 			 TEMPFILE, errno, strerror(errno));
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	tst_exit();
 }

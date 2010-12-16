@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <unistd.h>
-                                                                                                                        
+
 #include "nfs_flock.h"
 
 int
@@ -16,7 +16,7 @@ lock_reg(int fd, int type, off_t offset, int whence, off_t len, int cmd)
    return(fcntl(fd, cmd, &lock));
 }
 
-int 
+int
 lock_test(int fd, int type, off_t offset, int whence, int len)
 {
    struct flock lock;

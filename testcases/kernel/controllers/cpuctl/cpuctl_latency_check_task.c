@@ -109,7 +109,6 @@ int main(int argc, char *argv[])
 		sleep(8);
 	}
 
-
 	printf("TINFO \tThe latency check task started\n");
 
 	/* Let us start capturing the time now */
@@ -155,5 +154,5 @@ int main(int argc, char *argv[])
 	/* Done with testing, signal the script */
 	cleanup();
 
-	return 0;
+	tst_exit();
 }

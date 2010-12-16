@@ -18,7 +18,7 @@
 
 /* TODO: from V4L2 Spec:
  * "Drivers may enumerate a different set of standards after switching the video input or output."
- * 
+ *
  */
 
 #include <stdio.h>
@@ -152,7 +152,6 @@ void test_VIDIOC_ENUMSTD_S32_MAX_1() {
 	std2.index = ((__u32)S32_MAX)+1;
 	CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 }
-
 
 void test_VIDIOC_ENUMSTD_U32_MAX() {
 	int ret_enum, errno_enum;

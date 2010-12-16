@@ -39,7 +39,7 @@
  *  the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; 
+ *  along with this program;
  *
  *  FILE        : user_tbio.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -56,7 +56,6 @@
  *
  */
 
-
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,7 +70,6 @@
 #include "../kernel_space/tbio.h"
 
 static int tbio_fd = -1;		/* file descriptor */
-
 
 int
 tbioopen() {
@@ -102,7 +100,6 @@ tbioopen() {
             }
         }
     }
-
 
     /*
      * Check for the /dev/tbase node, and create if it does not
@@ -146,7 +143,6 @@ tbioopen() {
 
 }
 
-
 int
 tbioclose() {
 
@@ -154,7 +150,7 @@ tbioclose() {
 		close (tbio_fd);
 		tbio_fd = -1;
 	}
-	
+
 	return 0;
 }
 
@@ -196,7 +192,6 @@ int tbio_to_dev(int fd  , int flag)
 	return 0;
 
 }
-
 
 int tbio_from_dev(int fd  , int flag)
 {
@@ -245,8 +240,6 @@ int tbio_from_dev(int fd  , int flag)
 
 }
 
-
-
 int tbio_split_to_dev(int fd  , int flag)
 {
 	int rc;
@@ -286,7 +279,6 @@ int tbio_split_to_dev(int fd  , int flag)
 
 }
 
-
 int main()
 {
 	int rc;
@@ -297,7 +289,7 @@ int main()
 		printf("Test bio Driver may not be loaded\n");
 		exit(1);
 	}
-	
+
 	if (ki_generic(tbio_fd , LTP_TBIO_ALLOC))
 		printf("Failed on LTP_TBIO_ALLOC test\n");
 	else
@@ -318,12 +310,10 @@ int main()
 	else
 		printf("Success on LTP_TBIO_ADD_PAGE test\n");
 
-
 	if (tbio_split_to_dev(tbio_fd , LTP_TBIO_SPLIT))
 		printf("Failed on LTP_TBIO_SPLIT:write to dev\n");
 	else
 		printf("Success on LTP_TBIO_SPLIT:write to dev\n");
-
 
 	if (tbio_to_dev(tbio_fd , LTP_TBIO_DO_IO))
 		printf("Failed on LTP_TBIO_DO_IO:write to dev\n");
@@ -335,14 +325,11 @@ int main()
 	else
 		printf("Success on LTP_TBIO_DO_IO:read from dev\n");
 
-
-	
 	if (ki_generic(tbio_fd , LTP_TBIO_PUT))
 		printf("Failed on LTP_TBIO_PUT test\n");
 	else
 		printf("Success on LTP_TBIO_PUT test\n");
 
-	
 	/* close the bioule */
 	rc = tbioclose();
 	if (rc) {

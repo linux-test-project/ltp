@@ -16,7 +16,7 @@
  *     mode.
  *  3. Check that the mode is unchanged.
  */
-  
+
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -26,7 +26,6 @@
 #define SHM_NAME "posixtest_26-1"
 #define CREATION_MODE S_IRUSR|S_IWUSR
 #define OPEN_MODE     S_IRGRP
-
 
 int main() {
 	int fd;
@@ -43,8 +42,8 @@ int main() {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
-	}	
-	old_mode = stat_buf.st_mode;	
+	}
+	old_mode = stat_buf.st_mode;
 
 	fd = shm_open(SHM_NAME, O_RDWR|O_TRUNC, OPEN_MODE);
 	if (fd == -1) {
@@ -69,4 +68,3 @@ int main() {
 	printf("The mode has changed.\n");
 	return PTS_FAIL;
 }
-       

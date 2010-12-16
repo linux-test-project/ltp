@@ -39,7 +39,6 @@
 #define NUM_SLAVES 20
 #define SLAVE_PRIO 89
 
-
 pthread_mutex_t MM;
 pthread_mutex_t MS;
 pthread_mutex_t MT;
@@ -50,7 +49,6 @@ pthread_cond_t CT;
 atomic_t slave_order_a = {0};
 atomic_t slave_order_b = {0};
 atomic_t slave_order_c = {0};
-
 
 void usage(void)
 {
@@ -182,5 +180,5 @@ int main(int argc, char *argv[])
 
 	join_threads();
 
-	return 0;
+	tst_exit();
 }

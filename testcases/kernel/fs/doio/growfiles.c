@@ -139,7 +139,6 @@ static void notify_others();
 int pre_alloc();
 #endif
 
-
 #define NEWIO	1	/* Use the tlibio.c functions */
 
 #ifndef NEWIO
@@ -154,7 +153,6 @@ int pre_alloc();
 #ifndef PATH_MAX
 #define PATH_MAX	1023
 #endif
-
 
 #define DEF_DIR		"."
 #define DEF_FILE	"gf"
@@ -344,7 +342,6 @@ int Open_flags[] = {
 #define LSK_EOFPLUSGROW	    -2	/* set fptr up to EOF + grow - leave whole */
 #define LSK_EOFMINUSGROW    -3	/* set fptr up to EOF-grow - no grow */
 
-
 /***********************************************************************
  * MAIN
  ***********************************************************************/
@@ -479,7 +476,6 @@ struct timeval tv1;
 				exit(1);
 			}
 			break;
-
 
 		case 'd':
 			auto_dir=optarg;
@@ -655,7 +651,6 @@ struct timeval tv1;
 		        }
 		        break;
 
-
 		case 'p' :	/* pre allocate space */
 #ifdef linux
 			printf("%s%s: --p is illegal option on linux system\n",
@@ -743,14 +738,14 @@ struct timeval tv1;
 			/* min-max:mult format */
 			if (sscanf(optarg, "%i-%i:%i%c", &min_size, &max_size,
 							&mult_size, &chr) != 3 ) {
-			  min_size=1;  
+			  min_size=1;
 			  /* max:mult format */
 		  	  if (sscanf(optarg, "%i:%i%c", &max_size,
 							&mult_size, &chr) != 2 ) {
 			    /* min-max format */
 		    	    if (sscanf(optarg, "%i-%i%c", &min_size,
 							&max_size, &chr) != 2 ) {
-			      min_size=1;  
+			      min_size=1;
 		      	      if (sscanf(optarg, "%i%c", &max_size, &chr) != 1) {
 				fprintf(stderr,
 				     "%s%s: --r option arg invalid: [min-]max[:mult]\n",
@@ -787,7 +782,7 @@ struct timeval tv1;
 			break;
 
 		case 's':	/* format: seed[,seed...] */
-		
+
 			/* count the number of seeds */
 			cptr=optarg;
 			for (Nseeds=1; *cptr ; Nseeds++) {
@@ -867,7 +862,7 @@ struct timeval tv1;
 
 		case 'U':   /* how often to unlink file */
 		       /*
-			* formats:  
+			* formats:
 			*      A-B  - randomly pick interval between A and B
 			*      X    - unlink file every X iteration
 			*/
@@ -979,7 +974,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 */
 
         if (Debug > 2) {
-	   
+
 	    if (Mode & MODE_GROW_BY_LSEEK)
 		printf("%s: %d DEBUG lseeking past end of file, writting a \"w\"\n",
 		    Progname, Pid);
@@ -1064,14 +1059,14 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	    if (no_file_check)
 		printf("%s: %d DEBUG3 no whole file checking will be done\n",
 		    Progname, Pid);
-	   
+
 	    if (unlink_inter_ran == -1) {
 		printf("%s: %d DEBUG3 unlink_inter = %d\n",
 		        Progname, Pid, unlink_inter);
 	    } else {
 		printf("%s: %d DEBUG3 unlink_inter = %d, unlink_inter_ran = %d\n",
                         Progname, Pid, unlink_inter, unlink_inter_ran);
-	    } 
+	    }
 
 	    if (Debug > 8) {
 	       num=sizeof(Open_flags)/sizeof(int);
@@ -1134,7 +1129,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		gettimeofday(&ts,NULL);
 	    Seed=ts.tv_sec + Pid;  /* default random seed */
 	    //Seed=time(0) + Pid;  /* default random seed */
-	
+
 	}
 
 	random_range_seed(Seed);
@@ -1169,7 +1164,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		argv[0] = (char *)malloc(strlen(exec_path) + 2);
 		sprintf(argv[0], "-%s", exec_path);
 	    }
-	 
+
 	    if (Debug > 2)
 	        printf("%s: %d DEBUG3 %s/%d: execvp(%s, argv)\n",
 		    Progname, Pid, __FILE__, __LINE__, argv[0]);
@@ -1226,7 +1221,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	/*
 	 * construct auto filename and insert them into filenames space
 	 */
-	
+
 	for (ind=0;ind<num_auto_files; ind++, num++) {
 		gettimeofday(&tv1,NULL);
 		sprintf((char *)filenames+(num*PATH_MAX), "%s/%s%ld%ld%d.%d",
@@ -1316,7 +1311,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 * This is the main iteration loop.
 	 * Each iteration, all files can  be opened, written to,
 	 * read to check the write, check the whole file,
-	 * truncated, and closed.  
+	 * truncated, and closed.
 	 */
 	for (Iter_cnt=1; ! stop ; Iter_cnt++) {
 		struct timeval ts;
@@ -1343,7 +1338,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	     * This loop will loop through all files.
 	     * Each iteration, a single file can  be opened, written to,
 	     * read to check the write, check the whole file,
-	     * truncated, and closed.  
+	     * truncated, and closed.
 	     */
 	    for (ind=0; ind<num_files; ind++) {
 
@@ -1352,7 +1347,6 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 
 		filename=(char *)filenames+(ind*PATH_MAX);
 		Fileinfo.filename=(char *)filenames+(ind*PATH_MAX);
-
 
 		if (open_flags ==  RANDOM_OPEN) {
 		   ret=Open_flags[random_range(0, sizeof(Open_flags)/sizeof(int)-1, 1, NULL)];
@@ -1466,7 +1460,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		 * Unlink the file if that is desired
 		 */
 		if (unlink_inter && (Iter_cnt % unlink_inter == 0)) {
-	
+
 		    if (Debug > 4)
 			printf("%s: %d DEBUG5 %s/%d: %d Unlinking file %s\n",
 			    Progname, Pid, __FILE__, __LINE__, Iter_cnt, filename);
@@ -1478,7 +1472,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	         * delay while staying active for "delaysecs" seconds.
 	         */
 	        if (delaytime) {
-	
+
 		    int ct, end;
 #ifdef CRAY
 		    ct=_rtc();
@@ -1510,9 +1504,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	    }
 #endif
 
-
 	}   /* end iteration for loop */
-
 
         if (Debug) {
 	    printf("%s%s: %d %s/%d: DONE %d iterations to %d files. %s\n",
@@ -1536,7 +1528,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
     }
 
 	exit(0);
-	return 0;	/* to keep compiler happy */
+	tst_exit();	/* to keep compiler happy */
 }
 
 /***********************************************************************
@@ -1546,7 +1538,6 @@ int
 set_sig()
 {
    int sig;
-
 
         /*
          * now loop through all signals and set the handlers
@@ -1581,7 +1572,6 @@ set_sig()
             }
         } /* endfor */
 
-
         return 0;
 }
 
@@ -1600,7 +1590,7 @@ int sig;
 #ifndef sgi
         signal(sig, sig_handler);	/* allow us to get this signal more than once */
 #endif
-       
+
     } else if (sig == SIGINT) {
 	/* The user has told us to cleanup, don't pretend it's an error. */
 	exit_stat=0;
@@ -1625,7 +1615,7 @@ int sig;
 /***********************************************************************
  * this function attempts to send SIGUSR2 to other growfiles processes
  * telling them to stop.
- * 
+ *
  ***********************************************************************/
 static void
 notify_others()
@@ -1849,14 +1839,13 @@ prt_examples(FILE *stream)
 %s -i0 -r 1-50000 -R 0--2 -o random -I r -C0 -l -T 20 -uU100-200 -n 5 gf_rand1 gf_rand2\n",
 	    Progname);
 
-
 	return;
 }
 
 /***********************************************************************
  *
  * The file descriptor current offset is assumed to be the end of the
- * file. 
+ * file.
  * Woffset will be set to the offset before the write.
  * Grow_incr will be set to the size of the write or lseek write.
  ***********************************************************************/
@@ -1899,7 +1888,6 @@ long *curr_size_ptr;	/* BUG:14136 */
 
 	    return -1;
 	}
-
 
         if (grow_incr <= 0) {   /* don't attempt i/o if grow_incr <= 0 */
 
@@ -1945,7 +1933,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 		}
 
 		lkfile(fd, LOCK_EX, LKLVL0);	 /* get exclusive lock */
-	
+
 #if NEWIO
 		ret=lio_write_buffer(fd, io_type, "w", 1, SIGUSR1, &errmsg,0);
 #else
@@ -2000,11 +1988,10 @@ long *curr_size_ptr;	/* BUG:14136 */
 			printf("%s: %d DEBUG3 %s/%d: dealing with O_APPEND condition (offset:fsz:%d)\n",
 			    Progname, Pid, __FILE__, __LINE__, (int)stbuf.st_size);
 
-
 		} else if (Mode & MODE_RAND_LSEEK) {
                    if (max_lseek == LSK_EOF) {	/* within file size */
                         noffset=random_range(min_lseek, fsize, 1, NULL);
-                   }	
+                   }
 		   else if (max_lseek == LSK_EOFPLUSGROW) {
 		        /* max to beyond file size */
 			noffset=random_range(min_lseek, fsize+grow_incr, 1, NULL);
@@ -2164,7 +2151,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 		     * The pattern written to the file will be considered corrupted.
 		     */
 		    if (Debug > 0 && lockfile) {
-		        printf("%s%s: %d DEBUG1 %s/%d: offset after write(%ld) not as exp(%ld+%d=%ld)\n", 
+		        printf("%s%s: %d DEBUG1 %s/%d: offset after write(%ld) not as exp(%ld+%d=%ld)\n",
 			    Progname, TagName, Pid, __FILE__, __LINE__, tmp, Woffset, grow_incr, Woffset+grow_incr);
 			printf("%s%s: %d DEBUG1 %s/%d: %d Assuming file changed by another process, resetting offset:%ld (expect pattern mismatch)\n",
 				Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, tmp-grow_incr);
@@ -2179,7 +2166,6 @@ long *curr_size_ptr;	/* BUG:14136 */
 		}
 
 	}  /* end of grow by write */
-
 
 	/*
 	 * Woffset - holds start of grow (start of write expect in grow by lseek)
@@ -2261,7 +2247,7 @@ int just_trunc;		/* lseek has already been done for you */
 	            lkfile(fd, LOCK_UN, LKLVL0);
 		    return -1;
 		}
-		
+
 		if (new_offset < min_lseek)
 		    new_offset=min_lseek;
 		else
@@ -2281,7 +2267,7 @@ int just_trunc;		/* lseek has already been done for you */
             else if (Debug > 3)
                 printf("%s: %d DEBUG4 %s/%d: lseeked to random offset %d\n",
                     Progname, Pid, __FILE__, __LINE__, offset);
-   
+
 #endif
         }
 
@@ -2304,7 +2290,6 @@ int just_trunc;		/* lseek has already been done for you */
                     Progname, Pid, __FILE__, __LINE__, new_offset, trunc_incr);
 #endif
 	}
-
 
 #ifdef CRAY
 	ret=trunc(fd);
@@ -2333,7 +2318,6 @@ int just_trunc;		/* lseek has already been done for you */
 	    printf("%s: %d DEBUG2 %s/%d: trunc file by %d bytes, to size of = %d bytes\n",
 		Progname, Pid, __FILE__, __LINE__, cur_offset-new_offset, new_offset);
 	}
-
 
         bytes_consumed -= (cur_offset - new_offset);
 	return 0;
@@ -2373,8 +2357,6 @@ int mode;       /* write mode */
         return 0;	/* no check */
     }
 
-
-   
     /*
      * Get the shared file lock.  We need to hold the lock from before
      * we do the stat until after the read.
@@ -2459,7 +2441,6 @@ int mode;       /* write mode */
 	return 1;
     }
 
-
     lkfile(fd, LOCK_UN, LKLVL0);
 
     if (Mode & MODE_GROW_BY_LSEEK) {
@@ -2528,8 +2509,6 @@ int mode;       /* write mode */
 
     return 0;	/* all is well */
 }
-
-
 
 /***********************************************************************
  *
@@ -2616,7 +2595,7 @@ int no_file_check;	/* if set, do not do file content check */
 		    rd_size=MAX_FC_READ;
 	        else
 		    rd_size=fsize - rd_cnt;
-			
+
 #if NEWIO
 	        ret=lio_read_buffer(fd, io_type, buf, rd_size,
 		    SIGUSR1, &errmsg,0);
@@ -2655,8 +2634,7 @@ int no_file_check;	/* if set, do not do file content check */
 	            ret=databinchk('o', buf, rd_size, rd_cnt, &errmsg);
 	        else
 	            ret=dataasciichk(NULL, buf, rd_size, rd_cnt, &errmsg);
-	
-		   
+
 	        if (ret >= 0) {
 		    fprintf(stderr,
 		        "%s%s: %d %s/%d: %d CFp %s in file %s\n",
@@ -2698,7 +2676,6 @@ int no_file_check;	/* if set, do not do file content check */
 
 	    /* unlock the file as soon as we can */
 	    lkfile(fd, LOCK_UN, LKLVL0);
-
 
 	    if (ret != fsize) {
 		fprintf(stderr, "%s%s: %d %s/%d: %d CFw %s\n",
@@ -2767,7 +2744,6 @@ lkfile(int fd, int operation, int lklevel)
 {
     char *errmsg;
 
-   
     if (lockfile == lklevel) {
 
         if (Debug > 5) {

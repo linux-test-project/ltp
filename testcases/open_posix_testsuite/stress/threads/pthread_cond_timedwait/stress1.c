@@ -14,19 +14,18 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This file is a stress test for the function pthread_cond_timedwait.
  *
  *It aims to check the following assertion:
- *  When inside the function, the thread releases the mutex 
- *  before waiting for the conditionnal variable. 
- *  Those two operations are atomic in the mean that 
- *  no other thread can gain access to the mutex 
- *  then signal (or broadcast) the condition 
- *  without the blocked thread behaving as if 
- *  this signal (or broadcast) had happened 
+ *  When inside the function, the thread releases the mutex
+ *  before waiting for the conditionnal variable.
+ *  Those two operations are atomic in the mean that
+ *  no other thread can gain access to the mutex
+ *  then signal (or broadcast) the condition
+ *  without the blocked thread behaving as if
+ *  this signal (or broadcast) had happened
  *  after it blocked on the conditionnal variable.
- 
+
  * The steps are:
  * -> Create N mutex & N cond vars with different attributes
  * -> Create N threads A, which
@@ -50,11 +49,10 @@
  *
  * To test for pshared primitive, thread B could be in another process.
  */
- 
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We need the XSI extention for the mutex attributes
    and the mkstemp() routine */
 #ifndef WITHOUT_XOPEN
@@ -66,7 +64,7 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <unistd.h>
 
  #include <errno.h>
@@ -75,27 +73,27 @@
  #include <sys/mman.h>
  #include <string.h>
  #include <time.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -186,7 +184,7 @@ struct childdata
 	int * pBool;
 };
 
-typedef struct 
+typedef struct
 {
 	struct childdata cd[NTOT];
 	int boolean;
@@ -202,20 +200,20 @@ void * threaded_B (void * arg)
 	int ret;
 	struct timespec ts;
 	struct childdata * cd = (struct childdata *)arg;
-	
+
 	ret = pthread_mutex_lock(&(cd->mtx));
 	if (ret != 0)  {  UNRESOLVED(ret, "[gchild] Unable to lock mutex");  }
-	
+
 	while (*(cd->pBool) == 0)
 	{
 		ret = pthread_cond_broadcast(&(cd->cnd));
 		if (ret != 0)  {  UNRESOLVED(ret, "[gchild] Broadcast failed");  }
-		
+
 		ret = clock_gettime(cd->cid, &ts);
 		if (ret != 0)  {  UNRESOLVED(errno, "[gchild] Unable to read clock");  }
-		
+
 		ts.tv_sec += TIMEOUT;
-		
+
 		ret = pthread_cond_timedwait(&(cd->cnd), &(cd->mtx), &ts);
 		if (ret == ETIMEDOUT)
 		{
@@ -223,14 +221,14 @@ void * threaded_B (void * arg)
 		}
 		if (ret != 0)  {  UNRESOLVED(ret, "[gchild] Failed to wait the cond");  }
 	}
-	
+
 	/* We shall broadcast again to be sure the parent is not hung */
 	ret = pthread_cond_broadcast(&(cd->cnd));
 	if (ret != 0)  {  UNRESOLVED(ret, "[gchild] Broadcast failed");  }
-	
+
 	ret = pthread_mutex_unlock(&(cd->mtx));
 	if (ret != 0)  {  UNRESOLVED(ret, "[gchild] Failed to finally release the mutex");  }
-	
+
 	return NULL;
 }
 
@@ -243,12 +241,12 @@ void * threaded_A (void * arg)
 	int ret, status;
 	pid_t     child_p=0, wrc;
 	pthread_t child_t;
-	
+
 	struct timespec ts;
-	
+
 	ret = pthread_mutex_lock(&(cd->mtx));
 	if (ret != 0)  {  UNRESOLVED(ret, "[child] Unable to lock mutex");  }
-	
+
 	/* Create the grand child */
 	if (cd->fork == 0)
 	{
@@ -259,35 +257,35 @@ void * threaded_A (void * arg)
 	{
 		child_p= fork();
 		if (child_p == -1)  {  UNRESOLVED(ret, "[child] Failed to create a grand child proces");  }
-		
+
 		if (child_p == 0) /* grand child */
 		{
 			threaded_B(arg);
 			exit(0);
 		}
 	}
-	
+
 	while (*(cd->pBool) == 0)
 	{
 		ret = clock_gettime(cd->cid, &ts);
 		if (ret != 0)  {  UNRESOLVED(errno, "[child] Unable to read clock");  }
-		
+
 		ts.tv_sec += TIMEOUT;
-		
+
 		ret = pthread_cond_timedwait(&(cd->cnd), &(cd->mtx), &ts);
 		if (ret == ETIMEDOUT)
 		{
 			FAILED("[child] Timeout occured. This means a cond broadcast was lost -- or gchild died");
 		}
 		if (ret != 0)  {  UNRESOLVED(ret, "[child] Failed to wait the cond");  }
-		
+
 		ret = pthread_cond_signal(&(cd->cnd));
 		if (ret != 0)  {  UNRESOLVED(ret, "[child] Signal failed");  }
 	}
-	
+
 	ret = pthread_mutex_unlock(&(cd->mtx));
 	if (ret != 0)  {  UNRESOLVED(ret, "[gchild] Failed to finally release the mutex");  }
-	
+
 	/* Wait for the grand child termination */
 	if (cd->fork == 0)
 	{
@@ -300,15 +298,15 @@ void * threaded_A (void * arg)
 		if (wrc != child_p)
 		{
 			output("Expected pid: %i. Got %i\n", (int)child_p, (int)wrc);
-			UNRESOLVED(errno, "Waitpid failed"); 
+			UNRESOLVED(errno, "Waitpid failed");
 		}
-		
+
 		if (WIFSIGNALED(status))
-		{ 
-			output("Child process killed with signal %d\n",WTERMSIG(status)); 
-			UNRESOLVED(0 , "Child process was killed"); 
+		{
+			output("Child process killed with signal %d\n",WTERMSIG(status));
+			UNRESOLVED(0 , "Child process was killed");
 		}
-		
+
 		if (WIFEXITED(status))
 		{
 			ret = WEXITSTATUS(status);
@@ -318,7 +316,7 @@ void * threaded_A (void * arg)
 			UNRESOLVED(0, "Child process was neither killed nor exited");
 		}
 	}
-	
+
 	/* the end */
 	return NULL;
 }
@@ -344,22 +342,22 @@ int main(int argc, char * argv[])
 	pthread_mutexattr_t ma;
 	pthread_condattr_t ca;
 	clockid_t cid = CLOCK_REALTIME;
-	
+
 	testdata_t * td;
 	testdata_t alternativ;
-	
+
 	int do_fork;
 	long pshared, monotonic, cs, mf;
-	
+
 	pthread_t th[NTOT];
-	
+
 	output_init();
-	
+
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
 	cs = sysconf(_SC_CLOCK_SELECTION);
 	monotonic = sysconf(_SC_MONOTONIC_CLOCK);
 	mf =sysconf(_SC_MAPPED_FILES);
-	
+
 	#if VERBOSE > 0
 	output("Test starting\n");
 	output("System abilities:\n");
@@ -376,12 +374,12 @@ int main(int argc, char * argv[])
 	/* We are not interested in testing the clock if we have no other clock available.. */
 	if (monotonic < 0)
 		cs = -1;
-	
+
 #ifndef USE_ALTCLK
 	if (cs > 0)
 		output("Implementation supports the MONOTONIC CLOCK but option is disabled in test.\n");
 #endif
-	
+
 /**********
  * Allocate space for the testdata structure
  */
@@ -402,48 +400,48 @@ int main(int argc, char * argv[])
 		void * mmaped;
 		int fd;
 		char * tmp;
-		
+
 		/* We now create the temp files */
 		fd = mkstemp(filename);
 		if (fd == -1)
 		{ UNRESOLVED(errno, "Temporary file could not be created"); }
-		
+
 		/* and make sure the file will be deleted when closed */
 		unlink(filename);
-		
+
 		#if VERBOSE > 1
 		output("Temp file created (%s).\n", filename);
 		#endif
-		
+
 		ps = (size_t)sysconf(_SC_PAGESIZE);
 		sz= ((sizeof(testdata_t) / ps) + 1) * ps; /* # pages needed to store the testdata */
-		
+
 		tmp = calloc(1 , sz);
 		if (tmp == NULL)
 		{ UNRESOLVED(errno, "Memory allocation failed"); }
-				
+
 		/* Write the data to the file.  */
 		if (write (fd, tmp, sz) != (ssize_t) sz)
 		{ UNRESOLVED(sz, "Writting to the file failed"); }
-		
+
 		free(tmp);
-		
+
 		/* Now we can map the file in memory */
 		mmaped = mmap(NULL, sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (mmaped == MAP_FAILED)
 		{ UNRESOLVED(errno, "mmap failed"); }
-		
+
 		td = (testdata_t *) mmaped;
-		
+
 		/* Our datatest structure is now in shared memory */
 		#if VERBOSE > 1
 		output("Testdata allocated in shared memory (%ib).\n", sizeof(testdata_t));
 		#endif
 	}
-	
+
 	/* Init the signal handler variable */
 	pBoolean = &(td->boolean);
-	
+
 	/* Init the structure */
 	for (i=0; i< NSCENAR ; i++)
 	{
@@ -459,7 +457,7 @@ int main(int argc, char * argv[])
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to initialize the mutex attribute object");  }
 		ret = pthread_condattr_init(&ca);
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to initialize the cond attribute object");  }
-		
+
 		#ifndef WITHOUT_XOPEN
 		/* Set the mutex type */
 		ret = pthread_mutexattr_settype(&ma, scenarii[i].m_type);
@@ -468,7 +466,7 @@ int main(int argc, char * argv[])
 		output("[parent] Mutex type : %i\n", scenarii[i].m_type);
 		#endif
 		#endif
-		
+
 		/* Set the pshared attributes, if supported */
 		if ((pshared > 0) && (scenarii[i].mc_pshared != 0))
 		{
@@ -485,7 +483,7 @@ int main(int argc, char * argv[])
 			output("[parent] Mutex & cond are process-private\n");
 		}
 		#endif
-		
+
 		/* Set the alternative clock, if supported */
 		#ifdef USE_ALTCLK
 		if ((cs > 0) && (scenarii[i].c_clock != 0))
@@ -504,7 +502,7 @@ int main(int argc, char * argv[])
 		ret = pthread_condattr_getclock(&ca, &cid);
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to get clock from cond attr");  }
 		#endif
-		
+
 		/* Tell whether the test will be across processes */
 		if ((pshared > 0) && (scenarii[i].fork != 0))
 		{
@@ -518,7 +516,7 @@ int main(int argc, char * argv[])
 			output("[parent] Child will be a new thread\n");
 		}
 		#endif
-		
+
 		/* Initialize all the mutex and condvars which uses those attributes */
 		for (j=0; j < SCALABILITY_FACTOR * NCHILDREN; j++)
 		{
@@ -526,33 +524,32 @@ int main(int argc, char * argv[])
 			CD.pBool = &(td->boolean);
 			CD.fork = do_fork;
 			CD.cid = cid;
-			
+
 			/* initialize the condvar */
 			ret = pthread_cond_init(&(CD.cnd), &ca);
 			if (ret != 0)  {  UNRESOLVED(ret, "[parent] Cond init failed");  }
-			
+
 			/* initialize the mutex */
 			ret = pthread_mutex_init(&(CD.mtx), &ma);
 			if (ret != 0)  {  UNRESOLVED(ret, "[parent] Mutex init failed");  }
 			#undef CD
 		}
-			
+
 		ret = pthread_condattr_destroy(&ca);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the cond var attribute object");  }
-		
+
 		ret = pthread_mutexattr_destroy(&ma);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the mutex attribute object");  }
 	}
 	#if VERBOSE > 1
 	output("[parent] All condvars & mutex are ready\n");
 	#endif
-	
+
 	ret = pthread_attr_init(&ta);
 	if (ret != 0)  {  UNRESOLVED(ret, "[parent] Failed to initialize a thread attribute object");  }
 	ret = pthread_attr_setstacksize(&ta, sysconf(_SC_THREAD_STACK_MIN));
 	if (ret != 0)  {  UNRESOLVED(ret, "[parent] Failed to set thread stack size");  }
-	
-	
+
 	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = sighdl;
@@ -561,46 +558,44 @@ int main(int argc, char * argv[])
 	#if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
 	#endif
-	
+
 	for (i=0; i<NTOT; i++)
 	{
 		ret = pthread_create(&th[i], &ta, threaded_A, &(td->cd[i]));
 		/* In case of failure we can exit; the child process will die after a while */
 		if (ret != 0)  {  UNRESOLVED(ret, "[Parent] Failed to create a thread");  }
-		
+
 		#if VERBOSE > 1
 		if ((i % 10) == 0)
 			output("[parent] %i threads created...\n", i+1);
 		#endif
 	}
-	
+
 	#if VERBOSE > 1
 	output("[parent] All %i threads are running...\n", NTOT);
 	#endif
-	
+
 	for (i=0; i<NTOT; i++)
 	{
 		ret = pthread_join(th[i], NULL);
 		if (ret != 0)  {  UNRESOLVED(ret, "[Parent] Failed to join a thread");  }
 	}
-	
+
 	/* Destroy everything */
 	for (i=0; i< NTOT ; i++)
 	{
 		/* destroy the condvar */
 		ret = pthread_cond_destroy(&(td->cd[i].cnd));
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Cond destroy failed");  }
-		
+
 		/* destroy the mutex */
 		ret = pthread_mutex_init(&(td->cd[i].mtx), &ma);
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Mutex destroy failed");  }
 	}
-	
+
 	#if VERBOSE > 0
 	output("Test passed\n");
 	#endif
 
 	PASSED;
 }
-
-

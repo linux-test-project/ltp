@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /* 01/02/2003	Port to LTP	avenkat@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
@@ -35,7 +34,6 @@
  * RESTRICTIONS
  */
 
-
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
@@ -51,7 +49,6 @@
 
 /*****		*****/
 #define ERR		0.0000001
-
 
 double pi;
 
@@ -81,13 +78,12 @@ int main (int argc, char *argv[])
 	double r1, r2, x;
 	char buf[100];
 
-
 	setup();		/* temp file is now open	*/
 	pi = 4.0 * atan(1.0);
 
 /*--------------------------------------------------------------*/
 	blenter();
-	
+
 	for (i=0; i < 30; i++)
 		for (j=0; j < 30; j++) {
 			sprintf(buf, "%*.*f", i, j, pi);
@@ -168,7 +164,6 @@ int main (int argc, char *argv[])
 			break;
 	}
 
-
 	blexit();
 /*--------------------------------------------------------------*/
 	blenter();
@@ -204,7 +199,6 @@ int main (int argc, char *argv[])
 		if (local_flag == FAILED)
 			break;
 	}
-
 
 	blexit();
 /*--------------------------------------------------------------*/
@@ -388,17 +382,14 @@ void setup()
   temp = stderr;
 }
 
-
 int blenter()
 {
   local_flag = PASSED;
   return(0);
 }
 
-
 int blexit()
 {
   (local_flag == PASSED ) ? tst_resm(TPASS, "Test passed") : tst_resm(TFAIL, "Test failed");
   return(0);
 }
-

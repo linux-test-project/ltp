@@ -14,21 +14,20 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This sample test aims to check the following assertion:
  *
  * pthread_mutex_init() can be used to re-initialize a destroyed mutex.
- 
+
  * The steps are:
  * -> Initialize a mutex with a given attribute.
  * -> Destroy the mutex
  * -> Initialize again the mutex with another attribute.
- 
+
  */
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We need the XSI extention for the mutex attributes */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -39,7 +38,7 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <unistd.h>
 
 /********************************************************************************************/
@@ -48,20 +47,20 @@
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -97,7 +96,6 @@ scenarii[] =
 };
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
-
 /* Main function */
 int main (int argc, char * argv[])
 {
@@ -107,13 +105,13 @@ int main (int argc, char * argv[])
 	pthread_mutexattr_t ma[NSCENAR + 1];
 	pthread_mutexattr_t *pma[NSCENAR + 2];
 	long pshared;
-	
+
 	/* Initialize output routine */
 	output_init();
-	
+
 	/* System abilities */
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
-	
+
 	/* Initialize the mutex attributes objects */
 	for (i=0; i<NSCENAR; i++)
 	{
@@ -134,19 +132,19 @@ int main (int argc, char * argv[])
 	 /* Default mutexattr object */
 	ret = pthread_mutexattr_init(&ma[i]);
 	if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to initialize the mutex attribute object");  }
-	
+
 	/* Initialize the pointer array */
 	for (i=0; i<NSCENAR+1; i++)
 		pma[i]=&ma[i];
-	
+
 	/* NULL pointer */
 	pma[i] = NULL;
-	
+
 	/* Ok, we can now proceed to the test */
 	#if VERBOSE > 0
 	output("Attributes are ready, proceed to the test\n");
 	#endif
-	
+
 	for (i=0; i<NSCENAR + 2; i++)
 	{
 		for (j=0; j<NSCENAR + 2; j++)
@@ -168,38 +166,37 @@ int main (int argc, char * argv[])
 				strj = def;
 			if (j==NSCENAR+1)
 				strj = nul;
-			
+
 			output("Init with: %s, \nreinit with: %s\n", stri, strj);
 			#endif
-			
+
 			ret = pthread_mutex_init(&mtx, pma[i]);
 			if (ret != 0)  {   UNRESOLVED(ret, "Failed to init the mutex");  }
-			
+
 			ret = pthread_mutex_destroy(&mtx);
 			if (ret != 0)  {  FAILED("Failed to destroy an initialized unlocked mutex");  }
-			
+
 			ret = pthread_mutex_init(&mtx, pma[j]);
 			if (ret != 0)  {   FAILED("Failed to re-init the mutex");  }
-			
+
 			ret = pthread_mutex_destroy(&mtx);
 			if (ret != 0)  {  FAILED("Failed to destroy an initialized unlocked mutex");  }
-			
+
 		}
 	}
-	
-	#if VERBOSE > 0 
+
+	#if VERBOSE > 0
 	output("Test passed; destroying the test data\n");
 	#endif
-	
+
 	for (i=0; i<NSCENAR + 1; i++)
 	{
 		ret = pthread_mutexattr_destroy(&ma[i]);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy a mutex attribute object");  }
 	}
-	
+
 	PASSED;
 }
-
 
 #else /* WITHOUT_XOPEN */
 int main(int argc, char * argv[])

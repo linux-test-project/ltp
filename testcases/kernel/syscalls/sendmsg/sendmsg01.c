@@ -248,7 +248,6 @@ int main(int argc, char *argv[])
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -289,8 +288,8 @@ int main(int argc, char *argv[])
 		}
 	}
 	cleanup();
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 pid_t start_server(struct sockaddr_in * sin0, struct sockaddr_un * sun0)
 {
@@ -442,7 +441,7 @@ void cleanup(void)
 	unlink(tmpsunpath);
 	TEST_CLEANUP;
 	tst_rmdir();
-	tst_exit();
+
 }
 
 void setup0(void)

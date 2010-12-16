@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +45,7 @@ int main(int argn, char *argc[])
 	//					   argc[2] : Server Program Number
 	//					   argc[3] : Number of testes function calls
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -61,23 +61,23 @@ int main(int argn, char *argc[])
 	int nbCall = atoi(argc[3]);
 	int nbOk = 0;
 	int i;
-    
+
     //First, test initialization : create client using intermediate level API
 	nconf = getnetconfigent("udp");
-	
-    if ((struct netconfig *)nconf == NULL) 
+
+    if ((struct netconfig *)nconf == NULL)
     {
     	//Test failed
     	printf("5\n");
     	return 5;
     }
-    
+
     tv.tv_sec = 1;
 	tv.tv_usec = 1;
-	
+
     client = clnt_tp_create_timed(argc[1], progNum,
                                   VERSNUM, (struct netconfig *)nconf, &tv);
-    
+
     if (client == NULL)
     {
     	printf("5\n");
@@ -94,18 +94,18 @@ int main(int argn, char *argc[])
     	if (rslt == RPC_SUCCESS)
 			nbOk++;
 	}
-	
+
 	if (run_mode == 1)
 	{
 		printf("Aimed : %d\n", nbCall);
 		printf("Got : %d\n", nbOk);
 	}
-	
+
 	test_status = (nbOk == nbCall) ? 0 : 1;
-    
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

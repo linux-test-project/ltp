@@ -66,8 +66,6 @@ int anyfail();
 void ok_exit();
 /*****  **      **      *****/
 
-
-
 /*ARGSUSED*/
 static
 void
@@ -176,7 +174,7 @@ main(int argc, char *argv[]) {
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t));
 	ok_exit(); /* LTP Port */
-	return 0;
+	tst_exit();
 }
 
 /*****  LTP Port        *****/
@@ -187,7 +185,6 @@ void ok_exit()
 	tst_exit();
 }
 
-
 int anyfail()
 {
   tst_resm(TFAIL, "Test failed");
@@ -197,5 +194,3 @@ int anyfail()
 }
 
 /*****  **      **      *****/
-
-

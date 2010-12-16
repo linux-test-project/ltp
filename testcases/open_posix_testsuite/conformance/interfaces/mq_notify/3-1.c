@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -12,10 +12,10 @@
  *  for notification by the specified message queue, the existing registration
  *  will be removed.
  *
- *  4/11/2003 	change sa_flags from SA_RESTART to 0 to avoid compile 
- *  		error. 
+ *  4/11/2003 	change sa_flags from SA_RESTART to 0 to avoid compile
+ *  		error.
  *
- *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq
  *		resources
  */
 
@@ -33,7 +33,7 @@
 #define FUNCTION "mq_notify"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-#define MSG_SIZE	50 
+#define MSG_SIZE	50
 #define NAMESIZE	50
 
 int enter_handler = 0;

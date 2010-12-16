@@ -184,9 +184,8 @@ int main()
 		tst_resm(TPASS, "Test Passed");
 	}
 
-/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
 //Done Testing
-	return 0;
+	tst_exit();
 }

@@ -66,5 +66,5 @@ int main(int argc, char *argv[])
 
 	cap_free(cap);
 #endif
-	return 0;
+	tst_exit();
 }

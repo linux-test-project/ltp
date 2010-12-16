@@ -147,13 +147,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -194,14 +191,14 @@ int main(int ac, char **av)
 				test_cases[i].cleanup();
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
 
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
@@ -214,7 +211,6 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -227,14 +223,13 @@ void setup()
 			 "Failed to read the HZ from sysconf\n");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Save current parameters in tim_save */
 	if ((adjtimex(&tim_save)) == -1) {
 		tst_brkm(TBROK, NULL, "Failed to save current parameters");
 	}
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -253,7 +248,7 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-}				/* End cleanup() */
+}
 
 int setup2()
 {

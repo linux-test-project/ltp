@@ -14,31 +14,28 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertions:
 *
-* pthread_atfork registers the 'prepare' handler to be called before fork() 
+* pthread_atfork registers the 'prepare' handler to be called before fork()
 * processing in the context of the fork() calling thread.
 *
-* pthread_atfork registers the 'parent' handler to be called after fork() 
+* pthread_atfork registers the 'parent' handler to be called after fork()
 * processing in the context of the fork() calling thread in the parent process.
 *
-* pthread_atfork registers the 'child' handler to be called after fork() 
-* processing in the context of the fork() calling thread in the child process. 
-
+* pthread_atfork registers the 'child' handler to be called after fork()
+* processing in the context of the fork() calling thread in the child process.
 
 * The steps are:
 * -> Create a new thread
 * -> Call pthread_atfork from the main thread.
 * -> Child thread forks.
-* -> Check that the handlers have been called, and in the context of the 
+* -> Check that the handlers have been called, and in the context of the
 *    calling thread.
 
 * The test fails if the thread executing the handlers is not the one expected,
 * or if the handlers are not executed.
 
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -56,28 +53,27 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-
 /******************************************************************************/
 /***************************   Test framework   *******************************/
 /******************************************************************************/
 #include "testfrmw.h"
-#include "testfrmw.c" 
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
- *    where descr is a description of the error and ret is an int 
+ * UNRESOLVED(ret, descr);
+ *    where descr is a description of the error and ret is an int
  *   (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -111,7 +107,6 @@ void child(void)
 {
 	threads[ 2 ] = pthread_self();
 }
-
 
 /* Thread function */
 void * threaded(void * arg)
@@ -240,5 +235,3 @@ int main(int argc, char * argv[])
 
 	PASSED;
 }
-
-

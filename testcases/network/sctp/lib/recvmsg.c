@@ -3,7 +3,7 @@
  * sctp_recvmsg.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- *    http://www.gnu.org/copyleft/lesser.txt 
+ *    http://www.gnu.org/copyleft/lesser.txt
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -23,9 +23,9 @@
  * that in order for the sctp_sndrcvinfo structure to be filled in by
  * sctp_recvmsg() the caller must enable the sctp_data_io_events with
  * the SCTP_EVENTS option.
- * 
+ *
  * sctp_recvmsg(). Its syntax is,
- * 
+ *
  * int sctp_recvmsg(int s,
  *		    void *msg,
  *		    size_t len,
@@ -33,8 +33,8 @@
  *		    socklen_t *fromlen,
  *		    struct sctp_sndrcvinfo *sinfo,
  *		    int *msg_flags)
- * 
- * 
+ *
+ *
  * s          - is the socket descriptor
  * msg        - is a message buffer to be filled.
  * len        - is the length of the message buffer.

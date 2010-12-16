@@ -81,7 +81,6 @@ int check_mqueue(void *vtest)
 	tst_exit();
 }
 
-
 int main(int argc, char *argv[])
 {
 	int rc;
@@ -161,6 +160,5 @@ fail:
 	rmdir(DEV_MQUEUE2);
 	tst_exit();
 
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }

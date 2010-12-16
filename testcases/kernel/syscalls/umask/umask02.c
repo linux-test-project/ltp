@@ -105,7 +105,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified
@@ -127,6 +127,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

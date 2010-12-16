@@ -14,7 +14,6 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertion:
 *
 * The function does not return EINTR
@@ -24,7 +23,6 @@
 * -> check that EINTR is never returned
 
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -47,22 +45,22 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
-#include "testfrmw.c" 
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
+ * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -74,7 +72,6 @@
 #endif
 
 #define WITH_SYNCHRO
-
 
 /********************************************************************************************/
 /***********************************    Test cases  *****************************************/
@@ -178,7 +175,6 @@ void * testth(void * arg)
 	return NULL;
 }
 
-
 /* Test function -- calls pthread_kill() and checks that EINTR is never returned. */
 void * test(void * arg)
 {
@@ -200,7 +196,6 @@ void * test(void * arg)
 		UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 in worker thread");
 	}
 
-
 	while (do_it)
 	{
 		count_ope++;
@@ -218,7 +213,6 @@ void * test(void * arg)
 		}
 
 	}
-
 
 	ret = pthread_join(test_ch, NULL);
 
@@ -304,8 +298,6 @@ int main (int argc, char * argv[])
 	arg2.sem = &semsig2;
 #endif
 
-
-
 	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) & arg1)))
 	{
 		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
@@ -316,18 +308,14 @@ int main (int argc, char * argv[])
 		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
 	}
 
-
-
 	/* Let's wait for a while now */
 	sleep(1);
-
 
 	/* Now stop the threads and join them */
 	do
 	{
 		do_it = 0;
 	} while (do_it);
-
 
 	if ((ret = pthread_join(th_sig1, NULL)))
 	{
@@ -339,12 +327,10 @@ int main (int argc, char * argv[])
 		UNRESOLVED(ret, "Signal 2 sender thread join failed");
 	}
 
-
 	if ((ret = pthread_join(th_work, NULL)))
 	{
 		UNRESOLVED(ret, "Worker thread join failed");
 	}
-
 
 #if VERBOSE > 0
 	output("Test executed successfully.\n");

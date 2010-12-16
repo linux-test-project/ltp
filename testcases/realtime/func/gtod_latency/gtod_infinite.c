@@ -111,7 +111,6 @@ int main(int argc, char *argv[])
 	struct sigaction sact;
 	setup();
 
-
 	/* Set signal handler for SIGALRM */
 	sigfillset(&sact.sa_mask);
 	sact.sa_handler = alarm_handler;
@@ -194,5 +193,5 @@ int main(int argc, char *argv[])
 
 		}
 	}
-	return 0;
+	tst_exit();
 }

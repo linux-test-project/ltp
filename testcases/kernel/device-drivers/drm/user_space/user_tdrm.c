@@ -40,7 +40,6 @@
 #include "../kernel_space/tdrm.h"
 #include "drm.h"
 
-
 static int tdrm_fd = -1;		/* file descriptor */
 
 int
@@ -72,7 +71,6 @@ tdrmopen() {
             }
         }
     }
-
 
     /*
      * Check for the /dev/tbase node, and create if it does not
@@ -124,7 +122,6 @@ tdrmclose() {
 		tdrm_fd = -1;
 	}
 }
-
 
 int main() {
 	int rc;
@@ -193,7 +190,6 @@ int main() {
 	else
 		printf("Success on drm ioctl DRM(rmdraw)\n");
 
-
 	/* test drm stub_register */
 
 	if (ioctl(tdrm_fd, TDRM_STUB_REGISTER))
@@ -226,7 +222,6 @@ int main() {
 		printf("Failed on drm DRM(add_magic) test\n");
 	else
 		printf("Success on drm DRM(add_magic) test\n");
-
 
 	// test drm remove magic
 	if (ioctl(tdrm_fd, TDRM_REMOVE_MAGIC))
@@ -295,7 +290,6 @@ int main() {
 	else
 		printf("Success on drm DRM(agp_acquire) test\n");
 
-
 	static drm_agp_info_t agp_info;
 	if (ioctl(tdrm_fd, DRM_IOCTL_AGP_INFO,&agp_info))
 		printf("Failed on drm DRM(agp_info) test\n");
@@ -327,7 +321,7 @@ int main() {
 	else
 		printf("Success on drm DRM(agp_free) test\n");
 
-	// test drm_ctxbitmap.h 
+	// test drm_ctxbitmap.h
 	static drm_ctx_t getctx;
 	if (ioctl(tdrm_fd, DRM_IOCTL_GET_CTX,&getctx))
 		printf("Failed on drm DRM(getctx) test\n");

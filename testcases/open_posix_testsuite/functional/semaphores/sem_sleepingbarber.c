@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * Test the well-known sleeping barber problem. 
+ * Test the well-known sleeping barber problem.
  */
 
 #include <stdio.h>
@@ -84,8 +84,8 @@ void *barbers(void *unused)
 		perror("sem_post(&barber) didn't return success");
 			pthread_exit((void *)1);
 		}
-			
-	}	
+
+	}
 	return (void *) 0;
 }
 void *customers(void* ID)
@@ -107,7 +107,7 @@ void *customers(void* ID)
 			pthread_exit((void *)1);
 		}
 		my_printf("Customer %d sits down, now %d customers are waiting.\n", CusID, waiting);
-		if (-1 == sem_post(&lock)) {	
+		if (-1 == sem_post(&lock)) {
 			perror("sem_post(&lock) didn't return success");
 			pthread_exit((void *)1);
 		}
@@ -120,7 +120,7 @@ void *customers(void* ID)
 	else
 	{
 		my_printf("No chairs available, customer %d leaves without a haircut.\n", CusID);
-		if (-1 == sem_post(&lock)) {	
+		if (-1 == sem_post(&lock)) {
 			perror("sem_post(&lock) didn't return success");
 			pthread_exit((void *)1);
 		}
@@ -137,32 +137,32 @@ int main(int argc, char *argv[])
 	int i, ID[CUS_NUM];
 
 	if (-1 == sem_init(&print, shared, 1)) {
-		perror("sem_init(&print) didn't return success"); 
+		perror("sem_init(&print) didn't return success");
 		return PTS_UNRESOLVED;
 	}
 
 #ifndef  _POSIX_SEMAPHORES
 	my_printf("_POSIX_SEMAPHORES is not defined\n");
 	return PTS_UNRESOLVED;
-#endif 
+#endif
 	if (-1 == sem_init(&customer, shared, customer_value)) {
-		perror("sem_init(&customer) didn't return success"); 
+		perror("sem_init(&customer) didn't return success");
 		return PTS_UNRESOLVED;
 	}
 	if (-1 == sem_init(&barber, shared, barber_value)) {
-		perror("sem_init(&barber) didn't return success"); 
+		perror("sem_init(&barber) didn't return success");
 		return PTS_UNRESOLVED;
 	}
 	if (-1 == sem_init(&lock, shared, lock_value)) {
-		perror("sem_init(&lock) didn't return success"); 
+		perror("sem_init(&lock) didn't return success");
 		return PTS_UNRESOLVED;
 	}
 	for (i = 0; i < CUS_NUM; i++) {
 		ID[i] = i;
-		pthread_create(&cus[i], NULL, customers, (void *)&ID[i]);	
+		pthread_create(&cus[i], NULL, customers, (void *)&ID[i]);
 	}
-	pthread_create(&bar, NULL, barbers, NULL);	
-	for (i = 0; i< CUS_NUM; i++) 
+	pthread_create(&bar, NULL, barbers, NULL);
+	for (i = 0; i< CUS_NUM; i++)
 		pthread_join(cus[i], NULL);
 
 	return PTS_PASS;

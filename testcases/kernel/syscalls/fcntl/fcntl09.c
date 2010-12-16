@@ -162,7 +162,6 @@ int main(int ac, char **av)
 		int type;
 		for (type = 0; type < 2; type++) {
 
-			/* reset Tst_count in case we are looping. */
 			Tst_count = 0;
 
 			flocks.l_type = type ? F_RDLCK : F_WRLCK;
@@ -221,28 +220,25 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(fname, "./file_%d", getpid());
@@ -262,7 +258,7 @@ void setup()
 	flocks.l_start = 0;
 	flocks.l_len = 0;
 	flocks.l_pid = getpid();
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -285,9 +281,6 @@ void cleanup()
 
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

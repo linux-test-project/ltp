@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-tcpclient.c
@@ -59,10 +58,9 @@ int catch_sighup;               /* When catch the SIGHUP, set to non-zero */
 #include <sys/wait.h>
 #include <netinet/in.h>
 
-
 /*
  * Function: usage()
- * 
+ *
  * Descripton:
  *  Print the usage of this program. Then, terminate this program with
  *  the specified exit value.
@@ -96,7 +94,6 @@ usage (char *program_name, int exit_value)
     exit (exit_value);
 }
 
-
 /*
  * Function: set_signal_flag()
  *
@@ -128,7 +125,6 @@ set_signal_flag(int type)
 	    exit(EXIT_FAILURE);
     }
 }
-
 
 /*
  *
@@ -163,7 +159,7 @@ main(int argc, char *argv[])
     family = PF_UNSPEC;
     server_name = NULL;
     portnum = NULL;
-    
+
     /* Retrieve the options */
     while ((optc = getopt(argc, argv, "S:f:p:t:bwdh")) != EOF) {
 	switch (optc) {
@@ -291,7 +287,7 @@ main(int argc, char *argv[])
 
     freeaddrinfo(res);
     free(server_name);
-    
+
     /* If -b option is specified, work as a daemon */
     if (background)
 	if (daemon(0, 0) < 0)
@@ -330,10 +326,10 @@ main(int argc, char *argv[])
 	    break;
 
 	/* client timeout */
-	if (timeout) 
-	    if (timeout < difftime(time(NULL), start_time)) 
+	if (timeout)
+	    if (timeout < difftime(time(NULL), start_time))
 		break;
-	
+
 	/* Catch SIGHUP */
 	if (catch_sighup)
 	    break;

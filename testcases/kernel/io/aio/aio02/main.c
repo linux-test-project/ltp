@@ -30,7 +30,7 @@ int main(void)
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "libaio missing");
-	
-	return 0;
+
+	tst_exit();
 }
 #endif

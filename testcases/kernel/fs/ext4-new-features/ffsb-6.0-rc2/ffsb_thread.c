@@ -78,7 +78,6 @@ char *ft_getbuf(ffsb_thread_t *ft)
 	return ft->alignedbuf;
 }
 
-
 int ft_get_read_random(ffsb_thread_t *ft)
 {
 	return tg_get_read_random(ft->tg);

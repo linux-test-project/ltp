@@ -74,7 +74,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <stdio.h>
 #include <string.h>
 #ifdef _LINUX_
@@ -98,11 +97,9 @@ void handler (int, int, struct sigcontext *);
 void sys_error (const char *, int);
 void error (const char *, int);
 
-
 /* Flag set upon receiving SIGCHLD signal */
 volatile int sigchld_flag = 0;
 volatile int sigusr1_count = 0;
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -123,7 +120,7 @@ int main (int argc, char **argv)
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
 	fflush (stdout);
-   
+
 	/* Set up our signal handler */
 	signal_init ();
 
@@ -144,7 +141,7 @@ int main (int argc, char **argv)
 	}
 
 	/*
-	 * Interrupt the child process           
+	 * Interrupt the child process
 	 *
 	 * Send SIGSTOP signal to child process (child process will
 	 * stop upon receiving the signal).
@@ -189,7 +186,7 @@ int main (int argc, char **argv)
 	 * Wait for the child process to abort
 	 *
 	 * Suspend execution of the parent process until the SIGCHLD signal
-	 * is received upon termination of the child process. 
+	 * is received upon termination of the child process.
 	 *
 	 * Check the child process's exit status (with POSIX macros) to
 	 * verify that the child process terminated due to the SIGKILL signal
@@ -219,9 +216,8 @@ int main (int argc, char **argv)
 	/* Program completed successfully -- exit */
 	printf ("\nsuccessful!\n");
 
-	return 0;
+	tst_exit();
 }
-
 
 /*---------------------------------------------------------------------+
 |                               child ()                               |
@@ -245,7 +241,6 @@ void child (pid_t pid)
 
 	error ("child process failed to terminate correctly", __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               handler ()                             |
@@ -274,7 +269,6 @@ void handler (int signal, int code, struct sigcontext *scp)
 		error (msg, __LINE__);
 	}
 }
-
 
 /*---------------------------------------------------------------------+
 |                           signal_init ()                             |
@@ -310,7 +304,7 @@ void signal_init ()
 #else
 #  ifdef _LINUX_
        		if ((i == SIGKILL) || (i == SIGSTOP) || ((i>=32)&&(i<=34))) continue;
-#  else	
+#  else
                 if ((i == SIGKILL) || (i == SIGSTOP) || (i == SIGCONT)) continue;
 #  endif
 #endif
@@ -349,7 +343,6 @@ void signal_init ()
 		sys_error ("sigaction (SIGCHLD) failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -364,7 +357,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

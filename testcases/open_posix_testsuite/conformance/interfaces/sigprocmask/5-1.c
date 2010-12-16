@@ -2,10 +2,10 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- 
- The resulting set shall be the signal set pointed to by set, if the value 
+
+ The resulting set shall be the signal set pointed to by set, if the value
  of the argument how is SIG_SETMASK
 */
 
@@ -26,7 +26,7 @@ int main()
 	sigset_t blocked_set, pending_set;
 	sigemptyset(&blocked_set);
 	sigaddset(&blocked_set, SIGABRT);
-	
+
 	act.sa_handler = handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
@@ -70,4 +70,3 @@ int main()
 	printf("Test PASSED: signal was added to the process's signal mask\n");
 	return PTS_PASS;
 }
-

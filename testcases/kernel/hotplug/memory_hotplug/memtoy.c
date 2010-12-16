@@ -66,7 +66,6 @@ Where:\n\
 More info - TODO\n\
 ";
 
-
 /*
  * die() - emit error message and exit w/ specified return code.
  *	   if exit_code < 0, save current errno, and fetch associated
@@ -104,7 +103,6 @@ usage(char *mesg) {
 	fprintf(stderr, USAGE, glctx.program_name);
 	exit(1);
 }
-
 
 #ifdef _DEBUG
 /*
@@ -238,7 +236,6 @@ set_signals()
 		char *sig_name = *(namep++);
 		int sig = *(sigp++);
 
-
 		if (0 != sigaction(sig, &act, NULL)) {
 			die(-1, "%s: Failed to set sigaction for %s\n",
 			        gcp->program_name, sig_name);
@@ -249,7 +246,6 @@ set_signals()
 #endif
 			;
 	}
-
 
 		return;
 }
@@ -405,7 +401,6 @@ cleanup()
 	segment_cleanup(gcp);
 } /* cleanup() */
 
-
 int
 parse_command_line_args(int argc, char *argv[])
 {
@@ -435,7 +430,7 @@ parse_command_line_args(int argc, char *argv[])
 		case 'h':
 		case 'x':
 			usage(NULL);
-			
+
 			break;
 
 		case 'V':
@@ -490,7 +485,7 @@ main(int argc, char *argv[])
 
 	if (error /* || argc==1 */) {
 		usage(NULL);
-		
+
 	}
 
 	/*
@@ -498,7 +493,7 @@ main(int argc, char *argv[])
 	 */
 	printf("memtoy pid:  %d\n", getpid());
 	vprint("%s:  pagesize = %d\n", gcp->program_name, gcp->pagesize);
-	if (gcp->numa_max_node >= 0) 
+	if (gcp->numa_max_node >= 0)
 		vprint("%s:  NUMA available - max node: %d\n",
 			gcp->program_name, gcp->numa_max_node);
 
@@ -506,12 +501,12 @@ main(int argc, char *argv[])
 
 	process_commands();
 
-	return 0;
+	tst_exit();
 
 }
 #else	/* ! (HAVE_NUMA_H && HAVE_NUMAIF_H) */
 int main(void) {
 	printf("System doesn't have required numa support.\n");
-	return 0;
+	tst_exit();
 }
 #endif	/* HAVE_NUMA_H && HAVE_NUMAIF_H */

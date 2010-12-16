@@ -228,6 +228,5 @@ unsigned long getTimeDiff(void) {
 	return(tv_end.tv_usec - tv_start.tv_usec);
 }
 
-
 #endif
 #endif

@@ -154,7 +154,6 @@ int main(int argc, char *argv[])
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -182,9 +181,9 @@ int main(int argc, char *argv[])
 		}
 	}
 	cleanup();
-	/*NOT REACHED */
-	return 0;
-}				/* End main */
+
+	tst_exit();
+}
 
 pid_t pid;
 
@@ -203,7 +202,7 @@ void cleanup(void)
 {
 	(void)kill(pid, SIGKILL);	/* kill server */
 	TEST_CLEANUP;
-	tst_exit();
+
 }
 
 void setup0(void)

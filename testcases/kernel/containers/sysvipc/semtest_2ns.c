@@ -214,5 +214,5 @@ int main(int argc, char *argv[])
 	semctl(id, IPC_RMID, 0);
 	tst_exit();
 
-	return 0;
+	tst_exit();
 }

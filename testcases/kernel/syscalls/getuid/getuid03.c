@@ -46,7 +46,6 @@
 #include <usctest.h>
 #include "compat_16.h"
 
-
 TCID_DEFINE(getuid03);
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -67,7 +66,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -90,7 +88,7 @@ int main(int ac, char **av)
 					 cleanup,
 					 "uid(%ld) is too large for testing getuid16",
 					 TEST_RETURN);
-			  
+
 			} else {
 				if (pwent->pw_uid != TEST_RETURN) {
 					tst_resm(TFAIL, "getpwuid() value, %d, "
@@ -107,7 +105,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -115,10 +113,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

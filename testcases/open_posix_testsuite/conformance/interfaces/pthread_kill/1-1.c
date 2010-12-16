@@ -1,36 +1,36 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- This program verifies that the pthread_kill() function requests from the 
+ This program verifies that the pthread_kill() function requests from the
  kernel to deliver a specified signal to a specified thread.
 
- Using two global values of sem1 (INTHREAD and INMAIN), we are going to 
- control  when we want execution to be in main() and when we want 
+ Using two global values of sem1 (INTHREAD and INMAIN), we are going to
+ control  when we want execution to be in main() and when we want
  execution to be a_thread_func(). When the main() function sets sem1 to
  INTHREAD and keeps looping until sem1 gets changed back to INMAIN, the
- a_thread_func() will be exclusively running. Similarly, when the 
+ a_thread_func() will be exclusively running. Similarly, when the
  a_thread_func() sets sem1 to INMAIN and keeps looping until sem1 gets
- changed back to INTHREAD, the main() function will be exclusively 
+ changed back to INTHREAD, the main() function will be exclusively
  running.
 
  Steps:
- 1. From the main() function, create a new thread. Using the above 
+ 1. From the main() function, create a new thread. Using the above
     methodology, let the new thread run "exclusively."
  2. Inside the new thread, prepare for catching the signal indicated by
-    SIGTOTEST, and calling a handler that sets handler_called to 1. Now 
+    SIGTOTEST, and calling a handler that sets handler_called to 1. Now
     let the main() thread run "exclusively".
- 3. Have main() send the signal indicated by SIGTOTEST to the new thread, 
-    using pthread_kill(). Let the new thread continue running, 
-    and from the main function, wait until handler_called is set to 
+ 3. Have main() send the signal indicated by SIGTOTEST to the new thread,
+    using pthread_kill(). Let the new thread continue running,
+    and from the main function, wait until handler_called is set to
     something other than 0.
- 4. In the new thread, if the handler wasn't called for more than 5 
+ 4. In the new thread, if the handler wasn't called for more than 5
     seconds, then set handler_called to -1, otherwise set it to 1.
- 5. In either case, the main() function will continue execution and return 
-    a PTS_PASS if handler_called was 1, and a PTS_FAIL if handler_called 
+ 5. In either case, the main() function will continue execution and return
+    a PTS_PASS if handler_called was 1, and a PTS_FAIL if handler_called
     was -1.
  */
 
@@ -89,14 +89,14 @@ int main()
 	while (sem1==INTHREAD)
 		sleep(1);
 
-	if (pthread_kill(new_th, SIGTOTEST) != 0) 
+	if (pthread_kill(new_th, SIGTOTEST) != 0)
 	{
 		printf("Test FAILED: Couldn't send signal to thread\n");
 		return PTS_FAIL;
 	}
 
 	sem1=INTHREAD;
-	
+
 	while (handler_called==0)
 		sleep(1);
 
@@ -107,9 +107,7 @@ int main()
 		printf("Test FAILED: Thread did not recieve or handle\n");
 		return PTS_FAIL;
 	}
-	
+
 	printf("Test PASSED\n");
-	return PTS_PASS;	
+	return PTS_PASS;
 }
-
-

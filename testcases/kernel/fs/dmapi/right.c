@@ -132,8 +132,8 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }
 
 void DoTest(dm_token_t token, void *hanp, size_t hlen)
@@ -1142,7 +1142,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 	if (DMVAR_EXEC(UPGRADE_RIGHT_BASE + 5)) {
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_RIGHT_NULL)\n", szFuncName);
 		rc = dm_upgrade_right(sid, hanp, hlen, token);
@@ -1427,7 +1427,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 	if (DMVAR_EXEC(DOWNGRADE_RIGHT_BASE + 5)) {
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_RIGHT_NULL)\n", szFuncName);
 		rc = dm_downgrade_right(sid, hanp, hlen, token);
@@ -1651,7 +1651,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	   
+
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
@@ -1709,7 +1709,7 @@ void *Thread(void *parm)
 			case DM_EVENT_PREUNMOUNT:
 				response = DM_RESP_CONTINUE;
 				break;
-			
+
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");

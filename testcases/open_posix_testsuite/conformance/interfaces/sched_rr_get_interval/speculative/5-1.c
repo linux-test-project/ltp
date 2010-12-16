@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -22,9 +22,9 @@
 
 int main(int argc, char **argv)
 {
-	int result = -2;       
-	
-	result = sched_rr_get_interval(0, NULL);	
+	int result = -2;
+
+	result = sched_rr_get_interval(0, NULL);
 
 	if (result == -1 && errno == EFAULT) {
 		printf("sched_rr_get_interval() sets errno == EFAULT when interval argument points to NULL\n");
@@ -37,6 +37,5 @@ int main(int argc, char **argv)
 
 	printf("sched_rr_get_interval() return %i and sets errno == %i.\n",
 	       result, errno);
-	return PTS_UNRESOLVED;	
+	return PTS_UNRESOLVED;
 }
-

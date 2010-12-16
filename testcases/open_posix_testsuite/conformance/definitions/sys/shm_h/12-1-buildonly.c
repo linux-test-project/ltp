@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -8,13 +8,13 @@
  *  GNU General Public License for more details.
  *
  * Test that all of the folowing symbolic constants from sys/ipc.h are defined:
- *  IPC_CREAT 
- *  IPC_EXCL 
- *  IPC_NOWAIT 
- *  IPC_PRIVATE 
- *  IPC_RMID 
- *  IPC_SET 
- *  IPC_STAT 
+ *  IPC_CREAT
+ *  IPC_EXCL
+ *  IPC_NOWAIT
+ *  IPC_PRIVATE
+ *  IPC_RMID
+ *  IPC_SET
+ *  IPC_STAT
  */
 
 #include <sys/shm.h>
@@ -46,4 +46,3 @@
 #ifndef IPC_STAT
 #error IPC_STAT not defined
 #endif
-

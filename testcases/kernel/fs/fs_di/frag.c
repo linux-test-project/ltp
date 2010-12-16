@@ -105,5 +105,5 @@ int main(int argc, char *argv[])
 			break;
 	} while (1);
 	fclose(fp_data);
-	return 0;
+	tst_exit();
 }

@@ -88,7 +88,7 @@ void setup(void)
 void cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
+
 }
 
 void check(void)

@@ -8,7 +8,7 @@
  *  GNU General Public License for more details.
  *
  * Test that the shared memory object is created if the shared memory object
- * does not exists and the O_CREAT flags is set.   
+ * does not exists and the O_CREAT flags is set.
  *
  * Steps:
  *  1. Ensure that the shared memory object does not exists using shm_unlink.
@@ -26,14 +26,13 @@
 
 #define SHM_NAME "posixtest_15-1"
 
-
 int main() {
 	int fd, result;
 	struct stat stat_buf;
 
 	result = shm_unlink(SHM_NAME);
-	if (result != 0 && errno != ENOENT) { 
-		/* The shared memory object exist and shm_unlink can not 
+	if (result != 0 && errno != ENOENT) {
+		/* The shared memory object exist and shm_unlink can not
 		   remove it. */
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
@@ -44,7 +43,7 @@ int main() {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	result = fstat(fd, &stat_buf);
 
 	if (result == 0) {
@@ -61,4 +60,3 @@ int main() {
 	shm_unlink(SHM_NAME);
 	return PTS_FAIL;
 }
-       

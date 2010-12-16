@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		/*NOT REACHED */
+
 	}
 
 	setup();
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 
 	if (sigaction(SIGALRM, &sa, NULL) < 0) {
 		tst_brkm(TBROK, cleanup, "Sigaction failed !\n");
-		/* NOT REACHED */
+
 	}
 
 	timeout = 0;
@@ -276,7 +276,7 @@ void work(void)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -301,6 +301,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

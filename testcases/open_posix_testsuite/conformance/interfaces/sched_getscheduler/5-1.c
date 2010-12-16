@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -22,7 +22,7 @@
 #include "posixtest.h"
 
 int main(int argc, char **argv)
-{	       
+{
 
 	int result = -1, child_pid;
 	int stat_loc;
@@ -56,12 +56,12 @@ int main(int argc, char **argv)
 
 	/* Assume the pid is not yet reatributed to an other process */
 	result = sched_getscheduler(child_pid);
-	
+
 	if (result == -1) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
-	
+
 	if (errno != ESRCH) {
 		perror("ESRCH is not returned");
 		return PTS_FAIL;
@@ -72,9 +72,7 @@ int main(int argc, char **argv)
 		return PTS_FAIL;
 	} else {
 		perror("Unresolved test error");
-		return PTS_UNRESOLVED;	
-	}        
+		return PTS_UNRESOLVED;
+	}
 
 }
-
-

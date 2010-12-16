@@ -22,4 +22,3 @@ int main()
 	printf("as system space cannot be controlled from this test.\n");
 	return PTS_UNTESTED;
 }
-

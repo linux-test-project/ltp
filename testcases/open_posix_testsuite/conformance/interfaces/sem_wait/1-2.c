@@ -1,16 +1,15 @@
 /*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  majid.awad REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content 
- * of this license, see the COPYING file at the top level of this 
+ * This file is licensed under the GPL license.  For the full content
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
- * Keep calling sem_wait until the sempahore is locked.  That is 
+ * Keep calling sem_wait until the sempahore is locked.  That is
  * decrementing the semaphore value by one until its zero or locked.
  */
-
 
 #include <stdio.h>
 #include <errno.h>
@@ -21,12 +20,9 @@
 #include <signal.h>
 #include "posixtest.h"
 
-
 #define TEST "2-1"
 #define FUNCTION "sem_wait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
-
-
 
 int main() {
 	sem_t *mysemp;
@@ -49,10 +45,9 @@ int main() {
 			perror(ERROR_PREFIX "sem_getvalue");
 			return PTS_UNRESOLVED;
 		} else {
-			value--; 
+			value--;
 		}
 	}
-
 
 	if (sem_getvalue(mysemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
@@ -62,9 +57,8 @@ int main() {
 		sem_unlink(semname);
 		sem_close(mysemp);
 		return PTS_PASS;
-	} else { 
+	} else {
 		puts("TEST FAILED: Semaphore is not locked");
 		return PTS_FAIL;
 	}
 }
-

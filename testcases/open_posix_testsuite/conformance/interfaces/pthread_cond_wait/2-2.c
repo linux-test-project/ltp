@@ -14,7 +14,6 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This sample test aims to check the following assertion:
  *
  * When the function returns successfully, everything is as if
@@ -33,10 +32,10 @@
  * -> The parent unlocks the mutex then joins the child.
  * -> The child checks that it owns the mutex; then it leaves.
  */
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We need the XSI extention for the mutex attributes
    and the mkstemp() routine */
 #ifndef WITHOUT_XOPEN
@@ -48,34 +47,34 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <unistd.h>
 
  #include <errno.h>
  #include <sys/wait.h>
  #include <sys/mman.h>
  #include <string.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -95,7 +94,7 @@
 /********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 
-typedef struct 
+typedef struct
 {
 	pthread_mutex_t mtx;
 	pthread_cond_t cnd;
@@ -152,9 +151,9 @@ scenarii[] =
 void * tf(void * arg)
 {
 	int ret=0;
-	
+
 	testdata_t * td = (testdata_t *)arg;
-	
+
 	/* Lock the mutex */
 	ret = pthread_mutex_lock(&(td->mtx));
 	if (ret != 0)
@@ -162,25 +161,25 @@ void * tf(void * arg)
 		td->status = ret;
 		UNRESOLVED(ret, "[child] Unable to lock the mutex");
 	}
-	
+
 	/* Tell the parent the mutex is locked */
 	td->ctrl = 1;
-	
+
 	/* Enter the wait */
-	do 
+	do
 	{
 		ret = pthread_cond_wait(&(td->cnd), &(td->mtx));
 		td->ctrl = 2;
 	} while ((ret == 0) && (td->bool == 0));
-	
+
 	td->ctrl = 3;
-	
+
 	if (ret != 0)
 	{
 		td->status = ret;
 		UNRESOLVED(ret, "[child] Cond wait returned an error");
 	}
-	
+
 	/* Make sure we are owning the mutex */
 	ret = pthread_mutex_trylock(&(td->mtx));
 	if (td->type == PTHREAD_MUTEX_RECURSIVE)
@@ -216,7 +215,7 @@ void * tf(void * arg)
 		output("[child] The mutex was busy (normal).\n");
 		#endif
 	}
-	
+
 	ret = pthread_mutex_unlock(&(td->mtx));
 	if (ret != 0)
 	{
@@ -224,35 +223,34 @@ void * tf(void * arg)
 		output("[child] Got error %i: %s\n", ret, strerror(ret));
 		FAILED("[child] Failed to unlock the mutex - owned by another thread?");
 	}
-	
+
 	td->ctrl = 4;
 	return NULL;
 }
-
 
 int main(int argc, char * argv[])
 {
 	int ret, i;
 	pthread_mutexattr_t ma;
 	pthread_condattr_t ca;
-	
+
 	testdata_t * td;
 	testdata_t alternativ;
-	
+
 	int do_fork;
-	
+
 	pid_t child_pr=0, chkpid;
 	int status;
 	pthread_t child_th;
-	
+
 	long pshared, monotonic, cs, mf;
-	
+
 	output_init();
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
 	cs = sysconf(_SC_CLOCK_SELECTION);
 	monotonic = sysconf(_SC_MONOTONIC_CLOCK);
 	mf =sysconf(_SC_MAPPED_FILES);
-	
+
 	#if VERBOSE > 0
 	output("Test starting\n");
 	output("System abilities:\n");
@@ -265,11 +263,11 @@ int main(int argc, char * argv[])
 	if ((cs < 0) || (monotonic < 0))
 		output("Alternative clock won't be tested\n");
 	#endif
-	
+
 	/* We are not interested in testing the clock if we have no other clock available.. */
 	if (monotonic < 0)
 		cs = -1;
-	
+
 #ifndef USE_ALTCLK
 	if (cs > 0)
 		output("Implementation supports the MONOTONIC CLOCK but option is disabled in test.\n");
@@ -295,45 +293,44 @@ int main(int argc, char * argv[])
 		void * mmaped;
 		int fd;
 		char * tmp;
-		
+
 		/* We now create the temp files */
 		fd = mkstemp(filename);
 		if (fd == -1)
 		{ UNRESOLVED(errno, "Temporary file could not be created"); }
-		
+
 		/* and make sure the file will be deleted when closed */
 		unlink(filename);
-		
+
 		#if VERBOSE > 1
 		output("Temp file created (%s).\n", filename);
 		#endif
-		
+
 		sz= (size_t)sysconf(_SC_PAGESIZE);
-		
+
 		tmp = calloc(1, sz);
 		if (tmp == NULL)
 		{ UNRESOLVED(errno, "Memory allocation failed"); }
-		
+
 		/* Write the data to the file.  */
 		if (write (fd, tmp, sz) != (ssize_t) sz)
 		{ UNRESOLVED(sz, "Writting to the file failed"); }
-		
+
 		free(tmp);
-		
+
 		/* Now we can map the file in memory */
 		mmaped = mmap(NULL, sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (mmaped == MAP_FAILED)
 		{ UNRESOLVED(errno, "mmap failed"); }
-		
+
 		td = (testdata_t *) mmaped;
-		
+
 		/* Our datatest structure is now in shared memory */
 		#if VERBOSE > 1
 		output("Testdata allocated in shared memory.\n");
 		#endif
 	}
-	
-	
+
 /**********
  * For each test scenario, initialize the attributes and other variables.
  */
@@ -348,14 +345,14 @@ int main(int argc, char * argv[])
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to initialize the mutex attribute object");  }
 		ret = pthread_condattr_init(&ca);
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to initialize the cond attribute object");  }
-		
+
 		/* Set the mutex type */
 		ret = pthread_mutexattr_settype(&ma, scenarii[i].m_type);
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to set mutex type");  }
 		#if VERBOSE > 1
 		output("[parent] Mutex type : %i\n", scenarii[i].m_type);
 		#endif
-		
+
 		/* Set the pshared attributes, if supported */
 		if ((pshared > 0) && (scenarii[i].mc_pshared != 0))
 		{
@@ -372,7 +369,7 @@ int main(int argc, char * argv[])
 			output("[parent] Mutex & cond are process-private\n");
 		}
 		#endif
-		
+
 		/* Set the alternative clock, if supported */
 		#ifdef USE_ALTCLK
 		if ((cs > 0) && (scenarii[i].c_clock != 0))
@@ -389,7 +386,7 @@ int main(int argc, char * argv[])
 		}
 		#endif
 		#endif
-		
+
 		/* Tell whether the test will be across processes */
 		if ((pshared > 0) && (scenarii[i].fork != 0))
 		{
@@ -403,21 +400,20 @@ int main(int argc, char * argv[])
 			output("[parent] Child will be a new thread\n");
 		}
 		#endif
-	
-	
+
 /**********
- * Initialize the testdata_t structure with the previously defined attributes 
+ * Initialize the testdata_t structure with the previously defined attributes
  */
 		/* Initialize the mutex */
 		ret = pthread_mutex_init(&(td->mtx), &ma);
 		if (ret != 0)
 		{  UNRESOLVED(ret, "[parent] Mutex init failed");  }
-		
+
 		/* initialize the condvar */
 		ret = pthread_cond_init(&(td->cnd), &ca);
 		if (ret != 0)
 		{  UNRESOLVED(ret, "[parent] Cond init failed");  }
-		
+
 		/* Initialize the other datas from the test structure */
 		#ifdef USE_ALTCLK
 		ret = pthread_condattr_getclock(&ca, &(td->cid));
@@ -426,19 +422,19 @@ int main(int argc, char * argv[])
 		#else
 		td->cid = CLOCK_REALTIME;
 		#endif
-		
+
 		ret = pthread_mutexattr_gettype(&ma, &(td->type));
 		if (ret != 0)
 		{  UNRESOLVED(ret, "[parent] Unable to read mutex type attribute");  }
-		
+
 		td->ctrl=0;
 		td->bool=0;
 		td->status=0;
-		
+
 /**********
- * Proceed to the actual testing 
+ * Proceed to the actual testing
  */
-		
+
 		/* Create the child */
 		if (do_fork != 0)
 		{
@@ -446,13 +442,13 @@ int main(int argc, char * argv[])
 			child_pr = fork();
 			if (child_pr == -1)
 			{  UNRESOLVED(errno, "[parent] Fork failed");  }
-			
+
 			if (child_pr == 0)
 			{
 				#if VERBOSE > 1
 				output("[child] Child process starting...\n");
 				#endif
-				
+
 				if (tf((void *)td) != NULL)
 				{
 					UNRESOLVED(-1, "[child] Got an unexpected return value from test function");
@@ -471,14 +467,14 @@ int main(int argc, char * argv[])
 			ret = pthread_create(&child_th, NULL, tf, td);
 			if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to create the child thread.");  }
 		}
-		
+
 		/* Note: in case of an error, the child process will be alive for 10 sec then exit. */
-		
+
 		/* Child is now running and will enter the timedwait */
 		/* We are waiting for this; and we have to monitor the status value as well. */
 		ret = pthread_mutex_lock(&(td->mtx));
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to lock the mutex");  }
-		
+
 		while ((td->ctrl == 0) && (td->status == 0))
 		{
 			ret = pthread_mutex_unlock(&(td->mtx));
@@ -487,34 +483,34 @@ int main(int argc, char * argv[])
 			ret = pthread_mutex_lock(&(td->mtx));
 			if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to lock the mutex");  }
 		}
-		
+
 		if ((td->ctrl == 2) && (td->status == 0)) /* Spurious wakeups hapenned */
 		{
 			output("Spurious wake ups have happened. Maybe pthread_cond_wait is broken?\n");
 			td->ctrl = 1;
 		}
-		
+
 		if (td->ctrl == 1)/* The child is inside the cond wait */
 		{
 			ret = pthread_cond_signal(&(td->cnd));
 			if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to signal the condition");  }
-			
+
 			/* Let the child leave the wait function if something is broken */
 			usleep(100);
-			
+
 			if (td->ctrl != 1)
 			{
 				FAILED("[parent] Child went out from pthread_cond_wait without locking the mutex");
 			}
-			
+
 			/* Allow the child to continue */
 			td->bool=1;
 		}
-		
+
 		/* Let the child do its checking */
 		ret = pthread_mutex_unlock(&(td->mtx));
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to unlock the mutex");  }
-		
+
 		/* Wait for the child to terminate */
 		if (do_fork != 0)
 		{
@@ -523,14 +519,14 @@ int main(int argc, char * argv[])
 			if (chkpid != child_pr)
 			{
 				output("Expected pid: %i. Got %i\n", (int)child_pr, (int)chkpid);
-				UNRESOLVED(errno, "Waitpid failed"); 
+				UNRESOLVED(errno, "Waitpid failed");
 			}
 			if (WIFSIGNALED(status))
-			{ 
-				output("Child process killed with signal %d\n",WTERMSIG(status)); 
-				UNRESOLVED(td->status , "Child process was killed"); 
+			{
+				output("Child process killed with signal %d\n",WTERMSIG(status));
+				UNRESOLVED(td->status , "Child process was killed");
 			}
-			
+
 			if (WIFEXITED(status))
 			{
 				ret = WEXITSTATUS(status);
@@ -539,7 +535,7 @@ int main(int argc, char * argv[])
 			{
 				UNRESOLVED(td->status, "Child process was neither killed nor exited");
 			}
-			
+
 			if (ret != 0)
 			{
 				exit(ret); /* Output has already been closed in child */
@@ -552,22 +548,22 @@ int main(int argc, char * argv[])
 		}
 
 /**********
- * Destroy the data 
+ * Destroy the data
  */
  		ret = pthread_cond_destroy(&(td->cnd));
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the cond var");  }
-		
+
 		ret = pthread_mutex_destroy(&(td->mtx));
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the mutex");  }
-		
+
 		ret = pthread_condattr_destroy(&ca);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the cond var attribute object");  }
-		
+
 		ret = pthread_mutexattr_destroy(&ma);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the mutex attribute object");  }
-		
+
 	}  /* Proceed to the next scenario */
-	
+
 	#if VERBOSE > 0
 	output("Test passed\n");
 	#endif
@@ -582,5 +578,3 @@ int main(int argc, char * argv[])
 	UNTESTED("This test requires XSI features");
 }
 #endif
-
-

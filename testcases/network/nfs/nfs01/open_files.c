@@ -16,7 +16,6 @@ int write_something(int);
 void delete_files(void);
 void abortx(char *fmt, ...);
 
-
 int main(argc,argv)
 int argc;
 char *argv[];
@@ -80,7 +79,6 @@ char *argv[];
     exit(0);
 }
 
-
 int write_something(int fd)
 {
     int rc;
@@ -92,7 +90,6 @@ int write_something(int fd)
 	return(0);
     return(1);
 }
-
 
 void delete_files(void)
 {
@@ -113,11 +110,10 @@ void delete_files(void)
 	}
 }
 
-
 void abortx(char *fmt, ...)
 {
     va_list args;
-                                                                                                                            
+
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);
     va_end(args);

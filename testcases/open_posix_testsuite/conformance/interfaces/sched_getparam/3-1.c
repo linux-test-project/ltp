@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -16,7 +16,7 @@
 #include "posixtest.h"
 
 int main(int argc, char **argv)
-{	       
+{
 
 	struct sched_param param;
 	int result = -1;
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	param.sched_priority = -1;
 
 	result = sched_getparam(0, &param);
-	
+
 	if (result == 0 &&
 	   param.sched_priority != -1 &&
 	   errno == 0) {
@@ -42,11 +42,9 @@ int main(int argc, char **argv)
 		return PTS_FAIL;
 	} else {
 		perror("Unresolved test error");
-		return PTS_UNRESOLVED;	
-	}        
+		return PTS_UNRESOLVED;
+	}
 
 	printf("This code should not be executed.\n");
         return PTS_UNRESOLVED;
 }
-
-

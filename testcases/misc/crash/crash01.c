@@ -31,7 +31,6 @@ SOFTWARE.
 
 */
 
-
 /*
 
 A signal handler is set up so that in most cases the machine exception
@@ -50,7 +49,6 @@ stress test at the same time you run other tests, like a multi-user
 benchmark.
 
 */
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -82,7 +80,7 @@ static char *n_copt;
 int verbose_level = 2;
 
 /* Also, it may spend more time trapping and less time computing random bytes
- * by using the smallest incptr (while not executing already tested bits).  
+ * by using the smallest incptr (while not executing already tested bits).
  */
 int incptr = 80;
 
@@ -95,10 +93,8 @@ const int nbytes = 2000;
 /* max time allowed per try, in seconds */
 #define MAX_TRY_TIME 5
 
-
 /* in % */
 #define BLOCK_TRIGGER 80
-
 
 void cleanup()
 {
@@ -110,7 +106,6 @@ void cleanup()
 
 	tst_rmdir();
 
-	tst_exit();
 }
 
 void setup()
@@ -153,15 +148,12 @@ option_t options[] =
 	{ NULL, NULL, NULL }
 };
 
-
 int malloc_flag = 1; /* to be phased out */
-
 
 void badboy_fork ();
 void badboy_loop ();
 void summarize_status ();
 void record_status(unsigned int n);
-
 
 int
 main (int argc, char *argv[])
@@ -193,8 +185,6 @@ main (int argc, char *argv[])
 		tst_brkm(TBROK, cleanup, "Invalid arg for -b (max: %u): %s", nbytes/2, b_copt);
   }
 
-
-
    	setup();
 
 	for (lc=0; TEST_LOOPING(lc); lc++)
@@ -214,7 +204,7 @@ main (int argc, char *argv[])
 	}
 	summarize_status();
 	cleanup();
-	return 0;
+	tst_exit();
 }
 
 /* ************************* */
@@ -222,22 +212,20 @@ int badboy_pid;
 
 void my_signal (int sig, void (*func) ());
 
-
 void monitor_fcn (int sig)
 {
   int status;
 
- if (verbose_level >= 3) 
+ if (verbose_level >= 3)
 	    printf ("time limit reached on pid. using kill.\n");
 
   status = kill (badboy_pid, SIGKILL);
   if (status < 0)
     {
-	if (verbose_level >= 3) 
+	if (verbose_level >= 3)
       		printf ("failed to kill process\n");
     }
 }
-
 
 void
 badboy_fork ()
@@ -298,7 +286,7 @@ summarize_status ()
 {
   int i;
 
-  if (verbose_level < 2) 
+  if (verbose_level < 2)
 		  return;
 
   printf ("exit status ... number of cases\n");
@@ -308,7 +296,6 @@ summarize_status ()
       	printf ( "%11d ... %5d\n", i, status_table[i]);
     }
 }
-
 
 /* ************* badboy ******************************************* */
 
@@ -321,7 +308,6 @@ char *the_data;
 
 int offset = 0;
 int next_offset = 0;
-
 
 char * bad_malloc (int n);
 void my_signal (int sig, void (*func) ());
@@ -344,7 +330,6 @@ badboy_loop ()
 	      badboy = castaway (the_data);
 	      printf ("Badboy at %p\n", badboy);
 	    }
-
 
   for (i = 0; i < ntries; ++i)
     {
@@ -376,7 +361,6 @@ badboy_loop ()
   }
 }
 
-
 char * bad_malloc (int n)
 {
   char *data;
@@ -388,7 +372,6 @@ char * bad_malloc (int n)
 #endif
   return (data);
 }
-
 
 void again_handler (int sig)
 {
@@ -436,7 +419,7 @@ void again_handler (int sig)
     default:
       ss = "";
     }
-  if (verbose_level >= 5) 
+  if (verbose_level >= 5)
   	printf ("Got signal %d%s\n", sig, ss);
 
   longjmp (again_buff, 3);
@@ -476,7 +459,6 @@ set_up_signals ()
   my_signal (SIGINT, again_handler);
 }
 
-
 void compute_block_badboy (int n)
 {
   int j;
@@ -501,7 +483,7 @@ void compute_block_badboy (int n)
   /* was (nbytes < 0) */
   if (x_opt)
     {
-      if (verbose_level >= 1) 
+      if (verbose_level >= 1)
       		printf ("Dump of %d bytes of data\n", n);
       for (j = 0; j < n; ++j)
 	{
@@ -553,5 +535,3 @@ try_one_crash ()
   else if (nbytes == 0)
     while (1);
 }
-
-

@@ -36,7 +36,7 @@
  *    DESCRIPTION
  * 		 This test verifies that flock locks held on one fd conflict with
  * 		 flock locks held on a different fd.
- *		 	
+ *
  *		 Test:
  * 		 		 The process opens two file descriptors on the same file.
  * 		 		 It acquires an exclusive flock on the first descriptor,
@@ -136,11 +136,9 @@ int main(int argc, char **argv)
 		close(fd1);
 		close(fd2);
 
-	}			/* End of TEST_LOOPING */
+	}
 
 	cleanup();
-
-	return 0;
 
 }
 
@@ -151,7 +149,7 @@ int main(int argc, char **argv)
 void setup(void)
 {
 	int fd;
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified
@@ -176,7 +174,6 @@ void setup(void)
 		/* Removing temp dir */
 		tst_rmdir();
 
-		/* exit with return code appropriate for result */
 		tst_exit();
 	}
 	close(fd);
@@ -198,6 +195,4 @@ void cleanup(void)
 	unlink(filename);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

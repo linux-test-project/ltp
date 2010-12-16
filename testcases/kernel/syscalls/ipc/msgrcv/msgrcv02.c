@@ -156,13 +156,11 @@ void setup(void)
 {
 	key_t msgkey2;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Switch to nobody user for correct error code collection */
@@ -219,7 +217,6 @@ void cleanup(void)
 	/* if it exists, remove the message queue #2 */
 	rm_queue(msg_q_2);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -228,6 +225,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

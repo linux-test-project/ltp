@@ -26,7 +26,6 @@ extern llse_loff_t llse_llseek (unsigned int, llse_loff_t, unsigned int);
 
 #ifdef __linux__
 
-
 #if defined(__alpha__) || defined(__ia64__)
 
 #ifdef __NR_lseek
@@ -48,7 +47,6 @@ static off_t my_lseek(int fd, off_t off, int whence)
 
 static int _llseek (unsigned int, unsigned long,
 		   unsigned long, llse_loff_t *, unsigned int);
-
 
 #ifndef __NR_llseek
 /* no __NR_llseek on compilation machine - might give it explicitly */
@@ -80,7 +78,6 @@ static llse_loff_t my_llseek (unsigned int fd, llse_loff_t offset,
 }
 
 #endif /* __alpha__ */
-
 
 llse_loff_t llse_llseek (unsigned int fd, llse_loff_t offset,
 			 unsigned int origin)
@@ -125,5 +122,3 @@ llse_loff_t llse_llseek (unsigned int fd, llse_loff_t offset,
 }
 
 #endif 	/* linux */
-
-

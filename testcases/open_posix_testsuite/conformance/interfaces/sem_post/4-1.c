@@ -1,15 +1,14 @@
 /*
     Copyright (c) 2003, Intel Corporation. All rights reserved.
     Created by:  majid.awad REMOVE-THIS AT intel DOT com
-    This file is licensed under the GPL license.  For the full content 
-    of this license, see the COPYING file at the top level of this 
+    This file is licensed under the GPL license.  For the full content
+    of this license, see the COPYING file at the top level of this
     source tree.
  */
 
 /*
  * This test case verifies the sem_post returns 0 on successful call.
  */
-
 
 #include <stdio.h>
 #include <errno.h>
@@ -19,12 +18,9 @@
 #include <fcntl.h>
 #include "posixtest.h"
 
-
 #define TEST "4-1"
 #define FUNCTION "sem_post"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
-
-
 
 int main() {
 	sem_t *mysemp;
@@ -44,11 +40,10 @@ int main() {
 		sem_close(mysemp);
 		sem_unlink(semname);
 		return PTS_PASS;
-	} else { 
+	} else {
 		puts("TEST FAILED: value of sem_post is not returning zero");
 		return PTS_FAIL;
 	}
 	printf("This code should not be executed.\n");
 		return PTS_UNRESOLVED;
 }
-

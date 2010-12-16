@@ -170,9 +170,8 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (i = 0; Test_cases[i].desc != NULL; i++) {
@@ -191,7 +190,6 @@ int main(int ac, char **av)
 			 */
 			TEST(readlink(sym_file, buffer, buf_size));
 
-			/* Check return code of readlink(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "readlink() returned %ld, "
 					 "expected -1, errno:%d", TEST_RETURN,
@@ -212,13 +210,12 @@ int main(int ac, char **av)
 					 test_desc, TEST_ERRNO,
 					 Test_cases[i].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING. */
-	}			/* End for TEST_LOOPING */
-	/* Call cleanup() to undo setup done for the test. */
+		}
+	}
+
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -244,13 +241,10 @@ void setup()
 		perror("seteuid");
 	}
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* call individual setup functions */
@@ -371,9 +365,6 @@ void cleanup()
 		tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

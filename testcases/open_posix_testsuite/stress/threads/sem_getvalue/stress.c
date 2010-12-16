@@ -14,10 +14,9 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This stress test aims to test the following assertion:
-*  sem_getvalue always returns the value of the semaphore at a given time 
-* during the call into the sval argument. 
+*  sem_getvalue always returns the value of the semaphore at a given time
+* during the call into the sval argument.
 
 * The steps are:
 * -> Create a named semaphore and an unnamed semaphore, initialized to 0.
@@ -27,7 +26,6 @@
 * The test fails if sem_getvalue gets a value different from 0 or 1.
 
 */
-
 
 #include <pthread.h>
 #include <stdarg.h>
@@ -39,25 +37,25 @@
 #include <semaphore.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <signal.h> 
+#include <signal.h>
 
 #include "testfrmw.h"
-#include "testfrmw.c" 
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
+ * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -81,7 +79,6 @@ void sighdl(int sig)
 		do_it = 0;
 	} while (do_it);
 }
-
 
 /* Thread function */
 <<<<<<< HEAD
@@ -185,7 +182,6 @@ int main (int argc, char *argv[])
 		UNRESOLVED(ret, "Failed to create a thread");
 	}
 
-
 	/* loop */
 	while (do_it)
 	{
@@ -232,7 +228,6 @@ int main (int argc, char *argv[])
 	{
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
-
 
 	/* Destroy the semaphores */
 	ret = sem_close(named);

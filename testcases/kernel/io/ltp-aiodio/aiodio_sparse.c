@@ -263,7 +263,7 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		if (debug)
 			fprintf(stderr, "aiodio_sparse: io_getevent() res %ld res2 %ld\n",
 				event.res, event.res2);
-	
+
 		/* start next write */
 		io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, writesize, offset);
 		offset += writesize;
@@ -310,7 +310,6 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		unlink(filename);
 	);
 }
-
 
 void dirty_freeblocks(int size)
 {
@@ -510,7 +509,7 @@ int main(int argc, char **argv)
 			children_errors);
 	if (children_errors)
 		exit(10);
-	return 0;
+	tst_exit();
 }
 
 static void setup(void)
@@ -526,5 +525,4 @@ static void cleanup(void)
 	if (filename2)
 		unlink(filename2);
 
-	tst_exit();
 }

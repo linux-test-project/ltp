@@ -1,10 +1,10 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- * 
+ *
  * Test that timer_getoverrun() returns the number of overruns that
  * have happened due to signals being sent from a timer.  Test with
  * timer seconds in nanoseconds.
@@ -15,7 +15,7 @@
  * - Block signal SIGCONT (SIGCONT used so test will not terminate)
  * - Set up a timer to send SIGCONT on expiration with an interval
  *   of INTERVALNSEC nanoseconds.
- * - Wait for that timer to expire EXPECTEDIVERRUNS+1 times (wait VALUENSEC + 
+ * - Wait for that timer to expire EXPECTEDIVERRUNS+1 times (wait VALUENSEC +
  *   (EXPECTEDIVERRUNS)*INTERVALNSEC).
  * - Call timer_getoverrun() and ensure EXPECTEDOVERRUNS was returned.
  *   [First signal made it.  All others were overruns.]
@@ -97,7 +97,7 @@ int main()
 		perror("sigprocmask() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	overruns = timer_getoverrun(tid);
 	if (overruns > EXPECTEDOVERRUNS - 5) {
 		printf("Test PASSED\n");

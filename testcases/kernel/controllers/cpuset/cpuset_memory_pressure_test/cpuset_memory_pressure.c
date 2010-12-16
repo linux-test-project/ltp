@@ -50,7 +50,7 @@ main(int argc, char *argv[])
 	long int total_block = 0;
 
 	while (pagesize * mmap_block > 2 * unit) {
-		unsigned long *addr = mmap(NULL, pagesize * mmap_block, 
+		unsigned long *addr = mmap(NULL, pagesize * mmap_block,
 			PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 		if (addr == MAP_FAILED) {
 			mmap_block = mmap_block / 2;
@@ -61,5 +61,5 @@ main(int argc, char *argv[])
 		if (total_block * pagesize >= use * unit)
 			break;
 	}
-	return 0;
+	tst_exit();
 }

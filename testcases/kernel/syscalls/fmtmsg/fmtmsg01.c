@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 /* Clean up any files created by test before call to anyfail.   */
 
 	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
-	return 0;
+	tst_exit();
 }
 
 /*--------------------------------------------------------------*/
@@ -269,7 +269,7 @@ int blexit()
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */

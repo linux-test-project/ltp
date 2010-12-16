@@ -69,7 +69,6 @@ int gettid(void)
         return syscall(__NR_gettid);
 }
 
-
 typedef void* (*entrypoint_t)(void*);
 
 #define THREAD_STOP    1

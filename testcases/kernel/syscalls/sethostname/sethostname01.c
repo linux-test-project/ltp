@@ -93,7 +93,7 @@ int main(int ac, char **av)
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
 	/* Do initial setup. */
@@ -102,7 +102,6 @@ int main(int ac, char **av)
 	/* check -c option for looping. */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Call sethostname(2) */
@@ -118,13 +117,12 @@ int main(int ac, char **av)
 				 ltphost);
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /*
  * setup() - performs all one time setup for this test.
@@ -133,7 +131,6 @@ void setup()
 {
 	int ret;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Test should be executed as root user */
@@ -147,10 +144,9 @@ void setup()
 			 " current host name");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() -	performs all one time cleanup for this test
@@ -172,6 +168,4 @@ void cleanup()
 			 " hostname to \"%s\": %s", hname, strerror(errno));
 	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

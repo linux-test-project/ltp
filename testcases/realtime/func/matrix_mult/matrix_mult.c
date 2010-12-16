@@ -71,7 +71,6 @@ stats_container_t shist, chist;
 static pthread_barrier_t mult_start;
 static pthread_mutex_t mutex_cpu;
 
-
 void usage(void)
 {
 	rt_help();
@@ -187,7 +186,6 @@ void *concurrent_thread(void *thread)
 	return NULL;
 }
 
-
 void main_thread(void)
 {
 	int ret, i, j;
@@ -218,7 +216,6 @@ void main_thread(void)
 		fprintf(stderr, "Main thread: Can't set affinity.\n");
 		exit(1);
 	}
-
 
 	/* run matrix mult operation sequentially */
 	curdat = &sdat;
@@ -263,7 +260,6 @@ void main_thread(void)
 			exit(1);
 		}
 	}
-
 
 	/* run matrix mult operation concurrently */
 	printf("\nRunning concurrent operations\n");
@@ -347,6 +343,5 @@ int main(int argc, char *argv[])
 	set_priority(PRIO);
 	main_thread();
 
-
-	return 0;
+	tst_exit();
 }

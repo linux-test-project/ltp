@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -20,7 +20,7 @@
  *     changed since the call.
  */
 
-#ifdef __linux__ 
+#ifdef __linux__
 #define _GNU_SOURCE
 #endif
 
@@ -55,15 +55,15 @@ int set_process_affinity(int cpu)
 {
 	int retval = -1;
 	cpu_set_t cpu_mask;
-	
+
 	CPU_ZERO(&cpu_mask);
 	if (cpu >= 0 && cpu <= CPU_SETSIZE) {
 		CPU_SET(cpu, &cpu_mask);
 	} else {
-		fprintf (stderr, "Wrong cpu id: %d\n", cpu); 
+		fprintf (stderr, "Wrong cpu id: %d\n", cpu);
 		return -1;
 	}
-		
+
 //#ifndef P2_SCHED_SETAFFINITY
 	retval = sched_setaffinity(0, sizeof(cpu_mask), &cpu_mask);
 //#else
@@ -71,7 +71,7 @@ int set_process_affinity(int cpu)
 //#endif
 	if (retval == -1)
 	perror("Error at sched_setaffinity()");
-        
+
         return retval;
 }
 
@@ -79,16 +79,16 @@ int set_thread_affinity(int cpu)
 {
 	int retval = -1;
 	cpu_set_t cpu_mask;
-	
+
 	CPU_ZERO(&cpu_mask);
 	if (cpu >= 0 && cpu <= CPU_SETSIZE) {
 		CPU_SET(cpu, &cpu_mask);
 	} else {
-		fprintf (stderr, "Wrong cpu id: %d\n", cpu); 
+		fprintf (stderr, "Wrong cpu id: %d\n", cpu);
 		return -1;
 	}
 //#ifndef P2_PTHREAD_SETAFFINITY
-	retval = pthread_setaffinity_np(pthread_self(), 
+	retval = pthread_setaffinity_np(pthread_self(),
 			sizeof(cpu_mask), &cpu_mask);
 //#else
 //	retval = pthread_setaffinity_np(pthread_self(), &cpu_mask);
@@ -99,29 +99,29 @@ int set_thread_affinity(int cpu)
 }
 
 #endif
-        
+
 void * runner(void * arg) {
 	int i=0, nc;
 	long result = 0;
-#ifdef __linux__       
+#ifdef __linux__
         set_thread_affinity(*(int *)arg);
         fprintf(stderr, "%ld bind to cpu: %d\n", pthread_self(), *(int*)arg);
 #endif
-	
+
 	for (;i<LOOP;i++) {
 		nc = nb_call;
 		sched_yield();
 
 		/* If the value of nb_call has not change since the last call
-		   of sched_yield, that means that the thread does not 
+		   of sched_yield, that means that the thread does not
 		   relinquish the processor */
 		if (nc == nb_call) {
 			result++;
 		}
 	}
-        
+
 	pthread_exit((void*)(result));
-	
+
 	return NULL;
 }
 
@@ -130,7 +130,7 @@ void * busy_thread(void *arg) {
         set_thread_affinity(*(int *)arg);
         fprintf(stderr, "%ld bind to cpu: %d\n", pthread_self(), *(int*)arg);
 #endif
-        while (1) { 
+        while (1) {
                 nb_call++;
 		sched_yield();
 	}
@@ -138,11 +138,10 @@ void * busy_thread(void *arg) {
 	return NULL;
 }
 
-
 void busy_process(int cpu) {
         struct sched_param param;
 
-#ifdef __linux__        
+#ifdef __linux__
         /* Bind to a processor */
         set_process_affinity(cpu);
         fprintf(stderr, "%d bind to cpu: %d\n", getpid(), cpu);
@@ -159,10 +158,9 @@ void busy_process(int cpu) {
 
 }
 
-
 int main() {
 	int i, ncpu;
-	int *child_pid; 
+	int *child_pid;
 	pthread_t tid, tid_runner;
 	void *tmpresult;
 	long result;
@@ -170,13 +168,12 @@ int main() {
         struct sched_param param;
         int thread_cpu;
 
-
 	ncpu = get_ncpu();
 	if (ncpu == -1) {
 		printf("Can not get the number of CPUs of your machines.\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	printf("System has %d processors\n", ncpu);
 
         param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 1;
@@ -197,14 +194,13 @@ int main() {
 			perror("An error occurs when calling fork()");
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
-			
+
 			busy_process(i);
 
 			printf("This code should not be executed.\n");
 			return PTS_UNRESOLVED;
 		}
 	}
-
 
 	pthread_attr_init(&attr);
         pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
@@ -214,7 +210,7 @@ int main() {
 		perror("An error occurs when calling pthread_create()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (pthread_create(&tid_runner, &attr, runner, &thread_cpu) != 0) {
 		perror("An error occurs when calling pthread_create()");
 		return PTS_UNRESOLVED;
@@ -224,17 +220,17 @@ int main() {
 		perror("An error occurs when calling pthread_join()");
 		return PTS_UNRESOLVED;
 	}
-	
+
         for (i=0; i<ncpu-1; i++)
                 waitpid(child_pid[i], NULL, 0);
-	
+
         result = (long)tmpresult;
 	if (result) {
 		printf("A thread does not relinquish the processor.\n");
 		return PTS_FAIL;
 	}
-        
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
-			
+
 }

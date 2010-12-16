@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-icmpv4_sender.c
@@ -77,7 +76,6 @@ char *program_name;		/* program name */
 struct sigaction handler;	/* Behavior for a signal */
 int catch_sighup;		/* When catch the SIGHUP, set to non-zero */
 
-
 /*
  * Function: usage()
  *
@@ -121,7 +119,6 @@ usage (char *program_name, int exit_value)
     exit (exit_value);
 }
 
-
 /*
  * Function: set_signal_flag()
  *
@@ -153,7 +150,6 @@ set_signal_flag(int type)
 	    exit(EXIT_FAILURE);
     }
 }
-
 
 /*
  * Function: parse_options()
@@ -299,7 +295,6 @@ parse_options(int argc, char *argv[], struct icmpv4_fake *fake_p)
     }
 }
 
-
 /*
  * Function: complete_eth_addrs()
  *
@@ -340,7 +335,6 @@ complete_eth_addrs(struct icmpv4_fake *fake_p)
 
     close(sock_fd);
 }
-
 
 /*
  * Function: create_clean_packet()
@@ -401,7 +395,6 @@ create_clean_packet(struct icmpv4_fake *fake_p)
     fake_p->pkt = pkt;
     fake_p->pkt_size = pkt_size;
 }
-
 
 /*
  * Function: thrust_fakes()
@@ -535,7 +528,6 @@ thrust_fakes(struct ip4_datagram *pkt, u_int16_t fake_flag)
     }
 }
 
-
 /*
  * Function: send_packet()
  *
@@ -604,7 +596,6 @@ send_packets(struct icmpv4_fake *fake_p)
     /* Close the socket */
     close(sock_fd);
 }
-
 
 /*
  *

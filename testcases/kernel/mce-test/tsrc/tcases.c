@@ -1,4 +1,4 @@
-/* 
+/*
  * Verify MCA grading engine against some examples.
  */
 #include <sys/types.h>
@@ -51,13 +51,12 @@ void test2(u64 flag, char *flagname, u64 mcg, char *mcgname, int result)
 	int r;
 	char *msg;
 
-	if ((r = mce_severity(&m, tolerant, &msg)) != result) { 
+	if ((r = mce_severity(&m, tolerant, &msg)) != result) {
 		printf("%s %s expected %s got %s msg %s\n",
-		       flagname, mcgname, resname[result], resname[r], msg);	
+		       flagname, mcgname, resname[result], resname[r], msg);
 		fail++;
 	}
 }
-
 
 #define TEST(flag, result) \
 	test2(flag, #flag, MCG_STATUS_MCIP|MCG_STATUS_RIPV, "mcip,ripv", \
@@ -84,7 +83,7 @@ void test(void)
 
 	// UCNA
 	TEST(VAL|UC|EN, KEEP);
-	TEST(VAL|UC, NO);	// linux clears. correct?	
+	TEST(VAL|UC, NO);	// linux clears. correct?
 }
 
 int main(void)

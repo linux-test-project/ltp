@@ -8,7 +8,7 @@
  *  GNU General Public License for more details.
  *
  * Test that the shared memory object has a size of zero when created.
- * 
+ *
  * The test use fstat to get the size of shared memory object.
  */
 
@@ -27,8 +27,8 @@ int main() {
 	struct stat stat_buf;
 
 	result = shm_unlink(SHM_NAME);
-	if (result != 0 && errno != ENOENT) { 
-		/* The shared memory object exist and shm_unlink can not 
+	if (result != 0 && errno != ENOENT) {
+		/* The shared memory object exist and shm_unlink can not
 		   remove it. */
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
@@ -39,7 +39,7 @@ int main() {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	result = fstat(fd, &stat_buf);
 	if (result != 0) {
 		perror("An error occurs when calling fstat()");
@@ -56,4 +56,3 @@ int main() {
 	printf("The shared memory object has not a size of zero.\n");
 	return PTS_FAIL;
 }
-       

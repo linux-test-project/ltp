@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 	if (convert) {
 		bitmask_displaylist(buff, MAX_STRING_SIZE, mask1);
 		printf("%s\n", buff);
-		return 0;
+		tst_exit();
 	}
 
 	if (bitmask_parselist(argv[argc - 1], mask2) != 0)
@@ -111,5 +111,5 @@ int main(int argc, char **argv)
 	bitmask_displaylist(buff, MAX_STRING_SIZE, mask3);
 	printf("%s\n", buff);
 
-	return 0;
+	tst_exit();
 }

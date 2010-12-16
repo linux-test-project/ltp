@@ -61,7 +61,6 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 unsigned long huge_pages_shm_to_be_allocated;
 
-
 int exp_enos[] = {EINVAL, EACCES, 0};	/* 0 terminated list of */
 					/* expected errnos      */
 
@@ -102,7 +101,7 @@ int main(int ac, char **av)
 
         if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
              tst_brkm(TCONF, NULL, "Not enough available Hugepages");
-        else             
+        else
              huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
 
 	setup();			/* global setup */
@@ -138,15 +137,14 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-		
+
 			}
 		}
 	}
 
 	cleanup();
 
-	
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -156,13 +154,11 @@ void
 setup(void)
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -201,7 +197,6 @@ cleanup(void)
 	rm_shm(shm_id_2);
 	rm_shm(shm_id_3);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -210,7 +205,4 @@ cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
-

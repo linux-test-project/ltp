@@ -186,7 +186,6 @@ int main(int ac, char **av)
 	close(fd[1]);
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -196,10 +195,8 @@ void setup()
 {
 	int nbytes;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -254,7 +251,7 @@ void cleanup()
 			 f_name, errno);
 	}
 	tst_rmdir();
-	tst_exit();
+
 }
 
 int init_buffs(char *pbufs[])

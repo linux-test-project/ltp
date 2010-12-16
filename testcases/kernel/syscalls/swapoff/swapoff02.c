@@ -64,7 +64,7 @@
  *	-p   : Pause for SIGUSR1 before starting
  *	-P x : Pause for x seconds between iterations.
  *	-t   : Turn on syscall timing.
- *	
+ *
  *RESTRICTIONS:
  *Incompatible with kernel versions below 2.1.35.
  *
@@ -137,13 +137,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -189,7 +186,7 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}		/*End of TEST LOOPS */
-	}			/* End of TEST_LOOPING */
+	}
 
 	/*Clean up and exit */
 	cleanup();
@@ -243,7 +240,7 @@ int setup02()
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -254,10 +251,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	if (tst_is_cwd_tmpfs()) {
@@ -294,7 +289,7 @@ void setup()
 
 	need_swapfile_cleanup = 1;
 
-}				/* End setup() */
+}
 
 /*
 * cleanup() - Performs one time cleanup for this test at
@@ -313,9 +308,7 @@ void cleanup()
 			 " after execution of LTP test suite is"
 			 " recommended.");
 	}
-	/* Remove tmp dir and all files inside it */
+
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

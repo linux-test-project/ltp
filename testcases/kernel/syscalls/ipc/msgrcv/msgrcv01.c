@@ -141,7 +141,6 @@ int main(int ac, char **av)
 	cleanup();
 
     /** NOT REACHED **/
-	return 0;
 
 }
 
@@ -186,10 +185,9 @@ void do_child()
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -219,7 +217,6 @@ void cleanup(void)
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -228,6 +225,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

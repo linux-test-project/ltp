@@ -3,7 +3,7 @@
  * addrs.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- *    http://www.gnu.org/copyleft/lesser.txt 
+ *    http://www.gnu.org/copyleft/lesser.txt
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -27,8 +27,8 @@
 #include <netinet/sctp.h>
 #include <errno.h>
 
-/* 
- * Get local/peer addresses using the old API 
+/*
+ * Get local/peer addresses using the old API
  * Old kernels (2.6.13 and earlier) only support this API but it breaks 32-bit
  * programs on 64-bit kernels.
  */
@@ -70,8 +70,8 @@ sctp_getaddrs_old(int sd, sctp_assoc_t id, int optname_num, int optname_old,
 
 } /* sctp_getaddrs_old() */
 
-/* 
- * Common getsockopt() layer 
+/*
+ * Common getsockopt() layer
  * If the NEW getsockopt() API fails this function will fall back to using
  * the old API
  */
@@ -87,7 +87,7 @@ sctp_getaddrs(int sd, sctp_assoc_t id,
 	struct sctp_getaddrs *getaddrs = (struct sctp_getaddrs*)malloc(bufsize);
 	if (!getaddrs)
 		return -1;
-	
+
 	for (;;) {
 		char *new_buf;
 

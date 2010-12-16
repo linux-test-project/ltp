@@ -48,14 +48,11 @@ int anyfail();
 void ok_exit();
 /*****  **      **      *****/
 
-
-
 #define NPTEPG		(1024)
 /*#define GRAN_NUMBER	(1<<2)*/
 
 #define GRAN_NUMBER	(1<<8)
 	/* == 256 @ 4MB per mmap(2), we span a total of 1 GB */
-
 
 extern time_t	time(time_t *);
 extern char	*ctime(const time_t *);
@@ -109,9 +106,8 @@ main(int argc, char *argv[])
 	(void)time(&t);
 	//(void)printf("%s: Finished %s", argv[0], ctime(&t));
 	ok_exit();
-	return 0;
+	tst_exit();
 }
-
 
 /*****  LTP Port        *****/
 void ok_exit()
@@ -119,7 +115,6 @@ void ok_exit()
         tst_resm(TPASS, "Test passed\n");
 	tst_exit();
 }
-
 
 int anyfail()
 {
@@ -137,4 +132,3 @@ main (void)
 }
 #endif
 /*****  **      **      *****/
-

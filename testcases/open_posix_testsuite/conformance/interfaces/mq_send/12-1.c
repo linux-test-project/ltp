@@ -128,7 +128,6 @@ int main()
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
-	
+
 	return PTS_UNRESOLVED;
 }
-

@@ -22,7 +22,6 @@
 
 #include "test_VIDIOC_G_SLICED_VBI_CAP.h"
 
-
 void do_get_sliced_vbi_cap(enum v4l2_buf_type type) {
 	int ret_cap, errno_cap;
 	struct v4l2_sliced_vbi_cap sliced_vbi_cap;
@@ -49,7 +48,6 @@ void test_VIDIOC_G_SLICED_VBI_CAP() {
 	do_get_sliced_vbi_cap(V4L2_BUF_TYPE_SLICED_VBI_CAPTURE);
 	do_get_sliced_vbi_cap(V4L2_BUF_TYPE_SLICED_VBI_OUTPUT);
 }
-
 
 void do_get_sliced_vbi_cap_invalid(enum v4l2_buf_type type) {
 	int ret_cap, errno_cap;
@@ -113,7 +111,6 @@ void test_VIDIOC_G_SLICED_VBI_CAP_NULL() {
 
 	dprintf("\tVIDIOC_G_SLICED_VBI_CAP ret_set_output=%i, errno_set_output=%i\n",
 		ret_set_output, errno_set_output);
-
 
 	ret_null = ioctl(get_video_fd(), VIDIOC_G_SLICED_VBI_CAP, NULL);
 	errno_null = errno;

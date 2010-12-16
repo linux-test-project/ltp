@@ -2,7 +2,7 @@
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutexattr_getprioceiling()
@@ -13,7 +13,7 @@
  * Steps:
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2.  Call pthread_mutexattr_getprioceiling() to obtain the prioceiling.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -30,11 +30,11 @@ print_pthread_error(const char *fname, int ret)
 
 int main()
 {
-	
-	/* Make sure there is prioceiling capability. */ 
+
+	/* Make sure there is prioceiling capability. */
 	/* #ifndef _POSIX_PRIORITY_SCHEDULING
 	  fprintf(stderr,"prioceiling attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;	
+	  return PTS_UNRESOLVED;
 	#endif */
 
 	pthread_mutexattr_t ma;
@@ -59,7 +59,7 @@ int main()
 		print_pthread_error("pthread_mutexattr_getprioceiling", ret);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Get the max and min according to SCHED_FIFO */
 	max_prio = sched_get_priority_max(SCHED_FIFO);
 	min_prio = sched_get_priority_min(SCHED_FIFO);

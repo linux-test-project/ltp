@@ -2,10 +2,10 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- The resulting set shall be the intersection of the current set and 
+ The resulting set shall be the intersection of the current set and
  the complement of the set pointed to by set.
 
  Steps:
@@ -15,9 +15,9 @@
  3. Also inside the new thread, using the SIG_UNBLOCK as the value to
     pthread_sigmask's first parameter, unblock SIGALRM. Now only SIGABRT
     should be in the signal mask of the new thread.
- 4. Raise SIGALRM, and verify that handler was called, otherwise 
+ 4. Raise SIGALRM, and verify that handler was called, otherwise
     test fails.
- 5. Reset handler_called variable to 0. Raise SIGABRT, and verify that 
+ 5. Reset handler_called variable to 0. Raise SIGABRT, and verify that
     handler wasn't called, otherwise test fails.
  6. Make sure that the only pending signal is SIGABRT, otherwise fail.
  7. Return one of three return codes to the main() function:
@@ -151,4 +151,3 @@ int main() {
         }
         return PTS_PASS;
 }
-

@@ -7,4 +7,3 @@
 #include <signal.h>
 
 struct tm *mytime;
-

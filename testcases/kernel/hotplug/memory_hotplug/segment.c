@@ -49,7 +49,6 @@
 #include "memtoy.h"
 #include "segment.h"
 
-
 struct segment {
 	char         *seg_name;
 	void         *seg_start;
@@ -75,7 +74,6 @@ struct segment {
 #define SEG_OK  (1)
 
 #define SEG_OFFSET(SEGP, ADDR) ((char *)(ADDR) - (char *)(SEGP->seg_start))
-
 
 /*
  * =========================================================================
@@ -419,7 +417,7 @@ map_file_segment(segment_t *segp)
 	memp = (char *)mmap(0, segp->seg_length,
 	                    segp->seg_prot,
 	                    flags,
-	                    fd,           
+	                    fd,
 	                    segp->seg_offset);
 
 	if (memp == MAP_FAILED) {

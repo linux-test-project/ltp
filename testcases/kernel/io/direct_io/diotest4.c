@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * NAME
  *      diotest4.c
@@ -87,7 +86,6 @@ int TST_TOTAL=17;		 		 /* Total number of test conditions */
 #else
 # define ADDRESS_OF_MAIN main
 #endif
-
 
 /*
  * runtest_f: Do read, writes. Verify the error value obtained by
@@ -328,7 +326,6 @@ main(int argc, char *argv[])
 	}
 	total++;
 
-
 	/* Test-7: Closed file descriptor */
 	offset = 4096;
 	count = bufsize;
@@ -365,7 +362,6 @@ main(int argc, char *argv[])
 	}
 	total++;
 
-
 	/* Test-10: read, write to a mmaped file */
 	shm_base = (char *)(((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1));
         if (shm_base == NULL) {
@@ -390,8 +386,7 @@ main(int argc, char *argv[])
 	}
 	else
 		tst_resm (TPASS, "read, write to a mmaped file");
-	total++; 
-
+	total++;
 
 	/* Test-11: read, write to an unmaped file with munmap */
 	if ((ret = munmap(shm_base, 0x100000)) < 0) {
@@ -406,7 +401,6 @@ main(int argc, char *argv[])
 	else
 		tst_resm (TPASS, "read, write to an unmapped file");
 	total++;
-
 
 	/* Test-12: read from file not open for reading */
 	offset = 4096;
@@ -502,7 +496,6 @@ main(int argc, char *argv[])
 	total++;
 	close(fd);
 
-
 	/* Test-15: read, write buffer in read-only space */
 	offset = 4096;
 	count = bufsize;
@@ -595,7 +588,7 @@ main(int argc, char *argv[])
 		 		 total);
 	}
 	cleanup();
-	return 0;
+
 }
 
 static void setup(void)
@@ -626,7 +619,6 @@ static void cleanup(void)
 
 	tst_rmdir();
 
-	tst_exit();
 }
 
 #else /* O_DIRECT */

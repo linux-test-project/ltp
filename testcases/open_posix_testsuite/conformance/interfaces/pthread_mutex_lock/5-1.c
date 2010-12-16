@@ -14,43 +14,41 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
- 
- 
+
  * This sample test aims to check the following assertion:
- * If a signal is delivered to a thread waiting for a mutex, 
- * upon return from the signal handler the thread resumes 
- * waiting for the mutex as if it had not been interrupted. 
- 
- 
+ * If a signal is delivered to a thread waiting for a mutex,
+ * upon return from the signal handler the thread resumes
+ * waiting for the mutex as if it had not been interrupted.
+
  * The steps are:
  * -> Create a child thread
  * -> Child registers a signal handler
  * -> Child tries to lock a mutex owned by another thread
  * -> A signal is sent to the child
- * -> Check that the signal handler executes and then that the thread still 
+ * -> Check that the signal handler executes and then that the thread still
           waits for the mutex.
  * -> Release the mutex and check that the child takes it.
  * -> Do all of this several times with different mutex attributes
- * 
+ *
  * The test shall be considered to FAIL if it hangs!
  * a call to alarm() might eventually be added but this is a problem under high
  * system stress.
  */
- 
- /* 
+
+ /*
   * - adam.li@intel.com 2004-05-13
-  *   Add to PTS. Please refer to http://nptl.bullopensource.org/phpBB/ 
+  *   Add to PTS. Please refer to http://nptl.bullopensource.org/phpBB/
   *   for general information
   */
- 
+
   /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
 #endif
- 
+
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -62,27 +60,27 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <stdarg.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -90,7 +88,7 @@
 /********************************** Configuration ******************************************/
 /********************************************************************************************/
 #ifndef VERBOSE
-#define VERBOSE 1 
+#define VERBOSE 1
 #endif
 
 /********************************************************************************************/
@@ -110,7 +108,7 @@ void sighdl(int sig)
 /********** thread *********/
 void * threaded(void * arg)
 {
-	int ret, i; 
+	int ret, i;
 
 	/* We register the signal handler */
 	struct sigaction sa;
@@ -125,18 +123,17 @@ void * threaded(void * arg)
 	{
 		if (sem_post(&semstart)) /* Tell the father we are ready */
 		{ UNRESOLVED(errno, "Sem post in thread"); }
-		
+
 		if ((ret = pthread_mutex_lock(&mtx[i]))) /* Attempt to lock the mutex */
 		{ UNRESOLVED(ret, "Mutex lock failed in thread"); }
-		
+
 		ctrl++; /* Notify the main we have passed the lock */
-		
+
 		if ((ret = pthread_mutex_unlock(&mtx[i]))) /* We don't need the mutex anymore */
 		{ UNRESOLVED(ret, "Mutex unlock failed in thread"); }
 	}
 	return NULL;
 }
-
 
 /********* main ********/
 int main (int argc, char * argv[])
@@ -148,7 +145,7 @@ int main (int argc, char * argv[])
 
 	output_init();
 
-	/* Initialize the mutex attributes */	
+	/* Initialize the mutex attributes */
 	for (i=0; i<4; i++)
 	{
 		pma[i]=&ma[i];
@@ -192,14 +189,13 @@ int main (int argc, char * argv[])
 		if ((ret = pthread_mutexattr_destroy(pma[i])))
 		{ UNRESOLVED(ret, "pthread_mutexattr_destroy"); }
 	}
-	
+
 	/* Initialize the semaphores */
 	if (sem_init(&semsig, 0, 1))
 	{ UNRESOLVED(errno, "Sem init (1) failed"); }
 	if (sem_init(&semstart, 0, 0))
 	{ UNRESOLVED(errno, "Sem init (0) failed"); }
 
-	
 	#if VERBOSE >1
 	output("Going to create the child thread\n");
 	#endif
@@ -209,7 +205,6 @@ int main (int argc, char * argv[])
 	#if VERBOSE >1
 	output("Child created\n");
 	#endif
-
 
 	/* Monitor the child */
 	for (i=0; i<5; i++) /* We will do this for the 5 kinds of mutex */
@@ -221,9 +216,8 @@ int main (int argc, char * argv[])
 		output("Child is ready for iteration %i\n", i+1);
 		#endif
 
-
 		ctrl=0; /* init the ctrl var */
-		
+
 		/* Send some signals to the thread */
 		for (j=0; j<10; j++)
 		{
@@ -238,17 +232,17 @@ int main (int argc, char * argv[])
 		#if VERBOSE >1
 		output("Child was killed 10 times\n");
 		#endif
-		
+
 		/* Now check the thread is still waiting for the mutex */
 		if (ctrl != 0)
 		{
 			FAILED("Killed child passed the pthread_mutex_lock without owning it");
 		}
-		
+
 		#if VERBOSE >1
 		output("Control was OK\n");
 		#endif
-		
+
 		/* Unlock the mutex so the thread can proceed to the next one */
 		if ((ret = pthread_mutex_unlock(&mtx[i])))
 		{  UNRESOLVED(ret, "Mutex unlock in main failed"); }
@@ -261,16 +255,16 @@ int main (int argc, char * argv[])
 	/* Clean everything: the test has passed */
 	if ((ret = pthread_join(th, NULL)))
 	{  UNRESOLVED(ret, "Unable to join the child"); }
-	
+
 	for (i=0; i<5; i++)
 	{
 		if ((ret = pthread_mutex_destroy(&mtx[i])))
 		{ UNRESOLVED(ret, "Unable to finally destroy a mutex"); }
 	}
-	
+
 	if (sem_destroy(&semstart))
 	{ UNRESOLVED(errno, "Unable to destroy semstart semaphore"); }
-	
+
 	if (sem_destroy(&semsig))
 	{ UNRESOLVED(errno, "Unable to destroy semsig semaphore"); }
 

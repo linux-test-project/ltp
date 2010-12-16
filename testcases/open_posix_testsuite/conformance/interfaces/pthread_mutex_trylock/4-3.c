@@ -14,20 +14,19 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This sample test aims to check the following assertion:
  *
  * The function does not return EINTR
- 
+
  * The steps are:
  * -> A thread is killed several times while calling pthread_mutex_trylock
  * -> check that EINTR is never returned
- 
+
  */
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We need the XSI extention for the mutex attributes
    and the mkstemp() routine */
 #ifndef WITHOUT_XOPEN
@@ -39,33 +38,33 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <unistd.h>
 
  #include <errno.h>
  #include <semaphore.h>
  #include <signal.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -105,7 +104,6 @@ scenarii[] =
 };
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
-
 char do_it=1;
 char woken=0;
 unsigned long count_ope=0;
@@ -117,7 +115,7 @@ unsigned long count_sig=0;
 
 sigset_t usersigs;
 
-typedef struct 
+typedef struct
 {
 	int	sig;
 #ifdef WITH_SYNCHRO
@@ -131,7 +129,7 @@ void * sendsig (void * arg)
 	thestruct *thearg = (thestruct *) arg;
 	int ret;
 	pid_t process;
-	
+
 	process=getpid();
 
 	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
@@ -148,7 +146,7 @@ void * sendsig (void * arg)
 
 		ret = kill(process, thearg->sig);
 		if (ret != 0)  { UNRESOLVED(errno, "Kill in sendsig"); }
-		
+
 	}
 	return NULL;
 }
@@ -168,9 +166,8 @@ void sighdl2(int sig)
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig2))
 	{ UNRESOLVED(errno, "Sem_post in signal handler 2"); }
-#endif	
+#endif
 }
-
 
 /* Test function -- This one calls pthread_mutex_trylock and check that no EINTR is returned. */
 void * test(void * arg)
@@ -180,14 +177,14 @@ void * test(void * arg)
 	long pshared;
 	pthread_mutex_t mtx[NSCENAR+2];
 	pthread_mutexattr_t ma[NSCENAR+1];
-	
+
  	/* We don't block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 in worker thread");  }
-	
+
 	/* System abilities */
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
-	
+
 	/* Initialize the mutex objects according to the scenarii */
 	for (i=0; i<NSCENAR; i++)
 	{
@@ -208,7 +205,7 @@ void * test(void * arg)
 		/* Initialize the mutex */
 		ret = pthread_mutex_init(&mtx[i], &ma[i]);
 		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Mutex init failed");  }
-		
+
 	}
 	/* Default mutexattr object */
 	ret = pthread_mutexattr_init(&ma[i]);
@@ -218,17 +215,16 @@ void * test(void * arg)
 	/* Default mutex */
 	ret = pthread_mutex_init(&mtx[i+1], NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "[parent] Mutex init failed");  }
-	
-	
+
 	/* do the real testing */
 	while (do_it)
 	{
 		count_ope++;
-		
+
 		ret = pthread_mutex_trylock(&mtx[count_ope % (NSCENAR+2)]);
 		if (ret == EINTR)  {  FAILED("EINTR was returned");  }
 		if (ret != 0)  {  UNRESOLVED(ret, "1st trylock failed");  }
-		
+
 		ret = pthread_mutex_trylock(&mtx[count_ope % (NSCENAR+2)]);
 		if (ret == EINTR)  {  FAILED("EINTR was returned");  }
 		if (ret == 0)
@@ -238,27 +234,25 @@ void * test(void * arg)
 			ret = EBUSY;
 		}
 		if (ret != EBUSY)  {  UNRESOLVED(ret, "Unexpected error was returned.");  }
-		
+
 		ret = pthread_mutex_unlock(&mtx[count_ope % (NSCENAR+2)]);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
 	}
-	
+
 	/* Destroy everything */
 	for (i=0; i <= NSCENAR; i++)
 	{
 		ret = pthread_mutex_destroy(&mtx[i]);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the mutex");  }
-		
+
 		ret = pthread_mutexattr_destroy(&ma[i]);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the mutex attr object");  }
 	}
 	ret = pthread_mutex_destroy(&mtx[i]);
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy the mutex");  }
-	
+
 	return NULL;
 }
-
-
 
 /* Main function */
 int main (int argc, char * argv[])
@@ -267,10 +261,10 @@ int main (int argc, char * argv[])
 	pthread_t th_work, th_sig1, th_sig2;
 	thestruct arg1, arg2;
 	struct sigaction sa;
-	
+
 	/* Initialize output routine */
 	output_init();
-	
+
 	/* We need to register the signal handlers for the PROCESS */
 	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
@@ -286,7 +280,7 @@ int main (int argc, char * argv[])
 	ret = sigaddset(&usersigs, SIGUSR1);
 	ret |= sigaddset(&usersigs, SIGUSR2);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to add SIGUSR1 or 2 to a signal set");  }
-	
+
 	/* We now block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in main thread");  }
@@ -300,7 +294,7 @@ int main (int argc, char * argv[])
 
 	if ((ret = pthread_create(&th_work, NULL, test, NULL)))
 	{ UNRESOLVED(ret, "Worker thread creation failed"); }
-	
+
 	arg1.sig = SIGUSR1;
 	arg2.sig = SIGUSR2;
 #ifdef WITH_SYNCHRO
@@ -308,26 +302,23 @@ int main (int argc, char * argv[])
 	arg2.sem = &semsig2;
 #endif
 
-
 	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *)&arg1)))
 	{ UNRESOLVED(ret, "Signal 1 sender thread creation failed"); }
 	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *)&arg2)))
 	{ UNRESOLVED(ret, "Signal 2 sender thread creation failed"); }
 
-
 	/* Let's wait for a while now */
 	sleep(1);
-	
 
 	/* Now stop the threads and join them */
 	do { do_it=0; }
 	while (do_it);
-	
+
 	if ((ret = pthread_join(th_sig1, NULL)))
 	{ UNRESOLVED(ret, "Signal 1 sender thread join failed"); }
 	if ((ret = pthread_join(th_sig2, NULL)))
 	{ UNRESOLVED(ret, "Signal 2 sender thread join failed"); }
-	
+
 	if ((ret = pthread_join(th_work, NULL)))
 	{ UNRESOLVED(ret, "Worker thread join failed"); }
 
@@ -336,8 +327,7 @@ int main (int argc, char * argv[])
 	output("  %d mutex locks.\n", count_ope);
 	#ifdef WITH_SYNCHRO
 	output("  %d signals were sent meanwhile.\n", count_sig);
-	#endif 
-	#endif	
+	#endif
+	#endif
 	PASSED;
 }
-

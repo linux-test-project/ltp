@@ -166,7 +166,6 @@ void * low_prio_thread(void *arg)
 	return NULL;
 }
 
-
 void * high_prio_thread(void *arg)
 {
 	nsec_t high_start, high_end, high_get_lock;
@@ -220,7 +219,6 @@ void * high_prio_thread(void *arg)
 	return NULL;
 }
 
-
 int main(int argc, char *argv[])
 {
 	long i;
@@ -251,7 +249,6 @@ int main(int argc, char *argv[])
 	}
 
 	init_pi_mutex(&lock);
-
 
 	if ((ret = create_fifo_thread(low_prio_thread, (void *)0, LOWPRIO)) < 0)
 		exit(ret);

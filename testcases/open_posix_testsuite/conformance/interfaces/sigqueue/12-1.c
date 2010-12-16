@@ -1,19 +1,19 @@
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Test that when the process does not have the appropriate privilege
-    to send the signal to the receiving process, then sigqueue() 
+    to send the signal to the receiving process, then sigqueue()
     returns -1 and errno is set to [EPERM]
-    
-    The real or effective user ID of the sending process shall match 
+
+    The real or effective user ID of the sending process shall match
     the real or saved set-user-ID of the receiving process.
  */
 
-#define _XOPEN_SOURCE 600 
+#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>
@@ -30,7 +30,7 @@ int set_nonroot()
 {
 	struct passwd *pw;
 	setpwent();
-	/* search for the first user which is non root */ 
+	/* search for the first user which is non root */
 	while ((pw = getpwent()) != NULL)
 		if (strcmp(pw->pw_name, "root"))
 			break;
@@ -48,8 +48,7 @@ int set_nonroot()
 		perror("An error occurs when calling seteuid()");
 		return 1;
 	}
-	
-	
+
 	printf("Testing with user '%s' (euid: %d)(uid: %d)\n",
 	       pw->pw_name, (int)geteuid(), (int)getuid());
 	return 0;
@@ -66,7 +65,7 @@ int main()
         /* This test should be run under standard user permissions */
         if (getuid() == 0) {
                 if (set_nonroot() != 0) {
-			printf("Cannot run this test as non-root user\n");	
+			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
         }

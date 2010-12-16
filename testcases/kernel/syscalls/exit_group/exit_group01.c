@@ -49,7 +49,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -76,7 +76,7 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
+
         TEST_CLEANUP;
         tst_rmdir();
 }
@@ -112,7 +112,6 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
 	cpid = fork();     //call exit_group()
 	if (cpid == -1) {
         	tst_brkm(TFAIL|TERRNO, cleanup, "fork failed");
@@ -129,8 +128,7 @@ int main(int ac, char **av) {
 			tst_resm(TFAIL|TERRNO,
 			    "exit_group failed (wait status = %d)", w);
                 }
-        }	
+        }
 	cleanup();
         tst_exit();
 }
-

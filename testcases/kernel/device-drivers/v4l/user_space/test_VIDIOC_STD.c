@@ -116,7 +116,6 @@ void test_VIDIOC_G_STD() {
 
 	foreach_input(do_test_VIDIOC_G_STD);
 
-
 	/* TODO: Iterate trough all outputs VIDIOC_ENUMOUTPUT.
 	 * Also ensure tahat VIDIC_G_STD is called at least
 	 * once even if VIDIOC_ENUMOUTPUT always return EINVAL.
@@ -124,7 +123,6 @@ void test_VIDIOC_G_STD() {
 	 * TODO: What shall happen when changing output? The
 	 * VIDIOC_G_STD only deals with current input.
 	 */
-
 
 }
 
@@ -399,8 +397,6 @@ static void do_test_VIDIOC_G_STD_NULL(int ret_input_enum, int errno_input_enum, 
 			CU_ASSERT_EQUAL(errno_null, EINVAL);
 		}
 	}
-
-
 
 }
 

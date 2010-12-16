@@ -1,13 +1,13 @@
 /*
     Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
     Created by:  majid.awad REMOVE-THIS AT intel DOT com
-    This file is licensed under the GPL license.  For the full content 
-    of this license, see the COPYING file at the top level of this 
+    This file is licensed under the GPL license.  For the full content
+    of this license, see the COPYING file at the top level of this
     source tree.
  */
 
 /*
-   sem_open test case that attempts to open a new semaphoree, and the 
+   sem_open test case that attempts to open a new semaphoree, and the
    return value is not NULL
  */
 
@@ -23,7 +23,6 @@
 #define TEST "1-2"
 #define FUNCTION "sem_open"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
-
 
 int main()
 {

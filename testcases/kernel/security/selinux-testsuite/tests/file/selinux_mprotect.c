@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   }
 
   fd = open(argv[1], O_RDONLY, 0);
- 
+
   if (fd == -1) {
     perror("selinux_mprotect:open");
     exit(2);

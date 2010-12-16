@@ -18,7 +18,6 @@
 /*									      */
 /******************************************************************************/
 
-
 /******************************************************************************/
 /*                                                                            */
 /* History:     Nov - 21 - 2001 Created - Manoj Iyer, IBM Austin TX.          */
@@ -84,7 +83,6 @@ void noprintf(char* string, ...) {
 #define WRITER  0	/* cause thread function to shmat and write           */
 #define READER  1	/* cause thread function to shmat and read            */
 
-
 /******************************************************************************/
 /*								 	      */
 /* Function:	usage							      */
@@ -104,7 +102,6 @@ usage(char *progname)           /* name of this program                       */
                     progname);
     exit(-1);
 }
-
 
 /******************************************************************************/
 /*								 	      */
@@ -155,9 +152,6 @@ rm_shared_mem(key_t  shm_id,	/* id of shared memory segment to be removed  */
     return 0;
 }
 
-
-
-
 /******************************************************************************/
 /*								 	      */
 /* Function:	shmat_rd_wr						      */
@@ -192,7 +186,6 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
     char         *shmat_addr;   /* address of the attached memory             */
     char	 buff;          /* temporary buffer                           */
 
-
     reader = (int)locargs[3];
     while (shmndx++ < (int)locargs[0])
     {
@@ -207,7 +200,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
             perror("do_shmat_shmadt(): shmget()");
             PTHREAD_EXIT(-1);
         }
-       
+
         fprintf(stdout, "pid[%d]: shmat_rd_wr(): shmget():"
 			"success got segment id %d\n",
                            getpid(), shm_id);
@@ -223,7 +216,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
         }
 	dprt("pid[%d]: do_shmat_shmadt(): content of memory shmat_addr = %s\n",
             getpid(), shmat_addr);
-       
+
         fprintf(stdout, "pid[%d]: do_shmat_shmadt(): got shmat address = %#lx\n",
             getpid(), (long)shmat_addr);
 
@@ -270,7 +263,6 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 
     PTHREAD_EXIT(0);
 }
-
 
 /******************************************************************************/
 /*								 	      */
@@ -339,7 +331,7 @@ main(int	argc,		/* number of input parameters		      */
 		break;
 	}
     }
-   
+
     chld_args[0] = num_reps;
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx+=2)
@@ -369,7 +361,7 @@ main(int	argc,		/* number of input parameters		      */
             exit(-1);
         }
     }
-   
+
     sync();
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)

@@ -60,7 +60,6 @@ int array[WORKLEN];
 
 volatile int flag; /*let interrupter know we're done */
 
-
 void usage(void)
 {
         rt_help();
@@ -113,8 +112,6 @@ void do_work(int runs)
 	}
 }
 
-
-
 void *thread_worker(void* arg)
 {
 	struct timespec start, stop;
@@ -136,7 +133,6 @@ void *thread_worker(void* arg)
 		do_work(NUMLOOPS);
 		clock_gettime(CLOCK_MONOTONIC, &stop);
 
-
 		/* calc delta, min and max */
 		delta = ts_sub(stop, start);
 		if (delta < min)
@@ -157,7 +153,6 @@ void *thread_worker(void* arg)
 				"Iteration", "Delay (ns)", &dat, "points");
 	return NULL;
 }
-
 
 void *thread_interrupter(void* arg)
 {
@@ -182,5 +177,5 @@ int main(int argc, char *argv[])
 	flag = 1;
 	join_thread(interrupter);
 
-	return 0;
+	tst_exit();
 }

@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 		overcommit();
-	}	
+	}
 	cleanup();
 }
 
@@ -277,7 +277,7 @@ static void cleanup(void)
 		!= strlen(nr_overcommit_hugepages))
 		tst_resm(TWARN|TERRNO, "write");
 	close(fd);
-	
+
 	snprintf(buf, BUFSIZ, "%s/hugemmap05", get_tst_tmpdir());
 	if (umount(buf) == -1)
 		tst_resm(TWARN|TERRNO, "umount");
@@ -285,7 +285,7 @@ static void cleanup(void)
 		tst_resm(TINFO|TERRNO, "shmdt");
 		shmctl(shmid, IPC_RMID, NULL);
 	}
-	tst_exit();
+
 }
 
 static void setup(void)

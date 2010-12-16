@@ -67,12 +67,12 @@ main(int argc, char *argv[])
 	int error;
 	int pf_class;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
 
-	/* Initialize the server and client addresses. */ 
+	/* Initialize the server and client addresses. */
 #if TEST_V6
 	pf_class = PF_INET6;
         svr_loop.v6.sin6_family = AF_INET6;
@@ -113,8 +113,8 @@ main(int argc, char *argv[])
 
 	/* Create the client socket.  */
 	clt_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
-	
-	/* Do a blocking connect from clt_sk to svr_sk */      
+
+	/* Do a blocking connect from clt_sk to svr_sk */
 #if TEST_V6
 	svr_loop.v6.sin6_addr = in6addr_loopback;
 #else
@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 
 	/* Extract the association on the listening socket as a new socket. */
 	len = sizeof(accept_loop);
-	accept_sk = test_accept(svr_sk, &accept_loop.sa, &len); 
+	accept_sk = test_accept(svr_sk, &accept_loop.sa, &len);
 
 	memset(&svr_local_addr, 0x00, sizeof(svr_local_addr));
 	len = sizeof(svr_local_addr);
@@ -222,7 +222,7 @@ main(int argc, char *argv[])
 			 "error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockname with invalid buffer - EFAULT");
- 
+
 	memset(&clt_peer_addr, 0x00, sizeof(clt_peer_addr));
 	len = sizeof(clt_peer_addr);
 	/*getpeername():  Bad socket descriptor, EBADF expected error*/
@@ -248,11 +248,11 @@ main(int argc, char *argv[])
 			 "error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getpeername with invalid buffer - EFAULT");
- 
+
 	close(clt_sk);
 	close(svr_sk);
 	close(accept_sk);
 
         /* Indicate successful completion.  */
-	return 0;
+	tst_exit();
 }

@@ -69,7 +69,7 @@
  * 				TEST failed
  *		else
  *			TEST failed
- *	
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *
@@ -135,13 +135,10 @@ int main(int ac, char **av)
 	maybe_run_child(&do_child, "d", &i);
 #endif
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -222,14 +219,12 @@ int main(int ac, char **av)
 
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /* do_child() */
 void do_child()
@@ -266,13 +261,11 @@ void do_child()
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -287,9 +280,7 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}
 
 /*
  * child_handler() - Signal handler for child

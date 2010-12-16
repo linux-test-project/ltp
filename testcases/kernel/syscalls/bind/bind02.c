@@ -161,6 +161,5 @@ int main(int argc, char *argv[])
 	try_bind();
 	tst_exit();
 
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }

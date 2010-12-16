@@ -19,7 +19,7 @@
 /* Author: Shi Weihua <shiwh@cn.fujitsu.com>                                  */
 /*                                                                            */
 /******************************************************************************/
- 
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -68,10 +68,10 @@ int main(void)
 		if (pid == -1)
 			err(1, "fork()");
 		else if (pid == 0) {
-			return 0;
+			tst_exit();
 		} else {
 			wait(&status);
 		}
 	} while (test_switch);
-	return 0;
+	tst_exit();
 }

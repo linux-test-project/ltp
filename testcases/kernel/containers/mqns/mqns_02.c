@@ -107,7 +107,6 @@ int check_mqueue(void *vtest)
 
 }
 
-
 int main(int argc, char *argv[])
 {
 	int r;

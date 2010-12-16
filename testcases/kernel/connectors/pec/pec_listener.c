@@ -331,10 +331,9 @@ int main(int argc, char **argv)
 		sleep(10);
 	}
 
-	return 0;
+	tst_exit();
 }
 
 #endif /* CN_IDX_PROC */
 
 #endif /* NETLINK_CONNECTOR */
-

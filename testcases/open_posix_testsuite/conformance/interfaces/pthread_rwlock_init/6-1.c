@@ -1,9 +1,9 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- * 
+ *
  * Test pthread_rwlock_init().
  *
  * 	May fail if:
@@ -37,18 +37,17 @@ int main()
 		printf("Test FAILED: Error at pthread_rwlock_init(), returns %d\n", rc);
 		return PTS_FAIL;
 	}
-	
+
 	/* Re-intialize without destroying it first */
 	rc = pthread_rwlock_init(&rwlock, NULL);
-	
-	/* Cleanup */	
+
+	/* Cleanup */
 	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
-	
 	if (rc == EBUSY)
 	{
 		printf("Test PASSED\n");
@@ -57,10 +56,10 @@ int main()
 	{
 		printf("Test PASSED: Note*: pthread_rwlock_init() returned 0 instead of EBUSY, but standard specifies _may_ fail\n");
 		return PTS_PASS;
-	} else 
+	} else
 	{
 		printf("Test FAILED: Error at pthread_rwlock_init(), should return 0 or EBUSY, but returns %d\n", rc);
 		return PTS_FAIL;
 	}
-		
+
 }

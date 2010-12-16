@@ -86,13 +86,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -108,28 +105,24 @@ int main(int ac, char **av)
 			tst_resm(TFAIL|TTERRNO, "Test Failed, sched_setparam()"
 				 "returned %ld", TEST_RETURN);
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	param.sched_priority = 0;
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -143,4 +136,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-}				/* End cleanup() */
+}

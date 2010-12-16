@@ -103,7 +103,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -113,10 +112,8 @@ void setup()
 {
 	char *cur_dir = NULL;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -136,7 +133,7 @@ void setup()
 		tst_resm(TFAIL, "mkdir() failed to create"
 			 " a testing directory");
 		exit(1);
-		
+
 	}
 
 	/* Switch to nobody user for correct error code collection */
@@ -166,7 +163,7 @@ void cleanup()
 		tst_resm(TFAIL, "rmdir() failed to removed"
 			 " a testing directory");
 		exit(1);
-		
+
 	}
 	/*
 	 * print timing stats if that option was specified.
@@ -177,6 +174,4 @@ void cleanup()
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

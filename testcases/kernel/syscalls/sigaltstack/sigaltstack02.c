@@ -129,15 +129,13 @@ int main(int ac, char **av)
 		tst_exit();
 	 }
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -178,15 +176,14 @@ int main(int ac, char **av)
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING. */
+		}
 		Tst_count++;	/* incr. TEST_LOOP counter */
-	}			/* End of TEST CASE LOOPING. */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 	  return 0;
 
-}				/* End main */
+}
 
 /*
  * void
@@ -195,10 +192,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Allocate memory for the alternate stack */
@@ -224,6 +220,4 @@ void cleanup()
 
 	free(sigstk.ss_sp);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

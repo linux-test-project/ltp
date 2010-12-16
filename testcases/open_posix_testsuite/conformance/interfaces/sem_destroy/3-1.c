@@ -1,13 +1,13 @@
 /*
  *  Copyright (c) 2003, Intel Corporation. All rights reserved.
  *  Created by:  majid.awad REMOVE-THIS AT intel DOT com
- *  This file is licensed under the GPL license.  For the full content 
- *  of this license, see the COPYING file at the top level of this 
+ *  This file is licensed under the GPL license.  For the full content
+ *  of this license, see the COPYING file at the top level of this
  *  source tree.
  */
 
 /*
- * Test case vrifies sem_destroy shall destroy on intialized semaphore 
+ * Test case vrifies sem_destroy shall destroy on intialized semaphore
  * upon which no threads are currently blocked.
  */
 
@@ -25,14 +25,12 @@
 #define FUNCTION "sem_destroy"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-
-
-sem_t psem, csem; 
+sem_t psem, csem;
 int n;
 
 int main()
 {
-    pthread_t prod, cons; 
+    pthread_t prod, cons;
    void *producer(void *);
    void *consumer(void *);
    long cnt = 3;
@@ -65,8 +63,7 @@ int main()
 	   	return PTS_FAIL;
    	}
    }
-}        
-
+}
 
 void * producer(void *arg)
 {
@@ -74,11 +71,11 @@ void * producer(void *arg)
     cnt = (long)arg;
     for (i=0; i<cnt; i++) {
             sem_wait(&psem);
-            n++;  
+            n++;
             sem_post(&csem);
     }
     return NULL;
-}       
+}
 
 void * consumer(void *arg)
 {
@@ -90,4 +87,3 @@ void * consumer(void *arg)
     }
     return NULL;
 }
-

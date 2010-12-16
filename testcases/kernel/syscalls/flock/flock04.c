@@ -48,7 +48,7 @@
  *		Check return code, if system call failed (return == -1)
  *				Log the error number and issue a FAIL message
  *		otherwise issue a PASS message
- *	
+ *
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
@@ -165,10 +165,10 @@ int main(int argc, char **argv)
 
 		close(fd);
 		close(fd1);
-	}			/* End of TEST_LOOPING */
+	}
 
 	cleanup();
-	return 0;
+
  }
 
 /*
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
@@ -205,8 +205,6 @@ void setup(void)
 		/* Removing temp dir */
 		tst_rmdir();
 
-		/* exit with return code appropriate for results */
-		tst_exit();
 	}
 }
 
@@ -227,6 +225,4 @@ void cleanup(void)
 
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

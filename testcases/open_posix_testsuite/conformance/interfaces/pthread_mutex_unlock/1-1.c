@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_unlock()
  *   shall release the mutex object 'mutex'.
 
- * Steps: 
+ * Steps:
  *   -- Initilize a mutex object
  *   -- Get the mutex using pthread_mutex_lock()
  *   -- Release the mutex using pthread_mutex_unlock()
@@ -39,7 +39,7 @@ int main()
         	printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
-    		
+
 	/* Get the mutex using pthread_mutex_trylock() */
 	if ((rc=pthread_mutex_trylock(&mutex)) != 0) {
         	printf("Test FAILED\n");

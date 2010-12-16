@@ -27,7 +27,6 @@ int main(void)
   if (rc < 0) {
     perror("read");
     exit(-1);
-  } 
+  }
   exit(0);
 }
-

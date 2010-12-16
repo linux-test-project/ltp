@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive() test plan:
- * Test that if the message queue is empty and O_NONBLOCK is not set, 
+ * Test that if the message queue is empty and O_NONBLOCK is not set,
  * mq_timedreceive() will block until mq_timedreceive() is interrupted by a
  * signal.
  *
@@ -69,7 +69,7 @@ int main()
 
 		ts.tv_sec = INT32_MAX;
 		ts.tv_nsec = 0;
-	
+
         	if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) == -1) {
 			wait(NULL);
 			if (EINTR != errno) {
@@ -81,7 +81,7 @@ int main()
 			wait(NULL);
 			printf("mq_timedreceive() succeed unexpectly \n");
 			failure = 1;
-		}	
+		}
 		if (mq_close(mqdes) != 0) {
                		perror("mq_close() did not return success");
 	                unresolved=1;
@@ -108,4 +108,3 @@ int main()
 		kill(getppid(), SIGABRT);
 	}
 }
-

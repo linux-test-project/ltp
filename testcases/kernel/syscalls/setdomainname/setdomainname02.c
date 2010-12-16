@@ -167,7 +167,6 @@ int main(int ac, char **av)
 void setup(void)
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
@@ -184,7 +183,6 @@ void setup(void)
 			 " getting current domain name");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 }
@@ -209,6 +207,4 @@ void cleanup(void)
 			 " domainname to \"%s\"", old_domain_name);
 	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

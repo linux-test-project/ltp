@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-icmpv6_sender.c
@@ -70,7 +69,6 @@ struct icmp6_info {
 
     u_int16_t fake_flag;
 };
-
 
 /*
  * Gloval variables
@@ -130,7 +128,6 @@ usage (char *program_name, int exit_value)
     exit (exit_value);
 }
 
-
 /*
  * Function: set_signal_flag()
  *
@@ -162,7 +159,6 @@ set_signal_flag(int type)
 	    exit(EXIT_FAILURE);
     }
 }
-
 
 /*
  * Function: specify_hw_addr()
@@ -202,7 +198,6 @@ specify_hw_addr(struct sockaddr_ll *lladdr_p, const char *ifname)
     close(sock_fd);
 }
 
-
 /*
  * Function: calc_hd_mcastaddr
  *
@@ -231,7 +226,6 @@ calc_hd_mcastaddr(struct sockaddr_ll *lladdr_p, struct in6_addr *addr_p)
     lladdr_p->sll_addr[1]   = 0x33;
     memcpy(&lladdr_p->sll_addr[2], &addr_p->s6_addr[12], ETH_ALEN - 2);
 }
-
 
 /*
  * Function: create_mld_query()
@@ -353,7 +347,6 @@ create_mld_query(struct icmp6_info *info_p, uint16_t mrc, char *saddrs)
     return 0;
 }
 
-
 /*
  * Function: create_echo_request()
  *
@@ -415,7 +408,6 @@ create_echo_request(struct icmp6_info *info_p)
     info_p->pkt = pkt;
     info_p->pkt_size = sizeof(struct ip6_hdr) + ip6_psize;
 }
-
 
 /*
  * Function: parse_options()
@@ -587,7 +579,6 @@ parse_options(int argc, char *argv[], struct icmp6_info *info_p, int *bg_p)
 	usage(program_name, EXIT_FAILURE);
     }
 
-
     if (is_mld_query) {		/* MLDv2 query */
 	if (info_p->fake_flag) {
 	    fprintf(stderr, "It is not permitted to break MLDv2 query\n");
@@ -618,7 +609,6 @@ parse_options(int argc, char *argv[], struct icmp6_info *info_p, int *bg_p)
     }
     info_p->daddr_ll.sll_ifindex = if_nametoindex(ifname);
 }
-
 
 /*
  * Function: thrust_fakes()
@@ -699,7 +689,6 @@ thrust_fakes(struct ip6_datagram *pkt, u_int16_t fake_flag)
     }
 }
 
-
 /*
  * Function: send_packet()
  *
@@ -773,7 +762,6 @@ send_packets(struct icmp6_info *info_p)
     /* Close the socket */
     close(sock_fd);
 }
-
 
 /*
  *

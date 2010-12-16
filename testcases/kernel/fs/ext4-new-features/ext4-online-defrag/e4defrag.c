@@ -1232,7 +1232,6 @@ int get_best_count(ext4_fsblk_t block_count)
 	return ret;
 }
 
-
 /*
  * file_statistic() -	Get statistic info of the file's fragments.
  *
@@ -1555,7 +1554,6 @@ int call_defrag(int fd, int donor_fd, const char *file,
 		/* Print defrag progress */
 		print_progress(file, start, buf->st_size);
 
-		/* End of file */
 		if (start >= buf->st_size)
 			break;
 
@@ -2160,7 +2158,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (success_flag)
-		return 0;
+		tst_exit();
 
 	exit(1);
 
@@ -2168,4 +2166,3 @@ out:
 	printf(MSG_USAGE);
 	exit(1);
 }
-

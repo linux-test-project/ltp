@@ -1,23 +1,23 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_rwlock_timedwrlock(pthread_rwlock_t *rwlock)
  *
- *	pthread_rwlock_timedwrlock() function shall apply a write lock to the 
- *	read-write lock referenced by rwlock as in the pthread_rwlock_wrlock() function. 
- *	However, if the lock cannot be acquired without waiting for other threads to 
- *	unlock the lock, this wait shall be terminate when the specified timeout expires. 
+ *	pthread_rwlock_timedwrlock() function shall apply a write lock to the
+ *	read-write lock referenced by rwlock as in the pthread_rwlock_wrlock() function.
+ *	However, if the lock cannot be acquired without waiting for other threads to
+ *	unlock the lock, this wait shall be terminate when the specified timeout expires.
  *
  * Steps:
  * 1.  Initialize rwlock
- * 2.  Main creats thread0. 
+ * 2.  Main creats thread0.
  * 3.  Thread0 does pthread_rwlock_timedwrlock(), should get the lock successfully then unlock.
  * 4.  Main thread locks 'rwlock' for reading with pthread_rwlock_rdlock()
- * 5.  Create a child thread, the thread time-locks 'rwlock' for writing, 
- *	using pthread_rwlock_timedwrlock(), should block, but when the timer expires, 
+ * 5.  Create a child thread, the thread time-locks 'rwlock' for writing,
+ *	using pthread_rwlock_timedwrlock(), should block, but when the timer expires,
  *	that wait will be terminated.
  * 6.  Main thread unlocks 'rwlock'
  * 7.  Main thread locks 'rwlock' for writing.
@@ -40,12 +40,12 @@
 #define TIMEOUT 3
 
 static pthread_rwlock_t rwlock;
-static int thread_state; 
+static int thread_state;
 static struct timeval currsec1, currsec2;
 static int expired;
 
-/* thread_state indicates child thread state: 
-	1: not in child thread yet; 
+/* thread_state indicates child thread state:
+	1: not in child thread yet;
 	2: just enter child thread ;
 	3: just before child thread exit;
 */
@@ -55,7 +55,7 @@ static int expired;
 #define EXITING_THREAD 3
 
 static void* fn_wr(void *arg)
-{ 
+{
 	struct timespec timeout, ts;
 	int rc;
 	thread_state = ENTERED_THREAD;
@@ -67,15 +67,15 @@ static void* fn_wr(void *arg)
 		exit(PTS_UNRESOLVED);
 	}
 	currsec1.tv_sec = ts.tv_sec;
-	currsec1.tv_usec = ts.tv_nsec / 1000; 
+	currsec1.tv_usec = ts.tv_nsec / 1000;
 #else
 	gettimeofday(&currsec1, NULL);
 #endif
 	/* Absolute time, not relative. */
 	timeout.tv_sec = currsec1.tv_sec + TIMEOUT;
-	timeout.tv_nsec = currsec1.tv_usec * 1000;	
-	
-	printf("thread: attempt timed write lock, %d secs\n", TIMEOUT);	
+	timeout.tv_nsec = currsec1.tv_usec * 1000;
+
+	printf("thread: attempt timed write lock, %d secs\n", TIMEOUT);
 	rc = pthread_rwlock_timedwrlock(&rwlock, &timeout);
 	if (rc  == ETIMEDOUT)
 	{
@@ -98,7 +98,7 @@ static void* fn_wr(void *arg)
 		printf("thread: Error in pthread_rwlock_timedrdlock().\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	/* Get time after the mutex timed out in locking. */
 #ifdef CLOCK_REALTIME
 	rc = clock_gettime(CLOCK_REALTIME, &ts);
@@ -108,7 +108,7 @@ static void* fn_wr(void *arg)
 		exit(PTS_UNRESOLVED);
 	}
 	currsec2.tv_sec = ts.tv_sec;
-	currsec2.tv_usec = ts.tv_nsec / 1000; 
+	currsec2.tv_usec = ts.tv_nsec / 1000;
 #else
 	gettimeofday(&currsec2, NULL);
 #endif
@@ -116,12 +116,12 @@ static void* fn_wr(void *arg)
 	pthread_exit(0);
 	return NULL;
 }
- 
+
 int main()
 {
 	int cnt = 0;
 	pthread_t thread0, thread1, thread2;
-	
+
 	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("Error at pthread_rwlock_init()\n");
@@ -135,15 +135,15 @@ int main()
 		printf("Error creating thread0\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* thread0 should not block at all since no one else has locked rwlock */
 
 	cnt = 0;
 	expired = 0;
 	do{
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 2*TIMEOUT); 
-	
+	}while (thread_state !=EXITING_THREAD && cnt++ < 2*TIMEOUT);
+
 	if (thread_state == EXITING_THREAD)
 	{
 		if (expired == 1)
@@ -163,32 +163,32 @@ int main()
 	{
 		printf("Unexpected state for thread0 %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
-	}	
-	
+	}
+
 	if (pthread_join(thread0, NULL) != 0)
 	{
 		printf("Error when joining thread0\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	printf("main: attempt read lock\n");
-	/* We have no lock, this read lock should succeed */	
+	/* We have no lock, this read lock should succeed */
 	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
 	}
 	printf("main: acquired read lock\n");
-	
+
 	thread_state = NOT_CREATED_THREAD;
-	
+
 	printf("main: create thread1\n");
 	if (pthread_create(&thread1, NULL, fn_wr, NULL) != 0)
 	{
 		printf("Error when creating thread1\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* If the shared data is not altered by child after TIMEOUT*2 seconds,
 	   we regard it as blocked */
 
@@ -196,8 +196,8 @@ int main()
 	cnt = 0;
 	do{
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 2*TIMEOUT); 
-		
+	}while (thread_state !=EXITING_THREAD && cnt++ < 2*TIMEOUT);
+
 	if (thread_state == EXITING_THREAD)
 	{
 		/* the child thread does not block, check the time interval */
@@ -213,8 +213,8 @@ int main()
 		{
 			printf("Test FAILED: the timer expired and blocking "
 				"was terminated, but the timeout is not correct: "
-				"expected to wait for %d, but waited for %ld.%06ld\n", 
-				TIMEOUT, (long)time_diff.tv_sec, 
+				"expected to wait for %d, but waited for %ld.%06ld\n",
+				TIMEOUT, (long)time_diff.tv_sec,
 				(long)time_diff.tv_usec);
 			exit(PTS_FAIL);
 		}
@@ -232,25 +232,25 @@ int main()
 		printf("Unexpected state for thread1 %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	printf("main: unlock read lock\n");
 	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("Error when release read lock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	if (pthread_join(thread1, NULL) != 0)
 	{
 		printf("Error when joining thread1\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	printf("main: attempt write lock\n");
 	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_wrlock()\n");
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 	printf("main: acquired write lock\n");
 
@@ -262,12 +262,12 @@ int main()
 		printf("Error when creating thread2\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* we expect thread2 to expire blocking after timeout */
 	do{
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 2*TIMEOUT); 
-	
+	}while (thread_state !=EXITING_THREAD && cnt++ < 2*TIMEOUT);
+
 	if (thread_state == EXITING_THREAD)
 	{
 		/* the child thread does not block, check the time interval */
@@ -287,7 +287,7 @@ int main()
 		}
 		else
 			printf("thread2 correctly expired at timeout.\n");
-		
+
 	}
 	else if (thread_state == ENTERED_THREAD)
 	{
@@ -313,7 +313,7 @@ int main()
 	{
 		printf("Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

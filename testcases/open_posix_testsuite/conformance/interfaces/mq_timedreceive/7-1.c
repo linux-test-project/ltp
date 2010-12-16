@@ -9,7 +9,7 @@
 /*
  * mq_timedreceive() test plan:
  * If message queue is empty and O_NONBLOCK is set in the message queue,
- * no message will be removed from the queue, mq_timedreceive will return an 
+ * no message will be removed from the queue, mq_timedreceive will return an
  * error.
  */
 
@@ -48,7 +48,7 @@ int main()
                 perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
         }
-	
+
 	ts.tv_sec = time(NULL) + 1;
 	ts.tv_nsec = 0;
        	if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) != -1) {
@@ -77,4 +77,3 @@ int main()
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-

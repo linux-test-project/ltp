@@ -142,7 +142,6 @@ int main(int ac, char **av)
 		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);
 	}
 
-	/* perform global setup for test */
 	setup();
 
 	Tst_count = 0;
@@ -222,7 +221,7 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -230,13 +229,11 @@ int main(int ac, char **av)
 void setup()
 {
 	int ret;
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
@@ -295,7 +292,7 @@ void setup()
 			 fd_notify, fname);
 	};
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -321,9 +318,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-}				/* End cleanup() */
+}
 
 /*
  * issue a help message

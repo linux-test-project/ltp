@@ -1,4 +1,4 @@
-/* 
+/*
  * Print table of MCA status bit combinations with results in HTML.
  * Author: Andi Kleen
  */
@@ -18,7 +18,6 @@
 
 typedef unsigned long long u64;
 
-
 #define MCI_STATUS_S	 (1ULL<<56)  /* Signaled machine check */
 #define MCI_STATUS_AR	 (1ULL<<55)  /* Action required */
 
@@ -30,7 +29,7 @@ int mce_ser = 1;
 
 int disable_opt = 0;
 
-struct rname { 
+struct rname {
 	char *name;
 	unsigned color;
 	char *desc;
@@ -46,11 +45,11 @@ struct rname {
 #undef R
 };
 
-struct bit { 
+struct bit {
 	char *name;
 	unsigned offset;
 	u64 bit;
-} bits[] = { 
+} bits[] = {
 #define O(x) offsetof(struct mce, x)
 #define S(x) { #x, O(status), MCI_STATUS_ ## x }
 	{ "RIPV", O(mcgstatus), MCG_STATUS_RIPV },
@@ -70,9 +69,9 @@ struct bit {
 
 struct mce basem;
 
-#define bit_for_each(i,v) for (i = 0; i < 64; i++) if ((v) & (1ULL << i)) 
+#define bit_for_each(i,v) for (i = 0; i < 64; i++) if ((v) & (1ULL << i))
 
-struct result { 
+struct result {
 	int res;
 	unsigned dontcare;
 	char *msg;
@@ -82,16 +81,16 @@ void genstate(struct mce *m, unsigned num)
 {
 	int i;
 	*m = basem;
-	
+
 	bit_for_each (i, num)
 		*(u64 *)((char *)m + bits[i].offset) |= bits[i].bit;
 }
 
 // find don't care bits
-// brute force version because andi is not clever enough to make the clever 
+// brute force version because andi is not clever enough to make the clever
 // version work. luckily the tables are small
 
-#define for_rr(start, i) for (i = start; i < num; i++) if (rr[i].res >= 0) 
+#define for_rr(start, i) for (i = start; i < num; i++) if (rr[i].res >= 0)
 #define mask_of(x) ((1U << (x))-1)
 
 static void disable(struct result *rr, int i, int src)
@@ -107,14 +106,14 @@ static void one_bit_all(struct result *rr, int num, int mask)
 	if (mask >= num)
 		return;
 	first = mask;
-	for_rr (first, k) { 
+	for_rr (first, k) {
 		if (!(k & mask))
 			continue;
 		if (rr[k].res != rr[first].res)
 			return;
 	}
 	rr[first].dontcare = mask_of(ARRAY_SIZE(bits)) & ~mask;
-	for_rr (first + 1, k) { 
+	for_rr (first + 1, k) {
 		if (k & mask)
 			disable(rr, k, k);
 	}
@@ -124,13 +123,13 @@ static void one_bit_all(struct result *rr, int num, int mask)
 static void neighbour_same(struct result *rr, int num, int mask)
 {
 	int k, other;
-	for_rr (mask, k) { 
+	for_rr (mask, k) {
 		if (!(k & mask) || (rr[k].dontcare & mask))
 			continue;
 		other = k ^ mask;
 		if (other >= num)
 			continue;
-		if (rr[other].res == rr[k].res && rr[other].msg == rr[k].msg) { 
+		if (rr[other].res == rr[k].res && rr[other].msg == rr[k].msg) {
 			disable(rr, other, k);
 			rr[k].dontcare |= mask;
 		}
@@ -161,8 +160,8 @@ int bitcount(u64 v)
 void table(char *title)
 {
 	struct mce m;
-	int i, w, num; 
-	
+	int i, w, num;
+
 	struct result *rr = calloc(sizeof(struct result), 1U << ARRAY_SIZE(bits));
 
 	num = 0;
@@ -174,29 +173,29 @@ void table(char *title)
 
 	if (!disable_opt)
 		optimizer(rr, num);
-	
+
 	printf("<p><table border=1>\n");
 	printf("<chaption>%s</chaption>\n", title);
 
-	printf("<tr>\n");	
-	for (i = 0; i < ARRAY_SIZE(bits); i++) { 
+	printf("<tr>\n");
+	for (i = 0; i < ARRAY_SIZE(bits); i++) {
 		printf("<th>%s</th>", bits[i].name);
 	}
 	printf("<th>Result</th><th>Rule</th><th>Action</th>\n");
 	printf("</tr>\n");
 
-	for_rr (0, i) { 
+	for_rr (0, i) {
 		printf("<tr>");
-		for (w = 0; w < ARRAY_SIZE(bits); w++) { 
-			char *p = "0"; 
+		for (w = 0; w < ARRAY_SIZE(bits); w++) {
+			char *p = "0";
 			char *col = "";
 			unsigned mask = 1U << w;
 
 			if (mask & rr[i].dontcare) {
 				p = "x";
 				col = " bgcolor=\"888888\"";
-			} else if (mask & i) { 
-				if (bitcount(bits[w].bit) > 1) 
+			} else if (mask & i) {
+				if (bitcount(bits[w].bit) > 1)
 					asprintf(&p, "%llx", bits[w].bit);
 				else
 					p = "1";
@@ -212,7 +211,7 @@ void table(char *title)
 		assert(rr[i].msg != NULL);
 		printf("<td>%s</td>", rr[i].msg);
 		printf("<td>%s</td>", rname->desc);
-		printf("</tr>\n");	
+		printf("</tr>\n");
 	}
 	printf("</table>\n");
 }
@@ -227,9 +226,9 @@ void usage(void)
 int main(int ac, char **av)
 {
 	int opt;
-	while ((opt = getopt(ac, av, "a")) != -1) { 
-		switch (opt) { 
-		case 'a': 
+	while ((opt = getopt(ac, av, "a")) != -1) {
+		switch (opt) {
+		case 'a':
 			disable_opt = 1;
 			break;
 		default:
@@ -256,5 +255,5 @@ int main(int ac, char **av)
 	basem.cs = 3;
 	table("Without MCA recovery ring 3");
 	printf("</body></html>\n");
-	return 0;
+	tst_exit();
 }

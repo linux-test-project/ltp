@@ -59,7 +59,6 @@ FILE * temp;
 int TST_TOTAL =1;
 extern int Tst_count;
 
-
 void setup();
 int blenter();
 int blexit();
@@ -79,12 +78,11 @@ int main (argc, argv)
 	blenter();
 
 	i = llabs(MININT) + (long long)MININT;
-	
+
 	if (i != 0) {
 		fprintf(temp, "abs of minimum integer failed.");
 		local_flag = FAILED;
 	}
-
 
 	blexit();
 /*--------------------------------------------------------------*/
@@ -123,14 +121,11 @@ void setup()
   temp = stderr;
 }
 
-
 int blenter()
 {
   local_flag = PASSED;
   return(0);
 }
-
-
 
 int blexit()
 {

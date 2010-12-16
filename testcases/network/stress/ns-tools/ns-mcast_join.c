@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-mcast_join.c
@@ -80,7 +79,6 @@ size_t join_leave_times;	/* If non-zero, join-leave mode */
 char *mcast_addr;		/* multicast address to join/leave */
 struct timespec interval;	/* interval for join-leave mode */
 
-
 /*
  * Function: usage()
  *
@@ -129,7 +127,6 @@ usage (char *program_name, int exit_value)
     exit (exit_value);
 }
 
-
 /*
  * Function: set_signal_flag()
  *
@@ -161,7 +158,6 @@ set_signal_flag(int type)
 	    exit(EXIT_FAILURE);
     }
 }
-
 
 /*
  * Function: parse_options()
@@ -197,7 +193,7 @@ parse_options(int argc, char *argv[])
 		    usage(program_name, EXIT_FAILURE);
 		}
 		break;
-		
+
 	    case 'I':
 		ifindex = if_nametoindex(optarg);
 		if (ifindex == 0) {
@@ -254,7 +250,7 @@ parse_options(int argc, char *argv[])
 	    case 'm':
 		is_multi_socket = 1;
 		break;
-		
+
 	    case 'd':
 		debug = 1;
 		break;
@@ -272,7 +268,7 @@ parse_options(int argc, char *argv[])
 	fprintf(stderr, "specified interface seems incorrect\n");
 	usage(program_name, EXIT_FAILURE);
     }
-    
+
     if (saddrs) {
 	if (fmode != MCAST_EXCLUDE && fmode != MCAST_INCLUDE) {
 	    fprintf(stderr, "filter mode is wrong\n");
@@ -280,7 +276,6 @@ parse_options(int argc, char *argv[])
 	}
     }
 }
-
 
 /*
  * Function: join_group()
@@ -327,7 +322,7 @@ join_group(void)
 		break;
 	    }
 	}
-    
+
 	if (! is_multi_socket)
 	    maximize_sockbuf(sock_array[idx]);
     }
@@ -421,7 +416,6 @@ join_group(void)
 	    break;
 }
 
-
 /*
  * Function: join_leave_group()
  *
@@ -471,7 +465,7 @@ join_leave_group(void)
 		fatal_error("setsockopt(): Failed to add a group filter");
 
 	nanosleep(&interval, NULL);
-	
+
 	/* Leave */
 	if (setsockopt(sd, level, MCAST_LEAVE_GROUP, grp_info,
 		    sizeof(struct group_req)) == -1)
@@ -489,7 +483,6 @@ join_leave_group(void)
     freeaddrinfo(maddr_info);
 }
 
-
 /*
  *
  *  Function: main()
@@ -502,7 +495,7 @@ main(int argc, char *argv[])
     program_name = strdup(argv[0]);
 
     parse_options(argc, argv);
-    
+
     if (! join_leave_times) {
 	if (mcast_prefix == NULL && mcast_addr == NULL) {
 	    fprintf(stderr, "multicast address is not specified\n");

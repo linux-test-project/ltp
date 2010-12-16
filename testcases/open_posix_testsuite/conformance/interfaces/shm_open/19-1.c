@@ -20,4 +20,3 @@ int main()
         printf("Will not test the effect of calling shm_open() when the shared memory object\ndoes not exists, the O_CREAT flags is set, and bits in mode other than the\nfile permission bits are set. It is unspecified.\n");
         return PTS_UNTESTED;
 }
-

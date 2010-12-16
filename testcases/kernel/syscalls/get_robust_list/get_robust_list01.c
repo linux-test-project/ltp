@@ -67,7 +67,7 @@ struct robust_list_head {
 	struct robust_list *list_op_pending;
 };
 
-extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern int Tst_count;
 
 int exp_enos[] = { ESRCH, EPERM, EFAULT, 0 };
 
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
 	setup();
@@ -256,7 +256,6 @@ void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	tst_exit();
 }
 
 #else

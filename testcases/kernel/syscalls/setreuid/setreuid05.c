@@ -140,13 +140,11 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 
-	/* Perform global setup for test */
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int i, pid, status;
 
@@ -228,7 +226,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if (getpwnam("nobody") == NULL) {
@@ -280,8 +278,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }
 
 void uid_verify(struct passwd *ru, struct passwd *eu, char *when)

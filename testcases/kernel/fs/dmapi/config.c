@@ -404,7 +404,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 
 }

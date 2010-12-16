@@ -18,7 +18,6 @@
 /*									      */
 /******************************************************************************/
 
-
 /******************************************************************************/
 /*									      */
 /* History:	July - 02 - 2001 Created by Manoj Iyer, IBM Austin TX.	      */
@@ -57,7 +56,6 @@
 /*			         					      */
 /******************************************************************************/
 
-
 /* Include Files							      */
 #include <stdio.h>
 #include <sys/types.h>
@@ -76,8 +74,6 @@
 #include "test.h"
 #include "usctest.h"
 
-
-
 /* Defines								      */
 #define GB 1000000000
 #ifndef TRUE
@@ -86,7 +82,6 @@
 #ifndef FALSE
 #define FALSE 0
 #endif
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -107,7 +102,6 @@ mkfile(int size) 		/* size of the file to be generated in GB     */
     int  index = 0;		/* index into the file, fill it with a's      */
     char buff[4096];		/* buffer that will be written to the file.   */
     char template[PATH_MAX];    /* template for temp file name                */
-
 
     /* fill the buffer with a's and open a temp file */
     memset(buff, 'a', 4096);
@@ -135,7 +129,7 @@ mkfile(int size) 		/* size of the file to be generated in GB     */
     }
     fprintf(stdout, "created file of size %d\n"
 		    "content of the file is 'a'\n", index);
-   
+
     /* make sure a's are written to the file. */
     if (fsync(fd) == -1)
     {
@@ -171,7 +165,6 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
     exit(0);
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Function:    set_timer                                                     */
@@ -200,7 +193,6 @@ set_timer(float run_time)         /* period for which test is intended to run   
     }
 }
 
-
 /******************************************************************************//*								 	      */
 /* Function:	usage							      */
 /*									      */
@@ -221,7 +213,6 @@ usage(char *progname)           /* name of this program                       */
                     progname);
     exit(-1);
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -308,7 +299,7 @@ int main(int argc,	    /* number of input parameters.		      */
 
     /* set up time for which test has to be run */
     set_timer(exec_time);
-   
+
     /* set up signals */
     sigptr.sa_handler = (void (*)(int signal))sig_handler;
     sigfillset(&sigptr.sa_mask);
@@ -344,7 +335,7 @@ int main(int argc,	    /* number of input parameters.		      */
             fd = -1;
 	    map_flags = map_flags|MAP_ANONYMOUS;
         }
-  
+
         if ((memptr = (char *)mmap(0,(fsize * GB), PROT_READ|PROT_WRITE,
 		     map_flags, fd, 0)) == (char *)-1)
         {
@@ -354,7 +345,7 @@ int main(int argc,	    /* number of input parameters.		      */
         else
 	    fprintf(stdout, "file mapped at %p\n"
 			    "changing file content to 'A'\n", memptr);
-  
+
         /* Change the content of the file with A's, and commit changes */
         memset(memptr, 'A', ((fsize * GB)/sizeof(char)));
 
@@ -378,4 +369,3 @@ int main(int argc,	    /* number of input parameters.		      */
     }while (TRUE && !run_once);
     exit (0);
 }
-

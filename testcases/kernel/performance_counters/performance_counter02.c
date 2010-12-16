@@ -53,7 +53,6 @@ Use -c N if you have more than 8 hardware counters.  The -v flag makes
 it print out the values of each counter.
 */
 
-
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -76,7 +75,7 @@ it print out the values of each counter.
 #define PR_TASK_PERF_COUNTERS_ENABLE            32
 
 /* Extern Global Variables */
-extern int  Tst_count;               /* counter for tst_xxx routines.         */
+extern int  Tst_count;
 extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -241,5 +240,5 @@ main(int ac, char **av)
 	} else {
 		tst_resm(TINFO, "test passed");
 	}
-	tst_exit();
+
 }

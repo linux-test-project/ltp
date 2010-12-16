@@ -159,9 +159,8 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -186,7 +185,7 @@ int main(int ac, char **av)
 				 TEST_RETURN);
 		}
 
-	}			/* End of TEST CASE LOOPING. */
+	}
 
 	/*
 	 * Invoke cleanup() to delete the test directory/file(s) created
@@ -194,14 +193,14 @@ int main(int ac, char **av)
 	 */
 	cleanup();
 	tst_exit();
-}				/* End main */
+}
 
 #else
 
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -250,7 +249,7 @@ void setup()
 		tst_brkm(TBROK|TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE);
 
-}				/* End setup() */
+}
 
 /*
  * void
@@ -272,12 +271,9 @@ void cleanup()
 	if (close(fildes) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TEST_FILE);
 
-	/* Remove files and temporary directory created */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}
 
 /*
  * sighandler() - handle the signals
@@ -292,6 +288,5 @@ void sighandler(int sig)
 		tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
 	}
 	cleanup();
-	/*NOT REACHED */
 
 }

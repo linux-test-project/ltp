@@ -40,9 +40,9 @@
 #define 	MAX_FNAME_LEN	16
 
 /*****************************************************************
- * create file: 
- * 	
- * func_name is the name of the function 
+ * create file:
+ *
+ * func_name is the name of the function
  *
  * code can take 2 values: DATA_CREATE to create a input data file
  *			   RESULT_CREATE for output result file
@@ -51,7 +51,7 @@
 int create_file(char *func_name, int NbVal)
 {
 	pid_t myproc;
-	           
+
         if (( myproc = fork() )!=0)
                 return myproc;
         else {
@@ -61,16 +61,13 @@ int create_file(char *func_name, int NbVal)
 	     	fprintf(stderr, "ERROR %s\n", strerror(errno));
 	     	abort();
 	}
-} 
-
-
-
+}
 
 int main(int argc, char *argv[])
 {
 	char *funct, *bin_path;
 	pid_t child;
-	
+
 	if (argc != 2) {
                 printf ("ERROR: need the path to generation binaries\n");
                 abort();
@@ -94,8 +91,8 @@ int main(int argc, char *argv[])
 	sprintf (funct, "%s/genfrexp", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
-	
-	sprintf (funct, "%s/genldexp", bin_path);	
+
+	sprintf (funct, "%s/genldexp", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
@@ -107,5 +104,5 @@ int main(int argc, char *argv[])
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	return 0;
+	tst_exit();
 }

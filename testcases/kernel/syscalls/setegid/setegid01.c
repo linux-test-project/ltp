@@ -119,5 +119,5 @@ int main(int argc, char **argv)
 	}
 	tst_resm(TPASS, "setegid() passed functional test");
 	tst_exit();
-	return 0;
+	tst_exit();
 }

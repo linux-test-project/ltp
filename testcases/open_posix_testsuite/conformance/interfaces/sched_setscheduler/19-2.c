@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -37,7 +37,7 @@ int main() {
 	param.sched_ss_low_priority = invalid_priority;
 
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
-	
+
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

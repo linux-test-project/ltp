@@ -120,7 +120,6 @@ int do_clone_unshare_test(int use_clone, unsigned long clone_flags,
 	}
 }
 
-
 /*
  * Run fn1 in a unshared environmnent, and fn2 in the original context
  */

@@ -203,8 +203,6 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 		CU_ASSERT_EQUAL(errno_query, EINVAL);
 	}
 
-
-
 	memset(&reqbuf, 0, sizeof(reqbuf));
 	reqbuf.count = 0;
 	reqbuf.type = type;

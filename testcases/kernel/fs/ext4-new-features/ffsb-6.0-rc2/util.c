@@ -44,12 +44,10 @@ uint64_t ffsb_get_filesize(char *name)
 	struct stat64 filestat;
 #endif
 
-
 	STAT(name, &filestat);
 	return (uint64_t)filestat.st_size;
 #undef STAT
 }
-
 
 void *ffsb_malloc(size_t size)
 {
@@ -109,7 +107,6 @@ void ffsb_sleep(unsigned secs)
 	tv.tv_sec = secs;
 	select(0, NULL, NULL, NULL, &tv);
 }
-
 
 char *ffsb_printsize(char *buf, double size, int bufsize)
 {
@@ -185,7 +182,6 @@ double cpu_so_far_children(void)
 		((double) rusage.ru_stime.tv_sec) +
 		(((double) rusage.ru_stime.tv_usec) / 1000000.0);
 }
-
 
 /* !!!! check portability */
 float getfsutil(char *dirname)
@@ -282,7 +278,6 @@ void ffsb_micro_sleep(unsigned time)
 	tv.tv_usec = time ;
 	select(0, NULL, NULL, NULL, &tv);
 }
-
 
 void ffsb_barrier_init(ffsb_barrier_t *fb, unsigned count)
 {

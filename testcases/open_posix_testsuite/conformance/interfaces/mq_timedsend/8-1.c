@@ -58,8 +58,8 @@ int main()
 		unresolved=1;
 	}
 
-	if (strncmp(msgptr, msgrcd, strlen(msgptr)) != 0) { 
-		printf("send was unsuccessful:  sent %s received %s\n", 
+	if (strncmp(msgptr, msgrcd, strlen(msgptr)) != 0) {
+		printf("send was unsuccessful:  sent %s received %s\n",
 				msgptr, msgrcd);
 		unresolved = 1;
 	}
@@ -88,4 +88,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

@@ -8,13 +8,13 @@
  */
 
 /* In x-mode
- * There are several threads that share a mutex, When the owner of mutex is 
- * dead, a waiter locks the mutex and will get EOWNERDEAD. In 
- * PTHREAD_MUTEX_ROBUST_NP Mode, if the owner can't recover it to 
- * heathy state(not_recoverable state), then calling 
- * pthread_mutex_setconsistency_np will change the mutex state to 
- * ENOTRECOVERABLE. 
- */ 
+ * There are several threads that share a mutex, When the owner of mutex is
+ * dead, a waiter locks the mutex and will get EOWNERDEAD. In
+ * PTHREAD_MUTEX_ROBUST_NP Mode, if the owner can't recover it to
+ * heathy state(not_recoverable state), then calling
+ * pthread_mutex_setconsistency_np will change the mutex state to
+ * ENOTRECOVERABLE.
+ */
 
 /*
  * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_NP isn't POSIX.
@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include "test.h"
 
-#define THREAD_NUM		2	
+#define THREAD_NUM		2
 
 pthread_mutex_t	mutex;
 
@@ -38,7 +38,7 @@ void *thread_1(void *arg)
 	pthread_exit(NULL);
 	return NULL;
 }
-void *thread_2(void *arg) 
+void *thread_2(void *arg)
 {
 	int state;
 	int rc;
@@ -63,7 +63,7 @@ void *thread_2(void *arg)
 	}
 	DPRINTF(stdout,"Thread 2 lock the mutex and return EOWNERDEAD \n");
 
-	state = 1;	
+	state = 1;
 	if (pthread_mutex_setconsistency_np(&mutex, state) == 0) {
 		pthread_mutex_unlock(&mutex);
 		rc = pthread_mutex_lock(&mutex);
@@ -99,13 +99,13 @@ void *thread_2(void *arg)
 				"(Why fails?) in x-mode \n");
 			pthread_mutex_unlock(&mutex);
 		}
-	} 
+	}
 #endif
 	pthread_exit(NULL);
 	return NULL;
 }
 
-int main() 
+int main()
 {
 	pthread_mutexattr_t attr;
 	pthread_t threads[THREAD_NUM];
@@ -121,27 +121,27 @@ int main()
 #if __linux__
 	rc = pthread_mutexattr_setrobust_np(&attr, PTHREAD_MUTEX_ROBUST_NP);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_mutexattr_setrobust_np %d %s", 
+		EPRINTF("UNRESOLVED: pthread_mutexattr_setrobust_np %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 #endif
 	rc = pthread_mutex_init(&mutex, &attr);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s", 
+		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 	rc = pthread_attr_init(&threadattr);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_attr_init %d %s",
-			rc, strerror(rc));	
+			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 	rc = pthread_create(&threads[0], &threadattr, thread_1, NULL);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_create %d %s",
-			rc, strerror(rc));	
+			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 	pthread_join(threads[0], NULL);
@@ -150,7 +150,7 @@ int main()
 	rc = pthread_create(&threads[1], &threadattr, thread_2, NULL);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_create %d %s",
-			rc, strerror(rc));	
+			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 	pthread_join(threads[1], NULL);
@@ -159,4 +159,3 @@ int main()
 	DPRINTF(stdout,"PASS: Test PASSED\n");
 	return PASS;
 }
- 

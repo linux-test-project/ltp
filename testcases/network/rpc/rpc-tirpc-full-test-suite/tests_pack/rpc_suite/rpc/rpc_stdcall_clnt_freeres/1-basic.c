@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,7 +39,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -51,41 +51,41 @@ int main(int argn, char *argc[])
 	enum clnt_stat cs;
 	struct timeval to;
 	int varSnd = 0;
-	
+
 	//Initialization
 	to.tv_sec = 1;
 	to.tv_usec = 100;
-	
+
 	//First of all, create a client
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
-	
+
 	if (run_mode == 1)
 	{
 		printf("CLIENT : %d\n", clnt);
 		printf("progNum : %d\n", progNum);
 		printf("Proto : %s\n", proto);
 	}
-	
+
 	if ((CLIENT *)clnt == NULL)
 	{
 		clnt_pcreateerror("err");
 		printf("1\n");
 		return 1;
 	}
-	
-	cs = clnt_call(clnt, PROCNUM, 
+
+	cs = clnt_call(clnt, PROCNUM,
 				   (xdrproc_t)xdr_int, (char *)&varSnd,
 				   (xdrproc_t)xdr_int, (char *)&varSnd,
 				   to);
-	
+
 	test_status = !clnt_freeres(clnt, (xdrproc_t)xdr_int, (char *)&varSnd);
-	
+
 	if (cs != RPC_SUCCESS)
 		clnt_perrno(cs);
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

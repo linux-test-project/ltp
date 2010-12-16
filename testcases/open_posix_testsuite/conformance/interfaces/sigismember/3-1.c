@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- * Tests assertion 3 by filling a signal set and arbitrarily querying 
+ * Tests assertion 3 by filling a signal set and arbitrarily querying
  * it for a SIGABRT function. Sigmember should return a 1.
 */
 

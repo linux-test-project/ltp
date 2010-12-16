@@ -128,7 +128,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* loop through the test cases */
@@ -153,7 +152,7 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
@@ -165,10 +164,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */

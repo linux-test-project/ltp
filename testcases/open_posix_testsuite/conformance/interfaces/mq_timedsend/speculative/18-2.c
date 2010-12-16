@@ -58,4 +58,3 @@ int main()
 	printf("mq_timedsend() did not fail on invalid abs_time\n");
         return PTS_PASS;
 }
-

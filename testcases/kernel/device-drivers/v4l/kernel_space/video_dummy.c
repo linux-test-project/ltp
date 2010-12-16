@@ -6,11 +6,9 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-dev.h>
 
-
 struct dummy_dev {
 	struct video_device        *vfd;
 };
-
 
 static int dummy_open(struct inode *inode, struct file *file)
 {
@@ -58,7 +56,6 @@ static struct file_operations dummy_fops = {
 #endif
 #endif
 };
-
 
 static const struct v4l2_ioctl_ops dummy_ioctl_ops = {
 	.vidioc_querycap      = vidioc_querycap,

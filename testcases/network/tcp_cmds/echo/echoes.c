@@ -42,7 +42,6 @@ void	echofile (struct servent *, struct addrinfo *, char *, char *);
 int	checkfile(char *, char *);
 void	cleanup(int);
 
-
 int
 main (int argc, char *argv[], char *env[])
 {
@@ -63,23 +62,23 @@ main (int argc, char *argv[], char *env[])
 
 	if (argc != 4) {
 		tst_resm(TBROK, "usage: remote-addr file num-procs");
-		tst_exit();
+
 	}
 
 	if ((sp = getservbyname("echo", "tcp")) == NULL) {
 		tst_resm(TBROK, "echo service not found (check "
 				"/etc/services?)");
-		tst_exit();
+
 	}
 
 	if ((gai = getaddrinfo(argv[1], NULL, &hints, &hp)) != 0) {
 		tst_resm(TBROK, "Unknown subject address %s: %s\n",
 				argv[1], gai_strerror(gai));
-		tst_exit();
+
 	}
 	if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AFI) {
 		tst_resm(TBROK, "getaddrinfo failed");
-		tst_exit();
+
 	}
 	i = (unsigned int) strtol(argv[3], (char**) NULL, 10);
 	j = 0;
@@ -93,7 +92,7 @@ main (int argc, char *argv[], char *env[])
 		case -1:
 			tst_resm(TFAIL, "Failed to fork a new process: %s",
 					strerror(errno));
-			tst_exit();
+
 			break;
 		default:
 			echo_struc[j].pid = pid;
@@ -108,7 +107,7 @@ main (int argc, char *argv[], char *env[])
 
 		if ((pid = wait(&wait_stat)) == -1) {
 			tst_resm(TFAIL, "ERROR in wait process");
-			tst_exit();
+
 		}
 		if (wait_stat == 0) {
 			for (j = 0; j < i; j++) {
@@ -135,13 +134,10 @@ main (int argc, char *argv[], char *env[])
 				}
 			}
 
-			tst_exit();
-
 		}
 
 	}
 
-	return 0;
 }
 
 void
@@ -212,13 +208,13 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 	 * 41                      } else {
 	 * 42                              printf("Host IP: 0x%x\n", ai->ai_addr);
 	 * (gdb) p *hp
-	 * $16 = {h_name = 0x1a60198 "127.0.0.1", h_aliases = 0x1a60190, h_addrtype = 2, 
+	 * $16 = {h_name = 0x1a60198 "127.0.0.1", h_aliases = 0x1a60190, h_addrtype = 2,
 	 *   h_length = 4, h_addr_list = 0x1a60180}
 	 * (gdb) p *hp->h_addr_list
 	 * $14 = 0x1a60170 "\177"
 	 * (gdb) p *ai
-	 * $15 = {ai_flags = 0, ai_family = 2, ai_socktype = 1, ai_protocol = 6, 
-	 *   ai_addrlen = 16, ai_addr = 0x1a600b0, ai_canonname = 0x0, 
+	 * $15 = {ai_flags = 0, ai_family = 2, ai_socktype = 1, ai_protocol = 6,
+	 *   ai_addrlen = 16, ai_addr = 0x1a600b0, ai_canonname = 0x0,
 	 *     ai_next = 0x1a600d0}
 	 *
 	 * If one continues down this path, SIGPIPE will get tossed at the first
@@ -399,7 +395,7 @@ checkfile(char *file1, char *file2)
 }
 
 void
-cleanup(int s) 
+cleanup(int s)
 {
 	close(s);
 }

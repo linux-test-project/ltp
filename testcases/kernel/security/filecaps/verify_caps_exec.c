@@ -271,7 +271,6 @@ int caps_actually_set_test(void)
 		}
 	}
 
-
 	cap_free(pcap);
 	cap_free(fcap);
 	cap_fullpi = cap_init();

@@ -38,7 +38,7 @@
  *		if the argument operation does not include LOCK_SH,LOCK_EX,LOCK_UN.$
  *	3)	flock(2) returns -1 and sets error number to EINVAL
  *		if an invalid combination of locking modes is used i.e LOCK_SH with LOCK_EX
- *	
+ *
  *	Setup:
  *        Setup signal handling.
  *        Pause for SIGUSR1 if option specified.
@@ -53,7 +53,7 @@
  *				Issue system call fails with expected return value and error number
  *			else
  *				Issue system call failed to produce expected error.
- *	
+ *
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
@@ -155,13 +155,11 @@ int main(int argc, char **argv)
 				 TEST_ERRNO);
 		}
 
-	}			/* End of TEST_LOOPING */
+	}
 
 	close(fd);
 
 	cleanup();
-
-	return 0;
 
 }
 
@@ -171,7 +169,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
@@ -199,7 +197,6 @@ void setup(void)
 		/* Removing temp dir */
 		tst_rmdir();
 
-		/* exit with return code appropriate for result */
 		tst_exit();
 	}
 }
@@ -220,6 +217,4 @@ void cleanup(void)
 	unlink(filename);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

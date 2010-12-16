@@ -83,7 +83,6 @@ int main(int argc, char **argv)
 	 */
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -103,7 +102,6 @@ int main(int argc, char **argv)
 
 	}
 	cleanup();
-	tst_exit();
 
 }
 
@@ -113,7 +111,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
@@ -132,7 +130,6 @@ void setup(void)
 		perror("setuid");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -149,6 +146,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

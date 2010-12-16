@@ -76,7 +76,6 @@ union semun {
         struct seminfo *ipc_buf;        /* buffer for IPC_INFO */
 };
 
-
 int sem_id;
 int err_ret;  /* This is used to determine PASS/FAIL status */
 int main(int argc, char **argv)
@@ -84,7 +83,7 @@ int main(int argc, char **argv)
     int i, rc;
     char *msg;
     union semun semunion;
-   
+
     pthread_t pt[NUMTHREADS];
     pthread_attr_t attr;
 
@@ -102,7 +101,6 @@ int main(int argc, char **argv)
     semunion.val = 1;
     semctl(sem_id, 0, SETVAL, semunion);
 
-   
     /* setup the attributes of the thread        */
     /* set the scope to be system to make sure the threads compete on a  */
     /* global scale for cpu   */
@@ -128,10 +126,9 @@ int main(int argc, char **argv)
     else
 	tst_resm(TPASS, "passed");
     cleanup();
-    /* NOT REACHED */
+
     return 1;
 }
-
 
 /* This thread sleeps 10 seconds then waits on the semaphore.  As long
    as someone has posted on the semaphore, and no undo has taken
@@ -159,18 +156,18 @@ void * waiter(void * foo)
 void * poster(void * foo)
 {
     int pid;
-  
+
     pid = getpid();
     tst_resm(TINFO, "Poster, pid = %d, posting", pid);
     semop(sem_id, &Vsembuf, 1);
     tst_resm(TINFO, "Poster posted");
     tst_resm(TINFO, "Poster exiting");
-   
+
     pthread_exit(0);
 }
 
 void cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
+
 }

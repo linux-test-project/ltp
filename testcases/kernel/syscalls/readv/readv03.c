@@ -113,7 +113,7 @@ int main(int ac, char **av)
 
 	}
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -122,10 +122,8 @@ int main(int ac, char **av)
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -156,5 +154,5 @@ void cleanup()
 		tst_brkm(TBROK, cleanup, "close failed: errno = %d", errno);
 	}
 	tst_rmdir();
-	tst_exit();
+
 }

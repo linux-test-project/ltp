@@ -89,7 +89,7 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int ind;		/* counter for test case looping */
+	int ind;
 	int which;		/* scheduling priority category */
 
 	TST_TOTAL = sizeof(prio_which) / sizeof(int);
@@ -102,15 +102,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
@@ -122,7 +120,6 @@ int main(int ac, char **av)
 			 */
 			TEST(getpriority(which, 0));
 
-			/* check return code of getpriority() */
 			if (TEST_RETURN < 0 && TEST_ERRNO != 0) {
 				tst_resm(TFAIL, "getpriority(%d, 0) "
 					 "Failed, errno=%d : %s",
@@ -133,24 +130,22 @@ int main(int ac, char **av)
 					 "%ld priority value",
 					 which, TEST_RETURN);
 			}
-		}		/* End of TEST CASE LOOPING */
-	}			/* End for TEST_LOOPING */
+		}
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	  return 0;
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -166,6 +161,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -266,7 +266,7 @@ int main(int ac, char **av)
 		close(tfd);
 	}
 
-	return 0;
+	tst_exit();
 }
 
 #else
@@ -276,6 +276,6 @@ int main()
 {
 
 	tst_resm(TCONF, "This test needs a kernel that has timerfd syscall.");
-	return 0;
+	tst_exit();
 }
 #endif

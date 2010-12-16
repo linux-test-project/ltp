@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -8,7 +8,7 @@
  *  GNU General Public License for more details.
  *
  *
- * Test that the current execution time limit is returned for the calling 
+ * Test that the current execution time limit is returned for the calling
  * process when pid = 0.
  */
 #include <stdio.h>
@@ -19,7 +19,7 @@
 #include <time.h>
 
 int main(int argc, char **argv)
-{	       
+{
 
 	struct timespec interval0;
 	struct timespec interval1;
@@ -28,14 +28,13 @@ int main(int argc, char **argv)
 
 	interval0.tv_sec = -1;
 	interval0.tv_nsec = -1;
-	
+
 	interval1.tv_sec = -1;
 	interval1.tv_nsec = -1;
-	
+
 	result0 = sched_rr_get_interval(0, &interval0);
 	result1 = sched_rr_get_interval(getpid(), &interval1);
 
-	
 	if (result0 == result1 &&
 	   interval0.tv_sec == interval1.tv_sec &&
 	   interval0.tv_nsec == interval1.tv_nsec &&
@@ -51,5 +50,3 @@ int main(int argc, char **argv)
 	}
 
 }
-
-

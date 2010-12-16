@@ -45,14 +45,13 @@
 #include <signal.h>
 #include <sys/syscall.h>
 
-
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -78,7 +77,7 @@ int  testno;
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }

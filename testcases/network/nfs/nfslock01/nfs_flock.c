@@ -13,7 +13,7 @@
 #define BYTES 64
 #define LINES 16384
 
-int 
+int
 main(argc, argv)
    int argc;
    char **argv;
@@ -35,8 +35,8 @@ main(argc, argv)
    mac = atoi(argv[1]);
 
    /*
-    * Replace a line of characters by 1's if it is process one 
-    * else with 0's. Number of charcters in any line are BYTES-1, 
+    * Replace a line of characters by 1's if it is process one
+    * else with 0's. Number of charcters in any line are BYTES-1,
     * the last character being a newline character.
     */
    for (i = 0; i < BYTES-1; i++) {
@@ -62,7 +62,7 @@ main(argc, argv)
                offset = BYTES;
             else
                offset += 2*BYTES;
-         } else 
+         } else
             continue;
       }
 

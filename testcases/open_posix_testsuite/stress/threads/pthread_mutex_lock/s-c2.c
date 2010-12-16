@@ -14,10 +14,9 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
- 
- 
+
  * This file is a scalability test for the pthread_mutex_lock function.
- * The goal is to test if there is a limit on the number 
+ * The goal is to test if there is a limit on the number
  *  of concurrent mutex having threads pending.
 
  * The steps are:
@@ -42,12 +41,12 @@
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
 #endif
- 
+
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -57,27 +56,27 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <stdarg.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -97,7 +96,7 @@
 
 #ifndef WITHOUT_XOPEN
 int types[]={
-	PTHREAD_MUTEX_NORMAL, 
+	PTHREAD_MUTEX_NORMAL,
 	PTHREAD_MUTEX_ERRORCHECK,
 	PTHREAD_MUTEX_RECURSIVE,
 	PTHREAD_MUTEX_DEFAULT
@@ -125,7 +124,7 @@ typedef struct _td
 	int id;
 	pthread_mutex_t mtx;
 	int error;
-	struct _td * next; /* It is a chained list */ 
+	struct _td * next; /* It is a chained list */
 } testdata_t;
 
 /* Thread attribute object */
@@ -149,10 +148,9 @@ void * sub(void * arg)
 		if (td->error != 0)
 		{  UNRESOLVED(td->error, "Mutex unlock failed. Mutex data was corrupted?");  }
 	}
-	
-	return NULL; 
+
+	return NULL;
 }
-		
 
 /*****
  * Level 1 - child function
@@ -163,13 +161,12 @@ void * threaded(void * arg)
 	int ret;
 	int ret_create;
 	pthread_t ch;
-	
+
 	ret = pthread_mutex_lock(&m);
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to lock 'm' in child");  }
 	/* Mark this thread as started */
 	counter++;
-
 
 	/* Initialize the mutex with the mutex attribute */
 	ret = pthread_mutex_init(&(td->mtx), pma[td->id % 6]);
@@ -189,7 +186,7 @@ void * threaded(void * arg)
 
 	/* Create the child thread */
 	ret_create = pthread_create(&ch, &ta, sub, arg);
-	
+
 	/* Wait for the condition */
 	while (do_it)
 	{
@@ -200,7 +197,7 @@ void * threaded(void * arg)
 	ret = pthread_mutex_unlock(&m);
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to unlock 'm' in child");  }
-	
+
 	/* Unlock the mutex and release the child */
 	ret = pthread_mutex_unlock(&(td->mtx));
 	if (ret != 0)
@@ -213,16 +210,16 @@ void * threaded(void * arg)
 		if (ret != 0)
 		{  UNRESOLVED(ret, "Grandchild join failed");  }
 	}
-	
+
 	/* Destroy the test mutex */
 	ret = pthread_mutex_destroy(&(td->mtx));
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Test mutex destroy failed. Corrupted data?");  }
-	
+
 	/* We're done */
 	return NULL;
 }
-			
+
 /*****
  * Level 0 - main function
  */
@@ -233,20 +230,20 @@ int main(int argc, char * argv[])
 	int errors;
 	testdata_t sentinel;
 	testdata_t *cur, *tmp;
-	
+
 	output_init();
-	
+
 	#if VERBOSE > 1
 	output("Test starting, initializing data\n");
 	#endif
-	
+
 	do_it = 1;
 	errors=0;
 	counter = 0;
 	sentinel.next=NULL;
 	sentinel.id = 0;
 	cur = &sentinel;
-	
+
 	/* Initialize the 6 pma objects */
 	pma[0]=NULL;
 	pma[1]=&ma[0];
@@ -278,7 +275,7 @@ int main(int argc, char * argv[])
 	output("%d types of mutex attribute objects were initialized\n", sizeof(types)/sizeof(types[0]));
 	#endif
 	#endif
-	
+
 	/* Initialize the thread attribute object */
 	ret = pthread_attr_init(&ta);
 	if (ret != 0)
@@ -286,16 +283,16 @@ int main(int argc, char * argv[])
 	ret = pthread_attr_setstacksize(&ta, sysconf(_SC_THREAD_STACK_MIN));
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to set stack size to minimum value");  }
-	
+
 	/* Lock m */
 	ret = pthread_mutex_lock(&m);
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to lock 'm' in main");  }
-	
+
 	#if VERBOSE > 1
 	output("Ready to create the threads, processing...\n");
 	#endif
-	
+
 	/* create the threads */
 	while (1)
 	{
@@ -305,7 +302,7 @@ int main(int argc, char * argv[])
 			/* We cannot create anymore testdata */
 			break;
 		}
-		
+
 		/* We have a new test data structure */
 		ret = pthread_create(&(tmp->child), &ta, threaded, tmp);
 		if (ret != 0)
@@ -314,14 +311,14 @@ int main(int argc, char * argv[])
 			free((void *)tmp);
 			break;
 		}
-		
+
 		cur->next = tmp;
 		tmp->id = cur->id + 1;
 		tmp->error = 0;
 		cur = tmp;
 
 		/* The new thread was created, let's start it*/
-		do 
+		do
 		{
 			/* Unlock m so the thread can acquire it */
 			ret = pthread_mutex_unlock(&m);
@@ -336,7 +333,7 @@ int main(int argc, char * argv[])
 		/* If the counter has been incremented, this means this child is in the cond wait loop */
 		} while (counter != cur->id);
 	}
-	
+
 	/* Unable to create more threads, let's signal the cond and join the threads */
 	#if VERBOSE > 1
 	if (tmp == NULL)
@@ -345,7 +342,7 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
-		output("Cannot create another thread (error: %d).\n", 
+		output("Cannot create another thread (error: %d).\n",
 		ret);
 	}
 	output("The children will now be signaled.\n");
@@ -354,7 +351,7 @@ int main(int argc, char * argv[])
 	ret = pthread_cond_broadcast(&cnd);
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Cond broadcast failed");  }
-	
+
 	ret = pthread_mutex_unlock(&m);
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to unlock m after broadcast");  }
@@ -362,7 +359,7 @@ int main(int argc, char * argv[])
 	#if VERBOSE > 1
 	output("The children are terminating. We will join them.\n");
 	#endif
-	
+
 	/* All the threads are terminating, we can join the children and destroy the testdata */
 	cur = &sentinel;
 	while (cur->next != NULL)
@@ -370,22 +367,22 @@ int main(int argc, char * argv[])
 		/* Remove the first item from the list */
 		tmp = cur->next;
 		cur->next = tmp->next;
-		
+
 		/* Join the thread from the current item */
 		ret = pthread_join(tmp->child, NULL);
 		if (ret != 0)
 		{  UNRESOLVED(ret, "Unable to join a child");  }
-		
+
 		/* get the useful data */
 		if (tmp->error != 0)
 			errors++;
-		
+
 		/* Free the memory */
 		free((void *)tmp);
 	}
-	
+
 	/* We are done */
-	
+
 	/* Exit */
 	if (errors == 0)
 	{
@@ -406,4 +403,3 @@ int main(int argc, char * argv[])
 		FAILED("There may be an issue in scalability");
 	}
 }
-

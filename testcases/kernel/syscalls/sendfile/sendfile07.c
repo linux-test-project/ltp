@@ -117,7 +117,6 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -129,10 +128,8 @@ void setup()
 	int p[2];
 	int i, r;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -207,6 +204,4 @@ void cleanup()
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

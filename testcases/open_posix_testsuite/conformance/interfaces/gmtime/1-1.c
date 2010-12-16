@@ -10,7 +10,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <time.h>
 #include <posixtest.h>
@@ -102,4 +101,4 @@ int main ()
 
 	puts("Test PASSED");
 	return PTS_PASS;
-} 
+}

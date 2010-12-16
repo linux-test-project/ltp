@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  majid.awad REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content 
- * of this license, see the COPYING file at the top level of this 
+ * This file is licensed under the GPL license.  For the full content
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
  * This test case will verify that sem_timedwait will wait one second to
- * unlock the locked semaphore, and then when the semaphore fails to 
- * unlock should return -1, and leave the semaphore status unchanged 
- * by doing sem_post on the sempahore and check the current value of 
+ * unlock the locked semaphore, and then when the semaphore fails to
+ * unlock should return -1, and leave the semaphore status unchanged
+ * by doing sem_post on the sempahore and check the current value of
  * the semaphore.
  */
 
@@ -25,18 +25,14 @@
 #include <time.h>
 #include "posixtest.h"
 
-
 #define TEST "2-2"
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
-
-
 
 int main() {
 	sem_t mysemp;
 	struct timespec ts;
 	int sts, val;
-
 
 	if (sem_init (&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");

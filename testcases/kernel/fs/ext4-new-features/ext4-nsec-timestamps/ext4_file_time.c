@@ -65,6 +65,5 @@ int main(int argc, char *argv[])
 
 	printf("%lu\n", t);
 
-	return 0;
+	tst_exit();
 }
-

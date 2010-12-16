@@ -11,7 +11,6 @@
  * memory object does not exist.
  */
 
-
 #include <stdio.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -21,12 +20,12 @@
 
 int main() {
 	int result;
-	
+
 	/* Ensure that the name SHM_NAME is removed */
 	shm_unlink(SHM_NAME);
 
 	result = shm_unlink(SHM_NAME);
-	
+
 	if (result == -1 && errno == ENOENT) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
@@ -37,5 +36,5 @@ int main() {
 
 	printf("shm_unlink() success.");
 	return PTS_FAIL;
-	
+
 }

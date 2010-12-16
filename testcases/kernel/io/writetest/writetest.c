@@ -32,7 +32,6 @@
  *
  */
 
-
 #include <fcntl.h>
 #include <getopt.h>
 #include <stdarg.h>

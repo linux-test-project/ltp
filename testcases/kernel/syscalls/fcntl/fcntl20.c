@@ -87,12 +87,10 @@ void setup()
 	char template[PATH_MAX];
 	struct sigaction act;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	pipe(parent_pipe);
@@ -135,8 +133,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	tst_rmdir();
-	/* exit with return code appropriate for results */
-	tst_exit();
+
 }
 
 void do_child()
@@ -658,5 +655,5 @@ int main(int ac, char **av)
 		close(fd);
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }

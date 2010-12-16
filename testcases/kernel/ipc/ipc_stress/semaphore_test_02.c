@@ -88,7 +88,6 @@
 # define DEFAULT_NUM_SEMAPHORES	96
 # define DEFAULT_NUM_CHILDREN	0
 
-
 #define USAGE	"\nUsage: %s [-s nsems] [-p nproc]\n\n" \
 		"\t-s nsems  number of semaphores (per process)\n\n"	\
 		"\t-p nproc  number of child processes to spawn\n\n"
@@ -106,7 +105,6 @@ static void test_commands (pid_t);
 static void sys_error (const char *, int);
 static void error (const char *, int);
 static void parse_args (int, char **);
-
 
 /*
  * Structures and Global variables:
@@ -201,7 +199,6 @@ int main (int argc, char **argv)
 	return (errors);
 }
 
-
 /*---------------------------------------------------------------------+
 |                   test_commands (pid_t pid)                          |
 | ==================================================================== |
@@ -238,7 +235,6 @@ static void test_commands (pid_t pid)
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (IPC_SET) command operation\n");
 
-
 	semunptr.buf = (struct semid_ds *) calloc(1, sizeof (struct semid_ds));
 	if (!semunptr.buf)
 		error("calloc failed", __LINE__);
@@ -249,7 +245,6 @@ static void test_commands (pid_t pid)
 
 	if (semctl (semid, 0, IPC_SET, semunptr) < 0)
 		sys_error ("semctl failed", __LINE__);
-
 
 	/*
 	 * Test semctl () with IPC_STAT command
@@ -301,7 +296,6 @@ static void test_commands (pid_t pid)
 			sys_error ("semctl (GETVAL) failed", __LINE__);
 	}
 
-
 	// testing in linux.  before semctl(GETPID) works, we must call semop
 	if (pid == parent_pid)
 		printf ("\n\tTesting semop (signal and wait) operations\n");
@@ -332,7 +326,7 @@ static void test_commands (pid_t pid)
 	 * Test semctl () with GETNCNT command
 	 *
 	 * Get semncnt (the number of processes awaiting semval > currval)
-	 * and insure that this value is 0... 
+	 * and insure that this value is 0...
 	 *
 	 * Note: A better test would include forking off a process that
 	 *       waits for the semaphore so that semncnt would be nonzero.
@@ -351,7 +345,7 @@ static void test_commands (pid_t pid)
 	 * Test semctl () with GETZCNT command
 	 *
 	 * Get semzcnt (the number of processes awaiting semval = currval)
-	 * and insure that this value is 0... 
+	 * and insure that this value is 0...
 	 *
 	 * Note: A better test would include forking off a process that
 	 *       waits for the semaphore so that semzcnt would be nonzero.
@@ -410,7 +404,6 @@ static void test_commands (pid_t pid)
 
 }
 
-
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
 | ==================================================================== |
@@ -460,7 +453,6 @@ void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -477,7 +469,6 @@ static void sys_error (const char *msg, int line)
 	errors++;
 	/* error (syserr_msg, line); */
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

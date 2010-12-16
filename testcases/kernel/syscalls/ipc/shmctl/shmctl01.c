@@ -507,10 +507,9 @@ void sighandler(sig)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, sighandler, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -533,7 +532,6 @@ void cleanup(void)
 	/* if it exists, remove the shared memory segment */
 	rm_shm(shm_id_1);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -542,6 +540,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

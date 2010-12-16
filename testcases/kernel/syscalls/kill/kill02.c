@@ -38,7 +38,7 @@
     TEST IDENTIFIER :  kill02  Sending a signal to processes with the same process group ID.
 
     PARENT DOCUMENT :  kiltds01  Kill System Call.
-	
+
     AUTHOR          :  Dave Baumgartner
 
     CO-PILOT        :  Barrie Kletscher
@@ -230,7 +230,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 #ifdef UCLINUX
     /***************************************************************
@@ -255,7 +255,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		if ((pid1 = FORK_OR_VFORK()) > 0) {
@@ -318,7 +317,6 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	return 0;
 }				/* END OF MAIN. */
 
 /******************************************************************************
@@ -730,7 +728,7 @@ void childB_rout_uclinux()
 	childB_rout();
 }
 #endif
-
+
 /*******************************************************************************
  *  This routine sets up the interprocess communication pipes, signal handling,
  *  and process group information.
@@ -751,7 +749,7 @@ void setup()
 	 *  SIGUSR1 is set to be ignored because this is the signal we are using for
 	 *  the test and we are not concerned with the parent getting it.
 	 */
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if (signal(SIGUSR1, SIG_IGN) == SIG_ERR) {
@@ -767,7 +765,6 @@ void setup()
 	/* Indicate which errnos are expected */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -853,7 +850,7 @@ void notify_timeout()
 	alarm_flag = TRUE;
 
 }				/*End of notify_timeout */
-
+
 /***********************************************************
  *  This routine handles the procedure for removing the
  *  children forked off during this test.
@@ -914,7 +911,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}				/* End cleanup() */
+}

@@ -130,7 +130,7 @@ int main(int ac, char **av)
 			/* Kill all processes in this process group */
 			TEST(kill(-getpgrp(), TEST_SIG));
 			sleep(300);
-			 
+
 			    tst_resm(TINFO, "%d never recieved a"
 				     " signal", getpid());
 			exit(exno);
@@ -174,7 +174,7 @@ void do_child()
 	int exno = 1;
 
 	sleep(299);
-	 
+
 	    tst_resm(TINFO, "%d never recieved a" " signal", getpid());
 	exit(exno);
 }
@@ -187,7 +187,6 @@ void setup(void)
 	/* Setup default signal handling */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -203,6 +202,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

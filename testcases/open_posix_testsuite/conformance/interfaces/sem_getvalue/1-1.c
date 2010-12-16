@@ -1,14 +1,14 @@
 /*
     Copyright (c) 2003, Intel Corporation. All rights reserved.
     Created by:  majid.awad REMOVE-THIS AT intel DOT com
-    This file is licensed under the GPL license.  For the full content 
-    of this license, see the COPYING file at the top level of this 
+    This file is licensed under the GPL license.  For the full content
+    of this license, see the COPYING file at the top level of this
     source tree.
  */
 
 /*
  * This test case will call sem_getvalue to update the location referenced
- * by the semaphpre without effecting the state of the semaphore.  The 
+ * by the semaphpre without effecting the state of the semaphore.  The
  * updated value represents the actual semaphore value when it was called.
  */
 
@@ -42,7 +42,7 @@ int main(void)
 
 	if (sem_getvalue(mysemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
-		return PTS_UNRESOLVED; 
+		return PTS_UNRESOLVED;
 	}
 
 	/*
@@ -59,4 +59,3 @@ int main(void)
 		return PTS_FAIL;
 	}
 }
-

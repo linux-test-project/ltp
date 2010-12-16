@@ -48,7 +48,6 @@
 
 static int tmod_fd = -1;		/* file descriptor */
 
-
 int
 tmodopen() {
 
@@ -78,7 +77,6 @@ tmodopen() {
             }
         }
     }
-
 
     /*
      * Check for the /dev/tmod node, and create if it does not
@@ -122,7 +120,6 @@ tmodopen() {
 
 }
 
-
 int
 tmodclose() {
 
@@ -130,10 +127,9 @@ tmodclose() {
 		close (tmod_fd);
 		tmod_fd = -1;
 	}
-	
+
 	return 0;
 }
-
 
 int main() {
 	int rc;
@@ -145,15 +141,11 @@ int main() {
                 exit(1);
         }
 
-
-
 	/* make test calls */
 	if (ki_generic(tmod_fd, LTP_OPTION1))
 		printf("Failed on option 1 test\n");
 	else
 		printf("Success on option 1 test\n");
-
-
 
 	/* close the module */
 	rc = tmodclose();

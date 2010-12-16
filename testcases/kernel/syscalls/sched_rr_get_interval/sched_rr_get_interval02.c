@@ -97,13 +97,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		tp.tv_sec = 99;
@@ -124,14 +121,12 @@ int main(int ac, char **av)
 				 strerror(TEST_ERRNO), (int)tp.tv_sec,
 				 tp.tv_nsec);
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
@@ -142,17 +137,15 @@ void setup()
 	 */
 	struct sched_param p = { 1 };
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Change scheduling policy to SCHED_FIFO */
 	if ((sched_setscheduler(0, SCHED_FIFO, &p)) == -1) {
 		tst_brkm(TBROK, cleanup, "sched_setscheduler() failed");
 	}
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -167,6 +160,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

@@ -54,7 +54,7 @@ sigill (int sig)
   tst_exit();
 }
 
-int 
+int
 main ()
 {
   signal (SIGILL, sigill);

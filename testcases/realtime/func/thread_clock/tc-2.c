@@ -108,7 +108,6 @@ void *workerthread(void *arg)
 	return NULL;
 }
 
-
 void *sleeperthread(void *arg)
 {
 	struct thread* pthr = (struct thread* )arg;

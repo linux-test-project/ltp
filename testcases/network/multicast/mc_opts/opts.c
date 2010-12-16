@@ -18,7 +18,7 @@ int
 main(argc, argv)
 int argc;
 char *argv[];
-{ 
+{
         int s;
         struct in_addr gimr;
         struct ip_mreq simr;
@@ -33,7 +33,7 @@ char *argv[];
 	unsigned int len=0;
 
   	if (argc != 2) {
-           fprintf(stderr, 
+           fprintf(stderr,
                    "usage: %s interface_name (or i.i.i.i)\n",
                    argv[ 0]);
            exit( 1);
@@ -46,21 +46,21 @@ char *argv[];
 	printf("agrv sub 1 is %s\n", argv[1]);
         if ((hp = gethostbyname(argv[1])))
            memcpy(&simr.imr_interface.s_addr, hp->h_addr, hp->h_length);
-        else 
+        else
            if ((n = sscanf(argv[1], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
                fprintf(stderr,"Bad interface address\n");
                exit(1);
            } else
-               simr.imr_interface.s_addr = 
+               simr.imr_interface.s_addr =
                                    htonl((i1<<24) | (i2<<16) | (i3<<8) | i4);
         strcpy(sintf, inet_ntoa(simr.imr_interface));
-         
+
         /* verify socket options */
-	if ( setsockopt(s, IPPROTO_IP, IP_MULTICAST_IF, 
-                        &simr.imr_interface.s_addr, 
+	if ( setsockopt(s, IPPROTO_IP, IP_MULTICAST_IF,
+                        &simr.imr_interface.s_addr,
                         sizeof(simr.imr_interface.s_addr)) != 0 )
         {
-           perror ("Error: Setting IP_MULTICAST_IF"); 
+           perror ("Error: Setting IP_MULTICAST_IF");
            errors++;
         }
 	else
@@ -68,7 +68,7 @@ char *argv[];
 
         len = sizeof(gimr);
         if (getsockopt(s,IPPROTO_IP,IP_MULTICAST_IF,&gimr,(socklen_t*)&len)!= 0) {
-           perror ("Getting IP_MULTICAST_IF"); 
+           perror ("Getting IP_MULTICAST_IF");
            errors++;
         }
         else {
@@ -87,7 +87,7 @@ char *argv[];
 
         len = sizeof(ttl);
 	if (getsockopt(s,IPPROTO_IP,IP_MULTICAST_TTL,&ttl,(socklen_t*)&len) != 0) {
-           perror ("Error: Gettting IP_MULTICAST_TTL"); 
+           perror ("Error: Gettting IP_MULTICAST_TTL");
            errors++;
         }
         else
@@ -98,13 +98,13 @@ char *argv[];
         len = sizeof (ttl);
 	if (setsockopt(s,IPPROTO_IP,IP_MULTICAST_TTL,&ttl,sizeof(ttl)) != 0)
         {
-           perror ("Error: Setting IP_MULTICAST_TTL"); 
+           perror ("Error: Setting IP_MULTICAST_TTL");
            errors++;
         }
 	else
            printf ("TTL set on multicast socket\n");
 	if (getsockopt(s,IPPROTO_IP,IP_MULTICAST_TTL,&ttl,(socklen_t*)&len) != 0) {
-           perror ("Error: Getting IP_MULTICAST_TTL"); 
+           perror ("Error: Getting IP_MULTICAST_TTL");
            errors++;
         }
         if (ttl != 10) {
@@ -114,7 +114,7 @@ char *argv[];
 
         len = sizeof (loop);
         if (getsockopt(s,IPPROTO_IP,IP_MULTICAST_LOOP,&loop,(socklen_t*)&len) != 0) {
-           perror ("Error: Getting IP_MULTICAST_LOOP"); 
+           perror ("Error: Getting IP_MULTICAST_LOOP");
            errors++;
         } else
            printf ("Got loopback setting\n");
@@ -128,11 +128,11 @@ char *argv[];
         if (setsockopt(s,IPPROTO_IP,IP_MULTICAST_LOOP,&loop,sizeof(char)) != 0)
         {
            errors++;
-           perror ("Error: Setting IP_MULTICAST_LOOP"); 
+           perror ("Error: Setting IP_MULTICAST_LOOP");
         } else
            printf ("Multicast loopback disabled\n");
         if (getsockopt(s,IPPROTO_IP,IP_MULTICAST_LOOP,&loop,(socklen_t*)&len) != 0) {
-           perror ("Error: Getting IP_MULTICAST_LOOP"); 
+           perror ("Error: Getting IP_MULTICAST_LOOP");
            errors++;
         } else
            printf ("Got multicast loopback value\n");

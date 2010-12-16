@@ -71,5 +71,5 @@ int main()
 
 	if (pid == -1)
 		return 3;
-	return 0;
+	tst_exit();
 }

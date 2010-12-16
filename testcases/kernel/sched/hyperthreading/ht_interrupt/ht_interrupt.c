@@ -129,6 +129,5 @@ int main(int argc, char *argv[])
 
 	tst_resm(TINFO, "End: HyperThreading Interrupt");
 
-	return 0;
+	tst_exit();
 }
-

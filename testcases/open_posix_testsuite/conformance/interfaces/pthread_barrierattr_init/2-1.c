@@ -1,13 +1,13 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * pthread_barrierattr_init()
  *
  * After a barrier attributes object has been used to initialize one or more barriers
- * any function affecting the attributes object (including destruction) shall not 
+ * any function affecting the attributes object (including destruction) shall not
  * affect any previously initialized barrier.
  *
  */
@@ -30,7 +30,7 @@ int main()
 	pthread_barrierattr_t ba;
 	pthread_barrier_t barriers [BARRIER_NUM];
 	int cnt;
-	
+
 	/* Initialize the barrier attribute object */
 	rc = pthread_barrierattr_init(&ba);
 	if (rc != 0)
@@ -45,7 +45,7 @@ int main()
 		if (pthread_barrier_init(&barriers[cnt], &ba, 1) != 0)
 		{
 			printf("Error at %dth initialization\n", cnt);
-			return PTS_UNRESOLVED;	
+			return PTS_UNRESOLVED;
 		}
 	}
 
@@ -66,7 +66,7 @@ int main()
 		if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
 		{
 			printf("Test Fail: Error at %dth wait, %s\n", cnt, strerror(rc));
-			return PTS_FAIL;	
+			return PTS_FAIL;
 		}
 	}
 
@@ -77,7 +77,7 @@ int main()
 		if (rc != 0)
 		{
 			printf("Error at %dth destruction, %s\n", cnt, strerror(rc));
-			return PTS_UNRESOLVED;	
+			return PTS_UNRESOLVED;
 		}
 	}
 

@@ -102,7 +102,6 @@ int main(int argc, char **argv)
         struct ifreq ifr;
         int ifindex;
 
-
         if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
                 perror("socket");
                 return 1;
@@ -136,7 +135,7 @@ int main(int argc, char **argv)
         setsockopt(t, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
 
         while (1) {
-                
+
                 FD_ZERO(&rdfs);
                 FD_SET(s, &rdfs);
                 FD_SET(t, &rdfs);
@@ -197,7 +196,7 @@ int main(int argc, char **argv)
                                 fprintf(stderr, "read: incomplete CAN frame\n");
                                 exit(1);
                         }
-                        
+
                         printf ("%08X\n", frame.can_id);
                 }
         }
@@ -209,4 +208,3 @@ int main(int argc, char **argv)
 
         return 0;
 }
-

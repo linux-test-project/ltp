@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -15,7 +15,6 @@
 #include <sched.h>
 #include <stdio.h>
 #include "posixtest.h"
-
 
 int main() {
 	int policy, invalid_priority, old_priority;
@@ -51,7 +50,7 @@ int main() {
 <<<<<<< HEAD
 
 =======
-	
+
 >>>>>>> master
 	if (param.sched_priority == old_priority) {
 		printf("Test PASSED\n");
@@ -60,5 +59,5 @@ int main() {
 		printf("The priority have changed.\n");
 		return PTS_FAIL;
 	}
-	
+
 }

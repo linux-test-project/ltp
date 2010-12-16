@@ -20,10 +20,10 @@ int main(void)
 
 	*map = 1;
 
-	if (madvise(map, PS, MADV_SOFT_OFFLINE) < 0) 
+	if (madvise(map, PS, MADV_SOFT_OFFLINE) < 0)
 		perror("madvise SOFT_OFFLINE");
-	
+
 	*map = 2;
 
-	return 0;
+	tst_exit();
 }

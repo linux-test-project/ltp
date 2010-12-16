@@ -2,7 +2,7 @@
  * Copyright (c) 2004, Bull SA. All rights reserved.
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -80,7 +80,7 @@ main ()
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
 		return PTS_UNSUPPORTED;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_suspend_8_1_%d", 
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_suspend_8_1_%d",
 		  getpid());
 	unlink(tmpfname);
 
@@ -108,8 +108,6 @@ main ()
 		close (fd);
 		exit(PTS_UNRESOLVED);
 	}
-
-
 
 	aiocbs = (struct aiocb**)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
 
@@ -193,7 +191,7 @@ main ()
 	/* Check selected request has completed */
 	err = aio_error (aiocbs[WAIT_FOR_AIOCB]);
 	ret = aio_return (aiocbs[WAIT_FOR_AIOCB]);
-	
+
 	if ((err != 0) && (ret !=  BUF_SIZE)) {
 		printf (TNAME " Error : AIOCB %d should have completed after suspend\n",
 			WAIT_FOR_AIOCB);
@@ -204,7 +202,6 @@ main ()
 		close (fd);
 		exit (PTS_FAIL);
 	}
-
 
 	/* Wait for list processing completion */
 	while (!received_all)

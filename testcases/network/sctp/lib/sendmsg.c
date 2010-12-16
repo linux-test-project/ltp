@@ -3,7 +3,7 @@
  * sendmsg.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- *    http://www.gnu.org/copyleft/lesser.txt 
+ *    http://www.gnu.org/copyleft/lesser.txt
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -85,7 +85,7 @@ sctp_send(int s, const void *msg, size_t len,
 	outmsg.msg_iovlen = 1;
 	outmsg.msg_controllen = 0;
 
-	if (sinfo) {	
+	if (sinfo) {
 		char outcmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
 		struct cmsghdr *cmsg;
 

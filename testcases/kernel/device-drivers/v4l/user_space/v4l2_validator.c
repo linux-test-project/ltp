@@ -78,7 +78,6 @@ int valid_tuner_capability(__u32 capability) {
 	return valid;
 }
 
-
 int valid_modulator_capability(__u32 capability) {
 	return valid_tuner_capability(capability);
 }
@@ -106,4 +105,3 @@ int valid_string(char* str, unsigned int max_length) {
 
 	return valid;
 }
-

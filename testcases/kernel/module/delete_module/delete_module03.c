@@ -72,7 +72,7 @@
  *		 only one instance to run at a time.
  *
  * CHANGELOG
- *   
+ *
  *  11/22/02 -	Added "--force" to insmod options and redirected output to
  *  		/dev/null. This was done to allow kernel mismatches, b/c it
  *  		doesn't matter in this case.
@@ -144,7 +144,6 @@ main(int argc, char **argv)
 
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -171,7 +170,6 @@ END:
 		return 1;
 	}
 
-	tst_exit();
 }
 
 /*
@@ -181,7 +179,7 @@ END:
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);

@@ -14,12 +14,11 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This sample test aims to check the following assertion:
  *
- * The new thread inherits is signal mask from the calling thread, 
+ * The new thread inherits is signal mask from the calling thread,
  * and has no pending signal at creation time.
- 
+
  * The steps are:
  * 1.  In main(), create a signal mask with a few signals in the set (SIGUSR1 and SIGUSR2).
  * 2.  Raise those signals in main.  These signals now should be pending.
@@ -28,11 +27,10 @@
 
  * Parts of this test are copied from 8-1.c (author: rolla.n.selbak REMOVE-THIS AT intel DOT com)
  */
- 
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -43,7 +41,7 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <string.h>
  #include <unistd.h>
 
@@ -53,28 +51,27 @@
  #include <assert.h>
  #include <sys/wait.h>
  #include <signal.h>
- 
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -98,7 +95,6 @@
  * scenar_fini(): function to call after end of use of the scenarii array.
  */
 
-
 /********************************************************************************************/
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
@@ -109,26 +105,25 @@ typedef struct
 	sigset_t pending;
 } testdata_t;
 
-
 /* Thread function; which will check the signal mask and pending signals */
 void * threaded(void * arg)
 {
 	int ret;
 	testdata_t * td=(testdata_t *)arg;
-	
+
 	/* Obtain the signal mask of this thread. */
 	ret = pthread_sigmask(SIG_SETMASK, NULL, &(td->mask));
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to get the signal mask of the thread");  }
-	
+
 	/* Obtain the pending signals of this thread. It should be empty. */
 	ret = sigpending(&(td->pending));
 	if (ret != 0)  {  UNRESOLVED(errno, "Failed to get pending signals from the thread");  }
-	
+
 	/* Signal we're done (especially in case of a detached thread) */
 	do { ret = sem_post(&scenarii[sc].sem); }
 	while ((ret == -1) && (errno == EINTR));
 	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
-	
+
 	/* return */
 	return arg;
 }
@@ -137,34 +132,34 @@ int main (int argc, char *argv[])
 {
 	int ret=0;
 	pthread_t child;
-	
+
 	testdata_t td_parent, td_thread;
-	
+
 	/* Initialize output routine */
 	output_init();
-	
+
 	/* Initialize thread attribute objects */
 	scenar_init();
-	
+
 	/* Initialize the signal state */
 	ret = sigemptyset(&(td_parent.mask));
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to initialize a signal set");  }
-	
+
 	ret = sigemptyset(&(td_parent.pending));
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to initialize a signal set");  }
-	
+
 	/* Add SIGCONT, SIGUSR1 and SIGUSR2 to the set of blocked signals */
 	ret = sigaddset(&(td_parent.mask), SIGUSR1);
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to add SIGUSR1 to the signal set");  }
 
 	ret = sigaddset(&(td_parent.mask), SIGUSR2);
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to add SIGUSR2 to the signal set");  }
-	
+
 	/* Block those signals. */
 	ret = pthread_sigmask(SIG_SETMASK, &(td_parent.mask), NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to mask the singals in main");  }
-	
-	/* Raise those signals so they are now pending. */	
+
+	/* Raise those signals so they are now pending. */
 	ret = raise(SIGUSR1);
 	if (ret != 0)  {  UNRESOLVED(errno, "Failed to raise SIGUSR1");  }
 	ret = raise(SIGUSR2);
@@ -177,26 +172,25 @@ int main (int argc, char *argv[])
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n", sc, scenarii[sc].descr);
 		#endif
-		
+
 		/* (re)initialize thread signal sets */
 		ret = sigemptyset(&(td_thread.mask));
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to initialize a signal set");  }
-		
+
 		ret = sigemptyset(&(td_thread.pending));
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to initialize a signal set");  }
-		
-		
+
 		ret = pthread_create(&child, &scenarii[sc].ta, threaded, &td_thread);
 		switch (scenarii[sc].result)
 		{
 			case 0: /* Operation was expected to succeed */
 				if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
 				break;
-			
+
 			case 1: /* Operation was expected to fail */
 				if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
 				break;
-			
+
 			case 2: /* We did not know the expected result */
 			default:
 				#if VERBOSE > 0
@@ -220,22 +214,22 @@ int main (int argc, char *argv[])
 				while ((ret == -1) && (errno == EINTR));
 				if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
 			}
-			
+
 			/* The thread has terminated its work, so we can now control */
 			ret = sigismember(&(td_thread.mask), SIGUSR1);
 			if (ret != 1)
 			{
 				if (ret == 0)  {  FAILED("The thread did not inherit the signal mask");  }
 				/* else */
-				UNRESOLVED(ret, "sigismember() failed"); 
+				UNRESOLVED(ret, "sigismember() failed");
 			}
-			
+
 			ret = sigismember(&(td_thread.mask), SIGUSR2);
 			if (ret != 1)
 			{
 				if (ret == 0)  {  FAILED("The thread did not inherit the signal mask");  }
 				/* else */
-				UNRESOLVED(ret, "sigismember() failed"); 
+				UNRESOLVED(ret, "sigismember() failed");
 			}
 
 			ret = sigismember(&(td_thread.pending), SIGUSR1);
@@ -243,28 +237,26 @@ int main (int argc, char *argv[])
 			{
 				if (ret == 1)  {  FAILED("The thread inherited the pending signal SIGUSR1");  }
 				/* else */
-				UNRESOLVED(ret, "sigismember() failed"); 
+				UNRESOLVED(ret, "sigismember() failed");
 			}
-			
+
 			ret = sigismember(&(td_thread.pending), SIGUSR2);
 			if (ret != 0)
 			{
 				if (ret == 1)  {  FAILED("The thread inherited the pending signal SIGUSR2");  }
 				/* else */
-				UNRESOLVED(ret, "sigismember() failed"); 
+				UNRESOLVED(ret, "sigismember() failed");
 			}
-			
-			
+
 		}
 	}
-	
+
 	scenar_fini();
 	#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
 	#endif
-	
+
 	PASSED;
 }
-

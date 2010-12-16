@@ -57,7 +57,7 @@ int main()
 		unsigned pri;
 
 		/* child here */
-		
+
 		/* Set up handler for SIGUSR1 */
         	act.sa_handler = handler;
 		act.sa_flags = 0;
@@ -72,7 +72,7 @@ int main()
 		/* once parent has finished mq_send, open new queue */
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	woqueue = mq_open(qname, O_WRONLY, 
+        	woqueue = mq_open(qname, O_WRONLY,
 				S_IRUSR | S_IWUSR, &attr);
         	if (woqueue == (mqd_t)-1) {
                 	perror("mq_open() read only failed in child");
@@ -112,7 +112,7 @@ int main()
 
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	woqueue = mq_open(qname, O_CREAT |O_WRONLY, 
+        	woqueue = mq_open(qname, O_CREAT |O_WRONLY,
 				S_IRUSR | S_IWUSR, &attr);
         	if (woqueue == (mqd_t)-1) {
                 	perror("mq_open() did not return success");
@@ -150,7 +150,7 @@ int main()
 #ifdef DEBUG
         	printf("Message receive failed, as expected\n");
 #endif
-	
+
 		sleep(1);
 		kill(pid, SIGUSR1); //tell child mq_open and mq_send finished
 
@@ -180,4 +180,3 @@ int main()
 
 	return PTS_UNRESOLVED;
 }
-

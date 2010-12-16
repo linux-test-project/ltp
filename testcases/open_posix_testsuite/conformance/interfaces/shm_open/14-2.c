@@ -20,7 +20,7 @@
  */
 
 /* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base 
+   avoid warning if the implementation does not program ftruncate as a base
    interface */
 #define _XOPEN_SOURCE 600
 
@@ -39,23 +39,23 @@ int main() {
 	int fd;
 	char str[BUF_SIZE] = "qwerty";
 	char *buf;
-	
+
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
 	buf = mmap(NULL, BUF_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
 	if (buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
-		return PTS_UNRESOLVED;	
-	}	
+		return PTS_UNRESOLVED;
+	}
 
 	strcpy(buf, str);
 
@@ -68,8 +68,8 @@ int main() {
 	buf = mmap(NULL, BUF_SIZE, PROT_READ, MAP_SHARED, fd, 0);
 	if (buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
-		return PTS_UNRESOLVED;	
-	}	
+		return PTS_UNRESOLVED;
+	}
 
 	shm_unlink(SHM_NAME);
 	if (strcmp(buf, str) == 0) {

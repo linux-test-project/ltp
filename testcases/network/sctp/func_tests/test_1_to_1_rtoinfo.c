@@ -57,10 +57,10 @@ char *TCID = __FILE__;
 int TST_TOTAL = 3;
 int TST_CNT = 0;
 
-int 
-main(void) 
+int
+main(void)
 {
-	
+
 	int sd, ret;
 	socklen_t len;
 	struct sctp_rtoinfo srtoinfo; /*setting the variables*/
@@ -69,7 +69,7 @@ main(void)
 	sd = test_socket (PF_INET, SOCK_STREAM, IPPROTO_SCTP);
 
 	len = sizeof(struct sctp_rtoinfo);
-	
+
 	/*TEST1 Getting the default values using getsockopt()*/
 	ret = getsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &grtoinfo, &len);
 	if (ret < 0)
@@ -84,7 +84,7 @@ main(void)
 	srtoinfo.srto_min=40;
 
 	/*TEST2 Setting the values using setsockopt()*/
-	ret = setsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &srtoinfo, 
+	ret = setsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &srtoinfo,
 		sizeof(struct sctp_rtoinfo));
 	if (ret < 0)
 		tst_brkm(TBROK, NULL, "setsockopt SCTP_RTOINFO "
@@ -98,7 +98,7 @@ main(void)
 		tst_brkm(TBROK, NULL, "getsockopt SCTP_RTOINFO "
 			 "ret:%d, errno:%d", ret, errno);
 
-	/* TEST3 Compare the get values with the set values. */ 
+	/* TEST3 Compare the get values with the set values. */
 	if (srtoinfo.srto_initial != grtoinfo.srto_initial &&
             srtoinfo.srto_max != grtoinfo.srto_max &&
             srtoinfo.srto_min != grtoinfo.srto_min)
@@ -110,5 +110,5 @@ main(void)
 
 	close(sd);
 
-	return 0;
+	tst_exit();
 }

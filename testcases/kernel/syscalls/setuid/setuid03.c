@@ -81,7 +81,6 @@ int main(int ac, char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -105,7 +104,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -124,12 +122,10 @@ void setup(void)
 		perror("setuid");
 	}
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -145,6 +141,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

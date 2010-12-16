@@ -110,7 +110,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -138,7 +137,7 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * cleanup and exit
@@ -146,7 +145,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return (0);
-}				/* End main */
+}
 
 static int splice_test(void)
 {
@@ -157,7 +156,6 @@ static int splice_test(void)
 	int i, len;
 	int fd_in, fd_out;
 
-	/* Make a temp directory and cd to it */
 	tst_tmpdir();
 
 	for (i = 0; i < SPLICE_TEST_BLOCK_SIZE; i++) {
@@ -247,12 +245,10 @@ void setup()
 	sprintf(testfile1, "splicetest%d_1.txt", getpid());
 	sprintf(testfile2, "splicetest%d_2.txt", getpid());
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -270,9 +266,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

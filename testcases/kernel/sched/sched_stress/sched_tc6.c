@@ -58,7 +58,6 @@
 #include <sys/resource.h>
 #include "sched.h"
 
-
 /*
  * Defines:
  *
@@ -100,7 +99,6 @@ int read_file (int, char *);
 int lock_file (int, short, char *);
 int unlock_file (int, char *);
 int lock_error (int, char *);
-
 
 /*
  * Global variables:
@@ -150,7 +148,6 @@ int main (int argc, char **argv)
             errno = ENODATA;
             sys_error("environment variable KERNEL not set",__FILE__, __LINE__);
         }
-
 
 	/* Process command line arguments...  */
 	parse_args (argc, argv);
@@ -212,7 +209,6 @@ int main (int argc, char **argv)
 	if (fclose (statfile) < 0)
 		sys_error ("fclose failed", __FILE__, __LINE__);
 
-
 	/* Unlock file at latest possible time to prevent real time child from
 	 * writing throughput results before user process parent */
 	unlock_file (fd, filename);
@@ -221,7 +217,6 @@ int main (int argc, char **argv)
 	if (debug)
 	    printf ("\tprocess id %d completed read and unlocked file\n",
 			    	getpid());
-
 
 	/* The parent waits for child process to complete before exiting
 	 * so the driver will not read the throughput results file before
@@ -243,14 +238,13 @@ DARA: which one to use
 	    while ((rc=wait ((void *) 0)) != pid)
 	       if (rc == -1)
 	          sys_error ("wait failed", __FILE__, __LINE__);
-*/	
+*/
 	}
-  
+
 	/* Exit with success! */
 	if (verbose) printf ("\nsuccessful!\n");
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             open_file ()                             |
@@ -268,7 +262,6 @@ int open_file (char *file, int open_mode)
 	return(file_desc);
 }
 
-
 /*---------------------------------------------------------------------+
 |                           fork_realtime ()                           |
 | ==================================================================== |
@@ -282,34 +275,31 @@ int fork_realtime (char **args)
 	char *results_file = args[2];
 	char *priority     = args[3];
 
-
 	/* fork process then determine if process is parent or child */
-	pid = fork();    
-	switch(pid)    
+	pid = fork();
+	switch(pid)
 	{
 		/* fork failed  */
-		case -1: 
+		case -1:
 			sys_error ("fork failed", __FILE__, __LINE__);
 
 		/* child process */
-		case 0:  
+		case 0:
 			if (execl(*args, *args, REAL_TIME, results_file, priority,
 			NO_FORK, (char *) NULL) < 0)
 				sys_error ("execl failed", __FILE__, __LINE__);
 
 		/* parent process */
-		default: 
+		default:
 			#ifdef DEBUG
 			printf ("\tparent process id = %d\n", getpid());
 			printf ("\tchild process id = %d\n\n", pid);
 			#endif
 
-		break;           
+		break;
 	}
 	return(pid);
 }
-
-
 
 /*---------------------------------------------------------------------+
 |                             read_file ()                             |
@@ -353,8 +343,6 @@ int read_file (int fd, char *filename)
 	if (debug) printf ("\n");
 	return 1;
 }
-
-
 
 /*---------------------------------------------------------------------+
 |                             lock_file ()                             |
@@ -401,7 +389,6 @@ int lock_file (int fd, short lock_type, char *file)
 	return (1);
 }
 
-
 /*---------------------------------------------------------------------+
 |                            unlock_file ()                            |
 | ==================================================================== |
@@ -418,7 +405,6 @@ int unlock_file (int fd, char *file)
 
 	return 1;
 }
- 
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -488,7 +474,6 @@ int lock_error (int fd, char *file)
 
 	return(ret);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |

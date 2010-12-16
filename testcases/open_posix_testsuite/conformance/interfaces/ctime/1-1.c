@@ -10,7 +10,6 @@
  * not NULL after converting the time value to a date and time string.
  */
 
-
 #include <stdio.h>
 #include <time.h>
 #include "posixtest.h"

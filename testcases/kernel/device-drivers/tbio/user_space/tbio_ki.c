@@ -45,7 +45,7 @@
  *  the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; 
+ *  along with this program;
  *
  *  FILE        : tbio_ki.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -62,10 +62,6 @@
  *
  */
 
-
-
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
@@ -75,21 +71,16 @@ int ki_generic(int fd, int flag)
 {
 	int                     rc;
 	tbio_interface_t        bif;
-       
+
 	rc = ioctl(fd, flag, &bif);
 	if (rc) {
 		printf("Ioctl error\n");
 		return rc;
 	}
-	
+
 	return rc;
 }
 
-
-
-
-
 #if 0
-
 
 #endif

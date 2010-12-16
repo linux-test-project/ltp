@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -19,10 +19,10 @@
  *  3/28/2003	Fix a bug mentioned by Michal Wronski, pass mq_attr struct
  *  		to the mq_open().
  *
- *  4/11/2003 	change sa_flags from SA_RESTART to 0 to avoid compile 
- *  		error. 
- *  
- *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *  4/11/2003 	change sa_flags from SA_RESTART to 0 to avoid compile
+ *  		error.
+ *
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq
  *		resources
  */
 
@@ -76,24 +76,24 @@ int main()
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
 	if (mqdes == (mqd_t)-1) {
 		perror(ERROR_PREFIX "mq_open");
-		mqclean(mqdes, mqname);	
+		mqclean(mqdes, mqname);
 		return PTS_UNRESOLVED;
 	}
 
 	pid = fork();
         if (pid == -1) {
                 perror(ERROR_PREFIX "fork");
-		mqclean(mqdes, mqname);	
+		mqclean(mqdes, mqname);
                 return PTS_UNRESOLVED;
         }
         if (pid == 0) {
                 /* child process */
 		mq_receive(mqdes, r_msg_ptr, MSG_SIZE, NULL);
-		return 0;
+		tst_exit();
 	}
 	else {
 		/* parent process */
-		sleep(2); /* after 2 seconds, 
+		sleep(2); /* after 2 seconds,
 			      assume that child with block on mq_receive. */
 		notification.sigev_notify = SIGEV_SIGNAL;
 		notification.sigev_signo = SIGUSR1;
@@ -122,4 +122,3 @@ int main()
 		return PTS_PASS;
 	}
 }
-

@@ -106,7 +106,7 @@
 #define SYNC_FILE_RANGE_INVALID 8
 
 /* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -163,7 +163,6 @@ extern void cleanup()
 		tst_resm(TWARN|TERRNO, "close(%s) failed", filename);
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 }
 
@@ -187,13 +186,11 @@ extern void cleanup()
 /******************************************************************************/
 void setup()
 {
-/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(filename, "tmpfile_%d", getpid());

@@ -111,15 +111,12 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -142,14 +139,12 @@ int main(int ac, char **av)
 					 "nice() returned %ld for %s",
 					 TEST_RETURN, test_desc);
 			}
-		}		/* End of TEST CASE LOOPING. */
-	}			/* End for TEST_LOOPING */
+		}
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -157,7 +152,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -171,7 +166,6 @@ void setup()
 		perror("setuid");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -187,6 +181,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

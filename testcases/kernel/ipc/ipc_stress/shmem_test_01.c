@@ -97,7 +97,6 @@ void error (const char *, int);
  */
 int shmem_size = DEFAULT_SHMEM_SIZE;
 
-
 /*---------------------------------------------------------------------+
 |                               main                                   |
 | ==================================================================== |
@@ -121,7 +120,7 @@ int main (int argc, char **argv)
 	 */
 	parse_args (argc, argv);
 	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
-   
+
 	/*
 	 * Obtain a unique shared memory identifier with shmget ().
 	 * Attach the shared memory segment to the process with shmat (),
@@ -151,7 +150,6 @@ int main (int argc, char **argv)
 
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
@@ -192,7 +190,6 @@ void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -207,7 +204,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

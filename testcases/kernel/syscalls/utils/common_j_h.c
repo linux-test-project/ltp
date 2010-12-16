@@ -143,7 +143,6 @@ pid_t create_sig_proc(unsigned long usec, int sig, unsigned count)
 	}
 }
 
-
 /*
  * Create and delete test file
  */
@@ -171,7 +170,6 @@ int cleanup_file(char *path)
 	unlink(path);
 	return 0;
 }
-
 
 /*
  * Create and delete swap file
@@ -230,7 +228,6 @@ int cleanup_swapfile(char *path)
 	return 0;
 }
 
-
 /*
  * Change user limit that the calling process can open
  */
@@ -280,7 +277,6 @@ int cleanup_ulimit_fnum(rlim_t oldlim)
 	}
 	return 0;
 }
-
 
 /*
  * Change /proc or /sys setting
@@ -336,7 +332,6 @@ int cleanup_proc_fs(char *path, int oldval)
 	return 0;
 }
 
-
 #if 0
 /*
  * Check max nodes from /sys/devices/system/node/node* files (for NUMA)
@@ -368,4 +363,3 @@ pid_t get_unexist_pid(void)
 		return pid;
 	}
 }
-

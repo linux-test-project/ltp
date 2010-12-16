@@ -113,13 +113,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -128,7 +125,6 @@ int main(int ac, char **av)
 		 */
 		TEST(readlink(symfile_path, buffer, sizeof(buffer)));
 
-		/* Check return code of readlink(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "readlink() on %s failed, errno=%d : "
 				 "%s", symfile_path, TEST_ERRNO,
@@ -165,12 +161,11 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
-	/* Call cleanup() to undo setup done for the test. */
+	}
+
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -193,10 +188,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 	}
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get current bin directory */
@@ -205,7 +198,6 @@ void setup()
 			 "getcwd(3) fails to get working directory of process");
 	}
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* get the name of the temporary directory */
@@ -300,9 +292,6 @@ void cleanup()
 		tst_brkm(TBROK, NULL, "failed to set process id to root");
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -436,7 +436,6 @@ int main(int argc, char **argv)
 		debug(DBG_ERR, "pthread_barrier_init failed: %s\n",
 				strerror(ret));
 
-
 	for (i = 0; i < nr_tasks; i++) {
 		stats_container_init(&intervals[i], nr_runs);
 		stats_container_init(&intervals_length[i], nr_runs);
@@ -522,5 +521,5 @@ int main(int argc, char **argv)
 	else
 		exit(0);
 
-	return 0;
+	tst_exit();
 }

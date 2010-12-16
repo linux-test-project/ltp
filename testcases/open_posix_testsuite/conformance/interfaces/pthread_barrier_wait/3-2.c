@@ -1,15 +1,15 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * pthread_barrier_wait()
  *
- * If a signal is delivered to a thread blocked on a barrier..  
+ * If a signal is delivered to a thread blocked on a barrier..
  * otherwise, the thread shall continue as normal from the completed barrier wait. Until
  * the thread in the signal handler returns from it, it is unspecified whether other threads may
- * proceed past the barrier once they have all reached it. 
+ * proceed past the barrier once they have all reached it.
  *
  * Steps:
  * 1. Main initialize barrier with count 2
@@ -31,7 +31,7 @@
 #include "posixtest.h"
 
 static pthread_barrier_t barrier;
-static int thread_state; 
+static int thread_state;
 static int sig_rcvd;
 static int barrier_waited;
 
@@ -41,10 +41,10 @@ static int barrier_waited;
 
 void sig_handler()
 {
-	struct timespec ts; 
+	struct timespec ts;
 	sig_rcvd = 1;
 	printf("thread: interrupted by SIGUSR1\n");
-	
+
 	ts.tv_sec = 1;
 	ts.tv_nsec = 0;
 	while (barrier_waited != 1)
@@ -54,18 +54,18 @@ void sig_handler()
 }
 
 static void* fn_chld(void *arg)
-{ 
+{
 	int rc = 0;
-	struct sigaction act;	
+	struct sigaction act;
 
 	thread_state = ENTERED_THREAD;
-	
+
 	/* Set up thread to handle SIGUSR1 */
 	act.sa_flags = 0;
 	act.sa_handler = sig_handler;
 	sigfillset(&act.sa_mask);
 	sigaction(SIGUSR1, &act, 0);
-	
+
 	printf("thread: call barrier wait\n");
 	rc = pthread_barrier_wait(&barrier);
 	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
@@ -73,16 +73,15 @@ static void* fn_chld(void *arg)
 		printf("Test FAILED: child: pthread_barrier_wait() got unexpected "
 			"return code : %d\n" , rc);
 		exit(PTS_FAIL);
-	} 
+	}
 	else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
 		printf("thread: got PTHREAD_BARRIER_SERIAL_THREAD\n");
-	
+
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);
 	return NULL;
 }
 
- 
 int main()
 {
 	int cnt = 0;
@@ -90,7 +89,7 @@ int main()
 	pthread_t child_thread;
 	sig_rcvd = 0;
 	barrier_waited = 0;
-	
+
 	printf("Initialize barrier with count = 2\n");
 	if (pthread_barrier_init(&barrier, NULL, 2) != 0)
 	{
@@ -105,13 +104,13 @@ int main()
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Expect the child to block*/
 	cnt = 0;
 	do{
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 2); 
-	
+	}while (thread_state !=EXITING_THREAD && cnt++ < 2);
+
 	if (thread_state == EXITING_THREAD)
 	{
 		/* child thread did not block */
@@ -132,7 +131,7 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* Wait for thread to receive the signal */	
+	/* Wait for thread to receive the signal */
 	while (sig_rcvd != 1)
 	{
 		sleep(1);
@@ -140,24 +139,24 @@ int main()
 
 	printf("main: call barrier wait\n");
 	rc = pthread_barrier_wait(&barrier);
-	
+
 	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		printf("Test FAILED: main: pthread_barrier_wait() got unexpected "
 			"return code : %d\n" , rc);
 		exit(PTS_FAIL);
-	} 
+	}
 	else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
 		printf("main: got PTHREAD_BARRIER_SERIAL_THREAD\n");
-	
+
 	barrier_waited = 1;
-		
+
 	/* We expected the child returned from barrier wait */
-	cnt = 0;	
+	cnt = 0;
 	do{
 		sleep(1);
-	}while (thread_state != EXITING_THREAD && cnt++ < 3); 
-	
+	}while (thread_state != EXITING_THREAD && cnt++ < 3);
+
 	if (thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: child thread still blocked on "
@@ -180,7 +179,7 @@ int main()
 	{
 		printf("Error at pthread_barrier_destroy()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

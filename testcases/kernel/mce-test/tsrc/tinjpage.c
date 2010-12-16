@@ -2,7 +2,7 @@
  * Test program for Linux poison memory error recovery.
  * This injects poison into various mapping cases and triggers the poison
  * handling.  Requires special injection support in the kernel.
- * 
+ *
  * Copyright 2009, 2010 Intel Corporation
  *
  * tinjpage is free software; you can redistribute it and/or
@@ -16,8 +16,8 @@
  * General Public License for more details.
  *
  * You should find a copy of v2 of the GNU General Public License somewhere
- * on your Linux system; if not, write to the Free Software Foundation, 
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * on your Linux system; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * Authors: Andi Kleen, Fengguang Wu
  */
@@ -178,25 +178,25 @@ u64 page_to_pfn(char *page)
 	u64 pfn;
 
 	if (pagemap_fd < 0)  {
-		pagemap_fd = open("/proc/self/pagemap", O_RDONLY); 
+		pagemap_fd = open("/proc/self/pagemap", O_RDONLY);
 		if (pagemap_fd < 0)
 			err("/proc/self/pagemap not supported");
 	}
 
-	if (pread(pagemap_fd, &pfn, sizeof(u64), 
+	if (pread(pagemap_fd, &pfn, sizeof(u64),
 		((u64)page / PS)*sizeof(u64)) != sizeof(u64))
 		err("Cannot read from pagemap");
 
-	pfn &= (1ULL<<56)-1; 
+	pfn &= (1ULL<<56)-1;
 	return pfn;
 }
 
-/* 
- * Inject Action Optional #MC 
+/*
+ * Inject Action Optional #MC
  * with mce-inject using the software injector.
- * 
+ *
  * This tests the low level machine check handler too.
- * 
+ *
  * Slightly racy with page migration because we don't mlock the page.
  */
 void inject_mce_inject(char *page)
@@ -211,17 +211,17 @@ void inject_mce_inject(char *page)
 		exit(1);
 	}
 
-	fprintf(mce_inject, 
+	fprintf(mce_inject,
 		"CPU 0 BANK 3 STATUS UNCORRECTED SRAO 0xc0\n"
 		"MCGSTATUS RIPV MCIP\n"
 		"ADDR %#llx\n"
 		"MISC 0x8c\n"
 		"RIP 0x73:0x1eadbabe\n", pfn);
 
-	if (ferror(mce_inject) || fclose(mce_inject) < 0) { 
+	if (ferror(mce_inject) || fclose(mce_inject) < 0) {
 		fprintf(stderr, "mce-inject failed: %s\n", strerror(errno));
 		exit(1);
-	} 
+	}
 }
 
 void (*inject)(char *page) = inject_madvise;
@@ -233,7 +233,7 @@ void poison(char *msg, char *page, enum rmode mode)
 
 	if (sigsetjmp(early_recover_ctx, 1) == 0) {
 		inject(page);
-		
+
 		if (early_kill && (mode == MWRITE || mode == MREAD)) {
 			printf("XXX: %s: process is not early killed\n", msg);
 			failure++;
@@ -304,7 +304,7 @@ void expecterr(char *msg, int err)
 	}
 }
 
-/* 
+/*
  * Any optional error is really a deficiency in the kernel VFS error reporting
  * and should be eventually fixed and turned into a expecterr
  */
@@ -383,13 +383,13 @@ static void do_file_clean(int flags, char *name)
 	if (fd < 0)
 		err("open temp file");
 	write(fd, fn, 4);
-	page = checked_mmap(NULL, PS, PROT_READ|PROT_WRITE, MAP_SHARED|flags, 
+	page = checked_mmap(NULL, PS, PROT_READ|PROT_WRITE, MAP_SHARED|flags,
 		fd, 0);
 	fsync(fd);
 	close(fd);
 	testmem(name, page, MREAD_OK);
 	 /* reread page from disk */
-	printf("\t reading %x\n", *(unsigned char *)page);	
+	printf("\t reading %x\n", *(unsigned char *)page);
 	testmem(name, page, MWRITE_OK);
 }
 
@@ -417,7 +417,7 @@ static void do_file_dirty(int flags, char *name)
 	fn[0] = 0;
 	int fd = playfile(fn);
 
-	page = checked_mmap(NULL, PS, PROT_READ, 
+	page = checked_mmap(NULL, PS, PROT_READ,
 			MAP_SHARED|MAP_POPULATE|flags, fd, 0);
 	testmem(ndesc(nbuf, name, "initial"), page, MREAD);
 	expecterr("msync expect error", msync(page, PS, MS_SYNC) < 0);
@@ -426,7 +426,7 @@ static void do_file_dirty(int flags, char *name)
 
 	fd = open(fn, O_RDONLY);
 	if (fd < 0) err("reopening temp file");
-	page = checked_mmap(NULL, PS, PROT_READ, MAP_SHARED|MAP_POPULATE|flags, 
+	page = checked_mmap(NULL, PS, PROT_READ, MAP_SHARED|MAP_POPULATE|flags,
 				fd, 0);
 	recover(ndesc(nbuf, name, "populated"), page, MREAD_OK);
 	close(fd);
@@ -506,7 +506,7 @@ static void nonlinear(void)
 	close(fd);
 }
 
-/* 
+/*
  * These tests are currently too racy to be enabled.
  */
 
@@ -766,7 +766,7 @@ cleanup:
 		else
 			munmap_reserve(shared_page, PS);
 	}
-	if (shm_id >= 0 && shmctl(shm_id, IPC_RMID, NULL) < 0) 
+	if (shm_id >= 0 && shmctl(shm_id, IPC_RMID, NULL) < 0)
 		err("shmctl IPC_RMID");
 	if (sem_id >= 0 && semctl(sem_id, 0, IPC_RMID) < 0)
 		err("semctl IPC_RMID");
@@ -862,7 +862,7 @@ struct testcase {
 };
 
 struct testcase snipercases[] = {
-	{ under_io_dirty, "under io dirty" }, 
+	{ under_io_dirty, "under io dirty" },
 	{ under_io_clean, "under io clean" },
 };
 
@@ -877,17 +877,17 @@ void usage(void)
 
 void handle_opts(char **av)
 {
-	while (*++av) { 
-		if (!strcmp(*av, "--sniper")) { 
+	while (*++av) {
+		if (!strcmp(*av, "--sniper")) {
 			struct testcase *t;
 			for (t = cases; t->f; t++)
 				;
 			*t++ = snipercases[0];
 			*t++ = snipercases[1];
 		}
-		else if (!strcmp(*av, "--mce-inject")) { 
-			inject = inject_mce_inject;			
-		} else 
+		else if (!strcmp(*av, "--mce-inject")) {
+			inject = inject_mce_inject;
+		} else
 			usage();
 	}
 }
@@ -913,7 +913,7 @@ int main(int ac, char **av)
 	struct testcase *t;
 	/* catch signals */
 	sigaction(SIGBUS, &sa, NULL);
-	for (t = cases; t->f; t++) { 
+	for (t = cases; t->f; t++) {
 		printf("---- testing %s\n", t->name);
 		t->f();
 	}
@@ -965,5 +965,5 @@ int main(int ac, char **av)
 		return 1;
 	}
 	printf("SUCCESS\n");
-	return 0;
+	tst_exit();
 }

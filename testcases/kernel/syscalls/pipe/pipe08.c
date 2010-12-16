@@ -110,7 +110,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -130,10 +129,9 @@ void sighandler(int sig)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, sighandler, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

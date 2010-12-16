@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 				tst_resm(TBROK, "self_exec FAILED - "
 					 "terminating test.");
 				tst_exit();
-				return 0;
+				tst_exit();
 			}
 #else
 			do_child();
@@ -241,7 +241,7 @@ int main(int argc, char **argv)
 	tst_rmdir();
 /*--------------------------------------------------------------------*/
 	anyfail();
-	return 0;
+	tst_exit();
 }
 
 /****** LTP Port        *****/

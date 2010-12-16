@@ -118,7 +118,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* loop through the test cases */
@@ -145,15 +144,15 @@ int main(int ac, char **av)
 					 strerror(TEST_RETURN), TC[i].error);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -162,10 +161,8 @@ void setup()
 {
 	int pipedes[2];
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Make a pipe */
@@ -185,7 +182,7 @@ void setup()
 			TC[i].fd = pipedes[0];
 		}
 	}
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -202,6 +199,4 @@ void cleanup()
 	/* Close pipe of read side */
 	close(TC[0].fd);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

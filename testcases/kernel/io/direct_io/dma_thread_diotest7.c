@@ -36,7 +36,7 @@
 /*   which reliably reproduces the problem on ext3 and xfs is attached. The   */
 /*   program creates, patterns, reads, and verify a series of files. In the   */
 /*   read phase, a file is opened with O_DIRECT n times, where n is the       */
-/*   number of cpu's. A single buffer large enough to contain the file is     */  
+/*   number of cpu's. A single buffer large enough to contain the file is     */
 /*   allocated and patterned with data not found in any of the files. The     */
 /*   alignment of the buffer is controlled by a command line option. Each file*/
 /*   is read in parallel by n threads, where n is the number of cpu's. Thread */
@@ -143,7 +143,6 @@ typedef struct {
     unsigned char  *buffer;
 } worker_t;
 
-
 void *worker_thread(void * arg)
 {
     int		    bytes_read;
@@ -154,7 +153,7 @@ void *worker_thread(void * arg)
     unsigned char  *buffer  = worker->buffer;
     int		    pattern = worker->pattern;
     int		    length  = worker->length;
-   
+
     if (lseek(fd, offset, SEEK_SET) < 0) {
 	fprintf(stderr, "Failed to lseek to %d on fd %d: %s.\n",
 			offset, fd, strerror(errno));
@@ -180,7 +179,7 @@ void *worker_thread(void * arg)
 		printf("%02x ", buffer[i - 8 + k]);
 		if (k == 7) {
 		    printf("\n");
-		}      
+		}
 	    }
 
 	    printf("\n");
@@ -310,7 +309,7 @@ int main(int argc, char *argv[])
     }
 
     printf("Using alignment %d.\n", align);
-   
+
     posix_memalign((void *)&buffer, PAGE_SIZE, READSIZE+ align);
     printf("Read buffer: %p.\n", buffer);
     for (n = 1; n <= FILECOUNT; n++) {

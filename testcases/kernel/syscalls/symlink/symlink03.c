@@ -166,7 +166,7 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 
 	/*
@@ -178,9 +178,8 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -199,7 +198,6 @@ int main(int ac, char **av)
 			 */
 			TEST(symlink(test_file, sym_file));
 
-			/* Check return code of symlink(2) */
 			if (TEST_RETURN == -1) {
 				/*
 				 * Perform functional verification if
@@ -221,16 +219,14 @@ int main(int ac, char **av)
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING. */
+		}
 
 		Tst_count++;	/* incr. TEST_LOOP counter */
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	tst_exit();
 
-}				/* End main */
+}
 
 /*
  * void
@@ -241,7 +237,7 @@ int main(int ac, char **av)
 void setup()
 {
 	int ind;
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified
@@ -259,7 +255,6 @@ void setup()
 	if (setuid(ltpuser->pw_uid) == -1)
 		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 #if !defined(UCLINUX)
@@ -275,7 +270,7 @@ void setup()
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
 	}
-}				/* End setup() */
+}
 
 /*
  * int
@@ -414,9 +409,6 @@ void cleanup()
 		tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

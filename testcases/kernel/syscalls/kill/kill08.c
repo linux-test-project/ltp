@@ -179,7 +179,7 @@ void do_child()
  */
 void setup(void)
 {
-	/* Pause if that option was specified */
+
 	TEST_PAUSE;
 }
 
@@ -195,6 +195,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

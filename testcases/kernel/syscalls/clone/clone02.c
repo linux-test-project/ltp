@@ -170,7 +170,6 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
 	/* Allocate stack for child */
@@ -178,10 +177,8 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 	}
 
-	/* check looping state if -c option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -234,7 +231,7 @@ int main(int ac, char **av)
 			/* Do test specific cleanup */
 			test_cleanup();
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	free(child_stack);
 
@@ -243,16 +240,14 @@ int main(int ac, char **av)
 
 	tst_exit();
 
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create temporary directory and 'cd' to it. */
@@ -263,7 +258,7 @@ void setup()
 		tst_brkm(TBROK|TERRNO, cleanup, "sprintf() failed");
 	}
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -285,9 +280,7 @@ void cleanup()
 	chdir("/tmp");
 	remove(cwd_parent);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}
 
 /*
  * test_setup() - test specific setup function

@@ -19,4 +19,3 @@ int main()
         printf("Will not test that the open file description is new.\n");
         return PTS_UNTESTED;
 }
-

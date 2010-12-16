@@ -42,7 +42,7 @@ int main()
 
 	ts.tv_sec=time(NULL)+1;
 	ts.tv_nsec=0;
-        if (mq_timedsend(queue, msgptr, strlen(msgptr), MQ_PRIO_MAX, &ts) 
+        if (mq_timedsend(queue, msgptr, strlen(msgptr), MQ_PRIO_MAX, &ts)
 									== 0) {
                 printf("mq_timedsend() ret success with pri = MQ_PRIO_MAX\n");
 		failure=1;
@@ -71,4 +71,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

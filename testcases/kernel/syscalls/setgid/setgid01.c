@@ -155,7 +155,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -179,29 +178,27 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	gid = GETGID();
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -215,6 +212,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

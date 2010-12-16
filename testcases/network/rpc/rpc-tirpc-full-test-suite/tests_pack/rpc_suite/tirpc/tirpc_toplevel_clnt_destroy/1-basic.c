@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,7 +47,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -56,7 +56,7 @@ int main(int argn, char *argc[])
 	int progNum = atoi(argc[2]);
 	char nettype[16] = "visible";
 	CLIENT *clnt = NULL;
-	
+
 	if (run_mode == 1)
 	{
 		printf("Server : %s\n", argc[1]);
@@ -64,20 +64,20 @@ int main(int argn, char *argc[])
 		printf("Net : %s\n", nettype);
 		printf("Client : %d\n", (CLIENT *)clnt);
 	}
-	
+
 	//first create client
-	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);	
-	
+	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
+
 	//then call destroy macro
 	clnt_destroy(clnt);
-	
+
 	//if we are here, macro succeed, test will return 0 (PASS)
 	test_status = 0;
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }
 

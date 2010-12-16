@@ -2,13 +2,13 @@
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_cond_timedwait()
  *   Upon successful completion, a value of zero shall be returned.
  */
- 
+
 #define _XOPEN_SOURCE 600
 
 #include <pthread.h>
@@ -36,7 +36,7 @@ void *t1_func(void *arg)
 	int rc;
 	struct timespec timeout;
 	struct timeval  curtime;
-	
+
 	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"Thread1 failed to acquire the mutex\n");
 		exit(PTS_UNRESOLVED);
@@ -64,13 +64,13 @@ void *t1_func(void *arg)
 			exit(PTS_FAIL);
                 }
 	}
-	
+
 	if (signaled == 0) {
 		fprintf(stderr,"Thread1 did not block on the cond at all\n");
                 exit(PTS_UNRESOLVED);
 	}
 	fprintf(stderr,"Thread1 wakened and got returned value 0\n");
-	
+
 	if (pthread_mutex_unlock(&td.mutex) != 0) {
 		fprintf(stderr,"Thread1 failed to release the mutex\n");
                 exit(PTS_UNRESOLVED);
@@ -98,9 +98,9 @@ int main()
 	}
 	while (!t1_start)	/* wait for thread1 started */
 		usleep(100);
-	
+
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */
-	if (pthread_mutex_lock(&td.mutex) != 0) {	
+	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"Main failed to acquire mutex\n");
 		return PTS_UNRESOLVED;
 	}
@@ -109,14 +109,14 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 	sleep(INTERVAL);
-	
+
 	fprintf(stderr,"Time to wake up thread1 by signaling a condition\n");
 	signaled = 1;
 	if (pthread_cond_signal(&td.cond) != 0) {
 		fprintf(stderr,"Main failed to signal the condition\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	pthread_join(thread1, NULL);
 	printf("Test PASSED\n");
 	return PTS_PASS;

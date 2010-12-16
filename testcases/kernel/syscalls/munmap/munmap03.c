@@ -112,13 +112,10 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* Perform global setup for test */
 		setup();
 
 		/*
@@ -146,17 +143,11 @@ int main(int ac, char **av)
 				 "expected:%d", TEST_ERRNO, EINVAL);
 		}
 
-		/* Call cleanup() to undo setup done for the test. */
 		cleanup();
 
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-	tst_exit();
-
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -169,10 +160,8 @@ void setup()
 {
 	struct rlimit brkval;	/* variable to hold max. break val */
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* call getrlimit function to get the maximum possible break value */
@@ -191,7 +180,6 @@ void setup()
 	 */
 	map_len = 3 * page_sz;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Creat a temporary file used for mapping */
@@ -273,6 +261,5 @@ void cleanup()
 			 TEMPFILE, errno, strerror(errno));
 	}
 
-	/* Remove the temporary directory and all files in it */
 	tst_rmdir();
 }

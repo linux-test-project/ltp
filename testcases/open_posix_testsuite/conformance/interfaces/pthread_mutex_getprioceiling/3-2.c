@@ -1,4 +1,4 @@
-/*   
+/*
  * Copyright (c) 2010, Garrett Cooper.
  *
  * Test that pthread_mutex_getprioceiling() fails because:
@@ -12,7 +12,7 @@
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2.  Explicitly set the protocol using PTHREAD_PRIO_NONE.
  * 3.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -43,7 +43,7 @@ main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	/* 
+	/*
 	 * The default protocol is PTHREAD_PRIO_NONE according to
 	 * pthread_mutexattr_getprotocol.
 	 */

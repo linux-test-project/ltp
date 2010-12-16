@@ -69,7 +69,6 @@ int main(int argc, char **argv)
         struct ifreq ifr;
         int ifindex;
 
-
         if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
                 perror("socket");
                 return 1;
@@ -164,4 +163,3 @@ int main(int argc, char **argv)
         close(s);
         return 0;
 }
-

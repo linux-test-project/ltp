@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-common.c
@@ -57,7 +56,6 @@
 #define NS_COMMON 1
 #include "ns-traffic.h"
 
-
 /*
  * Function: fatal_error()
  *
@@ -76,7 +74,6 @@ fatal_error(char *errmsg)
     perror(errmsg);
     exit(EXIT_FAILURE);
 }
-
 
 /*
  * Function: maximize_sockbuf()
@@ -129,7 +126,6 @@ maximize_sockbuf(int sd)
     }
 }
 
-
 /*
  * Function: calc_checksum()
  *
@@ -165,7 +161,6 @@ calc_checksum(u_int16_t *data, size_t size)
     return sum;
 }
 
-
 /*
  * Function: fill_payload()
  *
@@ -187,7 +182,6 @@ fill_payload(unsigned char *payload_p, size_t size)
     for (idx = 0; idx < size; idx++)
 	*(payload_p + idx) = idx % 0x100;
 }
-
 
 /*
  * Function: rand_within()
@@ -217,7 +211,6 @@ rand_within(int first, int last)
     return rand_val;
 }
 
-
 /*
  * Function: bit_change_seed
  *
@@ -245,7 +238,6 @@ bit_change_seed(size_t bitsize, size_t oversize)
 
     return seed;
 }
-
 
 /*
  * Function: eth_pton()
@@ -294,7 +286,6 @@ eth_pton(int af, const char *str, struct sockaddr_ll *ll)
     return 0;
 }
 
-
 /*
  * Function: get_ifinfo()
  *
@@ -320,7 +311,6 @@ get_ifinfo(struct ifreq *ans, int sock_fd, const char *ifname, int query)
     if (ioctl(sock_fd, query, ans) < 0)
 	fatal_error("ioctl()");
 }
-
 
 /*
  * Function: strtotimespec()
@@ -362,7 +352,6 @@ strtotimespec(const char *str, struct timespec *ts_p)
 
     return 0;
 }
-
 
 /*
  * Function: get_a_lla_byifindex()
@@ -433,7 +422,6 @@ get_a_lla_byifindex(struct sockaddr_in6 *lla_p, int ifindex)
     return 1;
 }
 
-
 /*
  * Function: get_maddrinfo()
  *
@@ -475,7 +463,6 @@ get_maddrinfo(sa_family_t family, const char *maddr, const char *portnum)
     return res;
 }
 
-
 /*
  * Function: create_group_info()
  *
@@ -506,7 +493,6 @@ create_group_info(uint32_t ifindex, struct addrinfo *mainfo_p)
 
     return greq;
 }
-
 
 /*
  * Function: create_source_filter()

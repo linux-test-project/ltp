@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_mutexattr_settype()
@@ -10,9 +10,9 @@
  *  PTHREAD_MUTEX_NORMAL
 
  *  This type of mutex doesn't detect deadlock.  So a thread attempting to relock this mutex
- *  without unlocking it first will not return an error.  Attempting to unlock a mutex locked 
+ *  without unlocking it first will not return an error.  Attempting to unlock a mutex locked
  *  by a different thread results in undefined behavior.  Attemping to unlock an unlocked mutex
- *  results in undefined behavior. 
+ *  results in undefined behavior.
  *
  * Steps:
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
@@ -44,14 +44,14 @@ int main()
 	pthread_mutex_t mutex;
 	pthread_mutexattr_t mta;
 	int ret;
-	
+
 	/* Initialize a mutex attributes object */
 	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	 /* Set the 'type' attribute to be PTHREAD_MUTEX_NORMAL  */
 	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_NORMAL) != 0)
 	{
@@ -59,7 +59,7 @@ int main()
 		return PTS_FAIL;
 	}
 
-	/* Initialize the mutex with that attribute obj. */	
+	/* Initialize the mutex with that attribute obj. */
 	if (pthread_mutex_init(&mutex, &mta) != 0)
 	{
 		perror("Error intializing the mutex.\n");
@@ -79,7 +79,7 @@ int main()
 	/* This lock will cause deadlock */
 	ret=pthread_mutex_lock(&mutex);
 	/* We should not get here */
-	printf("Relock the mutex did not get deadlock\n");	
+	printf("Relock the mutex did not get deadlock\n");
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }

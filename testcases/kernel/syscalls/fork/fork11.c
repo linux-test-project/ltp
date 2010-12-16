@@ -140,5 +140,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	tst_exit();
 }

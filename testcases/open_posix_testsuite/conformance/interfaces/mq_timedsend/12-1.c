@@ -61,7 +61,7 @@ void justreturn_handler(int signo)
 
 void *a_thread_func()
 {
-		
+
 		int i;
 		struct sigaction act;
 		char gqname[NAMESIZE];
@@ -87,7 +87,7 @@ void *a_thread_func()
 			pthread_exit((void*)PTS_UNRESOLVED);
                 	return NULL;
         	}
-		
+
 		/* mq_timedsend will block for 10 seconds when it waits */
 		ts.tv_sec=time(NULL)+10;
 		ts.tv_nsec=0;
@@ -96,7 +96,7 @@ void *a_thread_func()
 		sem = INMAIN;
 
 		for (i=0; i<MAXMSG+1; i++) {
-        		if (mq_timedsend(gqueue, msgptr, 
+        		if (mq_timedsend(gqueue, msgptr,
 					strlen(msgptr), 1, &ts) == -1) {
 				if (errno == EINTR) {
 					if (mq_unlink(gqname) != 0) {
@@ -140,7 +140,7 @@ int main()
 		perror("Error: in pthread_create\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Wait for thread to set up handler for SIGUSR1 */
 	while (sem==INTHREAD)
 	 	sleep(1);
@@ -148,7 +148,7 @@ int main()
 	while ((i != 10) && (sem==INMAIN))
 	{
 		/* signal thread while it's in mq_timedsend */
-		if (pthread_kill(new_th, SIGUSR1) != 0)	
+		if (pthread_kill(new_th, SIGUSR1) != 0)
 		{
 			perror("Error: in pthread_kill\n");
 			return PTS_UNRESOLVED;
@@ -178,9 +178,8 @@ int main()
 			return PTS_UNRESOLVED;
 		}
 	}
-	
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 
 }
-

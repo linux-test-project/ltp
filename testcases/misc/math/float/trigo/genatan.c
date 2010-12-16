@@ -37,9 +37,6 @@
 
 #define M_PIl	3.1415926535897932384626433832795029L
 
-
-
-
 int create_Result_file()
 {
 
@@ -49,13 +46,12 @@ int create_Result_file()
 	int fp;
 
 	F_name = "ratan";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc = 2/nbVal;
 
 	for (i=0; i<nbVal; i++)
 		tabRatan[i] = atan ( (Inc*i)-1 );
-
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
         if (!fp)
@@ -66,16 +62,15 @@ int create_Result_file()
 	}
 	else
 	{
-		for (i = 0; i<nbVal; i++) 
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabRatan[i],sizeof(double));
 		}
-	
+
 		close(fp);
 		return 0;
 	}
 }
-
 
 int create_Data_file()
 {
@@ -85,13 +80,12 @@ int create_Data_file()
 	int fp;
 
 	F_name = "datan";
-	nbVal = 20000; 
+	nbVal = 20000;
 
-	Inc = 2/nbVal; 
+	Inc = 2/nbVal;
 
 	for (i=0; i<nbVal; i++)
 		tabDatan[i] = (Inc * i) -1;
-
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
         if (!fp)
@@ -101,8 +95,8 @@ int create_Data_file()
 	    	return -1;
         }
         else
-        {	
-		for (i = 0; i<nbVal; i++) 
+        {
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabDatan[i],sizeof(double));
 		}
@@ -111,11 +105,10 @@ int create_Data_file()
 	}
 }
 
-
 int main(int argc, char  *argv[])
 {
 
-	if (argc > 1) 
+	if (argc > 1)
 	{
 		switch ( atoi(argv[1]) )
 		{

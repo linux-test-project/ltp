@@ -12,7 +12,6 @@
  *   5. rmmod test_genhd
  */
 
-
 #include <linux/module.h>
 #include <linux/genhd.h>
 

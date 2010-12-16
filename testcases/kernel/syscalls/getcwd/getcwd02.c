@@ -287,11 +287,10 @@ void do_block7()		//buffer = NULL, size = BUFSIZ: -> work fine, allocate buffer
 
 void setup()
 {
-	/* capture signals */
+
 	/* FORK is set here because of the popen() call above */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* create a test directory and cd into it */
@@ -303,6 +302,4 @@ void cleanup()
 	/* remove the test directory */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

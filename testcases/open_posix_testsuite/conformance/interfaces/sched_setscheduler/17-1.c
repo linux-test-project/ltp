@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -39,7 +39,7 @@ struct unique {
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1) || defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 	{
 		SCHED_SPORADIC,"SCHED_SPORADIC"
-	}, 
+	},
 #endif
 	{
 		SCHED_OTHER, "SCHED_OTHER"
@@ -53,7 +53,6 @@ int main() {
 	int policy, invalid_priority, result = PTS_PASS;
 	int old_priority, old_policy, new_policy;
 	struct sched_param param;
-
 
 	struct unique *tst;
 
@@ -75,7 +74,6 @@ int main() {
 			perror("An error occurs when calling sched_getscheduler()");
 			return PTS_UNRESOLVED;
 		}
-
 
 		invalid_priority = sched_get_priority_max(policy);
 		if (invalid_priority == -1) {
@@ -99,9 +97,8 @@ int main() {
 			perror("An error occurs when calling sched_getscheduler()");
 			return PTS_UNRESOLVED;
 		}
-		
 
-		if (old_policy == new_policy && 
+		if (old_policy == new_policy &&
 		   old_priority == param.sched_priority) {
 			printf("  OK\n");
 		} else {
@@ -113,7 +110,7 @@ int main() {
 			}
 			result = PTS_FAIL;
 		}
-		
+
 		tst++;
 	}
 

@@ -166,7 +166,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	return 0;
+
 }
 
 #else
@@ -174,7 +174,7 @@ int main(int ac, char **av)
 int main()
 {
 	tst_resm(TINFO, "Ignore this test on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* UCLINUX */
@@ -196,7 +196,6 @@ void setup()
 {
 	tst_sig(FORK, sighandler, NULL);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	tst_tmpdir();		/* create a temporary directory, cd to it */
@@ -218,6 +217,4 @@ void cleanup()
 
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -179,10 +179,8 @@ void setup()
 	int fd;
 	char buf[100];
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -216,8 +214,6 @@ void cleanup()
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 int create_server(void)

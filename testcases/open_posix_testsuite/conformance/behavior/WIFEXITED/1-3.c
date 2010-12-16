@@ -1,6 +1,6 @@
 /*
   Test case for assertion #1 of the WIFEXITED macro defined in sys/wait.h
-  by forking a new process, having the child SIGABRT, and verifying 
+  by forking a new process, having the child SIGABRT, and verifying
   WIFEXITED returns zero.
 */
 
@@ -46,4 +46,3 @@ int main()
 	printf("Test FAILED\n");
 	exit(PTS_FAIL);
 }
-

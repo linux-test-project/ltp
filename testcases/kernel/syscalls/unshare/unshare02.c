@@ -59,7 +59,7 @@
 #include "config.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -88,12 +88,12 @@ int  TST_TOTAL = 2;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
 	/* Exit with appropriate TEST_RETURNurn code. */
-	tst_exit();
+
 }
 
 /* Local  Functions */
@@ -126,14 +126,13 @@ int main(int ac, char **av) {
 	int lc;		 /* loop counter */
 	int rval;
 	char *msg;	      /* message TEST_RETURNurned from parse_opts */
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -175,7 +174,7 @@ int main(int ac, char **av) {
 						tst_brkm(TFAIL, cleanup,
 						    "unshare call failed");
 						break;
-					} 
+					}
 				}
 			}
 
@@ -226,6 +225,6 @@ int main(int ac, char **av) {
 int main(void)
 {
 	tst_resm(TCONF, "unshare is undefined.");
-	return 0;
+	tst_exit();
 }
 #endif

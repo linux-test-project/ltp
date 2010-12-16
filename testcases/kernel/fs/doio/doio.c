@@ -109,7 +109,6 @@
 #define	MPP_BUMP	0
 #endif
 
-
 #define	SYSERR strerror(errno)
 
 /*
@@ -139,7 +138,6 @@ int 	U_opt = 0;  	    /* upanic() on varios conditions	*/
 int	V_opt = 0;	    /* over-ride default validation fd type */
 int	M_opt = 0;	    /* data buffer allocation types     */
 char	TagName[40];	    /* name of this doio (see Monster)  */
-
 
 /*
  * Misc globals initialized in parse_cmdline()
@@ -503,10 +501,10 @@ char	**argv;
 					     i+1, SYSERR, errno);
 				exit(E_SETUP);
 			}
-		
+
 			Children[Nchildren] = pid;
 			Nchildren++;
-		
+
 			if (pid == 0) {
 				if (e_opt) {
 					char *exec_path;
@@ -530,21 +528,21 @@ char	**argv;
 		/*
 		 * Parent spins on wait(), until all children exit.
 		 */
-	
+
 		ex_stat = E_NORMAL;
-	
+
 		while (Nprocs) {
 			if ((pid = wait(&stat)) == -1) {
 				if (errno == EINTR)
 					continue;
 			}
-		
+
 			for (i = 0; i < Nchildren; i++)
 				if (Children[i] == pid)
 					Children[i] = -1;
-		
+
 			Nprocs--;
-		
+
 			if (WIFEXITED(stat)) {
 				switch (WEXITSTATUS(stat)) {
 				case E_NORMAL:
@@ -596,10 +594,10 @@ char	**argv;
 				doio_fprintf(stderr,
 					     "(parent) pid %d terminated by signal %d\n",
 					     pid, WTERMSIG(stat));
-			
+
 				ex_stat |= E_SIGNAL;
 			}
-		
+
 			fflush(NULL);
 		}
 	}
@@ -764,7 +762,6 @@ doio()
 		case SIGUSR2:
 			sigaction(i, &sa, NULL);
 			break;
-
 
 		    /* Default Action for all other signals */
 		default:
@@ -981,7 +978,6 @@ doio_delay()
 	}
 }
 
-
 /*
  * Format IO requests, returning a pointer to the formatted text.
  *
@@ -1050,7 +1046,6 @@ char *
 format_oflags(int oflags)
 {
 	char flags[255];
-
 
 	flags[0]='\0';
 	switch(oflags & 03) {
@@ -1223,7 +1218,6 @@ format_sds(
 	cp = errbuf;
 	cp += sprintf(cp, "Request number %d\n", Reqno);
 
-
 	switch (ioreq->r_type) {
 	case SSREAD:
 		cp += sprintf(cp, "syscall:  ssread(%#o, %#o, %d)\n",
@@ -1319,7 +1313,6 @@ struct io_req	*req;
 
 	addr = Memptr;
 
-
 	if ((req->r_data.read.r_uflags & F_WORD_ALIGNED)) {
 		/*
 		 * Force memory alignment for Direct I/O
@@ -1339,7 +1332,6 @@ struct io_req	*req;
 	addr = Memptr;
 #endif	/* !CRAY && sgi */
 #endif	/* CRAY */
-
 
 	switch (req->r_type) {
 	case READ:
@@ -1473,7 +1465,6 @@ struct io_req	*req;
 	 */
 
 	Pattern[0] = pattern;
-
 
 	/*
 	 * Get a descriptor to do the io on
@@ -1786,7 +1777,6 @@ struct io_req	*req;
 	return( (rval == -1) ? -1 : 0);
 }
 
-
 /*
  * Simple routine to lock/unlock a file using fcntl()
  */
@@ -1867,7 +1857,7 @@ format_listio(
 		case LO_WRITE:	opcode = "LO_WRITE";	break;
 		default:	opcode = "???";		break;
 		}
-		
+
 		cp += sprintf(cp, "          li_opcode =    %s\n", opcode);
 		cp += sprintf(cp, "          li_drvr =      %#o\n", listreq->li_drvr);
 		cp += sprintf(cp, "          li_flags =     %#o\n", listreq->li_flags);
@@ -2228,7 +2218,6 @@ struct io_req	*req;
 
 #endif /* _CRAY1 */
 
-
 /* ---------------------------------------------------------------------------
  *
  * A new paradigm of doing the r/w system call where there is a "stub"
@@ -2332,7 +2321,7 @@ fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
 #endif
 #ifdef sgi
 	if (io->r_oflags & O_DIRECT) {
-	
+
 		if (fcntl(fd, F_DIOINFO, &finfo) == -1) {
 			cp += sprintf(cp, "          Error %s (%d) getting direct I/O info\n",
 				      strerror(errno), errno);
@@ -2865,7 +2854,7 @@ fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 	cp += sprintf(cp, "\tfile-mem=0x%lx, length=%d, buffer=0x%lx\n",
 		      (unsigned long) memaddr, req->r_data.io.r_nbytes,
 		      (unsigned long) addr);
-		     
+
 	return(errbuf);
 }
 #endif /* !CRAY */
@@ -3328,7 +3317,6 @@ do_rw(req)
 		}
 	}
 
-
 	/*
 	 * Verify that the data was written correctly - check_file() returns
 	 * a non-null pointer which contains an error message if there are
@@ -3380,7 +3368,6 @@ do_rw(req)
 	free(s);
 	return (rval == -1) ? -1 : 0;
 }
-
 
 /*
  * fcntl-based requests
@@ -3526,7 +3513,6 @@ do_sync(req)
 }
 #endif
 
-
 int
 doio_pat_fill(char *addr, int mem_needed, char *Pattern, int Pattern_Length,
 	      int shift)
@@ -3563,7 +3549,7 @@ int	patshift;
 				if ((unsigned int)nb > sizeof(expected)-1) {
 					nb = sizeof(expected)-1;
 				}
-			   
+
 				ep += sprintf(ep, "corrupt bytes starting at file offset %d\n", offset + (int)(cp-buf));
 
 				/*
@@ -3602,7 +3588,6 @@ int	patshift;
 
 	return NULL;
 }
-
 
 /*
  * Check the contents of a file beginning at offset, for length bytes.  It
@@ -3694,7 +3679,7 @@ int	fsa;
 			file, length, nb);
 		return errbuf;
 	}
-   
+
 	if ((em = (*Data_Check)(buf, offset, length, pattern, pattern_length, patshift)) != NULL) {
 		ep = errbuf;
 		ep += sprintf(ep, "*** DATA COMPARISON ERROR ***\n");
@@ -3940,7 +3925,7 @@ int nbytes;
 			}
 		}
 		break;
-	
+
 	case MEM_SHMEM:
 		if (nbytes > M->size) {
 			if (M->space != NULL) {
@@ -4391,7 +4376,6 @@ cleanup_handler(int sig, siginfo_t *info, void *v)
 	exit(0);
 }
 
-
 void
 die_handler(int sig, siginfo_t *info, void *v)
 {
@@ -4419,7 +4403,6 @@ sigbus_handler(int sig, siginfo_t *info, void *v)
 	   would not have been set so maybe that doesn't make the guess
 	   stronger.)
 	 */
-
 
 	if (active_mmap_rw && havesigint && (info->si_errno == EINTR)) {
 		cleanup_handler( sig, info, v );
@@ -4465,14 +4448,12 @@ int sig;
 #endif /* !CRAY */
 #endif /* sgi */
 
-
 void
 noop_handler(sig)
 int sig;
 {
 	return;
 }
-
 
 /*
  * SIGINT handler for the parent (original doio) process.  It simply sends
@@ -4542,7 +4523,6 @@ dump_aio()
 	}
 	fprintf(stderr, "%d active async i/os\n", count);
 }
-
 
 #ifdef sgi
 /*
@@ -4678,7 +4658,6 @@ int	aio_id;
 #endif
 	int r, cnt;
 
-
 	aiop = aio_slot(aio_id);
 /*printf("%d aiop B =%p\n", getpid(), aiop);*/
 
@@ -4760,7 +4739,6 @@ int	aio_id;
 		 * Note: cb_handler already calls aio_done
 		 */
 		break;
-
 
 	case A_SUSPEND:
 		aioary[0] = &aiop->aiocb;
@@ -5124,8 +5102,6 @@ char	*opts;
 	return 0;
 }
 
-
-
 /*
  * Parse memory allocation types
  *
@@ -5328,7 +5304,6 @@ parse_delay(char *arg)
 	}
 }
 
-
 /*
  * Usage clause - obvious
  */
@@ -5456,4 +5431,3 @@ FILE	*stream;
 	fprintf(stream, "\t                     only the iogen program generates the proper\n");
 	fprintf(stream, "\t                     format\n");
 }
-

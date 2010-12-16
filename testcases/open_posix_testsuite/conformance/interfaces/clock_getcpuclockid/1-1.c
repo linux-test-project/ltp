@@ -1,12 +1,12 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * @pt:CPT
- * General test that clock_getcpuclockid() returns CPU-time clock for a 
+ * General test that clock_getcpuclockid() returns CPU-time clock for a
  * process.  The process chosen is the current process.
  *
  *
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		return PTS_FAIL;
 	}
 
-	/* 
+	/*
 	 * Verify that it returned a valid clockid_t that can be used in other
 	 * functions
 	 */

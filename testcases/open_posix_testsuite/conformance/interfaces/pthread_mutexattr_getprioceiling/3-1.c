@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutexattr_getprioceiling()
@@ -15,9 +15,9 @@
  * This function shall not return an error code of [EINTR]
  *
  * Steps:
- * 1.  Call pthread_mutexattr_getprioceiling() to obtain the prioceiling for an 
+ * 1.  Call pthread_mutexattr_getprioceiling() to obtain the prioceiling for an
  *     uninitialized pthread_mutexattr_t object.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -28,7 +28,7 @@
 
 int main()
 {
-	
+
 	int prioceiling, ret;
 	pthread_mutexattr_t mta;
 
@@ -36,8 +36,8 @@ int main()
 	if ((ret=pthread_mutexattr_getprioceiling(&mta, &prioceiling)) == 0)
 	{
 		printf("Test PASSED: *Note: Returned 0 instead of EINVAL when passed an uninitialized mutex attribute object to pthread_mutexattr_getprioceiling, but standard says 'may' fail.\n");
-		return PTS_PASS;		
-	      	  
+		return PTS_PASS;
+
 	}else if (ret != EINVAL)
 	{
 		printf("Test FAILED: Invalid return code %d. Expected EINVAL or 0.\n", ret);
@@ -47,5 +47,3 @@ int main()
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-
-

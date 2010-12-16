@@ -118,13 +118,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -210,12 +207,11 @@ int main(int ac, char **av)
 		/* reset to offset 0 in case we are looping */
 		l_seek(fildes, 0, SEEK_SET, 0);
 
-	}			/* End for TEST_LOOPING */
-	/* Call cleanup() to undo setup done for the test. */
+	}
+
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -225,16 +221,14 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Allocate/Initialize the write buffer with known data */
 	init_buffers();
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Creat a temporary file used for mapping */
@@ -367,9 +361,6 @@ void cleanup()
 			 TEMPFILE, errno, strerror(errno));
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

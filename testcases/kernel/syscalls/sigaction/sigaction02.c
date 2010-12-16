@@ -205,6 +205,6 @@ int main(int ac, char **av)
 
 	tst_exit();
 
-	return 0;
+	tst_exit();
 
 }

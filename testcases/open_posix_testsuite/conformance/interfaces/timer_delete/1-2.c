@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that after a timer is deleted by calling timer_delete(), it
  * cannot be armed by calling timer_settime().
  * Steps:
- * - Create a timer 
+ * - Create a timer
  * - Delete that timer
  * - Try to call timer_settime() on that timer and ensure it fails
  *   with errno==EINVAL.

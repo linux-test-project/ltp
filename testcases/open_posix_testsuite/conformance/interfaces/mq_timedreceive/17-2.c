@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive() test plan:
- * mq_timedreceive() will fail with EINVAL if message queue is 
+ * mq_timedreceive() will fail with EINVAL if message queue is
  * empty and nanoseconds field value of abs_timeout greater than
  * or equal to 1000 million.
  *
@@ -52,7 +52,7 @@ int main()
 		unresolved = 1;
         }
 	ts.tv_sec = time(NULL) + 1;
-	ts.tv_nsec = 1000000000; 
+	ts.tv_nsec = 1000000000;
        	if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) == -1) {
 		if (EINVAL != errno) {
 			printf("errno != EINVAL \n");
@@ -82,4 +82,3 @@ int main()
         printf("Test PASSED\n");
       	return PTS_PASS;
 }
-

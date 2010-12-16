@@ -3,7 +3,7 @@
  * (C) Copyright IBM Corp. 2004
  *
  * This file does send and receive for 500 threads on a unique association for
- * THREAD_SND_RCV_LOOPS = 10 many times. To change the number of threads 
+ * THREAD_SND_RCV_LOOPS = 10 many times. To change the number of threads
  * change the THREADS valuen and loop change the THREAD_SND_RCV_LOOPS.
  *
  * The SCTP reference implementation is free software;
@@ -64,7 +64,7 @@ int acpt_sk;
 struct sockaddr_in  conn_addr;
 char *message = "hello, world!\n";
 
-void 
+void
 t_recv (int id) {
 	int cnt;
 	struct msghdr inmessage;
@@ -126,7 +126,7 @@ void * relay (void* id_) {
 	if (id == 0) {
 		t_send(id);
 	} else if (id == THREADS -1) {
-		t_send(id);	
+		t_send(id);
 	} else {
 		t_recv (id);
 		t_send(id);
@@ -134,10 +134,9 @@ void * relay (void* id_) {
 
 	return 0;
 }
-	
 
-int 
-main(void) 
+int
+main(void)
 {
 
 	int      cnt,i;
@@ -152,7 +151,7 @@ main(void)
 
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	
+
 	server_sk = test_socket(PF_INET, SOCK_STREAM, IPPROTO_SCTP);
 	client_sk = test_socket(PF_INET, SOCK_STREAM, IPPROTO_SCTP);
 

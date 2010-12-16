@@ -102,9 +102,9 @@ int setup()
 	char template[PATH_MAX];
 	struct sigaction act;
 
-	tst_sig(FORK, DEF_HANDLER, NULL);	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, NULL);
 	umask(0);
-	TEST_PAUSE;		/* Pause if that option is specified */
+	TEST_PAUSE;
 	tst_tmpdir();		/* make temp dir and cd to it */
 
 	if (pipe(parent_pipe) < 0) {
@@ -164,7 +164,7 @@ void cleanup()
 {
 	close(file_fd);
 	tst_rmdir();
-	tst_exit();
+
 }
 
 void do_child1()
@@ -635,5 +635,5 @@ int main(int ac, char **av)
 	waitpid(child_pid2, &child_stat, 0);
 	waitpid(child_pid3, &child_stat, 0);
 	cleanup();
-	return 0;
+	tst_exit();
 }

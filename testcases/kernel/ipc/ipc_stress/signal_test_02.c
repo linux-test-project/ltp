@@ -76,7 +76,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-
 /* Macro for specifying signal masks */
 #define MASK(sig)  (1 << ((sig) - 1))
 
@@ -89,10 +88,8 @@ void reset_valid_sig ();
 void sys_error (const char *, int);
 void error (const char *, int);
 
-
 /* Define an array for verifying received signals */
 int valid_sig [ SIGMAX + 1 ];
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -127,7 +124,7 @@ int main (int argc, char **argv)
 	 * First indicate which signals the signal handler should expect
 	 * by setting the corresponding valid_sig[] array fields.
 	 *
-	 * Then send the signals to this process. 
+	 * Then send the signals to this process.
 	 *
 	 * And finally verify that the signals were caught by the signal
 	 * handler by checking to see if the corresponding valid_sig[] array
@@ -262,7 +259,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             init_sig ()                              |
 | ==================================================================== |
@@ -337,7 +333,6 @@ void handler (int sig)//, int code, struct sigcontext *scp)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                         reset_valid_sig ()                           |
 | ==================================================================== |
@@ -355,7 +350,6 @@ void reset_valid_sig ()
 		valid_sig [i] = 0;
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -370,7 +364,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

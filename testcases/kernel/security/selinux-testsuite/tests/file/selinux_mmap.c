@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   }
 
   fd = open(argv[1], O_RDWR, 0);
- 
+
   if (fd == -1) {
     perror("selinux_mmap:open");
     exit(2);

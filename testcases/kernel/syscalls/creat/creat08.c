@@ -470,7 +470,7 @@ int main(int ac, char **av)
 		 *system("groupdel,group2");
 		 */
 	}			/* end for */
-	return 0;
+	tst_exit();
 }
 
 int issu()

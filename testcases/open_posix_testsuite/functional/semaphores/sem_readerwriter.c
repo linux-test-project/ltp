@@ -1,12 +1,12 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * This test use semaphore to implement reader and writer problem. Some readers
- * and some writers read/write on one blackboard. Only one writer allow to 
+ * and some writers read/write on one blackboard. Only one writer allow to
  * write on the board at the same time. Reader and Writer can't use the board
  * the same time. Reader has higher priority than writer, which means only when
  * no reader reads the board, the writer can write the board.
@@ -34,7 +34,7 @@ int data = 0;
 
 int read_fun(int ID)
 {
-	printf("read the board, data=%d \n", data);	
+	printf("read the board, data=%d \n", data);
 	return 0;
 }
 int write_fun(int ID)
@@ -112,26 +112,25 @@ int main(int argc, char *argv[])
 #ifndef  _POSIX_SEMAPHORES
 	printf("_POSIX_SEMAPHORES is not defined \n");
 	return PTS_UNRESOLVED;
-#endif 
+#endif
 	if (-1 == sem_init(&r_lock, shared, r_value)) {
-		perror("sem_init didn't return success \n"); 
+		perror("sem_init didn't return success \n");
 		return PTS_UNRESOLVED;
 	}
 	if (-1 == sem_init(&w_lock, shared, w_value)) {
-		perror("sem_init didn't return success \n"); 
+		perror("sem_init didn't return success \n");
 		return PTS_UNRESOLVED;
 	}
 
 	for (i = 0; i< WRITE_NUM; i++) {
 		WriteID[i] = i;
-		pthread_create(&wri[i], NULL, (void *)writer, &WriteID[i]);	
+		pthread_create(&wri[i], NULL, (void *)writer, &WriteID[i]);
 	}
 	for (i = 0; i< READ_NUM; i++) {
 		ReadID[i] = i;
-		pthread_create(&rea[i], NULL, (void *)reader, &ReadID[i]);	
+		pthread_create(&rea[i], NULL, (void *)reader, &ReadID[i]);
 	}
 
-	
 	for (i = 0; i< READ_NUM; i++)
 		pthread_join(rea[i], NULL);
 	for (i = 0; i< WRITE_NUM; i++)

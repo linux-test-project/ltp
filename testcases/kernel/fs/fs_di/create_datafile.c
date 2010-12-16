@@ -22,7 +22,7 @@
  *  PURPOSE	: Creates a file of specified size.
  *  HISTORY	:
  *  	10/17/2003 Robbie Williamson
- *	  -Written  
+ *	  -Written
  */
 
 #include <stdio.h>
@@ -55,7 +55,7 @@ main(int argc, char *argv[])
    for (i=1;i<BSIZE;i++)
       buf[i]=buf[i-1]+1;
    buf[BSIZE-1]='Z';
-   
+
    if ((fd = creat(argv[2],0755)) == -1)
       perror("lftest: ");
 

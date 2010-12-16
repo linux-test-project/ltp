@@ -46,7 +46,6 @@ int main(int ac, char **av)
     exit(1);
   }
 
-
   /* 00/00/00/00 */
   for (i = 0 ; i < m ; i++) {
     r = random() % m;
@@ -90,4 +89,3 @@ void open_read_close(char *fname)
   }
   close(fd);
 }
-

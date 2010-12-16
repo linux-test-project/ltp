@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -34,7 +34,7 @@ struct unique {
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1) || defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 	{
 		SCHED_SPORADIC,"SCHED_SPORADIC"
-	}, 
+	},
 #endif
 	{
 		SCHED_OTHER, "SCHED_OTHER"
@@ -47,7 +47,6 @@ struct unique {
 int main() {
 	int policy, invalid_priority, tmp, result = PTS_PASS;
 	struct sched_param param;
-
 
 	struct unique *tst;
 

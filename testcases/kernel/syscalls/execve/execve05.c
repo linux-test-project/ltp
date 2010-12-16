@@ -66,7 +66,7 @@ void usage(void)
 {
 	tst_resm(TBROK, "usage: %s <iters> <fname1> <fname2> <count>", TCID);
 	tst_resm(TINFO, "example: %s 20 test1 test2 4", TCID);
-	tst_exit();
+
 }
 
 int main(int ac, char **av)
@@ -93,7 +93,6 @@ int main(int ac, char **av)
 		usage();
 	 }
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -219,10 +218,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	umask(0);
@@ -236,5 +234,4 @@ void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	tst_exit();
 }

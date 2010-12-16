@@ -36,16 +36,14 @@
 #include        <math.h>
 
 /******************************************************************
- * 
+ *
  *	genldexp
- * 
+ *
  * generate input and output file  for the ldexp function
  * double x multiplied by 2 raised to the power y
  *
  *
  */
-
-
 
 int create_Result_file()
 {
@@ -60,7 +58,7 @@ int create_Result_file()
 	F_name = "ldexp_out.ref";
 	F_namini = "ildexp_inp.ref";
 	F_namind = "ldexp_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	fpi = open(F_namini,O_RDONLY,0777);
 	fpd = open(F_namind,O_RDONLY,0777);
@@ -76,7 +74,7 @@ int create_Result_file()
 		for (i=0; i<nbVal; i++) {
 		    read(fpi, &(tabInpi[i]), sizeof(int) );
 		    read(fpd, &(tabInpd[i]), sizeof(double) );
-		    tabR[i] = ldexp (tabInpd[i], tabInpi[i]); 
+		    tabR[i] = ldexp (tabInpd[i], tabInpi[i]);
 		}
 		close(fpi);
 		close(fpd);
@@ -90,11 +88,11 @@ int create_Result_file()
 		}
 		else
 		{
-			for (i = 0; i<nbVal; i++) 
+			for (i = 0; i<nbVal; i++)
 			{
 			    write(fp,&tabR[i],sizeof(double));
 			}
-	
+
 			close(fp);
 			return 0;
 		}
@@ -117,11 +115,11 @@ int create_Data_file()
 
 	F_named = "ldexp_inp.ref";
 	F_namei = "ildexp_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc = exp(1)/10;
 
-	for (i=0; i<(nbVal); i++) {	
+	for (i=0; i<(nbVal); i++) {
 		tabDD[i] = (Inc * i) + Inc;
 		tabDI[i] = nbVal -i;
 	}
@@ -136,8 +134,8 @@ int create_Data_file()
 	    	return -1;
         }
         else
-        {	
-		for (i = 0; i<nbVal; i++) 
+        {
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabDD[i],sizeof(double));
 			write(fpi,&tabDI[i],sizeof(int));
@@ -148,11 +146,10 @@ int create_Data_file()
 	}
 }
 
-
 int main(int argc, char  *argv[])
 {
 
-	if (argc > 1) 
+	if (argc > 1)
 	{
 		switch ( atoi(argv[1]) )
 		{

@@ -111,7 +111,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -134,22 +133,22 @@ int main(int ac, char **av)
 					 i, TC[i].len);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 #else
 
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -177,6 +176,4 @@ void cleanup()
 {
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

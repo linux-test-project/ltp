@@ -127,10 +127,8 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* Perform global setup for test */
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		pid_t pid;
 		int status, i;
@@ -218,7 +216,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -229,7 +227,6 @@ void setup(void)
 {
 	tst_require_root(NULL);
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */

@@ -1,17 +1,17 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_rwlock_unlock(pthread_rwlock_t *rwlock)
  *
- * 	pthread_rwlock_unlock() function shall release a lock held on the 
+ * 	pthread_rwlock_unlock() function shall release a lock held on the
  *	read-write lock object referenced by rwlock
- *	If this function is called to release a read lock from the read-write lock object 
- *	and there are other read locks currently held on this read-write lock object, 
- *	the read-write lock object remains in the read locked state. 
- *	If this function releases the last read lock for this read-write lock object, 
+ *	If this function is called to release a read lock from the read-write lock object
+ *	and there are other read locks currently held on this read-write lock object,
+ *	the read-write lock object remains in the read locked state.
+ *	If this function releases the last read lock for this read-write lock object,
  *	the read-write lock object shall be put in the unlocked state with no owners.
  *
  * Steps:
@@ -32,10 +32,10 @@
 #include "posixtest.h"
 
 static pthread_rwlock_t rwlock;
-static int thread_state; 
+static int thread_state;
 
-/* thread_state indicates child thread state: 
-	1: not in child thread yet; 
+/* thread_state indicates child thread state:
+	1: not in child thread yet;
 	2: just enter child thread ;
 	3: after 1st read lock
 	4: after 2nd read lock and before write lock;
@@ -49,7 +49,7 @@ static int thread_state;
 #define EXITING_THREAD 5
 
 static void* fn_rd(void *arg)
-{ 
+{
 	int rc = 0;
 
 	thread_state = ENTERED_THREAD;
@@ -67,7 +67,7 @@ static void* fn_rd(void *arg)
 		printf("Test FAILED: thread: Error at pthread_rwlock_unlock(), Error Code=%d\n", rc);
 		exit(PTS_FAIL);
 	}
-	
+
 	thread_state = PASSED_RLOCK1;
 	printf("thread: attempt 2nd read lock\n");
 	if (pthread_rwlock_rdlock(&rwlock) != 0)
@@ -83,7 +83,7 @@ static void* fn_rd(void *arg)
 		printf("Test FAILED: thread: Error at 2nd pthread_rwlock_unlock(), Error Code=%d\n", rc);
 		exit(PTS_FAIL);
 	}
-	
+
 	thread_state = PASSED_RLOCK2;
 	/* The thread should block here */
 	printf("thread: attempt write lock\n");
@@ -103,14 +103,14 @@ static void* fn_rd(void *arg)
 	thread_state = EXITING_THREAD;
 	return NULL;
 }
- 
+
 int main()
 {
 	int cnt = 0;
 	int rc = 0;
 
 	pthread_t rd_thread;
-	
+
 	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("main: Error at pthread_rwlock_init()\n");
@@ -119,13 +119,13 @@ int main()
 
 	printf("main: attempt read lock\n");
 
-	/* This read lock should succeed */	
+	/* This read lock should succeed */
 	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread\n");
 	if (pthread_create(&rd_thread, NULL, fn_rd, NULL) != 0)
@@ -133,14 +133,14 @@ int main()
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* If the shared data is not altered by child after 3 seconds,
 	   we regard it as blocked */
 	cnt = 0;
 	do{
 		sleep(1);
-	}while (thread_state !=PASSED_RLOCK2 && cnt++ < 3); 
-	
+	}while (thread_state !=PASSED_RLOCK2 && cnt++ < 3);
+
 	if (thread_state == ENTERED_THREAD)
 	{
 		printf("Thread should not block on first read lock\n");
@@ -170,8 +170,8 @@ int main()
 	cnt = 0;
 	do{
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 3); 
-	
+	}while (thread_state !=EXITING_THREAD && cnt++ < 3);
+
 	if (thread_state != EXITING_THREAD)
 	{
 		printf("Test FAILED: thread did not get write lock even when the lock has no owner\n");
@@ -188,7 +188,7 @@ int main()
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

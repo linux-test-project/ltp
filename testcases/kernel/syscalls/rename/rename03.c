@@ -118,7 +118,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* set up the files and directories for the tests */
@@ -139,7 +138,7 @@ int main(int ac, char **av)
 				if (stat(TC[i].name2, &buf2) == -1) {
 					tst_brkm(TBROK, cleanup, "stat of %s "
 						 "failed", TC[i].desc);
-					
+
 				}
 
 				/*
@@ -183,7 +182,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Couldn't remove directory %s",
 			    mdir);
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
@@ -195,10 +194,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -221,7 +219,7 @@ void setup2()
 	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"
 			 "in rename()", fname);
-		
+
 	}
 
 	/* save original file's dev and ino */
@@ -238,7 +236,7 @@ void setup2()
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s"
 			 "in rename()", fdir);
-		
+
 	}
 
 	d_olddev = buf1.st_dev;

@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive() test plan:
- * mq_timedreceive() will fail with ETIMEDOUT when O_NONBLOCK is not 
+ * mq_timedreceive() will fail with ETIMEDOUT when O_NONBLOCK is not
  * set and no message arrived before the timout expired.
  *
  */
@@ -43,7 +43,6 @@ void exit_handler(int signo)
         return;
 }
 
-
 int main()
 {
         char mqname[NAMESIZE], msgrv[BUFFER];
@@ -69,7 +68,7 @@ int main()
                 act.sa_flags=0;
                 sigemptyset(&act.sa_mask);
                 sigaction(SIGABRT, &act, 0);
-										
+
 		ts.tv_sec = time(NULL) + TIMEOUT;
 		ts.tv_nsec = 0;
        		if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) == -1) {
@@ -105,10 +104,9 @@ int main()
 	      	return PTS_PASS;
 	}
 	else {
-		sleep(TIMEOUT + 3); /* Parent is probably blocking, 
+		sleep(TIMEOUT + 3); /* Parent is probably blocking,
 				       send a signal to let it abort */
 		kill(getppid(), SIGABRT);
-		return 0;
+		tst_exit();
 	}
 }
-

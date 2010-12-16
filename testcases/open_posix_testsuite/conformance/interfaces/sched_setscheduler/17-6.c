@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -28,14 +28,12 @@
 #include <string.h>
 #include "posixtest.h"
 
-
-
 /** Set the euid of this process to a non-root uid */
 int set_nonroot()
 {
 	struct passwd *pw;
 	setpwent();
-	/* search for the first user which is non root */ 
+	/* search for the first user which is non root */
 	while ((pw = getpwent()) != NULL)
 		if (strcmp(pw->pw_name, "root"))
 			break;
@@ -53,31 +51,30 @@ int set_nonroot()
 		perror("An error occurs when calling seteuid()");
 		return 1;
 	}
-	
+
 	printf("Testing with user '%s' (uid: %d)\n",
 	       pw->pw_name, (int)geteuid());
 	return 0;
 }
-
 
 int main() {
 	int max_priority, old_priority, old_policy, new_policy, policy;
         struct sched_param param;
 
         /* We assume process Number 1 is created by root */
-        /* and can only be accessed by root */ 
+        /* and can only be accessed by root */
         /* This test should be run under standard user permissions */
         if (getuid() == 0) {
 	  	if (set_nonroot() != 0) {
-			printf("Cannot run this test as non-root user\n");	
+			printf("Cannot run this test as non-root user\n");
                 return PTS_UNTESTED;
-        }	
-        }	
+        }
+        }
 
 	if (sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 	old_priority = param.sched_priority;
 
 	old_policy = sched_getscheduler(getpid());
@@ -95,7 +92,6 @@ int main() {
 		sched_get_priority_min(policy) :
 		max_priority;
 
-	
 	sched_setscheduler(1, policy, &param);
 
 	if (sched_getparam(getpid(), &param) != 0) {
@@ -108,9 +104,8 @@ int main() {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
-		
 
-	if (old_policy == new_policy && 
+	if (old_policy == new_policy &&
 	   old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

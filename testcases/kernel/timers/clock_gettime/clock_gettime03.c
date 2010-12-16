@@ -112,7 +112,7 @@ main(int ac, char **av)
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
-	/* 
+	/*
 	 * PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
 	 * kernel versions lower than 2.6.12
 	 */
@@ -125,14 +125,10 @@ main(int ac, char **av)
 		testcase[5] = EFAULT;
 	}
 
-
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -173,13 +169,12 @@ main(int ac, char **av)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

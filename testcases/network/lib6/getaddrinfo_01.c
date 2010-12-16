@@ -83,17 +83,14 @@ main(int argc, char *argv[])
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		gaiv4();
 		gaiv6();
 	}
 	cleanup();
 
-	
 	return(0);
-}	/* End main */
-
+}
 
 /* getaddrinfo tests (v4) */
 
@@ -325,7 +322,6 @@ gaiv4(void)
 			"getaddrinfo IPv4 0+service, PASSIVE (\"\", \"%s\") "
 			"returns %ld (\"%s\")", service, TEST_RETURN,
 			gai_strerror(TEST_RETURN));
-
 
 	/* test 7, IPv4 0+service */
 
@@ -734,7 +730,6 @@ gaiv6(void)
 			"returns %ld (\"%s\")", service, TEST_RETURN,
 			gai_strerror(TEST_RETURN));
 
-
 	/* test 18, IPv6 0+service */
 
 	memset(&hints, 0, sizeof(hints));
@@ -959,6 +954,5 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
-}
 
+}

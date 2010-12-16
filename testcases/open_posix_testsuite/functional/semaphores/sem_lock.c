@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * This test use semaphore to protect critical section between several
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		perror("sem_init didn't return success\n");
 		return PTS_UNRESOLVED;
 	}
-	for (i = 1; i < num; i++) 
+	for (i = 1; i < num; i++)
 		switch ((pid = fork())) {
 		case -1:
 			perror("fork");
@@ -70,20 +70,20 @@ int main(int argc, char *argv[])
 	if (sem_wait(sem_lock) == -1) {
 		perror("sem_wait didn't return success\n");
 		return PTS_UNRESOLVED;
-	} 
+	}
 	for (i = 1; i <= 10; i++) {
 		c = buf;
 		while (*c != '\n') {
 			fputc(*c, stdout);
 			c++;
 	 	}
-		fputc('\n', stdout); 
+		fputc('\n', stdout);
 	}
 
 	if (sem_post(sem_lock) == -1) {
 		perror("sem_wait didn't return success\n");
 		return PTS_UNRESOLVED;
-	} 
-	
+	}
+
 	return PTS_PASS;
 }

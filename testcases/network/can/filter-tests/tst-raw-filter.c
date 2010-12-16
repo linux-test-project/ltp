@@ -83,7 +83,7 @@ int main(int argc, char **argv)
                 case 'p': /* MSG_PEEK 'p' times before consuming the frame */
                         peek = atoi(optarg);
                         break;
-                case 'd': /* use default settings from CAN_RAW socket */ 
+                case 'd': /* use default settings from CAN_RAW socket */
                         deflt = 1;
                         break;
                 case 'f': /* add this filter can_id:can_mask */
@@ -100,7 +100,6 @@ int main(int argc, char **argv)
                         break;
                 }
         }
-
 
         if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
                 perror("socket");
@@ -157,9 +156,9 @@ int main(int argc, char **argv)
                                 printf("%8X  ", frame.can_id & CAN_EFF_MASK);
                         else
                                 printf("%3X  ", frame.can_id & CAN_SFF_MASK);
-            
+
                         printf("[%d] ", frame.can_dlc);
-            
+
                         for (i = 0; i < frame.can_dlc; i++) {
                                 printf("%02X ", frame.data[i]);
                         }
@@ -176,4 +175,3 @@ int main(int argc, char **argv)
 
         return 0;
 }
-

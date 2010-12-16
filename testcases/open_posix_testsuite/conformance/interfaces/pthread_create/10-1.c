@@ -1,12 +1,12 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_create().
- * 
+ *
  * If pthread_create() fails, no new thread is created and the contents of the
  * location referenced by 'thread' is undefined.
  *
@@ -15,18 +15,18 @@
  * attributes object was passed.  Since the last situation is the easiest to implement, that
  * is the one I chose to use in order to make pthread_create fail.
  *
- * The problem with that is that accessing an uninitialized attributes object will cause a 
+ * The problem with that is that accessing an uninitialized attributes object will cause a
  * segmentation fault (since it usually points to garbage).  So the idea here is to catch
  * the SIGSEGV signal (segmentation faults), and to see if the thread was ever created, by
  * setting a flag in the thread's starting routine.
- * 
+ *
  * I recognize that causing pthread_create() to fail gracefully is a very difficult task,
  * especially taking into consideration that a lot of it is implementation-specific.  I did
  * try to manually set the members of a pthread_attr_t object to invalid values, but that didn't
  * seem to make pthread_create() fail at all, in any of the implementations I tested on. So for
  * now, this is what we have.
- * 
- * 
+ *
+ *
  * Steps:
  * 1.  Create a thread using pthread_create() with an invalid attributes object (uninitialized).
  * 2.  Catch the SIGSEGV (seg fault) signal.  In the signal handler, check to make sure that
@@ -36,8 +36,8 @@
  *
  *
  * - adam.li@intel.com: 2004-04-30
- * This case will end with segmentation fault. 
- * I happened to find on NPTL pthread_create() can fail is 
+ * This case will end with segmentation fault.
+ * I happened to find on NPTL pthread_create() can fail is
  * pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_INHERIT), while
  * does not call pthread_attr_setschedparam() to set the prority. (since
  * by default the priority will be 0. But this is implementation specific.
@@ -104,7 +104,7 @@ int main()
 	act.sa_handler = sig_handler;
 	act.sa_flags = 0;
 	sigaction(SIGSEGV, &act, NULL);
-	
+
 	/* Create the thread with the invalid, uninitialized attributes object. */
 	pthread_create(&new_th, &inv_attr, a_thread_func, NULL);
 
@@ -112,9 +112,9 @@ int main()
 	segfault_flag = 0;
 
 	/* Timeout after 10 seconds if a segfault was not encountered.  The test then fails. */
-	sleep(10);	
+	sleep(10);
 
-	/* Manually send the SIGSEGV signal to the signal handler.  If this point is reached, 
+	/* Manually send the SIGSEGV signal to the signal handler.  If this point is reached,
 	 * the test fails. */
 	if (raise(SIGSEGV) != 0)
 	{
@@ -125,5 +125,3 @@ int main()
 	printf("Test FAILED.\n");
 	return PTS_FAIL;
 }
-
-

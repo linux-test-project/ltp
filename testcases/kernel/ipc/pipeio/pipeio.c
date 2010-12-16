@@ -75,7 +75,6 @@ myexit (int x)
 # define NBPW sizeof(int)
 #endif
 
-
 #define PPATH "tpipe"
 #define OCTAL	'o'
 #define HEX	'x'
@@ -143,7 +142,7 @@ char *av[];
 	int fds[2];		/* un-named pipe fds */
 	int read_fd = 0;
 	int write_fd = 0;
-	int empty_read = 0;	/* counter for the number of empty reads */
+	int empty_read = 0;
 	time_t start_time, current_time, diff_time;	/* start time, current time, diff of times */
 	int *count_word;	/* holds address where to write writers count */
 	int *pid_word;		/* holds address where to write writers pid */
@@ -160,7 +159,7 @@ char *av[];
 	  struct semid_ds *buf;
 	  unsigned short int *array;
 	} u;
-	
+
 	u.val = 0;
 	format = HEX;
 	blk_type = NON_BLOCKING_IO;
@@ -556,7 +555,6 @@ printf("child after fork pid = %d\n", getpid());
 		if (semop(sem_id, &sem_op, 1) == -1)
 			tst_brkm(TBROK, NULL, "Couldn't raise the semaphore: %s", strerror(errno));
 
-
 		pid_word = (int *)&writebuf[0];
 		count_word = (int *)&writebuf[NBPW];
 
@@ -576,7 +574,7 @@ printf("child after fork pid = %d\n", getpid());
 
 			*count_word = j;
 			*pid_word = getpid();
-		
+
                         if ((nb = lio_write_buffer(write_fd, iotype, writebuf, size,
                                                         SIGUSR1, &cp, 0)) < 0 ) {
 			/*
@@ -767,7 +765,7 @@ help()
   -v           - verbose mode, all writes/reads resutlts printed\n");
 
 	fflush(stdout);
-       
+
 }
 
 void

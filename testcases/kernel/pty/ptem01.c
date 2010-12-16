@@ -38,13 +38,10 @@
 #include "test.h"
 #include "usctest.h"
 
-
 char *TCID="ptem01";            /* Test program identifier.    */
 int TST_TOTAL=6;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
-
-
 
 /*
  * pty master clone device
@@ -52,7 +49,6 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 #define MASTERCLONE "/dev/ptmx"
 
 #define BUFSZ 4096
-
 
 /*
  * test termio/termios ioctls
@@ -191,7 +187,6 @@ test2(void)
 		tst_exit();
 	}
 
-
 	if (ioctl(masterfd, TIOCSWINSZ, &wsz1) != 0) {
 		tst_resm(TFAIL,"TIOCSWINSZ");
 		tst_exit();
@@ -313,7 +308,6 @@ test3(void)
 	/** NOT REACHED **/
 	return 0;
 }
-
 
 /*
  * test multiple opens of slave side
@@ -451,7 +445,6 @@ test5(void)
 	return 0;
 }
 
-
 /*
  * test hangup semantics
  */
@@ -532,6 +525,6 @@ main(int argc, char **argv)
  	 * all done
 	 */
 	tst_exit();
-	
-	return 0;
+
+	tst_exit();
 }

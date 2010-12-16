@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* Copyright (c) Jens Axboe <axboe@kernel.dk>, 2009                           */ 
+/* Copyright (c) Jens Axboe <axboe@kernel.dk>, 2009                           */
 /*                                                                            */
 /* LKML Reference: http://lkml.org/lkml/2009/4/2/55                           */
 /*                                                                            */
@@ -37,14 +37,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -59,7 +58,6 @@ static inline long ltp_splice(int fd_in, loff_t *off_in,
 			return syscall(__NR_splice, fd_in, off_in, fd_out,
 					off_out, len, flags);
 }
-
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -80,11 +78,10 @@ static inline long ltp_splice(int fd_in, loff_t *off_in,
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
+
         TEST_CLEANUP;
         tst_rmdir();
 
-        /* Exit with appropriate return code. */
         tst_exit();
 }
 
@@ -142,7 +139,7 @@ int main(int ac, char **av) {
 	   cleanup();
 	   tst_exit();
 	}
-			
+
         do {
 		TEST(ltp_splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
 	    if (TEST_RETURN < 0) {
@@ -158,4 +155,3 @@ int main(int ac, char **av) {
 	    }
 	} while (1);
 }
-

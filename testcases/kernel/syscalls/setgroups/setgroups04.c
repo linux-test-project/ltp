@@ -109,10 +109,8 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		gidsetsize = NGROUPS;
@@ -124,7 +122,7 @@ int main(int ac, char **av)
 		 * sets appropriate errno.
 		 */
 		TEST(SETGROUPS(gidsetsize, sbrk(0)));
-		/* check return code of setgroups */
+
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "setgroups() returned %ld, "
 				 "expected -1, errno=%d", TEST_RETURN,
@@ -144,12 +142,10 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() */
 	cleanup();
 
-	tst_exit();
 }
 
 #else
@@ -157,7 +153,7 @@ int main(int ac, char **av)
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -173,10 +169,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 }
@@ -191,6 +185,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

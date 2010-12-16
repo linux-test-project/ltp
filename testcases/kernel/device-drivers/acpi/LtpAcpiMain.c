@@ -82,7 +82,6 @@ int LTP_acpi_open_block_device()
     struct stat statbuf;
     int rc;
 
-
     if (ltp_block_dev_handle == 0) {
 
         /* check for the /dev/LTPACPITest subdir, and create if it does not exist.
@@ -114,7 +113,6 @@ int LTP_acpi_open_block_device()
                 }
             }
         }
-
 
         /*
          * Check for the /dev/ltp-acpi/block_device node, and create if it does not

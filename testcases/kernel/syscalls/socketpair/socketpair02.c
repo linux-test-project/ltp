@@ -62,7 +62,7 @@
 #endif
 
 /* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -88,7 +88,7 @@ char *TCID = "socketpair02";	/* test program identifier.              */
 /******************************************************************************/
 void cleanup()
 {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -129,7 +129,6 @@ int main(int argc, char *argv[])
 	}
 	setup();
 
-	/* Check looping state if -i option given */
 	if (socketpair(PF_UNIX, SOCK_STREAM, 0, fds) == -1) {
 		tst_brkm(TFAIL, cleanup, "socketpair(0) failed");
 	}

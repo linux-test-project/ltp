@@ -31,7 +31,7 @@
  *     Use run_auto.sh script in current directory to build and run test.
  *
  * AUTHOR
- *      Darren Hart <dvhltc@us.ibm.com> 
+ *      Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
  *    2006-Oct-20: Initial version by Darren Hart <dvhltc@us.ibm.com>
@@ -70,8 +70,6 @@ atomic_t step;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex;
 
-
-
 void usage(void)
 {
         rt_help();
@@ -92,7 +90,6 @@ int parse_args(int c, char *v)
         }
         return handled;
 }
-
 
 /* calculate the tsc period */
 unsigned long long tsc_period_ps(void)
@@ -224,5 +221,5 @@ int main(int argc, char *argv[])
 	printf("%d samples over 25 us latency\n", over_25);
 	printf("%d samples over 30 us latency\n", over_30);
 
-	return 0;
+	tst_exit();
 }

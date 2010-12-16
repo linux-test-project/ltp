@@ -68,12 +68,12 @@ main(int argc, char *argv[])
 	uint32_t ppid;
 	uint32_t stream;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
 
-	/* Initialize the server and client addresses. */ 
+	/* Initialize the server and client addresses. */
 	svr_loop.sin_family = AF_INET;
 	svr_loop.sin_addr.s_addr = SCTP_IP_LOOPBACK;
 	svr_loop.sin_port = htons(SCTP_TESTPORT_1);
@@ -101,11 +101,11 @@ main(int argc, char *argv[])
 
 	len = sizeof(struct sockaddr_in);
 	test_connect(clt_sk, (struct sockaddr *) &clt_loop, len);
-	
+
 	acpt_sk = test_accept(svr_sk, (struct sockaddr *) &acpt_loop, &len);
 
 	/* Build up a msghdr structure we can use for all sending.  */
-	memset(&outmessage, 0, sizeof(outmessage));	
+	memset(&outmessage, 0, sizeof(outmessage));
 	outmessage.msg_name = &svr_loop;
 	outmessage.msg_namelen = sizeof(svr_loop);
 	outmessage.msg_iov = &out_iov;
@@ -154,7 +154,7 @@ main(int argc, char *argv[])
                                     sizeof(struct sctp_assoc_change),
                                     SCTP_ASSOC_CHANGE,
                                     SCTP_COMM_UP);
-	
+
 	tst_resm(TPASS, "COMM_UP notification on client socket - SUCCESS");
 
 	error = test_recvmsg(acpt_sk, &inmessage, MSG_WAITALL);
@@ -163,7 +163,7 @@ main(int argc, char *argv[])
                                     sizeof(struct sctp_assoc_change),
                                     SCTP_ASSOC_CHANGE,
                                     SCTP_COMM_UP);
-	
+
 	tst_resm(TPASS, "COMM_UP notification on server socket - SUCCESS");
 
 	inmessage.msg_control = incmsg;
@@ -186,5 +186,5 @@ main(int argc, char *argv[])
 	close(svr_sk);
 	close(acpt_sk);
 
-	return 0;
+	tst_exit();
 }

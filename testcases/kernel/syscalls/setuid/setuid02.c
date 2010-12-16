@@ -158,7 +158,6 @@ int main(int ac, char **av)
 	uid = getuid();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -187,25 +186,23 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temp dir and cd to it */
@@ -214,7 +211,7 @@ void setup()
 	/* must be root */
 	if (geteuid() != 0)
 		tst_brkm(TBROK, cleanup, "Must be root for this test!");
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -228,9 +225,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove files and temp dir */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

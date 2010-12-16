@@ -45,7 +45,7 @@ void test(int early)
 		err("mmap");
 	signal(SIGBUS, handler);
 	printf("ptr = %p\n", ptr);
-	if (sigsetjmp(recover_ctx, 1) == 0) { 
+	if (sigsetjmp(recover_ctx, 1) == 0) {
 		seq = 0;
 		printf("injection\n");
 		if (madvise(ptr, PS, MADV_POISON) < 0)
@@ -76,7 +76,7 @@ int main(void)
 		fail("starting policy not default");
 	if (prctl(PR_MCE_KILL, PR_MCE_KILL_SET, PR_MCE_KILL_LATE, 0, 0, 0) < 0)
 		err("PR_MCE_KILL_SET late");
-	test(0);	
+	test(0);
 	if (prctl(PR_MCE_KILL, PR_MCE_KILL_SET, PR_MCE_KILL_EARLY, 0, 0, 0) < 0)
 		err("PR_MCE_KILL_SET early");
 	test(1);
@@ -92,5 +92,5 @@ int main(void)
 		err("PR_MCE_KILL_GET");
 	if (err != PR_MCE_KILL_DEFAULT)
 		fail("ending policy not default");
-	return 0;
+	tst_exit();
 }

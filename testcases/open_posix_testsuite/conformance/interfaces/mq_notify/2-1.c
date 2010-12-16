@@ -2,18 +2,18 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
  *  mq_notify() test plan:
- *  Only one process may be registerd for notification by a message queue. 
- *  If the calling process or other process has already registered for the 
- *  notification, subsequent attempts to register for that message queue 
- *  will fail. 
- *  
- *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *  Only one process may be registerd for notification by a message queue.
+ *  If the calling process or other process has already registered for the
+ *  notification, subsequent attempts to register for that message queue
+ *  will fail.
+ *
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq
  *		resources
  */
 

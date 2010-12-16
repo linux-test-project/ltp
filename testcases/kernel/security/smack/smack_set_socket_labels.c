@@ -42,7 +42,7 @@ main(int argc, char *argv[])
 	int sock;
 	int rc;
 
-	if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) { 
+	if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 		sprintf(message, "%s Socket creation failure", argv[0]);
 		perror(message);
 		exit(1);

@@ -48,7 +48,6 @@
 #include <sys/resource.h>
 #include   "sched.h"
 
-
 /*
  * Defines:
  *
@@ -80,7 +79,6 @@
 void parse_args (int, char **);
 void multiply_matrices ();
 
-
 /*
  * Global variables:
  *
@@ -96,7 +94,6 @@ int	verbose = 0;
 int	debug = 0;
 long    execution_time = DEFAULT_EXECUTION_TIME;
 char 	*priority      = DEFAULT_PRIORITY_TYPE;
-
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -163,7 +160,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                         multiply_matricies ()                        |
 | ==================================================================== |
@@ -201,7 +197,6 @@ void multiply_matrices ()
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
 | ==================================================================== |
@@ -232,7 +227,6 @@ void parse_args (int argc, char **argv)
                 fprintf (stderr, USAGE, program_name);
                 exit (0);
         }
-
 
 	while ((opt = getopt(argc, argv, "p:t:vd")) != EOF)
 	{

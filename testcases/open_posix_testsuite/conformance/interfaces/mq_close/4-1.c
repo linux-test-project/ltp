@@ -7,7 +7,7 @@
  */
 
 /*
-  Test that a closed message queue descriptor has been disassociated from 
+  Test that a closed message queue descriptor has been disassociated from
   its message queue by attempting to set a notification on the descriptor
   and verifying that mq_notify returns -1 and sets errno to EBADF
  */

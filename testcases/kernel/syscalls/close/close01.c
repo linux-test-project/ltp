@@ -151,7 +151,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	return 0;
+	tst_exit();
  }
 
 /*
@@ -161,15 +161,12 @@ void setup(void)
 {
 	int mypid;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	mypid = getpid();
@@ -190,9 +187,6 @@ void cleanup(void)
 
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

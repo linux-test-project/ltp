@@ -34,7 +34,7 @@ int main (int argc, char ** argv)
   }
 
   /* Read all given files */
-  for (i=1; i<argc; i++) {  
+  for (i=1; i<argc; i++) {
 
     /* open the file */
     fd = open (argv[i], O_RDONLY);
@@ -55,4 +55,3 @@ int main (int argc, char ** argv)
   free(buf);
   return 0;
 }
-

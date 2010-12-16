@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
@@ -74,7 +73,6 @@
 #define dprt(fmt, args...)
 #endif
 
-
 /* aliases for environment variable entries */
 #define    AUSDEBUG  (*edat[ADBG].eval.vint)	/* debug value */
 #define    BVAL  (*edat[BNDX].eval.vint)	/* # of childern per parent */
@@ -109,7 +107,6 @@ union semun {	/* to fix problem with 4th arg of semctl in 64 bits MARIOG */
 	struct semid_ds *buf;
 	unsigned short *array;
 } semarg = { 0 };
-
 
 /* structure of all environment variable used by program */
 struct envstruct {
@@ -148,7 +145,6 @@ FILE *debugfp = stderr;		/* debug file pointer, used if AUSDEBUG set */
 #define errfp stderr
 #define debugfp stderr
 #endif
-
 
 struct envstruct *edat = envdata;	/* pointer to environment data */
 
@@ -253,7 +249,6 @@ void severe(char *fmt, ...)
 		exit(1);
 	}
 }
-
 
 /*
  *  if AUSDEBUG set will print information to file associated with slot number.
@@ -540,7 +535,6 @@ int spawn(int val)
 
     level++;
 
-
     for (i = 1; i <= BVAL; i++) {
         tval = (val * BVAL) + i;
         if (!lvlflg) {
@@ -767,7 +761,7 @@ void set_signals(void *sighandler())
 	    {SIGQUIT,	"SIGQUIT"},
 	    {SIGABRT,	"SIGABRT"},
 	    {SIGBUS,	"SIGBUS"},
-	    {SIGSEGV,	"SIGSEGV"},        
+	    {SIGSEGV,	"SIGSEGV"},
 	    {SIGALRM,	"SIGALRM"},
 	    {SIGUSR1,	"SIGUSR1"},
 	    {SIGUSR2,	"SIGUSR2"},
@@ -1085,7 +1079,7 @@ void messenger(void) /* AKA Assassin */
 					exit(0);
 				}
 				exit( 1 );
-				/* NOT REACHED */
+
 				break;
 			}
 		}
@@ -1122,8 +1116,8 @@ void doit(void)
 		procgrp = setpgrp();
 #endif
 		if (AUSDEBUG) {
-			fprintf(stderr, "process group: %d\n", procgrp);   
-	        	fflush(stderr);    
+			fprintf(stderr, "process group: %d\n", procgrp);
+	        	fflush(stderr);
 		}
 		if (procgrp == -1) {
 			perror("setpgid failed");
@@ -1174,7 +1168,6 @@ int main(int argc, char *argv[])
 {
 	extern Pinfo *shmaddr;	/* start address of shared memory */
 
-
 	prtln();
 	getenv_val();		/* Get and initialize all environment variables */
 	prtln();
@@ -1189,7 +1182,6 @@ int main(int argc, char *argv[])
                 exit( 1 );
         }
 
-
 	parse_args(argc, argv);	/* Get all command line arguments */
 dprt("value of BVAL = %d, value of DVAL = %d\n", BVAL, DVAL);
 	nodesum = sumit(BVAL, DVAL);
@@ -1203,7 +1195,6 @@ dprt("value of BVAL = %d, value of DVAL = %d\n", BVAL, DVAL);
 	}
 #endif
 
-	
 dprt("value of nodesum is initiallized to: %d\n", nodesum);
 
 	prtln();
@@ -1216,6 +1207,6 @@ dprt("value of nodesum is initiallized to: %d\n", nodesum);
 
 	doit(); 		/* spawn off processes */
 	prtln();
-	return 0;
-	
+	tst_exit();
+
 }

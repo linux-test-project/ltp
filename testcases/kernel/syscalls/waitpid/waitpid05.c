@@ -85,7 +85,7 @@ int main(int ac, char **av)
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "d", &sig_uclinux);
@@ -105,7 +105,7 @@ int main(int ac, char **av)
 		if (signal(SIGTERM, SIG_DFL) == SIG_ERR) {
 			tst_resm(TFAIL, "Sigset SIGTERM failed, errno = %d",
 				 errno);
-			tst_exit();
+
 		}
 
 		exno = 1;
@@ -277,6 +277,4 @@ void cleanup(void)
 
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

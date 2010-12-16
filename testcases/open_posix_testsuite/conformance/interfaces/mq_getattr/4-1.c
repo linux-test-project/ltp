@@ -8,9 +8,9 @@
 
 /*
  * mq_getattr test plan:
- * mq_getattr gets mq_curmsgs value, which will be returned as 
+ * mq_getattr gets mq_curmsgs value, which will be returned as
  * the number of the message currently on the queue.
- *  
+ *
  */
 
 #include <stdio.h>
@@ -85,4 +85,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

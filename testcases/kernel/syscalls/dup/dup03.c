@@ -138,7 +138,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
     /***************************************************************
@@ -151,7 +151,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -187,15 +186,14 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -217,13 +215,10 @@ void setup()
 	Fd = (int *)malloc(maxfds * sizeof(int));
 	Fd[0] = -1;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/*
@@ -255,7 +250,7 @@ void setup()
 			 "Unable to open enough files to use all file descriptors, tried %ld",
 			 maxfds);
 	}
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -282,9 +277,6 @@ void cleanup()
 		free(Fd);
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

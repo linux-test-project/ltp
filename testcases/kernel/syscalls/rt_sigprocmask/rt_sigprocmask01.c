@@ -28,7 +28,7 @@
 /*		as follows:						      */
 /*									      */
 /*		SIG_BLOCK						      */
-/*		    The set of blocked signals is the union of the current set*/ 
+/*		    The set of blocked signals is the union of the current set*/
 /*		    and the set argument. 				      */
 /*		SIG_UNBLOCK						      */
 /*		    The signals in set are removed from the current set of    */
@@ -65,7 +65,7 @@
 #include "ltp_signal.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -94,11 +94,10 @@ int  TST_TOTAL = 8;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
-	/* Exit with appropriate return code. */
-	tst_exit();
+
 }
 
 /* Local  Functions */
@@ -149,7 +148,7 @@ int main(int ac, char **av) {
 	sigset_t set, oset;
 	int lc;                 /* loop counter */
 	char *msg;              /* message returned from parse_opts */
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 <<<<<<< HEAD
@@ -161,7 +160,6 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 	        Tst_count = 0;
 	        for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -240,11 +238,10 @@ int main(int ac, char **av) {
 
 		Tst_count++;
 
-	}	
+	}
 
 	cleanup();
-	
+
 	return 1;
 
 }
-

@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +50,6 @@ struct RES
 	double locRes;
 	double svcRes;
 };
-
 
 struct RES *resTbl;
 
@@ -81,53 +80,53 @@ void *my_thread_process (void * arg)
 	static double result = 0;
     struct timeval total_timeout;
 	struct netconfig *nconf = NULL;
-    
+
     total_timeout.tv_sec = 1;
 	total_timeout.tv_usec = 1;
-	
+
 	nconf = getnetconfigent("udp");
-	
-    if ((struct netconfig *)nconf == NULL) 
+
+    if ((struct netconfig *)nconf == NULL)
     {
     	//Test failed
     	printf("5\n");
     	pthread_exit (5);
     }
-	
+
 	clnt = clnt_tp_create_timed(hostname, progNum,
                                 VERSNUM, (struct netconfig *)nconf, &total_timeout);
-	
+
 	if (clnt == NULL)
 	{
 		printf("5\n");
 		pthread_exit (5);
 	}
-	
+
 	if (run_mode == 1)
 	{
 		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
-	
+
 	vars.a = getRand();
 	vars.b = getRand();
 	vars.c = getRand();
-		
+
 	resTbl[atoi(arg)].locRes = vars.a + (vars.b * vars.c);
-	
-    clnt_call((CLIENT *)clnt, CALCTHREADPROC, 
+
+    clnt_call((CLIENT *)clnt, CALCTHREADPROC,
 				(xdrproc_t)xdr_datas, (char *)&vars, // xdr_in
                 (xdrproc_t)xdr_double, (char *)&resTbl[atoi(arg)].svcRes, // xdr_out
 				total_timeout);
-	
+
 	thread_array_result[atoi(arg)] = (resTbl[atoi(arg)].svcRes == resTbl[atoi(arg)].locRes) ? 0 : 1;
-	
+
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread #%d calc : %lf, received : %lf\n", 
+		fprintf(stderr, "Thread #%d calc : %lf, received : %lf\n",
 		        atoi(arg), resTbl[atoi(arg)].locRes,
 		        resTbl[atoi(arg)].svcRes);
 	}
-    
+
     pthread_exit (0);
 }
 
@@ -137,7 +136,7 @@ int main(int argn, char *argc[])
 	//					   argc[2] : Server Program Number
 	//					   argc[3] : Number of threads
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -147,25 +146,25 @@ int main(int argn, char *argc[])
 	int i;
 	pthread_t *pThreadArray;
     void *ret;
-    
+
     hostname = argc[1];
     nettype = "VISIBLE";
-    
+
     resTbl = (struct RES *)malloc(threadNb * sizeof(struct RES));
-    
+
 	progNum = atoi(argc[2]);
-	
+
 	if (run_mode == 1)
 	{
 		printf("Server #%d\n", progNum);
 		printf("Thread to create %d\n", threadNb);
 	}
-	
+
 	//Initialization : create threads results array, init elements to 0
 	//Each thread will put function result (pas/fail) into array
 	thread_array_result = (int *)malloc(threadNb * sizeof(int));
 	memset(&thread_array_result[0], 0, threadNb * sizeof(int));
-	
+
 	//Create all threads
 	//Run all threads
 	pThreadArray = (pthread_t *)malloc(threadNb * sizeof(pthread_t));
@@ -179,13 +178,13 @@ int main(int argn, char *argc[])
 	        exit (1);
 	    }
 	}
-			
+
 	//Clean threads
 	for (i = 0; i < threadNb; i++)
 	{
 		(void)pthread_join (pThreadArray[i], &ret);
 	}
-			
+
 	//Check if all threads results are ok
 	test_status = 0;
 	for (i = 0; i < threadNb; i++)
@@ -196,7 +195,7 @@ int main(int argn, char *argc[])
 			break;
 		}
 	}
-	
+
 	if (run_mode == 1)
 	{
 		for (i = 0; i < threadNb; i++)
@@ -204,10 +203,10 @@ int main(int argn, char *argc[])
 			fprintf(stderr, "Result[%d]=%d\n", i, thread_array_result[i]);
 		}
 	}
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

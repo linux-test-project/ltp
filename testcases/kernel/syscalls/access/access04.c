@@ -111,12 +111,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -125,7 +123,6 @@ int main(int ac, char **av)
 		 */
 		TEST(access(TESTFILE, F_OK));
 
-		/* check return code of access(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL|TTERRNO, "access(%s, F_OK) failed", TESTFILE);
 			continue;
@@ -151,12 +148,10 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -170,7 +165,6 @@ void setup()
 {
 	int fd;			/* File handle for testfile */
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -181,10 +175,8 @@ void setup()
 	if (setuid(ltpuser->pw_uid) == -1)
 		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Creat a test directory under temporary directory */
@@ -237,6 +229,4 @@ void cleanup()
 	 */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

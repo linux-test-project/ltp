@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  Assumption: The test assumes that this program is run under normal conditions,
@@ -12,11 +12,11 @@
 
  1. sigsuspend() replaces the original signal mask (containing SIGUSR1)
     with the new signal mask (containing SIGUSR2.) This can be accomplished
-    by having the child call sigsuspend, and then have the parent send the 
+    by having the child call sigsuspend, and then have the parent send the
     child a SIGUSR2 signal. The signal should remain pending while as long
     as the child is suspended. How do we verify that a signal is pending?
     Well, if it wasn't for the fact that the child is suspended, we could
-    have easily called the sigpending() from the child process. Because 
+    have easily called the sigpending() from the child process. Because
     the child is suspended, we have to somehow verify that the signal is
     pending using only the parent process. This is acheived by having the
     parent send the child another signal, one that will cause the child to
@@ -30,12 +30,12 @@
     SIGUSR1. We verify this using the following rationale: Via the 3 seconds of
     sleep at the very start of the parent section of the code, the parent
     process allowed for enough time for the child process to complete execution
-    and get to the "return 2" line at the very end of the child's code, but the 
+    and get to the "return 2" line at the very end of the child's code, but the
     parent didn't allow for any time in which the child may have been suspended.
     Because the child did recieve the signal that the parent later sent before
-    the child finished executing, that had to have meant that the child was 
+    the child finished executing, that had to have meant that the child was
     suspended for a while during it's execution.
-    
+
 */
 
 #include <signal.h>
@@ -57,14 +57,14 @@ void handler(int signo)
 		if (SIGUSR2_called == 1) {
 			exit(1);
 		}
-	} 
+	}
 	else if (signo == SIGUSR2) {
 		printf("SIGUSR2 called. Inside handler\n");
 		SIGUSR2_called = 1;
 		if (SIGUSR1_called == 1)
 			exit(0);
 		else
-			exit(1); 
+			exit(1);
 	}
 }
 
@@ -110,20 +110,20 @@ int main()
 		return 2;
 
 	} else {
-		int s; 
+		int s;
 		int exit_status;
 
 		/* parent */
 		sleep(3);
 
-		printf("parent sending child a SIGUSR2 signal\n");		
+		printf("parent sending child a SIGUSR2 signal\n");
 		kill (pid, SIGUSR2);
 
 		if (SIGUSR2_called == 1) {
                         printf("Test FAILED: sigsuspend did not add SIGUSR2 to the temporary mask\n");
                         return PTS_FAIL;
 		}
-		printf("parent sending child a SIGUSR1 signal\n");		
+		printf("parent sending child a SIGUSR1 signal\n");
 		kill (pid, SIGUSR1);
 
 		if (wait(&s) == -1) {
@@ -134,9 +134,9 @@ int main()
 
 		if (!WIFEXITED(s)) {
 			printf("Test FAILED: Did not exit normally\n");
-			return PTS_FAIL;	
+			return PTS_FAIL;
 		}
-		
+
 		exit_status = WEXITSTATUS(s);
 
 		printf("Exit status from child is %d\n", exit_status);

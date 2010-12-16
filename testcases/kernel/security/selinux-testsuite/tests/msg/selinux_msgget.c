@@ -38,5 +38,5 @@ int main(int argc, char **argv)
 	  return 1;
 	printf("msgget succeeded: key = %d, id = %d\n", key, id);
 
-	return 0;
+	tst_exit();
 }

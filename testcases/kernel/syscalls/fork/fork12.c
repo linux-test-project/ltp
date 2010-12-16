@@ -162,7 +162,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	tst_exit();
 }
 
 void fork12_sigs(int signum)

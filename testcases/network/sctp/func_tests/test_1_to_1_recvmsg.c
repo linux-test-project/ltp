@@ -105,7 +105,7 @@ main(int argc, char *argv[])
         test_listen(lstn_sk, 10);
 
 	len = sizeof(struct sockaddr_in);
-	
+
 	test_connect(sk, (struct sockaddr *) &conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 			 "pointer count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "recvmsg() with invalid iovec ptr - EFAULT");
-	
+
 	inmessage.msg_iov = &iov_rcv;
 
 	/*recvmsg () TEST4: Invalid msghdr pointer EFAULT, Expected error*/
@@ -177,7 +177,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "recvmsg() on a socket that has received shutdown - "
 		 "EOF");
 
-	/*recvmsg () TEST7:reading the pending message socket that sent 
+	/*recvmsg () TEST7:reading the pending message socket that sent
 	SHUTDOWN*/
 	count = recvmsg(sk, &inmessage, flag);
 	if (count < 0)
@@ -202,5 +202,5 @@ main(int argc, char *argv[])
 	close(sk);
 	close(lstn_sk);
 	close(acpt_sk);
-	return 0;
+	tst_exit();
 }

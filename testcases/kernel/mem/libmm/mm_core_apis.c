@@ -35,7 +35,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -52,11 +51,9 @@
 #define FALSE 0
 #endif
 
-
 char *TCID;             /* testcase identifier                                */
 int TST_TOTAL = 1;      /* Total number of testcases.                         */
 extern int Tst_count;   /* Testcase couter for tst_*** routines.              */
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -77,7 +74,6 @@ cleanup()
     tst_resm(TINFO, "cleanup: cleaning up temporary files and directories\n");
     tst_exit();
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -108,7 +104,7 @@ mm_core_test01()
 
     tst_resm(TINFO, "test01: Testing Memory Segment Access\n");
     tst_resm(TINFO, "test01: Creating 16KB shared memory core area\n");
-   
+
     if ((alloc_mem_ptr = (unsigned char *)mm_core_create(16*1024, NULL)) == NULL)
     {
         mm_err = (char *)mm_error();
@@ -151,7 +147,6 @@ mm_core_test01()
         }
     }
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -371,7 +366,6 @@ mm_core_test02()
     return 0;
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Function:    main                                                          */
@@ -395,7 +389,7 @@ main(int  argc,            /* argument count                                  */
         tst_resm(TPASS,
                 "mm_core_test01: Testing Memory Segment Access success");
     }
-   
+
     TCID = "mm_core_test02";    /* identify the first testcase                */
     if ((ret = mm_core_test02()) == 0)
     {

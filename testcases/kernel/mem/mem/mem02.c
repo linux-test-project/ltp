@@ -37,7 +37,6 @@
 >BUGS:	<
 ======================================================================*/
 
-
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -149,7 +148,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 	if ((pm2=pm1=(char *)malloc(memsize)) == NULL) {
 		tst_resm(TFAIL, "malloc did not alloc memory ");
 		             tst_exit();
-	}	     
+	}
 
 	for (i=0; i<memsize; i++)
 		*pm2++ = 'X';
@@ -252,7 +251,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 		free(memptr);
 	}
 
-	return 0;
+	tst_exit();
 /*--------------------------------------------------------------------*/
 }					/******** END OF MAIN. ********/
 /*--------------------------------------------------------------------*/

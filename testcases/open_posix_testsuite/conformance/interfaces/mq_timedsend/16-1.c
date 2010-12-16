@@ -5,16 +5,16 @@
  * source tree.
  * adam.li@intel.com - 2004-04-29
  */
- 
+
 /*
- * Test that if the message queue is full and O_NONBLOCK is not set, 
+ * Test that if the message queue is full and O_NONBLOCK is not set,
  * mq_timedsend() will block until abs_timeout is reached.
  *
  * Test by sending messages in a child process until the message queue is full.
  * At this point, the child should be blocking on sending.  Then, have the
  * parent wait for the timeout and return pass when the next message is sent
  * to the message queue.
- * 
+ *
  * If Timers is supported, then abs_timeout is based on CLOCK_REALTIME.
  * Otherwise, the timeout is based on the system clock (time() function).
  */
@@ -79,7 +79,7 @@ int main()
 		struct timespec ts;
 		sigset_t mask;
 
-		/* wait for parent to set up handler */ 
+		/* wait for parent to set up handler */
 		sigemptyset(&mask);
 		sigaddset(&mask, SIGUSR1);
 		sigprocmask(SIG_BLOCK,&mask,NULL);
@@ -91,12 +91,12 @@ int main()
 		clock_gettime(CLOCK_REALTIME, &ts);
 		ts.tv_sec += TIMEOUT;
 #else
-		ts.tv_sec=time(NULL)+TIMEOUT; 
+		ts.tv_sec=time(NULL)+TIMEOUT;
 #endif
 		ts.tv_nsec=0;
 
 		for (i=0; i<MAXMSG+1; i++) {
-        		if (mq_timedsend(gqueue, msgptr, 
+        		if (mq_timedsend(gqueue, msgptr,
 						strlen(msgptr), 1, &ts) != 0) {
 				/* send will fail after timeout occurs*/
 				kill(getppid(), SIGABRT);
@@ -127,11 +127,11 @@ int main()
 		kill(pid, SIGUSR1);
 
 		/* wait for heartbeats from child */
-		for (j=0; j<MAXMSG+1; j++) { 
+		for (j=0; j<MAXMSG+1; j++) {
 			ts.tv_sec = 3;
 			ts.tv_nsec = 0;
-			if (nanosleep(&ts, NULL) 
-				== 0) 
+			if (nanosleep(&ts, NULL)
+				== 0)
 			{
 			/* If sleep finished, child is probably blocking */
 				break;
@@ -172,4 +172,3 @@ int main()
 
 	return PTS_UNRESOLVED;
 }
-

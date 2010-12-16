@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -76,12 +76,12 @@ int get_ncpu() {
 	sysctl(mib, 2, &ncpu, &len, NULL, 0);
 # else
 #  ifdef HPUX
-	struct pst_dynamic psd; 
+	struct pst_dynamic psd;
 	pstat_getdynamic(&psd, sizeof(psd), 1, 0);
-	ncpu = (int)psd.psd_proc_cnt; 
+	ncpu = (int)psd.psd_proc_cnt;
 #  endif /* HPUX */
 # endif /* BSD */
-#endif /* _SC_NPROCESSORS_ONLN */  
+#endif /* _SC_NPROCESSORS_ONLN */
 
 	return ncpu;
 }
@@ -115,14 +115,14 @@ void kill_children(int *child_pid) {
 	int i;
 
 	for (i=0; i<nb_cpu; i++) {
-		kill(child_pid[i], SIGTERM);		
+		kill(child_pid[i], SIGTERM);
 	}
 }
 
 int main() {
         int *child_pid, oldcount, newcount, shm_id, i, j;
 	struct sched_param param;
-	key_t key; 
+	key_t key;
 
 	/* Get the number of CPUs */
 	nb_cpu = get_ncpu();
@@ -132,7 +132,6 @@ int main() {
 	}
 
 	child_pid = malloc(nb_cpu);
-
 
 	key = ftok("conformance/interfaces/sched_setparam/9-1.c",1234);
 	shm_id = shmget(key, sizeof(int), IPC_CREAT|0600);
@@ -171,17 +170,17 @@ int main() {
 			perror("An error occurs when calling fork()");
 			for (j=0; j<i; j++) {
 >>>>>>> master
-				kill(child_pid[j], SIGTERM);		
+				kill(child_pid[j], SIGTERM);
 			}
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
-			
+
 			child_process();
 
 			printf("This code should not be executed.\n");
 			return PTS_UNRESOLVED;
 		}
-	}		
+	}
 
 	child_pid[i] = fork();
 	if (child_pid[i] == -1) {
@@ -191,13 +190,13 @@ int main() {
 =======
 		for (j=0; j<i; j++) {
 >>>>>>> master
-			kill(child_pid[j], SIGTERM);		
+			kill(child_pid[j], SIGTERM);
 		}
 		return PTS_UNRESOLVED;
 	} else if (child_pid[i] == 0) {
-		
+
 		test_process();
-		
+
 		printf("This code should not be executed.\n");
 		return PTS_UNRESOLVED;
 	}
@@ -214,13 +213,13 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 	newcount = *shmptr;
-	
+
 	if (newcount == oldcount) {
 		printf("The target process does not preempt the calling process\n");
 		kill_children(child_pid);
 		return PTS_FAIL;
-	} 
-		
+	}
+
 	printf("Test PASSED\n");
 	kill_children(child_pid);
 	return PTS_PASS;

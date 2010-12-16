@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2003, 2004, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content 
- * of this license, see the COPYING file at the top level of this 
+ * This file is licensed under the GPL license.  For the full content
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
- * Under no circumstance shall the function fail with a timeout if 
- * the semaphore can be locked immediately. The validity of the 
- * abs_timeout need not be checked if the semaphore can be locked 
+ * Under no circumstance shall the function fail with a timeout if
+ * the semaphore can be locked immediately. The validity of the
+ * abs_timeout need not be checked if the semaphore can be locked
  * immediately.
  */
 
@@ -30,14 +30,12 @@
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-
-
 int main() {
 	sem_t mysemp[2];
 	struct timespec ts[2];
 	int val[2], sts[2];
 	int i;
-	
+
 	for (i = 0; i < 2; i++) {
         	if (sem_init (&mysemp[i], 0, 1) == -1) {
                 	perror(ERROR_PREFIX "sem_init");
@@ -54,7 +52,7 @@ int main() {
 		sts[i] = sem_timedwait(&mysemp[i], &ts[i]);
         	if (sts[i] == -1) {
 			perror(ERROR_PREFIX "sem_timedwait");
-			return PTS_UNRESOLVED; 
+			return PTS_UNRESOLVED;
 		}
 
 		/* Value of Semaphore */
@@ -68,7 +66,7 @@ int main() {
 			puts("TEST PASSED");
 			sem_destroy(&mysemp[i]);
 			return PTS_PASS;
-		} else { 
+		} else {
 			puts("TEST FAILED");
 			sem_destroy(&mysemp[i]);
 			return PTS_FAIL;

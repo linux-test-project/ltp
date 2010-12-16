@@ -139,18 +139,16 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -173,7 +171,6 @@ int main(int ac, char **av)
 			 */
 			TEST(lseek(fildes, 0, whence));
 
-			/* check return code of lseek(2) */
 			if (TEST_RETURN != (off_t) - 1) {
 				tst_resm(TFAIL, "lseek() returned %ld, expected "
 					 "-1, errno:%d", TEST_RETURN,
@@ -192,11 +189,10 @@ int main(int ac, char **av)
 		}
 	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	  return 0;
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -206,15 +202,12 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int ind;		/* counter for test setup function */
+	int ind;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* call individual setup functions */
@@ -338,9 +331,6 @@ void cleanup()
 			 TEMP_FILE2, errno, strerror(errno));
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

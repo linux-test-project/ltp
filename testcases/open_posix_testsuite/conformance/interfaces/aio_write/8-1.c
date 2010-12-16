@@ -2,7 +2,7 @@
  * Copyright (c) 2004, Bull SA. All rights reserved.
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -54,8 +54,8 @@ int main()
 	/*
 	 * EBADF is encountered at a later stage
 	 * and should be collected by aio_error()
-	 */ 
-	
+	 */
+
 	if (aio_write(&aiocb) != 0)
 	{
 		printf(TNAME " bad aio_write return value()\n");
@@ -70,7 +70,6 @@ int main()
 		printf(TNAME " errno is not EBADF %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
-
 
 	printf ("Test PASSED\n");
 	return PTS_PASS;

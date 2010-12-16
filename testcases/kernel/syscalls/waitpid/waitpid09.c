@@ -35,7 +35,7 @@
  *	case 1:
  *		Parent calls a waitpid with no children waiting. Waitpid
  *		should return a -1 since there are no children to wait for.
- *	
+ *
  * USAGE:  <for command-line>
  *      waitpid09 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *      where,  -c n : Run n copies concurrently.
@@ -44,7 +44,7 @@
  *              -I x : Execute test for x seconds.
  *              -P x : Pause for x seconds between iterations.
  *              -t   : Turn on syscall timing.
- *	
+ *
  * History
  *	07/2001 John George
  *		-Ported
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");
@@ -260,8 +260,6 @@ int main(int argc, char **argv)
 		 }
 	}
 
-	return 0;
-
 }
 
 /*
@@ -305,8 +303,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }
 
 void inthandlr()

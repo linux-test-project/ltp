@@ -1079,7 +1079,7 @@ static int store_number(const char *path, const char *file, int val)
 {
 	char buf[PATH_MAX];
 	char data[SMALL_BUFSZ];
-	
+
 	memset(data, 0, sizeof(data));
 	pathcat2(buf, sizeof(buf), path, file);
 	snprintf(data, sizeof(data), "%d", val);
@@ -1861,7 +1861,6 @@ static int get_siblings()
 		siblings = 1;	/* old kernel, no siblings, default to 1 */
 	return siblings;
 }
-
 
 /*
  * Some 2.6.16 and 2.6.17 kernel versions have a bug in the dynamic
@@ -3326,7 +3325,6 @@ const struct cpuset *cpuset_fts_get_cpuset(const struct cpuset_fts_entry *cs_ent
 {
 	return cs_entry->cpuset;
 }
-
 
 /* Return value of errno (0 if no error) on attempted cpuset operations */
 int cpuset_fts_get_errno(const struct cpuset_fts_entry *cs_entry)

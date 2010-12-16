@@ -143,8 +143,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -229,10 +228,9 @@ void check_functionality(int i)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	if ((TC = malloc(TST_TOTAL*sizeof(struct test_case_t))) == NULL)
@@ -298,7 +296,6 @@ void cleanup(void)
 	if (TC != NULL)
 		free(TC);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -307,6 +304,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

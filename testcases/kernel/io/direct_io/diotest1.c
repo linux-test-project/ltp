@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * NAME
  *      diotest1.c
@@ -54,7 +53,6 @@
 
 char *TCID="diotest01";		 		 /* Test program identifier.    */
 int TST_TOTAL=1;		 		 /* Total number of test conditions */
-
 
 #ifdef O_DIRECT
 
@@ -201,7 +199,7 @@ main(int argc, char *argv[])
 	unlink(outfile);
 	tst_resm(TPASS, "Test passed");
 	tst_exit();
-	return 0;
+	tst_exit();
 }
 
 #else /* O_DIRECT */

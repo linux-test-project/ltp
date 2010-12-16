@@ -111,7 +111,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -119,12 +118,11 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -140,6 +138,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

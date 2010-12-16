@@ -48,7 +48,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -75,7 +75,7 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -117,12 +117,11 @@ struct test_case_t {
 
 int test_count = sizeof(test_cases) / sizeof(struct test_case_t);
 
-
 int main(int ac, char **av) {
 	int i;
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
-	
+
 	/* parse standard options */
 <<<<<<< HEAD
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
@@ -135,7 +134,6 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {

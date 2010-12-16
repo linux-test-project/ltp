@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +37,7 @@
 //Other define
 #define NBCASE 1
 
-typedef struct 
+typedef struct
 {
 	//List parameters here
 	int init_tout;
@@ -49,7 +49,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -61,11 +61,11 @@ int main(int argn, char *argc[])
 	char nettype[16] = "visible";
 	CLIENT *clnt = NULL;
 	struct timeval tv;
-	
+
 	//Test initialization
 	paramList[0].init_tout = 1;
 	paramList[0].next_tout = 1;
-	
+
 	//Call tested function using all tests cases
 	for (i = 0; i < NBCASE; i++)
 	{
@@ -76,13 +76,13 @@ int main(int argn, char *argc[])
 			printf("%d", paramList[i].next_tout);
 			printf("\n");
 		}
-		
+
 		//Call function
 		tv.tv_sec = paramList[i].init_tout;
 		tv.tv_usec = paramList[i].next_tout;
-	
-		clnt = clnt_create_timed(argc[1], progNum, VERSNUM, nettype, &tv);	
-		
+
+		clnt = clnt_create_timed(argc[1], progNum, VERSNUM, nettype, &tv);
+
 		//Check result
 		if (clnt == NULL)
 		{
@@ -91,10 +91,10 @@ int main(int argn, char *argc[])
 			break;
 		}
 	}
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

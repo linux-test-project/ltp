@@ -1,15 +1,15 @@
-/*   
+/*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
    Testing passing an invalid signals to sigrelse().
-   After sighold is called on an invalid signal, sigrelse() should 
+   After sighold is called on an invalid signal, sigrelse() should
 return -1 and set errno to EINVAL
-   
-   The invalid signal passed to sigrelse() depends on the argument 
+
+   The invalid signal passed to sigrelse() depends on the argument
 passed to this program.
    There are currently 4 invalid signals.
  */
@@ -100,5 +100,3 @@ sig11_handler(int sig)
 {
     longjmp(sig11_recover, 1);
 }
-
-

@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program verifies that sigpause() suspends the calling process
@@ -12,10 +12,10 @@
  1. From the main() function, create a new thread. Give the new thread a
     a second to set up for receiving a signal, and to suspend itself using
     sigpause().
- 2. For about ten seconds, keep checking from main() that the "returned" 
+ 2. For about ten seconds, keep checking from main() that the "returned"
     variable hasn't been set yet. If it has, that means that sigpause
     returned even before a signal was sent to it, thus FAIL the test.
- 3. After the ten seconds, send the new thread a signal using pthread_kill, 
+ 3. After the ten seconds, send the new thread a signal using pthread_kill,
     and verify that "returned" has now been set to 1, meaning that the
     sigpause returned from suspension.
  */
@@ -69,7 +69,7 @@ int main()
 		}
 	}
 
-	if (pthread_kill(new_th, SIGTOTEST) != 0) 
+	if (pthread_kill(new_th, SIGTOTEST) != 0)
 	{
 		printf("Test UNRESOLVED: Couldn't send signal to thread\n");
 		return PTS_UNRESOLVED;
@@ -83,7 +83,5 @@ int main()
 	}
 
 	printf("Test PASSED\n");
-	return PTS_PASS;	
+	return PTS_PASS;
 }
-
-

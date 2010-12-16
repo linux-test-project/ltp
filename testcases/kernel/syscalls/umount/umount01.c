@@ -142,13 +142,10 @@ int main(int ac, char **av)
 		STD_COPIES = 1;
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Call mount(2) */
@@ -173,19 +170,19 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "umount(2) Passed ");
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
 
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root */
@@ -208,10 +205,9 @@ void setup()
 			 strerror(errno));
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -229,12 +225,9 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}
 
 /*
  * issue a help message

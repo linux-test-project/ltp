@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -36,7 +36,7 @@ struct unique {
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1) || defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 	{
 		SCHED_SPORADIC,"SCHED_SPORADIC"
-	}, 
+	},
 #endif
 	{
 		SCHED_OTHER, "SCHED_OTHER"
@@ -59,12 +59,12 @@ int main(int argc, char **argv)
 		fflush(stdout);
 
 		policy = tst->value;
-		priority = (sched_get_priority_min(policy) + 
+		priority = (sched_get_priority_min(policy) +
 			     sched_get_priority_max(policy)) / 2;
 		param.sched_priority = priority;
 
 		tmp = sched_setscheduler(getpid(), policy, &param);
-		
+
 		if (tmp == -1 || errno != 0) {
 			if (errno == EPERM) {
 <<<<<<< HEAD

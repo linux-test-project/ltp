@@ -8,7 +8,7 @@
 
 /*
  * mq_receive test plan:
- * mq_receive will return EMSGSIZE when msg_len is less than the 
+ * mq_receive will return EMSGSIZE when msg_len is less than the
  * message size attribute of the message queue.
  */
 
@@ -85,4 +85,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

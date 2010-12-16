@@ -71,11 +71,9 @@ static int test_ioctl(struct block_device *bdev, fmode_t mode,
 static void test_nls_base(void);
 static void option1(void);
 
-
 struct test_block_device {
 	spinlock_t queue_lock;
 };
-
 
 static struct block_device_operations bdops = {
 	.open = test_open,
@@ -199,7 +197,6 @@ static int test_init_module(void)
 
 	return 0;
 }
-
 
 static void test_exit_module(void)
 {

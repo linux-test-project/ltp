@@ -56,4 +56,3 @@ register int maxlen;
     *ptr = 0;
     return(n);
 }
-

@@ -86,7 +86,6 @@ int main(int ac, char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -141,7 +140,6 @@ int main(int ac, char **av)
 		}
 	}
 
-	tst_exit();
 }
 
 /*
@@ -154,10 +152,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Must run test as root");
 	}
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temporary directory and cd to it */
@@ -189,6 +185,4 @@ void cleanup()
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -14,9 +14,8 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This scalability sample aims to test the following assertion:
-*  -> The sem_open() duration does not depend on the # of opened semaphores 
+*  -> The sem_open() duration does not depend on the # of opened semaphores
 *     in the system
 
 * The steps are:
@@ -25,7 +24,6 @@
 * The test fails if the sem_open duration tends to grow with the # of semaphores,
 * or if the failure at last semaphore creation is unexpected.
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -50,22 +48,22 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
-#include "testfrmw.c" 
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
+ * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -108,7 +106,6 @@ mes_t;
 /* Forward declaration */
 int parse_measure(mes_t * measures);
 
-
 /* Structure to store created semaphores */
 
 typedef struct __test_t
@@ -121,7 +118,6 @@ typedef struct __test_t
 }
 
 test_t;
-
 
 /* Test routine */
 int main (int argc, char *argv[])
@@ -152,7 +148,6 @@ int main (int argc, char *argv[])
 	sems_cur->next = NULL;
 	sems_cur->prev = NULL;
 
-
 #if VERBOSE > 1
 	output("SEM_NSEMS_MAX: %ld\n", SEM_MAX);
 
@@ -182,8 +177,6 @@ int main (int argc, char *argv[])
 
 			break;
 		}
-
-
 
 		/* read clock */
 		ret = clock_gettime(CLOCK_REALTIME, &ts_ref);
@@ -254,7 +247,6 @@ int main (int argc, char *argv[])
 
 			free(sems_tmp);
 			break;
-
 
 		}
 
@@ -353,7 +345,6 @@ int main (int argc, char *argv[])
 		sems_cur->next = NULL;
 	}
 
-
 #if VERBOSE > 0
 	output("Parse results\n");
 
@@ -361,7 +352,6 @@ int main (int argc, char *argv[])
 
 	/* Compute the results */
 	ret = parse_measure(&sentinel);
-
 
 	/* Free the resources and output the results */
 
@@ -388,7 +378,6 @@ int main (int argc, char *argv[])
 		free(m_cur);
 	}
 
-
 	if (ret != 0)
 	{
 		FAILED("The function is not scalable, add verbosity for more information");
@@ -399,7 +388,6 @@ int main (int argc, char *argv[])
 	{
 		UNRESOLVED(locerrno, "Function is scalable, but test terminated with error");
 	}
-
 
 #if VERBOSE > 0
 	output("-----\n");
@@ -413,10 +401,6 @@ int main (int argc, char *argv[])
 	PASSED;
 }
 
-
-
-
-
 /***
  * The next function will seek for the better model for each series of measurements.
  *
@@ -424,7 +408,7 @@ int main (int argc, char *argv[])
  * -> Y = a;      -- Error is r1 = avg((Y - Yavg)²);
  * -> Y = aX + b; -- Error is r2 = avg((Y -aX -b)²);
  *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg((X - Xavg)²)
- *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg)); 
+ *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg));
  *                --                       and  _d = sum((X - Xavg)²);
  *                -- and   b = Yavg - a * Xavg
  * -> Y = c * X^a;-- Same as previous, but with log(Y) = a log(X) + b; and b = log(c). Error is r3
@@ -516,7 +500,7 @@ int parse_measure(mes_t * measures)
 
 	/* We start with reading the list to find:
 	 * -> number of elements, to assign an array.
-	 * -> average values 
+	 * -> average values
 	 */
 
 	while (cur->next != NULL)
@@ -553,7 +537,6 @@ int parse_measure(mes_t * measures)
 	output(" Found %d rows\n", N);
 
 #endif
-
 
 	/* We will now alloc the array ... */
 
@@ -622,7 +605,6 @@ int parse_measure(mes_t * measures)
 		_q_o[ 2 ] += Table[ r ]._lny_o * Table[ r ]._x;
 		_d_o[ 2 ] += Table[ r ]._x * Table[ r ]._x;
 
-
 		r1_c += ((double) Table[ r ]._y_c / array_max) * (double) Table[ r ]._y_c;
 
 		_q_c[ 0 ] += Table[ r ]._y_c * Table[ r ]._x;
@@ -656,7 +638,7 @@ int parse_measure(mes_t * measures)
 		r2_c += t * t / array_max ;
 
 		/* r3 = avg((y - c.x^a) ²);
-		    t = y - c * x ^ a 
+		    t = y - c * x ^ a
 		      = y - log (LnYavg - (_q[1]/_d[1]) * LnXavg) * x ^ (_q[1]/_d[1])
 		*/
 		t = (Table[ r ].Y_o
@@ -788,4 +770,3 @@ int parse_measure(mes_t * measures)
 	/* We're done */
 	return ret;
 }
-

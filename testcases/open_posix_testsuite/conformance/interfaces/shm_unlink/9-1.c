@@ -33,17 +33,16 @@
 
 #define SHM_NAME "posixtest_9-1"
 
-
 int main() {
 	int fd, result;
 	struct passwd *pw;
-	
+
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* search for the first user which is non root and which is not the
 	   current user */
 	while ((pw = getpwent()) != NULL)
@@ -63,7 +62,7 @@ int main() {
 		perror("An error occurs when calling seteuid()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	printf("Testing with user '%s' (uid: %i)\n",
 	       pw->pw_name, pw->pw_uid);
 
@@ -74,13 +73,13 @@ int main() {
 		shm_unlink(SHM_NAME);
 		return PTS_PASS;
 	} else if (result == -1) {
-		perror("Unexpected error");		
+		perror("Unexpected error");
 		seteuid(getuid());
 		shm_unlink(SHM_NAME);
 		return PTS_FAIL;
 	}
-	
+
 	printf("shm_unlink() success.\n");
 	return PTS_UNRESOLVED;
-	
+
 }

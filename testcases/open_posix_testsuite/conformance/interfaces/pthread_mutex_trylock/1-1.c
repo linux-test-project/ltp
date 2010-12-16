@@ -1,22 +1,22 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_trylock()
- *   is equivalent to pthread_mutex_lock() except that if the mutex object 
+ *   is equivalent to pthread_mutex_lock() except that if the mutex object
  *   referenced by 'mutex' is currently locked (by any thread, including the
  *   current thread), the call shall return immediately.
 
- * Steps: 
+ * Steps:
  *   -- Initilize a mutex object
  *   -- Create a secondary thread and have it lock the mutex
- *   -- Within the main thread, try to lock the mutex using 
+ *   -- Within the main thread, try to lock the mutex using
  	pthread_mutex_trylock() and EBUSY is expected
  *   -- Have the secondary thread unlock the mutex
- *   -- Within the main thread, try to lock the mutex again  
+ *   -- Within the main thread, try to lock the mutex again
  	and expect a successful locking.
  *
  */
@@ -42,7 +42,7 @@ int main()
     	pthread_create(&t1, NULL, func, NULL);
     	while (!t1_start)
 		sleep(1);
-    		
+
 	/* Trylock the mutex and expect it returns EBUSY */
    	rc = pthread_mutex_trylock(&mutex);
       	if (rc!=EBUSY) {
@@ -50,10 +50,10 @@ int main()
         	printf("Test FAILED\n");
 		return PTS_FAIL;
       	}
-    	
+
     	/* Allow the secondary thread to go ahead */
 	t1_pause=0;
-	
+
 	/* Trylock the mutex for N times */
 	for (i=0; i<5; i++) {
 		rc = pthread_mutex_trylock(&mutex);
@@ -70,7 +70,7 @@ int main()
 			return PTS_UNRESOLVED;
 		}
 	}
-		
+
 	/* Clean up */
 	pthread_join(t1, NULL);
   	pthread_mutex_destroy(&mutex);
@@ -92,7 +92,7 @@ void *func(void *parm)
 		pthread_exit((void*)PTS_UNRESOLVED);
 	}
 	t1_start=1;
-	
+
 	while (t1_pause)
 		sleep(1);
 

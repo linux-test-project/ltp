@@ -92,21 +92,18 @@ main(int ac, char **av)
 
 	TST_TOTAL = sizeof(clocks) / sizeof(clocks[0]);
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(syscall(__NR_clock_gettime, clocks[i], &spec));
 			tst_resm((TEST_RETURN < 0 ? TFAIL | TTERRNO : TPASS),
 				"%s", (TEST_RETURN == 0 ? "passed" : "failed"));
-		}	/* End of TEST CASE LOOPING */
-	}		/* End for TEST_LOOPING */
+		}
+	}
 
 	CLEANUP();
 	tst_exit();
@@ -116,10 +113,9 @@ main(int ac, char **av)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, CLEANUP);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

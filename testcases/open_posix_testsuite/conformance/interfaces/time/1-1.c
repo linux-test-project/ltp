@@ -7,11 +7,9 @@
  *
  *
  *
- * This test case shall return PASS on returning the value of time, otherwise 
+ * This test case shall return PASS on returning the value of time, otherwise
  * it fails with -1.
  */
-
-
 
 #include <stdio.h>
 #include <stdint.h>
@@ -21,7 +19,7 @@
 int main(void)
 {
 	time_t current_time;
-		
+
 	current_time = time(NULL);
 	printf("%ju secs since the Epoch\n",(uintmax_t) current_time);
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2004, Bull SA. All rights reserved.
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -10,7 +10,7 @@
  * assertion:
  *
  *	aio_return() may fail with [EINVAL]
- *	If the aiocbp does not refer to an operation whose return status 
+ *	If the aiocbp does not refer to an operation whose return status
  *	has not yet been retrieved.
  *
  * method:
@@ -47,12 +47,12 @@ int main(void)
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
 		return PTS_UNSUPPORTED;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_return_2_1_%d", 
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_return_2_1_%d",
 		  getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	
+
 	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
@@ -94,7 +94,7 @@ int main(void)
 		}
 
 		retval = aio_return(&aiocb);
-	
+
 		if (retval != BUF_SIZE) {
 			close(fd);
 			printf(TNAME " Error at aio_return(): %d, %s\n", retval,
@@ -108,7 +108,7 @@ int main(void)
 			strerror(retval));
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	close(fd);
 	printf("Test PASSED\n");
 	exit(PTS_PASS);

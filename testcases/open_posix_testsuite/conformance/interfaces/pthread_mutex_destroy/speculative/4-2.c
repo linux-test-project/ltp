@@ -5,11 +5,11 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
 
- * Test that when a pthread_mutex_destroy is called on a 
+ * Test that when a pthread_mutex_destroy is called on a
  *  locked mutex, it fails and returns EBUSY
 
  * Steps:
- * 1. Create a mutex 
+ * 1. Create a mutex
  * 2. Lock the mutex
  * 3. Try to destroy the mutex
  * 4. Check that this may fail with EBUSY

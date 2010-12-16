@@ -149,7 +149,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Call fstatfs(2) */
@@ -162,7 +161,7 @@ int main(int ac, char **av)
 				fname);
 		} else {
 
-	     		/* 
+	     		/*
 			 * only perform functional verification if flag set
 			 * (-f not given)
 			 */
@@ -173,25 +172,22 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
 
-	tst_exit();
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(fname, "tfile_%d", getpid());
@@ -208,7 +204,7 @@ void setup()
 	}
 	close(fd);
 
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -223,4 +219,4 @@ void cleanup()
 	TEST_CLEANUP;
 
 	tst_rmdir();
-}				/* End cleanup() */
+}

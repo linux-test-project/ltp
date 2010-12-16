@@ -1,5 +1,5 @@
 /*
-  Test for the existence and valid prototype 
+  Test for the existence and valid prototype
   of the mq_setattr function as specified on
   line 9690 of the Base Definitions document
 */

@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -23,7 +23,7 @@
 #include <time.h>
 
 int main(int argc, char **argv)
-{	       
+{
 
 	struct timespec interval;
 	int result = -2, child_pid, stat_loc;
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 		return PTS_UNRESOLVED;
 >>>>>>> master
 	}
-	
+
 	/* Assume the pid is not yet reatributed to an other process */
 	result = sched_rr_get_interval(child_pid, &interval);
 
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
-	
+
 	if (errno != ESRCH) {
 		perror("Returned error is not ESRCH");
 		return PTS_FAIL;
@@ -73,9 +73,7 @@ int main(int argc, char **argv)
 		return PTS_FAIL;
 	} else {
 		perror("Unresolved test error");
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
-	
+
 }
-
-

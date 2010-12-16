@@ -120,8 +120,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	return 0;
-
  }
 
 /*
@@ -140,10 +138,8 @@ void setup()
 		perror("setuid");
 	}
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

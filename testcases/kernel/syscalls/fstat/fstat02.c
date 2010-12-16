@@ -110,15 +110,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -128,7 +126,6 @@ int main(int ac, char **av)
 		 */
 		TEST(fstat(fildes, &stat_buf));
 
-		/* check return code of fstat(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL|TTERRNO, "fstat(%s) failed", TESTFILE);
 			continue;
@@ -155,13 +152,11 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	tst_exit();
-}				/* End main */
+}
 
 /*
  * void
@@ -177,7 +172,6 @@ void setup()
 	int wbytes;
 	int write_len = 0;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -188,10 +182,8 @@ void setup()
 	if (setuid(ltpuser->pw_uid) == -1)
 		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	fildes = open(TESTFILE, O_WRONLY | O_CREAT, FILE_MODE);
@@ -219,7 +211,7 @@ void setup()
 	user_id = getuid();
 	group_id = getgid();
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -238,9 +230,6 @@ void cleanup()
 	if (close(fildes) == -1)
 		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TESTFILE);
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

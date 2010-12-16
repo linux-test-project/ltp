@@ -52,14 +52,14 @@ int main()
 		int sig;
 
 		/* child here */
-		
+
 		/* try to sync with parent for mq_open*/
 		sigemptyset(&mask);
 		sigaddset(&mask, SIGUSR1);
 		sigprocmask(SIG_BLOCK,&mask,NULL);
 		sigwait(&mask, &sig);
 
-        	childqueue = mq_open(qname, O_CREAT|O_EXCL|O_RDWR, 
+        	childqueue = mq_open(qname, O_CREAT|O_EXCL|O_RDWR,
 				S_IRUSR | S_IWUSR, NULL);
         	if (childqueue != (mqd_t)-1) {
 			succeeded++;
@@ -76,7 +76,7 @@ int main()
 		sleep(1);
 		kill(pid, SIGUSR1); //tell child ready to call mq_open
 
-        	queue = mq_open(qname, O_CREAT | O_EXCL |O_RDWR, 
+        	queue = mq_open(qname, O_CREAT | O_EXCL |O_RDWR,
 				S_IRUSR | S_IWUSR, NULL);
         	if (queue != (mqd_t)-1) {
 			succeeded++;
@@ -116,4 +116,3 @@ int main()
 
 	return PTS_UNRESOLVED;
 }
-

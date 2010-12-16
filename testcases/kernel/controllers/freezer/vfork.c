@@ -361,7 +361,6 @@ main(int argc, char** argv)
 					tst_resm(TINFO | TERRNO,
 						"ptrace(PTRACE_CONT) failed.");
 				}
-			
 
 				send_mutex(psync[1]);
 

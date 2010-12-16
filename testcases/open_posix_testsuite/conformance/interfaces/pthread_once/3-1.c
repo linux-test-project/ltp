@@ -1,16 +1,16 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- * 
+ *
  * Test pthread_once()
  *
  * The pthread_once() function is not a cancelation point.  However if
- * 'init_routine'is a cancelation point and is canceled, the effect on 
+ * 'init_routine'is a cancelation point and is canceled, the effect on
  * 'once_control' shall be as if pthread_once() was never called.
- *   
+ *
  * STEPS:
  * 1. Create a cancelable thread.
  * 2. In the thread routine, call pthread_once using a global pthread_once_t
@@ -36,9 +36,9 @@ void *an_init_func()
 {
 	/* Indicate to main() that the init function has been reached */
 	init_flag=1;
-	
+
 	/* Stay in a continuous loop until the thread that called
-	 * this function gets canceled */ 
+	 * this function gets canceled */
 	sleep(10);
 
 	/* The thread could not be canceled, timeout after 10 secs */
@@ -69,36 +69,36 @@ int main()
 {
 	pthread_t new_th;
 	init_flag=0;
-	
+
 	/* Create a thread that will execute the first call to pthread_once() */
 	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{	
+	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Wait until the init function is reached to cancel the thread */
 	while (init_flag==0)
-		sleep(1);	
+		sleep(1);
 
 	/* Send cancel request to the thread*/
-	if (pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0)
 	{
 		perror("Could send cancel request to thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Wait until the thread is canceled */	
+	/* Wait until the thread is canceled */
 	pthread_join(new_th, NULL);
 
 	/* If the thread could not be canceled and timed out, send
-	 * an error */ 	
+	 * an error */
 	if (init_flag == -1)
 	{
 		perror("Error: could not cancel thread\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	init_flag=0;
 
 	/* Should be able to call pthread_once() again with the same
@@ -106,7 +106,7 @@ int main()
 	pthread_once(&once_control, (void*)an_init_func2);
 
 	/* If the init function from the 2nd call to pthread_once() was not
- 	 * reached, the test fails. */	
+ 	 * reached, the test fails. */
 	if (init_flag != 1)
 	{
 		printf("Test FAILED\n: %d", init_flag);
@@ -116,5 +116,3 @@ int main()
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-
-

@@ -68,7 +68,7 @@ struct robust_list_head {
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern int Tst_count;
 
 char *TCID = "set_robust_list01";	/* test program identifier.              */
 int TST_TOTAL = 2;		/* total number of tests in this file.   */
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
 	setup();
@@ -176,5 +176,4 @@ void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	tst_exit();
 }

@@ -12,14 +12,12 @@
  * value specified in param.
  */
 
-
 #include <sched.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 void * runner(void * arg) {
 
@@ -54,7 +52,6 @@ int main() {
 		printf("An error occurs when calling pthread_create()");
 		return PTS_UNRESOLVED;
 	}
-
 
 	param.sched_priority = sched_get_priority_min(new_policy);
 	if (sched_setscheduler(getpid(), new_policy, &param) != 0) {

@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- *  Test that the sigpending() function stores the set of signals that 
+ *  Test that the sigpending() function stores the set of signals that
  *  are blocked from delivery to a signal handler function.  Steps are:
  *  1)  Block three signals from delivery to a signal handler.
  *  2)  Raise the signal to get into that signal handler.
@@ -15,11 +15,11 @@
  *    5)  Verify the one signal not raised is not shown.
  */
 
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  The handler raises the two blocked signals and verifies they are
@@ -107,4 +107,3 @@ int main()
 	printf("This code should not be reachable\n");
 	return PTS_UNRESOLVED;
 }
-

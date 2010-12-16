@@ -87,7 +87,7 @@ int main()
 	       	if (mq_close(mqdes) != 0) {
 			perror(ERROR_PREFIX "mq_close");
 			unresolved = 1;
-       		}	
+       		}
        		if (mq_unlink(mqname) != 0) {
 			perror(ERROR_PREFIX "mq_unlink");
 			unresolved = 1;
@@ -107,9 +107,8 @@ int main()
 		sleep(TIMEOUT + 3); /* Parent is probably blocking
 				       send a signal to let it abort */
 		kill(getppid(), SIGABRT);
-		return 0; 
+		tst_exit();
 	}
         printf("Test PASSED\n");
       	return PTS_PASS;
 }
-

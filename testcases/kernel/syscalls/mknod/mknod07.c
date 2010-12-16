@@ -131,7 +131,7 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
 	/*
@@ -143,9 +143,8 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -178,9 +177,9 @@ int main(int ac, char **av)
 					 "expected errno:%d", test_desc,
 					 TEST_ERRNO, Test_cases[ind].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING. */
+		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * Invoke cleanup() to delete the test directories created
@@ -188,8 +187,7 @@ int main(int ac, char **av)
 	 */
 	cleanup();
 
-	tst_exit();
-}				/* End main */
+}
 
 /*
  * setup(void) - performs all ONE TIME setup for this test.
@@ -203,7 +201,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int ind;		/* counter for setup functions */
+	int ind;
 
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -219,7 +217,6 @@ void setup()
 			 ltpuser->pw_uid, strerror(errno));
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Make a temp dir and cd to it */
@@ -295,9 +292,6 @@ void cleanup()
 	if (seteuid(0) == -1)
 		tst_resm(TBROK, "Couldn't get root back: %s", strerror(errno));
 
-	/* Remove files and temporary directory created */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

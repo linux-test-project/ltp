@@ -139,7 +139,6 @@ void test_VIDIOC_G_AUDOUT_ignore_index() {
 
 }
 
-
 void test_VIDIOC_G_AUDOUT_NULL() {
 	int ret_get, errno_get;
 	int ret_null, errno_null;
@@ -368,7 +367,6 @@ void test_VIDIOC_S_AUDOUT_S32_MAX_1() {
 		CU_ASSERT_EQUAL(errno_set, EINVAL);
 	}
 }
-
 
 void test_VIDIOC_S_AUDOUT_U32_MAX() {
 	int ret_orig, errno_orig;

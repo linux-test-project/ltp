@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2000 Motorola
  # Copyright (C) 2001 Nokia
  * Copyright (C) 2001 La Monte H.P. Yarroll
- * 
+ *
  * The SCTP reference implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -42,13 +42,13 @@
  */
 
 #include <stdio.h>
-#include <errno.h> 
+#include <errno.h>
 #include <ctype.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
-#include <netinet/in.h> 
+#include <netinet/in.h>
 #include <malloc.h>
 #include "netinet/sctp.h"
 #include "sctputil.h"
@@ -68,7 +68,7 @@ test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
 		       data->init.sinit_max_attempts);
 		printf("   sinit_max_init_timeo %d\n",
 		       data->init.sinit_max_init_timeo);
-		
+
 		break;
 	case SCTP_SNDRCV:
 		printf("SNDRCV\n");
@@ -80,9 +80,9 @@ test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
 		printf("   sinfo_tsn     %u\n",    data->sndrcv.sinfo_tsn);
 		printf("   sinfo_cumtsn  %u\n",    data->sndrcv.sinfo_cumtsn);
 		printf("   sinfo_assoc_id  %u\n", data->sndrcv.sinfo_assoc_id);
-		
+
 		break;
-		
+
 	default:
 		printf("UNKNOWN CMSG: %d\n", type);
 		break;
@@ -91,7 +91,7 @@ test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
 
 /* This function prints the message. */
 void
-test_print_message(int sk, struct msghdr *msg, size_t msg_len) 
+test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 {
 	sctp_cmsg_data_t *data;
 	struct cmsghdr *cmsg;
@@ -130,7 +130,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 			for (i = 0; i < len - 1; ++i) {
                                 if (!isprint(text[i])) text[i] = '.';
                         }
-		
+
 			printf("%s", text);
 			text[msg_len-1] = save;
 
@@ -175,13 +175,13 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 /* Check if a buf/msg_flags matches a notification, its type, and possibly an
  * additional field in the corresponding notification structure.
  */
-void 
+void
 test_check_buf_notification(void *buf, int datalen, int msg_flags,
 			    int expected_datalen, uint16_t expected_sn_type,
 			    uint32_t expected_additional)
 {
 	union sctp_notification *sn;
-	
+
 	if (!(msg_flags & MSG_NOTIFICATION))
 		tst_brkm(TBROK, NULL, "Got a datamsg, expecting notification");
 
@@ -192,13 +192,13 @@ test_check_buf_notification(void *buf, int datalen, int msg_flags,
 		tst_brkm(TBROK, NULL, "Got a notification of unexpected "
 			 "length (%d); expected length was %d", datalen,
 			 expected_datalen);
-		
+
 	sn = (union sctp_notification *)buf;
 	if (sn->sn_header.sn_type != expected_sn_type)
 		tst_brkm(TBROK, NULL, "Unexpected notification:%d "
 			 "expected:%d", sn->sn_header.sn_type,
 			  expected_sn_type);
-	
+
 	switch(sn->sn_header.sn_type) {
 	case SCTP_ASSOC_CHANGE:
 		if (sn->sn_assoc_change.sac_state != expected_additional)
@@ -214,7 +214,7 @@ test_check_buf_notification(void *buf, int datalen, int msg_flags,
 /* Check if a message matches a notification, its type, and possibly an
  * additional field in the corresponding notification structure.
  */
-void 
+void
 test_check_msg_notification(struct msghdr *msg, int datalen,
 			    int expected_datalen, uint16_t expected_sn_type,
 			    uint32_t expected_additional)
@@ -250,7 +250,7 @@ test_check_buf_data(void *buf, int datalen, int msg_flags,
 			 "expecting:0x%x", msg_flags, expected_msg_flags);
 
 	if ((0 == expected_stream) && (0 == expected_ppid))
-		return; 
+		return;
 
 	if (!sinfo)
 		tst_brkm(TBROK, NULL, "Null sinfo, but expected "
@@ -296,14 +296,13 @@ test_check_msg_data(struct msghdr *msg, int datalen, int expected_datalen,
 
 }
 
-
 /* Allocate a buffer of requested len and fill in with data. */
 void *
 test_build_msg(int len)
 {
 	int i = len - 1;
 	int n;
-	unsigned char msg[] = 
+	unsigned char msg[] =
 		"012345678901234567890123456789012345678901234567890";
 	char *msg_buf, *p;
 
@@ -318,9 +317,9 @@ test_build_msg(int len)
 		memcpy(p, msg, ((i > 50)?50:i));
 		p += n;
 		i -= n;
-	} while (i > 0); 
+	} while (i > 0);
 
-	msg_buf[len-1] = '\0'; 
+	msg_buf[len-1] = '\0';
 
 	return(msg_buf);
 }

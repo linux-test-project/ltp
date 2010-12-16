@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -31,7 +31,7 @@ int main() {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Make sure new_policy != old_policy */
 	new_policy = (old_policy == SCHED_FIFO) ? SCHED_RR : SCHED_FIFO;
 
@@ -40,12 +40,12 @@ int main() {
 
 	if (result == old_policy) {
 		printf("Test PASSED\n");
-		return PTS_PASS;	
+		return PTS_PASS;
 	} else if (result == -1 && errno == EPERM) {
 		printf("The process have not permission to change its own policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	printf("Returned code == %i.\n", result);
 	perror("Unknow error");
 	return PTS_FAIL;

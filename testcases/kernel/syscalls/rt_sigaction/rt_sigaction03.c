@@ -54,7 +54,7 @@
 #define INVAL_SIGSETSIZE -1
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -81,11 +81,10 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
+
         TEST_CLEANUP;
         tst_rmdir();
 
-        /* Exit with appropriate return code. */
         tst_exit();
 }
 
@@ -117,7 +116,6 @@ void setup() {
 int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND, SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO, SA_NOMASK};
 char *test_flags_list[] = {"SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND|SA_SIGINFO", "SA_NOMASK"};
 
-
 struct test_case_t {
         int exp_errno;
         char *errdesc;
@@ -144,7 +142,7 @@ set_handler(int sig, int sig_to_mask, int mask_flags)
 
 		/*   							        *
 		 * long sys_rt_sigaction (int sig, const struct sigaction *act, *
-		 * truct sigaction *oact, size_t sigsetsize);			* 
+		 * truct sigaction *oact, size_t sigsetsize);			*
 		 * EINVAL:							*
         	 * sigsetsize was not equivalent to the size of a sigset_t type *
 		 */
@@ -157,12 +155,11 @@ set_handler(int sig, int sig_to_mask, int mask_flags)
                 }
 }
 
-
 int main(int ac, char **av) {
 	int signal, flag;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
-	
+
         /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 <<<<<<< HEAD
@@ -175,12 +172,11 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-                
-			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++) {//signal for 34 to 65 
+
+			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++) {//signal for 34 to 65
 			 	for (flag=0; flag<5;flag++) {
 	                        	 TEST(set_handler(signal, 0, test_flags[flag]));
 					if ((TEST_RETURN == -1) && (TEST_ERRNO == test_cases[0].exp_errno)) {
@@ -191,14 +187,11 @@ int main(int ac, char **av) {
         					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
 						}
                 			}
-		 	printf("\n");	
+		 	printf("\n");
         		}
 
-
-
                 }
-        }	
+        }
 	cleanup();
         tst_exit();
 }
-

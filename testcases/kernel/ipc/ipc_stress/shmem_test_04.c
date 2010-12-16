@@ -84,8 +84,6 @@ typedef unsigned long ulong_t;
 #include "dsi.h"
 #endif
 
-
-
 /* Defines
  *
  * USAGE: usage statement
@@ -127,7 +125,6 @@ static void segv_handler (int signal, int code, struct sigcontext *scp);
 static void bus_handler (int signal, int code, struct sigcontext *scp);
 static void sys_error (const char *, int);
 static void error (const char *, int);
-
 
 /*
  * Global variables
@@ -308,8 +305,6 @@ int main (int argc, char **argv)
 	printf ("\nsuccessful!\n");
 	cleanup(0);
 
-	return 0;
-	
 }
 
 static void cleanup (int rc)
@@ -546,7 +541,6 @@ static void setup_signal_handlers ()
 		sys_error ("sigaction failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
 | ==================================================================== |
@@ -673,8 +667,6 @@ static void parse_args (int argc, char **argv)
 	}
 }
 
-
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -689,7 +681,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

@@ -79,8 +79,6 @@ unsigned fc_get_num_filesys(ffsb_config_t *fc)
 	return fc->num_filesys;
 }
 
-
-
 struct ffsb_tg *fc_get_tg(ffsb_config_t *fc, unsigned num)
 {
 	assert(num < fc->num_threadgroups);

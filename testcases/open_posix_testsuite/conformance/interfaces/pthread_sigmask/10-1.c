@@ -2,10 +2,10 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- Attempt to add SIGKILL and SIGSTOP to the process's signal mask and 
+ Attempt to add SIGKILL and SIGSTOP to the process's signal mask and
  verify that:
  - They do not get added.
  - pthread_sigmask() does not return -1.
@@ -31,7 +31,7 @@ void *a_thread_func()
 	if (sigismember(&set2, SIGKILL)) {
 		printf("FAIL: SIGKILL was added to the signal mask\n");
 		pthread_exit((void*)-1);
-	} 
+	}
 	if (sigismember(&set2, SIGSTOP)) {
 		printf("FAIL: SIGSTOP was added to the signal mask\n");
 		pthread_exit((void*)-1);

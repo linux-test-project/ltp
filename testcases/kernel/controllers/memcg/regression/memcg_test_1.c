@@ -56,7 +56,7 @@ int main(void)
 				p = mmap(NULL, size, PROT_READ | PROT_WRITE,
 					 MAP_FLAGS, 0, 0);
 
-				return 0;
+				tst_exit();
 			}
 		}
 
@@ -66,6 +66,5 @@ int main(void)
 
 	close(fd);
 
-	return 0;
+	tst_exit();
 }
-

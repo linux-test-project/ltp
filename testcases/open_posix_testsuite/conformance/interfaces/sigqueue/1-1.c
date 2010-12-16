@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Test that the sigqueue() function shall send signal signo and value
     to the child process specified by pid.
  *  1) Fork a child process.
- *  2) In the parent process, call sigqueue with signal SIGTOTEST and 
+ *  2) In the parent process, call sigqueue with signal SIGTOTEST and
  *     value VALTOTEST for the pid of the child
  *  In the child,
  *  3) Wait for signal SIGTOTEST.
@@ -52,7 +52,7 @@ int main()
 			sleep(1);
 		}
 		printf("shouldn't be here\n");
-		return 0;
+		tst_exit();
 	} else {
 		/* parent here */
 		int i;
@@ -85,11 +85,3 @@ int main()
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
-
-
-
-
-
-
-
-

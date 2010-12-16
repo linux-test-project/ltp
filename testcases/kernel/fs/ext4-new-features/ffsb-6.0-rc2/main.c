@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 
 	if (fc.time == 0) {
 		printf("Setup complete, exiting\n");
-		return 0;
+		tst_exit();
 	}
 
 	params = ffsb_malloc(sizeof(tg_run_params_t) * fc.num_threadgroups);
@@ -233,7 +233,6 @@ int main(int argc, char *argv[])
 		((before_children.ru_utime.tv_sec +
 		  ((before_children.ru_utime.tv_usec)/USEC_PER_SEC)));
 
-
 	/* sum up self and children after */
 	systime = (after_self.ru_stime.tv_sec +
 		   ((after_self.ru_stime.tv_usec)/USEC_PER_SEC)) +
@@ -254,5 +253,5 @@ int main(int argc, char *argv[])
 	free(params);
 	destroy_ffsb_config(&fc);
 
-	return 0;
+	tst_exit();
 }

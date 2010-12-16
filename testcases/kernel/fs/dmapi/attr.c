@@ -123,7 +123,7 @@ void LogDirAttrs(void *attrlist, u_int mask)
 			DMLOG_PRINT(DMLVL_DEBUG, "    dt_change: %d\n", stat->dt_change);
 		if (mask & DM_AT_STAT)
 	       		LogDmStat(stat);
-		
+
 		stat = DM_STEP_TO_NEXT(stat, dm_stat_t *);
 	}
 }
@@ -139,7 +139,7 @@ dm_stat_t *GetDirEntry(void *attrlist, char *compname)
 		stat = DM_STEP_TO_NEXT(stat, dm_stat_t *);
 	}
 	return NULL;
-	
+
 }
 
 dm_stat_t *GetLastDirEntry(void *attrlist)
@@ -153,7 +153,7 @@ dm_stat_t *GetLastDirEntry(void *attrlist)
 		stat = DM_STEP_TO_NEXT(stat, dm_stat_t *);
 	}
 	return laststat;
-	
+
 }
 
 int GetNumDirEntry(void *attrlist)
@@ -167,7 +167,7 @@ int GetNumDirEntry(void *attrlist)
 		stat = DM_STEP_TO_NEXT(stat, dm_stat_t *);
 	}
 	return i;
-	
+
 }
 
 int main(int argc, char **argv)
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}				
+				}
 			}
 		} else {
 			rc = -1;
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
-	
+
 		rc = dm_get_config(fshanp, fshlen, DM_CONFIG_PERS_INHERIT_ATTRIBS, &persInheritAttr);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_ERR, "dm_get_config failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -236,7 +236,7 @@ int main(int argc, char **argv)
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
-	
+
 		dm_handle_free(fshanp, fshlen);
 
 		sprintf(fullAttrName, "%s%s", DMAPI_ATTR_PREFIX, ATTR_NAME);
@@ -3618,7 +3618,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_getall_dmattr - fs handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -3719,7 +3719,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_getall_dmattr(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
@@ -5076,7 +5076,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_uid = DUMMY_UID;
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_set_fileattr(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, DM_AT_UID, &fileattr);
@@ -6329,7 +6329,7 @@ int main(int argc, char **argv)
 		dm_stat_t stat;
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_fileattr(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, DM_AT_EMASK, &stat);
@@ -6630,7 +6630,7 @@ int main(int argc, char **argv)
 			rc = dm_init_attrloc(sid, hanp, hlen, DM_NO_TOKEN, &loc);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "loc = %lld\n", loc);
-			}			
+			}
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -6671,7 +6671,7 @@ int main(int argc, char **argv)
 			rc = dm_init_attrloc(sid, hanp, hlen, DM_NO_TOKEN, &loc);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "loc = %lld\n", loc);
-			}			
+			}
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -6730,7 +6730,7 @@ int main(int argc, char **argv)
 		dm_attrloc_t loc;
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_init_attrloc(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &loc);
@@ -9236,7 +9236,7 @@ int main(int argc, char **argv)
 	 * TEST    : dm_get_dirattrs - DM_AT_EMASK (verify no handle)
 	 * EXPECTED: rc = 0
 	 *
-	 * This variation uncovered XFS BUG #28 (handle returned when      
+	 * This variation uncovered XFS BUG #28 (handle returned when
 	 * DM_AT_HANDLE not set in mask)
 	 */
 	if (DMVAR_EXEC(GET_DIRATTRS_BASE + 36)) {
@@ -9705,7 +9705,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_set_inherit(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &attrname, 0);
@@ -10048,7 +10048,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_clear_inherit(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &attrname);
@@ -10383,7 +10383,7 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_getall_inherit(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, 1, &inheritbuf, &nelem);
@@ -10474,6 +10474,6 @@ int main(int argc, char **argv)
 	remove(DUMMY_TMP);
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }

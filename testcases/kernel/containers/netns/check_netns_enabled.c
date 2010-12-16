@@ -28,7 +28,7 @@
 
 char *TCID = "check_netns_enabled";
 int TST_COUNT = 1;
-int TST_TOTAL = 1; 
+int TST_TOTAL = 1;
 
 #ifndef CLONE_NEWNET
 #define CLONE_NEWNET -1

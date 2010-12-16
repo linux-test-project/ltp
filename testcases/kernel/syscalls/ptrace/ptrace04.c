@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 	errno = 0;
 	if (ptrace(PTRACE_SYSCALL, pid, NULL, NULL) && errno) {
 		tst_resm(TFAIL, "PTRACE_SYSCALL failed: %s", strerror(errno));
-		return 0;
+		tst_exit();
 	}
 	compare_registers(0x00);
 	compare_registers(0xff);
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 	/* hopefully this worked */
 	ptrace(PTRACE_KILL, pid, NULL, NULL);
 
-	return 0;
+	tst_exit();
 }
 
 static void cleanup() { }

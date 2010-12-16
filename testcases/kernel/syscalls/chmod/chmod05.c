@@ -132,15 +132,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -149,7 +147,6 @@ int main(int ac, char **av)
 		 */
 		TEST(chmod(TESTDIR, PERMS));
 
-		/* check return code of chmod(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "chmod(%s, %#o) failed",
 				 TESTDIR, PERMS);
@@ -189,13 +186,11 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
- }		/* End main */
+ }
 
 /*
  * void
@@ -217,10 +212,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	nobody_u = getpwnam("nobody");
@@ -248,10 +241,10 @@ void setup()
 		tst_brkm(TBROK|TERRNO, cleanup, "chown() of testdir failed");
 
 	/* change to nobody:nobody */
-	if (setegid(nobody_u->pw_gid) == -1 || 
+	if (setegid(nobody_u->pw_gid) == -1 ||
 		 seteuid(nobody_u->pw_uid) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to nobody:nobody");
-}				/* End setup() */
+}
 
 /*
  * void
@@ -270,10 +263,6 @@ void cleanup()
 	setegid(0);
 	seteuid(0);
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}				/* End cleanup() */
+}

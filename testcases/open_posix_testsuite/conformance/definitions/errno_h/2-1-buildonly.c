@@ -1,5 +1,5 @@
 /*
- *The <errno.h> header shall provide a 
+ *The <errno.h> header shall provide a
  *declaration for errno
  *author:ysun@lnxw.com
  */
@@ -13,4 +13,3 @@ int dummyfcn (void)
 	errno_test = errno;
 	return 0;
 }
-

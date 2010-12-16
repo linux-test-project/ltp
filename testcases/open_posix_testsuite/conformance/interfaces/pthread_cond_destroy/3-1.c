@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_cond_destroy()
@@ -25,7 +25,7 @@ int main()
 		fprintf(stderr,"Fail to initialize cond, rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if ((rc=pthread_cond_destroy(&cond)) == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
@@ -42,7 +42,7 @@ int main()
 	}
 
 	/* Any other returned value means the test failed */
-	else 
+	else
 	{
 		printf("Test FAILED (error %i unexpected)\n", rc);
 		return PTS_FAIL;

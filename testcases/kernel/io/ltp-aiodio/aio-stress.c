@@ -27,7 +27,7 @@
  * aio-stress
  *
  * will open or create each file on the command line, and start a series
- * of aio to it. 
+ * of aio to it.
  *
  * aio is done in a rotating loop.  first file1 gets 8 requests, then
  * file2, then file3 etc.  As each file finishes writing, it is switched
@@ -336,14 +336,14 @@ static int check_finished_io(struct io_unit *io) {
 
   		 struct stat s;
   		 fstat(io->io_oper->fd, &s);
- 
+
   		 /*
   		  * If file size is large enough for the read, then this short
   		  * read is an error.
   		  */
   		 if ((io->io_oper->rw == READ || io->io_oper->rw == RREAD) &&
   		     s.st_size > (io->iocb.u.c.offset + io->res)) {
- 
+
   		 		 fprintf(stderr, "io err %lu (%s) op %d, off %Lu size %d\n",
   		 		 		 io->res, strerror(-io->res), io->iocb.aio_lio_opcode,
   		 		 		 io->iocb.u.c.offset, io->buf_size);
@@ -356,7 +356,7 @@ static int check_finished_io(struct io_unit *io) {
         if (memcmp(io->buf, verify_buf, io->io_oper->reclen)) {
 	    fprintf(stderr, "verify error, file %s offset %Lu contents (offset:bad:good):\n",
 	            io->io_oper->file_name, io->iocb.u.c.offset);
-	   
+
 	    for (i = 0 ; i < io->io_oper->reclen ; i++) {
 	        if (io->buf[i] != verify_buf[i]) {
 		    fprintf(stderr, "%d:%c:%c ", i, io->buf[i], verify_buf[i]);
@@ -574,7 +574,7 @@ off_t random_byte_offset(struct io_oper *oper) {
     /* find a random mb offset */
     num = 1 + (int)((double)range * rand() / (RAND_MAX + 1.0 ));
     rand_byte += num * 1024 * 1024;
-   
+
     /* find a random byte offset */
     num = 1 + (int)((double)(1024 * 1024) * rand() / (RAND_MAX + 1.0));
 
@@ -629,7 +629,7 @@ static struct io_unit *build_iocb(struct thread_info *t, struct io_oper *oper)
 	oper->last_offset = rand_byte;
         io_prep_pwrite(&io->iocb,oper->fd, io->buf, oper->reclen,
 	              rand_byte);
-       
+
         break;
     }
 
@@ -702,7 +702,7 @@ int build_oper(struct thread_info *t, struct io_oper *oper, int num_ios,
         num_ios = oper->total_ios;
 
     if ((oper->started_ios + num_ios) > oper->total_ios)
-        num_ios = oper->total_ios - oper->started_ios;  
+        num_ios = oper->total_ios - oper->started_ios;
 
 <<<<<<< HEAD
     for (i = 0 ; i < num_ios ; i++) {
@@ -711,7 +711,7 @@ int build_oper(struct thread_info *t, struct io_oper *oper, int num_ios,
 >>>>>>> master
 	io = build_iocb(t, oper);
 	if (!io) {
-	    return -1;   
+	    return -1;
 	}
 	my_iocbs[i] = &io->iocb;
     }
@@ -978,7 +978,7 @@ free_buffers:
     if (t->ios)
         free(t->ios);
     if (t->iocbs)
-        free(t->iocbs); 
+        free(t->iocbs);
     if (t->events)
         free(t->events);
     return -1;
@@ -996,7 +996,7 @@ int setup_shared_mem(int num_threads, int num_files, int depth,
 {
     char *p = NULL;
     size_t total_ram;
-   
+
     padded_reclen = (reclen + page_size_mask) / (page_size_mask+1);
     padded_reclen = padded_reclen * (page_size_mask+1);
     total_ram = num_files * depth * padded_reclen + num_threads;
@@ -1020,7 +1020,7 @@ int setup_shared_mem(int num_threads, int num_files, int depth,
 	/* won't really be dropped until we shmdt */
 	drop_shm();
     } else if (use_shm == USE_SHMFS) {
-        char mmap_name[16]; /* /dev/shm/ + null + XXXXXX */   
+        char mmap_name[16]; /* /dev/shm/ + null + XXXXXX */
 	int fd;
 
 	strcpy(mmap_name, "/dev/shm/XXXXXX");
@@ -1080,7 +1080,6 @@ void global_thread_throughput(struct thread_info *t, char *this_stage) {
         fprintf(stderr, "\n");
     }
 }
-
 
 /* this is the meat of the state machine.  There is a list of
  * active operations structs, and as each one finishes the required
@@ -1187,7 +1186,7 @@ restart:
 	    pthread_cond_wait(&stage_cond, &stage_mutex);
 	pthread_mutex_unlock(&stage_mutex);
     }
-   
+
     /* someone got restarted, go back to the beginning */
     if (t->active_opers && (cnt < iterations || iterations == RUN_FOREVER)) {
 	iteration++;
@@ -1205,7 +1204,7 @@ restart:
         fprintf(stderr, "global num pending is %d\n", t->num_global_pending);
     }
     io_queue_release(t->io_ctx);
-   
+
     return status;
 }
 
@@ -1474,7 +1473,6 @@ int main(int ac, char **av)
 		fprintf(stderr, "error while creating file %s: %s", av[i], strerror(errno));
 		exit(1);
 	    }
-
 
 	    oper = create_oper(rwfd, first_stage, j * context_offset,
 	                       file_size - j * context_offset, rec_len,

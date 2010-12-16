@@ -123,7 +123,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
@@ -135,7 +135,6 @@ void setup(void)
 	 */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 // Changed by prashant yendigeri, because the temp file was not being created in//  the $TDIRECTORY
@@ -157,9 +156,6 @@ void cleanup(void)
 
 	unlink(pfiln);
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

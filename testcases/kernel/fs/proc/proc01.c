@@ -135,7 +135,7 @@ const char error_nonblock[][PATH_MAX] = {
     ""
 };
 
-/* 
+/*
  * Verify expected failures, and then let the test to continue.
  *
  * Return 0 when a problem errno is found.
@@ -169,7 +169,7 @@ int found_errno(const char *syscall, const char *obj, int tmperr)
 			return 1;
 		}
 	}
-	return 0; 
+	return 0;
 }
 
 void cleanup()
@@ -179,7 +179,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 	tst_rmdir();
-	tst_exit();
 
 }
 
@@ -466,5 +465,5 @@ int main(int argc, char *argv[])
 	}
 
 	cleanup();
-	return 0;
+	tst_exit();
 }

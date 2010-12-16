@@ -14,12 +14,10 @@
 #include <errno.h>
 #include "posixtest.h"
 
-
 void handler(int signo)
 {
 	printf("Caught SIGCHLD\n");
 }
-
 
 int main()
 {
@@ -35,14 +33,14 @@ int main()
 	act.sa_handler = handler;
 	act.sa_flags = SA_NOCLDWAIT;
 	sigemptyset(&act.sa_mask);
-	sigaction(SIGCHLD,  &act, 0);     
+	sigaction(SIGCHLD,  &act, 0);
 
 	if (fork() == 0) {
 		/* child */
-		return 0;
+		tst_exit();
 	} else {
 		/* parent */
-		int s; 		
+		int s;
 		if (wait(&s) == -1 && errno == ECHILD) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
@@ -52,4 +50,3 @@ int main()
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
-

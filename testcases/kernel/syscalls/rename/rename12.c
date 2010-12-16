@@ -122,7 +122,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -176,10 +175,9 @@ int main(int ac, char **av)
 			}
 
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
-	tst_exit();
 
 }
 
@@ -193,10 +191,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Must run this as root");
 	 }
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -215,13 +211,13 @@ void setup()
 
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s", fdir);
-		
+
 	}
 
 	/* set the sticky bit */
 	if (chmod(fdir, buf1.st_mode | S_ISVTX) != 0) {
 		tst_brkm(TBROK, cleanup, "failed to set the S_ISVTX bit");
-		
+
 	}
 
 	/* create a file under fdir */

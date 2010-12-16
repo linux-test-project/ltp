@@ -39,7 +39,7 @@
  * 				 of signal setup and signal sending.
  *
  * PARENT DOCUMENT :  sgntds01  Signal System Call
- * 	
+ *
  * AUTHOR           :  Dave Baumgartner
  * 		    :  Rewrote 12/92 by Richard Logan
  *
@@ -260,7 +260,6 @@ char **argv;
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		errno = -4;
@@ -284,7 +283,7 @@ char **argv;
 
 	cleanup();
 
-	return 0;
+	tst_exit();
 }				/*End of main */
 
 /***********************************************************************
@@ -424,7 +423,7 @@ int tst_count;
 		}
 		close(fd1[0]);
 
-	} /* End of parent. */
+	}
 	else if (Pid == 0) {
 		/*
 		 * This is the child.
@@ -441,14 +440,14 @@ int tst_count;
 		do_child(test_case);
 #endif
 
-	} /* End of child. */
+	}
 	else {
 		tst_resm(TBROK|TERRNO, "fork() failed");
 		close(fd1[0]);
 		close(fd1[1]);
 		return;
 	}
-}				/* End of do_test. */
+}
 
 /***********************************************************************
  * do_child()
@@ -519,7 +518,7 @@ int test_case;
 	pause();
 
 	exit(exit_val);
-}				/* End of do_child */
+}
 
 #ifdef UCLINUX
 /***********************************************************************
@@ -528,7 +527,7 @@ int test_case;
 void do_child_uclinux()
 {
 	do_child(test_case_uclinux);
-}				/* End of do_child_uclinux */
+}
 #endif
 
 /***********************************************************************
@@ -563,23 +562,22 @@ void sigdfl_test()
 			Tret, TEST_ERRNO, EINVAL);
 	}
 
-}				/* End of sigdfl_test. */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make and change to a temporary directory */
 	tst_tmpdir();
 
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -602,9 +600,7 @@ void cleanup()
 
 	tst_rmdir();
 
-	tst_exit();
-
-}				/* End cleanup() */
+}
 
 /***********************************************************************
  *  Signal handler routine that used by the parent to handler

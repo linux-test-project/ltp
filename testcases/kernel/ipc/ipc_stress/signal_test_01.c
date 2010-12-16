@@ -64,7 +64,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -110,10 +109,8 @@ void reset_valid_sig ();		/* reset valid_sig array */
 void sys_error (const char *, int);	/* system error message function */
 void error (const char *, int);		/* error message function */
 
-
 /* Define an array for verifying received signals */
 int valid_sig [ SIGMAX + 1 ];
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -128,11 +125,10 @@ int main (int argc, char **argv)
 	     newmask, 		/* Second process signal mask */
 	     oldmask;		/* Signal mask returned by sigblock */
     pid_t pid = getpid ();	/* Process ID (of this process) */
-   
-   
+
 	/* Print out program header */
 	printf ("%s: IPC Signals TestSuite program\n\n", *argv);
-   
+
 	/*
 	 * Establish signal handler for each signal & reset "valid signals"
 	 * array, and setup alternative stack for processing signals
@@ -153,7 +149,7 @@ int main (int argc, char **argv)
 	 * First indicate which signals the signal handler should expect
 	 * by setting the corresponding valid_sig[] array fields.
 	 *
-	 * Then send the signals to this process. 
+	 * Then send the signals to this process.
 	 *
 	 * And finally verify that the signals were caught by the signal
 	 * handler by checking to see if the corresponding valid_sig[] array
@@ -209,7 +205,7 @@ int main (int argc, char **argv)
 	kill (pid, SIGFPE);
 	kill (pid, SIGTERM);
 	kill (pid, SIGINT);
-	
+
 	if (valid_sig [SIGFPE])
 		error ("failed to receive SIGFPE signal!", __LINE__);
 	if (valid_sig [SIGTERM])
@@ -278,7 +274,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                           init_sig_vec ()                            |
 | ==================================================================== |
@@ -343,7 +338,6 @@ void init_sig_vec ()
 #endif //ifdef _LINUX_
 }
 
-
 /*---------------------------------------------------------------------+
 |                             handler ()                               |
 | ==================================================================== |
@@ -372,7 +366,6 @@ void handler (int sig)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                         reset_valid_sig ()                           |
 | ==================================================================== |
@@ -390,7 +383,6 @@ void reset_valid_sig ()
 		valid_sig [i] = 0;
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -405,7 +397,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

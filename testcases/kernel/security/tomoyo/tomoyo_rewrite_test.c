@@ -165,5 +165,5 @@ int main(int argc, char *argv[])
 	tomoyo_test_init();
 	stage_rewrite_test();
 	clear_status();
-	return 0;
+	tst_exit();
 }

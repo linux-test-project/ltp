@@ -123,7 +123,6 @@ int main(int ac, char *av[])
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -151,7 +150,7 @@ int main(int ac, char *av[])
 	}
 	cleanup();
 	tst_exit();
-}				/* End main */
+}
 
 void setup(void)
 {

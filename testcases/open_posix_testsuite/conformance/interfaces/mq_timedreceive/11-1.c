@@ -12,9 +12,9 @@
  * and the message will be removed from the queue.
  * step:
  * 1. send two messages to the message queue
- * 2. call mq_timedreceive() twice, if the two received messages are the same, 
- *    which means the first mq_timedreceive does not remove the message from 
- *    the queue, the test will fail. Otherwise, the test will pass. 
+ * 2. call mq_timedreceive() twice, if the two received messages are the same,
+ *    which means the first mq_timedreceive does not remove the message from
+ *    the queue, the test will fail. Otherwise, the test will pass.
  */
 
 #include <stdio.h>
@@ -96,4 +96,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

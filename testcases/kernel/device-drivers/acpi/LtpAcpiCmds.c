@@ -51,7 +51,6 @@ static int ltpdev_open(struct block_device *bdev, fmode_t mode);
 static int ltpdev_release(struct gendisk *disk, fmode_t mode);
 static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, unsigned long arg);
 
-
 static u32 ltp_test_sleep_button_ev_handler(void *context);
 static u32 ltp_test_power_button_ev_handler(void *context);
 static u32 acpi_ec_gpe_handler(void *context);
@@ -81,7 +80,7 @@ ioctl:      ltpdev_ioctl,
 int ltp_acpi_major = LTPMAJOR;
 int test_iteration = 0;
 
-static char genhd_flags = 0;  
+static char genhd_flags = 0;
 static struct gendisk * gd_ptr;
 
 struct acpi_ec {
@@ -99,12 +98,9 @@ MODULE_AUTHOR("Martin Ridgeway <mridge@us.ibm.com>");
 MODULE_DESCRIPTION(ACPI_LTP_TEST_DRIVER_NAME);
 MODULE_LICENSE("GPL");
 
-
-
 /*
  * Device operations for the virtual ACPI devices
  */
-
 
 extern struct acpi_device		*acpi_root;
 
@@ -164,9 +160,6 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
     int 		state = 0;
 
     /*****************************************************************************/
-
-
-
 
     printk(KERN_ALERT "ltpdev_ioctl \n");
     switch (cmd) {
@@ -292,7 +285,7 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
             printk(KERN_ALERT "TEST -- acpi_remove_gpe_handler \n");
             acpi_remove_gpe_handler(device, ec->gpe_bit, &acpi_ec_gpe_handler);
         }
-    
+
         printk(KERN_ALERT "TEST -- acpi_get_current_resources \n");
         status = acpi_get_current_resources (next_child_handle, &buffer);
 
@@ -403,7 +396,6 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
             printk(KERN_ALERT "Failed get_devices %d\n",status);
         }
 
-
 //        status = acpi_os_create_semaphore(1, 1, &tmp_handle);
 
         if (status) {
@@ -454,7 +446,6 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
 
         break;
     }
-
 
     return 0;
 }
@@ -570,10 +561,7 @@ int init_module(void)
 {
     int                result;
 
-
-
     printk(KERN_ALERT "ltpdev_init_module \n");
-
 
     result = register_blkdev(ltp_acpi_major, LTP_ACPI_DEV_NAME);
 
@@ -605,7 +593,6 @@ int init_module(void)
 //    gd_ptr->disk_de = NULL;
     gd_ptr->flags = genhd_flags;
 
-
     sprintf(gd_ptr->disk_name, LTP_ACPI_DEV_NAME);
 
     add_disk(gd_ptr);
@@ -625,4 +612,3 @@ void cleanup_module(void)
     unregister_blkdev(ltp_acpi_major, LTP_ACPI_DEV_NAME);
 
 }
-

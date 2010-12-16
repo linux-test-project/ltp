@@ -135,13 +135,10 @@ main(int ac, char **av)
 		testcase[8] = EFAULT;
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -182,9 +179,9 @@ main(int ac, char **av)
 				}
 			} /* end of else */
 
-		}	/* End of TEST CASE LOOPING */
+		}
 
-	}	/* End for TEST_LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
@@ -241,7 +238,7 @@ setup_test(int option)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root*/
@@ -256,7 +253,6 @@ setup(void)
 	spec.tv_sec = 1;
 	spec.tv_nsec = 0;
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

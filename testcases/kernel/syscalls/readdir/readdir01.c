@@ -212,7 +212,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		if (Nfiles)
@@ -288,15 +287,15 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 /***************************************************************
  * help
@@ -320,7 +319,6 @@ void setup()
 	 */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
@@ -354,6 +352,4 @@ void cleanup()
 	 */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

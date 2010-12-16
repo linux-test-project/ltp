@@ -8,8 +8,8 @@
 
 /*
  * mq_timedreceive() test plan:
- * Test that if the message queue is empty and O_NONBLOCK is not set, 
- * mq_timedreceive() will block until timeout expires. 
+ * Test that if the message queue is empty and O_NONBLOCK is not set,
+ * mq_timedreceive() will block until timeout expires.
  *
  */
 
@@ -74,7 +74,7 @@ int main()
 		oldtime = time(NULL);
 		mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts);
 		newtime = time(NULL);
-		if ((newtime - oldtime) < TIMEOUT) { 
+		if ((newtime - oldtime) < TIMEOUT) {
 			printf("FAIL: mq_timedreceive didn't block until timout expires\n");
 			failure = 1;
 		}
@@ -83,7 +83,7 @@ int main()
 	       	if (mq_close(mqdes) != 0) {
 			perror(ERROR_PREFIX "mq_close");
 			unresolved = 1;
-       		}	
+       		}
        		if (mq_unlink(mqname) != 0) {
 			perror(ERROR_PREFIX "mq_unlink");
 			unresolved = 1;
@@ -103,9 +103,8 @@ int main()
 		sleep(TIMEOUT + 3); /* Parent is probably blocking
 				       send a signal to let it abort */
 		kill(getppid(), SIGABRT);
-		return 0; 
+		tst_exit();
 	}
         printf("Test PASSED\n");
       	return PTS_PASS;
 }
-

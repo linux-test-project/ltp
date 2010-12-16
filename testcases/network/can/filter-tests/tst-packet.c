@@ -148,9 +148,9 @@ int main(int argc, char **argv)
                                 printf("%8X  ", frame.can_id & CAN_EFF_MASK);
                         else
                                 printf("%3X  ", frame.can_id & CAN_SFF_MASK);
-            
+
                         printf("[%d] ", frame.can_dlc);
-            
+
                         for (i = 0; i < frame.can_dlc; i++) {
                                 printf("%02X ", frame.data[i]);
                         }
@@ -165,4 +165,3 @@ int main(int argc, char **argv)
 
         return 0;
 }
-

@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutexattr_setprioceiling()
@@ -15,7 +15,7 @@
  * Steps:
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2.  Call pthread_mutexattr_setprioceiling() to set the prioceiling.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -26,18 +26,18 @@
 
 int main()
 {
-	
-	/* Make sure there is prioceiling capability. */ 
+
+	/* Make sure there is prioceiling capability. */
 	/* #ifndef _POSIX_PRIORITY_SCHEDULING
 	  fprintf(stderr,"prioceiling attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;	
+	  return PTS_UNRESOLVED;
 	#endif */
 
 	pthread_mutexattr_t mta;
 	int prioceiling, ret;
 
 	prioceiling = sched_get_priority_min(SCHED_FIFO);
-	
+
 	/* Set the prioceiling of an unintialized mutex attr. */
 	if ((ret=pthread_mutexattr_setprioceiling(&mta,prioceiling)) == 0)
 	{

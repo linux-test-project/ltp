@@ -172,5 +172,5 @@ int main(int argc, char *argv[])
 	shmctl(id, IPC_RMID, NULL);
 	tst_exit();
 
-	return 0;
+	tst_exit();
 }

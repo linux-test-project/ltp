@@ -81,7 +81,7 @@ extern int Tst_count;
 int main(int argc, char **argv)
 {
 	tst_resm(TCONF, "System doesn't support execution of the test");
-	return 0;
+	tst_exit();
 }
 
 #else
@@ -301,7 +301,7 @@ int main(int argc, char **argv)
 
 	cleanup();
 
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -309,7 +309,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* Pause if that option was specified */
+
 	TEST_PAUSE;
 }
 
@@ -325,8 +325,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 #endif

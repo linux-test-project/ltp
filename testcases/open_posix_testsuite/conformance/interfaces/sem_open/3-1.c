@@ -1,13 +1,13 @@
 /*
     Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
     Created by:  majid.awad REMOVE-THIS AT intel DOT com
-    This file is licensed under the GPL license.  For the full content 
-    of this license, see the COPYING file at the top level of this 
+    This file is licensed under the GPL license.  For the full content
+    of this license, see the COPYING file at the top level of this
     source tree.
  */
 /*
-   open_sem test case that attempts to open a new semaphore with read 
-   permissions, close it, then create the same semaphore with write 
+   open_sem test case that attempts to open a new semaphore with read
+   permissions, close it, then create the same semaphore with write
    permissions which should come up with denial access.
  */
 
@@ -24,18 +24,16 @@
 #include <fcntl.h>
 #include "posixtest.h"
 
-
 #define TEST "3-1"
 #define FUNCTION "sem_open"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
-
 
 /** Set the euid of this process to a non-root uid */
 int set_nonroot()
 {
 	struct passwd *pw;
 	setpwent();
-	/* search for the first user which is non root */ 
+	/* search for the first user which is non root */
 	while ((pw = getpwent()) != NULL)
 		if (strcmp(pw->pw_name, "root"))
 			break;
@@ -53,7 +51,7 @@ int set_nonroot()
 		perror("An error occurs when calling seteuid()");
 		return 1;
 	}
-	
+
 	printf("Testing with user '%s' (uid: %d)\n",
 	       pw->pw_name, (int)geteuid());
 	return 0;
@@ -63,10 +61,9 @@ int main()
 	sem_t   *mysemp;
 	char semname[50];
 
-
 	if (getuid() == 0) {
                 if (set_nonroot() != 0) {
-			printf("Cannot run this test as non-root user\n");	
+			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
 	}

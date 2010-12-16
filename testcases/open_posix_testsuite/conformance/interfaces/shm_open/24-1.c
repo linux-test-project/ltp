@@ -19,4 +19,3 @@ int main()
         printf("Will not test the result of shm_open() when O_EXCL is set and O_CREAT is not\nset because it is undefined.\n");
         return PTS_UNTESTED;
 }
-

@@ -133,7 +133,6 @@ double	execution_time = DEFAULT_TIME;
 int	process_slots  = DEFAULT_PROCESS_SLOTS;
 int	debug = 0;
 
-
 /*
  * Function prototypes
  */
@@ -149,7 +148,6 @@ void  kill_short_term_testcases ();
 void  start_short_term_testcases (int, double, int);
 void  finishup (long);
 void  parse_args (int, char **);
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -244,7 +242,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*------------------------------ startup() ------------------------------*/
 /* This procedure opens the , and then outputs some starting	 *
  * information to the screen and .  It also initializes the	 *
@@ -284,7 +281,6 @@ void startup (long start_time)
 	e6child = 0.0;
 }
 
-
 /*--------------------------- start_testcase() --------------------------*/
 /* This procedure will run a specified testcase by forking a process, and*
  * then running the testcase with it.  It will also store the process id *
@@ -301,7 +297,7 @@ void startup (long start_time)
 int start_testcase (char *name1, char *name2, char *param1, char *param2, char *param3, char *param4)
 {
 	int   pid,        /* pid of currently running process */
-	pid_save;   /* saved pid of process */  
+	pid_save;   /* saved pid of process */
 
 	/*
 	 * Fork a process that will run testcase and save the pid
@@ -351,7 +347,6 @@ int start_testcase (char *name1, char *name2, char *param1, char *param2, char *
 	return (pid_save);
 }
 
-
 /*------------------------- process_slots_in_use() ----------------------*/
 /* This function will return the number of process slots currently in use*
  * by executing the 'ps' command.					 *
@@ -394,7 +389,6 @@ int process_slots_in_use()
 
 	return (usedslots - 1);
 }
-
 
 /*----------------------- available_user_process_slots() ----------------*/
 /* This function returns the total number of available user process slots*
@@ -500,7 +494,6 @@ void display_line (char *tcname, int pri, int f, float et, float *pet, int ff)
 	static  int display_header = 0;
 	float	pc;               /* holds percent change */
 
-
 	/*
 	 * Print header every eight lines...
 	 */
@@ -529,7 +522,6 @@ void display_line (char *tcname, int pri, int f, float et, float *pet, int ff)
 
 	*pet = et;
 }
-
 
 /*------------------------- perform_throughput_tests() ------------------*/
 /* This procedure is called each time throughput tests are to be	 *
@@ -590,7 +582,6 @@ void perform_throughput_tests (int current_priority)
 	e6child = esecs2;
 }
 
-
 /*------------------------ start_long_term_testcases() ------------------*/
 /* This procedure takes the number of long-term process slots available, *
  * and executes the long term testcases.				 *
@@ -599,7 +590,7 @@ void start_long_term_testcases (long_term_slot_total, execution_time)
 int long_term_slot_total;    /* total number of long-term slots */
 char *execution_time;              /* runtime hours to pass to each testcase */
 {
-	int   i;   /* counter for loop */
+	int   i;
 
 	/*
 	 * Now use up the long_term_slot_total by starting testcases call
@@ -623,7 +614,6 @@ char *execution_time;              /* runtime hours to pass to each testcase */
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                     start_short_term_testcases ()                    |
 | ==================================================================== |
@@ -633,7 +623,7 @@ char *execution_time;              /* runtime hours to pass to each testcase */
 +---------------------------------------------------------------------*/
 void start_short_term_testcases (int short_term_slot_total, double stress_percent, int pri)
 {
-	int	i;                  /* counter for loop */
+	int	i;
 	int	short_term_slots;   /* number of slots to use */
 
 	/*
@@ -699,7 +689,6 @@ void kill_short_term_testcases()
 	numprocs = 0;
 }
 
-
 /*----------------------------- finishup() ------------------------------*/
 /* This procedure closing information to the about ending	 *
  * times, elapsed times, etc.  This procedure then closes the file*
@@ -719,7 +708,6 @@ long start_time;   /* starting time to calculate elapsed time */
 	printf ("elapsed time = %4.2f hours\n",
 		( (end_time - start_time) / 3600.0));
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |

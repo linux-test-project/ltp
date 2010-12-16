@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-udpsender.c
@@ -74,7 +73,6 @@ char *program_name;		/* program name */
 struct sigaction handler;	/* Behavior for a signal */
 int catch_sighup;		/* When catch the SIGHUP, set to non-zero */
 
-
 /*
  * Function: usage()
  *
@@ -116,7 +114,6 @@ usage (char *program_name, int exit_value)
     exit (exit_value);
 }
 
-
 /*
  * Function: set_signal_flag()
  *
@@ -149,7 +146,6 @@ set_signal_flag(int type)
     }
 }
 
-
 /*
  * Function: parse_options()
  *
@@ -160,7 +156,7 @@ set_signal_flag(int type)
  *   argc:  the number of argument
  *   argv:  arguments
  *  udp_p: pointer to the data of udp datagram
- *   bg_p: pointer to the flag of working in backgrond 
+ *   bg_p: pointer to the flag of working in backgrond
  *
  * Return value:
  *  None
@@ -276,7 +272,6 @@ parse_options(int argc, char *argv[], struct udp_info *udp_p, int *bg_p)
     }
 }
 
-
 /*
  * Function: create_udp_datagram()
  *
@@ -343,7 +338,7 @@ create_udp_datagram(struct udp_info *udp_p)
 		    fatal_error("setsockopt()");
 		}
 		break;
-		
+
 	    case PF_INET6:	/* IPv6 */
 		if (setsockopt(udp_p->sd, IPPROTO_IPV6, IPV6_MULTICAST_IF,
 				id_p, sizeof(int))) {
@@ -365,7 +360,6 @@ create_udp_datagram(struct udp_info *udp_p)
     memcpy (&(udp_p->addr_info), res, sizeof(struct addrinfo));
     freeaddrinfo(res);
 }
-
 
 /*
  * Function: send_udp_datagram()
@@ -421,7 +415,6 @@ send_udp_datagram(struct udp_info *udp_p)
     /* Close the socket */
     close(udp_p->sd);
 }
-
 
 /*
  *

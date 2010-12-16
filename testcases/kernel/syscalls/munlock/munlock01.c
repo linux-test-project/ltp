@@ -103,13 +103,11 @@ int main(int ac, char **av)
 		tst_exit();
 	}
 
-	/* perform global setup for test */
 	setup();
 
 	/* check looping state */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -131,13 +129,13 @@ int main(int ac, char **av)
 					 i, TC[i].len);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 void setup1(int i)
 {
@@ -157,7 +155,7 @@ void setup1(int i)
 /* setup() - performs all ONE TIME setup for this test. */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root */
@@ -167,8 +165,6 @@ void setup()
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-
-	/* Pause if that option was specified */
 
 	TEST_PAUSE;
 }
@@ -181,6 +177,4 @@ void cleanup()
 {
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

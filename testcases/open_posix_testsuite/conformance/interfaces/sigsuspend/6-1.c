@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  Assumption: The test assumes that this program is run under normal conditions,
@@ -10,7 +10,7 @@
 
  Steps:
  1. Fork() a child process. Have the child suspend itself.
- 2. From the parent, send the child a SIGUSR1 signal so that the child returns from 
+ 2. From the parent, send the child a SIGUSR1 signal so that the child returns from
     suspension.
  3. In the child process, make sure that sigsuspend returns a -1 and pass that info
     to the parent process.
@@ -64,7 +64,7 @@ int main()
 		return 2;
 
 	} else {
-		int s; 
+		int s;
 		int exit_status;
 
 		/* parent */
@@ -101,4 +101,3 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 }
-

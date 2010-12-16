@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutexattr_setprioceiling()
@@ -14,7 +14,7 @@
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2.  Get the min and max boundries for SCHED_FIFO of what prioceiling can be.
  * 3.  In a for loop, go through each valid SCHED_FIFO value, set the prioceiling.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -24,16 +24,16 @@
 
 int main()
 {
-	
-	/* Make sure there is prioceiling capability. */ 
+
+	/* Make sure there is prioceiling capability. */
 	/* #ifndef _POSIX_PRIORITY_SCHEDULING
 	  fprintf(stderr,"prioceiling attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;	
+	  return PTS_UNRESOLVED;
 	#endif */
 
 	pthread_mutexattr_t mta;
 	int max_prio, min_prio, i;
-	
+
 	/* Initialize a mutex attributes object */
 	if (pthread_mutexattr_init(&mta) != 0)
 	{
@@ -47,7 +47,7 @@ int main()
 
 	for (i=min_prio;(i<max_prio+1);i++)
 	{
-		/* Set the prioceiling to a priority number in the boundries 
+		/* Set the prioceiling to a priority number in the boundries
 		 * of SCHED_FIFO policy */
 		if (pthread_mutexattr_setprioceiling(&mta,i))
 		{

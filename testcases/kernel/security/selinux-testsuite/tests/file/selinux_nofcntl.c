@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
   }
 
   fd = open(argv[1], O_RDONLY | O_APPEND, 0);
- 
+
   if (fd == -1) {
     perror("selinux_nofcntl:open");
     exit(2);

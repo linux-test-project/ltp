@@ -262,5 +262,4 @@ void cleanup()
 	unlink(fnamebuf);
 	tst_rmdir();
 
-	tst_exit();
 }

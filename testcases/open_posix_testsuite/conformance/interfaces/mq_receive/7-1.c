@@ -9,7 +9,7 @@
 /*
  * mq_receive() test plan:
  * If message queue is empty and O_NONBLOCK is set in the message queue,
- * no message will be removed from the queue, mq_receive will return an 
+ * no message will be removed from the queue, mq_receive will return an
  * error.
  */
 
@@ -45,7 +45,7 @@ int main()
                 perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
         }
-	
+
        	if (mq_receive(mqdes, msgrv, BUFFER, NULL) != -1) {
 		printf("mq_receive succeed unexpectly \n");
 		failure = 1;
@@ -72,4 +72,3 @@ int main()
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-

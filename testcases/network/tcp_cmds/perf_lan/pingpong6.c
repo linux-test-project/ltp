@@ -1,14 +1,14 @@
 /*
 #
 #
-#                              Task Subprogram 
+#                              Task Subprogram
 #
 #  SUBPROGRAM NAME: PINGPONG6.C
 #
 #  REQUIRED PARAMETERS:
 #    Calling Procedure: pingpong6 HOST SIZE PACKETS
 #       HOST - Current host
-#       SIZE  - Size of each packet 
+#       SIZE  - Size of each packet
 #       PACKETS  - the number of packets across the network
 #
 #  SETUP REQUIRED:
@@ -69,7 +69,6 @@ struct addrinfo hints;
 struct sockaddr_in6 whereto;/* Who to pingpong */
 int datalen;		/* How much data */
 
-
 char *hostname;
 char hnamebuf[MAXHOSTNAMELEN];
 
@@ -79,7 +78,7 @@ int ident;
 
 int nreceived = 0;		/* # of packets we got back */
 int timing = 0;
-void finish(int); 
+void finish(int);
 int nwrite;
 /*
  * 			M A I N
@@ -115,11 +114,11 @@ char *argv[];
         hostname = hnamebuf;
 	memset( (char *)&whereto, 0x00, sizeof(struct sockaddr) );
 	memcpy(&whereto, hp->ai_addr, hp->ai_addrlen);
-        
+
 	/*  Determine Packet Size - either use what was passed in or default */
         printf ("Determine packet size \n");
 	if (argc >= 3)
-		datalen = atoi( av[2] ) - 8;  
+		datalen = atoi( av[2] ) - 8;
 	else
 		datalen = 64-8;
 	if (datalen > MAXPACKET) {
@@ -127,16 +126,13 @@ char *argv[];
 		exit(1);
 	}
 
-
         /* Set number of packets to be sent */
         printf ("Determine number of packets to send \n");
 	if (argc >= 4)
 		npackets = atoi(av[3]);
 
-
         /* Get PID of current process */
 	ident = getpid() & 0xFFFF;
-
 
         /* Get network protocol to use (check /etc/protocol) */
 	if ((proto = getprotobyname("ipv6-icmp")) == NULL) {
@@ -144,7 +140,6 @@ char *argv[];
 		exit(1);
 	}
 
- 
         /* Create a socket endpoint for communications - returns a descriptor */
 	if ((s = socket(AF_INET6, SOCK_RAW, proto->p_proto)) < 0) {
 		printf("Pingpong: socket - could not create link \n");
@@ -152,7 +147,7 @@ char *argv[];
 	}
 
 	printf("echoing %s: %d data bytes\n", hostname, datalen );
-	printf("Total packet size is %d bytes\n",datalen+8);	
+	printf("Total packet size is %d bytes\n",datalen+8);
 
 	setlinebuf( stdout );
 
@@ -160,7 +155,6 @@ char *argv[];
 	signal( SIGINT, finish );
 	signal( SIGCLD, finish );
 
-     
         /* Fork a child process to continue sending packets */
         printf ("Create a child process to continue to send packets \n");
 	switch (fork()) {
@@ -191,11 +185,11 @@ char *argv[];
 				printf("ERROR in recvfrom\n");
 			}
                         /* Verify contents of packet */
-                        if ((rc = ck_packet (packet, cc, &from)) == 0) 
+                        if ((rc = ck_packet (packet, cc, &from)) == 0)
 				nreceived++;
 		}
 	}
-	return 0;
+	tst_exit();
 }
 
 echopkt(datalen,npackets)
@@ -214,17 +208,16 @@ int npackets;
 
 	register u_char *datap = &outpack[8];
 
-
         /* Setup the packet structure */
         printf ("Setup ICMP packet structure to send to host \n");
 	icp->icmp6_type = ICMP6_ECHO_REQUEST;
 	icp->icmp6_code = 0;
 	icp->icmp6_cksum = 0;
 	icp->icmp6_id = ident;		/* ID */
-	
+
 	cc = datalen+8;			/* skips ICMP portion */
 
-	for (i=0; i<datalen; i++) {	
+	for (i=0; i<datalen; i++) {
 		*datap++ = 6;
 	}
 	ntransmitted=0;
@@ -244,11 +237,8 @@ int npackets;
 		return(count);
 }
 
-
-
-
 /*
- *			F I N I S H      
+ *			F I N I S H
  *
  * Outputs packet information to confirm transmission and reception.
  */
@@ -257,7 +247,6 @@ void finish(int n)
 	printf("%d packets received, \n", nreceived );
 	exit(0);
 }
-
 
 /*
  *			C K _ P A C K E T
@@ -274,7 +263,6 @@ struct sockaddr_in6 *from; 	/* address of sender */
 	struct  icmp6_hdr icp_hdr;
 	struct	icmp6_hdr *icp = (struct ip6_hdr *) buf;          /* pointer to IP header */
   	u_char *datap ;
-	
 
 	datap = (u_char *)icp + sizeof(icp_hdr);
 	if (icp->icmp6_type != ICMP6_ECHO_REPLY) {
@@ -282,13 +270,13 @@ struct sockaddr_in6 *from; 	/* address of sender */
 	}
 	if (icp->icmp6_id != ident) {
 		return(1);			/* Sent to us by someone else */
-	}	
+	}
 	printf("Receiving packet \n");
         /* Verify data in packet */
 
 	printf ("Checking Data.\n");
-        for (i=0; i<datalen; i++) {     
-          if ((*datap) != 6) {               
+        for (i=0; i<datalen; i++) {
+          if ((*datap) != 6) {
                  printf ("RVW: Data in [%d] is %d\n",i,(*datap));
 		 printf ("Data cannot be validated. \n");
           }

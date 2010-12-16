@@ -35,7 +35,6 @@
 
 #define NUM_CHILDREN 8
 
-
 char *check_zero(unsigned char *buf, int size)
 {
 	unsigned char *p;
@@ -57,7 +56,6 @@ char *check_zero(unsigned char *buf, int size)
 	}
 	return 0;	/* all zeros */
 }
-
 
 int read_eof(char *filename)
 {

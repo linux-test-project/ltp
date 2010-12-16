@@ -10,8 +10,8 @@
  * Will not test the behavior of implementation when an application does not
  * specify exactly one of the first two values (access modes) below in the
  * value of oflag:
- *     O_RDONLY 
- *     O_RDWR 
+ *     O_RDONLY
+ *     O_RDWR
  *
  * Often O_RDONLY == 0 and O_RDWR == 2^n, so when both values are specified,
  * the result is the same than when only O_RDWR is set.
@@ -25,4 +25,3 @@ int main()
         printf("Will not test the behavior of implementation when an application does not\nspecify exactly one of two values: O_RDONLY and O_RDWR.\n");
         return PTS_UNTESTED;
 }
-

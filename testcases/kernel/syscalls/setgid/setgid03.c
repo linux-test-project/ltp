@@ -104,7 +104,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -117,10 +116,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	if ((rootpwent = getpwnam(root)) == NULL) {
@@ -160,6 +157,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

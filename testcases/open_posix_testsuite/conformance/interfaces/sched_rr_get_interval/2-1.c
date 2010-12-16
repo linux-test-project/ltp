@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -17,15 +17,15 @@
 #include <time.h>
 
 int main(int argc, char **argv)
-{	       
+{
 	struct timespec interval;
 	int result = -2;
 
 	interval.tv_sec = -1;
 	interval.tv_nsec = -1;
-	
+
 	result = sched_rr_get_interval(0, &interval);
-	
+
 	if (result == 0 &&
 	   interval.tv_sec >= 0 &&
 	   interval.tv_nsec >= 0 &&
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 		printf("interval.tv_sec  not updated.\n");
 		return PTS_FAIL;
 	}
-	
+
 	if (interval.tv_nsec == -1) {
 		printf("interval.tv_nsec  not updated.\n");
 		return PTS_FAIL;
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 		return PTS_FAIL;
 	} else {
 		perror("Unresolved test error");
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
-	
+
 }

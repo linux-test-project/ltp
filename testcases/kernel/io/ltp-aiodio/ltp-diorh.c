@@ -62,7 +62,7 @@ void do_buffered_writes(int fd, int pattern)
 {
 		 int rc;
 		 int offset;
-	
+
 		 memset(iobuf, pattern, WRITESIZE);
 		 for (offset = 0; offset+WRITESIZE <= BIGSIZE; offset += WRITESIZE) {
 		 		 rc = pwrite(fd, iobuf, WRITESIZE, offset);
@@ -82,7 +82,7 @@ int do_direct_reads(char *filename)
 		 int offset;
 		 int rc, i;
 		 int *p;
-	
+
 		 fd = open(filename, O_DIRECT|O_RDONLY, 0);
 		 assert("open", fd >= 0);
 
@@ -116,14 +116,14 @@ int main(int argc, char *argv[])
 		 int pid;
 		 int err;
 		 int bufsize;
-	
+
 		 if (argc != 2) {
 		 		 fprintf(stderr, "Needs a filename as an argument.\n");
 		 		 exit(1);
 		 }
-	
+
 		 filename = argv[1];
-	
+
 		 pagesize = getpagesize();
 		 bufsize = READSIZE;
 		 if (WRITESIZE > READSIZE)
@@ -133,27 +133,27 @@ int main(int argc, char *argv[])
 		 		 fprintf(stderr, "Error allocating %d aligned bytes.\n", bufsize);
 		 		 exit(1);
 		 }
-	
+
 		 fd = open(filename, O_CREAT|O_TRUNC|O_RDWR, 0666);
 		 assert("open", fd >= 0);
-	
+
 		 do {
-		 	
+
 		 		 assert("ftruncate", ftruncate(fd, BIGSIZE) == 0);
 		 		 fsync(fd);
 
 		 		 pid = fork();
 		 		 assert("fork", pid >= 0);
-		 	
+
 		 		 if (!pid) {
 		 		 		 do_buffered_writes(fd, 0);
 		 		 		 exit(0);
 		 		 }
-		 	
+
 		 		 err = do_direct_reads(filename);
 
 		 		 wait4(pid, NULL, WNOHANG, 0);
-		 	
+
 		 		 if (err)
 		 		 		 break;
 
@@ -169,6 +169,6 @@ int main(int argc, char *argv[])
          if (!err) {
              fprintf(stdout, "ltp-diorh: Completed %d iterations OK \n", pass);
          }
-	
+
 		 return err;
 }

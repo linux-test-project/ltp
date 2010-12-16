@@ -95,7 +95,6 @@ void changedir(char *dir)
   }
 }
 
-
 void create_file(char *filename)
 {
   int fd;
@@ -116,4 +115,3 @@ void create_file(char *filename)
   filecount++;
   close(fd);
 }
-

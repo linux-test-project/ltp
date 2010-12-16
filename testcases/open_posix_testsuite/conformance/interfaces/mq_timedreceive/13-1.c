@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive() test plan:
- * mq_timedreceive() will fail with EAGAIN, if  message queue is empty and 
+ * mq_timedreceive() will fail with EAGAIN, if  message queue is empty and
  * O_NONBLOCK is set in the message queue,
  */
 
@@ -79,4 +79,3 @@ int main()
         printf("Test PASSED\n");
 	return PTS_PASS;
 }
-

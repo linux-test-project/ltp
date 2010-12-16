@@ -166,11 +166,10 @@ main(int argc, char **argv)
 			"at a time");
 		STD_COPIES = 1;
 	}
-       
+
 	tst_tmpdir();
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -243,8 +242,6 @@ cleanup1(void)
 	}
 }
 
-
-
 /*
  * setup()
  *	performs all ONE TIME setup for this test
@@ -252,7 +249,7 @@ cleanup1(void)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);

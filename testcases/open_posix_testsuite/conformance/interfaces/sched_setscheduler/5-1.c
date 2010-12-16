@@ -8,7 +8,7 @@
  *  GNU General Public License for more details.
  *
  * Will not test the condition under which one process has the appropriate
- * privilege to change the scheduling parameters of another process because 
+ * privilege to change the scheduling parameters of another process because
  * they are implementation-defined.
  */
 

@@ -67,8 +67,6 @@ void cleanup()
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 /*
@@ -124,7 +122,6 @@ static int kill_pid_in_childfun(void *vtest)
 
 	cleanup();
 
-	/* NOT REACHED */
 	return 0;
 }
 
@@ -156,7 +153,5 @@ int main()
 	/* cleanup and exit */
 	cleanup();
 
-	
-	return 0;
+	tst_exit();
 }
-

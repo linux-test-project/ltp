@@ -133,7 +133,5 @@ int main (int argc, char **argv) {
 	waitpid(cpid_poster, &status, 0);
 	waitpid(cpid_waiter, &status, 0);
 
-	return 0;
+	tst_exit();
 }
-
-

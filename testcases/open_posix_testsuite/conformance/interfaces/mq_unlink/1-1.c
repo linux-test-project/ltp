@@ -2,16 +2,16 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
  *  mq_unlink() test plan:
- *  mq_unlink() will remove the message queue named by the pathname name 
- *  and return 0 on success. After the success call to mq_unlink() with name, 
+ *  mq_unlink() will remove the message queue named by the pathname name
+ *  and return 0 on success. After the success call to mq_unlink() with name,
  *  a call to mq_open() with name will fail if the flag O_CREAT is not set.
- *  
+ *
  */
 
 #include <stdio.h>

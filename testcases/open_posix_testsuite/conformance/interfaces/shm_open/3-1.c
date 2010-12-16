@@ -19,4 +19,3 @@ int main()
         printf("Will not test whether the name appears in the file system and is visible to\nother functions that take pathnames as arguments because it is unspecified.\n");
         return PTS_UNTESTED;
 }
-

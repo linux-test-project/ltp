@@ -81,7 +81,7 @@
 
 #define INCR_TIME	30	/* increment in the system's current time */
 
-#define BASH_CLOCK	
+#define BASH_CLOCK
 
 char *TCID = "stime01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
@@ -106,16 +106,14 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/*
@@ -138,7 +136,6 @@ int main(int ac, char **av)
 		/* Get the system's new time */
 		new_time = real_time_tv.tv_sec + INCR_TIME;
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -195,11 +192,11 @@ int main(int ac, char **av)
 
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
-	return 0;
-}				/* End main */
+
+}
 
 /*
  * void
@@ -215,10 +212,9 @@ void setup()
 			"you must be root to execute this test!");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  * void
@@ -240,6 +236,4 @@ void cleanup()
 					 "fixed manually");
 	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

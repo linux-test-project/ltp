@@ -1,7 +1,7 @@
-/* 
- * Test program for Linux memory error recovery. 
+/*
+ * Test program for Linux memory error recovery.
  * Requires special injection support.
- * 
+ *
  * This is a early primitive version of tinjpage.c,
  * but simpler to debug in some cases.
  */
@@ -48,7 +48,7 @@ void testmem(char *msg, char *page, int write)
 		if (write)
 			*page = 2;
 		else
-			printf("%x\n", *(unsigned char *)page);	
+			printf("%x\n", *(unsigned char *)page);
 	}
 	printf("recovered\n");
 }
@@ -80,7 +80,7 @@ int main(void)
 	PS = getpagesize();
 	char *page;
 
-	struct sigaction sa = { 	
+	struct sigaction sa = {
 		.sa_sigaction = sighandler,
 		.sa_flags = SA_SIGINFO
 	};
@@ -159,7 +159,5 @@ int main(void)
 	}
 	printf("SUCCESS\n");
 
-	return 0;
-}	
-
-
+	tst_exit();
+}

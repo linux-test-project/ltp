@@ -131,7 +131,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Initialize the test directories name */
@@ -210,15 +209,14 @@ int main(int ac, char **av)
 				 "in a directory having no permissions FAILED");
 			cleanup();
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	tst_exit();
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -230,10 +228,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Must run this as root");
 	 }
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -262,5 +258,5 @@ void cleanup()
 	/*
 	 * Exit with return code appropriate for results.
 	 */
-	tst_exit();
+
 }

@@ -21,4 +21,3 @@ int main()
 		"more details of what isn't tested\n");
         return PTS_UNTESTED;
 }
-

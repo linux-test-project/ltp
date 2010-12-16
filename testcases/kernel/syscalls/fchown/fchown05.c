@@ -121,15 +121,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -144,7 +142,6 @@ int main(int ac, char **av)
 			 */
 			TEST(fchown(fildes, user_id, group_id));
 
-			/* check return code of fchown(2) */
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL,
 					 "fchown() Fails to %s, errno=%d",
@@ -190,13 +187,12 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	  return (0);
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -206,7 +202,6 @@ int main(int ac, char **av)
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check that the test process id is super/root  */
@@ -215,10 +210,8 @@ void setup()
 		tst_exit();
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	if ((fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
@@ -227,7 +220,7 @@ void setup()
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
 	}
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -248,9 +241,6 @@ void cleanup()
 			 TESTFILE, errno, strerror(errno));
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

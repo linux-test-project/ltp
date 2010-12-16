@@ -85,7 +85,7 @@ int main()
 
 		sleep(1);  // give parent time to set up handler
 		for (i=0; i<MAXMSG+1; i++) {
-        		if (mq_timedsend(gqueue, msgptr, 
+        		if (mq_timedsend(gqueue, msgptr,
 						strlen(msgptr), 1, &ts) == -1) {
 				if (errno == EINTR) {
 				printf("mq_timedsend interrupted by signal\n");
@@ -133,7 +133,7 @@ int main()
 			kill(pid, SIGKILL); //kill child if not gone
 			return PTS_UNRESOLVED;
 		}
-		
+
 		if (!WIFEXITED(k) || !WEXITSTATUS(k)) {
 			printf("Test FAILED\n");
 			return PTS_FAIL;
@@ -145,4 +145,3 @@ int main()
 
 	return PTS_UNRESOLVED;
 }
-

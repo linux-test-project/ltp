@@ -35,6 +35,6 @@ int main(int argc, char *argv[])
 		perror("sched_setscheduler");
 		exit(1);
 	}
-	
+
 	exit(0);
 }

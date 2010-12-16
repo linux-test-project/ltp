@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -10,7 +10,7 @@
  *  mq_unlink() test plan:
  *  mq_unlink() fails with ENOENT, if the named message queue does not
  *  exist.
- *  
+ *
  */
 
 #include <stdio.h>

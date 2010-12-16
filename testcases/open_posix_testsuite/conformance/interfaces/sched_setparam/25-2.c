@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -14,7 +14,6 @@
  *
  * @pt:SS
  */
-
 
 #include <sched.h>
 #include <stdio.h>
@@ -38,13 +37,12 @@ int main() {
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
-		
+
 		if (sched_setscheduler(0, SCHED_SPORADIC, &param) != 0) {
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
-	}	
-
+	}
 
 	invalid_priority = sched_get_priority_max(SCHED_SPORADIC);
 	if (invalid_priority == -1) {
@@ -58,7 +56,7 @@ int main() {
 	param.sched_ss_low_priority = invalid_priority;
 
 	result = sched_setparam(0,&param);
-	
+
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
@@ -69,7 +67,7 @@ int main() {
 		printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
 		return PTS_UNRESOLVED;
 	} else {
-	        perror("Unknow error");	        
+	        perror("Unknow error");
 		return PTS_FAIL;
 	}
 }

@@ -158,10 +158,8 @@ void setup(void)
 {
 	int i;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -204,7 +202,6 @@ void cleanup(void)
 	/* free malloced memory */
 	free(get_arr.array);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -213,6 +210,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

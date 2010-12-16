@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program tests the assertion that the process's signal mask will be
@@ -11,7 +11,7 @@
  Steps:
  1. Empty the signal mask
  2. Deliver the signal
- 3. When we return from the signal handler, verify that the signal mask 
+ 3. When we return from the signal handler, verify that the signal mask
     is still empty, otherwise fail.
 
 */
@@ -74,4 +74,4 @@ int main()
 		return PTS_FAIL;
 	}
 	return PTS_PASS;
-} 
+}

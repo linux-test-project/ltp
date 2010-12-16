@@ -135,7 +135,7 @@ main(int argc, char *argv[])
 		ERROR("couldn't find top of brk");
 		anyfail();
 	}
-      
+
 	/* i changed the second argument to NULL
 	from argv[0]. otherwise it causes the
 	open to fail
@@ -205,7 +205,7 @@ main(int argc, char *argv[])
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
 	ok_exit();
-	return 0;
+	tst_exit();
 }
 
 void ok_exit()
@@ -215,7 +215,6 @@ void ok_exit()
 	tst_exit();
 }
 
-
 int anyfail()
 {
   tst_resm(TFAIL, "Test failed\n");
@@ -223,7 +222,3 @@ int anyfail()
   tst_exit();
   return 0;
 }
-
-
-
-

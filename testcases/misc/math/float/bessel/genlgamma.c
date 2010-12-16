@@ -34,11 +34,9 @@
 #include        <sys/signal.h>
 #include        <math.h>
 
-
-
 int create_Result_file()
 {
-	
+
 	int signgam = 0;
 	int i, nbVal, tabSign[20000];
 	double	tabR[20000], Inc;
@@ -47,7 +45,7 @@ int create_Result_file()
 
 	F_name = "gamma_out.ref";
 	F_namesign = "gamma_sign.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc = sqrt(3);
 
@@ -68,19 +66,18 @@ int create_Result_file()
 	}
 	else
 	{
-		for (i = 0; i<nbVal; i++) 
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabR[i],sizeof(double));
 			write(fpsi,&tabSign[i],sizeof(int));
 		}
-	
+
 		close(fp);
 		close(fpsi);
 		return 0;
 	}
 	return(0);
 }
-
 
 int create_Data_file()
 {
@@ -90,13 +87,12 @@ int create_Data_file()
 	int fp;
 
 	F_name = "gamma_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc = sqrt(3);
 
 	for (i=0; i<nbVal; i++)
 		tabD[i] = (1+Inc*i);
-
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
         if (!fp)
@@ -106,8 +102,8 @@ int create_Data_file()
 	    	return -1;
         }
         else
-        {	
-		for (i = 0; i<nbVal; i++) 
+        {
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabD[i],sizeof(double));
 		}
@@ -117,11 +113,10 @@ int create_Data_file()
 	return(0);
 }
 
-
 int main(int argc, char  *argv[])
 {
 
-	if (argc > 1) 
+	if (argc > 1)
 	{
 		switch ( atoi(argv[1]) )
 		{

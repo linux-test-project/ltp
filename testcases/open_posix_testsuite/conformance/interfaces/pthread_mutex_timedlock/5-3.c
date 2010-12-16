@@ -1,20 +1,20 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_timedlock()
- * 
+ *
  * It shall fail if:
  *
  * [ETIMEDOUT] - The timeout expried and the mutex could not be locked.
  *
- * Steps: 
+ * Steps:
  *
  * 1. In main(), lock the mutex then create a thread.
- * 2. Inside the thread, call pthread_mutex_timedlock.  It should block and return 
+ * 2. Inside the thread, call pthread_mutex_timedlock.  It should block and return
  *    ETIMEDOUT.
  * 3. Save the return value of pthread_mutex_timedlock() and cleanup mutex stuff.
  * 4. Anaylse the return value.
@@ -34,12 +34,12 @@
 							   pthread_mutex_timedlock(). */
 void *f1(void *parm);
 
-int ret;						/* Save return value of 
+int ret;						/* Save return value of
 							   pthread_mutex_timedlock(). */
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
-time_t currsec1, currsec2;				/* Variables for saving time before 
+time_t currsec1, currsec2;				/* Variables for saving time before
 						           and afer locking the mutex using
-							   pthread_mutex_timedlock(). */	   
+							   pthread_mutex_timedlock(). */
 /****************************
  *
  * MAIN()
@@ -56,7 +56,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Create a thread that will call pthread_mutex_timedlock */	
+	/* Create a thread that will call pthread_mutex_timedlock */
 	if (pthread_create(&new_th, NULL, f1, NULL) != 0)
 	{
 		perror("Error in pthread_create().\n");
@@ -76,7 +76,7 @@ int main()
 		perror("Error in pthread_mutex_unlock().\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (pthread_mutex_destroy(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_destroy().\n");
@@ -105,9 +105,9 @@ void *f1(void *parm)
 	struct timespec timeout;
 
 	timeout.tv_sec = time(NULL);
-	timeout.tv_nsec = 0;	
+	timeout.tv_nsec = 0;
 
-	/* This should block since the mutex is not owned by anyone right now. 
+	/* This should block since the mutex is not owned by anyone right now.
 	 * Save the return value. */
 	ret = pthread_mutex_timedlock(&mutex, &timeout);
 

@@ -9,7 +9,7 @@
  *
  * Test that the state of the shared memory object, including all data
  * associated with the shared memory object, persists until all open references
- * are gone even if the shared memory object is unlinked and there 
+ * are gone even if the shared memory object is unlinked and there
  * is no mapping reference anymore.
  *
  * Steps:
@@ -19,9 +19,8 @@
  *  4. Check that the previously written string is always in the memory.
  */
 
-
 /* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base 
+   avoid warning if the implementation does not program ftruncate as a base
    interface */
 #define _XOPEN_SOURCE 600
 
@@ -41,34 +40,34 @@ int main() {
 	int fd;
 	char str[BUF_SIZE] = "qwerty";
 	char *buf;
-	
+
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_NAME);
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
 	buf = mmap(NULL, BUF_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
 	if (buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_NAME);
-		return PTS_UNRESOLVED;	
-	}	
+		return PTS_UNRESOLVED;
+	}
 
 	strcpy(buf, str);
 
        	if (munmap(buf, BUF_SIZE) != 0) {
 		perror("An error occurs when calling munmap()");
 		shm_unlink(SHM_NAME);
-		return PTS_UNRESOLVED;	
-	}	
-	
+		return PTS_UNRESOLVED;
+	}
+
 	if (shm_unlink(SHM_NAME) !=0) {
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
@@ -82,7 +81,7 @@ int main() {
 		return PTS_FAIL;
 	} else if (buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
 	if (strcmp(buf, str) == 0) {

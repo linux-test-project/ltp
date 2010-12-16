@@ -92,7 +92,7 @@ int main(int ac, char **av)
 
 	}
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -102,10 +102,8 @@ void setup()
 {
 	int i, numb_fds;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	numb_fds = getdtablesize();

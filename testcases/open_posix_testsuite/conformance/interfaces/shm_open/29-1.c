@@ -19,4 +19,3 @@ int main()
         printf("Will not test whether the name and shared memory object state remain valid\nafter a system reboot. It is unspecified.\n");
         return PTS_UNTESTED;
 }
-

@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-udpclient.c
@@ -42,14 +41,12 @@
 #define MESSAGE_LEN 1000	/* The length of message */
 #define RECVFROM_TIMEOUT  1	/* Timeout length of recvfrom() */
 
-
 /*
  * Gloval variables
  */
 struct sigaction handler;	/* Behavior for a signal */
 int catch_sigalrm;		/* When catch the SIGALRM, set to non-zero */
 int catch_sighup;		/* When catch the SIGHUP, set to non-zero */
-
 
 /*
  * Standard Header Files
@@ -68,10 +65,9 @@ int catch_sighup;		/* When catch the SIGHUP, set to non-zero */
 #include <sys/wait.h>
 #include <netinet/in.h>
 
-
 /*
  * Function: usage()
- * 
+ *
  * Descripton:
  *  Print the usage of this program. Then, terminate this program with
  *  the specified exit value.
@@ -102,7 +98,6 @@ usage(char *program_name, int exit_value)
 			    , program_name);
     exit (exit_value);
 }
-
 
 /*
  * Function: set_signal_flag()
@@ -139,7 +134,6 @@ set_signal_flag(int type)
     }
 }
 
-
 /*
  *
  *  Function: main()
@@ -150,21 +144,21 @@ main(int argc, char *argv[])
 {
     char *program_name = argv[0];
     int optc;			/* option */
-    
+
     sa_family_t family;		/* protocol family */
     char *server_name;		/* Name (or IP address) of the server */
     char *portnum;		/* port number in string representation */
-    
+
     int sock_fd;		/* socket descriptor to access */
     int on;			/* on/off at an socket option */
 
     struct addrinfo hints;	/* hints for getaddrinfo() */
     struct addrinfo *res;	/* pointer to addrinfo structure */
     int err;			/* return value of getaddrinfo */
-    
+
     char *message;		/* Pointer to the message */
     char *recvbuf = NULL;	/* Pointer to the message */
-    
+
     int background = 0;		/* work in the background if non-zero */
 
     debug = 0;
@@ -173,7 +167,7 @@ main(int argc, char *argv[])
     family = PF_UNSPEC;
     server_name = NULL;
     portnum = NULL;
-    
+
     /* Retrieve the options */
     while ((optc = getopt(argc, argv, "S:f:p:bdh")) != EOF) {
 	switch (optc) {
@@ -313,7 +307,6 @@ main(int argc, char *argv[])
 	struct sockaddr_storage from_addr;	/* address of a client */
 	socklen_t from_addr_len;		/* length of `client_addr' */
 
-
 	/* Send the message to the server */
 	if (sendto(sock_fd, message, MESSAGE_LEN, 0,
 		    res->ai_addr, res->ai_addrlen) != MESSAGE_LEN) {
@@ -322,7 +315,7 @@ main(int argc, char *argv[])
 	    else
 		fatal_error("sendto()");
 	}
-	
+
 	/* Receive the response from the server */
 	from_addr_len = sizeof(from_addr);
 	alarm(RECVFROM_TIMEOUT);
@@ -343,7 +336,7 @@ main(int argc, char *argv[])
 	recvbuf[recvlen] = '\0';
 	if (debug)
 	    fprintf(stderr, "Message is %s\n", recvbuf);
-		
+
 	/* Catch sighup */
 	if (catch_sighup)
 	    break;

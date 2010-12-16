@@ -14,21 +14,19 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This sample test aims to check the following assertion:
  *
  * The function does not return EINTR
- 
+
  * The steps are:
  * -> kill a thread which calls pthread_detach()
  * -> check that EINTR is never returned
- 
+
  */
- 
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -39,7 +37,7 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <string.h>
  #include <unistd.h>
 
@@ -50,27 +48,27 @@
  #include <sys/wait.h>
  #include <time.h>
  #include <signal.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -82,7 +80,6 @@
 #endif
 
 #define WITH_SYNCHRO
-
 
 /********************************************************************************************/
 /***********************************    Test cases  *****************************************/
@@ -96,7 +93,6 @@
  * scenar_init(): function to call before use the scenarii array.
  * scenar_fini(): function to call after end of use of the scenarii array.
  */
-
 
 /********************************************************************************************/
 /***********************************    Real Test   *****************************************/
@@ -112,7 +108,7 @@ unsigned long count_sig=0;
 
 sigset_t usersigs;
 
-typedef struct 
+typedef struct
 {
 	int	sig;
 #ifdef WITH_SYNCHRO
@@ -126,7 +122,7 @@ void * sendsig (void * arg)
 	thestruct *thearg = (thestruct *) arg;
 	int ret;
 	pid_t process;
-	
+
 	process=getpid();
 
 	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
@@ -143,7 +139,7 @@ void * sendsig (void * arg)
 
 		ret = kill(process, thearg->sig);
 		if (ret != 0)  { UNRESOLVED(errno, "Kill in sendsig"); }
-		
+
 	}
 	return NULL;
 }
@@ -163,26 +159,26 @@ void sighdl2(int sig)
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig2))
 	{ UNRESOLVED(errno, "Sem_post in signal handler 2"); }
-#endif	
+#endif
 }
 
 /* Thread function -- almost does nothing */
 void * threaded(void * arg)
 {
 	int ret;
-	
+
  	/* We don't block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 in worker thread");  }
 
 	ret = pthread_detach(pthread_self());
 	if (ret == EINTR)  {  FAILED("pthread_detach() returned EINTR");  }
-	
+
 	/* Signal we're done */
 	do { ret = sem_post(&scenarii[sc].sem); }
 	while ((ret == -1) && (errno == EINTR));
 	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
-	
+
 	/* return */
 	return arg;
 }
@@ -192,33 +188,33 @@ void * test(void * arg)
 {
 	int ret=0;
 	pthread_t child;
-	
+
  	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in signal thread");  }
 
 	sc = 0;
-	
+
 	while (do_it)
 	{
 		#if VERBOSE > 5
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n", sc, scenarii[sc].descr);
 		#endif
-		
+
 		count_ope++;
-		
+
 		ret = pthread_create(&child, &scenarii[sc].ta, threaded, NULL);
 		switch (scenarii[sc].result)
 		{
 			case 0: /* Operation was expected to succeed */
 				if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
 				break;
-			
+
 			case 1: /* Operation was expected to fail */
 				if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
 				break;
-			
+
 			case 2: /* We did not know the expected result */
 			default:
 				#if VERBOSE > 5
@@ -236,7 +232,7 @@ void * test(void * arg)
 			while ((ret == -1) && (errno == EINTR));
 			if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
 		}
-		
+
 		/* Change thread attribute for the next loop */
 		sc++;
 		sc %= NSCENAR;
@@ -251,19 +247,19 @@ int main (int argc, char * argv[])
 	pthread_t th_work, th_sig1, th_sig2;
 	thestruct arg1, arg2;
 	struct sigaction sa;
-	
+
 	/* Initialize output routine */
 	output_init();
-	
+
 	/* Initialize thread attribute objects */
 	scenar_init();
-	
+
 	/* We prepare a signal set which includes SIGUSR1 and SIGUSR2 */
 	sigemptyset(&usersigs);
 	ret = sigaddset(&usersigs, SIGUSR1);
 	ret |= sigaddset(&usersigs, SIGUSR2);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to add SIGUSR1 or 2 to a signal set");  }
-	
+
 	/* We now block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in main thread");  }
@@ -287,7 +283,7 @@ int main (int argc, char * argv[])
 
 	if ((ret = pthread_create(&th_work, NULL, test, NULL)))
 	{ UNRESOLVED(ret, "Worker thread creation failed"); }
-	
+
 	arg1.sig = SIGUSR1;
 	arg2.sig = SIGUSR2;
 #ifdef WITH_SYNCHRO
@@ -295,34 +291,26 @@ int main (int argc, char * argv[])
 	arg2.sem = &semsig2;
 #endif
 
-
-	
 	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *)&arg1)))
 	{ UNRESOLVED(ret, "Signal 1 sender thread creation failed"); }
 	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *)&arg2)))
 	{ UNRESOLVED(ret, "Signal 2 sender thread creation failed"); }
 
-
-
 	/* Let's wait for a while now */
 	sleep(1);
-	
 
 	/* Now stop the threads and join them */
 	do { do_it=0; }
 	while (do_it);
 
-	
 	if ((ret = pthread_join(th_sig1, NULL)))
 	{ UNRESOLVED(ret, "Signal 1 sender thread join failed"); }
 
 	if ((ret = pthread_join(th_sig2, NULL)))
 	{ UNRESOLVED(ret, "Signal 2 sender thread join failed"); }
 
-	
 	if ((ret = pthread_join(th_work, NULL)))
 	{ UNRESOLVED(ret, "Worker thread join failed"); }
-
 
 	scenar_fini();
 
@@ -331,8 +319,7 @@ int main (int argc, char * argv[])
 	output("  %d thread detached.\n", count_ope);
 	#ifdef WITH_SYNCHRO
 	output("  %d signals were sent meanwhile.\n", count_sig);
-	#endif 
-	#endif	
+	#endif
+	#endif
 	PASSED;
 }
-

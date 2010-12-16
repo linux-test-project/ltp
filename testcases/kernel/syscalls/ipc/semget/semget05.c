@@ -146,13 +146,11 @@ void setup(void)
 {
 	int sem_q;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -201,7 +199,6 @@ void cleanup(void)
 	/* free malloced memory */
 	free(sem_id_arr);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -210,6 +207,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

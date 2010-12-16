@@ -92,13 +92,10 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Create a Posix timer */
@@ -112,7 +109,7 @@ main(int ac, char **av)
 		tst_resm((TEST_RETURN == 0 ? TPASS : TFAIL | TTERRNO),
 			"%s",
 			(TEST_RETURN == 0 ? "passed" : "failed"));
-	}	/* End for TEST_LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
@@ -122,10 +119,9 @@ main(int ac, char **av)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

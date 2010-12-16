@@ -161,5 +161,5 @@ int main(int ac, char **av)
 
 		tst_exit();
 	}			/* end for */
-	return 0;
+	tst_exit();
 }

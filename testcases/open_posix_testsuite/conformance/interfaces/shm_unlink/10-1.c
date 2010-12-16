@@ -32,9 +32,9 @@ int main() {
 	for (i=1; i<name_max+2; i++)
 		shm_name[i] = 'a';
 	shm_name[name_max+2] = 0;
-	
+
 	result = shm_unlink(shm_name);
-	
+
 	if (result == -1 && errno == ENAMETOOLONG) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

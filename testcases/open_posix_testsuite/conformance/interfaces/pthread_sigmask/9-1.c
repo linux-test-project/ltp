@@ -7,13 +7,13 @@
   1. Use sigaction to setup a signal handler for SIGABRT
   2. Add SIGABRT to the signal mask.
   3. Raise SIGABRT. Now, SIGABRT is pending.
-  4. Call pthread_sigmask() again. Verify that global variable 
-     pthread_sigmask_return_val is not set to anything other than 
-     it's initial value (which is 1), while we're still inside 
+  4. Call pthread_sigmask() again. Verify that global variable
+     pthread_sigmask_return_val is not set to anything other than
+     it's initial value (which is 1), while we're still inside
      the signal handler code.
-  5. Once pthread_sigmask() returns, verify that it returns a zero, 
-     and verify that the global handler_called variable has been set to 1; 
-  6. If we manage to verify both steps 4 and 5, then we've 
+  5. Once pthread_sigmask() returns, verify that it returns a zero,
+     and verify that the global handler_called variable has been set to 1;
+  6. If we manage to verify both steps 4 and 5, then we've
      proved that signal was delivered before pthread_sigmask() returned.
 
 */
@@ -70,11 +70,11 @@ void *a_thread_func()
 		perror("Unexpected error while attempting to use pthread_sigmask.\n");
 		pthread_exit((void*)1);
 	}
-	
+
 	if (handler_called != 1) {
 		perror("Handler wasn't called, implying signal was not delivered.\n");
 		pthread_exit((void*)1);
-	}	
+	}
 
 	printf("Test PASSED: signal was delivered before the call to pthread_sigmask returned.\n");
 	pthread_exit((void*)0);
@@ -115,4 +115,3 @@ int main() {
         }
         return PTS_PASS;
 }
-

@@ -111,7 +111,7 @@ void populate_file();
 void file_seek(off_t);
 
 /* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines */
+extern int Tst_count;
 
 /* Global Variables */
 char *TCID = "fallocate03";	/* test program identifier */
@@ -138,10 +138,10 @@ int block_size;
 int buf_size;
 
 /******************************************************************************
- * Performs all one time clean up for this test on successful   
+ * Performs all one time clean up for this test on successful
  * completion,  premature exit or  failure. Closes all temporary
- * files, removes all temporary directories exits the test with 
- * appropriate return code by calling tst_exit() function.      
+ * files, removes all temporary directories exits the test with
+ * appropriate return code by calling tst_exit() function.
 ******************************************************************************/
 extern void cleanup()
 {
@@ -149,15 +149,12 @@ extern void cleanup()
 	if (close(fd) == -1)
 		tst_resm(TWARN|TERRNO, "close(%s) failed", fname);
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /*****************************************************************************
- * Performs all one time setup for this test. This function is  
+ * Performs all one time setup for this test. This function is
  * used to create temporary dirs and temporary files
  * that may be used in the course of this test
  ******************************************************************************/
@@ -309,5 +306,5 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }

@@ -12,14 +12,12 @@
  * their scheduling parameters from the process.
  */
 
-
 #include <sched.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 void * runner(void * arg) {
 
@@ -39,7 +37,7 @@ int main() {
 	}
 	/* Make sure new_priority != old_priority */
 	max_priority = sched_get_priority_max(SCHED_FIFO);
-	new_priority = (param.sched_priority == max_priority) ? 
+	new_priority = (param.sched_priority == max_priority) ?
 		sched_get_priority_min(SCHED_FIFO) :
 		max_priority;
 	param.sched_priority = new_priority;
@@ -51,7 +49,6 @@ int main() {
 		perror("An error occurs when calling sched_setscheduler()");
 		return PTS_UNRESOLVED;
 	}
-
 
 	if (pthread_attr_init(&attr) != 0) {
 		printf("An error occurs when calling pthread_attr_init()");
@@ -69,7 +66,6 @@ int main() {
 		printf("An error occurs when calling pthread_create()");
 		return PTS_UNRESOLVED;
 	}
-
 
 	if (pthread_getschedparam(tid , &policy, &param) != 0) {
 		printf("An error occurs when calling pthread_getschedparam()");

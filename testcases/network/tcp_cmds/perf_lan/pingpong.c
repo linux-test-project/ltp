@@ -1,14 +1,14 @@
 /*
 #
 #
-#						      Task Subprogram 
+#						      Task Subprogram
 #
 #  SUBPROGRAM NAME: PINGPONG.C
 #
 #  REQUIRED PARAMETERS:
 #    Calling Procedure: pingpong HOST SIZE PACKETS
 #       HOST - Current host
-#       SIZE  - Size of each packet 
+#       SIZE  - Size of each packet
 #       PACKETS  - the number of packets across the network
 #
 #  SETUP REQUIRED:
@@ -88,7 +88,7 @@ int		nwrite;
 int		nreceived = 0;		/* # of packets we got back */
 int		timing = 0;
 
-void		finish(int); 
+void		finish(int);
 uint16_t	in_cksum(uint16_t*, int);
 int		ck_packet(uint8_t*, size_t, sai_t*);
 int		echopkt(int, int);
@@ -139,8 +139,6 @@ main (int argc, char *argv[])
 
 	}
 
-
-
 	/*  Determine Packet Size - either use what was passed in or the default */
 	tst_resm (TINFO, "Determining packet size");
 
@@ -167,10 +165,8 @@ main (int argc, char *argv[])
 	if (argc >= 4)
 		npackets = atoi(argv[3]);
 
-
         /* Get PID of current process */
 	ident = getpid() & 0xFFFF;
-
 
 	/* Get network protocol to use (check /etc/protocol) */
 	if ((proto = getprotobyname(ICMP_PROTO)) == NULL) {
@@ -178,7 +174,6 @@ main (int argc, char *argv[])
 		tst_exit();
 	}
 
- 
 	/* Create a socket endpoint for communications - returns a descriptor */
 	if ((s = socket(AFI, SOCK_RAW, proto->p_proto)) < 0) {
 		tst_resm (TINFO, "socket - could not create link");
@@ -193,7 +188,6 @@ main (int argc, char *argv[])
 	signal(SIGINT, finish);
 	signal(SIGCLD, finish);
 
-     
 	/* Fork a child process to continue sending packets */
 	tst_resm (TINFO, "Create a child process to continue to send packets");
 	switch (fork()) {
@@ -229,13 +223,13 @@ main (int argc, char *argv[])
 				tst_resm (TINFO, "ERROR - network garbled packet");
 			} else {
 				nreceived++;
-			} 
+			}
 
 		}
 
 	}
 
-	return 0;
+	tst_exit();
 
 }
 
@@ -337,7 +331,7 @@ in_cksum (uint16_t *addr, int len)
 }
 
 /*
- *			F I N I S H      
+ *			F I N I S H
  *
  * Outputs packet information to confirm transmission and reception.
  */
@@ -348,14 +342,13 @@ finish (int n)
 	exit(0);
 }
 
-
 /*
  *			C K _ P A C K E T
  *
  * Checks contents of packet to verify information did not get destroyed
  */
 
-/* 
+/*
  * buf	- pointer to start of IP header
  * cc	- total size of received packet
  * from - address of sender
@@ -369,7 +362,7 @@ ck_packet (uint8_t *buf, size_t cc, sai_t *from)
 	register icmp_t *icp;			/* ptr to ICMP */
   	u_char *datap ;
 
-#if INET6	
+#if INET6
 	from->sin6_addr.s6_addr = ntohl(from->sin6_addr.s6_addr);
 #else
 	from->sin_addr.s_addr = ntohl(from->sin_addr.s_addr);
@@ -377,7 +370,7 @@ ck_packet (uint8_t *buf, size_t cc, sai_t *from)
 
 	iphdrlen = ip->ip_hl << 2;		/* Convert # 16-bit words to
 						 * number of bytes */
-	cc -= iphdrlen; 
+	cc -= iphdrlen;
 	icp = (icmp_t*) (buf + iphdrlen);
 	datap = (u_char *)icp + sizeof(struct timeval) + 8;
 	if (icp->icmp_type != IERP) {
@@ -387,7 +380,7 @@ ck_packet (uint8_t *buf, size_t cc, sai_t *from)
 	if (icp->icmp_id != ident) {
 		return 0;			/* Sent to us by someone
 						 * else */
-	}	
+	}
 
 	/* Verify data in packet */
 	tst_resm (TINFO, "Verify data in packet after returned from sender");
@@ -396,7 +389,7 @@ ck_packet (uint8_t *buf, size_t cc, sai_t *from)
 	}
 	tst_resm (TINFO, "Checking Data.");
 	for (i = 8; i < datalen; i++) {		/* skip 8 for time */
-		if (i !=  (*datap)) {		       
+		if (i !=  (*datap)) {
 			tst_resm (TINFO, "Data cannot be validated.");
 		}
 		datap++;

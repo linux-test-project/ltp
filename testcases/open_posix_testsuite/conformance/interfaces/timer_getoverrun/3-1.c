@@ -5,9 +5,9 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * Test that timer_getoverrun() can only return a value up to but 
- * not including {DELAYTIMER_MAX}. 
- * - adam.li 2004-04-29 Make the output as HEX. 
+ * Test that timer_getoverrun() can only return a value up to but
+ * not including {DELAYTIMER_MAX}.
+ * - adam.li 2004-04-29 Make the output as HEX.
  * - s.decugis 2005-11-25 Changed return value to UNTESTED.
  */
 

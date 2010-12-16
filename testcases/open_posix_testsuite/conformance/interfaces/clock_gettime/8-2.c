@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Error condition API test of the clock_gettime() function.
@@ -26,7 +26,7 @@
 #define NUMINVALIDTESTS 8
 
 static int invalid_tests[NUMINVALIDTESTS] = {
-		INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192, 
+		INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
 		1073743192, -1, 17
 };
 

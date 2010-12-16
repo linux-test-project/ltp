@@ -126,10 +126,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	sprintf(fname, "fcnlt12.%d", getpid());
@@ -152,6 +151,4 @@ void cleanup(void)
 	unlink(fname);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

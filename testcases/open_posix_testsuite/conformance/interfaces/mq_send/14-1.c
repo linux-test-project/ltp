@@ -26,9 +26,8 @@
 #define NUMINVALID 3
 
 static long messagesize[NUMINVALID] = {
-	19, 2, 1 
+	19, 2, 1
 };
-
 
 int main()
 {
@@ -54,7 +53,7 @@ int main()
                 	printf("mq_send() did not return -1 for EMSGSIZE\n");
 			failure=1;
         	}
-		
+
 		if (errno != EMSGSIZE) {
 			printf("errno != EMSGSIZE\n");
 			failure=1;
@@ -84,4 +83,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

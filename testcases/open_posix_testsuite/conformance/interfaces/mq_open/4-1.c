@@ -23,4 +23,3 @@ int main()
 	printf("implementation is implemented with a file descriptor.\n");
 	return PTS_UNTESTED;
 }
-

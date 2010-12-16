@@ -21,7 +21,7 @@
 /* File:	unshare01.c					   	 */
 /*									 */
 /* Description: This tests the unshare() syscall.		      	 */
-/*	     unshare() allows a process to disassociate parts of its	 */ 
+/*	     unshare() allows a process to disassociate parts of its	 */
 /*		execution context that are currently being shared with other 	*/
 /*		processes. Part of the execution context, such as the namespace	*/
 /*		,is shared implicitly when a new process is created using 	*/
@@ -29,7 +29,7 @@
 /*		, may be shared by explicit request when creating a process 	*/
 /*		using clone(2).							*/
 /*										*/
-/*		The main use of unshare() is to allow a process to control its	*/ 
+/*		The main use of unshare() is to allow a process to control its	*/
 /*		shared execution context without creating a new process.	*/
 /*		 								*/
 /*										*/
@@ -49,8 +49,8 @@
 /*			longer shares its root directory, current directory, or	*/
 /*			umask attributes with any other process.		*/
 /*		CLONE_NEWNS:							*/
-/*		       This flag has the same effect as the clone(2) CLONE_NEWNS*/ 
-/*			flag. Unshare the namespace, so that the calling process*/ 
+/*		       This flag has the same effect as the clone(2) CLONE_NEWNS*/
+/*			flag. Unshare the namespace, so that the calling process*/
 /*			has a private copy of its namespacei which is not shared*/
 /*			with any other process. Specifying this flag automat-	*/
 /*			ically implies CLONE_FS as well. 			*/
@@ -95,7 +95,7 @@
 #include "config.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -124,7 +124,7 @@ int  TST_TOTAL =1;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -159,14 +159,13 @@ int main(int ac, char **av) {
 	int lc;			/* loop counter */
 	int rval;
 	char *msg;		/* message TEST_RETURNurned from parse_opts */
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -301,6 +300,6 @@ int main(int ac, char **av) {
 int main(void)
 {
 	tst_resm(TCONF, "unshare is undefined.");
-	return 0;
+	tst_exit();
 }
 #endif

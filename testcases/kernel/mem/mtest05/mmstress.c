@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /******************************************************************************/
 /*                                                                            */
 /* File:         mmstress.c                                                   */
@@ -82,7 +81,6 @@
 /*        - fixed the use of the remove_files function in a conditional       */
 /*                                                                            */
 /******************************************************************************/
-
 
 /* GLOBAL INCLUDE FILES                                                       */
 #include <stdio.h>    /* standard C input/output routines                     */
@@ -181,7 +179,6 @@ sig_handler(int signal) /* signal number, set to handle SIGALRM               */
     exit(0);
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Function:    usage                                                         */
@@ -209,7 +206,6 @@ usage(char *progname)        /* name of this program                       */
     fprintf(stderr, "\t-V program version\n");
     exit(1);
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -240,7 +236,6 @@ set_timer(int run_time)         /* period for which test is intended to run   */
         exit(1);
     }
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -304,7 +299,6 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
     PTHREAD_EXIT(0);
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Function:    remove_tmpfiles                                               */
@@ -339,11 +333,10 @@ remove_files(char *filename, char * addr)    /* name of the file that is to be r
     {
         if (verbose_print)
             tst_resm(TINFO, "file %s removed", filename);
-       
-    }     
+
+    }
     return SUCCESS;
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -374,7 +367,7 @@ map_and_thread(
     int    fault_type,           /* type of fault to be generated             */
     int    num_thread,           /* number of threads to create               */
     RETINFO_t *retinfo)          /* return map address and oper status        */
-          
+
 {
     int  fd         = 0;         /* file descriptor of the file created       */
     int  thrd_ndx   = 0;         /* index to the number of threads created    */
@@ -383,11 +376,11 @@ map_and_thread(
     long th_args[5];     	/* argument list passed to  thread_fault()   */
     char *empty_buf = NULL;      /* empty buffer used to fill temp file       */
     long pagesize                /* contains page size at runtime             */
-                    = sysconf(_SC_PAGESIZE);       
+                    = sysconf(_SC_PAGESIZE);
     static pthread_t pthread_ids[NUMTHREAD];
                                  /* contains ids of the threads created       */
     caddr_t map_addr = NULL;     /* address where the file is mapped          */
-               
+
     /* Create a file with permissions 0666, and open it with RDRW perms       */
     /* if the name is not a NULL                                              */
 
@@ -421,7 +414,7 @@ map_and_thread(
         /* private, else map the file shared. if READ_FAULT is required to be */
         /* generated map the file with read protection else map with read -   */
         /* write protection.                               */
-   
+
         if ((map_addr = (caddr_t)mmap(0, pagesize*pages_num,
                         ((fault_type == READ_FAULT) ?
 			PROT_READ : PROT_READ|PROT_WRITE),
@@ -448,7 +441,7 @@ map_and_thread(
 
     /* As long as wait is set to TRUE, the thread that will be created will */
     /* loop in its exec routine */
-   
+
     wait_thread = TRUE;
 
     /* Create a few threads, ideally number of threads equals number of CPU'S */
@@ -462,7 +455,7 @@ map_and_thread(
     {
         th_args[0] = thrd_ndx;
         th_args[4] = (long)0;
-   
+
        /*************************************************************/
        /*   The way it was, args could be overwritten by subsequent uses
         *   of it before the called routine had a chance to fully initialize.
@@ -497,7 +490,7 @@ map_and_thread(
         tst_resm(TINFO, "map_and_thread(): pthread_create() success");
     wait_thread = FALSE;
     th_status = malloc(sizeof(int *));
-   
+
     /* suspend the execution of the calling thread till the execution of the  */
     /* other thread has been terminated.                                      */
 
@@ -520,14 +513,14 @@ map_and_thread(
                 tst_resm(TINFO,
                         "thread [%ld] - process exited with errors",
                 (long)pthread_ids[thrd_ndx]);
-                free(empty_buf);                         
+                free(empty_buf);
                 remove_files(tmpfile, map_addr);
                 close(fd);
                 exit(1);
             }
-        }  
+        }
     }
-   
+
     /* remove the temporary file that was created. - clean up                 */
     /* but dont try to remove special files.                                  */
 
@@ -552,7 +545,6 @@ map_and_thread(
     retinfo->status = SUCCESS;
     return retinfo;
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -582,7 +574,6 @@ test1()
     return (retval.status);
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Test:        Test case tests the race condition between simultaneous write */
@@ -611,7 +602,6 @@ test2()
     return (retval.status);
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Test:        Test case tests the race condition between simultaneous COW   */
@@ -638,7 +628,6 @@ test3()
     map_and_thread("./tmp.file.3", thread_fault, COW_FAULT, NUMTHREAD, &retval);
     return (retval.status);
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -667,7 +656,6 @@ test4()
     map_and_thread("/dev/zero", thread_fault, COW_FAULT, NUMTHREAD, &retval);
     return (retval.status);
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -715,9 +703,9 @@ test5()
             if (pid != -1)
                 wait(&wait_status);
         }
-       
+
     } while (fork_ndx++ < NUMTHREAD);
-   
+
     if (sbrk(-BRKSZ) == (caddr_t)-1)
     {
         tst_resm(TINFO, "test5(): rollback sbrk failed");
@@ -728,7 +716,6 @@ test5()
     }
     return SUCCESS;
 }
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -760,7 +747,7 @@ test6()
            "simultaneous fork -exec - exit faults in the same address space.");
 
     /* increment the  program's  data  space  by 200*1024 (BRKSZ) bytes       */
-   
+
     if (sbrk(BRKSZ) == (caddr_t)-1)
     {
         perror("test6(): sbrk()");
@@ -805,7 +792,7 @@ test6()
         }
 
     } while (fork_ndx++ < NUMTHREAD);
-  
+
     if (sbrk(-BRKSZ) == (caddr_t)-1)
     {
         tst_resm(TINFO, "test6(): rollback sbrk failed");
@@ -821,7 +808,6 @@ test6()
     return res;
 }
 
-   
 /******************************************************************************/
 /*                                                                            */
 /* Function:    main                                                          */
@@ -851,7 +837,7 @@ main(int   argc,     /* number of command line parameters                     */
 
     static char *version_info = "mmstress V1.00 04/17/2001";
                           /* version of this program                          */
-    int    (*(test_ptr)[])() =   
+    int    (*(test_ptr)[])() =
                                {NULL, test1, test2, test3, test4, test5, test6};
                                     /* pointer to the array of test names     */
     int    ch;                      /* command line flag character            */
@@ -881,7 +867,7 @@ main(int   argc,     /* number of command line parameters                     */
                         {SIGUSR2,"SIGUSR2"},
                         {SIGENDSIG,"ENDSIG"}
                    };
-   
+
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
@@ -914,7 +900,7 @@ main(int   argc,     /* number of command line parameters                     */
                           run_once = FALSE;
                       }
                       else
-                          OPT_MISSING(prog_name, optopt);              
+                          OPT_MISSING(prog_name, optopt);
                       break;
             case 'v': verbose_print = TRUE;
                       break;
@@ -939,7 +925,7 @@ main(int   argc,     /* number of command line parameters                     */
     /* duration for which the tests have to be run. test_time is converted to */
     /* corresponding seconds and the tests are run as long as the current time*/
     /* is less than the required time and test are successul (ie rc = 0)      */
-   
+
     set_timer(test_time);
 
     /* set up signals */

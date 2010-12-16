@@ -74,7 +74,7 @@
 #define SFD_CLOEXEC O_CLOEXEC
 
 /* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -102,12 +102,10 @@ int TST_TOTAL = 1;		/* total number of tests in this file.   */
 /******************************************************************************/
 extern void cleanup()
 {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -160,7 +158,6 @@ int main(int argc, char *argv[])
 	}
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {

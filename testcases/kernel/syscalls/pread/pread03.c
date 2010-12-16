@@ -118,7 +118,6 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
@@ -159,7 +158,6 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -170,16 +168,13 @@ void setup()
 {
 	char *cur_dir = NULL;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Allocate the read buffer */
 	init_buffers();
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* get the currect directory name */
@@ -195,7 +190,7 @@ void setup()
 	if (mkdir(PREAD_TEMPDIR, 0777) != 0) {
 		tst_resm(TFAIL, "mkdir() failed to create" " test directory");
 		exit(1);
-		
+
 	}
 
 	/* open temporary directory used for test */
@@ -250,6 +245,4 @@ void cleanup()
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

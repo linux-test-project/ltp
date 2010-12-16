@@ -35,7 +35,7 @@ int set_nonroot()
         int ret=0;
 
 	setpwent();
-	/* search for the first user which is non root */ 
+	/* search for the first user which is non root */
 	while ((pw = getpwent()) != NULL)
 		if (strcmp(pw->pw_name, "root"))
 			break;
@@ -65,7 +65,7 @@ int set_nonroot()
 		perror("An error occurs when calling seteuid()");
 		return 1;
 	}
-	
+
 	printf("Testing with user '%s' (uid: %d)\n",
 	       pw->pw_name, (int)geteuid());
 	return 0;
@@ -78,7 +78,7 @@ int main() {
         /* This test should be run under standard user permissions */
         if (getuid() == 0) {
                 if (set_nonroot() != 0) {
-			printf("Cannot run this test as non-root user\n");	
+			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
         }

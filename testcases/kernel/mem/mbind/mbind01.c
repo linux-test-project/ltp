@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 		if (munmap(addr, pagesize*3) == -1)
 			tst_brkm(TWARN|TERRNO, NULL, "munmap");
 	}
-	return 0;
+	tst_exit();
 }
 
 void usage(void)

@@ -3,15 +3,15 @@
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  rusty.lynch REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
-  Test case for assertion #22 of the sigaction system call that verifies 
-  that if the SA_NODEFER flag is set for a given signal, then when the 
-  sa_sigaction signal-catching function is entered, then the signal that 
-  was caught is not added to the signal mask by raising that signal in the 
+  Test case for assertion #22 of the sigaction system call that verifies
+  that if the SA_NODEFER flag is set for a given signal, then when the
+  sa_sigaction signal-catching function is entered, then the signal that
+  was caught is not added to the signal mask by raising that signal in the
   signal handler and verifying that the handler is reentered.
-  
+
   Steps:
   1. Fork a new process
   2. (parent) wait for child
@@ -74,7 +74,7 @@ int main()
 			       "setup test pre-conditions");
 			return PTS_UNRESOLVED;
 		}
-		
+
 		if (raise(SIGXFSZ) == -1) {
 			perror("Unexpected error while attempting to "
 			       "setup test pre-conditions");
@@ -83,7 +83,7 @@ int main()
 
 		return PTS_FAIL;
 	} else {
-		int s; 
+		int s;
 
 		/* parent */
 		if (wait(&s) == -1) {
@@ -99,6 +99,5 @@ int main()
 	}
 
 	printf("Test FAILED\n");
-	return PTS_FAIL;	
+	return PTS_FAIL;
 }
-

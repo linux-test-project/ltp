@@ -129,7 +129,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -290,25 +289,23 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "didn't get event: mask=%x ",
 				 event_set[test_num].mask);
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 	tst_exit();
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	if ((fd_notify = myinotify_init()) < 0) {
@@ -327,7 +324,7 @@ void setup()
 			 fd_notify);
 	};
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -351,9 +348,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-}				/* End cleanup() */
+}
 
 #else
 

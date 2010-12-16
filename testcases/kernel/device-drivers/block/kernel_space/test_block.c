@@ -16,7 +16,6 @@
  * 11 Jan 2009  0.1  First release
  */
 
-
 #include <linux/module.h>
 #include <linux/fs.h>
 
@@ -24,14 +23,12 @@ static unsigned int __initdata tc;
 module_param_named(tc, tc, int, 0);
 MODULE_PARM_DESC(tc, "Test Case to run. Default is 0 which means that run all tests.");
 
-
 MODULE_AUTHOR("Márton Németh <nm127@freemail.hu>");
 MODULE_DESCRIPTION("Test block drivers");
 MODULE_LICENSE("GPL");
 
 #define BLK_DEV_NAME		"test_block"
 #define MAX_MAJOR		255
-
 
 /*
  * Analysis of "int register_blkdev(unsigned int major, const char *name)"
@@ -156,7 +153,6 @@ static void tc04(void)
 	printk(KERN_INFO "Test Case 4: UNRESLOVED\n");
 }
 
-
 static void tc05(void)
 {
 	int major;
@@ -232,13 +228,10 @@ static void tc07(void)
 	printk(KERN_INFO "Test Case 7: UNRESLOVED\n");
 }
 
-
-
 static void tc10(void) {
 	int major;
 
 	printk(KERN_INFO "Test Case 10: unregister_blkdev() with major=0\n");
-
 
 	major = register_blkdev(0, BLK_DEV_NAME);
 	printk(KERN_DEBUG "major = %i\n", major);

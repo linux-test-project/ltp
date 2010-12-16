@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that when clock_nanosleep() is interrupted by a signal, rmtp
@@ -29,7 +29,6 @@ void handler(int signo)
 {
 	printf("In handler\n");
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -58,7 +57,7 @@ int main(int argc, char *argv[])
 		}
 		tssleep.tv_sec=SLEEPSEC;
 		tssleep.tv_nsec=0;
-		if (clock_nanosleep(CLOCK_REALTIME, 0, 
+		if (clock_nanosleep(CLOCK_REALTIME, 0,
 					&tssleep, &tsremain) == EINTR) {
 			if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
 				perror("clock_gettime() failed\n");
@@ -68,11 +67,11 @@ int main(int argc, char *argv[])
 							tsremain.tv_sec;
 
 			if (abs(sleptplusremaining - SLEEPSEC) <= OKDELTA) {
-				printf("PASS - within %d difference\n", 
+				printf("PASS - within %d difference\n",
 					abs(sleptplusremaining - SLEEPSEC));
 					return CHILDPASS;
 			} else {
-				printf("FAIL - within %d difference\n", 
+				printf("FAIL - within %d difference\n",
 					abs(sleptplusremaining - SLEEPSEC));
 					return CHILDFAIL;
 			}

@@ -5,7 +5,7 @@
  * This file has test cases to test the Non-Blocking mode of connect(),
  * accept() and recvmsg() calls.
  *
- * TEST1: Non blocking accept return EAGAIN if connect is not called 
+ * TEST1: Non blocking accept return EAGAIN if connect is not called
  * TEST2: Non blocking connect should return EINPROGRESS
  * TEST3: accept() passes when connect called in Non-blocking mode
  * TEST4: Non blocking recvmsg should return EAGAIN
@@ -79,7 +79,7 @@ main(int argc, char *argv[])
         char * buffer_snd;
 	char * buffer_rcv;
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
-	
+
         struct sockaddr_in conn_addr,lstn_addr,svr_addr;
 
 	/* Rather than fflush() throughout the code, set stdout to
@@ -110,7 +110,7 @@ main(int argc, char *argv[])
 
 	len = sizeof(struct sockaddr_in);
 	flag = MSG_NOSIGNAL;
-	
+
 	/*Setting server socket non-blocking*/
 	sflag = fcntl(lstn_sk, F_GETFL, 0);
 	if (sflag < 0)
@@ -154,7 +154,7 @@ main(int argc, char *argv[])
 	if (acpt_sk < 0)
 		tst_brkm(TBROK, NULL, "accept after a non-blocking connect "
                          "error:%d, errno:%d", error, errno);
-	
+
 	tst_resm(TPASS, "accept() after a non-blocking connect - SUCCESS");
 
 	memset(&outmessage, 0, sizeof(outmessage));
@@ -213,5 +213,5 @@ main(int argc, char *argv[])
 
 	close(lstn_sk);
 	close(acpt_sk);
-	return 0;
+	tst_exit();
 }

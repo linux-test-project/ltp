@@ -75,8 +75,7 @@ int main()
 {
 	tst_resm(TINFO, "This test includes x86 asm and will not work on "
 		 "this machine");
-	tst_exit();
-	return 0;
+
 }
 #else
 
@@ -185,10 +184,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* create a test directory and cd into it */
@@ -213,8 +211,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 #endif /* __i386__ */

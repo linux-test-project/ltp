@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <rpc/rpc.h>
@@ -63,33 +63,33 @@ int main(int argn, char *argc[])
 	SVCXPRT *transpTCP = NULL;
 	SVCXPRT *transpUDP = NULL;
 	//char *simplePing();
-	
+
 	//Initialization
 	pmap_unset(progNum, VERSNUM);
 	svc_unregister(progNum, VERSNUM);
-	
+
     //registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
     //    		simplePing, xdr_int, xdr_int);
     transpTCP = svctcp_create(RPC_ANYSOCK, 1000, 1000);
     transpUDP = svcudp_create(RPC_ANYSOCK);
-    
+
     if (run_mode)
     {
     	printf ("SVC TCP : %d\n", transpTCP);
     	printf ("SVC UDP : %d\n", transpUDP);
     }
-    
+
 	if (!svc_register(transpTCP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_TCP))
 	{
     	fprintf(stderr, "svc_register: error (TCP)\n");
     }
-    
+
     if (!svc_register(transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP))
 	{
     	fprintf(stderr, "svc_register: error (UDP)\n");
     }
-        		
-    svc_run();        
+
+    svc_run();
     fprintf(stderr, "Error: svc_run returned!\n");
     exit(1);
 }
@@ -114,13 +114,13 @@ char *calcProc(struct datas *dt, SVCXPRT *svc)
 void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	//printf("* in Dispatch Func.\n");
-	
-	char *result;            
-	xdrproc_t xdr_argument; 
-	xdrproc_t xdr_result;   
+
+	char *result;
+	xdrproc_t xdr_argument;
+	xdrproc_t xdr_result;
 	char *(*proc)(struct datas *, SVCXPRT *);
 	enum auth_stat why;
-	
+
     switch (rqstp->rq_proc)
     {
 		case CALCPROC:
@@ -139,16 +139,16 @@ void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
       		return;
       	}
     }
-    
+
     memset((char *)&argument, (int)0, sizeof(argument));
 	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
 	{
 		svcerr_decode(transp);
 		return;
 	}
-	
+
 	result = (char *)(*proc)((struct datas *)&argument, transp);
-	
+
 	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
 	{
 		svcerr_systemerr(transp);

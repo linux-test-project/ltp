@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * Test that clock_settime() sets errno=EINVAL if tp has a nsec value < 0 or 
+ * Test that clock_settime() sets errno=EINVAL if tp has a nsec value < 0 or
  * >= 1000 million.
  *
  * Test calling clock_settime() with the following tp.tv_nsec values:
@@ -32,7 +32,7 @@
 #define NUMINVALIDTESTS 9
 
 static int invalid_tests[NUMINVALIDTESTS] = {
-		INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192, 
+		INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
 		1073743192, -1, 1000000000, 1000000001
 };
 

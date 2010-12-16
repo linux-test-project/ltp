@@ -1,7 +1,7 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_spin_lock(pthread_spinlock_t *lock)
@@ -12,10 +12,10 @@
  * until the lock becomes available.
  *
  * Steps:
- * 1.  Initialize a pthread_spinlock_t object 'spinlock' with 
+ * 1.  Initialize a pthread_spinlock_t object 'spinlock' with
  *     pthread_spin_init()
  * 2.  Main thread lock 'spinlock', should get the lock
- * 3.  Create a child thread. The thread lock 'spinlock', should spin. 
+ * 3.  Create a child thread. The thread lock 'spinlock', should spin.
  * 4.  After child thread spin for 2 seconds, send SIGALRM to it.
  * 5.  Child thread check its status in the signal handler.
  */
@@ -29,7 +29,7 @@
 #include "posixtest.h"
 
 static pthread_spinlock_t spinlock;
-volatile static int thread_state; 
+volatile static int thread_state;
 
 #define NOT_CREATED_THREAD 1
 #define ENTERED_THREAD 2
@@ -44,9 +44,9 @@ static void sig_handler()
 }
 
 static void* fn_chld(void *arg)
-{ 
+{
 	int rc = 0;
-	
+
 	struct sigaction act;
 	struct timespec ts;
 	thread_state = ENTERED_THREAD;
@@ -66,7 +66,7 @@ static void* fn_chld(void *arg)
 	act.sa_handler = sig_handler;
 	sigfillset(&act.sa_mask);
 	sigaction(SIGALRM, &act, 0);
-	
+
 	printf("thread: send SIGALRM to me after 2 secs\n");
 	alarm(2);
 
@@ -76,10 +76,10 @@ static void* fn_chld(void *arg)
 	{
 		printf("Test FAILED: thread failed to get spin lock,error code:%d\n" , rc);
 		pthread_exit((void*)PTS_FAIL);
-	} 
-	
+	}
+
 	printf("thread: acquired spin lock\n");
-	
+
 	thread_state = GET_SPIN_LOCK;
 	/* Wait 10 seconds for SIGALRM to be sent */
 	while (cnt++ < 10)
@@ -94,7 +94,7 @@ static void* fn_chld(void *arg)
 	pthread_exit((void*)PTS_UNRESOLVED);
 	return NULL;
 }
- 
+
 int main()
 {
 	pthread_t child_thread;
@@ -109,7 +109,7 @@ int main()
 		perror("main: could not block SIGALRM\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
 	{
 		perror("main: Error at pthread_spin_init()\n");
@@ -118,15 +118,15 @@ int main()
 
 	printf("main: attempt spin lock\n");
 
-	/* We should get the lock */	
+	/* We should get the lock */
 	if (pthread_spin_lock(&spinlock) != 0)
 	{
 		printf("Test FAILED: main cannot get spin lock when no one owns the lock\n");
 		return PTS_FAIL;
-	} 
-	
+	}
+
 	printf("main: acquired spin lock\n");
-	
+
 	thread_state = NOT_CREATED_THREAD;
 
 	printf("main: create thread\n");
@@ -135,7 +135,7 @@ int main()
 		printf("main: Error creating child thread\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Wait for thread to end execution */
 	if (pthread_join(child_thread, &value_ptr) != 0)
 	{

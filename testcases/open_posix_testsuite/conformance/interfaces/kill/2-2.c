@@ -6,11 +6,11 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Test that when the null signal is sent to kill(), error checking is
@@ -43,7 +43,7 @@ int main()
 		} else {
 			printf("kill() failed on ESRCH errno not set correctly\n");
 			failure = 1;
-		}	
+		}
 	} else {
 		printf("kill() did not fail on ESRCH\n");
 		failure = 1;
@@ -60,7 +60,7 @@ int main()
 		} else {
 			printf("kill() failed on EPERM errno not set correctly\n");
 			failure = 1;
-		}	
+		}
 	} else {
 		printf("kill() did not fail on EPERM\n");
 		failure = 1;
@@ -74,4 +74,3 @@ int main()
 		return PTS_PASS;
 	}
 }
-

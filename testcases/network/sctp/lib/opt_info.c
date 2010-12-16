@@ -3,7 +3,7 @@
  * opt_info.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- *    http://www.gnu.org/copyleft/lesser.txt 
+ *    http://www.gnu.org/copyleft/lesser.txt
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this

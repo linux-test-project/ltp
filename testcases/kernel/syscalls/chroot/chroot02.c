@@ -128,7 +128,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -152,10 +151,8 @@ void setup()
 		tst_brkm(TBROK, cleanup, "%s does not exist", tmpbuf);
 	}
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -174,6 +171,4 @@ void cleanup()
 	TEST_CLEANUP;
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

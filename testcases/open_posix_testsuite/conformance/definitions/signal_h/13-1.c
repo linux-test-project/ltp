@@ -39,6 +39,6 @@ int main() {
 		return -1;
 	} else {
 		printf("Test PASSED\n");
-		return 0;
+		tst_exit();
 	}
 }

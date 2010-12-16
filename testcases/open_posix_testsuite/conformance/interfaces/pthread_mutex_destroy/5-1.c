@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_destroy()
- * 	It shall be safe to destroy an initialized mutex that is unlocked. 
+ * 	It shall be safe to destroy an initialized mutex that is unlocked.
  */
 
 #include <pthread.h>
@@ -18,7 +18,7 @@ pthread_mutex_t  mutex;
 int main()
 {
 	int rc;
-	
+
 	/* Initialize mutex with the default mutex attributes */
 	if ((rc=pthread_mutex_init(&mutex, NULL)) != 0) {
 		fprintf(stderr,"Fail to initialize mutex, rc=%d\n",rc);

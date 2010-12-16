@@ -92,13 +92,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -119,20 +116,17 @@ int main(int ac, char **av)
 					 "returned %ld", level, TEST_RETURN);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root  */
@@ -140,10 +134,9 @@ void setup()
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 	 }
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -165,7 +158,7 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-}				/* End cleanup() */
+}
 
 #else /* __i386__ */
 
@@ -179,7 +172,7 @@ int main()
 	tst_resm(TPASS,
 		 "LSB v1.3 does not specify iopl() for this architecture.");
 	tst_exit();
-	return 0;
+	tst_exit();
 }
 
 #endif /* __i386__ */

@@ -82,8 +82,7 @@ int main(int ac, char *av[])
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-		return 0;
+
 	}
 	tst_tmpdir();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -197,17 +196,17 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL,
 				 "pwrite at 0 failed: nbytes=%d, errno=%d",
 				 nbytes, errno);
-			tst_exit();
+
 		}
 		l_seek(fd, 0, SEEK_CUR, K2);
 		if (fstat(fd, &statbuf) == -1) {
 			tst_resm(TFAIL, "fstat failed: errno = %d", errno);
-			tst_exit();
+
 		}
 		if (statbuf.st_size != K5) {
 			tst_resm(TFAIL, "file size is %ld != K4",
 				 statbuf.st_size);
-			tst_exit();
+
 		}
 		tst_resm(TPASS, "O_APPEND test passed.");
 
@@ -217,7 +216,7 @@ int main(int ac, char *av[])
 		unlink(fname);
 	}			/* end for */
 	cleanup();
-	return 0;
+
 }
 
 /*------------------------------------------------------------------------*/
@@ -275,9 +274,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove files and temporary directory created */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

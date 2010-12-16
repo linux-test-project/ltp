@@ -53,5 +53,5 @@ int main()
 	fsync(fd);
 	close(fd);
 	unlink(filename);
-	return 0;
+	tst_exit();
 }

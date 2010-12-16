@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/SGIGPLNoticeExplan/
  */
 
@@ -47,9 +47,9 @@ typedef enum {
 	OP_DREAD,
 	OP_DWRITE,
 	OP_FDATASYNC,
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	OP_FREESP,
-#endif	
+#endif
 	OP_FSYNC,
 	OP_GETDENTS,
 	OP_LINK,
@@ -58,18 +58,18 @@ typedef enum {
 	OP_READ,
 	OP_READLINK,
 	OP_RENAME,
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	OP_RESVSP,
-#endif	
+#endif
 	OP_RMDIR,
 	OP_STAT,
 	OP_SYMLINK,
 	OP_SYNC,
 	OP_TRUNCATE,
 	OP_UNLINK,
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	OP_UNRESVSP,
-#endif	
+#endif
 	OP_WRITE,
 	OP_LAST
 } opty_t;
@@ -82,7 +82,7 @@ typedef struct opdesc {
 	opfnc_t	func;
 	int	freq;
 	int	iswrite;
-	int	isxfs; 
+	int	isxfs;
 } opdesc_t;
 
 typedef struct fent {
@@ -295,9 +295,9 @@ int main(int argc, char **argv)
 	ptrdiff_t	srval;
 #endif
         int             nousage=0;
-#ifndef NO_XFS		
+#ifndef NO_XFS
 	xfs_error_injection_t	err_inj;
-#endif	
+#endif
 
 	errrange = errtag = 0;
 	umask(0);
@@ -308,7 +308,7 @@ int main(int argc, char **argv)
 		switch (c) {
 		case 'c':
 			/*Don't cleanup*/
-			cleanup=1;  
+			cleanup=1;
 			break;
 		case 'd':
 			dirname = optarg;
@@ -372,30 +372,30 @@ int main(int argc, char **argv)
 			exit(1);
 		case 'X':
 			no_xfs = 1;
-			break; 
+			break;
 		}
 	}
-        while ((loopcntr <= loops) || (loops == 0)) 
+        while ((loopcntr <= loops) || (loops == 0))
         {
-		if (no_xfs && errtag) { 
+		if (no_xfs && errtag) {
 			fprintf(stderr, "error injection only works on XFS\n");
-			exit(1); 
-		} 
+			exit(1);
+		}
 
-		if (no_xfs) { 
+		if (no_xfs) {
 			int i;
-			for (i = 0; ops+i < ops_end; ++i) { 
-				if (ops[i].isxfs) 
-					ops[i].freq = 0; 
+			for (i = 0; ops+i < ops_end; ++i) {
+				if (ops[i].isxfs)
+					ops[i].freq = 0;
 			}
-		} 
-       	 
+		}
+
        	 	if (!dirname) {
        	     	/* no directory specified */
     	        	if (!nousage) usage();
            	 exit(1);
         	}
-        
+
 		(void)mkdir(dirname, 0777);
 		if (chdir(dirname) < 0) {
 			perror(dirname);
@@ -415,8 +415,8 @@ int main(int argc, char **argv)
 			seed = (int)t.tv_sec ^ (int)t.tv_usec;
 			printf("seed = %ld\n", seed);
 		}
-#ifndef NO_XFS	
-		if (!no_xfs) { 
+#ifndef NO_XFS
+		if (!no_xfs) {
 		i = ioctl(fd, XFS_IOC_FSGEOMETRY, &geom);
 		if (i >= 0 && geom.rtblocks)
 			rtpct = MIN(MAX(geom.rtblocks * 100 /
@@ -455,24 +455,24 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 		} else
-#endif	
+#endif
 			close(fd);
 		unlink(buf);
-		if (nproc == 1) { 
-			procid = 0; 
+		if (nproc == 1) {
+			procid = 0;
 			doproc();
-		} else { 
+		} else {
 			for (i = 0; i < nproc; i++) {
 				if (fork() == 0) {
 					procid = i;
 					doproc();
-					return 0;
+					tst_exit();
 				}
 			}
 			while (wait(&stat) > 0)
 				continue;
 		}
-#ifndef NO_XFS		
+#ifndef NO_XFS
 		if (errtag != 0) {
 			err_inj.errtag = 0;
 			err_inj.fd = fd;
@@ -489,10 +489,10 @@ int main(int argc, char **argv)
 	{
 	  sprintf(cmd,"rm -rf %s/*",dirname);
 	  system(cmd);
-	}	
+	}
         loopcntr++;
 	}
-	return 0;
+	tst_exit();
 }
 
 void
@@ -522,7 +522,7 @@ append_pathname(pathname_t *name, char *str)
 		fprintf(stderr, "fsstress: append_pathname failure\n");
 		chdir(homedir);
 		abort();
-		
+
 	}
 #endif
 	name->path = realloc(name->path, name->len + 1 + len);
@@ -604,7 +604,7 @@ check_cwd(void)
 	chdir(homedir);
 	fprintf(stderr, "fsstress: check_cwd failure\n");
 	abort();
-	
+
 #endif
 }
 
@@ -722,9 +722,8 @@ doproc(void)
 		namerand = random();
 	for (opno = 0; opno < operations; opno++) {
 		p = &ops[freq_table[random() % freq_table_size]];
-		if ((unsigned long)p->func < 4096) abort(); 
+		if ((unsigned long)p->func < 4096) abort();
 
-		
 		p->func(opno, random());
 		/*
 		 * test for forced shutdown by stat'ing the test
@@ -865,7 +864,7 @@ get_fname(int which, long r, pathname_t *name, flist_t **flpp, fent_t **fepp,
 	abort();
 #endif
         return -1;
-	
+
 }
 
 void
@@ -1225,7 +1224,7 @@ show_ops(int flag, char *lead_str)
         if (flag<0) {
                 /* print in list form */
                 int             x = WIDTH;
-                
+
 	        for (p = ops; p < ops_end; p++) {
 			if (lead_str != NULL && x+strlen(p->name)>=WIDTH-5)
 				x=printf("%s%s", (p==ops)?"":"\n", lead_str);
@@ -1277,7 +1276,7 @@ symlink_path(const char *name1, pathname_t *name)
 	char		buf[MAXNAMELEN];
 	pathname_t	newname;
 	int		rval;
-        
+
         if (!strcmp(name1, name->path)) {
             printf("yikes! %s %s\n", name1, name->path);
             return 0;
@@ -1358,7 +1357,7 @@ usage(void)
 	printf("   -z               zeros frequencies of all operations\n");
 	printf("   -S               prints the table of operations (omitting zero frequency)\n");
 	printf("   -H               prints usage and exits\n");
-	printf("   -X               don't do anything XFS specific (default with -DNO_XFS)\n"); 
+	printf("   -X               don't do anything XFS specific (default with -DNO_XFS)\n");
 }
 
 void
@@ -1492,7 +1491,7 @@ attr_remove_f(int opno, long r)
 	if (aname == NULL) {
 		if (v)
 			printf(
-			"%d/%d: attr_remove - name %d not found at %s\n",	
+			"%d/%d: attr_remove - name %d not found at %s\n",
 				procid, opno, which, f.path);
 		free_pathname(&f);
 		return;
@@ -1553,12 +1552,12 @@ bulkstat_f(int opno, long r)
 	t = malloc(nent * sizeof(*t));
 	fd = open(".", O_RDONLY);
 	total = 0;
-    
+
         bsr.lastip=&last;
         bsr.icount=nent;
         bsr.ubuffer=t;
         bsr.ocount=&count;
-            
+
 	while (ioctl(fd, XFS_IOC_FSBULKSTAT, &bsr) == 0 && count > 0)
 		total += count;
 	free(t);
@@ -1580,7 +1579,6 @@ bulkstat1_f(int opno, long r)
 	xfs_bstat_t	t;
 	int		v;
         xfs_fsop_bulkreq_t bsr;
-        
 
 	good = random() & 1;
 	if (good) {
@@ -1592,8 +1590,8 @@ bulkstat1_f(int opno, long r)
 		check_cwd();
 		free_pathname(&f);
 	} else {
-                /* 
-                 * pick a random inode 
+                /*
+                 * pick a random inode
                  *
                  * note this can generate kernel warning messages
                  * since bulkstat_one will read the disk block that
@@ -1610,15 +1608,15 @@ bulkstat1_f(int opno, long r)
 		v = verbose;
 	}
 	fd = open(".", O_RDONLY);
-        
+
         bsr.lastip=&ino;
         bsr.icount=1;
         bsr.ubuffer=&t;
         bsr.ocount=NULL;
-        
+
 	e = ioctl(fd, XFS_IOC_FSBULKSTAT_SINGLE, &bsr) < 0 ? errno : 0;
 	if (v)
-		printf("%d/%d: bulkstat1 %s ino %lld %d\n", 
+		printf("%d/%d: bulkstat1 %s ino %lld %d\n",
                     procid, opno, good?"real":"random", (int64_t)ino, e);
 	close(fd);
 }
@@ -1661,7 +1659,7 @@ creat_f(int opno, long r)
 	int		type;
 	int		v;
 	int		v1;
-	int esz=0; 
+	int esz=0;
 
 	if (!get_fname(FT_DIRm, r, NULL, NULL, &fep, &v1))
 		parid = -1;
@@ -1690,7 +1688,7 @@ creat_f(int opno, long r)
 	check_cwd();
 	esz = 0;
 	if (fd >= 0) {
-#ifndef NO_XFS	
+#ifndef NO_XFS
 		struct fsxattr	a;
 		if (extsize && ioctl(fd, XFS_IOC_FSGETXATTR, &a) >= 0) {
 			a.fsx_xflags |= XFS_XFLAG_REALTIME;
@@ -1699,9 +1697,9 @@ creat_f(int opno, long r)
 			if (ioctl(fd, XFS_IOC_FSSETXATTR, &a) < 0)
 				e1 = errno;
 			esz = a.fsx_estsize;
-			
+
 		}
-#endif		
+#endif
 		 		 add_to_flist(type, id, parid);
 		close(fd);
 	}
@@ -1711,32 +1709,30 @@ creat_f(int opno, long r)
 	free_pathname(&f);
 }
 
-
-
-int 
+int
 setdirect(int fd)
-{ 
+{
 	static int no_direct;
-	int flags; 
+	int flags;
 
 	if (no_direct)
-		return 0; 
+		return 0;
 
-	flags = fcntl(fd, F_GETFL, 0); 
-	if (flags < 0)  
-		return 0; 
+	flags = fcntl(fd, F_GETFL, 0);
+	if (flags < 0)
+		return 0;
 
-	if (fcntl(fd, F_SETFL, flags|O_DIRECT)  < 0) { 
+	if (fcntl(fd, F_SETFL, flags|O_DIRECT)  < 0) {
 		if (no_xfs) {
 			no_direct = 1;
 			return 0;
 		}
-		printf("cannot set O_DIRECT: %s\n",strerror(errno)); 
-		return 0; 
-	} 
-			       
+		printf("cannot set O_DIRECT: %s\n",strerror(errno));
+		return 0;
+	}
+
 	return 1;
-} 
+}
 
 void
 dread_f(int opno, long r)
@@ -1752,7 +1748,7 @@ dread_f(int opno, long r)
 	off64_t		off;
 	struct stat64	stb;
 	int		v;
-       
+
 	init_pathname(&f);
 	if (!get_fname(FT_REGFILE, r, &f, NULL, NULL, &v)) {
 		if (v)
@@ -1762,9 +1758,9 @@ dread_f(int opno, long r)
 	}
 	fd = open_path(&f, O_RDONLY);
 
-	if (!setdirect(fd)) { 
+	if (!setdirect(fd)) {
 		return;
-	} 
+	}
 
 	e = fd < 0 ? errno : 0;
 	check_cwd();
@@ -1791,13 +1787,13 @@ dread_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	
-	if (no_xfs) { 
-		diob.d_miniosz = stb.st_blksize; 
-		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */ 
-		diob.d_mem = stb.st_blksize; 
-	} 
-#ifndef NO_XFS	
+
+	if (no_xfs) {
+		diob.d_miniosz = stb.st_blksize;
+		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */
+		diob.d_mem = stb.st_blksize;
+	}
+#ifndef NO_XFS
 	   else 	if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
 		if (v)
 			printf(
@@ -1807,7 +1803,7 @@ dread_f(int opno, long r)
 		close(fd);
 		return;
 	}
-#endif	
+#endif
 	align = (__int64_t)diob.d_miniosz;
 	lr = ((__int64_t)random() << 32) + random();
 	off = (off64_t)(lr % stb.st_size);
@@ -1817,7 +1813,7 @@ dread_f(int opno, long r)
 	len -= (len % align);
 	if (len <= 0)
 		len = align;
-	else if (len > diob.d_maxiosz) 
+	else if (len > diob.d_maxiosz)
 		len = diob.d_maxiosz;
 	buf = memalign(diob.d_mem, len);
 	e = read(fd, buf, len) < 0 ? errno : 0;
@@ -1862,8 +1858,8 @@ dwrite_f(int opno, long r)
 		return;
 	}
 
-	if (!setdirect(fd)) 
-		return; 
+	if (!setdirect(fd))
+		return;
 	if (fstat64(fd, &stb) < 0) {
 		if (v)
 			printf("%d/%d: dwrite - fstat64 %s failed %d\n",
@@ -1872,12 +1868,12 @@ dwrite_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	if (no_xfs) { 
-		diob.d_miniosz = stb.st_blksize; 
-		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */ 
-		diob.d_mem = stb.st_blksize; 
-	} 
-#ifndef NO_XFS	
+	if (no_xfs) {
+		diob.d_miniosz = stb.st_blksize;
+		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */
+		diob.d_mem = stb.st_blksize;
+	}
+#ifndef NO_XFS
 	else if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
 		if (v)
 			printf(
@@ -1887,7 +1883,7 @@ dwrite_f(int opno, long r)
 		close(fd);
 		return;
 	}
-#endif	
+#endif
 	align = (__int64_t)diob.d_miniosz;
 	lr = ((__int64_t)random() << 32) + random();
 	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));
@@ -1897,7 +1893,7 @@ dwrite_f(int opno, long r)
 	len -= (len % align);
 	if (len <= 0)
 		len = align;
-	else if (len > diob.d_maxiosz) 
+	else if (len > diob.d_maxiosz)
 		len = diob.d_maxiosz;
 	buf = memalign(diob.d_mem, len);
 	off %= maxfsize;

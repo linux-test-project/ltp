@@ -51,10 +51,11 @@
 
 char *TCID="asapi_07";		/* Test program identifier.    */
 
-void setup(void), cleanup(void);
+void setup(void);
+void cleanup(void);
 
-void adatet(void), adatft(void);
-
+void adatet(void);
+void adatft(void);
 
 int
 main(int argc, char *argv[])
@@ -63,10 +64,8 @@ main(int argc, char *argv[])
 	char	*msg;
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -75,8 +74,8 @@ main(int argc, char *argv[])
 	}
 
 	cleanup();
-	
-	return 0;
+
+	tst_exit();
 }
 
 enum ttype { EXISTS, ALIAS, VALUE, DEFINED };
@@ -152,13 +151,11 @@ adatet(void)
 				etab[i].et_struct);
 			break;
 		default:
-			tst_resm(TBROK, "invalid type %d",
-				etab[i].et_type);
+			tst_resm(TBROK, "invalid type %d", etab[i].et_type);
 			break;
 		}
 	}
 }
-
 
 void
 setup(void)
@@ -170,7 +167,6 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
 }
 
 int TST_TOTAL = ETCOUNT;

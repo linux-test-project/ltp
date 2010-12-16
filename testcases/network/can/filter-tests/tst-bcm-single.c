@@ -103,10 +103,8 @@ int main(int argc, char **argv)
         msg.frame.data[4] = 0x00;
         msg.frame.data[5] = 0x00;
 
-
         if (write(s, &msg, sizeof(msg)) < 0)
                 perror("write");
 
         return 0;
 }
-

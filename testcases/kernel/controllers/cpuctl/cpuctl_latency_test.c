@@ -101,5 +101,5 @@ int main(int argc, char *argv[])
 	while (1)
 		f = sqrt(f * f);
 
-	return 0;
+	tst_exit();
 }

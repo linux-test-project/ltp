@@ -34,7 +34,7 @@ int main(void)
 		for (i = 0; i < 200; i++) {
 			pid = fork();
 			if (pid == 0) {
-				return 0;
+				tst_exit();
 			} else if (pid < 0) {
 				continue;
 			}
@@ -45,6 +45,5 @@ int main(void)
 				break;
 	}
 
-	return 0;
+	tst_exit();
 }
-

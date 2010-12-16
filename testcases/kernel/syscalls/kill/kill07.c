@@ -220,7 +220,6 @@ void do_child()
 void setup(void)
 {
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -252,9 +251,6 @@ void cleanup(void)
 	 */
 	rm_shm(shmid1);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

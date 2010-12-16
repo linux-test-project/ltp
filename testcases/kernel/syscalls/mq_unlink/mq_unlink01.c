@@ -59,7 +59,6 @@
 #include <mqueue.h>
 #include <limits.h>
 
-
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
@@ -69,7 +68,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -96,7 +95,7 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -127,7 +126,6 @@ void setup() {
 	tst_tmpdir();
 }
 
-
 /*
  * Macros
  */
@@ -136,7 +134,6 @@ void setup() {
 enum test_type {
 	NORMAL,
 };
-
 
 /*
  * Data Structure
@@ -148,7 +145,6 @@ struct test_case {
 	int ret;
 	int err;
 };
-
 
 /* Test cases
 *
@@ -273,11 +269,9 @@ EXIT:
 	mq_unlink(QUEUE_NAME);
 }
 
-
 /*
  * main()
  */
-
 
 int main(int ac, char **av) {
 	int result = RESULT_OK;
@@ -291,7 +285,6 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -309,8 +302,7 @@ int main(int ac, char **av) {
 			}
 
 		}
-	}	
+	}
 	cleanup();
 	tst_exit();
 }
-

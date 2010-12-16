@@ -163,7 +163,7 @@ void mmapzero(void)
 void cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
+
 }
 
 void setup(void)

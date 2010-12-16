@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program verifies that sigpause() removes sig from the signal mask.
@@ -11,8 +11,8 @@
  1. From the main() function, create a new thread. Give the new thread a
     a second to set up for receiving a signal, and to suspend itself using
     sigpause().
- 2. Have main() send the signal indicated by SIGTOTEST to the new thread, 
-    using pthread_kill(). After doing this, give the new thread a second 
+ 2. Have main() send the signal indicated by SIGTOTEST to the new thread,
+    using pthread_kill(). After doing this, give the new thread a second
     to get to the signal handler.
  3. In the main() thread, if the handler_called variable wasn't set to 1,
     then the test has failed, else it passed.
@@ -61,7 +61,7 @@ int main()
 
 	sleep(1);
 
-	if (pthread_kill(new_th, SIGTOTEST) != 0) 
+	if (pthread_kill(new_th, SIGTOTEST) != 0)
 	{
 		printf("Test UNRESOLVED: Couldn't send signal to thread\n");
 		return PTS_UNRESOLVED;
@@ -75,7 +75,5 @@ int main()
 	}
 
 	printf("Test PASSED\n");
-	return PTS_PASS;	
+	return PTS_PASS;
 }
-
-

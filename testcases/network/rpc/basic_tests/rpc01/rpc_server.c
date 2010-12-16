@@ -131,7 +131,7 @@ xdr_receive_data(XDR *xdrs, struct data **buffer)
     char *p;
 
     bp = *buffer = (struct data *) malloc(sizeof(struct data));
-    rc = xdr_long(xdrs, &(bp->address)); 
+    rc = xdr_long(xdrs, &(bp->address));
     rc = rc && xdr_long(xdrs, &bp->request_id);
     rc = rc && xdr_long(xdrs, &bp->data_length);
     p = (*buffer)->data = (char *) malloc(bp->data_length);

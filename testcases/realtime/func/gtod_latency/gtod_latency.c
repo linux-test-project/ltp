@@ -213,7 +213,6 @@ int stats_cmdline(int argc, char *argv[])
 	return 0;
 }
 
-
 long long timespec_subtract(struct timespec * a, struct timespec *b)
 {
 	long long ns;
@@ -342,5 +341,5 @@ int main(int argc, char *argv[])
 	stats_container_free(&hist);
 	stats_quantiles_free(&quantiles);
 
-	return 0;
+	tst_exit();
 }

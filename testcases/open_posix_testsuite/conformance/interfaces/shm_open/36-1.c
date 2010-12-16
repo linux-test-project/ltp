@@ -12,7 +12,7 @@
  *
  * This is very difficult to test for a non blocking function.
  */
-   
+
 #include <stdio.h>
 #include "posixtest.h"
 

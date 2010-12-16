@@ -46,7 +46,6 @@ int     local_flag;
 #define PASSED 1
 #define FAILED 0
 
-
 char progname[] = "stream04()" ;
 char tempfile1[40]="";
 long ftell();
@@ -125,5 +124,5 @@ int main(int ac, char *av[])
 	} /* end for */
 	tst_rmdir();
 	tst_exit();
-	return 0;
+	tst_exit();
 }

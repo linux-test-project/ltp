@@ -14,10 +14,9 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertion:
 *
-* NULL can be passed as any of these handlers when no treatment is required. 
+* NULL can be passed as any of these handlers when no treatment is required.
 
 * The steps are:
 * -> Create a new thread
@@ -26,7 +25,6 @@
 * The test fails if the registered handlers are not executed as expected.
 
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -44,28 +42,27 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-
 /******************************************************************************/
 /***************************   Test framework   *******************************/
 /******************************************************************************/
 #include "testfrmw.h"
-#include "testfrmw.c" 
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
- *    where descr is a description of the error and ret is an int 
+ * UNRESOLVED(ret, descr);
+ *    where descr is a description of the error and ret is an int
  *   (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -138,7 +135,6 @@ void c6(void)
 {
 	iChild |= 1 << 6;
 }
-
 
 /* Thread function */
 void * threaded(void * arg)
@@ -310,5 +306,3 @@ int main(int argc, char * argv[])
 
 	PASSED;
 }
-
-

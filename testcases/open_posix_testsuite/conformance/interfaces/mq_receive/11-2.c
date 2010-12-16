@@ -8,8 +8,8 @@
 
 /*
  * mq_receive() test plan:
- * mq_receive() will fail with EBADF, if message queue 
- * is not open for reading. 
+ * mq_receive() will fail with EBADF, if message queue
+ * is not open for reading.
  */
 
 #include <stdio.h>
@@ -77,4 +77,3 @@ int main()
 	printf("Test PASSED\n");
         return PTS_PASS;
 }
-

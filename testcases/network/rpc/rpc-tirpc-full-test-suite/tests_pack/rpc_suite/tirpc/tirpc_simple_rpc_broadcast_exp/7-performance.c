@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +48,7 @@ double average(double *tbl)
 	//Return average of values in tbl
 	int i;
 	double rslt = 0;
-	
+
 	for (i = 0; i < maxIter; i++)
 	{
 		rslt += tbl[i];
@@ -62,13 +62,13 @@ double mini(double *tbl)
 	//Return minimal of values in tbl
 	int i;
 	double rslt = tbl[0];
-	
+
 	for (i = 0; i < maxIter; i++)
 	{
 		if (rslt > tbl[i])
 			rslt = tbl[i];
 	}
-	return rslt;	
+	return rslt;
 }
 
 double maxi(double *tbl)
@@ -76,7 +76,7 @@ double maxi(double *tbl)
 	//Return maximal of values in tbl
 	int i;
 	double rslt = tbl[0];
-	
+
 	for (i = 0; i < maxIter; i++)
 	{
 		if (rslt < tbl[i])
@@ -91,7 +91,7 @@ int main(int argn, char *argc[])
 	//					   argc[2] : Server Program Number
 	//					   argc[3] : Number of test call
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -108,31 +108,30 @@ int main(int argn, char *argc[])
     int sndVar = 0;
     int recVar = -1;
     enum clnt_stat cs;
-	
+
 	//Test initialisation
     maxIter = atoi(argc[3]);
     resultTbl = (double *)malloc(maxIter * sizeof(double));
-    
-	
+
 	//Call tested function several times
 	for (i = 0; i < maxIter; i++)
 	{
 		//Tic
 		gettimeofday(&tv1, &tz);
-		
+
 		//Call function
 		cs = rpc_broadcast_exp(progNum, VERSNUM, PROCNUM,
 						  		(xdrproc_t)xdr_int, (char *)&sndVar,
 						  		(xdrproc_t)xdr_int, (char *)&recVar,
 						  		(resultproc_t)eachresult, atoi(argc[3]), atoi(argc[4]), nettype);
-						  
+
 		//Toc
 		gettimeofday(&tv2, &tz);
-		
+
 		//Add function execution time (toc-tic)
 		diff = (tv2.tv_sec-tv1.tv_sec) * 1000000L + (tv2.tv_usec-tv1.tv_usec);
 		rslt = (double)diff / 1000;
-    	
+
     	if (cs == RPC_SUCCESS)
     	{
     		resultTbl[i] = rslt;
@@ -142,20 +141,19 @@ int main(int argn, char *argc[])
     		test_status = 1;
     		break;
     	}
-    	
-    	
+
     	if (run_mode)
     	{
     		fprintf(stderr, "lf time  = %lf usecn\n", resultTbl[i]);
     	}
 	}
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
 	printf("%lf %d\n", average(resultTbl), maxIter);
 	printf("%lf\n", mini(resultTbl));
 	printf("%lf\n", maxi(resultTbl));
-	
+
 	return test_status;
 }

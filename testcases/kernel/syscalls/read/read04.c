@@ -86,7 +86,6 @@ int main(int ac, char **av)
 
 	setup();		/* global setup for test */
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;	/* reset Tst_count while looping */
@@ -121,7 +120,7 @@ int main(int ac, char **av)
 		 }
 	}
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -129,15 +128,13 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(fname, "tfile_%d", getpid());
@@ -164,10 +161,7 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	unlink(fname);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

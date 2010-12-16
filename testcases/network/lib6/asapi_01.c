@@ -260,8 +260,8 @@ main(int argc, char *argv[])
 	}
 
 	cleanup();
-	
-	return 0;
+
+	tst_exit();
 }
 
 void
@@ -274,6 +274,4 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
 }
-

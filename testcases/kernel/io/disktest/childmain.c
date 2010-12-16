@@ -604,7 +604,7 @@ void *ChildMain(void *vtest)
 			 * Delay delayTime msecs before continuing, for simulated
 			 * processing time, requested by user
 			 */
-		
+
 			if (args->delayTimeMin == args->delayTimeMax) { /* static delay time */
 				/* only sleep if delay is greater then zero */
 				if (args->delayTimeMin > 0) { Sleep(args->delayTimeMin); }
@@ -735,7 +735,6 @@ void *ChildMain(void *vtest)
 			continue;
 		}
 
-
 		/* data compare routine.  Act as if we were to write, but just compare */
 		if ((target.oper == READER) && (args->flags & CLD_FLG_CMPR)) {
 			/* This is very SLOW!!! */
@@ -838,4 +837,3 @@ void *ChildMain(void *vtest)
 
 	TEXIT((uintptr_t)exit_code);
 }
-

@@ -2,11 +2,11 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  Steps:
- 1. Call pthread_sigmask with a randomly generated 
+ 1. Call pthread_sigmask with a randomly generated
  value of  how that is checked to make sure it does not equal any of the three defined
  values of how which are SIG_SETMASK, SIG_BLOCK, or SIG_UNBLOCK. This should
  cause pthread_sigmask() to return EINVAL. If it doesn't, then fail, otherwise pass.
@@ -87,4 +87,3 @@ int main() {
         }
         return PTS_PASS;
 }
-

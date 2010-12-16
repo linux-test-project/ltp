@@ -9,7 +9,7 @@
  * Written by Márton Németh <nm127@freemail.hu>
  * Released under GPL
  */
- 
+
 /*
  * Note: V4L2_CID_LASTP1 != V4L2_CID_BASE_LASTP1
  */
@@ -142,7 +142,7 @@ void test_VIDIOC_QUERYCTRL() {
 				/* These parameters are defined as n/a by V4L2, so
 				 * they should be filled with zeros, the same like
 				 * the reserved fields.
-				 */ 
+				 */
 				CU_ASSERT_EQUAL(queryctrl.minimum, 0);
 				CU_ASSERT_EQUAL(queryctrl.maximum, 0);
 				CU_ASSERT_EQUAL(queryctrl.step, 0);
@@ -273,7 +273,6 @@ void test_VIDIOC_QUERYCTRL_LASTP1_1() {
 
 }
 
-
 void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 	int ret_query, errno_query;
 	char count_controls1[V4L2_CID_LASTP1-V4L2_CID_BASE];
@@ -344,7 +343,7 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 				CU_ASSERT_EQUAL(memcmp(&queryctrl, &controls[queryctrl.id-V4L2_CID_BASE], sizeof(queryctrl)), 0);
 			}
 
-			/* "The VIDIOC_QUERYCTRL ioctl will return the first 
+			/* "The VIDIOC_QUERYCTRL ioctl will return the first
 			 *  control with a higher ID than the specified one."
 			 */
 			CU_ASSERT(i < queryctrl.id);
@@ -387,12 +386,12 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 			CU_ASSERT_EQUAL(errno_query, EINVAL);
 		}
 
-		/* Check whether the same controls are reported if using 
+		/* Check whether the same controls are reported if using
 		 * V4L2_CTRL_FLAG_NEXT_CTRL and without using it.
 		 * This also checks if one control is not reported twice.
 		 */
 		CU_ASSERT_EQUAL(memcmp(count_controls1, count_controls2, sizeof(count_controls1)), 0);
-		
+
 		dprintf1("count_controls1 = { ");
 		for (i=0; i<sizeof(count_controls1)/sizeof(*count_controls1); i++) {
 		    dprintf("%i ", count_controls1[i]);
@@ -404,7 +403,7 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 		    dprintf("%i ", count_controls2[i]);
 		}
 		dprintf1("}\n");
-	
+
 	} else {
 		dprintf1("V4L2_CTRL_FLAG_NEXT_CTRL is not supported or no control is available\n");
 		/* The flag V4L2_CTRL_FLAG_NEXT_CTRL is not supported
@@ -416,8 +415,6 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 	}
 
 }
-
-
 
 void test_VIDIOC_QUERYCTRL_private() {
 	int ret_query, errno_query;
@@ -482,7 +479,7 @@ void test_VIDIOC_QUERYCTRL_private() {
 				/* These parameters are defined as n/a by V4L2, so
 				 * they should be filled with zeros, the same like
 				 * the reserved fields.
-				 */ 
+				 */
 				CU_ASSERT_EQUAL(queryctrl.minimum, 0);
 				CU_ASSERT_EQUAL(queryctrl.maximum, 0);
 				CU_ASSERT_EQUAL(queryctrl.step, 0);

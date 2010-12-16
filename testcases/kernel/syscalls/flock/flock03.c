@@ -36,7 +36,7 @@
  *    DESCRIPTION
  * 	This test verifies that flock cannot unlock a file locked
  * 	by another task
- *	
+ *
  *	Test:
  * 		Fork a child processes
  * 		The parent flocks a file with LOCK_EX
@@ -153,11 +153,11 @@ int main(int argc, char **argv)
 
 		close(fd);
 
-	}			/* End of TEST_LOOPING */
+	}
 
 	cleanup();
 
-	return 0;
+	tst_exit();
 
 }
 
@@ -197,7 +197,7 @@ void childfunc(int fd)
 	close(fd2);
 
 	tst_exit();
-	/* NOT REACHED */
+
 	return;
 }
 
@@ -208,7 +208,7 @@ void childfunc(int fd)
 void setup(void)
 {
 	int fd;
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified
@@ -233,7 +233,6 @@ void setup(void)
 		/* Removing temp dir */
 		tst_rmdir();
 
-		/* exit with return code appropriate for result */
 		tst_exit();
 	}
 	close(fd);
@@ -255,6 +254,4 @@ void cleanup(void)
 	unlink(filename);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

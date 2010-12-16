@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive() test plan:
- * mq_timedreceive() will fail with EINVAL if message queue is 
+ * mq_timedreceive() will fail with EINVAL if message queue is
  * empty and nanoseconds field value of abs_timeout is less than 0.
  *
  */
@@ -81,4 +81,3 @@ int main()
         printf("Test PASSED\n");
       	return PTS_PASS;
 }
-

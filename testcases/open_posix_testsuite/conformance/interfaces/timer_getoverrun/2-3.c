@@ -1,12 +1,12 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Copyright (c) 2002, Jim Houston. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * Patched by:  jim.houston REMOVE-THIS AT attbi DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- * 
+ *
  * Test that timer_getoverrun() returns the number of overruns that
  * have happened due to signals being sent from a timer.  Test with
  * timer seconds in smallest possible increments.
@@ -19,7 +19,7 @@
  * - Block signal SIGCONT (SIGCONT used so test will not terminate)
  * - Set up a timer to send SIGCONT on expiration with an interval
  *   of intervalnsec nanoseconds.
- * - Wait for that timer to expire expectedoverruns+1 times 
+ * - Wait for that timer to expire expectedoverruns+1 times
  *   (Sleep for valuensec + (expectedoverruns)*intervalnsec).
  * - Call timer_getoverrun() and ensure expectedoverruns was returned.
  *   [First signal made it.  All others were overruns.]
@@ -27,12 +27,12 @@
  *   12/17/02 - Added Jim Houston's patch.  There is a chance that additional
  *   timer expires can happen before the overrun count is gotten, so this
  *   test stops the timer before that can happen.
- * 
- *   04/29/2004 - adam.li 
+ *
+ *   04/29/2004 - adam.li
  *   - Add test for RTS option
  *   - It seems disalarm the timer before calling timer_getoverun() will discard
  *     previous overrun (when testing on libc-2004-04-29
- *   - Make itvalue = 1 sec. 
+ *   - Make itvalue = 1 sec.
  */
 
 #include <signal.h>
@@ -140,12 +140,12 @@ int main()
 		perror("sigprocmask() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	overruns = timer_getoverrun(tid);
 	printf("%d overruns occurred\n", overruns);
 	/*
 	 * Depending on the clock resolution we may have a few
-	 * extra expiries after the nanosleep completes so do 
+	 * extra expiries after the nanosleep completes so do
 	 * a range check.
 	 */
 	fudge = expectedoverruns/100;

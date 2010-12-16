@@ -443,7 +443,6 @@ static void under_io_clean(void)
 	close(fd);
 }
 
-
 struct testcase {
 	void (*f)(void);
 	char *name;
@@ -460,7 +459,6 @@ struct testcase {
 	/* { under_io_clean, "under io clean" }, */
 	{}
 };
-
 
 int main(void)
 {
@@ -525,5 +523,5 @@ int main(void)
 		return 1;
 	}
 	printf("SUCCESS\n");
-	return 0;
+	tst_exit();
 }

@@ -10,11 +10,11 @@
  * Test that mq_open() fails with EMFILE if there are too many message
  * queue descriptors or file descriptors in use by the process calling mq_open.
  *
- * Test by calling mq_open() _POSIX_OPEN_MAX+1 or _POSIX_MQ_OPEN_MAX+1 times.  
+ * Test by calling mq_open() _POSIX_OPEN_MAX+1 or _POSIX_MQ_OPEN_MAX+1 times.
  * If it fails, assume it was because there were too many message queue
  * descriptors or file descriptors open and check that errno == EMFILE.
  *
- * If it does not fail, print that test results are inconclusive and 
+ * If it does not fail, print that test results are inconclusive and
  * return PTS_PASS.
  */
 
@@ -50,7 +50,7 @@ int main()
 							i++, numqueues++) {
         	sprintf(qname, "/msgqueue%d_%d", i, getpid());
 
-        	queue[i] = mq_open(qname, O_CREAT |O_RDWR, 
+        	queue[i] = mq_open(qname, O_CREAT |O_RDWR,
 						S_IRUSR | S_IWUSR, NULL);
         	if (queue[i] == (mqd_t)-1) {
 			printf("mq_open() failed before expected\n");
@@ -96,4 +96,3 @@ int main()
 #endif
 #endif
 }
-

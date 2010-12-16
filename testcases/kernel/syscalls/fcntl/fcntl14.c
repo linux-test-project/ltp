@@ -566,7 +566,6 @@ void cleanup(void)
 
 	tst_rmdir();
 
-	tst_exit();
 }
 
 /*
@@ -577,10 +576,10 @@ void setup(void)
 {
 	struct sigaction act;
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 	signal(SIGHUP, SIG_IGN);
 	umask(0);
-	TEST_PAUSE;		/* Pause if that option is specified */
+	TEST_PAUSE;
 	tst_tmpdir();		/* make temp dir and cd to it */
 	parent = getpid();
 
@@ -1238,5 +1237,5 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exit block 4");
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }

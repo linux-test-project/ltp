@@ -37,16 +37,16 @@
 #define POLICY        SCHED_RR
 
 /* mutex required by the cond variable */
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;    
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 /* condition variable that threads block on*/
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;       
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 /* Flags that the threads use to indicate events */
 int woken_up = -1;
 int low_done = -1;
 
-/* Signal handler that handle the ALRM and wakes up 
- * the high priority thread 
+/* Signal handler that handle the ALRM and wakes up
+ * the high priority thread
  */
 void signal_handler(int sig)
 {
@@ -65,7 +65,7 @@ float timediff(struct timespec t2, struct timespec t1)
 }
 
 void *hi_priority_thread(void *tmp)
-{	
+{
 	struct sched_param        param;
 	int                       policy;
 	int                       rc = 0;
@@ -110,10 +110,10 @@ void *hi_priority_thread(void *tmp)
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* This variable is unprotected because the scheduling removes 
-	 * the contention 
+	/* This variable is unprotected because the scheduling removes
+	 * the contention
 	 */
-	if (low_done != 1) 
+	if (low_done != 1)
 		woken_up = 1;
 
 	rc = pthread_mutex_unlock(&mutex);
@@ -166,7 +166,7 @@ int main()
 	pthread_attr_t              high_attr, low_attr;
 	struct sched_param          param;
 	int                         rc = 0;
-	
+
 	/* Create the higher priority thread */
 	rc = pthread_attr_init(&high_attr);
 	if (rc != 0) {

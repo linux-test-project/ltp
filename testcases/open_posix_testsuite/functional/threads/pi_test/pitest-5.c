@@ -8,29 +8,29 @@
  */
 
 /* There are n TF threads, n is equal to the processors in the system minus
- * one. TFs are used to keep busy these CPUs, which have priority 3. A 
- * TL thread with lower priority 1 is created, which locks a mutex and 
+ * one. TFs are used to keep busy these CPUs, which have priority 3. A
+ * TL thread with lower priority 1 is created, which locks a mutex and
  * does workload. A TB thread with higher priority 4 is created and try
  * to lock TL's mutex. A TP thread with priority 2 is created to reflect the
- * priority change of TL. Main thread has the highest priority 6, which will 
- * control the running steps of those threads, including creating threads, 
+ * priority change of TL. Main thread has the highest priority 6, which will
+ * control the running steps of those threads, including creating threads,
  * stopping threads. There is another thread to collect the sample data
  * with priority 5.
- * 
+ *
  * Steps:
- * 1.	Create n TF threads, n is equal to processors number minus one. TF 
+ * 1.	Create n TF threads, n is equal to processors number minus one. TF
  * 	will do workload.
- * 2.	Create 1 TP thread and do workload. The thread will keep running when 
- * 	TL is created. 
- * 3.	Create 1 TL thread to lock a mutex. TL will get a chance to run 
+ * 2.	Create 1 TP thread and do workload. The thread will keep running when
+ * 	TL is created.
+ * 3.	Create 1 TL thread to lock a mutex. TL will get a chance to run
  *      when TP sleep a wee bit in between.
- * 4.	Create 1 TB thread to lock the mutex. TL's priority will boost to 
+ * 4.	Create 1 TB thread to lock the mutex. TL's priority will boost to
  *  	TB's priority, which will cause TP having no chance to run.
  * 5.	TL will unlock the mutex,  TL's priority will decrease, so TP and TL
  * 	will keep working as before.
  * 5.	Keep running for a while to let TL stabilize.
  * 6.	Stop these threads.
- * 
+ *
  * NOTE: Most of the code is ported from test-11 written by inkay.
  */
 
@@ -82,11 +82,11 @@ void do_work(unsigned granularity_top, volatile unsigned *progress)
 	unsigned granularity_cnt, i;
 	unsigned top = 5 * 1000 * 1000;
 	unsigned dummy = do_work_dummy;
-	
-	for (granularity_cnt = 0; granularity_cnt < granularity_top; 
+
+	for (granularity_cnt = 0; granularity_cnt < granularity_top;
 	     granularity_cnt++)
 	{
-		for (i = 0; i < top; i++) 
+		for (i = 0; i < top; i++)
 			dummy = i | dummy;
 		(*progress)++;
 	}
@@ -110,10 +110,10 @@ void *thread_fn(void *param)
 	}
 #endif
 
-	DPRINTF(stdout, "#EVENT %f Thread %s started\n", 
+	DPRINTF(stdout, "#EVENT %f Thread %s started\n",
 		seconds_read() - base_time, tp->name);
 	DPRINTF(stderr,"Thread %s index %d: started\n", tp->name, tp->index);
-	
+
 	tp->progress = 0;
 	ts.tv_sec = 0;
 	ts.tv_nsec = tp->sleep_ms * 1000 * 1000;
@@ -129,8 +129,8 @@ void *thread_fn(void *param)
 			exit(UNRESOLVED);
 		}
 	}
-	
-	DPRINTF(stdout, "#EVENT %f Thread %s stopped\n", 
+
+	DPRINTF(stdout, "#EVENT %f Thread %s stopped\n",
 		seconds_read() - base_time, tp->name);
 	return NULL;
 }
@@ -151,30 +151,30 @@ void *thread_tl(void *param)
 	}
 #endif
 
-	DPRINTF(stdout, "#EVENT %f Thread TL started\n", 
+	DPRINTF(stdout, "#EVENT %f Thread TL started\n",
 		seconds_read() - base_time);
 	DPRINTF(stderr,"Thread %s index %d: started\n", tp->name, tp->index);
-	
+
 	tp->progress = 0;
 	pthread_mutex_lock(&mutex);
 	while (!tp->stop)
 	{
 		do_work(5, &tp->progress);
-		if (unlock_mutex == 1) { 
+		if (unlock_mutex == 1) {
 			rc = pthread_mutex_unlock(&mutex);
 			if (rc == 0) {
 				unlock_mutex = 0;
-				DPRINTF(stdout, "#EVENT %f TL unlock the mutex\n", 
+				DPRINTF(stdout, "#EVENT %f TL unlock the mutex\n",
 					seconds_read() - base_time);
 			}else{
 				EPRINTF("UNRESOLVED: TL failed to unlock mutex: %d %s",
 					rc, strerror(rc));
-				exit(UNRESOLVED);	
+				exit(UNRESOLVED);
 			}
 		}
 	}
-	
-	DPRINTF(stdout, "#EVENT %f Thread TL stopped\n", 
+
+	DPRINTF(stdout, "#EVENT %f Thread TL stopped\n",
 		seconds_read() - base_time);
 	return NULL;
 }
@@ -189,22 +189,22 @@ void *thread_sample(void *arg)
 	int rc;
 
 	test_set_priority(pthread_self(),SCHED_FIFO, 5);
-	
+
 	DPRINTF(stderr,"Thread Sampler: started\n");
 	DPRINTF(stdout, "# COLUMNS %d Time TL TP ", 2 + cpus);
-	
+
 	for (i = 0; i < (cpus - 1); i++)
 		DPRINTF(stdout, "TF%d ", i);
 	DPRINTF(stdout, "\n");
-	
+
 	ts.tv_sec = 0;
 	ts.tv_nsec = period * 1000 * 1000;
-	
-	while (!ts_stop) 
+
+	while (!ts_stop)
 	{
-		size = snprintf(buffer, 1023, "%f ", seconds_read() - base_time); 
-		for (i = 0; i < cpus + 1; i++) 
-			size += snprintf(buffer + size, 1023 - size, "%u ", tp[i].progress); 
+		size = snprintf(buffer, 1023, "%f ", seconds_read() - base_time);
+		for (i = 0; i < cpus + 1; i++)
+			size += snprintf(buffer + size, 1023 - size, "%u ", tp[i].progress);
 		DPRINTF(stdout,"%s\n", buffer);
 		rc = nanosleep(&ts, NULL);
 		if (rc < 0)
@@ -223,30 +223,30 @@ void *thread_tb(void *arg)
 
 	test_set_priority(pthread_self(),SCHED_FIFO, 4);
 	DPRINTF(stderr,"Thread TB: started\n");
-	DPRINTF(stdout, "#EVENT %f Thread TB started,trying to lock\n", 
+	DPRINTF(stdout, "#EVENT %f Thread TB started,trying to lock\n",
 		seconds_read() - base_time);
-	
-	rc = pthread_mutex_lock(&mutex);	
+
+	rc = pthread_mutex_lock(&mutex);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: Thread TB: lock returned %d %s", 
+		EPRINTF("UNRESOLVED: Thread TB: lock returned %d %s",
 			rc, strerror(rc));
 		exit(UNRESOLVED);
 	}
-	DPRINTF(stdout, "#EVENT %f Thread TB got lock\n", 
+	DPRINTF(stdout, "#EVENT %f Thread TB got lock\n",
 		seconds_read() - base_time);
-	
+
 	nanosleep(&ts, NULL);
-	
+
 	rc = pthread_mutex_unlock(&mutex);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: Thread TB: unlock returned %d %s", 
+		EPRINTF("UNRESOLVED: Thread TB: unlock returned %d %s",
 			rc, strerror(rc));
 		exit(UNRESOLVED);
 	}
-	
-	DPRINTF(stdout, "#EVENT %f Thread TB unlocked and stopped\n", 
+
+	DPRINTF(stdout, "#EVENT %f Thread TB unlocked and stopped\n",
 		seconds_read() - base_time);
-	
+
 	return NULL;
 }
 
@@ -258,7 +258,7 @@ int main(int argc, char **argv)
 	time_t multiplier = 1;
 	int i;
 	int rc;
-	
+
 	test_set_priority(pthread_self(),SCHED_FIFO, 6);
 	base_time = seconds_read();
 	cpus = sysconf(_SC_NPROCESSORS_ONLN);
@@ -280,9 +280,9 @@ int main(int argc, char **argv)
         }
 	/* Start the TF threads */
 	DPRINTF(stderr,"Main Thread: Creating %d TF threads\n", cpus-1);
-	for (i = 0; i < cpus - 1; i++) 
+	for (i = 0; i < cpus - 1; i++)
 	{
-		rc = pthread_create(&threads[i], &threadattr, thread_fn, 
+		rc = pthread_create(&threads[i], &threadattr, thread_fn,
 				    &tp[i + 2]);
 	        if (rc != 0) {
 	                EPRINTF("UNRESOLVED: pthread_create: %d %s",
@@ -290,7 +290,7 @@ int main(int argc, char **argv)
 	                exit(UNRESOLVED);
 	        }
 	}
-	
+
 	sleep(base_time + multiplier * 10 - seconds_read());
 
 	/* Start TP thread */
@@ -314,7 +314,7 @@ int main(int argc, char **argv)
 	sleep(base_time + multiplier * 30 - seconds_read());
 
 	/* Start TB thread (boosting thread) */
-	rc = pthread_create(&threadtb, &threadattr, thread_tb, NULL); 
+	rc = pthread_create(&threadtb, &threadattr, thread_tb, NULL);
         if (rc != 0) {
                 EPRINTF("UNRESOLVED: pthread_create: %d %s",
                         rc, strerror(rc));
@@ -341,6 +341,5 @@ int main(int argc, char **argv)
 	/* Stop sampler */
 	ts_stop = 1;
 	DPRINTF(stderr,"Main Thread: stop sampler thread\n");
-	return 0;
+	tst_exit();
 }
-

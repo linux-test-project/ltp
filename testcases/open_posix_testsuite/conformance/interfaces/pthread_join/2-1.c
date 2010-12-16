@@ -1,12 +1,12 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_join()
- *  
+ *
  * On return from a successful pthread_join() call with a non-NULL 'value_ptr'
  * argument, the avlue passed to pthread_exit() by the terminating thread shall
  * be made available in the location referenced by 'value_ptr'.
@@ -15,7 +15,7 @@
  * 1.  Create a new thread.  Have it return a return code on pthread_exit();
  * 2.  Call pthread_join() in main(), and pass to it 'value_ptr'.
  * 3.  Check to see of the value_ptr and the value returned by pthread_exit() are the same;
- * 
+ *
  */
 
 #include <pthread.h>
@@ -47,15 +47,15 @@ int main()
 	/* Initializing variables. */
 	value_ptr=0;
 	sem=INTHREAD;
-	
+
 	/* Create a new thread. */
 	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{	
+	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Make sure the thread was created before we join it. */	
+	/* Make sure the thread was created before we join it. */
 	while (sem==INTHREAD)
 		sleep(1);
 
@@ -77,5 +77,3 @@ int main()
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-
-

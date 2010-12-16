@@ -7,11 +7,11 @@
  */
 
 /*
- * If the message can be removed from the message queue immedietely, 
- * the operation will never fail and the validity of abs_timeout 
+ * If the message can be removed from the message queue immedietely,
+ * the operation will never fail and the validity of abs_timeout
  * need not be checked.
  * Test Steps:
- * 1. Set the abs_timeout to be invalid, when there is message 
+ * 1. Set the abs_timeout to be invalid, when there is message
  *    than can be removed from the message queue immediately.
  * 2. The validity of abs_timeout will not be checked.
  */
@@ -39,7 +39,7 @@ int main()
         char mqname[NAMESIZE], msgrv[BUFFER];
         const char *msgptr = "test message";
         mqd_t mqdes;
-	unsigned int rvprio; 
+	unsigned int rvprio;
 	int sdprio = 1;
 	struct timespec	ts;
 	struct mq_attr attr;
@@ -67,7 +67,7 @@ int main()
 		if (errno == EINVAL)
 			printf("FAIL: the validity of abs_timeout "
 				"is checked\n");
-		else 
+		else
 			perror("Unexpected error at mq_timedreceive");
 		failure = 1;
 	}
@@ -95,4 +95,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

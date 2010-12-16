@@ -1,8 +1,8 @@
 /*
     Copyright (c) 2003, Intel Corporation. All rights reserved.
     Created by:  majid.awad REMOVE-THIS AT intel DOT com
-    This file is licensed under the GPL license.  For the full content 
-    of this license, see the COPYING file at the top level of this 
+    This file is licensed under the GPL license.  For the full content
+    of this license, see the COPYING file at the top level of this
     source tree.
  */
 /* sem_init shall fail if the valueargument exceeds SEM_VALUE_MAX.
@@ -22,7 +22,6 @@
 #define FUNCTION "sem_init"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-
 int main()
 {
 	sem_t   mysemp;
@@ -36,7 +35,6 @@ int main()
 
 	++counter;
         sem_init (&mysemp, 0, counter);
-
 
 	if (errno == EINVAL)  {
 		puts("TEST PASSED");

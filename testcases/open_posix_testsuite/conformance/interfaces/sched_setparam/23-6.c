@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -27,7 +27,7 @@ int set_nonroot()
 {
 	struct passwd *pw;
 	setpwent();
-	/* search for the first user which is non root */ 
+	/* search for the first user which is non root */
 	while ((pw = getpwent()) != NULL)
 		if (strcmp(pw->pw_name, "root"))
 			break;
@@ -45,7 +45,7 @@ int set_nonroot()
 		perror("An error occurs when calling seteuid()");
 		return 1;
 	}
-	
+
 	printf("Testing with user '%s' (euid: %d)(uid: %d)\n",
 	       pw->pw_name, (int)geteuid(), (int)getuid());
 	return 0;
@@ -56,15 +56,15 @@ int main() {
 	int rc;
 
         /* We assume process Number 1 is created by root */
-        /* and can only be accessed by root */ 
+        /* and can only be accessed by root */
         /* This test should be run under standard user permissions */
-        
+
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO);
 	/* Cannot test SCHED_OTHER, on 0 valid as its priority */
 	sched_setscheduler(0, SCHED_FIFO, &param);
 	if (getuid() == 0) {
                 if (set_nonroot() != 0) {
-			printf("Cannot run this test as non-root user\n");	
+			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
         }
@@ -87,7 +87,7 @@ int main() {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (param.sched_priority == old_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

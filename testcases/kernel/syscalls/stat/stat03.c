@@ -163,9 +163,8 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -204,18 +203,17 @@ int main(int ac, char **av)
 					 TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING. */
+		}
 		Tst_count++;	/* incr TEST_LOOP counter */
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * Invoke cleanup() to delete the test directory/file(s) created
 	 * in the setup().
 	 */
 	cleanup();
-	tst_exit();
 
-}				/* End main */
+}
 
 /*
  * void
@@ -227,7 +225,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int ind;		/* counter for setup functions */
+	int ind;
 
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -266,7 +264,7 @@ void setup()
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
 	}
-}				/* End setup() */
+}
 
 /*
  * int
@@ -385,6 +383,5 @@ void cleanup()
 		tst_brkm(TFAIL, NULL, "chmod(2) of %s failed", DIR_TEMP);
 	}
 
-	/* Remove files and temporary directory created */
 	tst_rmdir();
-}				/* End cleanup() */
+}

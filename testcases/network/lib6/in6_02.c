@@ -90,7 +90,6 @@ main(int argc, char *argv[])
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		n2itest();
 		i2ntest();
@@ -98,10 +97,8 @@ main(int argc, char *argv[])
 	}
 	cleanup();
 
-	
 	return(0);
-}	/* End main */
-
+}
 
 /* if_nametoindex tests */
 
@@ -297,6 +294,5 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
-}
 
+}

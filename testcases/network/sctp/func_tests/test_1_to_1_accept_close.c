@@ -2,7 +2,7 @@
  * Copyright (c) 2003 Hewlett-Packard Development Company, L.P
  * (C) Copyright IBM Corp. 2004
  *
- * This file has test cases to test the accept () and close () call for 
+ * This file has test cases to test the accept () and close () call for
  * 1-1 style sockets
  *
  * accept () Tests:
@@ -20,7 +20,7 @@
  * TEST8: Bad socket descriptor
  * TEST9: valid socket descriptor
  * TEST10: Closed socket descriptor
- * 
+ *
  * The SCTP reference implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -158,7 +158,7 @@ main(int argc, char *argv[])
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "accept() on a non-listening socket - EINVAL");
-	
+
 	test_connect(clnt_sk[i++], (struct sockaddr *) &conn_addr, len);
 
 	/*Calling accept to establish the connection*/
@@ -198,7 +198,6 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "accept() on a listening socket - SUCCESS");
 
-	
         /*close() TEST8: Bad socket descriptor, EBADF Expected error*/
 	error = close(-1);
 	if (error != -1 || errno != EBADF)
@@ -222,12 +221,12 @@ main(int argc, char *argv[])
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "close() with a closed socket descriptor - EBADF");
-	
+
 	for (i = 0 ; i < SK_MAX ; i++) {
 		close(clnt_sk[i]);
 		close(new_sk[i]);
 		close(clnt2_sk[i]);
 	}
 
-	return 0;
+	tst_exit();
 }

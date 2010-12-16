@@ -168,12 +168,11 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -184,5 +183,5 @@ void setup(void)
 void cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
+
 }

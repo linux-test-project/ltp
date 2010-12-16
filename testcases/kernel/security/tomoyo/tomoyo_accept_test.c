@@ -141,5 +141,5 @@ int main(int argc, char *argv[])
 	fprintf(profile_fp, "255-CONFIG::file=disabled\n");
 	printf("Done\n");
 	clear_status();
-	return 0;
+	tst_exit();
 }

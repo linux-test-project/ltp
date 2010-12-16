@@ -1,13 +1,13 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_destroy()
  *   shall destroy the mutex referenced by 'mutex'; the mutex object in effect
- *   becomes uninitialized. 
+ *   becomes uninitialized.
  *
  */
 
@@ -28,7 +28,7 @@ int main()
 		fprintf(stderr,"Error at pthread_mutexattr_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Initialize mutex1 with the default mutex attributes */
 	if ((rc=pthread_mutex_init(&mutex1,&mta)) != 0) {
 		fprintf(stderr,"Fail to initialize mutex1, rc=%d\n",rc);

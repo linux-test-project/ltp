@@ -119,7 +119,7 @@ int main(int ac, char *av[])
 	}
 
 	cleanup();
-	tst_exit();
+
 }
 
 static void setup(void)
@@ -157,7 +157,6 @@ static void setup(void)
 
 	local_flag = PASSED;
 }
-
 
 static void runtest(void)
 {

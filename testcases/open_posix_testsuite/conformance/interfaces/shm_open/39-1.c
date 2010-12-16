@@ -37,9 +37,9 @@ int main() {
 	for (i=1; i<name_max+2; i++)
 		shm_name[i] = 'a';
 	shm_name[name_max+2] = 0;
-	
+
 	fd = shm_open(shm_name, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-	
+
 	if (fd == -1 && errno == ENAMETOOLONG) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

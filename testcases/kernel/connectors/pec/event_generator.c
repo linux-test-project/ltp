@@ -223,13 +223,12 @@ int main(int argc, char **argv)
 		gen_exec();
 
 		/* won't reach here */
-		return 0;
+		tst_exit();
 	}
 
 	/* other events */
 	for (i = 0; i < nr_event; i++)
 		gen_event();
 
-	return 0;
+	tst_exit();
 }
-

@@ -47,7 +47,6 @@
 #include <sys/resource.h>
 #include   "sched.h"
 
-
 /*
  * Defines:
  *
@@ -76,7 +75,6 @@
 void process_file (char *);
 void parse_args (int, char **);
 
-
 /*
  * Global variables:
  *
@@ -92,7 +90,6 @@ int	verbose = 0;
 int	debug = 0;
 long    execution_time = DEFAULT_EXECUTION_TIME;
 char 	*priority      = DEFAULT_PRIORITY_TYPE;
-
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -161,7 +158,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                            process_file ()                           |
 | ==================================================================== |
@@ -194,7 +190,6 @@ void process_file (char *filename)
 	if (fclose (datafile))
 		sys_error ("fclose failed", __FILE__, __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |

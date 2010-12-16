@@ -42,7 +42,7 @@
 
 /* This is a basic functional test for the SCTP kernel reference
  * implementation state machine.
- */ 
+ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -91,10 +91,10 @@ int main(void)
 	struct sockaddr_in6 *in6_addr;
 	void *addr_buf;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered. 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
 	 */
-	setvbuf(stdout, NULL, _IONBF, 0); 
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	/* Set some basic values which depend on the address family. */
 #if TEST_V6
@@ -137,7 +137,7 @@ int main(void)
 
         /* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-	memset(&inmessage, 0, sizeof(inmessage));	
+	memset(&inmessage, 0, sizeof(inmessage));
         iov.iov_base = big_buffer;
         iov.iov_len = REALLY_BIG;
         inmessage.msg_iov = &iov;
@@ -146,7 +146,7 @@ int main(void)
 	inmessage.msg_name = &msgname;
 
         /* Try to read on socket 2.  This should fail since we are
-	 * neither listening, nor established. 
+	 * neither listening, nor established.
 	 */
         inmessage.msg_controllen = sizeof(incmsg);
         error = recvmsg(sk2, &inmessage, MSG_WAITALL);
@@ -159,7 +159,7 @@ int main(void)
 
        /* Mark sk2 as being able to accept new associations.  */
 	error = test_listen(sk2, 1);
-        
+
 	tst_resm(TPASS, "listen");
 
         /* Send the first message.  This will create the association.  */
@@ -178,13 +178,13 @@ int main(void)
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
 	ppid = rand(); /* Choose an arbitrary value. */
-	stream = 1; 
+	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
         outmessage.msg_iov->iov_base = message;
         outmessage.msg_iov->iov_len = strlen(message) + 1;
         test_sendmsg(sk1, &outmessage, 0, strlen(message)+1);
-        
+
 	tst_resm(TPASS, "sendmsg with a valid msg_name");
 
         /* Get the communication up message on sk2.  */
@@ -193,7 +193,7 @@ int main(void)
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 #if TEST_V6
 
 	if (inmessage.msg_namelen != sizeof(struct sockaddr_in6)) {
@@ -207,11 +207,11 @@ int main(void)
 		DUMP_CORE;
 	}
 
-	if (memcmp(&msgname.v6.sin6_addr, &in6addr_loopback, 
+	if (memcmp(&msgname.v6.sin6_addr, &in6addr_loopback,
 		   sizeof(msgname.v6.sin6_addr))) {
 		DUMP_CORE;
 	}
-#else 
+#else
 	if (inmessage.msg_namelen != sizeof(struct sockaddr_in)) {
 		DUMP_CORE;
 	}
@@ -235,9 +235,9 @@ int main(void)
         inmessage.msg_control = incmsg;
         inmessage.msg_controllen = sizeof(incmsg);
         error = test_recvmsg(sk1, &inmessage, MSG_WAITALL);
-	test_check_msg_notification(&inmessage, error, 
+	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	associd1 = sac->sac_assoc_id;
 
@@ -263,11 +263,11 @@ int main(void)
 		DUMP_CORE;
 	}
 
-	if (memcmp(&msgname.v6.sin6_addr, &in6addr_loopback, 
+	if (memcmp(&msgname.v6.sin6_addr, &in6addr_loopback,
 		   sizeof(msgname.v6.sin6_addr))) {
 		DUMP_CORE;
 	}
-#else 
+#else
 	if (inmessage.msg_namelen != sizeof(struct sockaddr_in)) {
 		DUMP_CORE;
 	}
@@ -339,10 +339,10 @@ int main(void)
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
         test_check_msg_data(&inmessage, error, strlen(telephone_resp) + 1,
 			    MSG_EOR, stream, ppid);
-       
+
 	tst_resm(TPASS, "recvmsg");
 
-	n_laddrs = sctp_getladdrs(sk1, associd1, &laddrs); 
+	n_laddrs = sctp_getladdrs(sk1, associd1, &laddrs);
 	if (n_laddrs <= 0)
                 tst_brkm(TBROK, NULL, "sctp_getladdrs: %s",
 			 strerror(errno));
@@ -372,7 +372,7 @@ int main(void)
 
 	tst_resm(TPASS, "sctp_freeladdrs");
 
-	n_paddrs = sctp_getpaddrs(sk1, associd1, &paddrs); 
+	n_paddrs = sctp_getpaddrs(sk1, associd1, &paddrs);
 	if (n_paddrs <= 0)
                 tst_brkm(TBROK, NULL, "sctp_getpaddrs: %s",
 			 strerror(errno));
@@ -412,7 +412,7 @@ int main(void)
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);	
+				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);
 #if TEST_V6
 
 	if (inmessage.msg_namelen != sizeof(struct sockaddr_in6)) {
@@ -426,11 +426,11 @@ int main(void)
 		DUMP_CORE;
 	}
 
-	if (memcmp(&msgname.v6.sin6_addr, &in6addr_loopback, 
+	if (memcmp(&msgname.v6.sin6_addr, &in6addr_loopback,
 		   sizeof(msgname.v6.sin6_addr))) {
 		DUMP_CORE;
 	}
-#else 
+#else
 	if (inmessage.msg_namelen != sizeof(struct sockaddr_in)) {
 		DUMP_CORE;
 	}
@@ -445,11 +445,11 @@ int main(void)
 		DUMP_CORE;
 	}
 #endif
-				
+
 	tst_resm(TPASS, "recvmsg SHUTDOWN_COMP notification");
 
         close(sk2);
 
         /* Indicate successful completion.  */
-       	return 0; 
+       	tst_exit();
 }

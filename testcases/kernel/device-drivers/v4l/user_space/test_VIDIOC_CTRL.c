@@ -274,11 +274,11 @@ int do_set_control(__u32 id) {
 						 * S32_MIN <= queryctrl.minimum-queryctrl.step and
 						 * queryctrl.maximum+queryctrl.step <= S32_MAX
 						 */
-						 
+
 /*
  * If we try to set the new control value to "value" then the possible results can be
  * "x" and "x-step". These two values can be expressed with the range
- * (value-step, value+step) where the ranges are not included. 
+ * (value-step, value+step) where the ranges are not included.
  *
  *           value-step        value         value+step
  *              |                |                |
@@ -431,7 +431,6 @@ int do_set_control(__u32 id) {
 		CU_ASSERT_EQUAL(ret_orig, -1);
 		CU_ASSERT_EQUAL(errno_orig, EINVAL);
 
-
 	}
 
 	if (ret_orig == 0) {
@@ -546,7 +545,6 @@ static void do_set_control_value(__u32 id, __s32 value, struct v4l2_queryctrl *q
 		}
 	}
 }
-
 
 int do_set_control_invalid(__u32 id) {
 	int ret_query, errno_query;
@@ -759,7 +757,6 @@ int do_set_control_invalid(__u32 id) {
 	return ret_query;
 }
 
-
 void test_VIDIOC_S_CTRL() {
 	int ret1;
 	__u32 i;
@@ -786,7 +783,6 @@ void test_VIDIOC_S_CTRL() {
 
 	ret1 = do_set_control(i);
 }
-
 
 void test_VIDIOC_S_CTRL_invalid() {
 	int ret1;
@@ -825,7 +821,6 @@ void test_VIDIOC_S_CTRL_white_balance() {
 	ret1 = do_set_control(V4L2_CID_BLUE_BALANCE);
 }
 
-
 void test_VIDIOC_S_CTRL_white_balance_invalid() {
 	int ret1;
 
@@ -844,7 +839,6 @@ void test_VIDIOC_S_CTRL_gain() {
 	ret1 = do_set_control(V4L2_CID_GAIN);
 }
 
-
 void test_VIDIOC_S_CTRL_gain_invalid() {
 	int ret1;
 
@@ -852,7 +846,6 @@ void test_VIDIOC_S_CTRL_gain_invalid() {
 	ret1 = do_set_control_invalid(V4L2_CID_AUTOGAIN);
 	ret1 = do_set_control_invalid(V4L2_CID_GAIN);
 }
-
 
 void test_VIDIOC_S_CTRL_NULL() {
 	int ret_null, errno_null;

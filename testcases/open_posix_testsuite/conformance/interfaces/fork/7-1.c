@@ -14,22 +14,19 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertion:
 *
 * The child process gets a copy of the parent message catalog descriptor.
-
 
 * The steps are:
 * -> Create a message catalog file from the file
 * -> Open this catalog
 * -> fork
-* -> Check that the child can read from the message catalog. 
+* -> Check that the child can read from the message catalog.
 
 * The test fails if the message catalog is read in the parent and not in the child.
 
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -47,7 +44,7 @@
 #include <nl_types.h>
 
 #include "testfrmw.h"
-#include "testfrmw.c" 
+#include "testfrmw.c"
 
 #ifndef VERBOSE
 #define VERBOSE 1
@@ -84,7 +81,7 @@ void read_catalog(nl_catd cat, char *who)
 #endif
 }
 
-static char *messcat_in = 
+static char *messcat_in =
 "$set 1\n1 First sentence\n2 Second sentence\n"
 "$set 2\n1 First translated sentence\n2 Second translated sentence\n";
 
@@ -114,7 +111,7 @@ int main(int argc, char * argv[])
 
 	/* Generate the message catalog file from the text sourcefile */
 	if (system(NULL)) {
-		
+
 		if (create_catalog() != 0) {
 			UNRESOLVED(errno, "Can't create "MESSCAT_IN);
 		}

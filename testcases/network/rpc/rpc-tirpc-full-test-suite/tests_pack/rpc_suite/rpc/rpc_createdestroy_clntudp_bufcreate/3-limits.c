@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +42,7 @@
 //Other define
 #define NBCASE 2
 
-typedef struct 
+typedef struct
 {
 	//List parameters here
 	int bufsnd;
@@ -54,7 +54,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -63,31 +63,31 @@ int main(int argn, char *argc[])
 	int progNum = atoi(argc[2]);
 	int i;
 	params paramList[NBCASE];
-	CLIENT *clnt = NULL;    
+	CLIENT *clnt = NULL;
 	struct sockaddr_in server_addr;
 	struct hostent *hp = NULL;
 	struct timeval pertry_timeout;
 	int sock = RPC_ANYSOCK;
-	
+
 	//Test initialization
 	if ((hp = gethostbyname(argc[1])) == NULL) {
         fprintf(stderr, "can't get addr for %s\n",argc[1]);
         exit(-1);
     }
-    
+
     pertry_timeout.tv_sec = 1;
     pertry_timeout.tv_usec = 0;
-    
+
     bcopy(hp->h_addr, (caddr_t)&server_addr.sin_addr, hp->h_length);
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = 0;
-	
+
 	//Test initialization
 	paramList[0].bufsnd = 2147483647;
 	paramList[0].bufrec = 0;
 	paramList[1].bufsnd = 0;
 	paramList[1].bufrec = 2147483647;
-	
+
 	//Call tested function using all tests cases
 	for (i = 0; i < NBCASE; i++)
 	{
@@ -98,11 +98,11 @@ int main(int argn, char *argc[])
 			printf("%d", paramList[i].bufrec);
 			printf("\n");
 		}
-		
+
 		//Call function
-		clnt = clntudp_bufcreate(&server_addr, progNum, VERSNUM, pertry_timeout, 
+		clnt = clntudp_bufcreate(&server_addr, progNum, VERSNUM, pertry_timeout,
 								 &sock, paramList[i].bufsnd, paramList[i].bufrec);
-		
+
 		//Check result
 		if (clnt == NULL)
 		{
@@ -111,10 +111,10 @@ int main(int argn, char *argc[])
 			break;
 		}
 	}
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

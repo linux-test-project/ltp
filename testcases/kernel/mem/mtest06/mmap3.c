@@ -18,7 +18,6 @@
 /*									      */
 /******************************************************************************/
 
-
 /******************************************************************************/
 /*									      */
 /* History:	July - 16 - 2001 Created by Manoj Iyer, IBM Austin TX.	      */
@@ -58,7 +57,6 @@
 /*		number of processes.					      */
 /*			         					      */
 /******************************************************************************/
-
 
 /* Include Files							      */
 #include <stdio.h>
@@ -133,7 +131,7 @@ mkfile(int  *size) 		/* size of the file to be generated in GB     */
 	    return -1;
 	}
     }
-   
+
     /* make sure a's are written to the file. */
     if (fsync(fd) == -1)
     {
@@ -169,7 +167,6 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
     exit(0);
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Function:    set_timer                                                     */
@@ -198,7 +195,6 @@ set_timer(float run_time)         /* period for which test is intended to run   
     }
 }
 
-
 /******************************************************************************//*								 	      */
 /* Function:	usage							      */
 /*									      */
@@ -219,7 +215,6 @@ usage(char *progname)           /* name of this program                       */
                     progname);
     exit(-1);
 }
-
 
 /******************************************************************************/
 /*									      */
@@ -285,7 +280,6 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
     pthread_exit((void *)0);
 }
 
-
 /******************************************************************************/
 /*                                                                            */
 /* Function:    main                                                          */
@@ -317,7 +311,7 @@ main(int  argc,		/* number of input parameters.			      */
     struct sigaction sigptr;	/* set up signal, for interval timer          */
     int          map_private =  /* if TRUE mapping is private, ie, MAP_PRIVATE*/
 			       FALSE;
-   
+
     static struct signal_info
     {
         int  signum;    /* signal number that hasto be handled                */        char *signame;  /* name of the signal to be handled.                  */    } sig_info[] =

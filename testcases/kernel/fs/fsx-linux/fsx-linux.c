@@ -128,7 +128,6 @@ int	fsxgoodfd = 0;
 FILE *	fsxlogf = NULL;
 int badoff = -1;
 
-
 void
 vwarnc(code, fmt, ap)
 	int code;
@@ -143,7 +142,6 @@ vwarnc(code, fmt, ap)
 	fprintf(stderr, "%s\n", strerror(code));
 }
 
-
 void
 warn(const char * fmt, ...)
 {
@@ -152,7 +150,6 @@ warn(const char * fmt, ...)
 	vwarnc(errno, fmt, ap);
 	va_end(ap);
 }
-
 
 void
 __attribute__((format(printf, 1, 2)))
@@ -177,7 +174,6 @@ prterr(char *prefix)
 	prt("%s%s%s\n", prefix, prefix ? ": " : "", strerror(errno));
 }
 
-
 void
 log4(int operation, int arg0, int arg1, int arg2, struct timeval *tv)
 {
@@ -194,7 +190,6 @@ log4(int operation, int arg0, int arg1, int arg2, struct timeval *tv)
 	if (logptr >= LOGSIZE)
 		logptr = 0;
 }
-
 
 void
 logdump(void)
@@ -280,7 +275,6 @@ logdump(void)
 	}
 }
 
-
 void
 save_buffer(char *buffer, off_t bufferlength, int fd)
 {
@@ -323,7 +317,6 @@ save_buffer(char *buffer, off_t bufferlength, int fd)
 	}
 }
 
-
 void
 report_failure(int status)
 {
@@ -340,7 +333,6 @@ report_failure(int status)
 	}
 	exit(status);
 }
-
 
 #define short_at(cp) ((unsigned short)((*((unsigned char *)(cp)) << 8) | \
 				        *(((unsigned char *)(cp)) + 1)))
@@ -494,7 +486,6 @@ close_test_files(void)
 	}
 }
 
-
 void
 check_size(void)
 {
@@ -515,7 +506,6 @@ check_size(void)
 		report_failure(120);
 	}
 }
-
 
 void
 check_trunc_hack(void)
@@ -667,7 +657,6 @@ doread(unsigned offset, unsigned size)
 	check_buffers(offset, size);
 }
 
-
 void
 domapread(unsigned offset, unsigned size)
 {
@@ -738,7 +727,6 @@ domapread(unsigned offset, unsigned size)
 	check_buffers(offset, size);
 }
 
-
 void
 gendata(char *original_buf, char *good_buf, unsigned offset, unsigned size)
 {
@@ -749,7 +737,6 @@ gendata(char *original_buf, char *good_buf, unsigned offset, unsigned size)
 		offset++;
 	}
 }
-
 
 void
 dowrite(unsigned offset, unsigned size)
@@ -809,7 +796,6 @@ dowrite(unsigned offset, unsigned size)
 		report_failure(151);
 	}
 }
-
 
 void
 domapwrite(unsigned offset, unsigned size)
@@ -910,7 +896,6 @@ domapwrite(unsigned offset, unsigned size)
 	}
 }
 
-
 void
 dotruncate(unsigned size)
 {
@@ -949,7 +934,6 @@ dotruncate(unsigned size)
 	}
 }
 
-
 void
 writefileimage()
 {
@@ -976,7 +960,6 @@ writefileimage()
 		report_failure(173);
 	}
 }
-
 
 void
 docloseopen(void)
@@ -1011,7 +994,6 @@ docloseopen(void)
 		prt("       %lu.%06lu open done\n", t.tv_sec, t.tv_usec);
 	}
 }
-
 
 void
 test(void)
@@ -1081,7 +1063,6 @@ test(void)
 		docloseopen();
 }
 
-
 void
 cleanup(sig)
 	int	sig;
@@ -1091,7 +1072,6 @@ cleanup(sig)
 	prt("testcalls = %lu\n", testcalls);
 	exit(sig);
 }
-
 
 void
 usage(void)
@@ -1128,7 +1108,6 @@ usage(void)
 "	fname: this filename is REQUIRED (no default)\n");
 	exit(90);
 }
-
 
 int
 getnum(char *s, char **e)
@@ -1303,7 +1282,7 @@ main(int argc, char **argv)
 
 		default:
 			usage();
-			
+
 		}
 	argc -= optind;
 	argv += optind;
@@ -1404,7 +1383,5 @@ main(int argc, char **argv)
 	free(good_buf);
 	free(temp_buf);
 
-	return 0;
+	tst_exit();
 }
-
- 	  

@@ -441,5 +441,5 @@ char *argv[];
 
 	blexit();
 	anyfail();
-	return 0;
+	tst_exit();
 }

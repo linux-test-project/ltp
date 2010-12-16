@@ -80,7 +80,6 @@ void build_dirs(struct benchfiles *bf)
 	}
 }
 
-
 void init_filelist(struct benchfiles *b, char *basedir, char *basename,
 		   uint32_t numsubdirs, int builddirs)
 {
@@ -257,7 +256,6 @@ static struct ffsb_file *add_file_named(struct benchfiles *b, uint64_t size,
 
 	return newfile;
 }
-
 
 #if 0
 static void print_rb_helper(rb_node *cur)
@@ -463,7 +461,6 @@ static int add_dir_to_filelist(struct benchfiles *bf, DIR *subdir,
 	}
 	return retval;
 }
-
 
 int grab_old_fileset(struct benchfiles *bf, char *basename,
 		      fl_validation_func_t vfunc, void *vfunc_data)

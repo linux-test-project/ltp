@@ -35,7 +35,6 @@ int rtc_fd = -1;
 char *TCID = "rtc01";
 int TST_TOTAL = 3;
 
-
 /* Read and Alarm Tests :  Read test reads the Date/time from RTC
  * while Alarm test, sets the alarm to 5 seconds in future and
  * waits for it to ring.The ioctls tested in these tests are

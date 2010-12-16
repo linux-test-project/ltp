@@ -129,10 +129,8 @@ main(int ac, char **av)
 	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
 		tst_brkm(TCONF, cleanup, "Not enough available Hugepages");
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 	        /* Creat a temporary file used for mapping */
@@ -141,7 +139,7 @@ main(int ac, char **av)
 				 "open() on %s Failed, errno=%d : %s",
 				 TEMPFILE, errno, strerror(errno));
 		}
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count=0;
 
 		/* Note the number of free huge pages BEFORE testing */
@@ -177,7 +175,7 @@ main(int ac, char **av)
 			/* force to allocate page and change HugePages_Free */
 			*(int*)addr = 0;
 		}
-	
+
 		/* Make sure the number of free huge pages AFTER testing decreased */
 		aftertest = getfreehugepages();
 		hugepagesmapped = beforetest - aftertest;
@@ -192,14 +190,12 @@ main(int ac, char **av)
 				 "memory, errno=%d", errno);
 		}
 		close(fildes);
-	}	/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	
 	return 1;
-}	/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -220,10 +216,8 @@ setup()
 	TEMPFILE=strcat(mypid,TEMPFILE);
 	TEMPFILE=strcat(Hopt,TEMPFILE);
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 }
@@ -240,7 +234,7 @@ getfreehugepages()
 	char buff[BUFFER_SIZE];
 
         f = fopen("/proc/meminfo", "r");
-	if (!f) 
+	if (!f)
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
 	while (fgets(buff,BUFFER_SIZE, f) != NULL) {
@@ -248,8 +242,8 @@ getfreehugepages()
 			break;
 	}
 
-        if (retcode != 1) { 
-        	fclose(f); 
+        if (retcode != 1) {
+        	fclose(f);
        		tst_brkm(TFAIL, cleanup, "Failed reading number of huge pages free.");
      	}
 	fclose(f);
@@ -268,7 +262,7 @@ get_huge_pagesize()
 	char buff[BUFFER_SIZE];
 
         f = fopen("/proc/meminfo", "r");
-	if (!f) 
+	if (!f)
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
 	while (fgets(buff,BUFFER_SIZE, f) != NULL) {
@@ -276,8 +270,8 @@ get_huge_pagesize()
 			break;
 	}
 
-        if (retcode != 1) { 
-        	fclose(f); 
+        if (retcode != 1) {
+        	fclose(f);
        		tst_brkm(TFAIL, cleanup, "Failed reading size of huge page.");
      	}
 	fclose(f);
@@ -299,6 +293,4 @@ cleanup()
 
 	unlink(TEMPFILE);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

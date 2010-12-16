@@ -47,7 +47,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -72,7 +71,6 @@
 #define MAX_MSGS		8192
 #define USAGE	"\nUsage: %s [-v] [-l logfile ]\n\n"
 
-
 /*
  * Function prototypes
  *
@@ -84,7 +82,6 @@ static void parse_args (int, char **);
 static void sys_error (const char *, int);
 static void error (const char *, int);
 
-
 /*
  * Global variables
  *
@@ -94,7 +91,6 @@ int	verbose	= 0;
 int	logit	= 0;
 FILE	*logfile;
 char	*log_filename = NULL;
-
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -142,7 +138,6 @@ int main (int argc, char **argv)
 		printf ("\tCreated message queue: %d\n\n", msqid);
 	if (logit)
 		fprintf (logfile, "\tCreated message queue: %d\n\n", msqid);
-
 
 	/*
 	 * Determine message queue limits
@@ -215,10 +210,8 @@ int main (int argc, char **argv)
 		fclose (logfile);
 	}
 
-
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
@@ -264,7 +257,6 @@ static void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -279,7 +271,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

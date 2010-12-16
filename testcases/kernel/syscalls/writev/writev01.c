@@ -452,7 +452,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
@@ -499,7 +499,6 @@ void cleanup(void)
 	}
 	tst_rmdir();
 
-	tst_exit();
 }
 
 int init_buffs(char *pbufs[])

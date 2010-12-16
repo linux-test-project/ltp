@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 	cleanup();
 
 	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
-	return 0;
+
 }
 
 /*--------------------------------------------------------------*/
@@ -173,9 +173,7 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}
 
 void setup()
 {

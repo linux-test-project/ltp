@@ -109,16 +109,13 @@ int main(int ac, char **av)
 	maybe_run_child(&do_child_uclinux, "");
 #endif
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Creat a new process using fork() */
@@ -178,13 +175,11 @@ int main(int ac, char **av)
 					 "as expected");
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /*
  * do_child()
@@ -232,10 +227,9 @@ void do_child_uclinux()
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Catch SIGINT */
@@ -281,6 +275,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -1,19 +1,19 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_rwlockattr_destroy()
  *   A destroyed 'attr' attributes object can be reinitialized using
  *   pthread_rwlockattr_init()
- * 
+ *
  * Steps:
  * 1.  Initialize a pthread_rwlockattr_t object using pthread_rwlockattr_init()
  * 2.  Destroy that initialized attribute using pthread_rwlockattr_destroy()
  * 3.  Initialize the pthread_rwlockattr_t object again. This should not result
  *     in any error.
- * 
+ *
  */
 
 #define _XOPEN_SOURCE 600
@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 int main()
 {
@@ -46,7 +45,7 @@ int main()
 
 	/* Initialize the rwlock attributes object again.  This shouldn't result in an error. */
 	rc = pthread_rwlockattr_init(&rwla);
-	
+
 	if (rc != 0)
 	{
 		printf("Test FAILED, with error: %d\n", rc);
@@ -58,5 +57,3 @@ int main()
 		return PTS_PASS;
 	}
 }
-
-

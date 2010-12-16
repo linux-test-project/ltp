@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * NAME
  *      diotest5.c
@@ -293,7 +292,6 @@ main(int argc, char *argv[])
 
 	cleanup();
 
-	return 0;
 }
 
 static void setup(void)
@@ -319,7 +317,6 @@ static void cleanup(void)
 
 	tst_rmdir();
 
-	tst_exit();
 }
 #else /* O_DIRECT */
 

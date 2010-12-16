@@ -151,7 +151,7 @@ struct test_case_t {
 	{ PTRACE_GETSIGINFO, .data = -3 },
 	{ PTRACE_GETSIGINFO, .data = -4 },
 #endif
-	
+
 #if HAVE_DECL_PTRACE_SETSIGINFO
 	{ PTRACE_SETSIGINFO, .data = 0 },
 	{ PTRACE_SETSIGINFO, .data = 1 },

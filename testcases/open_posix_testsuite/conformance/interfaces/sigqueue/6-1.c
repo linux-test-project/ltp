@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program verifies that if the value of pid causes signo to be
@@ -19,7 +19,7 @@
    set yet to the return value of sigqueue. If it has, then that means that
    sigqueu has returned before the handler finished executing, and thus is
    a FAILED test.
- - Also before the program ends, verify that the handler 
+ - Also before the program ends, verify that the handler
    has been called.
  */
 
@@ -71,4 +71,3 @@ int main()
 	}
 	return PTS_PASS;
 }
-

@@ -140,7 +140,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -403,21 +402,21 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/***************************************************************
 	 * cleanup and exit
 	 ***************************************************************/
 	cleanup();
-	tst_exit();
-}				/* End main */
+
+}
 
 #else
 
 int main()
 {
 	tst_resm(TCONF, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -427,10 +426,9 @@ int main()
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make and change to a temporary directory */

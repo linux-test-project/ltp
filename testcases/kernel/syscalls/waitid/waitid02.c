@@ -52,7 +52,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -79,11 +79,10 @@ int  TST_TOTAL = 4;                   /* total number of tests in this file.  */
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
+
         TEST_CLEANUP;
         tst_rmdir();
 
-        /* Exit with appropriate return code. */
         tst_exit();
 }
 
@@ -120,7 +119,7 @@ int main(int ac, char **av) {
 
 	int lc;                 /* loop counter */
 	char *msg;              /* message returned from parse_opts */
-	
+
         /* parse standard options */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
@@ -134,12 +133,10 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno)	{
-                     
+
 	TEST(waitid(P_ALL, 0, &infop, WNOHANG));
 	if (TEST_RETURN == -1)
 		tst_resm(TPASS, "Success1 ... -1 is returned. error is %d.",
@@ -188,7 +185,7 @@ int main(int ac, char **av) {
 		getpid(), pgid = __getpgid(0));
 
 	TEST(waitid(P_PGID, pgid, &infop, WEXITED));
-	if (TEST_RETURN == 0) {				
+	if (TEST_RETURN == 0) {
 		tst_resm(TPASS, "Success3 ... 0 is returned.");
 		tst_resm(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
 		infop.si_pid, infop.si_code, infop.si_status);
@@ -208,7 +205,6 @@ int main(int ac, char **av) {
 		tst_resm(TFAIL|TTERRNO, "Fail4 ...  %d is returned", i);
 		tst_exit();
 	}
-
 
 	TEST(waitid(P_PID, id3, &infop, WEXITED));
 	if (TEST_RETURN == 0) {	/*NOCHILD*/

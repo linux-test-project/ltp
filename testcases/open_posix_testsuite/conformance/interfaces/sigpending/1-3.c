@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- *  Test that the sigpending() function stores the set of signals that 
+ *  Test that the sigpending() function stores the set of signals that
  *  are blocked from delivery when there are signals blocked both
  *  in the main function and in the signal handler.
  *  1)  Block two signals from delivery to main process.
@@ -18,12 +18,11 @@
  *    6)  Verify the three signals not raised are not shown.
  */
 
-
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Signal handler uses exit() to leave so that the signals are not executed.
@@ -109,7 +108,6 @@ int main()
                 return PTS_UNRESOLVED;
         }
 
-
 	if ((sigaddset(&act.sa_mask, SIGCONT) == -1) ||
 		(sigaddset(&act.sa_mask, SIGABRT) == -1) ||
 		(sigaddset(&act.sa_mask, SIGUSR1) == -1)) {
@@ -129,4 +127,3 @@ int main()
 	printf("This code should not be reachable\n");
 	return PTS_UNRESOLVED;
 }
-

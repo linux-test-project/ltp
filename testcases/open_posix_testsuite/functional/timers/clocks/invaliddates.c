@@ -63,12 +63,12 @@ int main(int argc, char *argv[])
 #ifdef DEBUG
 			printf("Delta:  %ds %dns\n", secdelta, nsecdelta);
 #endif
-                	if ((secdelta > ACCEPTABLESECDELTA) || 
+                	if ((secdelta > ACCEPTABLESECDELTA) ||
 			    (secdelta < 0)) {
                         	printf("clock does not appear to be set\n");
 				failure = 1;
                 	}
-                	if ((nsecdelta > ACCEPTABLENSECDELTA) || 
+                	if ((nsecdelta > ACCEPTABLENSECDELTA) ||
 			    (nsecdelta < 0)) {
                         	printf("clock does not appear to be set\n");
 				failure = 1;
@@ -97,4 +97,3 @@ int main(int argc, char *argv[])
 	printf("All tests PASSED\n");
 	return PTS_PASS;
 }
-

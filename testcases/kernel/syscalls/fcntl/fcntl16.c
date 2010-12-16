@@ -303,7 +303,6 @@ void cleanup(void)
 
 	tst_rmdir();
 
-	tst_exit();
 }
 
 void dochild(int kid)
@@ -413,7 +412,6 @@ void setup(void)
 {
 	struct sigaction sact;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);
@@ -678,7 +676,6 @@ int main(int ac, char **av)
 
 	setup();		/* global setup */
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -731,5 +728,5 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exiting block 3");
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }

@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +42,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -63,76 +63,76 @@ int main(int argn, char *argc[])
 	char *hostname;
     char nettype[16] = "visible";
 	int progNum = atoi(argc[2]);
-	
+
 	//Test initialization
 	hostname = argc[1];
-	
+
 	//Call tested procedure several times
 	//Int test : call INTPROCNUM RPC
 	intSnd = -65536;
 	rslt = rpc_call(hostname, progNum, VERSNUM, INTPROCNUM,
                     (xdrproc_t)xdr_int, (char *)&intSnd, // xdr_in
                     (xdrproc_t)xdr_int, (char *)&intRec, // xdr_out
-                    nettype);	
-	
+                    nettype);
+
 	if (intSnd != intRec)
 		test_status = 1;
 	if (run_mode == 1)
 		printf("Send (int) : %d, Received : %d\n", intSnd, intRec);
-		
+
 	//Test positive number
 	intSnd = 16777216;
 	rslt = rpc_call(hostname, progNum, VERSNUM, INTPROCNUM,
                     (xdrproc_t)xdr_int, (char *)&intSnd, // xdr_in
                     (xdrproc_t)xdr_int, (char *)&intRec, // xdr_out
-                    nettype);	
-	
+                    nettype);
+
 	if (intSnd != intRec)
 		test_status = 1;
 	if (run_mode == 1)
 		printf("Send (int) : %d, Received : %d\n", intSnd, intRec);
-		
+
 	//Double test : call DBLPROCNUM RPC
 	dblSnd = -1735.63000f;
 	rslt = rpc_call(hostname, progNum, VERSNUM, DBLPROCNUM,
                     (xdrproc_t)xdr_double, (char *)&dblSnd, // xdr_in
                     (xdrproc_t)xdr_double, (char *)&dblRec, // xdr_out
                     nettype);
-	
+
 	if (dblSnd != dblRec)
 		test_status = 1;
 	if (run_mode == 1)
 		printf("Send (double) : %lf, Received : %lf\n", dblSnd, dblRec);
-	
+
 	//Long test : call LNGPROCNUM RPC
 	lngSnd = -430000;
 	rslt = rpc_call(hostname, progNum, VERSNUM, LNGPROCNUM,
                     (xdrproc_t)xdr_long, (char *)&lngSnd, // xdr_in
                     (xdrproc_t)xdr_long, (char *)&lngRec, // xdr_out
                     nettype);
-	
+
 	if (lngSnd != lngRec)
 		test_status = 1;
 	if (run_mode == 1)
-		printf("Send (long) : %ld, Received : %ld\n", lngSnd, lngRec);	
-	
+		printf("Send (long) : %ld, Received : %ld\n", lngSnd, lngRec);
+
 	//String test : call STRPROCNUM RPC
 	strSnd = "text to send.";
 	strRec = (char *)malloc(64 * sizeof(char));
-	
+
 	rslt = rpc_call(hostname, progNum, VERSNUM, STRPROCNUM,
                     (xdrproc_t)xdr_wrapstring, (char *)&strSnd, // xdr_in
                     (xdrproc_t)xdr_wrapstring, (char *)&strRec, // xdr_out
                     nettype);
-	
+
 	if (strcmp(strSnd, strRec))
 		test_status = 1;
 	if (run_mode == 1)
 		printf("Send (string) : \"%s\", Received : \"%s\"\n", strSnd, strRec);
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

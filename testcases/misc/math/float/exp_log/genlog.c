@@ -34,8 +34,6 @@
 #include        <sys/signal.h>
 #include        <math.h>
 
-
-
 int create_Result_file()
 {
 
@@ -45,13 +43,12 @@ int create_Result_file()
 	int fp;
 
 	F_name = "log_out.ref2";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc = exp(1)/10;
 
 	for (i=0; i<nbVal; i++)
 		tabR[i] = log ( (Inc*i) + Inc );
-
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
         if (!fp)
@@ -62,16 +59,15 @@ int create_Result_file()
 	}
 	else
 	{
-		for (i = 0; i<nbVal; i++) 
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabR[i],sizeof(double));
 		}
-	
+
 		close(fp);
 		return 0;
 	}
 }
-
 
 int create_Data_file()
 {
@@ -81,13 +77,12 @@ int create_Data_file()
 	int fp;
 
 	F_name = "log_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc = exp(1)/10;
 
 	for (i=0; i<nbVal; i++)
 		tabD[i] = (Inc * i) + Inc;
-
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
         if (!fp)
@@ -97,8 +92,8 @@ int create_Data_file()
 	    	return -1;
         }
         else
-        {	
-		for (i = 0; i<nbVal; i++) 
+        {
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabD[i],sizeof(double));
 		}
@@ -107,11 +102,10 @@ int create_Data_file()
 	}
 }
 
-
 int main(int argc, char  *argv[])
 {
 
-	if (argc > 1) 
+	if (argc > 1)
 	{
 		switch ( atoi(argv[1]) )
 		{

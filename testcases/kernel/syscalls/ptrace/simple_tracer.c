@@ -129,5 +129,5 @@ int main(int argc, char *argv[])
 	/* hopefully this worked */
 	vptrace(PTRACE_KILL, pid, NULL, NULL);
 
-	return 0;
+	tst_exit();
 }

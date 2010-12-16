@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -22,7 +22,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include "posixtest.h"
-
 
 /* There is no chance that a scheduling policy has such a value */
 #define INVALID_POLICY -27367
@@ -55,7 +54,7 @@ int main() {
 
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED with policy value %i\n", INVALID_POLICY);
-		return PTS_PASS; 
+		return PTS_PASS;
 	} else if (errno == 0) {
 		printf("No error occurs, could %i be a valid value for the scheduling policy ???\n", INVALID_POLICY);
 		return PTS_UNRESOLVED;
@@ -63,6 +62,5 @@ int main() {
 		perror("Unknow error");
 		return PTS_FAIL;
 	}
-
 
 }

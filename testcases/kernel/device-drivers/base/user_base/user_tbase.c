@@ -42,9 +42,7 @@
 #include "user_tbase.h"
 #include "../tbase/tbase.h"
 
-
 static int tbase_fd = -1;		/* file descriptor */
-
 
 int
 tbaseopen() {
@@ -75,7 +73,6 @@ tbaseopen() {
             }
         }
     }
-
 
     /*
      * Check for the /dev/tbase node, and create if it does not
@@ -126,10 +123,9 @@ tbaseclose() {
 		close (tbase_fd);
 		tbase_fd = -1;
 	}
-	
+
 	return 0;
 }
-
 
 int main() {
 	int rc;
@@ -140,7 +136,6 @@ int main() {
                 printf("Test MOD Driver may not be loaded\n");
                 exit(1);
         }
-
 
 	/* test bus rescan */
 	if (ki_generic(tbase_fd, BUS_RESCAN))
@@ -244,16 +239,11 @@ int main() {
         else
                 printf("Success on unregistering sysdev\n");
 
-
 	/* test unregister sysdev_class */
         if (ki_generic(tbase_fd, SYSDEV_CLS_UNREG))
                 printf("Failed on unregistering sysdev_class\n");
         else
                 printf("Success on unregistering sysdev_class\n");
-
-
-
-
 
 	/* close the module */
 	rc = tbaseclose();

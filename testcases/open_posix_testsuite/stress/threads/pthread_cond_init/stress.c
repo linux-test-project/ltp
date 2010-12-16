@@ -14,8 +14,7 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
- 
- 
+
  * This file is a stress test for the pthread_cond_init function.
 
  * The steps are:
@@ -26,7 +25,7 @@
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -37,29 +36,29 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <stdarg.h>
- 
+
  #include <time.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -95,9 +94,9 @@ void * threaded (void * arg)
 	int sz = 4;
 	/* We will use mutex from the stack or from malloc'ed memory */
 	char loc = ((me % 5) %2);
-	
+
 	pmtx = &mtx;
-	
+
 	if (loc)
 	{
 		pcnd = &cnd;
@@ -108,29 +107,29 @@ void * threaded (void * arg)
 		if (pcnd == NULL)
 		{ UNRESOLVED(errno, "Memory allocation for condvar failed"); }
 	}
-	
+
 	me %= sz;
-	
+
 	ret = clock_gettime(CLOCK_REALTIME, &now);
 	if (ret != 0) {  UNRESOLVED(errno, "Clock get time (realtime) failed.");  }
-	
+
 	switch (me)
 	{
 		case 0: /* We will initialize the cond with NULL pointer attribute */
 			pca = NULL;
 			break;
-		
+
 		default: /* We will initialize the cond with an attribute object */
 			if ((ret = pthread_condattr_init(&ca)))
 			{ UNRESOLVED(ret, "Cond attribute init failed"); }
 			pca = &ca;
-			
+
 			if ((me == 1) || (me == 3))
 			{
 				ret = pthread_condattr_setpshared(&ca, PTHREAD_PROCESS_SHARED);
 				if (ret != 0) {  UNRESOLVED(ret, "Unable to set PShared condvar");  }
 			}
-			
+
 			if ((sysconf(_SC_MONOTONIC_CLOCK) > 0) && ((me == 1) || (me == 2)))
 			{
 				ret = pthread_condattr_setclock(&ca, CLOCK_MONOTONIC);
@@ -139,14 +138,14 @@ void * threaded (void * arg)
 				ret = clock_gettime(CLOCK_MONOTONIC, &now);
 				if (ret != 0) {  UNRESOLVED(errno, "Clock get time (realtime) failed.");  }
 			}
-			
+
 	}
-	
+
 	ret = pthread_mutex_init(pmtx, NULL);
 	if (ret != 0) {  UNRESOLVED(ret, "Unable to initialize a mutex");  }
 	ret = pthread_mutex_lock(pmtx);
 	if (ret != 0) {  UNRESOLVED(ret, "Unable to lock a mutex");  }
-	
+
 	while (do_it)
 	{
 		ret = pthread_cond_init(pcnd, pca);
@@ -174,14 +173,14 @@ void * threaded (void * arg)
 		ret = pthread_mutex_unlock(&cnt_mtx);
 		if (ret != 0) {  UNRESOLVED(ret, "Unable to unlock counter mutex");  }
 	}
-			
+
 	if (!loc) /* cond was malloc'ed */
 		free(pcnd);
-	
+
 	if (me)
 		if ((ret = pthread_condattr_destroy(pca)))
 		{ FAILED("Cond attribute destroy failed at the end"); }
-		
+
 	return NULL;
 }
 
@@ -192,8 +191,6 @@ void sighdl(int sig)
 	while (do_it);
 }
 
-
-
 /******** Parent thread *************/
 int main(int argc, char * argv[])
 {
@@ -201,7 +198,7 @@ int main(int argc, char * argv[])
 	pthread_t threads[N * SCALABILITY_FACTOR];
 	int i;
 	int ret;
-	
+
 	output_init();
 
 	sigemptyset (&sa.sa_mask);
@@ -209,7 +206,7 @@ int main(int argc, char * argv[])
 	sa.sa_handler = sighdl;
 	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{ UNRESOLVED(ret, "Unable to register signal handler"); }
-	
+
 	for (i=0; (i<(N * SCALABILITY_FACTOR) && (ret == 0)); i++)
 	{
 		ret = pthread_create(&threads[i], NULL, threaded, (void *) i);
@@ -221,10 +218,10 @@ int main(int argc, char * argv[])
 		while (do_it);
 		for (; i>0; i--)
 			pthread_join(threads[i-1], NULL);
-		
+
 		UNRESOLVED(ret, "Unable to create enough threads");
 	}
-	
+
 	/* Every threads were created; we now just wait */
 	for (i=0; i<(N * SCALABILITY_FACTOR); i++)
 	{
@@ -235,6 +232,6 @@ int main(int argc, char * argv[])
 	output("pthread_cond_init stress test passed (%llu iterations)\n", cnt);
 	#endif
 
-	/* Everything went OK */	
+	/* Everything went OK */
 	PASSED;
 }

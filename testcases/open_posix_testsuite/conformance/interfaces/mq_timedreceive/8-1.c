@@ -6,8 +6,8 @@
  * adam.li@intel.com
  */
 /*
- * If Timers option is supported, then abs_timeout is based on 
- * CLOCK_REALTIME. 
+ * If Timers option is supported, then abs_timeout is based on
+ * CLOCK_REALTIME.
  * Otherwise, the timeout is based on the system clock (time() function).
  */
 
@@ -83,7 +83,7 @@ int main()
 #else
 		newtime = time(NULL);
 #endif
-		if ((newtime - oldtime) < TIMEOUT) { 
+		if ((newtime - oldtime) < TIMEOUT) {
 			printf("FAIL: mq_timedreceive didn't block until timout expires\n");
 			failure = 1;
 		}
@@ -93,7 +93,7 @@ int main()
 		if (mq_close(mqdes) != 0) {
 			perror(ERROR_PREFIX "mq_close");
 			unresolved = 1;
-       		}	
+       		}
        		if (mq_unlink(mqname) != 0) {
 			perror(ERROR_PREFIX "mq_unlink");
 			unresolved = 1;
@@ -113,7 +113,6 @@ int main()
 		sleep(TIMEOUT + 3); /* Parent is probably blocking
 				       send a signal to let it abort */
 		kill(getppid(), SIGABRT);
-		return 0; 
+		tst_exit();
 	}
 }
-

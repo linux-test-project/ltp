@@ -20,4 +20,3 @@ int main()
 	printf("as POSIX does not define when this error occurs.\n");
 	return PTS_UNTESTED;
 }
-

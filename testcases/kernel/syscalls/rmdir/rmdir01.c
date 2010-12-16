@@ -103,7 +103,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -139,14 +138,12 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "call succeeded");
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-
-	tst_exit();
 
 }
 
@@ -155,10 +152,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -187,5 +183,5 @@ void cleanup()
 	/*
 	 * Exit with return code appropriate for results.
 	 */
-	tst_exit();
+
 }

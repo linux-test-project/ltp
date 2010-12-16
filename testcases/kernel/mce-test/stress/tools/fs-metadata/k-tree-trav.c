@@ -12,8 +12,8 @@
  * General Public License for more details.
  *
  * You should find a copy of v2 of the GNU General Public License somewhere
- * on your Linux system; if not, write to the Free Software Foundation, 
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * on your Linux system; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * This program helps you to traverse each node in the k tree
  * Do the i-node operations on the all file entries in recursive
@@ -84,5 +84,5 @@ int main(int argc, char **argv)
 	k_tree_trav(atoi(argv[1]), atoi(argv[2]));
 	printf("Traverse k tree (depth: %s, width: %s), done\n", argv[1],
 	       argv[2]);
-	return 0;
+	tst_exit();
 }

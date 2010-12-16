@@ -1,16 +1,16 @@
-/* 
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Test that pthread_rwlockattr_destroy()
  *    shall destroy a read write attributes object.
- * 
+ *
  * Steps:
  * 1.  Initialize a pthread_rwlockattr_t object using pthread_rwlockattr_init()
  * 2.  Destroy the attributes object using pthread_rwlockattr_destroy()
- * 
+ *
  */
 
 #define _XOPEN_SOURCE 600
@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 int main()
 {
@@ -44,7 +43,5 @@ int main()
 	}
 
 	printf("Test PASSED\n");
-	return PTS_PASS;	
+	return PTS_PASS;
 }
-
-

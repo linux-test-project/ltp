@@ -79,7 +79,6 @@ unsigned long long tv_minus(struct timeval *tv_start, struct timeval *tv_end)
 	return nsecs;
 }
 
-
 /* calculate the tsc period */
 unsigned long long tsc_period_ps(void)
 {
@@ -156,5 +155,5 @@ int main(int argc, char *argv[])
 	printf("     Min: %llu ns\n", min);
 	printf("     Avg: %llu ns\n", avg);
 
-	return 0;
+	tst_exit();
 }

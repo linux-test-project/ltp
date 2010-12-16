@@ -2,12 +2,12 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program tests the assertion that sigset shall return the signal's
  previous disposition if signal had not been blocked.
-     
+
 */
 
 #define _XOPEN_SOURCE 600
@@ -40,4 +40,4 @@ int main()
         }
 
 	return PTS_PASS;
-} 
+}

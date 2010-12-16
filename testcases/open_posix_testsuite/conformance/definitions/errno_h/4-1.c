@@ -1,5 +1,5 @@
 /*
- *errno.h shall give positive values for the 
+ *errno.h shall give positive values for the
  *error number symbolic constants
  *author:ysun@lnxw.com
  */
@@ -13,8 +13,6 @@
 #define PTP_UNTESTED    5
 #define PTP_UNINITIATED 6
 #define PTP_NORESULT    7
-
-
 
 struct unique {
     int value;

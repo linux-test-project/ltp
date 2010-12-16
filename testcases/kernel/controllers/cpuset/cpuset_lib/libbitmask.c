@@ -292,7 +292,7 @@ static int scan_was_ok(int sret, char nextc, const char *ok_next_chars)
  *	0-3		0,1,2,3
  *	0-7:2		0,2,4,6
  *	1,3,5-7		1,3,5,6,7
- *	0-3:2,8-15:4	0,2,8,12	
+ *	0-3:2,8-15:4	0,2,8,12
  */
 int bitmask_parselist(const char *buf, struct bitmask *bmp)
 {
@@ -618,7 +618,6 @@ struct bitmask *bitmask_eor(struct bitmask *bmp1, const struct bitmask *bmp2,
 		_setbit(bmp1, i, _getbit(bmp2, i) ^ _getbit(bmp3, i));
 	return bmp1;
 }
-
 
 /*
  * Iteration operators

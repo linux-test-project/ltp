@@ -20,7 +20,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * weave:
  *	Mmap parts of a file, and then write to the file causing single
@@ -34,7 +33,6 @@
  *
  *  Compile with -DLARGE_FILE to enable file sizes > 2 GB.
  */
-
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -284,7 +282,7 @@ main(int argc, char *argv[])
   	tst_rmdir();
    	tst_exit();	//LTP Port
 
-	return 0;
+	tst_exit();
 }
 
 /*****	LTP Port	*****/

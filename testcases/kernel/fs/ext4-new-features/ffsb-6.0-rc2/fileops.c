@@ -25,7 +25,6 @@
 #include <assert.h>
 #include <errno.h>
 
-
 #include "fh.h"
 #include "util.h"
 #include "ffsb.h"
@@ -301,7 +300,6 @@ void ffsb_writefile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-
 /* Shared core between ffsb_writeall and ffsb_writeall_fsync.*/
 
 static unsigned ffsb_writeall_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
@@ -360,7 +358,6 @@ void ffsb_writeall_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_incr_op(ft, opnum, iterations, filesize);
 	ft_add_writebytes(ft, filesize);
 }
-
 
 static unsigned ffsb_appendfile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
 				unsigned opnum, uint64_t *filesize_ret,
@@ -544,4 +541,3 @@ void ffsb_stat(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 
 	ft_incr_op(ft, opnum, 1, 0);
 }
-

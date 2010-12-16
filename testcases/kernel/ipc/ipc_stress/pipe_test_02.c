@@ -75,13 +75,13 @@
  * packets contents were not garbled.
  *
  * DEFAULT_NUM_CHILDREN: default number of child processes spawned
- * 
+ *
  * DEFAULT_PACKETS_TO_SEND: default number of packets sent to each child
  * process.
  *
  * MAXCHILD: maximum number of child processes which may be spawned
  * (based upon the number of file descriptors that a process may use)
- * 
+ *
  * USAGE: usage statement
  */
 #define MB			(1024*1024)
@@ -99,7 +99,7 @@
 
 /*
  * Function Prototypes:
- * 
+ *
  * setup (): Parse command line arguments and intialize variables
  * child (): Child process
  * cleanup (): Close all pipes and kill child processes
@@ -158,7 +158,6 @@ int	p2child [MAXCHILD][2]; 	/* Pipes from parent to child processes */
 int	p2parent [2];  		/* Pipe from child processes to parent */
 char	err_msg [256];		/* Generic error message buffer */
 
-
 /*---------------------------------------------------------------------+
 |                               main ()                                |
 | ==================================================================== |
@@ -186,9 +185,9 @@ int main (int argc, char **argv)
 	setup (argc, argv);
 	printf ("%s: IPC Pipe TestSuite program\n", *argv);
 	fflush (stdout);
-   
+
 	/*
-	 * Create two sets of half duplex pipes: 
+	 * Create two sets of half duplex pipes:
 	 *
 	 * p2child: for sending packets from the parent process to the child
 	 *          processes and
@@ -226,8 +225,8 @@ int main (int argc, char **argv)
 	 * Spawn num_children processes
 	 *
 	 * Fork of the child process & record the newly created process's
-	 * id for future reference. 
-	 * 
+	 * id for future reference.
+	 *
 	 * Then close the READ end of the p2child pipe, since the parent
 	 * process will be writing into this pipe rather than reading.
 	 * Also close the WRITE end of the p2parent pipe, for just the
@@ -297,7 +296,7 @@ int main (int argc, char **argv)
 	 *
 	 * After sending the last packet, close the WRITE end of the p2child
 	 * pipe as we are finish sending packets to the child processes.
-	 * 
+	 *
 	 * Then wait for all of the child processes to send the checksum
 	 * packets.  Upon receiving the checksum packets verify that the
 	 * child's checksum matches that of the parent.
@@ -321,7 +320,7 @@ int main (int argc, char **argv)
 		}
 		if (close (p2child [i][WRITE]) < 0)
 			sys_error ("close failed", __LINE__);
-	
+
 		if (read (p2parent [READ], &packet, sizeof (packet)) <= 0)
 			sys_error ("read failed", __LINE__);
 
@@ -363,7 +362,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               child ()                               |
 | ==================================================================== |
@@ -383,7 +381,7 @@ void child (int p2child [], int p2parent [])
 {
 	int	n;			/* Bytes read */
 	pid_t	pid = getpid ();	/* Process id of child */
-	int	end_of_transmission = 0;/* End of transaction flag */
+	int	end_of_transmission = 0;
 	long	packets_received = 0;	/* Number of packets received
 					 * from parent
 					 */
@@ -468,7 +466,6 @@ void child (int p2child [], int p2parent [])
 	if (close (p2child [READ]) < 0)
 		sys_error ("close failed", __LINE__);
 
-
 	/*
 	 * Send parent packet containing child's checksum
 	 *
@@ -490,7 +487,6 @@ void child (int p2child [], int p2parent [])
 	if (close (p2parent [WRITE]) < 0)
 		sys_error ("close failed", __LINE__);
 }
-	   
 
 /*---------------------------------------------------------------------+
 |                               setup ()                               |
@@ -587,7 +583,6 @@ void setup_signal_handlers ()
 		sys_error ("sigaction failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             handler ()                               |
 | ==================================================================== |
@@ -624,7 +619,6 @@ void handler (int sig, int code, struct sigcontext *scp)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             cleanup ()                               |
 | ==================================================================== |
@@ -652,7 +646,6 @@ void cleanup ()
 	exit (-1);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -667,7 +660,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

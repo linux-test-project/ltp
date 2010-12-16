@@ -54,7 +54,7 @@ int main()
                 perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
         }
-	
+
 	if ((pid = fork()) != 0) {
 		/* Parent process */
 		struct sigaction act;
@@ -74,7 +74,7 @@ int main()
 			wait(NULL);
 			printf("mq_receive() succeed unexpectly \n");
 			failure = 1;
-		}	
+		}
 		if (mq_close(mqdes) != 0) {
                		perror("mq_close() did not return success");
 	                unresolved=1;
@@ -93,7 +93,7 @@ int main()
 		}
 		printf("Test PASSED\n");
 		return PTS_PASS;
-		
+
 	}
 	else {
 		/*  Child Process */
@@ -103,4 +103,3 @@ int main()
 	}
 	return PTS_UNRESOLVED;
 }
-

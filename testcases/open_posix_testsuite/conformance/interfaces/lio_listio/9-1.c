@@ -2,14 +2,14 @@
  * Copyright (c) 2004, Bull SA. All rights reserved.
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
  * assertion:
  *
- *	LIO_WRITE causes the entry to be submited as if by a call to 
+ *	LIO_WRITE causes the entry to be submited as if by a call to
  *	aio_write().
  *
  * method:
@@ -51,7 +51,7 @@ int main()
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
 		exit(PTS_UNSUPPORTED);
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_9_1_%d", 
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_9_1_%d",
 		  getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
@@ -100,7 +100,6 @@ int main()
 		close(fd);
 		exit(PTS_FAIL);
 	}
-
 
 	memset(check, 0xaa, BUF_SIZE);
 

@@ -53,7 +53,6 @@ void ok_exit();
 
 #define ANON_GRAN_PAGES_MAX	(32U)
 
-
 extern time_t	time(time_t *);
 extern char	*ctime(const time_t *);
 extern int atoi(const char *);
@@ -99,7 +98,7 @@ main(int argc, char *argv[]) {
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
 	ok_exit();
-	return 0;
+	tst_exit();
 }
 
 /*****	LTP Port	*****/
@@ -108,7 +107,6 @@ void ok_exit()
         tst_resm(TPASS, "Test passed\n");
 	tst_exit();
 }
-
 
 int anyfail()
 {

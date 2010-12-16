@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 	if ((msg =
 	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
 	/**************************************************
@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
 		close(fd);
 	}
 	cleanup();
-	return 0;
+
 }
 
 /***************************************************************
@@ -291,15 +291,14 @@ int main(int argc, char *argv[])
  ***************************************************************/
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create temp directory and change to that */
 	tst_tmpdir();
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -313,13 +312,9 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove temp directory and files */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}				/* End cleanup() */
+}
 
 /***************************************************************
  * check_and_print(extected_errno) - checks the returned value of call

@@ -6,18 +6,16 @@
  * source tree.
  *
  *
- * This test case will cover all the conversion specifiers that are supported 
+ * This test case will cover all the conversion specifiers that are supported
  * in strftime().
  */
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
 #include <langinfo.h>
-#include <time.h> 
+#include <time.h>
 #include "posixtest.h"
-
 
 int main () {
 
@@ -30,7 +28,6 @@ int main () {
     setlocale(LC_TIME, "");
     strftime(text, 256, nl_langinfo (D_T_FMT), local_t);
     printf("STRING IS:   %s\n\n", text);
-
 
     /* use format controls to print the various date/time components. */
 
@@ -111,7 +108,6 @@ int main () {
  *   }
  */
 
-
     result = strftime(text, 256, "%e", local_t);
     printf("e   Bytes %i           %s	", result, text);
     if (result != 2) {
@@ -169,8 +165,6 @@ int main () {
 	    puts ("PASS");
     }
 
-
-
     result = strftime(text, 256, "%I", local_t);
     printf("I   Bytes %i           %s	", result, text);
     if (result != 2) {
@@ -216,7 +210,6 @@ int main () {
 	    puts ("PASS");
     }
 
-
     result = strftime(text, 256, "%p", local_t);
     printf("p   Bytes %i           %s	", result, text);
     if (result != 2) {
@@ -235,7 +228,6 @@ int main () {
 	    puts ("PASS");
     }
 
-
     result = strftime(text, 256, "%R", local_t);
     printf("R   Bytes %i           %s	", result, text);
     if (result != 5) {
@@ -244,7 +236,6 @@ int main () {
     } else {
 	    puts ("PASS");
     }
-
 
     result = strftime(text, 256, "%S", local_t);
     printf("S   Bytes %i           %s	", result, text);
@@ -264,7 +255,6 @@ int main () {
 	    puts ("PASS");
     }
 
-
     result = strftime(text, 256, "%T", local_t);
     printf("T   Bytes %i           %s	", result, text);
     if (result != 8) {
@@ -274,7 +264,6 @@ int main () {
 	    puts ("PASS");
     }
 
-
     result = strftime(text, 256, "%u", local_t);
     printf("u   Bytes %i           %s	", result, text);
     if (result != 1) {
@@ -283,7 +272,6 @@ int main () {
     } else {
 	    puts ("PASS");
     }
-
 
     result = strftime(text, 256, "%U", local_t);
     printf("U   Bytes %i           %s	", result, text);
@@ -302,7 +290,6 @@ int main () {
     } else {
 	    puts ("PASS");
     }
-
 
     result = strftime(text, 256, "%w", local_t);
     printf("w   Bytes %i           %s	", result, text);
@@ -372,7 +359,6 @@ int main () {
     } else {
 	    puts ("PASS");
     }
-
 
     //result = strftime(text, 256, "%Z", local_t);
   //printf("Z   Bytes %i           %s	", result, text);

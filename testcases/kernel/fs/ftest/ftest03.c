@@ -131,7 +131,7 @@ int main (int ac, char *av[])
 		tst_exit();
 	}
 
-	return 0;
+	tst_exit();
 }
 
 static void setup(void)
@@ -337,7 +337,7 @@ static void dotest(int testers, int me, int fd)
 		}
 
 		val_iovec[i].iov_len = w_ioveclen;
-	
+
 		if (malloc((i+1)*8) == NULL) {
 			tst_resm(TBROK, "\tmalloc failed");
 			tst_exit();
@@ -364,7 +364,7 @@ static void dotest(int testers, int me, int fd)
 	 * For each iteration:
 	 *	zap bits array
 	 *	loop
-	 *		pick random chunk, read it. 
+	 *		pick random chunk, read it.
 	 *		if corresponding bit off {
 	 *			verify = 0. (sparse file)
 	 *			++count;

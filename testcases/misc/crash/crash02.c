@@ -9,12 +9,12 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -44,12 +44,10 @@ CAUTION: running this program may crash your system, your disk and all
 	Running as user nobody and with all your filesystems
 	remounted to readonly may be wise..
 
-
 TODO:
 	* in rand_long(), stuff in some real pointers to random data
 	* Does a syscall is supposed to send SIGSEGV?
 */
-
 
 #define _GNU_SOURCE
 #include <sys/syscall.h>
@@ -92,8 +90,6 @@ int ntries = 100;
 /* max time allowed per try, in seconds */
 #define MAX_TRY_TIME 5
 
-
-
 void cleanup()
 {
 	/*
@@ -104,7 +100,6 @@ void cleanup()
 
 	tst_rmdir();
 
-	tst_exit();
 }
 
 void setup()
@@ -142,13 +137,11 @@ option_t options[] =
 	{ NULL, NULL, NULL }
 };
 
-
 void badboy_fork ();
 void badboy_loop ();
 
 void summarize_errno ();
 void record_errno(unsigned int n);
-
 
 int
 main (int argc, char *argv[])
@@ -191,7 +184,7 @@ main (int argc, char *argv[])
 		nseed++;
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }
 
 /* ************************* */
@@ -199,22 +192,20 @@ int badboy_pid;
 
 void my_signal (int sig, void (*func) ());
 
-
 void monitor_fcn (int sig)
 {
   int status;
 
- if (verbose_level >= 3) 
+ if (verbose_level >= 3)
 	    printf ("time limit reached on pid. using kill.\n");
 
   status = kill (badboy_pid, SIGKILL);
   if (status < 0)
     {
-	if (verbose_level >= 3) 
+	if (verbose_level >= 3)
       		printf ("failed to kill process\n");
     }
 }
-
 
 void
 badboy_fork ()
@@ -278,7 +269,7 @@ summarize_errno ()
 {
   int i;
 
-  if (x_opt || verbose_level < 2) 
+  if (x_opt || verbose_level < 2)
 		  return;
 
   printf ("errno status ... number of cases\n");
@@ -289,11 +280,9 @@ summarize_errno ()
     }
 }
 
-
 /* ************* badboy ******************************************* */
 
 jmp_buf again_buff;
-
 
 unsigned char * bad_malloc (int n);
 void my_signal (int sig, void (*func) ());
@@ -311,7 +300,6 @@ void
 badboy_loop ()
 {
   int i;
-
 
   for (i = 0; i < ntries; ++i)
     {
@@ -382,7 +370,7 @@ void again_handler (int sig)
     default:
       ss = "";
     }
-  if (verbose_level >= 5) 
+  if (verbose_level >= 5)
   	printf ("Got signal %d%s\n", sig, ss);
 
   longjmp (again_buff, 3);
@@ -428,8 +416,8 @@ set_up_signals ()
  * FIXME: 64bits systems
  *
  * TODO: improve arg mixing (16bits and 8bits values, NULLs, etc.).
- *	big values as returned by rand() are no so interresting 
- *	(except when used as pointers) because they may fall too 
+ *	big values as returned by rand() are no so interresting
+ *	(except when used as pointers) because they may fall too
  *	quickly in the invalid parameter sieve. Smaller values,
  *	will be more insidious because they may refer to existing
  *	objects (pids, fd, etc.).
@@ -440,7 +428,7 @@ long int rand_long()
 
     r1 = rand();
     r2 = rand();
-    
+
     if (r1 & 0x10000L)
     	r1 = 0;
     if (!r1 && (r2 & 0x50000L))
@@ -469,7 +457,7 @@ try_one_crash (int try_num)
   arg7 = rand_long();
 
   if (x_opt) {
-      if (verbose_level >= 1) 
+      if (verbose_level >= 1)
   	printf("%04d: syscall(%ld, %#lx, %#lx, %#lx, %#lx, %#lx, %#lx, %#lx)\n",
 		try_num, sysno, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
   } else {
@@ -494,13 +482,13 @@ in_blacklist (int sysno)
        * clone(child_stack=0, flags=CLONE_VM|CLONE_VFORK|SIGCHLD)
        * clone2()
        */
-      
+
       /*
        * NOTE (garrcoop):
        *  Could not find reference to SYS_fork(vfork) on mips32
        *  with the Montavista / Octeon toolchain. Need to develop an
        *  autoconf check for this item.
-       */   
+       */
 #if defined(__NR_vfork) && __NR_vfork
       SYS_vfork,
 #endif

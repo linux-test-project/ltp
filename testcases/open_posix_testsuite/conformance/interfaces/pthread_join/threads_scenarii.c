@@ -14,7 +14,6 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This file is a helper file for the pthread_join tests
 * It defines the following objects:
 * scenarii: array of struct __scenario type.
@@ -25,7 +24,6 @@
 * It is derived from the file in pthread_create tests, with the detached stuff removed
 *
 */
-
 
 struct __scenario
 {
@@ -67,9 +65,9 @@ scenarii[] =
 
         /*
          * This array gives the different combinations of threads attributes for the testcases.
-         * 
+         *
          * Some combinations must be avoided.
-         * -> Do not have a detached thread use an alternative stack; 
+         * -> Do not have a detached thread use an alternative stack;
          *     as we don't know when the thread terminates to free the stack memory
          * -> ... (to be completed)
          *
@@ -130,7 +128,6 @@ void scenar_init()
 	output(" pagesize: %li\n", pagesize);
 	output(" min stack size: %li\n", minstacksize);
 #endif
-
 
 	if (minstacksize % pagesize)
 	{
@@ -381,7 +378,6 @@ void scenar_init()
 			output("TSS unsupported => stack size unchanged\n");
 
 #endif
-
 
 	}
 

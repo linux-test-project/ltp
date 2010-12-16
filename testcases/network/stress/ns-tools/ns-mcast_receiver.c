@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-mcast_receiver.c
@@ -63,14 +62,12 @@ struct mcast_rcv_info {
     double timeout;
 };
 
-
 /*
  * Gloval variables
  */
 char *program_name;		/* program name */
 struct sigaction handler;	/* Behavior for a signal */
 int catch_sighup;		/* When catch the SIGHUP, set to non-zero */
-
 
 /*
  * Function: usage()
@@ -112,7 +109,6 @@ usage (char *program_name, int exit_value)
     exit (exit_value);
 }
 
-
 /*
  * Function: set_signal_flag()
  *
@@ -145,7 +141,6 @@ set_signal_flag(int type)
     }
 }
 
-
 /*
  * Function: parse_options()
  *
@@ -156,7 +151,7 @@ set_signal_flag(int type)
  *   argc:  the number of argument
  *   argv:  arguments
  *  info_p: pointer to data of multicast receiver information
- *   bg_p:  pointer to the flag of working in backgrond 
+ *   bg_p:  pointer to the flag of working in backgrond
  *
  * Return value:
  *  None
@@ -215,7 +210,6 @@ parse_options(int argc, char *argv[], struct mcast_rcv_info *info_p, int *bg_p)
 		    usage(program_name, EXIT_FAILURE);
 		}
 		break;
-
 
 	    case 's':
 		saddrs = strdup(optarg);
@@ -292,7 +286,6 @@ parse_options(int argc, char *argv[], struct mcast_rcv_info *info_p, int *bg_p)
 	free(portnum);
 }
 
-
 /*
  * Function: create_mcast_socket()
  *
@@ -311,7 +304,7 @@ create_mcast_socket(struct mcast_rcv_info *info_p)
     int sd;	/* socket file descriptor */
     int level;	/* protocol levels */
     int on;	/* flag for setsockopt */
- 
+
     switch (info_p->mainfo->ai_family) {
 	case PF_INET:
 	    level = IPPROTO_IP;
@@ -342,17 +335,16 @@ create_mcast_socket(struct mcast_rcv_info *info_p)
 
     /* Join the multicast group */
     if (setsockopt(sd, level, MCAST_JOIN_GROUP, info_p->greq, sizeof(struct group_req)))
-       fatal_error("setsockopt(): failed to join the multicast group");	
+       fatal_error("setsockopt(): failed to join the multicast group");
 
     /* Apply the source filter */
     if (info_p->gsf) {
 	if (setsockopt(sd, level, MCAST_MSFILTER, info_p->gsf, GROUP_FILTER_SIZE(info_p->gsf->gf_numsrc)))
-	    fatal_error("setsockopt(): failed to apply the source filter");	
+	    fatal_error("setsockopt(): failed to apply the source filter");
     }
 
     return sd;
 }
-
 
 /*
  * Function: receive_mcast()
@@ -426,7 +418,6 @@ receive_mcast(struct mcast_rcv_info *info_p)
 
     close(sd);
 }
-
 
 /*
  *

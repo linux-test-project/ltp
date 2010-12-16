@@ -52,7 +52,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -67,7 +66,6 @@
 #endif
 #include <sys/msg.h>
 #include <sys/types.h>
-
 
 /*
  * Defines
@@ -89,7 +87,6 @@
 #endif
 
 #define USAGE	"\nUsage: %s [-n num_message_queues] [-d]\n\n"
-
 
 /*
  * Function prototypes
@@ -113,7 +110,6 @@ static void cleanup (int qnum);
 int	max_queues = DEFAULT_MESSAGE_QUEUES;
 int	msqid_array [MAX_MESSAGE_QUEUES];
 int	debug = 0;
-                                 
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -167,7 +163,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
 | ==================================================================== |
@@ -212,7 +207,6 @@ static void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -228,7 +222,6 @@ static void sys_error (const char *msg, int line)
 	error (syserr_msg, line);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               error ()                               |
 | ==================================================================== |
@@ -241,7 +234,6 @@ static void error (const char *msg, int line)
 	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
 	exit (-1);
 }
-
 
 /*---------------------------------------------------------------------+
 |                              cleanup()                               |
@@ -264,4 +256,3 @@ void cleanup(int qnum)
                 if (debug) printf ("\tremoved queue  [%d]\n", qnum);
         }
 }
-

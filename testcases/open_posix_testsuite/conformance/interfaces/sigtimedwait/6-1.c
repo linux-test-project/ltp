@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
     Test that sigtimedwait() sets errno to [EAGAIN] if no signal specified by
@@ -57,7 +57,7 @@ int main()
 	struct sigevent ev;
 	timer_t tid;
 	struct itimerspec its;
-	
+
         its.it_interval.tv_sec = 0;
         its.it_interval.tv_nsec = 0;
         its.it_value.tv_sec = TIMERSEC;

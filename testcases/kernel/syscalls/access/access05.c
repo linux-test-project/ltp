@@ -158,7 +158,7 @@ int main(int ac, char **av)
 	char *file_name;	/* name of the testfile */
 	char *test_desc;	/* test specific message */
 	int access_mode;	/* specified access mode for testfile */
-	int ind;		/* counter for testcase looping */
+	int ind;
 
 	/* Parse standard options given to run the test. */
 <<<<<<< HEAD
@@ -172,15 +172,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -222,13 +220,11 @@ int main(int ac, char **av)
 				tst_resm(TFAIL|TTERRNO, "access() fails %s (expected errno %d)",
 					 test_desc, Test_cases[ind].exp_errno);
 			}
-		}		/* Test Case Looping */
-	}			/* End for TEST_LOOPING */
+		}
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -239,9 +235,8 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int ind;		/* counter for testsetup functions */
+	int ind;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -252,10 +247,8 @@ void setup()
 	if (setuid(ltpuser->pw_uid) == -1)
 		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 #if !defined(UCLINUX)
@@ -393,6 +386,4 @@ void cleanup()
 	 */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

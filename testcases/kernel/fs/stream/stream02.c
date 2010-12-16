@@ -43,7 +43,6 @@ int     local_flag;
 #define PASSED 1
 #define FAILED 0
 
-
 char progname[] = "stream02()" ;
 char tempfile1[40]="";
 
@@ -113,7 +112,7 @@ int main(int ac, char *av[])
 		} else {
 		         tst_resm(TFAIL, "Test failed in block1.");
 	        }
-		
+
 	/*--------------------------------------------------------------------*/
 	} /* end for */
 	tst_rmdir();

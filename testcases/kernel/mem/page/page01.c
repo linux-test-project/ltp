@@ -71,7 +71,6 @@ int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
-
 int main(argc, argv)
 	int argc;
 	char *argv[];
@@ -82,7 +81,6 @@ int main(argc, argv)
 	int *number_pointer;
 	int *memory_pointer;
 	int child, count;
-
 
 	setup();
 
@@ -99,7 +97,6 @@ int main(argc, argv)
 		tst_resm(TCONF, "\tBad arg count.\n");
 		exit(1);
 	}
-
 
 	blenter();
 
@@ -194,7 +191,7 @@ int main(argc, argv)
 
 	anyfail();
 	/** NOT REACHED **/
-	return 0;
+	tst_exit();
 }
 
 int bd_arg(str)
@@ -296,5 +293,3 @@ instress()
                                 " etc are likely to fail.\n");
         return 1;
 }
-
-

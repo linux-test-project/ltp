@@ -138,14 +138,14 @@ static char *maxsemstring;
 
 	if ((signal(SIGTERM, term)) == SIG_ERR) {
 		tst_resm(TFAIL, "\tsignal failed. errno = %d", errno);
-		tst_exit();
+
 	}
 
 	for (i = 0; i < NPROCS; i++) {
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_resm(TFAIL,
 				 "\tFork failed (may be OK if under stress)");
-			tst_exit();
+
 		}
 		if (pid == 0) {
 			procstat = 1;
@@ -418,7 +418,6 @@ void setup()
 	 *                   */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
@@ -439,7 +438,7 @@ void setup()
  ****************************************************************/
 void cleanup()
 {
-	/* Remove the temporary directory */
+
 	tst_rmdir();
 
 	/*
@@ -448,6 +447,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

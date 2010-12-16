@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_trylock()
@@ -25,17 +25,17 @@ int main()
 		fprintf(stderr,"Error at pthread_mutex_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Try to lock the mutex using pthread_mutex_trylock() */
 	if ((rc=pthread_mutex_trylock(&mutex)) == 0) {
 		pthread_mutex_unlock(&mutex);
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
-	
+
 	/* Check if returned values are tolerable */
 	/* PATCH: since we are using the mutex properly,*/
-	/*  errors are NOT tolerable here */ 
+	/*  errors are NOT tolerable here */
 	else if (rc == EBUSY) {
 		fprintf(stderr,"The mutex was already locked\n");
 	}

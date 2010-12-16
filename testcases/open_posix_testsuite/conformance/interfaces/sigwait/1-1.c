@@ -3,22 +3,21 @@
 #include "posixtest.h"
 
 /*
- 
+
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- 
- *  Test that the sigwait() function. If no signal in 'set' is pending at the 
- *  time of the call, the thread shall be suspended until one or more becomes 
+
+ *  Test that the sigwait() function. If no signal in 'set' is pending at the
+ *  time of the call, the thread shall be suspended until one or more becomes
  *  pending.
  *  1)  Block a signal from delivery.
  *  2)  Call sigwait()
  *  3)  Raise the signal.
  *  4)  Verify this process will return when the signal is sent.
  */
-
 
 int main()
 {
@@ -94,7 +93,6 @@ int main()
 		printf("Signal SIGALRM is not pending!\n");
 		return PTS_FAIL;
 	}
-
 
 	/* If we get here, then the process was suspended until
 	 * SIGALRM was raised.  */

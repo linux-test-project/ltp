@@ -104,6 +104,5 @@ int main(int argc, char *argv[])
 			touch_memory();
 	};
 
-	return 0;
+	tst_exit();
 }
-

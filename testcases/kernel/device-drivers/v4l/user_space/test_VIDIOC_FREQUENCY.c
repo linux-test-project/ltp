@@ -233,7 +233,6 @@ void test_VIDIOC_S_FREQUENCY() {
 
 		}
 
-
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
 		CU_ASSERT_EQUAL(errno_get, EINVAL);
@@ -711,7 +710,7 @@ void test_VIDIOC_S_FREQUENCY_NULL() {
 	dprintf("\t%s:%u: VIDIOC_S_FREQUENCY, ret_null=%i, errno_null=%i\n",
 		__FILE__, __LINE__, ret_null, errno_null);
 
-	/* Check whether any of VIDIOC_S_FREQUENCY or VIDIOC_G_FREQUENCY 
+	/* Check whether any of VIDIOC_S_FREQUENCY or VIDIOC_G_FREQUENCY
 	 * is supported at all or not
 	 */
 	if (ret_get == 0 || ret_set == 0) {

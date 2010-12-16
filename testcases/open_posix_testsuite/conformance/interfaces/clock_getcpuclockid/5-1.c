@@ -1,4 +1,4 @@
-/*   
+/*
  * Copyright (c) 2010, Garrett Cooper.
  *
  * The clock_getcpuclockid() function shall fail and return EPERM if the
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	clockid_t clockid_1;
 	int error;
 
-	/* 
+	/*
 	 * Do a best effort at trying to get root demoted to "nobody" for the
 	 * duration of the test.
 	 */

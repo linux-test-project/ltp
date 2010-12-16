@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +37,7 @@
 //Other define
 #define NBCASE 3
 
-typedef struct 
+typedef struct
 {
 	int init_tout;
 	int next_tout;
@@ -54,7 +54,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -67,7 +67,7 @@ int main(int argn, char *argc[])
 	int i;
 	int progNum = atoi(argc[2]);
 	params paramList[NBCASE];
-	
+
 	//Test initialization
 	paramList[0].init_tout = 1;
 	paramList[0].next_tout = 1;
@@ -75,8 +75,7 @@ int main(int argn, char *argc[])
 	paramList[1].next_tout = 10;
 	paramList[2].init_tout = 1000;
 	paramList[2].next_tout = 1000;
-	
-	
+
 	//Call tested function using all tests cases
 	for (i = 0; i < NBCASE; i++)
 	{
@@ -87,13 +86,13 @@ int main(int argn, char *argc[])
 			printf("%d", paramList[i].next_tout);
 			printf("\n");
 		}
-		
+
 		//Call function
 		rslt = rpc_broadcast_exp(progNum, VERSNUM, PROCNUM,
 						  		 (xdrproc_t)xdr_int, (char *)&sndVar,
 						  		 (xdrproc_t)xdr_int, (char *)&recVar,
 						  		 (resultproc_t)eachresult, paramList[i].init_tout, paramList[i].next_tout, nettype);
-						  
+
 		//Check result
 		if (rslt != RPC_TIMEDOUT)
 		{
@@ -102,10 +101,10 @@ int main(int argn, char *argc[])
 			break;
 		}/**/
 	}
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

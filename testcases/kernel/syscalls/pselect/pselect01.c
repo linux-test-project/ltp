@@ -108,7 +108,7 @@ int main()
 			    NULL);
 		clock_gettime(CLOCK_REALTIME, &tv_end);
 
-		real_sec = (0.5 + (tv_end.tv_sec - tv_start.tv_sec + 
+		real_sec = (0.5 + (tv_end.tv_sec - tv_start.tv_sec +
 			    1e-9 * (tv_end.tv_nsec - tv_start.tv_nsec)));
 		if (abs(real_sec - total_sec) < 0.2 * total_sec)
 			tst_resm(TPASS, "Sleep time was correct "
@@ -157,7 +157,7 @@ int main()
 		}
 	}
 	cleanup();
-	return 0;
+
 }
 
 /***************************************************************
@@ -165,15 +165,14 @@ int main()
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* create temporary directory */
 	tst_tmpdir();
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -187,9 +186,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove temporary test directory */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

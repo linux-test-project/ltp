@@ -30,4 +30,3 @@ int main()
 	printf("be implementation defined.\n");
 	return PTS_UNTESTED;
 }
-

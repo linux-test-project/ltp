@@ -9,8 +9,8 @@
  * TEST3: On a listening socket
  * TEST4: On a closed association
  * TEST5: Invalid message address
- * TEST6: send from client to server 
- * TEST7: send from server to client 
+ * TEST6: send from client to server
+ * TEST7: send from server to client
  * TEST8: sending partial data from a buffer
  *
  * The SCTP reference implementation is free software;
@@ -101,7 +101,7 @@ main(int argc, char *argv[])
         test_listen(lstn_sk, 10);
 
 	len = sizeof(struct sockaddr_in);
-	
+
 	test_connect(sk, (struct sockaddr *) &conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
@@ -116,7 +116,7 @@ main(int argc, char *argv[])
 			 "descriptor count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() with a bad socket descriptor - EBADF");
-	
+
 	/*send () TEST2: Invalid socket, ENOTSOCK Expected error*/
 	count = send(0, message, len_snd, flag);
 	if (count != -1 || errno != ENOTSOCK)
@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 #endif
 
 	test_connect(sk1, (struct sockaddr *) &lstn_addr, len);
-		 
+
 	count = test_send(sk1, message, len_snd, flag);
 
 	close(sk1);
@@ -184,7 +184,7 @@ main(int argc, char *argv[])
 	test_connect(sk, (struct sockaddr *) &conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
-	
+
 	msg_count = strlen(message) + 1;
 
 	/*send() TEST6: Sending data from client socket to server socket*/
@@ -213,7 +213,7 @@ main(int argc, char *argv[])
 	/*Sending only 5 bytes so that only hello is received*/
 	test_send(sk, message, 5 , flag);
 	test_recv(acpt_sk, message_rcv, 5, flag);
-	
+
 	tst_resm(TPASS, "send() partial data from a buffer - SUCCESS");
 
 	/* TEST9: sctp_send with no sinfo */
@@ -225,5 +225,5 @@ main(int argc, char *argv[])
 	close(lstn_sk);
 	close(acpt_sk);
 
-	return 0;
+	tst_exit();
 }

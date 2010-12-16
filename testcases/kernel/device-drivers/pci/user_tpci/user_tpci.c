@@ -61,7 +61,6 @@ tpciopen() {
         }
     }
 
-
     /*
      * Check for the /dev/tbase node, and create if it does not
      * exist.
@@ -123,7 +122,6 @@ int main() {
 		printf("Test PCI Driver may not be loaded\n");
 		exit(1);
 	}
-
 
 	/* test find pci */
 	if (ki_generic(tpci_fd, PCI_PROBE)) {
@@ -242,12 +240,11 @@ int main() {
 	else
 		printf("Device has tested capability\n");
 
-
 	rc = tpciclose();
 	if (rc) {
                 printf("Test PCI Driver may not be closed\n");
                 exit(1);
         }
 
-	return 0;
+	tst_exit();
 }

@@ -361,7 +361,6 @@ int main(int argc, char *argv[])
 	if ((nl_sd = create_nl_socket(NETLINK_GENERIC)) < 0)
 		err(1, "error creating Netlink socket\n");
 
-
 	mypid = getpid();
 	id = get_family_id(nl_sd);
 	if (!id) {
@@ -440,7 +439,6 @@ int main(int argc, char *argv[])
 
 		PRINTF("nlmsghdr size=%zu, nlmsg_len=%d, rep_len=%d\n",
 			sizeof(struct nlmsghdr), msg.n.nlmsg_len, rep_len);
-
 
 		rep_len = GENLMSG_PAYLOAD(&msg.n);
 
@@ -524,7 +522,7 @@ done:
 		close(fd);
 	if (cfd)
 		close(cfd);
-	return 0;
+	tst_exit();
 }
 #else
 int main (void) {

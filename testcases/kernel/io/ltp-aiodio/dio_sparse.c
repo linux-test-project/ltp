@@ -200,7 +200,6 @@ void dio_sparse(char *filename, int align, int writesize, int filesize)
 	);
 }
 
-
 void dirty_freeblocks(int size)
 {
 	int fd;
@@ -388,7 +387,7 @@ int main(int argc, char **argv)
 			children_errors);
 	if (children_errors)
 		exit(10);
-	return 0;
+	tst_exit();
 }
 
 static void setup(void)

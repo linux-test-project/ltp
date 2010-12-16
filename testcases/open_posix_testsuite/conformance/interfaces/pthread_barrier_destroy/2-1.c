@@ -1,7 +1,7 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * pthread_barrier_destroy()
@@ -31,20 +31,20 @@
 #include "posixtest.h"
 
 static pthread_barrier_t barrier;
-static int thread_state; 
+static int thread_state;
 #define NOT_CREATED_THREAD 1
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
 static void* fn_chld(void *arg)
-{ 
+{
 	int rc = 0;
 
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	thread_state = ENTERED_THREAD;
 
-	/* Child should block here */	
+	/* Child should block here */
 	printf("child: barrier wait\n");
 	rc = pthread_barrier_wait(&barrier);
 	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
@@ -52,12 +52,12 @@ static void* fn_chld(void *arg)
 		printf("Error: child: pthread_barrier_wait() get unexpected "
 			"return code : %d\n" , rc);
 		exit(PTS_UNRESOLVED);
-	} 
+	}
 	else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		printf("child: get PTHREAD_BARRIER_SERIAL_THREAD\n");
 	}
-	
+
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);
 	return NULL;
@@ -68,7 +68,7 @@ int main()
 	int cnt = 0;
 	int rc;
 	pthread_t child_thread;
-	
+
 	printf("main: Initialize barrier with count = 2\n");
 	if (pthread_barrier_init(&barrier, NULL, 2) != 0)
 	{
@@ -83,13 +83,13 @@ int main()
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Expect the child to block*/
 	cnt = 0;
 	do{
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 2); 
-	
+	}while (thread_state !=EXITING_THREAD && cnt++ < 2);
+
 	if (thread_state == EXITING_THREAD)
 	{
 		/* child thread did not block */
@@ -106,7 +106,7 @@ int main()
 	printf("main: destroy barrier while child is waiting\n");
 
 	rc = pthread_barrier_destroy(&barrier);
-	
+
 	if (rc == EBUSY)
 	{
 		printf("main: correctly got EBUSY\n");
@@ -117,9 +117,9 @@ int main()
 		printf("main: got return code: %d, %s\n", rc, strerror(rc));
 		printf("Test PASSED: Note*: Expected EBUSY, but standard says 'may' fail.\n");
 	}
-	
+
 	/* Cleanup (cancel thread in case it is still blocking */
 	pthread_cancel(child_thread);
-	
+
 	return PTS_PASS;
 }

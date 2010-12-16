@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_attr_init()
@@ -11,7 +11,7 @@
  * Steps:
  * 1.  Initialize a pthread_attr_t object using pthread_attr_init()
  * 2.  ENOMEM is the only error it returns, so if it doesn't return that error,
- *     the return number should be 0. 
+ *     the return number should be 0.
  */
 
 #include <pthread.h>
@@ -39,9 +39,9 @@ int main()
 	}
 
 	/* Any other return value other than 0 or ENOMEM, means the test
-	 * failed, because those are the only 2 return values for this 
+	 * failed, because those are the only 2 return values for this
 	 * function. */
-	else 
+	else
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

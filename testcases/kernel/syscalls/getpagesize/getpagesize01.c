@@ -71,7 +71,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Call getpagesize(2) */
@@ -103,20 +102,19 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	tst_exit();
-}				/* End main */
+
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -129,4 +127,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-}				/* End cleanup() */
+}

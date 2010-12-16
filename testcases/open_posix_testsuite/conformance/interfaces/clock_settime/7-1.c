@@ -1,17 +1,17 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * Test that if clock_settime() changes the time for CLOCK_REALTIME, 
- * then any threads blocked on clock_nanosleep() for the CLOCK_REALTIME 
+ * Test that if clock_settime() changes the time for CLOCK_REALTIME,
+ * then any threads blocked on clock_nanosleep() for the CLOCK_REALTIME
  * clock will use the new time for expiration.
  *
  * Steps:
  * - get time T0
- * - in child:  set clock_nanosleep() to sleep until time 
+ * - in child:  set clock_nanosleep() to sleep until time
  *   T1 = T0 + SLEEPOFFSET
  * - in parent:  sleep SMALLTIME (< SLEEPOFFSET)
  * - in parent:  set time back to T0

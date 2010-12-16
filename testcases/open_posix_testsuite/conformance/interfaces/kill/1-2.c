@@ -5,18 +5,18 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *  Test that the kill() function shall send signal sig to the process
  *  specified by pid when the process specified by pid is not the calling
  *  process.
  *  1) Fork a child process.
- *  2) In the parent process, call kill with signal SIGTOTEST for the 
+ *  2) In the parent process, call kill with signal SIGTOTEST for the
  *     pid of the child.
  *  In the child,
  *    3) Wait for signal SIGTOTEST.
@@ -62,11 +62,11 @@ int main()
 
 		if (0 != sigwait(&set, &sig)) {
 			printf("Sigwait did not return 0. Possible problem with sigwait function\n");
-			return 0; /* FAIL */
+			tst_exit(); /* FAIL */
 		}
 
 		if (sig != SIGTOTEST)
-			return 0; /* FAIL */
+			tst_exit(); /* FAIL */
 
 		return 1;
 	} else {
@@ -99,4 +99,3 @@ int main()
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
-

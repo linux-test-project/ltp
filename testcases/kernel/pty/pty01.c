@@ -39,12 +39,10 @@
 #include "test.h"
 #include "usctest.h"
 
-
 char *TCID="pty01";            /* Test program identifier.    */
 int TST_TOTAL=5;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
-
 
 /*
  * pty master clone device
@@ -70,7 +68,6 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
  * number of procs for parallel test
  */
 #define NUMPROCS 15
-
 
 /*
  * test slave locking
@@ -284,7 +281,7 @@ test3(void)
 /*
  * test multiple opens on slave side of pty
  */
-static void 
+static void
 test4(void)
 {
 	int masterfd;		/* master pty fd */
@@ -355,7 +352,7 @@ test4(void)
 /*
  * test opening/closing lots of ptys in parallel.  We may run out
  * of ptys for this test depending on how the system is configured,
- * but that's not a fatal error. 
+ * but that's not a fatal error.
  */
 static void
 test5(void)
@@ -407,7 +404,7 @@ test5(void)
 	}
 	tst_resm(TPASS, "test5");
 }
-	
+
 /*
  * main test driver
  */

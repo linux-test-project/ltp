@@ -62,7 +62,6 @@
 #include <signal.h>
 #include <limits.h>
 
-
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
@@ -72,7 +71,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -88,7 +87,7 @@ void sighandler(int sig)
 {
 	if (sig == SIGINT)
 		return;
-	
+
 	return;
 }
 
@@ -111,12 +110,11 @@ void sighandler(int sig)
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
 }
-
 
 /* Local  Functions */
 /******************************************************************************/
@@ -146,7 +144,6 @@ void setup() {
 	tst_tmpdir();
 }
 
-
 /*
  * Macros
  */
@@ -161,7 +158,6 @@ enum test_type {
 	EMPTY_QUEUE,
 	SEND_SIGINT,
 };
-
 
 /*
  * Data Structure
@@ -291,9 +287,6 @@ static struct test_case tcase[] = {
 	},
 };
 
-
-
-
 #define MEM_LENGTH	      (4 * 1024 * 1024)
 /*
  * do_test()
@@ -420,7 +413,6 @@ static int do_test(struct test_case *tc)
 			}
 	}
 
-
 	TEST_END:
 	/*
 	 * Check results
@@ -445,8 +437,6 @@ EXIT:
  * main()
  */
 
-
-
 int main(int ac, char **av) {
 	int result = RESULT_OK;
 <<<<<<< HEAD
@@ -460,7 +450,6 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -514,7 +503,6 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -526,15 +514,14 @@ int main(int ac, char **av) {
                 		        break;
 		                default:
                 		        usage(progname);
-                        		
+
                 		}
 		        }
-
 
 		if (ac != optind) {
         	        tst_resm(TINFO,"Options are not match.");
                 	usage(progname);
-                	
+
 	        }
 
 		/*

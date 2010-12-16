@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive test plan:
- * If message can be removed from message queue immediately, 
+ * If message can be removed from message queue immediately,
  * mq_timedreceive will never fail with a timeout.
  */
 
@@ -84,4 +84,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

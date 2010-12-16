@@ -64,7 +64,7 @@
  *	-p   : Pause for SIGUSR1 before starting
  *	-P x : Pause for x seconds between iterations.
  *	-t   : Turn on syscall timing.
- *	
+ *
  *RESTRICTIONS: None
  *****************************************************************************/
 #include <errno.h>
@@ -121,13 +121,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -153,7 +150,7 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}		/*End of TEST LOOPS */
-	}			/* End of TEST_LOOPING */
+	}
 
 	/*Clean up and exit */
 	cleanup();
@@ -164,13 +161,12 @@ int main(int ac, char **av)
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	dev_num[0] = -1;
@@ -193,7 +189,7 @@ void setup()
 			 "invoking ustat(2)");
 	}
 	dev_num[1] = buf->st_dev;
-}				/* End setup() */
+}
 
 /*
 * cleanup() - Performs one time cleanup for this test at
@@ -209,6 +205,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

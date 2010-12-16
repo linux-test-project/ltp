@@ -285,7 +285,6 @@ static void do_get_formats(enum v4l2_buf_type type) {
 					dprintf1(" }}\n");
 				}
 
-
 				/* TODO: check different fields */
 				//CU_ASSERT_EQUAL(format.fmt.win.w.left, ???);
 				//CU_ASSERT_EQUAL(format.fmt.win.w.top, ???);
@@ -508,7 +507,7 @@ static void do_get_format_invalid(enum v4l2_buf_type type) {
 void test_VIDIOC_G_FMT_invalid_type() {
 	int i;
 
-	/* In this test case the .index is valid (0) and only the .type 
+	/* In this test case the .index is valid (0) and only the .type
 	 * is invalid. The .type filed is an enum which is stored in an 'int'.
 	 */
 
@@ -1335,7 +1334,6 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 				CU_ASSERT_EQUAL(errno_max, EINVAL);
 			}
 
-
 			memset(&format_min, 0, sizeof(format_min));
 			format_min.type = type;
 			format_min.fmt.pix.pixelformat = fmtdesc.pixelformat;
@@ -1389,7 +1387,7 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 
 	dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_set=%i, errno_set=%i\n",
 		__FILE__, __LINE__, format_orig.type, ret_set, errno_set);
-		
+
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
 		CU_ASSERT_EQUAL(ret_set, 0);

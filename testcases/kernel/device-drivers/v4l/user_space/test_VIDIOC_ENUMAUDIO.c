@@ -138,7 +138,6 @@ void test_VIDIOC_ENUMAUDIO_S32_MAX_1() {
 	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
 }
 
-
 void test_VIDIOC_ENUMAUDIO_U32_MAX() {
 	int ret_enum, errno_enum;
 	struct v4l2_audio audio;

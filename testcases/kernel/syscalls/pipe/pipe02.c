@@ -153,8 +153,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }
 
 void catch_usr2(int sig)
@@ -190,10 +189,9 @@ void do_child()
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 }
@@ -210,6 +208,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -9,7 +9,7 @@
  *
  * Test that the header defines the PROT_READ protection option.
  *
- * @pt:MF 
+ * @pt:MF
  * @pt:SHM
  * @pt:ADV
  */
@@ -19,4 +19,3 @@
 #ifndef PROT_READ
 #error PROT_READ not defined
 #endif
-

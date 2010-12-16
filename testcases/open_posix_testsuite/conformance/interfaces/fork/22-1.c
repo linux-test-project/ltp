@@ -14,7 +14,6 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertion:
 *
 * The CPU-time clock of the new process/ new process's thread is initialized to 0.
@@ -41,27 +40,27 @@
 #include <sys/wait.h>
  #include <errno.h>
 
-#include <time.h> 
+#include <time.h>
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c" 
+ #include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
+ * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -148,7 +147,6 @@ int main(int argc, char * argv[])
 		while (tp.tv_sec < 1);
 	}
 
-
 	/* Create the child */
 	child = fork();
 
@@ -221,7 +219,6 @@ int main(int argc, char * argv[])
 		FAILED("Child exited abnormally");
 	}
 
-
 	/* Test passed */
 #if VERBOSE > 0
 	output("Test passed\n");
@@ -229,4 +226,3 @@ int main(int argc, char * argv[])
 #endif
 	PASSED;
 }
-

@@ -59,7 +59,6 @@ tusbopen() {
         }
     }
 
-
     /*
      * Check for the /dev/tbase node, and create if it does not
      * exist.
@@ -115,7 +114,6 @@ tusbclose() {
 	return 0;
 }
 
-
 int main() {
 	int 	rc = 0;
 
@@ -165,6 +163,5 @@ int main() {
 
 	tusbclose();
 
-	return 0;
+	tst_exit();
 }
-

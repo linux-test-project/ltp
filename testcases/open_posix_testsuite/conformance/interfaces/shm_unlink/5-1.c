@@ -9,9 +9,8 @@
  *
  * Test that the reuse of the name subsequently causes shm_open() to
  * create a new shared memory object if O_CREAT is set even if the object
- * continues to exist after the last shm_unlink(), 
+ * continues to exist after the last shm_unlink(),
  */
-
 
 #include <stdio.h>
 #include <sys/mman.h>
@@ -22,10 +21,9 @@
 
 #define SHM_NAME "posixtest_5-1"
 
-
 int main() {
 	int fd;
-	
+
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
@@ -49,5 +47,5 @@ int main() {
 	printf("Test PASSED\n");
 	shm_unlink(SHM_NAME);
 	return PTS_PASS;
-	
+
 }

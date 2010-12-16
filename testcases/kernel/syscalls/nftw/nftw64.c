@@ -714,7 +714,6 @@ void setup()
 	/* Switch to "nobody" */
 	setuid(ltpuser->pw_uid);
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 }
 

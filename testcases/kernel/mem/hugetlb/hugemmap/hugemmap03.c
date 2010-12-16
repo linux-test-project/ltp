@@ -80,7 +80,7 @@ main(int ac, char **av)
 #if __WORDSIZE==32  /* 32-bit compiled */
       	tst_resm(TCONF,"This test is only for 64bit");
 	tst_exit();
-       	
+
        	return 1;
 #else	/* 64-bit compiled */
 	int lc;			/* loop counter */
@@ -104,10 +104,8 @@ main(int ac, char **av)
 		tst_exit();
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 	        /* Creat a temporary file used for huge mapping */
@@ -116,8 +114,7 @@ main(int ac, char **av)
 				 "open() on %s Failed, errno=%d : %s",
 				 TEMPFILE, errno, strerror(errno));
 		}
-	
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count=0;
 
 		/* Attempt to mmap using normal pages and a high memory address */
@@ -134,15 +131,13 @@ main(int ac, char **av)
 		}
 
 		close(fildes);
-	}	/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	
 	return 1;
 #endif
-}	/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -163,14 +158,11 @@ setup()
 	TEMPFILE=strcat(mypid,TEMPFILE);
 	TEMPFILE=strcat(Hopt,TEMPFILE);
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 }
-
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -187,6 +179,4 @@ cleanup()
 
 	unlink(TEMPFILE);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

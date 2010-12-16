@@ -105,13 +105,12 @@ static int tagp_close(struct inode *ino, struct file *f) {
         return 0;
 }
 
-
 /*
  * tagp_ioctl:
  *      a user space program can drive the test functions
  *      through a call to ioctl once the correct file
  *      descriptor has been attained
- * 
+ *
  * 	in user space the file descriptor that you attain
  * 	will represent the inode and file pointers in
  * 	the kernel ioctl function, and only 3 variables
@@ -168,7 +167,6 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
                 }
         }
 
-
 	/*
 	 * Use a switch statement to determine which function
 	 * to call, based on the cmd flag that is specified
@@ -176,7 +174,7 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
 	 * needed
 	 *
 	 */
- 	switch(cmd) {	
+ 	switch(cmd) {
 		case TEST_PCI_FIND_DEV: 		rc = test_pci_find_device();break;
 		case TEST_BACKEND_ACQUIRE:		rc = test_agp_backend_acquire();break;
 		case TEST_BACKEND_RELEASE:		rc = test_agp_backend_release();break;
@@ -197,7 +195,7 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
 		case TEST_ENABLE:			rc = test_agp_enable();break;
 		case TEST_GLOBAL_CACHE_FLUSH:		rc = test_global_cache_flush();break;
 		case TEST_GENERIC_MASK_MEMORY:		rc = test_agp_generic_mask_memory();break;
-		
+
 		default:
 			printk("Mismatching ioctl command\n");
                         break;
@@ -253,10 +251,9 @@ static struct aper_size_info_fixed test_core_agp_sizes[] =
 	{ 0, 0, 0 },
 };
 
-
 static int test_fetch_size(void)
 {
-	printk("<1> tagp : Enter test fetch size\n");	
+	printk("<1> tagp : Enter test fetch size\n");
 	return 0;
 
 }
@@ -549,7 +546,7 @@ static int test_pci_find_device()
 	if (pdev)
 	{
 		printk("<1> tagp : pci find device success\n");
-	
+
 		u8 cap_ptr;
 
 		cap_ptr = pci_find_capability(pdev, PCI_CAP_ID_AGP);
@@ -580,15 +577,9 @@ static int test_pci_find_device()
 		printk("<1> tagp : agp set drvdata  success\n");
 		return agp_add_bridge(bridge);
 	}
-	
-
-
 
 	return 1;
 }
-
-
-
 
 static int __init agp_test_probe(struct pci_dev *pdev,
 				  const struct pci_device_id *ent)
@@ -628,7 +619,6 @@ static struct pci_driver agp_test_pci_driver = {
 	.probe		= agp_test_probe,
 	.remove		= agp_test_remove,
 };
-
 
 /*
  * tagp_init_module
@@ -681,7 +671,6 @@ static void __exit tagp_exit_module(void) {
 
 	pci_unregister_driver(&agp_test_pci_driver);
 }
-
 
 /* specify what that init is run when the module is first
 loaded and that exit is run when it is removed */

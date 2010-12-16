@@ -9,7 +9,7 @@
  *
  * Test that the FD_CLOEXEC file descriptor flag associated with the new file
  * descriptor is set
- * 
+ *
  * The test use fstat to check the flag.
  */
 
@@ -29,7 +29,7 @@ int main() {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	flags = fcntl(fd, F_GETFD);
 	if (flags == -1) {
 		perror("An error occurs when calling fcntl()");
@@ -46,4 +46,3 @@ int main() {
 	printf("shm_open() does not set the FD_CLOEXEC flags.\n");
 	return PTS_FAIL;
 }
-       

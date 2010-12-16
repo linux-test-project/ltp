@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 	if ((msg =
 	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
     /***************************************************************
@@ -143,7 +143,6 @@ int main(int argc, char **argv)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -416,25 +415,23 @@ int main(int argc, char **argv)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -471,7 +468,7 @@ void setup()
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
 #endif
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -501,6 +498,5 @@ void cleanup()
 	/*
 	 * Exit with a return value appropriate for the results.
 	 */
-	tst_exit();
 
-}				/* End cleanup() */
+}

@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  * Test that parameter CLOCK_REALTIME returns seconds since the
  * Epoch.  (This test is similar to other tests written, but rewritten
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
 	if (clock_gettime(CLOCK_REALTIME, &tpundertest) == 0) {
 		if (gettimeofday(&tvstandard, NULL) == 0) {
-			delta = (int) tvstandard.tv_sec - 
+			delta = (int) tvstandard.tv_sec -
 				(int) tpundertest.tv_sec;
 			if (abs(delta) <= ACCEPTABLEDELTA) {
 				printf("Test PASSED\n");

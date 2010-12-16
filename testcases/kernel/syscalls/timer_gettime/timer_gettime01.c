@@ -54,7 +54,7 @@
 typedef int kernel_timer_t;
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -81,11 +81,10 @@ int  TST_TOTAL = 3;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
-	/* Exit with appropriate return code. */
-	tst_exit();
+
 }
 
 /* Local  Functions */
@@ -121,8 +120,6 @@ char tmpname[40];
 int parent;
 int block = 1;
 
-
-
 int main(int ac, char **av) {
 	int lc;                 /* loop counter */
 	char *msg;              /* message returned from parse_opts */
@@ -137,7 +134,6 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {

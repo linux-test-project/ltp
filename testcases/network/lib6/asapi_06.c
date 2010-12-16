@@ -98,9 +98,9 @@ main(int argc, char *argv[])
 		do_tests();
 
 	cleanup();
-	
-	return(0);
-}	/* End main */
+
+	tst_exit();
+}
 
 #define NH_TEST	0x9f
 
@@ -295,7 +295,7 @@ so_test(struct soent *psoe)
 			psoe->so_tname);
 		return;
 	}
-	if (psoe->so_clear || sr < 0) { 
+	if (psoe->so_clear || sr < 0) {
 		if (sr <  0)
 			close(sr);
 		sr = socket(PF_INET6, SOCK_RAW, NH_TEST);
@@ -510,7 +510,7 @@ int getsock(char *tname, struct sockaddr_in6 *psin6_arg, int scope)
 			intfstr = " on ifindex";
 		else
 			intfstr = 0;
-	
+
 		if (intfstr)
 			tst_resm(TBROK, "%s: getsock : no%s addresses%s %d",
 				tname, scopestr, intfstr, ifindex);
@@ -632,7 +632,6 @@ do_tests(void)
 #endif /* notyet - see test_pktinfo() comment above */
 }
 
-
 void
 setup(void)
 {
@@ -643,5 +642,5 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
+
 }

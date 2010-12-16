@@ -52,7 +52,6 @@
 #include   <stdlib.h>
 #include   "sched.h"
 
-
 /*
  * Defines:
  *
@@ -86,7 +85,6 @@
 void parse_args (int, char **);
 void read_raw_device ();
 
-
 /*
  * Global variables:
  *
@@ -101,7 +99,6 @@ int	debug     = 0;
 int 	priority  = DEFAULT_PRIORITY;
 char	*logfile  = DEFAULT_LOGFILE;
 char 	*priority_type = DEFAULT_PRIORITY_TYPE;
-
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -163,14 +160,13 @@ int main (int argc, char **argv)
 
 	if (fclose (statfile) < 0)
 		sys_error ("fclose failed", __FILE__, __LINE__);
-  
+
 	/*
 	 * Exit with success!
 	 */
 	if (verbose) printf ("\nsuccessful!\n");
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                          read_raw_device ()                          |
@@ -224,7 +220,6 @@ void read_raw_device()
 	if (close (fd) < 0)
 		sys_error ("close failed", __FILE__, __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |

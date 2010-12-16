@@ -127,7 +127,7 @@ int TST_TOTAL;			/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char Path[1024];		/* path to create */
-int i;				/* counter for test case loop */
+int i;
 int tcases[] = {		/* modes to give nodes created (1 per text case) */
 	S_IFREG | 0777,		/* ordinary file with mode 0777 */
 	S_IFIFO | 0777,		/* fifo special with mode 0777 */
@@ -175,7 +175,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -216,25 +215,24 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+	tst_exit();
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temp dir and cd to it */
@@ -246,7 +244,7 @@ void setup()
 
 	/* build a temp node name to bre created my mknod */
 	sprintf(Path, "./tnode_%d", getpid());
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -260,9 +258,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove files and temp dir */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

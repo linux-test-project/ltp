@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive test plan:
- * mq_timedreceive will return EMSGSIZE when msg_len is less than the 
+ * mq_timedreceive will return EMSGSIZE when msg_len is less than the
  * message size attribute of the message queue.
  */
 
@@ -88,4 +88,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

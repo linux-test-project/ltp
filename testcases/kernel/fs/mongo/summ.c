@@ -6,7 +6,7 @@
 #include <stdlib.h>
 char str[100];
 
-int main(int argc, char **argv) {   
+int main(int argc, char **argv) {
 char c, *p;
 int sum=0, n=0;
 

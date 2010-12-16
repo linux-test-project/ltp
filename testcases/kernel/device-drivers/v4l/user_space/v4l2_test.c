@@ -94,7 +94,6 @@
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
 
-
 static CU_TestInfo suite_querycap[] = {
   { "VIDIOC_QUERYCAP", test_VIDIOC_QUERYCAP },
 
@@ -231,16 +230,16 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_CTRL, gain control with invalid value parameter", test_VIDIOC_S_CTRL_gain_invalid },
 
   { "VIDIOC_G_EXT_CTRLS with zero items to get", test_VIDIOC_G_EXT_CTRLS_zero },
-  { "VIDIOC_G_EXT_CTRLS with zero items to get, but with invalid count values", 
+  { "VIDIOC_G_EXT_CTRLS with zero items to get, but with invalid count values",
 	test_VIDIOC_G_EXT_CTRLS_zero_invalid_count },
   { "VIDIOC_G_EXT_CTRLS with only one item to get", test_VIDIOC_G_EXT_CTRLS_one },
 
   { "VIDIOC_S_EXT_CTRLS with zero items to set", test_VIDIOC_S_EXT_CTRLS_zero },
-  { "VIDIOC_S_EXT_CTRLS with zero items to set, but with invalid count values", 
+  { "VIDIOC_S_EXT_CTRLS with zero items to set, but with invalid count values",
 	test_VIDIOC_S_EXT_CTRLS_zero_invalid_count },
 
   { "VIDIOC_TRY_EXT_CTRLS with zero items to try", test_VIDIOC_TRY_EXT_CTRLS_zero },
-  { "VIDIOC_TRY_EXT_CTRLS with zero items to try, but with invalid count values", 
+  { "VIDIOC_TRY_EXT_CTRLS with zero items to try, but with invalid count values",
 	test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count },
 
   { "VIDIOC_G_PARM", test_VIDIOC_G_PARM },
@@ -364,8 +363,6 @@ static CU_TestInfo suite_null_writeread[] = {
   CU_TEST_INFO_NULL,
 };
 
-
-
 static CU_TestInfo suite_invalid_ioctl[] = {
   { "invalid ioctl _IO(0, 0)", test_invalid_ioctl_1 },
   { "invalid ioctl _IO(0xFF, 0xFF)", test_invalid_ioctl_2 },
@@ -421,5 +418,5 @@ int main() {
 
 	CU_cleanup_registry();
 
-	return 0;
+	tst_exit();
 }

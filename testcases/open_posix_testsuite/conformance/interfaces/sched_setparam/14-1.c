@@ -11,7 +11,7 @@
  * sched_ss_init_budget members of the param argument have no effect on the
  * scheduling behavior if the scheduling policy of the target process is either
  * SCHED_FIFO or SCHED_RR.
- 
+
  *
  * @pt:SS
  */

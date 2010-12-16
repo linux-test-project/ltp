@@ -69,8 +69,6 @@ void cleanup()
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 int max_pid()
 {
@@ -155,10 +153,8 @@ int create_nested_container(void *vtest)
 	close(fd[1]);
 	pause();
 
-	/* NOT REACHED */
 	return 0;
 }
-
 
 void kill_nested_containers()
 {
@@ -195,7 +191,6 @@ void kill_nested_containers()
 		waitpid(pids[i], &status, 0);
 	}
 }
-
 
 /***********************************************************************
 *   M A I N
@@ -250,7 +245,5 @@ int main(int argc, char *argv[])
 	/* cleanup and exit */
 	cleanup();
 
-	
-	return 0;
+	tst_exit();
 }
-

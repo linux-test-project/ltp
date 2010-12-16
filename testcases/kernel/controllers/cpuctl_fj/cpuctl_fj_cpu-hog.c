@@ -65,5 +65,5 @@ int main(void)
 		f = sqrt(f * f);
 	}
 
-	return 0;
+	tst_exit();
 }

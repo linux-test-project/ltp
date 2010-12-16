@@ -126,7 +126,7 @@ int Access_verify(int, int);	/*
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
-	int ind;		/* counter for testcase looping */
+	int ind;
 	char *msg;		/* message returned from parse_opts */
 	int fflag;		/* functionality flag variable */
 	int access_mode;	/* specified access mode for testfile */
@@ -141,15 +141,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
@@ -163,7 +161,6 @@ int main(int ac, char **av)
 			 */
 			TEST(access(file_name, access_mode));
 
-			/* check return code of access(2) */
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL|TTERRNO,
 					 "access(%s, %#o) failed",
@@ -192,13 +189,11 @@ int main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
-		}		/* Test Case Looping */
-	}			/* End for TEST_LOOPING */
+		}
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -209,9 +204,8 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int ind;		/* counter for testsetup functions */
+	int ind;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -222,10 +216,8 @@ void setup()
 	if (setuid(ltpuser->pw_uid) == -1)
 		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* call individual setup functions */
@@ -443,6 +435,4 @@ void cleanup()
 	 */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -500,7 +500,6 @@ void setup()
 
 	sigterm = sigusr1 = sigusr2 = 0;
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -526,6 +525,4 @@ void cleanup()
 		}
 	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

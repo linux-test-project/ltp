@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -9,8 +9,8 @@
  *
  *
  * Test that the policy and scheduling parameters remain unchanged when no
- * process can be found corresponding to that specified by pid. 
- * 
+ * process can be found corresponding to that specified by pid.
+ *
  * The test create a child process which exit immediately and call
  * sched_setscheduler with the pid of defunct child.
  * Steps:
@@ -36,7 +36,7 @@ int main() {
 	if (sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 	old_priority = param.sched_priority;
 
 	old_policy = sched_getscheduler(getpid());
@@ -68,7 +68,7 @@ int main() {
 		perror("An error occurs when calling wait()");
 		return PTS_UNRESOLVED;
         }
-        
+
         /* Assume the pid is not yet reatributed to an other process */
 	sched_setscheduler(child_pid, policy, &param);
 
@@ -82,9 +82,8 @@ int main() {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
-		
 
-	if (old_policy == new_policy && 
+	if (old_policy == new_policy &&
 	   old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

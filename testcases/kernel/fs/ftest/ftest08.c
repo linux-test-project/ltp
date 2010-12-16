@@ -114,7 +114,7 @@ int main(int ac, char *av[])
 	}
 
 	cleanup();
-	tst_exit();
+
 }
 
 static void init(void)
@@ -282,7 +282,7 @@ static void dotest(int testers, int me, int fd)
 		}
 
 		val0_iovec[i].iov_len = w_ioveclen;
-	
+
 		if (malloc((i+1)*8) == NULL) {
 			tst_resm(TBROK, "\tmalloc failed((i+1)*8)");
 			tst_exit();
@@ -515,4 +515,3 @@ void cleanup(void)
 
         tst_rmdir();
 }
-

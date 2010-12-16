@@ -251,7 +251,6 @@ void *threadedMain(void *vtest)
 	extern unsigned long glb_run;
 	extern int signal_action;
 
-
 	test->args->pid = GETPID();
 
 	init_gbl_data(test->env);
@@ -505,5 +504,5 @@ int main(int argc, char **argv)
     WSACleanup();
 #endif
 
-	return 0;
+	tst_exit();
 }

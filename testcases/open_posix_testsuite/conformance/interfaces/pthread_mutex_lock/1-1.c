@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_lock()
@@ -11,11 +11,11 @@
  *   available. This operation shall return with the mutex object referenced
  *   by 'mutex' in the locked state with the calling thread as its owner.
 
- * Steps: 
+ * Steps:
  *   -- Initialize a mutex to protect a global variable 'value'
- *   -- Create N threads. Each is looped M times to acquire the mutex, 
+ *   -- Create N threads. Each is looped M times to acquire the mutex,
  *      increase the value, and then release the mutex.
- *   -- Check if the value has increased properly (M*N); a broken mutex 
+ *   -- Check if the value has increased properly (M*N); a broken mutex
  *      implementation may cause lost augments.
  *
  */
@@ -44,7 +44,7 @@ int main()
 
   	pthread_attr_init(&pta);
   	pthread_attr_setdetachstate(&pta, PTHREAD_CREATE_JOINABLE);
-  
+
   	/* Create threads */
   	fprintf(stderr,"Creating %d threads\n", THREAD_NUM);
   	for (i=0; i<THREAD_NUM; ++i)
@@ -55,7 +55,7 @@ int main()
     		pthread_join(threads[i], NULL);
   	pthread_attr_destroy(&pta);
   	pthread_mutex_destroy(&mutex);
-  
+
   	/* Check if the final value is as expected */
   	if (value != (THREAD_NUM) * LOOPS) {
 	  	fprintf(stderr,"Using %d threads and each loops %d times\n", THREAD_NUM, LOOPS);
@@ -63,7 +63,7 @@ int main()
 		printf("Test FAILED\n");
 		return PTS_FAIL;
   	}
-	
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
@@ -74,9 +74,9 @@ void *f1(void *parm)
   	int   rc = 0;
   	pthread_t  self = pthread_self();
 
-	/* Loopd M times to acquire the mutex, increase the value, 
+	/* Loopd M times to acquire the mutex, increase the value,
 	   and then release the mutex. */
-	   
+
   	for (i=0; i<LOOPS; ++i) {
       		rc = pthread_mutex_lock(&mutex);
       		if (rc!=0) {

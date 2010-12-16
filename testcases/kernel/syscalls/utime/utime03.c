@@ -128,10 +128,9 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	/*
@@ -160,9 +159,8 @@ int main(int ac, char **av)
 
 		seteuid(user_uid);
 
-		/* Check looping state if -i option given */
 		for (lc = 0; TEST_LOOPING(lc); lc++) {
-			/* Reset Tst_count in case we are looping. */
+
 			Tst_count = 0;
 
 			/*
@@ -171,7 +169,6 @@ int main(int ac, char **av)
 			 */
 			TEST(utime(TEMP_FILE, NULL));
 
-			/* check return code of utime(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
@@ -237,7 +234,7 @@ int main(int ac, char **av)
 				}
 			}
 			Tst_count++;	/* incr. TEST_LOOP counter */
-		}		/* End for TEST_LOOPING */
+		}
 	} else {
 		waitpid(pid, &status, 0);
 		_exit(0);	/*
@@ -248,11 +245,10 @@ int main(int ac, char **av)
 				 * use during cleanup.
 				 */
 	}
-	/* Call cleanup() to undo setup done for the test. */
-	cleanup();
-	tst_exit();
 
-}				/* End main */
+	cleanup();
+
+}
 
 /*
  * void
@@ -267,7 +263,6 @@ void setup()
 	int fildes;		/* file handle for temp file */
 	char *tmpd = NULL;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Check that the test process id is not super/root  */
@@ -283,7 +278,6 @@ void setup()
 	 */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* get the name of the temporary directory */
@@ -349,7 +343,7 @@ void setup()
 	 */
 	sleep(2);		/* sleep(1) on IA64 sometimes sleeps < 1 sec!! */
 
-}				/* End setup() */
+}
 
 /*
  * void
@@ -366,9 +360,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

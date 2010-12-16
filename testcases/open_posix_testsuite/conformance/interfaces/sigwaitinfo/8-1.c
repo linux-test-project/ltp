@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  This program tests the assertion that if there aren't any more queued signals
@@ -13,7 +13,7 @@
  - Register for myhandler to be called when SIGTOTEST is called, and make
    sure SA_SIGINFO is set.
  - Block signal SIGTOTEST from the process.
- - Using sigqueue(), send NUMCALLS instances of SIGTOTEST to the current 
+ - Using sigqueue(), send NUMCALLS instances of SIGTOTEST to the current
    process.
  - Call sigwaitinfo() NUMCALLS times, and verify that the pending indication
    for signal SIGTOTEST has been reset.
@@ -54,7 +54,7 @@ int main()
 	sighold(SIGTOTEST);
 
 	for (i=NUMCALLS; i>0; i--) {
-		value.sival_int = i;	
+		value.sival_int = i;
 		if (sigqueue(pid, SIGTOTEST, value) != 0) {
 			printf("Test FAILED: call to sigqueue did not return success\n");
 			return PTS_FAIL;
@@ -63,7 +63,7 @@ int main()
 
         sigemptyset(&selectset);
         sigaddset(&selectset, SIGTOTEST);
- 
+
 	for (i=NUMCALLS; i>0; i--) {
 	        if (sigwaitinfo(&selectset, &info) != SIGTOTEST) {
 	                perror("sigwaitinfo() returned signal other than SIGTOTEST\n");

@@ -46,7 +46,7 @@
 #include "usctest.h"
 
 /* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -97,12 +97,10 @@ int  TST_TOTAL = 2;		/* total number of tests in this file.   */
 /*									      */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -327,7 +325,6 @@ static int do_test(struct test_case *tc) {
 		tst_resm(TINFO, "policy E:%d R:%d", tc->policy, policy);
 	}
 
-
 TEST_END:
 	/*
 	 * Check results
@@ -358,7 +355,7 @@ int main(int argc, char **argv) {
 		{ "help",  no_argument, 0, 'h' },
 		{ NULL, 0, NULL, 0 }
 	};
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 <<<<<<< HEAD
@@ -375,7 +372,6 @@ int main(int argc, char **argv) {
 
 	int lc, i, ret;		 /* loop counter */
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 
 		Tst_count = 0;
@@ -397,7 +393,7 @@ int main(int argc, char **argv) {
 				cleanup();
 				tst_exit();
 			}
-			
+
 			/*
 			 * Execute test
 			 */
@@ -416,7 +412,7 @@ int main(int argc, char **argv) {
 #else /* libnuma v2 */
 int main(void) {
 	tst_resm(TBROK, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
-	return 0;
+	tst_exit();
 }
 #endif
 #else /* no numaif.h // numa.h */

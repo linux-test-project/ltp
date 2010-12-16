@@ -55,7 +55,6 @@ int main()
     flags |= CLONE_NEWNS;
     flags |= CLONE_NEWNET;
 
-
     if (tst_kvercmp(2,6,19) < 0)
 	return 1;
 

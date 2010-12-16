@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <rpc/rpc.h>
@@ -67,33 +67,33 @@ int main(int argn, char *argc[])
 	SVCXPRT *transpTCP = NULL;
 	SVCXPRT *transpUDP = NULL;
 	//char *simplePing();
-	
+
 	//Initialization
 	pmap_unset(progNum, VERSNUM);
 	svc_unregister(progNum, VERSNUM);
-	
+
     //registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
     //    		simplePing, xdr_int, xdr_int);
     transpTCP = svctcp_create(RPC_ANYSOCK, 1000, 1000);
     transpUDP = svcudp_create(RPC_ANYSOCK);
-    
+
     if (run_mode)
     {
     	printf ("SVC TCP : %d\n", transpTCP);
     	printf ("SVC UDP : %d\n", transpUDP);
     }
-    
+
 	if (!svc_register(transpTCP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_TCP))
 	{
     	fprintf(stderr, "svc_register: error (TCP)\n");
     }
-    
+
     if (!svc_register(transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP))
 	{
     	fprintf(stderr, "svc_register: error (UDP)\n");
     }
-        		
-    svc_run();        
+
+    svc_run();
     fprintf(stderr, "Error: svc_run returned!\n");
     exit(1);
 }
@@ -121,7 +121,7 @@ char *svc_getcaller_test(union u_argument *inVar, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *intTestProc(union u_argument *in, SVCXPRT *transp) 
+char *intTestProc(union u_argument *in, SVCXPRT *transp)
 {
 	//printf("*** in intTestProc.\n");
 	//returns what received
@@ -131,7 +131,7 @@ char *intTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *lngTestProc(union u_argument *in, SVCXPRT *transp) 
+char *lngTestProc(union u_argument *in, SVCXPRT *transp)
 {
 	//printf("*** in lngTestProc.\n");
 	//returns what received
@@ -141,7 +141,7 @@ char *lngTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *dblTestProc(union u_argument *in, SVCXPRT *transp) 
+char *dblTestProc(union u_argument *in, SVCXPRT *transp)
 {
 	//printf("*** in dblTestProc.\n");
 	//returns what received
@@ -151,7 +151,7 @@ char *dblTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *strTestProc(union u_argument *in, SVCXPRT *transp) 
+char *strTestProc(union u_argument *in, SVCXPRT *transp)
 {
 	//printf("*** in strTestProc.\n");
 	//returns what received
@@ -161,21 +161,21 @@ char *strTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *svcGetargsProc(union u_argument *in, SVCXPRT *transp) 
+char *svcGetargsProc(union u_argument *in, SVCXPRT *transp)
 {
 	//printf("*** in svcGetargsProc.\n");
 	//returns what received inside this procedure : test svc_getargs function
 	union u_argument args;
-	
+
 	static char *result;
-	result = in->str;	
-	
+	result = in->str;
+
 	if ((svc_getargs(transp, (xdrproc_t)xdr_int, (char *)&args)) == FALSE)
 	{
 		svcerr_decode(transp);
 		return;
 	}
-	
+
 	//printf("%s\n", result);
 	return (char *)&result;
 }
@@ -189,13 +189,13 @@ void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
 	/*union {
 		int varIn;
 	} argument;*/
-	
-	char *result;            
-	xdrproc_t xdr_argument; 
-	xdrproc_t xdr_result;   
+
+	char *result;
+	xdrproc_t xdr_argument;
+	xdrproc_t xdr_result;
 	char *(*proc)(union u_argument *, SVCXPRT *);
 	enum auth_stat why;
-	
+
     switch (rqstp->rq_proc)
     {
 		case PROCSIMPLEPING:
@@ -284,16 +284,16 @@ void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
       		return;
       	}
     }
-    
+
     memset((char *)&argument, (int)0, sizeof(argument));
 	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
 	{
 		svcerr_decode(transp);
 		return;
 	}
-	
+
 	result = (char *)(*proc)((union u_argument *)&argument, transp);
-	
+
 	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
 	{
 		svcerr_systemerr(transp);

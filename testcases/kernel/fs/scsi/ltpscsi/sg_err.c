@@ -4,7 +4,6 @@
 #include "sg_include.h"
 #include "sg_err.h"
 
-
 /* This file is a huge cut, paste and hack from linux/drivers/scsi/constant.c
 *  which I guess was written by:
 *         Copyright (C) 1993, 1994, 1995 Eric Youngdale
@@ -45,7 +44,6 @@ static const char * group_0_commands[] = {
 /* 1c-1d */ "Receive Diagnostic", "Send Diagnostic",
 /* 1e-1f */ "Prevent/Allow Medium Removal", unknown,
 };
-
 
 static const char *group_1_commands[] = {
 /* 20-23 */  unknown, unknown, unknown, "Read Format capacities",
@@ -110,7 +108,6 @@ static const char *group_5_commands[] = {
 /* bd-bf */ "Spare (out), Mechanism status", "Volume set (in), Read cd",
             "Volume set (out), Send DVD structure",
 };
-
 
 #define group(opcode) (((opcode) >> 5) & 7)
 
@@ -218,7 +215,6 @@ void sg_print_scsi_status(int scsi_status)
 #define SC_RECOVERED_DATA "\xc"
 #define SC_ERROR_RATE_TOO_HIGH "\xd"
 #define SC_TIMES_TOO_HIGH "\xe"
-
 
 struct error_info{
     unsigned char code1, code2;
@@ -1020,7 +1016,6 @@ static const char * driverbyte_table[]={
 static const char * driversuggest_table[]={"SUGGEST_OK",
 "SUGGEST_RETRY", "SUGGEST_ABORT", "SUGGEST_REMAP", "SUGGEST_DIE",
 unknown,unknown,unknown, "SUGGEST_SENSE",NULL};
-
 
 void sg_print_driver_status(int driver_status)
 {

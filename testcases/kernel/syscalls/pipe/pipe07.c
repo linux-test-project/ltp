@@ -125,8 +125,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/* NOT REACHED */
-	return 0;
 }
 
 /*
@@ -147,10 +145,8 @@ void setup()
 	tempdir = mkdtemp(template);
 	chdir(tempdir);
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 }
@@ -173,6 +169,5 @@ void cleanup()
 	/* Chdir back to original working directory */
 	chdir(currdir);
 
-	/* Remove temporary test directory */
 	rmdir(tempdir);
 }

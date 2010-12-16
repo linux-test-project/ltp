@@ -214,7 +214,7 @@ int main()
 	/*
 	 * should be successful on all non-ix86 platforms.
 	 */
-	return 0;
+	tst_exit();
 }
 
 #endif /* if defined(linux) && defined(__i386__) */

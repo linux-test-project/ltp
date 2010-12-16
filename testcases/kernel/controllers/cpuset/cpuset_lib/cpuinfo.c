@@ -80,7 +80,7 @@ static int get_cpu_baseinfo(void)
 
 /*
  * get the cpu bitmask of the online processors
- * 
+ *
  * return value: 0  - success
  *               -1 - failed
  */
@@ -121,7 +121,7 @@ int online_cpumask(struct bitmask *cpumask)
 
 /*
  * get the cpu bitmask of the present processors including offline CPUs
- * 
+ *
  * return value: 0  - success
  *               -1 - failed
  */

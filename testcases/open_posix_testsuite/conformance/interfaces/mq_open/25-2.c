@@ -42,7 +42,7 @@ int main()
 	attr.mq_msgsize = VALIDVAL;
 	for (i=0; i<NUMTESTS; i++) {
 		attr.mq_maxmsg = invalid_values[i];
-        	queue = mq_open(qname, O_CREAT |O_RDWR, 
+        	queue = mq_open(qname, O_CREAT |O_RDWR,
 						S_IRUSR | S_IWUSR, &attr);
         	if (queue != (mqd_t)-1) {
 			printf("mq_open() succeeded w/invalid mq_maxmsg %ld\n",
@@ -73,7 +73,7 @@ int main()
 	attr.mq_maxmsg = VALIDVAL;
 	for (i=0; i<NUMTESTS; i++) {
 		attr.mq_msgsize = invalid_values[i];
-        	queue = mq_open(qname, O_CREAT |O_RDWR, 
+        	queue = mq_open(qname, O_CREAT |O_RDWR,
 						S_IRUSR | S_IWUSR, &attr);
         	if (queue != (mqd_t)-1) {
 			printf("mq_open() succeeded w/invalid mq_msgsize %ld\n",
@@ -108,4 +108,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

@@ -105,7 +105,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -123,7 +123,6 @@ void do_master_child()
 			 ltpuser->pw_uid);
 	}
 
-	/* Check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int tst_fd;
 
@@ -198,10 +197,8 @@ void setup(void)
 	if (fd < 0)
 		tst_brkm(TBROK, cleanup, "cannot creat test file");
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -220,6 +217,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

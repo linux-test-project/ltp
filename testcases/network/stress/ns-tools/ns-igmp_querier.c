@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-igmp_querier.c
@@ -67,14 +66,12 @@ struct igmp_info {
     struct timespec interval;
 };
 
-
 /*
  * Gloval variables
  */
 char *program_name;		/* program name */
 struct sigaction handler;	/* Behavior for a signal */
 int catch_sighup;		/* When catch the SIGHUP, set to non-zero */
-
 
 /*
  * Function: usage()
@@ -112,7 +109,6 @@ usage (char *program_name, int exit_value)
     exit (exit_value);
 }
 
-
 /*
  * Function: set_signal_flag()
  *
@@ -144,7 +140,6 @@ set_signal_flag(int type)
 	    exit(EXIT_FAILURE);
     }
 }
-
 
 /*
  * Function: create_query()
@@ -233,7 +228,6 @@ create_query(uint8_t code, char *maddr, char *saddrs)
     return query;
 }
 
-
 /*
  * Function: parse_options()
  *
@@ -244,7 +238,7 @@ create_query(uint8_t code, char *maddr, char *saddrs)
  *   argc:  the number of argument
  *   argv:  arguments
  *  info_p: pointer to data of querier information
- *   bg_p:  pointer to the flag of working in backgrond 
+ *   bg_p:  pointer to the flag of working in backgrond
  *
  * Return value:
  *  None
@@ -345,12 +339,11 @@ parse_options(int argc, char *argv[], struct igmp_info *info_p, int *bg_p)
 	free(saddrs);
 }
 
-
 /*
  * Function: create_socket()
  *
  * Description:
- *  This function creates a socket to send 
+ *  This function creates a socket to send
  *
  * Argument:
  *  info_p: pointer to data of igmp query information
@@ -365,7 +358,7 @@ create_socket(struct igmp_info *info_p)
     int on;
     unsigned char opt[4] = {0x94, 0x04, 0x00, 0x00};	/* Router Alert */
     struct ip_mreqn mcast_req, *req_p = &mcast_req;
- 
+
     /* Create a socket */
     sd = socket(AF_INET, SOCK_RAW, IPPROTO_IGMP);
     if (sd < 0)
@@ -391,7 +384,6 @@ create_socket(struct igmp_info *info_p)
 
     return sd;
 }
-
 
 /*
  * Function: send_query()
@@ -457,7 +449,7 @@ send_query(struct igmp_info *info_p)
 
 	/* Wait in specified interval */
 	nanosleep(&info_p->interval, NULL);
-	 
+
 	/* catch SIGHUP */
 	if (catch_sighup)
 	    break;
@@ -466,7 +458,6 @@ send_query(struct igmp_info *info_p)
 
     close(sd);
 }
-
 
 /*
  *

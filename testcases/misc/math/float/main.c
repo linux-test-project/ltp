@@ -38,7 +38,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 void
 myexit (int x)
 {
-  if (x) 
+  if (x)
     tst_resm (TFAIL, "Test failed");
   else
     tst_resm (TPASS, "Test passed");
@@ -58,7 +58,7 @@ char datadir[PATH_MAX];     		/* DATA directory */
 #endif
 #define DEFAULT_NUM_THREADS             20
 int     num_threads      = DEFAULT_NUM_THREADS;
-int     num_loops=500; 
+int     num_loops=500;
 
 int     sig_cancel = 0; /* flag set by handle_signals to tell initial thread
 			to stop creating new threads (signal caught) */
@@ -84,8 +84,8 @@ int generate(char *datadir, char *bin_path)
 {
  char *cmdline;
  char *fmt = "cd %s; %s/%s %s";
- 
- cmdline = malloc (2 * strlen(bin_path) + strlen(datadir) + 
+
+ cmdline = malloc (2 * strlen(bin_path) + strlen(datadir) +
 		   strlen(GENERATOR) + strlen(fmt));
  if (cmdline == NULL)
      return(1);
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
        	 switch ( opt ) {
                 case 'v':
 			++debug; /* verbose mode */
-			break; 
+			break;
                 case 'n':
                         num_threads = atoi (optarg);
                         break;
@@ -163,8 +163,8 @@ int main(int argc, char *argv[])
 	}
 	pid=fork();
         if (pid == 0) {                    /*Child*/
-		generate(datadir,bin_path);          
-		return(0);} 
+		generate(datadir,bin_path);
+		return(0);}
 	else                                /*Parent*/
 		waitpid(pid,NULL,0);
 	SAFE_FREE(bin_path);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 	/*
          * Start all calculation threads...
          */
-        threads = (pthread_t * ) malloc ((size_t) (nb_func 
+        threads = (pthread_t * ) malloc ((size_t) (nb_func
                                   * num_threads * sizeof (pthread_t)));
 	if (!threads) {
                 tst_resm (TFAIL, "malloc error.");
@@ -227,9 +227,8 @@ int main(int argc, char *argv[])
 	if (retval != 0)
         	sys_error("main : attr_setdetachstate(&newattr) FAILED",
                            __LINE__);
-	
 
-	/* run the nb_func functions on num_threads */ 
+	/* run the nb_func functions on num_threads */
 
 	indice = 0;
 	for (i = 0; i < nb_func; i++) {
@@ -256,7 +255,7 @@ int main(int argc, char *argv[])
 			pthread_mutex_unlock (&sig_mutex);
 			goto finished;
 		}
-		retval = pthread_create (&threads[indice], &newattr, 	 
+		retval = pthread_create (&threads[indice], &newattr,
 		                         thread_code,(void * ) pcom);
 		if (retval != 0)
                         sys_error("main : create FAILED",__LINE__);
@@ -285,7 +284,7 @@ finished:
 			sys_error("finish : join FAILED",__LINE__);
 
 		/* test the result in TH_DATA : communication buffer */
-		pcom = * tabcour++; 
+		pcom = * tabcour++;
 <<<<<<< HEAD
 		if (pcom->th_result !=0) {
 =======
@@ -309,10 +308,8 @@ finished:
 	tst_rmdir();
 	if (error) exit (1);
 	else exit(0);
-	return 0;
+	tst_exit();
 }
-
-
 
 /*---------------------------------------------------------------------+
 |                            handle_signals ()                         |
@@ -415,9 +412,6 @@ static void error (const char *msg, int line)
         exit (-1);
 }
 
-
-
-	
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -432,4 +426,3 @@ static void sys_error (const char *msg, int line)
         sprintf (syserr_msg, "%s: %s", msg, strerror(errno));
         error (syserr_msg, line);
 }
-

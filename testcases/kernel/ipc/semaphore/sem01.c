@@ -103,7 +103,6 @@ void mainloop(int semid) {
   }
 }
 
-
 int main(int argc, char *argv[]) {
   int semid, opt;
   union semun semunion;
@@ -125,7 +124,6 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
   }
-
 
   /* set up the semaphore */
   if ((semid = semget((key_t)9142, 1, 0666 | IPC_CREAT)) < 0) {

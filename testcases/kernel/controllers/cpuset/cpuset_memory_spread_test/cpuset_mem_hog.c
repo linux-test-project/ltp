@@ -96,7 +96,6 @@ int mem_hog(void)
 
 		close(fd);
 
-
 		sigsuspend(&sigset);
 	}
 

@@ -114,15 +114,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/* Get the euid/egid of the process */
@@ -136,7 +134,6 @@ int main(int ac, char **av)
 		 */
 		TEST(fchown(fildes, -1, group_id));
 
-		/* check return code of fchown(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "fchown() on %s Fails, errno=%d",
 				 TESTFILE, TEST_ERRNO);
@@ -184,13 +181,12 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	  return (0);
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -201,7 +197,6 @@ int main(int ac, char **av)
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -215,10 +210,8 @@ void setup()
 				strerror(errno));
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* Make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Create a test file under temporary directory */
@@ -239,7 +232,7 @@ void setup()
 	setegid(ltpuser->pw_gid);
 	seteuid(ltpuser->pw_uid);
 
-}				/* End setup() */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -260,9 +253,6 @@ void cleanup()
 			 TESTFILE, errno, strerror(errno));
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

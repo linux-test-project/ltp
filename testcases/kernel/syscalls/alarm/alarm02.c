@@ -127,8 +127,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
-
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -156,31 +154,26 @@ int main(int ac, char **av)
 						 sec[i], TEST_RETURN, buf[i]);
 				}
 
-			}	/* End of STD_FUNCTIONAL_TEST */
-		}		/* End of for loop */
+			}
+		}
 		/*
 		 *  Reset alarm before cleanup.
 		 */
 
 		alarm(0);
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
-	tst_exit();
 
 }
 
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
-
-	/* End setup() */
 
 }
 

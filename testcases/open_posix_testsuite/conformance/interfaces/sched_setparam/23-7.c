@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -9,7 +9,7 @@
  *
  *
  * Test that sched_setparam() sets errno == ESRCH when no process can be found
- * corresponding to that specified by pid. 
+ * corresponding to that specified by pid.
  */
 #include <sched.h>
 #include <stdio.h>
@@ -18,8 +18,6 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include "posixtest.h"
-
-
 
 int main() {
 	struct sched_param param;
@@ -45,7 +43,7 @@ int main() {
 		perror("An error occurs when calling wait()");
 		return PTS_UNRESOLVED;
         }
-        
+
         /* Assume the pid is not yet reatributed to an other process */
 	param.sched_priority++;
 	sched_setparam(child_pid, &param);
@@ -54,7 +52,7 @@ int main() {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (param.sched_priority == old_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

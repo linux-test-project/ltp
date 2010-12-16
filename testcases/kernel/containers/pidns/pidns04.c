@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 
 	tst_exit();
 
-}	/* End main */
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at

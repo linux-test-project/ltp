@@ -25,7 +25,7 @@
  *      SCHED_FIFO at a maximum SCHED_FIFO priority. It is bound to a single
  *      processor and its address space is locked as well. It makes successive
  *      calls to the gettimeofday() function(via inlined assembly to read the
- *      TSC).The value returned between two such consecutive calls is reported 
+ *      TSC).The value returned between two such consecutive calls is reported
  *	as the latency.
  *      The maximum, minimum and average delays are reported for x pairs of such
  *      calls.
@@ -56,7 +56,6 @@
 
 #define ITERATIONS 1000000ULL
 #define INTERVALS 10
-
 
 void usage(void)
 {
@@ -148,5 +147,5 @@ int main(int argc, char *argv[])
 	printf("Maximum: %llu \n", max);
 	printf("Average: %llu \n", avg);
 
-	return 0;
+	tst_exit();
 }

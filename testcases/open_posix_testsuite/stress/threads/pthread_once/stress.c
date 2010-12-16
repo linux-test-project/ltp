@@ -14,10 +14,9 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This stress test aims to test the following assertion:
 
-*  The init_routine from pthread_once never execute 
+*  The init_routine from pthread_once never execute
 * more or less than once.
 
 * The steps are:
@@ -26,7 +25,6 @@
 * -> Check the init_routine executed once.
 
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -48,22 +46,22 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c" 
+ #include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
+ * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -97,7 +95,6 @@ pthread_once_t once_ctl;
 int once_chk;
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
-
 void init_routine(void)
 {
 	int ret = 0;
@@ -119,7 +116,6 @@ void init_routine(void)
 
 	return ;
 }
-
 
 /* Thread function */
 void * threaded(void * arg)
@@ -159,7 +155,6 @@ int main (int argc, char *argv[])
 	/* Initialize output routine */
 	output_init();
 
-
 	/* Initialize barrier */
 	ret = pthread_barrier_init(&bar, NULL, NTHREADS);
 
@@ -167,7 +162,6 @@ int main (int argc, char *argv[])
 	{
 		UNRESOLVED(ret, "Failed to init barrier");
 	}
-
 
 	/* Register the signal handler for SIGUSR1 */
 	sigemptyset (&sa.sa_mask);
@@ -257,5 +251,3 @@ int main (int argc, char *argv[])
 
 	PASSED;
 }
-
-

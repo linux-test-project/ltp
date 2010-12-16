@@ -182,13 +182,10 @@ int main(int ac, char **av)
 		STD_COPIES = 1;
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -215,14 +212,14 @@ int main(int ac, char **av)
 				tst_brkm(TBROK|TTERRNO, cleanup,
 				    "umount(2) failed for %s", mntpoint);
 			}
-		}		/* End of TEST CASE LOOPING. */
-	}			/* End for TEST_LOOPING */
+		}
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
-}				/* End main */
+}
 
 /*
  * test_rwflag(int i, int cnt)
@@ -278,7 +275,7 @@ int test_rwflag(int i, int cnt)
 
 		snprintf(file, PATH_MAX, "%stmp1", Path_name);
 		if ((fd = open(file, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
-			tst_resm(TWARN|TERRNO, "opening %s failed", file); 
+			tst_resm(TWARN|TERRNO, "opening %s failed", file);
 		} else {
 			close(fd);
 			execlp(file, basename(file), NULL);
@@ -439,7 +436,6 @@ void setup()
 	char *test_home;	/* variable to hold TESTHOME env */
 	struct stat setuid_test_stat;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root */
@@ -494,10 +490,9 @@ void setup()
 	strcpy(testhome_path, test_home);
 	strcat(testhome_path, "/setuid_test");
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -513,9 +508,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it  */
 	tst_rmdir();
-}				/* End cleanup() */
+}
 
 /*
  * issue a help message

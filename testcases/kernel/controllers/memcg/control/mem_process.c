@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-/* 
+/*
  * Named pipe to act as a communication channel between
  * shell script & this process
  */
@@ -137,5 +137,5 @@ int main(int argc, char **argv)
 
 	remove(STATUS_PIPE);
 
-	return 0;
+	tst_exit();
 }

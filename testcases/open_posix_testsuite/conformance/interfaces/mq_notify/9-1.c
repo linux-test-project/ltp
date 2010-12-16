@@ -2,16 +2,16 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
  *  mq_notify() test plan:
- *  mq_notify will fail with EBUSY if a process is already registered for 
+ *  mq_notify will fail with EBUSY if a process is already registered for
  *  notification by the message queue.
- *  
- *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq
  *		resources
  */
 

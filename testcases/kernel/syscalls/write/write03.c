@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -157,7 +157,7 @@ int main()
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
@@ -198,6 +198,4 @@ void cleanup(void)
 	unlink(filename);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

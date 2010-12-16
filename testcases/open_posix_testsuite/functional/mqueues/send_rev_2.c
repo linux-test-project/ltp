@@ -1,13 +1,13 @@
 
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- * 
+ *
  * 1. Two threads sending/receiving on different message queue.
- * 2. Set different Priority to the messages in the message queue, to 
+ * 2. Set different Priority to the messages in the message queue, to
  * see whether the highest priority is received first.
  */
 
@@ -35,7 +35,7 @@ char r_msg_ptr_1[MAX_MSG][MSG_SIZE];
 char r_msg_ptr_2[MAX_MSG][MSG_SIZE];
 pthread_t send1, send2, rev1, rev2;
 
-int * send_1(void * mq) 
+int * send_1(void * mq)
 {
 	int i;
 	mqd_t mq1 = *(mqd_t *)mq;
@@ -51,7 +51,7 @@ int * send_1(void * mq)
 	pthread_exit((void *)0);
 
 }
-int * send_2(void * mq) 
+int * send_2(void * mq)
 {
 	int i;
  	mqd_t mq2 = *(mqd_t *)mq;
@@ -66,7 +66,7 @@ int * send_2(void * mq)
 	}
 	pthread_exit((void *)0);
 }
-int * receive_1(void * mq) 
+int * receive_1(void * mq)
 {
 	int i;
 	mqd_t mq1 = *(mqd_t *)mq;
@@ -81,7 +81,7 @@ int * receive_1(void * mq)
 	}
 	pthread_exit((void *)0);
 }
-int * receive_2(void * mq) 
+int * receive_2(void * mq)
 {
 	int i;
 	mqd_t mq2 = *(mqd_t *)mq;
@@ -98,8 +98,8 @@ int * receive_2(void * mq)
 }
 int main(int argc, char *argv[])
 {
-	
- 	mqd_t mq1 = 0, mq2 = 0;	
+
+ 	mqd_t mq1 = 0, mq2 = 0;
 	struct mq_attr mqstat;
 	int oflag = O_CREAT|O_NONBLOCK|O_RDWR;
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 	mqstat.mq_maxmsg = MAX_MSG;
 	mqstat.mq_msgsize = MSG_SIZE;
 	mqstat.mq_flags = 0;
-  
+
   	if ((mq1 = mq_open(MQ_NAME_1,oflag,0777, &mqstat)) == -1) {
 		printf("mq_open doesn't return success \n");
 		return PTS_UNRESOLVED;
@@ -118,17 +118,16 @@ int main(int argc, char *argv[])
 	}
 	pthread_create(&send1, NULL, (void *)send_1, (void *)&mq1);
 	pthread_create(&send2, NULL, (void *)send_2, (void *)&mq2);
-        pthread_create(&rev1, NULL, (void *)receive_1, (void *)&mq1);	
-        pthread_create(&rev2, NULL, (void *)receive_2, (void *)&mq2);	
+        pthread_create(&rev1, NULL, (void *)receive_1, (void *)&mq1);
+        pthread_create(&rev2, NULL, (void *)receive_2, (void *)&mq2);
 	pthread_join(send1, NULL);
 	pthread_join(send2, NULL);
 	pthread_join(rev1, NULL);
 	pthread_join(rev2, NULL);
-		
+
 	mq_close(mq1);
 	mq_close(mq2);
 	mq_unlink(MQ_NAME_1);
 	mq_unlink(MQ_NAME_2);
 	return PTS_PASS;
 }
-

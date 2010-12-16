@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_attr_setscope()
- * 
+ *
  * Steps:
- * 1.  Initialize pthread_attr_t object (attr) 
+ * 1.  Initialize pthread_attr_t object (attr)
  * 2.  sets the contentionscope to attr
  * 3.  create a thread with the attr
  * 4.  Get the contentionscope value in the created thread
@@ -47,11 +47,11 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
-	rc = pthread_attr_setscope(&attr, CONSCOPE); 	
+	rc = pthread_attr_setscope(&attr, CONSCOPE);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "PTHREAD_SCOPE_SYSTEM is not supported");
 		exit(PTS_UNRESOLVED);
-        } 
+        }
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
 	if (rc !=0) {
@@ -69,7 +69,7 @@ int main()
 		fprintf(stderr, ERROR_PREFIX "The contentionscope is not "
 		       "correct \n");
 		exit(PTS_FAIL);
-	}		
+	}
 
 	rc = pthread_join(new_th, NULL);
 	if (rc != 0)
@@ -84,9 +84,7 @@ int main()
                 perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
         }
-	
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-
-

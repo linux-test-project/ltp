@@ -18,13 +18,13 @@
  */
 
 /* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base 
+   avoid warning if the implementation does not program ftruncate as a base
    interface */
 
 /* adam.li: 2004-04-30: Rewrite the test case. The idea is that with
    O_CREAT and O_EXCL specified, to shm_open() a object can only success
-   once, although multiple processes might open with the same name at the 
-   same time. 
+   once, although multiple processes might open with the same name at the
+   same time.
  */
 #define _XOPEN_SOURCE 600
 
@@ -57,10 +57,10 @@ int child_func(void)
 {
 	int i, fd;
 	struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
-	int msec = 0;		
-	
+	int msec = 0;
+
 	sleep(1);
-	srand(time(NULL));	
+	srand(time(NULL));
 	for (i=0; i<NLOOP; i++) {
 		sprintf(name, SHM_NAME, i);
 		fd = shm_open(name, O_RDONLY|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
@@ -91,8 +91,8 @@ int main() {
 	}
 	sem_unlink(semname);
 
-	result_fd = shm_open(SHM_RESULT_NAME, 
-			     O_RDWR|O_CREAT, 
+	result_fd = shm_open(SHM_RESULT_NAME,
+			     O_RDWR|O_CREAT,
 			     S_IRUSR|S_IWUSR);
 	if (result_fd == -1) {
 		perror("An error occurs when calling shm_open()");
@@ -102,16 +102,16 @@ int main() {
 	if (ftruncate(result_fd, sizeof(*create_cnt)) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_RESULT_NAME);
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
-	create_cnt = mmap(NULL, sizeof(*create_cnt), PROT_WRITE, 
+	create_cnt = mmap(NULL, sizeof(*create_cnt), PROT_WRITE,
 		MAP_SHARED, result_fd, 0);
 	if (create_cnt == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_RESULT_NAME);
-		return PTS_UNRESOLVED;	
-	}	
+		return PTS_UNRESOLVED;
+	}
 
 	*create_cnt = 0;
 
@@ -127,11 +127,11 @@ int main() {
 	}
 
 	while (wait(NULL) > 0);
-	
+
 	for (i=0; i<NLOOP; i++) {
 		sprintf(name, SHM_NAME, i);
 		shm_unlink(name);
-	}	
+	}
 
 	fprintf(stderr, "create_cnt: %d\n", *create_cnt);
 	if (*create_cnt != NLOOP) {

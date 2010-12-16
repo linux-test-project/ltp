@@ -2,21 +2,21 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 /*
  *  mq_getattr() test plan:
- *  mq_getattr gets mq_flags which is set when message queue 
+ *  mq_getattr gets mq_flags which is set when message queue
  *  was opened.
- *  
- *  3/27/2003 	Fixed a bug pointed out by Krzysztof Benedyczak. 
+ *
+ *  3/27/2003 	Fixed a bug pointed out by Krzysztof Benedyczak.
  *   		mq_getattr returns ALL flags not only those set by
- *   		mq_setattr. So there should not be setting using 
- *   		"mqstat.mq_flags == MQFLAGS, so change to 
+ *   		mq_setattr. So there should not be setting using
+ *   		"mqstat.mq_flags == MQFLAGS, so change to
  *   		"!(mqstat.mq_flags & MQFLAGS)".
- *  
- *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq
  *		resources
  */
 
@@ -46,7 +46,7 @@ int main()
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
-	mqdes = mq_open(mqname, O_CREAT | O_RDWR | MQFLAGS, 
+	mqdes = mq_open(mqname, O_CREAT | O_RDWR | MQFLAGS,
                         S_IRUSR | S_IWUSR, NULL);
 	if (mqdes == (mqd_t)-1) {
 		perror(ERROR_PREFIX "mq_open()");

@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_setspecific()
  *
- * shall associate a thread-specific value with a key obtained via a previouse call to 
- * pthread_key_create.  Different threads may bind different values to the same key.  
+ * shall associate a thread-specific value with a key obtained via a previouse call to
+ * pthread_key_create.  Different threads may bind different values to the same key.
  * Calling pthread_setspecific with a key value not obtiained from pthread_key_create of after
  * the key has been deleted with pthread_key_delete is undefined.
  *
@@ -16,7 +16,7 @@
  * 1.  Create NUM_OF_KEYS pthread_key_t objects
  * 2.  Set each key to a thread-specific value with pthread_setspecific()
  * 3.  Call pthread_getspecific() on each key and check that the value returned is correct.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -47,7 +47,7 @@ int main()
 				printf("Test FAILED: Could not set the value of the key to %d\n", (i + KEY_VALUE));
 				return PTS_FAIL;
 			}
-			
+
 		}
 	}
 

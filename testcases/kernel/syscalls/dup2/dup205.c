@@ -129,5 +129,5 @@ char *av[];
 
 	}			/* end for */
 	tst_exit();
-	return 0;
+	tst_exit();
 }

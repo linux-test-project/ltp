@@ -69,7 +69,6 @@ struct {
 	{ "ipv6-opts", 60},
 };
 
-
 #define PTCOUNT	(sizeof(ptab)/sizeof(ptab[0]))
 
 #define READ_TIMEOUT	5	/* secs */
@@ -98,9 +97,9 @@ main(int argc, char *argv[])
 		do_tests();
 
 	cleanup();
-	
-	return(0);
-}	/* End main */
+
+	tst_exit();
+}
 
 void
 do_tests(void)
@@ -531,7 +530,6 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
 }
 
 int TST_TOTAL = PTCOUNT + CSCOUNT;

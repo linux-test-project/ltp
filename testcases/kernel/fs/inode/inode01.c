@@ -94,7 +94,6 @@ char read_string[PATH_STRING_LENGTH + 1];
 char write_string[PATH_STRING_LENGTH + 1];
 char rm_string[200];
 
-
 FILE *list_stream=NULL;
 int  file_id;
 int  list_id;
@@ -133,7 +132,6 @@ int main()
 
 	blenter();
 
-
 	/********************************/
 	/*				*/
 	/*  make the root directory for */
@@ -162,7 +160,6 @@ int main()
 	/*  may be checked			*/
 	/*					*/
 	/****************************************/
-
 
 	strcpy(path_list_string, path_string);
 	strcat(path_list_string, slash);
@@ -244,7 +241,6 @@ int main()
 
 	blexit();
 
-
 	/*
 	 * Now fork and exec a system call to remove the directory.
 	 */
@@ -262,7 +258,6 @@ int main()
 		fprintf(temp, "rm command exit status = %d\n", status);
 	}
 
-
 	/****************************************/
 	/*					*/
 	/*         .....and exit main		*/
@@ -271,7 +266,7 @@ int main()
 
 	anyfail();
         /***** NOT REACHED ******/
-	return 0;
+	tst_exit();
 }
 
 int generate(string, level)
@@ -348,14 +343,13 @@ int level;    	/* the tree depth variable */
 				file_id = creat(new_string, FILE_MODE);
 				if (file_id == -1) {
 					fprintf(temp,"\tImpossible to create file %s, errno=%d\n",
-						new_string, errno);	
+						new_string, errno);
 					return(-2);
 				}
 
 #ifdef PRINT
 				printf("%d  %s F\n", level, new_string);
 #endif
-
 
 				/****************************************/
 				/*					*/
@@ -370,7 +364,7 @@ int level;    	/* the tree depth variable */
 						fprintf(temp,"\tUnsuccessful write to file %s, expected return of %d, got %d, errno=%d\n",
 						new_string, len, ret_len, errno);
 						return(-3);
-					}	
+					}
 				}
 				close(file_id);
 
@@ -394,7 +388,6 @@ int level;    	/* the tree depth variable */
 				/*	 or make a directory		*/
 				/*					*/
 				/****************************************/
-
 
 				ret_val = mkdir(new_string, DIRECTORY_MODE);
 
@@ -471,13 +464,12 @@ int check()
 		/*					*/
 		/****************************************/
 
-	
 		if (fscanf(list_stream, "%s", path_string) == EOF) {
 
 #ifdef PRINT
 			printf("\nEnd of path_list file reached \n");
 #endif
-	
+
 			return 0;
 		}
 
@@ -502,14 +494,14 @@ int check()
 					path_string, errno);
 				return(-1);
 			}
-			
+
 			else {
 				/********************************/
 				/*				*/
 				/*    check its contents	*/
 				/*				*/
 				/********************************/
-			
+
 				len = strlen(path_string);
 				for (j = 1; j <= FILE_LENGTH; j++) {
 					ret_len = read(file_id, read_string, len);
@@ -775,4 +767,3 @@ ok_exit()
         local_flag = PASSED;
         return;
 }
-

@@ -565,8 +565,8 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }
 
 void *Thread(void *parm)
@@ -618,7 +618,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	   
+
     			bMounted = dm_handle_is_valid(hanp, hlen);
 
     			rc = dm_request_right(sid, hanp, hlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
@@ -673,7 +673,7 @@ void *Thread(void *parm)
 			case DM_EVENT_PREUNMOUNT:
 				response = DM_RESP_CONTINUE;
 				break;
-			
+
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");

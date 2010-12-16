@@ -48,7 +48,7 @@ int main()
 #ifdef DEBUG
 	printf("mq_open() failed as expected\n");
 #endif
-	
+
 	if (errno != ENAMETOOLONG) {
 		printf("errno != ENAMETOOLONG\n");
 		printf("Test FAILED\n");
@@ -62,4 +62,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

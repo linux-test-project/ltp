@@ -2,14 +2,14 @@
  * Copyright (c) 2004, Bull SA. All rights reserved.
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
  * assertion:
  *
- *	aio_supend() shall return zero after one or more AIO operations have 
+ *	aio_supend() shall return zero after one or more AIO operations have
  *	completed.
  *
  * method:
@@ -75,7 +75,7 @@ main ()
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
 		return PTS_UNSUPPORTED;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_suspend_6_1_%d", 
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_suspend_6_1_%d",
 		  getpid());
 	unlink(tmpfname);
 
@@ -103,8 +103,6 @@ main ()
 		close (fd);
 		exit(PTS_UNRESOLVED);
 	}
-
-
 
 	aiocbs = (struct aiocb**)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
 
@@ -174,7 +172,6 @@ main ()
 		close (fd);
 		exit (PTS_FAIL);
 	}
-
 
 	if (ret) {
 		printf (TNAME " Error at aio_suspend() %d: %s\n", errno, strerror (errno));

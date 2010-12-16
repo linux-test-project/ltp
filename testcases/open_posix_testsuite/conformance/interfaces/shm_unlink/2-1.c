@@ -12,7 +12,6 @@
  * unlinked.
  */
 
-
 #include <stdio.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -24,7 +23,7 @@
 
 int main() {
 	int fd;
-	
+
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
@@ -37,7 +36,7 @@ int main() {
 	}
 
 	fd = shm_open(SHM_NAME, O_RDONLY, 0);
-	
+
 	if (fd == -1 && errno == ENOENT) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
@@ -49,5 +48,5 @@ int main() {
 	printf("The name of shared memory object was not removed.\n");
 	shm_unlink(SHM_NAME);
 	return PTS_FAIL;
-	
+
 }

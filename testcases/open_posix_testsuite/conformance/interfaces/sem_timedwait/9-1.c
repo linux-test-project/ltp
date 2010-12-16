@@ -23,7 +23,6 @@
 #include <time.h>
 #include "posixtest.h"
 
-
 #define TEST "9-1"
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
@@ -42,12 +41,10 @@ int main()
 	struct timespec ts;
 	int pid, status;
 
-
 	if (sem_init (&mysemp, 0, 1) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
-
 
 	if (sem_wait(&mysemp) == -1) {
 		perror(ERROR_PREFIX "sem_wait");

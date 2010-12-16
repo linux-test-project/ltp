@@ -20,4 +20,3 @@ int main()
 	printf("results are undefined.\n");
 	return PTS_UNTESTED;
 }
-

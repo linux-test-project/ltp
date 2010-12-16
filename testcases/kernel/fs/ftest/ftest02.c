@@ -43,7 +43,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/param.h>
@@ -62,7 +61,6 @@
 #define K_1		1024
 #define K_2		2048
 #define K_4		4096
-
 
 char *TCID = "ftest02";
 int TST_TOTAL = 1;
@@ -109,7 +107,7 @@ int main(void)
 
 	if (signal(SIGTERM, term) == SIG_ERR) {
 		tst_resm(TFAIL, "first signal failed");
-		tst_exit();
+
 	}
 
 	/*
@@ -122,7 +120,7 @@ int main(void)
 	if (!startdir[0]) {
 		if (getcwd(startdir, MAXPATHLEN) == NULL) {
 			tst_resm(TBROK,"getcwd failed");
-			tst_exit();
+
 		}
 	}
 	cwd = startdir;
@@ -138,15 +136,14 @@ int main(void)
 	if (chdir(dirname) < 0) {
 		tst_resm(TBROK,"\tCan't chdir(%s), error %d.", dirname, errno);
 		cleanup();
-		tst_exit();
+
 	}
 	dirlen = strlen(dirname);
 	if (chdir(homedir) < 0) {
 		tst_resm(TBROK,"\tCan't chdir(%s), error %d.", homedir, errno);
 		cleanup();
-		tst_exit();
-	}
 
+	}
 
 	for (k = 0; k < nchild; k++) {
 		if ((child = fork()) == 0) {
@@ -234,7 +231,7 @@ int main(void)
 	sync();
 
 	cleanup();
-	tst_exit();
+
 }
 
 #define	warn(val,m1,m2)	if ((val) < 0) dowarn(me,m1,m2)
@@ -368,7 +365,6 @@ static void fussdir(int me, int count)
 	strcpy(dirname, savedir);
 }
 
-
 /*
  * dotest()
  *	Children execute this.
@@ -408,7 +404,6 @@ static void dotest(int me, int count)
 
 	//tst_resm(TINFO,"Test %d pid %d exiting.", me, getpid());
 }
-
 
 static void dowarn(int me, char *m1, char *m2)
 {

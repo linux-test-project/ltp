@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -27,19 +27,19 @@ int main() {
 	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 	old_priority = param.sched_priority;
 
 	param.sched_ss_max_repl = SS_REPL_MAX+1;
 	param.sched_priority++;
         sched_setparam(0,&param);
-	
+
 	if (sched_getparam(0, &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 <<<<<<< HEAD
-	
+
 =======
 
 >>>>>>> master
@@ -50,7 +50,6 @@ int main() {
 		printf("The priority have changed.\n");
 		return PTS_FAIL;
 	}
-	
 
 }
 

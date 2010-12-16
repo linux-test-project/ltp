@@ -43,7 +43,6 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-
 /*
  * getipckey() - generates and returns a message key used by the "get"
  *		 calls to create an IPC resource.

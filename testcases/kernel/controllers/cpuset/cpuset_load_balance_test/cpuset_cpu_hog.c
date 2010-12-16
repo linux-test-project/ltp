@@ -150,7 +150,7 @@ void checkopt(int argc, char **argv)
 }
 
 /*
- * hog the cpu time and check the cpu which the task is running on is in the 
+ * hog the cpu time and check the cpu which the task is running on is in the
  * cpus of the cpuset or not.
  *
  * return value: 0  - success.

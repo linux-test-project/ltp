@@ -18,7 +18,6 @@
 /*									      */
 /******************************************************************************/
 
-
 /******************************************************************************/
 /*                                                                            */
 /* History:     Oct - 10 - 2001 Created - Manoj Iyer, IBM Austin TX.          */
@@ -216,7 +215,6 @@
 #define MAXF	100	/* default number of files to create.	              */
 #define MAXT	8	/* default number of threads to create.	              */
 
-
 /******************************************************************************/
 /*								 	      */
 /* Function:	usage							      */
@@ -228,7 +226,7 @@
 /******************************************************************************/
 static void
 usage(char *progname)           /* name of this program                       */{
-    fprintf(stderr, 
+    fprintf(stderr,
                "Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
                "\t -d Number of subdirectories to generate:   Default: 100\n"
                "\t -f Number of c files in each subdirectory: Default: 100\n"
@@ -237,7 +235,6 @@ usage(char *progname)           /* name of this program                       */
                     progname);
     exit(-1);
 }
-
 
 /******************************************************************************/
 /*								 	      */
@@ -256,7 +253,7 @@ usage(char *progname)           /* name of this program                       */
 /* Return:	exits with 1 on error, 0 on success                           */
 /*									      */
 /******************************************************************************/
-static int 
+static int
 init_compile( int  what_todo,		 /* do a compile or clean             */
               char *base_dir,            /* base directory of the test        */
               char *hname)		 /* hostname of the machine           */
@@ -279,7 +276,7 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
     }
 
     what_todo ? sprintf(command, "make -s") : sprintf(command, "make -s clean");
-    
+
     sprintf(dirname, "%s/%s.%ld", base_dir, hname, gettid());
 
     if (chdir(dirname) == -1)
@@ -289,10 +286,10 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
         free(dirname);
         return 1;
     }
-    
+
     dprt("pid[%d]: init_compile(): command = %s\n", gettid(), command);
 
-    if ((pid = fork()) == -1) 
+    if ((pid = fork()) == -1)
     {
         perror("init_compile(): fork()");
         return 1;
@@ -307,7 +304,6 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
         argv[2] = command;
         argv[3] = 0;
 
-     
 	if (execv("/bin/sh", argv) == -1)
         {
 	  perror("init_compile(): execv()");
@@ -319,7 +315,7 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
         if (waitpid(pid, &status, 0) == -1)
         {
             if (errno != EINTR)
-            { 
+            {
                 fprintf(stderr, "init_compile(): waitpid() failed\n");
                 return 1;
             }
@@ -337,11 +333,10 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
             dprt("we are here %d\n", __LINE__);
             return status;
         }
-           
+
     } while (1);
 }
-   
-    
+
 /******************************************************************************/
 /*								 	      */
 /* Function:	rm_file_dir						      */
@@ -373,7 +368,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
         perror("crte_mk_rm(): dirname malloc()");
 	return 1;
     }
-    
+
     if ((tmpdirname = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
     {
         perror("crte_mk_rm(): tmpdirname malloc()");
@@ -411,11 +406,11 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
         dprt("pid[%d]: cd'ing to last created dir: %s\n", gettid(), dirname);
 
         sindex--;
-   
+
         /* remove all the ".c" files and makefile in this directory */
         for (filecnt = 0; filecnt < numfiles; filecnt++)
         {
-            sprintf(filename, "%s/%ld.%d.%d.c", dirname, gettid(), dircnt - 1, 
+            sprintf(filename, "%s/%ld.%d.%d.c", dirname, gettid(), dircnt - 1,
 		filecnt);
             dprt("pid[%d]: removing file: %s\n", gettid(), filename);
 
@@ -431,7 +426,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
             }
             sync();
         }
-        
+
         sprintf(filename, "%s/%s", dirname, "makefile");
         dprt("pid[%d]: removing %s\n", gettid(), filename);
         if (unlink(filename))
@@ -444,7 +439,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
             return 1;
         }
         sync();
-       
+
         /* the last directory does not have any more sub directories */
         /* nothing to remove.				         */
         dprt("pid[%d]: in directory count(dircnt): %d\n", gettid(), dircnt);
@@ -473,7 +468,6 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
     free(subdir);
     return 0;
 }
-
 
 /******************************************************************************/
 /*								 	      */
@@ -509,7 +503,7 @@ crte_mk_rm(void *args)
     char	*make_buf;	/* buffer the contents of the makefile        */
     char	*pwd;	        /* contains the current working directory     */
     long	*locargptr =	/* local pointer to arguments                 */
-                             (long *)args; 
+                             (long *)args;
     volatile int exit_val = 0;  /* exit value of the pthreads		      */
 
     if ((dirname = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
@@ -553,14 +547,14 @@ crte_mk_rm(void *args)
         perror("crte_mk_rm(): hostname malloc()");
 	PTHREAD_EXIT(-1);
     }
-    
+
     if (gethostname(hostname, 255) == -1)
     {
         perror("crte_mk_rm(): gethostname()");
         PTHREAD_EXIT(-1);
     }
     if (!getcwd(pwd, PATH_MAX))
-    { 
+    {
         perror("crte_mk_rm(): getcwd()");
 	PTHREAD_EXIT(-1);
     }
@@ -579,8 +573,8 @@ crte_mk_rm(void *args)
             sprintf(dirname, "%s", tmpdirname);
         }
         sync();
-          
-        dprt("pid[%d] creating directory: %s\n", gettid(), dirname); 
+
+        dprt("pid[%d] creating directory: %s\n", gettid(), dirname);
         if (mkdir(dirname, 0777) == -1)
         {
             perror("crte_mk_rm(): mkdir()");
@@ -588,7 +582,7 @@ crte_mk_rm(void *args)
         }
     }
 
-    sync(); 
+    sync();
     usleep(10);
     for (dircnt = 0; dircnt < (int)locargptr[0]; dircnt++)
     {
@@ -662,7 +656,7 @@ crte_mk_rm(void *args)
                 perror("crte_mk_rm(): write()");
 	        PTHREAD_EXIT(-1);
             }
-          
+
             free(make_buf);
 
             if (close(fd) == -1)
@@ -686,10 +680,10 @@ crte_mk_rm(void *args)
         /* In each directory create N ".c" files and a makefile. */
         for (filecnt = 0; filecnt < (int)locargptr[1]; filecnt++)
         {
-            sprintf(cfilename, "%s/%ld.%d.%d.c", dirname, gettid(), 
+            sprintf(cfilename, "%s/%ld.%d.%d.c", dirname, gettid(),
 			dircnt, filecnt);
 	    dprt("pid[%d]: creating file: %s\n", gettid(), cfilename);
-            if ((fd = open(cfilename, O_CREAT|O_RDWR, 
+            if ((fd = open(cfilename, O_CREAT|O_RDWR,
 	                       S_IRWXU|S_IRWXG|S_IRWXO)) == -1)
             {
 		fprintf(stderr, "open() failed to create file %s\n", cfilename);
@@ -714,7 +708,7 @@ crte_mk_rm(void *args)
 	            PTHREAD_EXIT(-1);
                 }
             }
-		
+
         }
     }
 
@@ -739,10 +733,9 @@ crte_mk_rm(void *args)
         fprintf(stderr, "crte_mk_rm(): rm_file_dir() failed\n");
         PTHREAD_EXIT(-1);
     }
-    /* if it made it this far exit with success */ 
+    /* if it made it this far exit with success */
     PTHREAD_EXIT(0);
 }
-
 
 /******************************************************************************/
 /*								 	      */
@@ -784,7 +777,7 @@ main(int	argc,		/* number of input parameters		      */
                 else
                 if (num_dirs < 0)
                 {
-		    fprintf(stdout, 
+		    fprintf(stdout,
 			"WARNING: bad argument. Using default\n");
 	            num_dirs = MAXD;
                 }
@@ -819,7 +812,7 @@ main(int	argc,		/* number of input parameters		      */
 		break;
 	}
     }
-    
+
     chld_args[0] = num_dirs;
     chld_args[1] = num_files;
 
@@ -831,7 +824,7 @@ main(int	argc,		/* number of input parameters		      */
             exit(-1);
         }
     }
-    
+
     sync();
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
@@ -855,4 +848,3 @@ main(int	argc,		/* number of input parameters		      */
     }
     return(0);
 }
-

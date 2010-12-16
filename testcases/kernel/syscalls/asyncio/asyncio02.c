@@ -169,7 +169,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (flag_cnt = 0; flag_cnt < Num_flags; flag_cnt++) {
@@ -289,10 +288,9 @@ int testrun(int flag, int bytes, int ti)
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* create a temporary directory and go to it */
@@ -309,7 +307,7 @@ void setup()
 		tst_brkm(TBROK|TERRNO, cleanup, "malloc() failed");
 	}
 
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -323,6 +321,5 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove temporary directory and all files in it. */
 	tst_rmdir();
-}				/* End cleanup() */
+}

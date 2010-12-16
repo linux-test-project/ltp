@@ -125,7 +125,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	tst_exit();
+
 }
 
 /*
@@ -133,10 +133,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

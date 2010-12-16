@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
    Test that sigaddset() will add all defined signal numbers to a signal
@@ -64,10 +64,10 @@ int main()
 			printf("Signal - %d\n", signallist[i]);
 		}
 	}
-	
+
 	if (0 == f) {
 		printf("All signals added\n");
-		return 0;
+		tst_exit();
 	} else {
 		printf("Some signals not added -- see above\n");
 		return -1;

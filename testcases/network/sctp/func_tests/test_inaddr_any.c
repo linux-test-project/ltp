@@ -43,7 +43,7 @@
 
 /* This is a functional test to verify binding a socket with INADDRY_ANY
  * address and send messages.
- */ 
+ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -84,10 +84,10 @@ main(void)
 	uint32_t stream;
 	socklen_t namelen;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered. 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
 	 */
-	setvbuf(stdout, NULL, _IONBF, 0); 
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	/* Set some basic values which depend on the address family. */
 #if TEST_V6
@@ -141,7 +141,7 @@ main(void)
 	error = getsockname(sk2, &anyaddr.sa, &namelen);
 	if (error != 0)
 		tst_brkm(TBROK, NULL, "getsockname: %s", strerror(errno));
-        
+
 #if TEST_V6
 	loop.v6.sin6_port = anyaddr.v6.sin6_port;
 #else
@@ -164,7 +164,7 @@ main(void)
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
 	ppid = rand(); /* Choose an arbitrary value. */
-	stream = 1; 
+	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
         outmessage.msg_iov->iov_base = message;
@@ -184,19 +184,19 @@ main(void)
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 
         /* Get the communication up message on sk1.  */
         inmessage.msg_controllen = sizeof(incmsg);
         error = test_recvmsg(sk1, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 
         /* Get the first message which was sent.  */
         inmessage.msg_controllen = sizeof(incmsg);
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
-        test_check_msg_data(&inmessage, error, strlen(message) + 1, 
+        test_check_msg_data(&inmessage, error, strlen(message) + 1,
 			    MSG_EOR, stream, ppid);
 
        /* Send 2 messages.  */
@@ -222,18 +222,18 @@ main(void)
 	outmessage.msg_iov->iov_base = telephone_resp;
         outmessage.msg_iov->iov_len = strlen(telephone_resp) + 1;
 	test_sendmsg(sk1, &outmessage, 0, strlen(telephone_resp)+1);
-        
+
         /* Get those two messages.  */
 	inmessage.msg_controllen = sizeof(incmsg);
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
-        test_check_msg_data(&inmessage, error, strlen(telephone) + 1, 
+        test_check_msg_data(&inmessage, error, strlen(telephone) + 1,
 			    MSG_EOR, stream, ppid);
 
 	inmessage.msg_controllen = sizeof(incmsg);
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
-        test_check_msg_data(&inmessage, error, strlen(telephone_resp) + 1, 
+        test_check_msg_data(&inmessage, error, strlen(telephone_resp) + 1,
 			    MSG_EOR, stream, ppid);
-        
+
         /* Shut down the link.  */
         close(sk1);
 

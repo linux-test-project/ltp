@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- *  Test that the raise(<signal>) function shall send the signal 
+ *  Test that the raise(<signal>) function shall send the signal
  *  to the executing process when the executing process is a child
  *  process.
  *  1) Set up a signal handler for a signal in the parent process.
@@ -47,7 +47,7 @@ void childhandler(int signo)
 int main()
 {
 	struct sigaction parentact;
-		
+
 	parentact.sa_handler=parenthandler;
 	parentact.sa_flags=0;
 	if (sigemptyset(&parentact.sa_mask) == -1) {
@@ -62,7 +62,7 @@ int main()
 	if (fork() == 0) {
 		/* child here */
 		struct sigaction childact;
-		
+
 		childact.sa_handler=childhandler;
 		childact.sa_flags=0;
 		if (sigemptyset(&childact.sa_mask) == -1) {
@@ -77,7 +77,7 @@ int main()
 			printf("Could not raise signal being tested\n");
 			return PTS_FAIL;
 		}
-	
+
 		printf("Should have exited from signal handler\n");
 		return PTS_FAIL;
 	} else {
@@ -99,8 +99,7 @@ int main()
 			return PTS_FAIL;
 		}
 	}
-	
+
 	printf("Should not make it here.\n");
 	return PTS_UNRESOLVED;
 }
-

@@ -96,20 +96,17 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		test_desc = "EINVAL";
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -138,11 +135,10 @@ int main(int ac, char **av)
 		}
 	}
 
-	/* Call cleanup */
 	cleanup();
 
 	  return 0;
-}				/* End main */
+}
 
 /*
  * setup(void)
@@ -158,7 +154,6 @@ void setup()
 		tst_exit();
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Make a temp dir and cd to it */
@@ -176,9 +171,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove files and temporary directory created */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -145,13 +145,11 @@ void setup(void)
 		perror("setreuid");
 	}
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -179,7 +177,6 @@ void cleanup(void)
 	/* if it exists, remove the semaphore resource */
 	rm_sema(sem_id_1);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -188,6 +185,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

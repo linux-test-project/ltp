@@ -52,7 +52,7 @@
 #include "config.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -102,7 +102,7 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -148,7 +148,6 @@ enum from_node {
 	NONE,
 	SELF,
 };
-
 
 /*
  * Data Structure
@@ -356,12 +355,9 @@ TEST_END:
 	return result;
 }
 
-
 /*
  * main()
  */
-
-
 
 int main(int argc, char **argv) {
 	int i, ret;

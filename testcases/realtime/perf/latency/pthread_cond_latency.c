@@ -47,7 +47,6 @@ pthread_mutex_t child_mutex = PTHREAD_MUTEX_INITIALIZER;
 volatile int child_waiting = 0;
 double endtime;
 
-
 void usage(void)
 {
         rt_help();
@@ -218,5 +217,5 @@ main(int argc, char *argv[])
 	iter = strtol(argv[1], NULL, 0);
 	test_signal(argc == 2, iter);
 
-	return 0;
+	tst_exit();
 }

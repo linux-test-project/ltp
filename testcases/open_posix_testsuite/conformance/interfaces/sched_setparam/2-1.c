@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -26,7 +26,7 @@
  *     counter is reasonably lower than the fathers one, the test is
  *     succesfull.
  *  7. The father kill all other children.
- *  
+ *
  */
 
 #include <sched.h>
@@ -47,7 +47,6 @@
 # include <sys/param.h>
 # include <sys/pstat.h>
 #endif
-
 
 #define NB_LOOP         20000000
 #define NB_LOOP_CHILD  200000000 /* shall be much greater than NB_LOOP */
@@ -78,12 +77,12 @@ int get_ncpu() {
 	sysctl(mib, 2, &ncpu, &len, NULL, 0);
 # else
 #  ifdef HPUX
-	struct pst_dynamic psd; 
+	struct pst_dynamic psd;
 	pstat_getdynamic(&psd, sizeof(psd), 1, 0);
-	ncpu = (int)psd.psd_proc_cnt; 
+	ncpu = (int)psd.psd_proc_cnt;
 #  endif /* HPUX */
 # endif /* BSD */
-#endif /* _SC_NPROCESSORS_ONLN */  
+#endif /* _SC_NPROCESSORS_ONLN */
 
 	return ncpu;
 }
@@ -101,7 +100,7 @@ void child_process(int id) {
 		count ++;
 	}
 }
-  
+
 void sigterm_handler(int signum) {
 	close(STDOUT);
 	close(the_pipe[0]);
@@ -129,7 +128,7 @@ int main() {
 
 	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
 				 sched_get_priority_max(SCHED_FIFO)) / 2;
-	
+
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
 		if (errno == EPERM) {
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root\n");
@@ -153,7 +152,7 @@ int main() {
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
 			child_process(i);
-			
+
 			printf("This code should not be executed.\n");
 			return PTS_UNRESOLVED;
 		}
@@ -185,7 +184,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	while (scanf("*%i*",&child_count) == 0) 
+	while (scanf("*%i*",&child_count) == 0)
 		sched_yield();
 
 <<<<<<< HEAD

@@ -129,7 +129,6 @@ int main(int argc, char **argv)
 	}
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -196,7 +195,7 @@ void cleanup1(void)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root  */
@@ -207,7 +206,7 @@ void setup(void)
 	/* Check for nobody_uid user id */
 	if ((ltpuser = getpwnam("nobody")) == NULL) {
 		tst_brkm(TBROK, NULL, "nobody user id doesn't exist");
-		
+
 	}
 
 	/* Pause if that option was specified
@@ -230,6 +229,4 @@ void cleanup(void)
 
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

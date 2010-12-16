@@ -14,8 +14,7 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
- 
- 
+
  * This file is a scalability test for the pthread_mutex_init function.
 
  * The steps are:
@@ -35,12 +34,11 @@
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
 
- 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -52,27 +50,27 @@
  #include <stdarg.h>
  #include <sys/resource.h>
  #include <sys/time.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -100,7 +98,7 @@ typedef struct _teststruct
 	struct _teststruct * prev;
 } teststruct_t;
 
-int types[]={PTHREAD_MUTEX_NORMAL, 
+int types[]={PTHREAD_MUTEX_NORMAL,
 					PTHREAD_MUTEX_ERRORCHECK,
 					PTHREAD_MUTEX_RECURSIVE,
 					PTHREAD_MUTEX_DEFAULT};
@@ -113,7 +111,7 @@ int main(int argc, char * argv[])
 	teststruct_t *cur, *prev;
  	struct timeval  time_zero, time_cour, time_res, time_sav[8];
  	long sav= 0;
-	
+
 	/* Limit the process memory to a small value (64Mb for example). */
 	rl.rlim_max=1024 * 1024 * 32 * SCALABILITY_FACTOR;
 	rl.rlim_cur=rl.rlim_max;
@@ -122,18 +120,18 @@ int main(int argc, char * argv[])
 	#if VERBOSE > 1
 	output(";Memory is now limited to %dMb\n", 	rl.rlim_max >> 20);
 	#endif
-	
+
 	prev = NULL;
 	cur = NULL;
-	
+
 	/* Loop while we have memory left */
-	while (1) 
+	while (1)
 	{
 		/* Allocate memory for 10 mutex and related stuff */
-		cur = malloc(sizeof(teststruct_t)); 
+		cur = malloc(sizeof(teststruct_t));
 		if (cur == NULL) /* No memory left */
 			break;
-		
+
 		/* Link to the previous so we are able to free memory */
 		cur->prev = prev;
 		prev = cur;
@@ -167,17 +165,17 @@ int main(int argc, char * argv[])
 		{
 			cur->pma[i]=&(cur->ma[i % 5]);
 		} /* The mutex attributes are now initialized */
-		
+
 		/* Save the time */
 		gettimeofday(&time_zero, NULL);
-		
+
 		/* For each mutex, we will:
 		 * - init the mutex
 		 * - destroy the mutex
 		 * - init the mutex
 		 * - lock the mutex
 		 * - unlock the mutex
-		 * if WITH_LOCKS, 
+		 * if WITH_LOCKS,
 		 * - lock the mutex
 		 */
 		for (i=0; i<10 * SCALABILITY_FACTOR; i++)
@@ -203,7 +201,7 @@ int main(int argc, char * argv[])
 			{ UNRESOLVED(ret, "Mutex 2st lock failed"); }
 			#endif
 		}
-		/* Compute the operation duration */		
+		/* Compute the operation duration */
 		gettimeofday(&time_cour, NULL);
 		time_res.tv_usec = time_cour.tv_usec + 1000000 - time_zero.tv_usec;
 		if (time_res.tv_usec < 1000000)
@@ -215,7 +213,7 @@ int main(int argc, char * argv[])
 			time_res.tv_sec = time_cour.tv_sec - time_zero.tv_sec;
 			time_res.tv_usec -= 1000000;
 		}
-		
+
 		if (sav >3)
 		{
 			time_sav[4].tv_sec = time_sav[5].tv_sec;
@@ -237,13 +235,13 @@ int main(int argc, char * argv[])
 	}
 	if (errno != ENOMEM)
 	{  UNRESOLVED(errno, "Memory not full"); }
-	
+
 	/* Now we just have to cleanup everything. */
 	while (prev != NULL)
 	{
 		cur = prev;
 		prev = cur->prev;
-		
+
 		/* Free the mutex resources in the cur element */
 		for (i=0; i<10 * SCALABILITY_FACTOR; i++)
 		{
@@ -287,8 +285,6 @@ int main(int argc, char * argv[])
 
 	PASSED;
 }
-
-
 
 #else /* WITHOUT_XOPEN */
 int main (int argc, char * argv[])

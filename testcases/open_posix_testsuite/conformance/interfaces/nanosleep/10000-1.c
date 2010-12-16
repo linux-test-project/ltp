@@ -1,17 +1,17 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test nanosleep() on a variety of valid and invalid input parameters.
  *
  * For valid parameters, if the seconds spent is within OKSECERR, the
- * test is considered a pass (Note:  This is not too accurate since 
+ * test is considered a pass (Note:  This is not too accurate since
  * accuracy is at the second level.).
  *
- * For invalid parameters, nanosleep should fail with -1 exit and 
+ * For invalid parameters, nanosleep should fail with -1 exit and
  * errno set to EINVAL.
  */
 #include <stdio.h>
@@ -24,19 +24,19 @@
 
 #define OKSECERR 1
 
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * input tests
  */
-static int sleepvalid[NUMVALID][2] = { {0, 30000000}, {1, 0}, 
+static int sleepvalid[NUMVALID][2] = { {0, 30000000}, {1, 0},
 					{1, 30000000}, {2, 0},
 					{10, 5000}, {13, 5} };
-static int sleepinvalid[NUMINVALID][2] = { {-1, -1}, {0, -1}, 
+static int sleepinvalid[NUMINVALID][2] = { {-1, -1}, {0, -1},
 					{1, 1000000000}, {2, 1000000000},
 					{-2147483647, -2147483647},
 					{1, 2147483647},
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	for (i=0; i<NUMVALID;i++) {
 		tssleepfor.tv_sec=sleepvalid[i][0];
 		tssleepfor.tv_nsec=sleepvalid[i][1];
-		printf("sleep %d sec %d nsec\n", 
+		printf("sleep %d sec %d nsec\n",
 				(int) tssleepfor.tv_sec,
 				(int) tssleepfor.tv_nsec);
 		if (clock_gettime(CLOCK_REALTIME, &tsbefore) == -1) {
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	for (i=0; i<NUMINVALID;i++) {
 		tssleepfor.tv_sec=sleepinvalid[i][0];
 		tssleepfor.tv_nsec=sleepinvalid[i][1];
-		printf("sleep %d sec %d nsec\n", 
+		printf("sleep %d sec %d nsec\n",
 				(int) tssleepfor.tv_sec,
 				(int) tssleepfor.tv_nsec);
 		if (nanosleep(&tssleepfor, &tsstorage) == -1) {

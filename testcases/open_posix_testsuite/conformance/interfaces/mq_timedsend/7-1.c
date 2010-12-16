@@ -51,7 +51,7 @@ int main()
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;
-        queue = mq_open(qname, O_CREAT | O_RDWR | O_NONBLOCK, 
+        queue = mq_open(qname, O_CREAT | O_RDWR | O_NONBLOCK,
 			S_IRUSR | S_IWUSR, &attr);
         if (queue == (mqd_t)-1) {
                 perror("mq_open() did not return success");
@@ -63,7 +63,7 @@ int main()
 	for (i=0; i<MAXMSG+1; i++) {
 		sprintf(msgptr, "message %d", i);
 		ts.tv_sec++;
-        	if (mq_timedsend(queue, msgptr, strlen(msgptr), spri++, &ts) 
+        	if (mq_timedsend(queue, msgptr, strlen(msgptr), spri++, &ts)
 									== -1) {
 			maxreached=1;
 			if (errno != EAGAIN) {
@@ -111,4 +111,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

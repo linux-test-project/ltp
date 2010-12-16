@@ -334,7 +334,6 @@ void setup()
 	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
@@ -355,7 +354,7 @@ void setup()
  *    ***************************************************************/
 void cleanup()
 {
-	/* Remove the temporary directory */
+
 	tst_rmdir();
 
 	/*
@@ -364,6 +363,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

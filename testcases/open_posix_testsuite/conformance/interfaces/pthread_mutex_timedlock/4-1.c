@@ -1,15 +1,15 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_mutex_timedlock()
- * 
+ *
  * Upon success, it returns 0.
  *
- * Steps: 
+ * Steps:
  *
  * 1. Create a thread, and call pthread_mutex_timedlock inside of it.  It should not block
  *    and should return 0 since it will be the only one owning the mutex.
@@ -30,12 +30,12 @@
 							   pthread_mutex_timedlock(). */
 void *f1(void *parm);
 
-int ret;						/* Save return value of 
+int ret;						/* Save return value of
 							   pthread_mutex_timedlock(). */
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
-time_t currsec1, currsec2;				/* Variables for saving time before 
+time_t currsec1, currsec2;				/* Variables for saving time before
 						           and afer locking the mutex using
-							   pthread_mutex_timedlock(). */	   
+							   pthread_mutex_timedlock(). */
 /****************************
  *
  * MAIN()
@@ -45,7 +45,7 @@ int main()
 {
 	pthread_t new_th;
 
-	/* Create a thread that will call pthread_mutex_timedlock */	
+	/* Create a thread that will call pthread_mutex_timedlock */
 	if (pthread_create(&new_th, NULL, f1, NULL) != 0)
 	{
 		perror("Error in pthread_create().\n");
@@ -81,9 +81,9 @@ void *f1(void *parm)
 	struct timespec timeout;
 
 	timeout.tv_sec = time(NULL) + TIMEOUT;
-	timeout.tv_nsec = 0;	
+	timeout.tv_nsec = 0;
 
-	/* This should not block since the mutex is not owned by anyone right now. 
+	/* This should not block since the mutex is not owned by anyone right now.
 	 * Save the return value. */
 	ret = pthread_mutex_timedlock(&mutex, &timeout);
 

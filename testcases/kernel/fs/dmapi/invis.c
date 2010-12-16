@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 		DM_EXIT();
 	} else {
 		int fd;
-	
+
 		sprintf(DummyFile, "%s/%s", mountPt, DUMMY_FILE);
 		sprintf(DummySubdir, "%s/%s", mountPt, DUMMY_SUBDIR);
 		sprintf(DummyTmp, "%s/%s", mountPt, DUMMY_TMP);
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}				
+				}
 			}
 		} else {
 			rc = -1;
@@ -488,7 +488,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -573,7 +573,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -658,7 +658,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -743,7 +743,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -883,7 +883,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_read_invis(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, inoff, inlen, buf);
@@ -1211,7 +1211,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1303,7 +1303,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1395,7 +1395,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1487,7 +1487,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1579,7 +1579,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1671,7 +1671,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}		
+						}
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1812,7 +1812,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-	
+
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_write_invis(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, 0, inoff, inlen, buf);
@@ -1870,8 +1870,8 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }
 
 void *Thread(void *parm)
@@ -1923,7 +1923,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	   
+
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
@@ -1991,7 +1991,7 @@ void *Thread(void *parm)
 		} else if (type == DM_EVENT_UNMOUNT) {
 			/* SPECIAL CASE: need to set response and bMounted */
 			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
-		
+
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_UNMOUNT\n");
 			DMLOG_PRINT(DMLVL_DEBUG, "  Unmount mode: %x\n", nse->ne_mode);
 			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n", DM_GET_VALUE(nse, ne_handle1, void *));
@@ -2075,7 +2075,7 @@ void *Thread(void *parm)
 			case DM_EVENT_CLOSE:
 				response = DM_RESP_INVALID;
 				break;
-			
+
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");

@@ -24,19 +24,19 @@
  ftruncate/mmap/write/read sequence. And we found that some pages are
  "lost" after writing to the mmaped file. which in the following test
  cases (count >= 0).
-        
+
   First we deployed the test cases into group of machines and see about
   >20% failure rate on average. Then, I did couple of experiment to try
   to reproduce it on a single machine. what i found is that:
   1. add a fsync after write the file, i can not reproduce this issue.
   2. add memory pressure(mmap/mlock) while run the test in infinite
   loop, the failure is reproduced quickly. ( background flushing ? )
-  
+
   The "bad pages" count differs each time from one digit to 4,5 digit
   for 128M ftruncated file. and what i also found that the bad page
   number are contiguous for each segment which total bad pages container
   several segments. ext "1-4, 9-20, 48-50" (  batch flushing ? )
-  
+
   (The failure is reproduced based on 2.6.29-rc8, also happened on
    2.6.18 kernel. . Here is the simple test case to reproduce it with
    memory pressure. )
@@ -56,12 +56,11 @@
 #include "usctest.h"
 
 /* Extern Global Variables */
-extern int  Tst_count;               /* counter for tst_xxx routines.         */
+extern int  Tst_count;
 
 /* Global Variables */
 char *TCID     = "mmap-corruption01"; /* test program identifier.          */
 int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
-
 
 long kMemSize  = 128 << 20;
 int kPageSize = 4096;
@@ -103,7 +102,7 @@ int main(int argc, char **argv) {
                                 usage);
                         anyfail();
                 }
-       } 
+       }
 
         /*
          *  Plan for death by signal.  User may have specified
@@ -124,29 +123,28 @@ int main(int argc, char **argv) {
         if (alarmtime) {
                 if (sigaction(SIGALRM, &sa, 0) == -1) {
                         perror("sigaction error");
-                        exit(1);                        
+                        exit(1);
                 }
                 (void)alarm(alarmtime);
-                printf("mmap-corruption will run for=> %ld, seconds\n",alarmtime);    
+                printf("mmap-corruption will run for=> %ld, seconds\n",alarmtime);
         } else { //Run for 5 secs only
                 if (sigaction(SIGALRM, &sa, 0) == -1) {
                         perror("sigaction error");
-                        exit(1); 
+                        exit(1);
                 }
                 (void)alarm(5);
-                printf("mmap-corruption will run for=> 5, seconds\n");    
+                printf("mmap-corruption will run for=> 5, seconds\n");
         }
         /* If we get a SIGQUIT or SIGTERM, clean up and exit immediately. */
         sa.sa_handler = finish;
         if (sigaction(SIGQUIT, &sa, 0) == -1) {
                 perror("sigaction error SIGQUIT");
-                exit(1);                        
+                exit(1);
         }
         if (sigaction(SIGTERM, &sa, 0) == -1) {
                 perror("sigaction error SIGTERM");
-                exit(1);                        
+                exit(1);
         }
-
 
        tst_tmpdir();
        while (1) {
@@ -181,4 +179,3 @@ void finish(int sig) {
      printf("mmap-corruption PASSED\n");
      exit(0);
 }
-

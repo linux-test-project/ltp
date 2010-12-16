@@ -21,7 +21,6 @@
 #include "cirlist.h"
 #include "util.h"
 
-
 void init_cirlist(struct cirlist *cl)
 {
 	cl->count = 0;

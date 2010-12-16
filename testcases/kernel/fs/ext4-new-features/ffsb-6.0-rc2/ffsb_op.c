@@ -129,7 +129,6 @@ void print_results(struct ffsb_op_results *results, double runtime)
 	}
 }
 
-
 char *op_get_name(int opnum)
 {
 	return ffsb_op_list[opnum].op_name;

@@ -34,7 +34,6 @@
 #include <errno.h>
 #include "test.h"
 
-
 /* Defines
  *
  * DEFAULT_NUM_THREADS: Default number of threads to create,
@@ -101,7 +100,6 @@ int main (int argc, char **argv)
 	exit (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               thread ()                              |
 | ==================================================================== |
@@ -116,7 +114,6 @@ void *thread (void *parm)
 	pthread_attr_t	attr;
 	size_t		stacksize = 1046528;
         int             pcrterr;
-
 
 	/*
 	 * Create threads while num < num_threads...
@@ -157,7 +154,6 @@ void *thread (void *parm)
 	*/
 }
 
-
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
 | ==================================================================== |
@@ -196,7 +192,6 @@ static void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -211,7 +206,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

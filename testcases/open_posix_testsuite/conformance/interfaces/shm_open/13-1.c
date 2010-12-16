@@ -14,7 +14,7 @@
  */
 
 /* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base 
+   avoid warning if the implementation does not program ftruncate as a base
    interface */
 #define _XOPEN_SOURCE 600
 
@@ -54,4 +54,3 @@ int main() {
 	shm_unlink(SHM_NAME);
 	return PTS_FAIL;
 }
-       

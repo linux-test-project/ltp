@@ -449,9 +449,8 @@ cleanup:
 	(void)time(&t);
 	//(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
 	ok_exit();
-	return 0;
+	tst_exit();
 }
-
 
 /*
  *  Child process that reads/writes map.  The child stats the file
@@ -699,7 +698,7 @@ fileokay(char *file, uchar_t *expbuf)
 		}
 	}
 	close(fd);
-				
+
 	return 1;
 }
 
@@ -740,7 +739,6 @@ void ok_exit()
         tst_exit();
 }
 
-
 int anyfail()
 {
   	tst_resm(TFAIL, "Test failed");
@@ -750,4 +748,3 @@ int anyfail()
 }
 
 /*****  **      **      *****/
-

@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_attr_setstacksize()
- * 
+ *
  * Steps:
- * 1.  Initialize pthread_attr_t object (attr) 
+ * 1.  Initialize pthread_attr_t object (attr)
  * 2.  set stacksize to attr
  * 3.  create a thread with the attr
  * 4.  In the created thread, read stacksize
@@ -124,7 +124,7 @@ int main()
 			strerror(rc));
 		exit(PTS_UNRESOLVED);
         }
-	
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }

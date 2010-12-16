@@ -69,9 +69,9 @@ register int sockfd;
     while (fgets(sendline, MAXLINE, fp) != NULL)
         {
 	    n = strlen(sendline);
-	   
+
 	    dprt("%s: str_cli(): sendline = %s", __FILE__, sendline);
-	   
+
 	    if (writen(sockfd, sendline, n) != n)
 	        perror("str_cli: writen error on socket");
 	    /*

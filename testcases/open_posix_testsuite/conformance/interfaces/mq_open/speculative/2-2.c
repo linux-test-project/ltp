@@ -7,7 +7,7 @@
  */
 
 /*
- * Test that if the first letter of name is not "/" the behavior 
+ * Test that if the first letter of name is not "/" the behavior
  * is implementation defined.
  */
 
@@ -44,4 +44,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

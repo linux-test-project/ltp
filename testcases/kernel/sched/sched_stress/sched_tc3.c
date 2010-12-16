@@ -49,7 +49,6 @@
 #include <sys/resource.h>
 #include   "sched.h"
 
-
 /*
  * Defines:
  *
@@ -81,7 +80,6 @@ void parse_args (int, char **);
 void multiply_matrices ();
 void signal_handler ();
 
-
 /*
  * Global variables:
  *
@@ -97,7 +95,6 @@ int	verbose   = 0;
 int	debug     = 0;
 int	signaled  = 0;
 char 	*priority = DEFAULT_PRIORITY_TYPE;
-
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -146,7 +143,6 @@ int main (int argc, char **argv)
 	i = 0;
 	start_time = time ((long *) 0);
 
-
 	/*
 	 * Continuously read through file until interrupted...
 	 */
@@ -166,7 +162,6 @@ int main (int argc, char **argv)
 	if (verbose) printf ("\nsuccessful!\n");
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                         multiply_matricies ()                        |
@@ -205,7 +200,6 @@ void multiply_matrices ()
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                           signal_handler ()                          |
 | ==================================================================== |
@@ -224,7 +218,6 @@ void signal_handler (int signal)
 	} else
 		error ("received unexpected signal", __FILE__, __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |

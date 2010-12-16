@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 
         if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
                 perror("read");
-    
+
         ioctl(s, SIOCGSTAMP, &tv);
         printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
@@ -334,7 +334,6 @@ int main(int argc, char **argv)
 
         if (write(s, &txmsg, sizeof(txmsg)) < 0)
                 perror("write");
-
 
         txmsg.msg_head.opcode  = TX_SEND;
         txmsg.msg_head.nframes = 1;
@@ -514,4 +513,3 @@ int main(int argc, char **argv)
 
         return 0;
 }
-

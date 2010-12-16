@@ -166,7 +166,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* save current working directory */
@@ -208,7 +207,7 @@ int main(int ac, char **av)
 		(void)rmdir(tstdir2);
 		(void)rmdir(tstdir3);
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * cleanup and exit
@@ -216,7 +215,7 @@ int main(int ac, char **av)
 	cleanup();
 	  return 0;
 
-}				/* End main */
+}
 
 /*
  * set_condition - set up starting conditions for the individual tests
@@ -342,10 +341,9 @@ void remove_longpath()
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -383,5 +381,5 @@ void cleanup()
 	/*
 	 * Exit with return code appropriate for results.
 	 */
-	tst_exit();
+
 }

@@ -80,7 +80,6 @@ int main(int argc, char **argv)
                 }
         }
 
-
         if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
                 perror("socket");
                 return 1;
@@ -92,12 +91,11 @@ int main(int argc, char **argv)
 
         addr.can_family  = AF_CAN;
         addr.can_ifindex = 0; /* bind to all interfaces */
- 
+
         if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
                 perror("bind");
                 return 1;
         }
-
 
         /* fill CAN frame */
         frame.can_id  = 0x123;
@@ -108,11 +106,10 @@ int main(int argc, char **argv)
 
         addr.can_family  = AF_CAN;
         addr.can_ifindex = ifindex; /* send via this interface */
- 
+
         nbytes = sendto(s, &frame, sizeof(struct can_frame), 0, (struct sockaddr*)&addr, sizeof(addr));
 
         close(s);
 
         return 0;
 }
-

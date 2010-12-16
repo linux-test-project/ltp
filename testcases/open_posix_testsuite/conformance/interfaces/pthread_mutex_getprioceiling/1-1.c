@@ -1,4 +1,4 @@
-/*   
+/*
  * Copyright (c) 2010, Garrett Cooper.
  *
  * Test that pthread_mutex_getprioceiling() returns the current prioceiling of
@@ -8,7 +8,7 @@
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2.  Set the protocol using PTHREAD_PRIO_INHERIT.
  * 3.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -39,7 +39,7 @@ main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	/* 
+	/*
 	 * Has to be something other than PTHREAD_PRIO_NONE, the default as per
 	 * pthread_mutexattr_getprotocol.
 	 */

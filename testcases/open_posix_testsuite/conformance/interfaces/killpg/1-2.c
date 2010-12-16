@@ -1,13 +1,13 @@
-/*   
+/*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  *   Steps:
  *  1) Fork a child process.
- *  2) In the parent process, call killpg with signal SIGTOTEST for the 
+ *  2) In the parent process, call killpg with signal SIGTOTEST for the
  *     process group id of the child. Have the parent ignore such a signal
  *     incase the process group id of the parent is the same as process
  *     group id of the child.
@@ -46,7 +46,7 @@ int main()
 
 		/* change child's process group id */
 
-		/* 
+		/*
 		 * XXX: POSIX 1003.1-2001 added setpgrp(2) to BASE, but
 		 * unfortunately BSD has had their own implementations for
 		 * ages for compatibility reasons.
@@ -59,7 +59,7 @@ int main()
 
 		sigpause(SIGABRT);
 
-		return 0;
+		tst_exit();
 	} else {
 		/* parent here */
 		int i;
@@ -70,7 +70,6 @@ int main()
 			printf("Could not get pgid of child\n");
 			return PTS_UNRESOLVED;
 		}
-
 
 		if (killpg(child_pgid, SIGTOTEST) != 0) {
 			printf("Could not raise signal being tested\n");
@@ -97,4 +96,3 @@ int main()
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
-

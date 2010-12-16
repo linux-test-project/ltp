@@ -59,7 +59,6 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 #define K_4		4096
 #define MAXSIZE         10*K_1
 
-
 int	nchild;				/* # kids */
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */
@@ -89,7 +88,6 @@ int main(argc, argv)
 {
 	register int i;
 	void	term();
-
 
 	prog = argv[0];
 	parent_pid = getpid();
@@ -138,14 +136,12 @@ int bd_arg(str)
         return 0;
 }
 
-
 int runtest()
 {
 	register int i;
 	int	child;
 	int	status;
 	int	count;
-
 
 	for (i = 0; i < nchild; i++) {
 		if ((child = fork()) == 0) {		/* child */
@@ -195,7 +191,6 @@ int runtest()
 
         /**NOT REACHED**/
         return 0;
-
 
 }
 
@@ -337,7 +332,6 @@ int bfill(buf, val, size)
 		buf[i] = val;
 	return 0;
 }
-
 
 /*
  * dumpbuf

@@ -1,17 +1,17 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_attr_setinheritsched()
- * 
+ *
  * Steps:
  * 1.  Initialize a pthread_attr_t object using pthread_attr_init()
- * 2.  Call pthread_attr_setinheritsched with unsupported inheritsched 
+ * 2.  Call pthread_attr_setinheritsched with unsupported inheritsched
  *     parameter
- * 
+ *
  */
 
 #include <pthread.h>
@@ -24,7 +24,7 @@
 #define FUNCTION "pthread_attr_setinheritsched"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-#define INVALIDSCHED 999 
+#define INVALIDSCHED 999
 
 int main()
 {
@@ -50,7 +50,3 @@ int main()
 	printf("Test PASS\n");
 	return PTS_PASS;
 }
-
-
-
-

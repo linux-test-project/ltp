@@ -14,7 +14,6 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This utility software allows to run any executable file with a timeout limit.
  * The syntax is:
  * $ ./t0 n exe arglist
@@ -23,13 +22,13 @@
  *        arglist is the arguments to be passed to executable.
  *
  * The use of this utility is intended to be "transparent", which means
- * everything is as if 
- * $ exe arglist 
+ * everything is as if
+ * $ exe arglist
  *   had been called, and a call to "alarm(n)" had been added inside exe's main.
  *
  * SPECIAL CASE:
  * $ ./t0 0
- *  Here another arg is not required. This special case will return immediatly 
+ *  Here another arg is not required. This special case will return immediatly
  *  as if it has been timedout. This is usefull to check a timeout return code value.
  *
  */
@@ -47,14 +46,14 @@
 int main (int argc, char * argv[])
 {
 	int ret, timeout;
-	
+
 	/* Special case: t0 0 */
 	if (argc == 2 && (strncmp(argv[1], "0", 1) == 0)) {
 		kill(getpid(), SIGALRM);
 		sleep(1);
 		return 1;
 	}
-	
+
 	/* General case */
 	if (argc < 3) {
 		printf("\nUsage: \n");
@@ -67,17 +66,17 @@ int main (int argc, char * argv[])
 		printf("  The second use case will emulate an immediate timeout.\n\n");
 		return 1;
 	}
-	
+
 	timeout = atoi(argv[1]);
 	if (timeout < 1)
 	{
 		fprintf(stderr, "Invalid timeout value \"%s\". Timeout must be a positive integer.\n", argv[1]);
 		return 1;
 	}
-	
+
 	/* Set the timeout */
 	alarm(timeout);
-	
+
 	/* Execute the command */
 	ret = execvp(argv[2], &argv[2]);
 

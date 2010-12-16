@@ -163,7 +163,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -200,22 +199,21 @@ int main(int ac, char **av)
 			break;
 		}		/* switch */
 
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/*
@@ -228,13 +226,12 @@ void setup()
 This is because the test forks to create a child process which then calls execl.\n\
 The TEST macro is NOT used.");
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temp dir and cd to it */
 	tst_tmpdir();
 
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -248,9 +245,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove files and temp dir */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

@@ -115,7 +115,6 @@ void readmsg(int sock, char *buf, int maxlen) {
         *buf = 0;
 }
 
-
 int main(int argc, char **argv)
 {
 
@@ -151,7 +150,7 @@ int main(int argc, char **argv)
                 exit(1);
         }
 
-        while (1) { 
+        while (1) {
                 sa = accept(sl,(struct sockaddr *)&clientaddr, &sin_size);
                 if (sa > 0) {
 
@@ -205,7 +204,7 @@ int main(int argc, char **argv)
                 items = sscanf(buf, "< %6s %c %lu %lu %x %hhu "
                                "%hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx >",
                                ifr.ifr_name,
-                               &cmd, 
+                               &cmd,
                                &msg.msg_head.ival2.tv_sec,
                                &msg.msg_head.ival2.tv_usec,
                                &msg.msg_head.can_id,
@@ -262,4 +261,3 @@ int main(int argc, char **argv)
 
         return 0;
 }
-

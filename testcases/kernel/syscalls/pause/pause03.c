@@ -104,13 +104,10 @@ int main(int ac, char **av)
 	maybe_run_child(&do_child, "");
 #endif
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Creat a new process using fork() */
@@ -184,13 +181,11 @@ int main(int ac, char **av)
 		/* reset cflag in case we are looping */
 		cflag = 0;
 
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /*
  * do_child()
@@ -212,10 +207,9 @@ void do_child()
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Initialise cflag */
@@ -253,6 +247,4 @@ void cleanup()
 	/* Cleanup the child if still active */
 	kill(cpid, SIGKILL);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

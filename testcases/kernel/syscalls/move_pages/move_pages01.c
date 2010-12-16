@@ -75,8 +75,7 @@ int main(int argc, char **argv)
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-		
+
 	}
 
 	setup();
@@ -116,9 +115,7 @@ int main(int argc, char **argv)
 #endif
 
 	cleanup();
-	/* NOT REACHED */
 
-	return 0;
 }
 
 /*
@@ -126,7 +123,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	check_config(TEST_NODES);
@@ -147,6 +144,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

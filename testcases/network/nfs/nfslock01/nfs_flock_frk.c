@@ -23,7 +23,7 @@ main (int argc, char **argv)
 
    Prog = strrchr(argv[1], '/');
    Prog++;
- 
+
    if ((pid = fork()) < 0) {
       printf("Failed in forking, Errno = %d", errno);
       exit(2);

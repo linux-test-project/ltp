@@ -158,7 +158,7 @@ int rt_init_long(const char *options, const struct option *longopts,
 		}
 		cur_opt++;
 	}
-	
+
 	while ((c = getopt_long(argc, argv, all_options, longopts, NULL)) != -1) {
 		switch (c) {
 		case 'c':
@@ -268,7 +268,6 @@ void setup()
 	signal(SIGQUIT,cleanup);
 	signal(SIGTERM, cleanup);
 }
-
 
 int create_thread(void*(*func)(void*), void *arg, int prio, int policy)
 {

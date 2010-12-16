@@ -46,4 +46,3 @@ int main()
 	printf("In this implementation, mq_open() fails on invalid flags\n");
         return PTS_PASS;
 }
-

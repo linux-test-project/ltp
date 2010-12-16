@@ -136,7 +136,6 @@ void error (const char *, int);
  */
 int shmem_size = DEFAULT_SHMEM_SIZE;
 
-
 /*---------------------------------------------------------------------+
 |                               main                                   |
 | ==================================================================== |
@@ -176,13 +175,12 @@ int main (int argc, char **argv)
 		'E'
 	};
 
-
 	/*
 	 * Parse command line arguments and print out program header
 	 */
 	parse_args (argc, argv);
 	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
-   
+
 	for (i=0; i<offsets_cnt; i++) {
         /*
          * Create a key to uniquely identify the shared segment
@@ -191,7 +189,6 @@ int main (int argc, char **argv)
 	mykey[i] = ftok(null_file,proj[i]);
 
 	printf ("\n\tmykey to uniquely identify the shared memory segment 0x%x\n",mykey[i]);
-
 
 	printf ("\n\tGet shared memory segment (%d bytes)\n", shmem_size);
         /*
@@ -202,7 +199,6 @@ int main (int argc, char **argv)
 	if ((shmid[i]= shmget (IPC_PRIVATE, shmem_size,
 				IPC_CREAT | IPC_EXCL | 0666 )) < 0)
 		sys_error ("shmget failed", __LINE__);
-
 
 	printf ("\n\tAttach shared memory segment to process\n");
         /*
@@ -220,8 +216,6 @@ int main (int argc, char **argv)
          if ((shmptr[i] = (char *) shmat (shmid[i], 0 , 0)) == (char *)-1)
 #endif
                 sys_error ("shmat failed", __LINE__);
-
-
 
 	printf ("\n\tIndex through shared memory segment ...\n");
 
@@ -249,7 +243,6 @@ int main (int argc, char **argv)
          * Release shared memory
          */
 
-
 	if (shmctl (shmid[i], IPC_RMID, 0) < 0)
 		sys_error ("shmctl failed", __LINE__);
 
@@ -262,7 +255,6 @@ int main (int argc, char **argv)
 
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
@@ -303,7 +295,6 @@ void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -318,7 +309,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

@@ -2,7 +2,7 @@
  * Copyright (c) 2004, Bull SA. All rights reserved.
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
@@ -18,9 +18,9 @@
  *	try to cancel the last one submited
  *	if aio_error() is ECANCELED and aio_cancel() is AIO_CANCELED
  *	test is passed
- *	if aio_error() is ECANCELED and aio_cancel() is NOT AIO_CANCELED 
+ *	if aio_error() is ECANCELED and aio_cancel() is NOT AIO_CANCELED
  *	test is failed
- *	if there is no aio_error() with ECANCELED and 
+ *	if there is no aio_error() with ECANCELED and
  *	aio_cancel() is AIO_CANCELED
  *	test is failed
  *	otherwise test is unresolved
@@ -57,7 +57,7 @@ int main()
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
 		return PTS_UNSUPPORTED;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_6_1_%d", 
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_6_1_%d",
 		  getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
@@ -138,7 +138,7 @@ int main()
 					printf ("Test PASSED\n");
 					return PTS_PASS;
 				}
-							
+
 				printf(TNAME " aio_cancel() is not AIO_CANCELED\n");
 				return PTS_FAIL;
 			}

@@ -37,8 +37,8 @@
 
 /* This is a kernel test to verify
  * 1. MSG_EOR flag is set correctly when a single message is read using multiple
- *    recvmsg() calls. 
- * 2. MSG_PEEK support. 
+ *    recvmsg() calls.
+ * 2. MSG_PEEK support.
  */
 
 #include <stdio.h>
@@ -70,12 +70,12 @@ main(int argc, char *argv[])
 	char *big_buffer;
 	void *msg_buf;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
 
-	/* Initialize the server and client addresses. */ 
+	/* Initialize the server and client addresses. */
 	svr_loop.sin_family = AF_INET;
 	svr_loop.sin_addr.s_addr = SCTP_IP_LOOPBACK;
 	svr_loop.sin_port = htons(SCTP_TESTPORT_1);
@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 	test_enable_assoc_change(clt_sk);
 
 	/* Send a message. This will create the association.  */
-	memset(&outmessage, 0, sizeof(outmessage));	
+	memset(&outmessage, 0, sizeof(outmessage));
 	outmessage.msg_name = &svr_loop;
 	outmessage.msg_namelen = sizeof(svr_loop);
 	outmessage.msg_iov = &out_iov;
@@ -123,17 +123,17 @@ main(int argc, char *argv[])
 	error = test_recvmsg(clt_sk, &inmessage, 0);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 
 	/* Receive COMM_UP on svr_sk. */
 	inmessage.msg_controllen = sizeof(incmsg);
 	error = test_recvmsg(svr_sk, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 
 	/* Read the 30000 byte message using multiple recvmsg() calls in a
-	 * loop with 2000 bytes per read. 
+	 * loop with 2000 bytes per read.
 	 */
 	for (i = 0, msglen = 30000; i < 15; i++, msglen-=2000) {
 		iov.iov_len = REALLY_BIG;

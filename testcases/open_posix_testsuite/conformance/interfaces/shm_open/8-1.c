@@ -49,7 +49,7 @@ int main() {
 		unlink(path);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	unlink(path);
 	shm_unlink(SHM_NAME);
 

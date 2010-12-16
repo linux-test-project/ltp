@@ -1,7 +1,7 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  * adam li
  *
@@ -45,9 +45,9 @@ int main(int argc, char *argv[])
 	rc = sysconf(_SC_CPUTIME);
 	printf("sysconf(_SC_CPUTIME) returns: %d\n", rc);
 	if (rc <= 0) {
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
-		
+
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 		return PTS_PASS;
 	} else {
 		printf("Timer did not last for correct amount of time\n");
-		printf("timer: %d != correct %d\n", 
+		printf("timer: %d != correct %d\n",
 				(int) ts.tv_sec- (int) tsleft.tv_sec,
 				TIMERSEC);
 		return PTS_FAIL;

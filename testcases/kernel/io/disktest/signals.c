@@ -167,4 +167,3 @@ void clear_stat_signal( void )
 		UNLOCK(sig_mutex);
 	}
 }
-

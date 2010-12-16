@@ -22,4 +22,3 @@ int main()
 	printf("test's domain.\n");
 	return PTS_UNTESTED;
 }
-

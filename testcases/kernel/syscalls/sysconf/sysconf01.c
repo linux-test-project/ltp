@@ -173,6 +173,5 @@ int main()
 
 	tst_exit();
 
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }

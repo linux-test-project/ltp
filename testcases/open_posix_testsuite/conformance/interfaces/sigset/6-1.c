@@ -2,10 +2,10 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- This program tests the assertion that if disp is SIG_HOLD, then the 
+ This program tests the assertion that if disp is SIG_HOLD, then the
  signal shall be added to the process's signal mask.
 
  Steps:
@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "posixtest.h"
-
 
 void myhandler(int signo)
 {
@@ -48,7 +47,7 @@ int main()
         }
 
 	raise(SIGCHLD);
-	
+
         if (sigpending(&pendingset) == -1) {
                 printf("Error calling sigpending()\n");
                 return PTS_UNRESOLVED;
@@ -60,4 +59,4 @@ int main()
 	}
 
 	return PTS_PASS;
-} 
+}

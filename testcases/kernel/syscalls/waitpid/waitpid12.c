@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 				if (self_exec(argv[0], "") < 0) {
 					tst_resm(TFAIL, "self_exec kid %d "
 						 "failed", kid_count);
-					tst_exit();
+
 				 }
 #else
 				do_exit();
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid %d failed. errno = "
 					 "%d", kid_count, errno);
-				tst_exit();
+
 			 }
 
 			/* parent */
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 			if (kill(fork_kid_pid[i], SIGINT) < 0) {
 				tst_resm(TFAIL, "Kill of child %d failed, "
 					 "errno = %d", i, errno);
-				tst_exit();
+
 			 }
 		}
 
@@ -311,8 +311,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	return 0;
-
 }
 
 /*
@@ -333,7 +331,7 @@ void setup_sigint(void)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified
@@ -355,8 +353,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }
 
 void inthandlr()

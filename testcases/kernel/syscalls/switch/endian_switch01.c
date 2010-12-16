@@ -68,10 +68,8 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 }
@@ -88,9 +86,7 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}
 
 #if defined (__powerpc64__) || (__powerpc__)
 #ifndef PPC_FEATURE_TRUE_LE

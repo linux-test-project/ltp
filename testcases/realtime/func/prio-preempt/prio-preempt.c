@@ -261,7 +261,6 @@ void *master_thread(void* arg)
 				sched_get_priority_min(SCHED_FIFO) + pri_boost);
 	}
 
-
 	printf("Worker threads created\n");
 	/* Let the worker threads wait on the cond vars */
 	while (threads_running < NUM_WORKERS)

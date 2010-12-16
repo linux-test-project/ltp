@@ -29,7 +29,7 @@
  * This is similar to fptest1.  Random values are used for some of the
  * math in routine "gauss".  The value "avgspd" computed in routine
  * "term()" should come out to a known value.  If this happens this
- * program prints a "passed" message and exits 0, otherwise a "failed" 
+ * program prints a "passed" message and exits 0, otherwise a "failed"
  * message is printed and it exits with value 1.
  *
  */
@@ -66,7 +66,6 @@ char *TCID="fptest02";          /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
-
 
 int init();
 int doevent();
@@ -198,7 +197,7 @@ double t;
 			break;
 			}
 		}
-	if (ok) 
+	if (ok)
 		return(0);
 	else{
                                  tst_resm(TBROK,"No room for event");
@@ -222,7 +221,7 @@ struct event *nextevent()
 		mintime=eventtab[i].time;
 		}
 	  }
-	
+
 	if (imin) {
 		rtrevent.type = eventtab[imin].type;
 		rtrevent.proc = eventtab[imin].proc;
@@ -282,7 +281,7 @@ struct event *ev;
 
 	switch (ev->type) {
 		case TRYCRIT :
-			if (critfree==TRUE) 
+			if (critfree==TRUE)
 				addevent(ENTERCRIT,proc,sgtime);
 			else
 				addwaiting(proc);
@@ -345,7 +344,7 @@ int seed;
 	twopi=2.*acos((double)-1.0);
 	return;
 }
-	
+
 double gauss()
 {
 	double x1,x2;
@@ -363,4 +362,3 @@ double gauss()
 		return(mean + stdev*x2);
 		}
 }
-

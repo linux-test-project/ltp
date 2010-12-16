@@ -118,7 +118,6 @@ void *thread_defense(void* arg)
 	return NULL;
 }
 
-
 /* This is the offensive team. They're trying to move the ball */
 void *thread_offense(void* arg)
 {
@@ -209,4 +208,3 @@ int main(int argc, char* argv[])
 	return result;
 
 }
-

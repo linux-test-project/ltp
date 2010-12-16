@@ -1,26 +1,25 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_condattr_destroy()
- *   Upon successful completion, pthread_condattr_destroy() shall 
+ *   Upon successful completion, pthread_condattr_destroy() shall
  *   return a value of 0.
- * 
+ *
  * Steps:
  * 1.  Initialize a pthread_condattr_t object using pthread_condattr_init()
  * 2.  Destroy that initialized attribute using pthread_condattr_destroy().
- *     This should return 0; 
- * 
+ *     This should return 0;
+ *
  */
 
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 int main()
 {
@@ -45,5 +44,3 @@ int main()
 		return PTS_PASS;
 	}
 }
-
-

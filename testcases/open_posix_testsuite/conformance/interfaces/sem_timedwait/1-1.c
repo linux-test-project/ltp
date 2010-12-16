@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  majid.awad REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content 
- * of this license, see the COPYING file at the top level of this 
+ * This file is licensed under the GPL license.  For the full content
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
- * sem_timedwait shall lock the unlocked semaphore and decrement the 
+ * sem_timedwait shall lock the unlocked semaphore and decrement the
  * semaphore * value by one.
  */
 
@@ -22,18 +22,14 @@
 #include <time.h>
 #include "posixtest.h"
 
-
 #define TEST "1-1"
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
-
-
 
 int main() {
 	sem_t mysemp;
 	struct timespec ts;
 	int val, sts;
-
 
         if (sem_init (&mysemp, 0, 1) == -1) {
                 perror(ERROR_PREFIX "sem_init");
@@ -47,9 +43,8 @@ int main() {
 	sts = sem_timedwait(&mysemp, &ts);
         if (sts == -1) {
 		perror(ERROR_PREFIX "sem_timedwait");
-		return PTS_UNRESOLVED; 
+		return PTS_UNRESOLVED;
 	}
-
 
 	/* Value of Semaphore */
 	if (sem_getvalue(&mysemp, &val) == -1) {
@@ -62,7 +57,7 @@ int main() {
 		puts("TEST PASSED");
 		sem_destroy(&mysemp);
 		return PTS_PASS;
-	} else { 
+	} else {
 		puts("TEST FAILED");
 		return PTS_FAIL;
 	}

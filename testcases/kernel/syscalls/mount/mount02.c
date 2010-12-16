@@ -169,13 +169,10 @@ int main(int ac, char **av)
 		STD_COPIES = 1;
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -208,14 +205,14 @@ int main(int ac, char **av)
 
 			(void)cleanup_test(i);
 
-		}		/* End of TEST CASE LOOPING. */
-	}			/* End for TEST_LOOPING */
+		}
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
-}				/* End main */
+}
 
 /*
  * int
@@ -385,7 +382,7 @@ int cleanup_test(int i)
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
@@ -403,9 +400,8 @@ void setup()
 	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -421,9 +417,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it. */
 	tst_rmdir();
-}				/* End cleanup() */
+}
 
 /*
  * issue a help message

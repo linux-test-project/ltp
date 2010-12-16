@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <tirpc/netconfig.h>
@@ -44,7 +44,7 @@ static void exm_proc();
 //****************************************//
 //***           Main Function          ***//
 //****************************************//
-int main(int argn, char *argc[]) 
+int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
 	//					    others arguments depend on server program
@@ -54,31 +54,30 @@ int main(int argn, char *argc[])
 	SVCXPRT *transp = NULL;
 	struct netconfig *nconf;
 	struct netbuf svcaddr;
-	
-	
+
 	//Initialization
 	svc_unreg(progNum, VERSNUM);
 
-	if ((nconf = getnetconfigent("udp")) == NULL) 
+	if ((nconf = getnetconfigent("udp")) == NULL)
     {
     	fprintf(stderr, "Cannot get netconfig entry for UDP\n");
     	exit(1);
 	}
-	
+
 	transp = svc_vc_create(RPC_ANYFD, 1024, 1024);
-                           
+
 	if (transp == NULL)
 	{
     	fprintf(stderr, "Cannot create service.\n");
     	exit(1);
 	}
-	
+
 	if (!svc_reg(transp, progNum, VERSNUM, exm_proc, nconf))
 	{
     	fprintf(stderr, "svc_reg failed!!\n");
     	exit(1);
 	}
-	
+
 	svc_run();
 
 	fprintf(stderr, "svc_run() returned.  ERROR has occurred.\n");
@@ -90,7 +89,7 @@ int main(int argn, char *argc[])
 //****************************************//
 //***        Remotes Procedures        ***//
 //****************************************//
-char *simplePing(char *in) 
+char *simplePing(char *in)
 {
 	//printf("*** in Ping Func.\n");
 	//Simple function, returns what received
@@ -108,13 +107,13 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 	union {
 		int varIn;
 	} argument;
-	
-	char *result;            
-	xdrproc_t xdr_argument; 
-	xdrproc_t xdr_result;   
+
+	char *result;
+	xdrproc_t xdr_argument;
+	xdrproc_t xdr_result;
 	char *(*proc)(char *);
-	
-	switch (rqstp->rq_proc) 
+
+	switch (rqstp->rq_proc)
 	{
 		case PROCSIMPLEPING:
 		{
@@ -131,9 +130,9 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 		svcerr_decode(transp);
 		return;
 	}
-	
+
 	result = (char *)(*proc)((char *)&argument);
-	
+
 	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
 	{
 		svcerr_systemerr(transp);

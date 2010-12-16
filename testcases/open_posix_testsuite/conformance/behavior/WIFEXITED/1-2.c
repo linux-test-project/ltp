@@ -1,6 +1,6 @@
 /*
   Test case for assertion #1 of the WIFEXITED macro defined in sys/wait.h
-  by forking a new process, having the process return 0, and verifying 
+  by forking a new process, having the process return 0, and verifying
   WIFEXITED returns a non-negative value.
 */
 

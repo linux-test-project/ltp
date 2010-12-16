@@ -79,7 +79,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -115,7 +114,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	return 0;
  }
 
 /*
@@ -123,10 +121,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temp dir and cd to it */
@@ -143,9 +140,6 @@ void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	/* remove the tmp dir and all its files */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

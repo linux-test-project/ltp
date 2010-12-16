@@ -105,13 +105,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -120,7 +117,6 @@ int main(int ac, char **av)
 		 */
 		TEST(SETGROUPS(gidsetsize, groups_list));
 
-		/* check return code of setgroups(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "setgroups(%d, groups_list) Failed, "
 				 "errno=%d : %s", gidsetsize, TEST_ERRNO,
@@ -159,12 +155,10 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -175,7 +169,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Make sure the calling process is super-user only */
@@ -183,7 +177,6 @@ void setup()
 		tst_brkm(TBROK, NULL, "Must be ROOT to run this test.");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get the group id info. of TESTUSER from /etc/passwd */
@@ -211,6 +204,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

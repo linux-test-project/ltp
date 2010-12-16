@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     oldkernel = 0;
 
   fd = open(argv[1], O_RDONLY, 0);
- 
+
   if (fd == -1) {
     perror("test_noioctl:open");
     exit(1);

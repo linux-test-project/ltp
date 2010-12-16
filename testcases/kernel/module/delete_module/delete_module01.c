@@ -94,10 +94,8 @@ main(int argc, char **argv)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -135,22 +133,20 @@ main(int argc, char **argv)
 	/* perform global cleanup and exit */
 EXIT:
 	cleanup();
-	
-	return 0;
 
-}		/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
-		
+
 	}
 
 	/*
@@ -179,7 +175,4 @@ cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-	
 }

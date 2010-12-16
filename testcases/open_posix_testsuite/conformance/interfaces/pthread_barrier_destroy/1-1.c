@@ -1,19 +1,19 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * pthread_barrier_destroy()
  *
  *
- * The pthread_barrier_destroy() function shall destroy the barrier 
+ * The pthread_barrier_destroy() function shall destroy the barrier
  * referenced by barrier and release any resources used by the barrier.
  *
  * Steps:
  * 1. Main initialize barrier with count 2
  * 2. Main destroy the barrier
- * 3. Repeat step 1,2 for N times 
+ * 3. Repeat step 1,2 for N times
  */
 #define _XOPEN_SOURCE 600
 #include <pthread.h>
@@ -31,7 +31,7 @@ int main()
 {
 	int cnt;
 	int rc;
-	
+
 	for (cnt = 0; cnt < LOOP_NUM; cnt++)
 	{
 		if (pthread_barrier_init(&barrier, NULL, 2) != 0)
@@ -47,7 +47,7 @@ int main()
 				" return code: %d, %s\n", rc, strerror(rc));
 			return PTS_FAIL;
 		}
-	}	
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

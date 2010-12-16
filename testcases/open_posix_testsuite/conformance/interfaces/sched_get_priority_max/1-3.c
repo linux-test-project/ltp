@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -20,11 +20,11 @@
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)||defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 
 int main(int argc, char **argv)
-{	       
+{
 	int result = -1;
-	
+
 	result = sched_get_priority_max(SCHED_SPORADIC);
-	
+
 	if (result != -1 && errno == 0) {
 		printf("The maximum priority for policy SCHED_SPORADIC is %i.\n",
 		       result);
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		perror("An error occurs");
 		return PTS_FAIL;
 	}
-		
+
 	printf("This code should not be executed.\n");
         return PTS_UNRESOLVED;
 }
@@ -45,4 +45,3 @@ int main()
 	return PTS_UNSUPPORTED;
 }
 #endif
-

@@ -10,7 +10,6 @@
  * a time value to a broken down local time.
  */
 
-
 #include <stdio.h>
 #include <time.h>
 #include "posixtest.h"

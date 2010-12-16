@@ -80,7 +80,7 @@ char path[FILENAME_MAX] = "/dev/cpuctl";
 extern void cleanup()
 {
 	kill(scriptpid, SIGUSR1);/* Inform the shell to do cleanup*/
-	tst_exit();		/* Report exit status*/
+		/* Report exit status*/
 }
 volatile int timer_expired = 0;
 
@@ -237,4 +237,3 @@ int main(int argc, char *argv[])
 		}/* end if*/
 	}/* end while*/
 }/* end main*/
-

@@ -63,8 +63,6 @@ void cleanup()
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 /*
@@ -126,7 +124,6 @@ int child_fn(void *arg)
 	exit(0);
 }
 
-
 /***********************************************************************
 *   M A I N
 ***********************************************************************/
@@ -184,4 +181,4 @@ int main(int argc, char *argv[])
 	/* Control won't reach below */
 	exit(0);
 
-}	/* End main */
+}

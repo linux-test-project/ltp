@@ -19,18 +19,15 @@
 /* usage :
         make
         insmod test-cmpxchg-nolock.ko
-        insmod: error inserting 'test-cmpxchg-nolock.ko': 
+        insmod: error inserting 'test-cmpxchg-nolock.ko':
                 -1 Resource temporarily unavailable
         dmesg (see dmesg output)                                              */
 /******************************************************************************/
-
-
 
 /* test-cmpxchg-nolock.c
 *
 * Compare local cmpxchg with irq disable / enable.
 */
-
 
 #include <linux/jiffies.h>
 #include <linux/compiler.h>
@@ -155,7 +152,6 @@ static void do_test_sync_inc(void)
        printk(KERN_ALERT "test end\n");
 }
 
-
 static void do_test_inc(void)
 {
        int ret;
@@ -183,8 +179,6 @@ static void do_test_inc(void)
        printk(KERN_ALERT "-> non locked add return takes %llu cycles\n", time);
        printk(KERN_ALERT "test end\n");
 }
-
-
 
 /*
  * This test will have a higher standard deviation due to incoming interrupts.
@@ -270,8 +264,6 @@ static void do_test_int(void)
        time);
        printk(KERN_ALERT "test end\n");
 }
-
-
 
 static int ltt_test_init(void)
 {

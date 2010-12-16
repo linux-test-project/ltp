@@ -191,7 +191,6 @@ static void child_signal_handler(int sig, siginfo_t *si, void *unused)
 	mq_receive((mqd_t)si->si_int, buf, attr.mq_msgsize, NULL);
 }
 
-
 /*
  * child_fn() - Inside container
  */
@@ -339,6 +338,5 @@ int main(int argc, char *argv[])
 
 	cleanup_mqueue(result, F_STEP_3, mqd);
 
-	/* NOT REACHED */
-	return 0;
-}    /* End main */
+	tst_exit();
+}

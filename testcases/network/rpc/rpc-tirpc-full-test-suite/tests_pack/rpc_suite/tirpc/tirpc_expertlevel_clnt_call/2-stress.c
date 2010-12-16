@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,7 +46,7 @@ int main(int argn, char *argc[])
 	//					   argc[2] : Server Program Number
 	//					   argc[3] : Number of testes function calls
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -58,13 +58,13 @@ int main(int argn, char *argc[])
 	struct netbuf svcaddr;
     char addrbuf[ADDRBUFSIZE];
 	enum clnt_stat cs;
-	int var_snd = 0; 
-	int var_rec = -1; 
+	int var_snd = 0;
+	int var_rec = -1;
 	struct timeval tv;
     int nbCall = atoi(argc[3]);
 	int nbOk = 0;
 	int i;
-	
+
 	//Initialization
     if (run_mode)
     {
@@ -72,7 +72,7 @@ int main(int argn, char *argc[])
 		printf("client : %d\n", client);
 		printf("nconf : %d\n", nconf);
 	}
-	
+
 	tv.tv_sec = 0;
 	tv.tv_usec = 100;
 
@@ -88,15 +88,15 @@ int main(int argn, char *argc[])
 	svcaddr.len = 0;
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
-	
+
 	if (svcaddr.buf == NULL)
 	{
     	printf("5\n");
 		exit(5);
     }
-        
+
     //printf("svcaddr reserved (%s)\n", argc[1]);
-   
+
 	if (!rpcb_getaddr(progNum, VERSNUM, nconf,
                                &svcaddr, argc[1]))
     {
@@ -108,30 +108,30 @@ int main(int argn, char *argc[])
 
 	client = clnt_tli_create(RPC_ANYFD, nconf, &svcaddr,
 	                         progNum, VERSNUM, 0, 0);/**/
-	                         
+
 	for (i = 0; i < nbCall; i++)
 	{
 		cs = clnt_call(client, PROCNUM,
-	    	           (xdrproc_t)xdr_int, (char *)&var_snd, 
+	    	           (xdrproc_t)xdr_int, (char *)&var_snd,
 	    	           (xdrproc_t)xdr_int, (char *)&var_rec,
 	    	           tv);
 	    if (cs == RPC_SUCCESS)
 			nbOk++;
 	}
-	
+
 	if (run_mode == 1)
 	{
 		printf("Aimed : %d\n", nbCall);
 		printf("Got : %d\n", nbOk);
 	}
-	
+
 	test_status = (nbOk == nbCall) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	clnt_destroy(client);
-	
+
 	return test_status;
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -8,7 +8,7 @@
  *  GNU General Public License for more details.
  *
  *
- * Test the existence of the sched.h file and that it can be included. 
+ * Test the existence of the sched.h file and that it can be included.
  */
 
 #include <sched.h>

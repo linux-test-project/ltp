@@ -23,10 +23,10 @@
  * The goal is:
  * -> if the testcase returns, the monitor returns the error code.
  * -> after a specified timeout, the monitor let the stress test terminate
- 
+
  * This allows for the stress tests to be run in an automatic maneer
  * with a script such as:
-#!/bin/sh 
+#!/bin/sh
 
 #monitor the system
 vmstat -n 120 180 &> monitor.txt &
@@ -47,7 +47,6 @@ done
 
 */
 
-
 /* This utility should compile on any POSIX-conformant implementation. */
 #define _POSIX_C_SOURCE 200112L
 
@@ -63,15 +62,15 @@ done
 pid_t child;
 int timeout;
 
-/* Note that there could be a race between 
-the moment the stress test terminates and 
+/* Note that there could be a race between
+the moment the stress test terminates and
 when the timeout expires. As this is highly
 improbable, we don't care... */
 
 void * timer(void * arg)
 {
 	int ret=0;
-	
+
 	unsigned remaining = timeout  * 3600;
 	do {
 		remaining = sleep(remaining);
@@ -82,10 +81,9 @@ void * timer(void * arg)
 		perror("Failed to kill the stress test");
 		exit(2);
 	}
-	
+
 	return NULL;
 }
-	
 
 int main (int argc, char * argv[])
 {
@@ -96,7 +94,7 @@ int main (int argc, char * argv[])
 	char *ts="[??:??:??]";
 	struct tm * now;
 	time_t nw;
-	
+
 	/* check args */
 	if (argc < 3)
 	{
@@ -108,14 +106,14 @@ int main (int argc, char * argv[])
 		printf("  arglist is the arguments to be passed to executable.\n\n");
 		return 2;
 	}
-	
+
 	timeout = atoi(argv[1]);
 	if (timeout < 1)
 	{
 		fprintf(stderr, "Invalid timeout value \"%s\". Timeout must be a positive integer.\n", argv[1]);
 		return 2;
 	}
-	
+
 	/* create the timer thread */
 	ret = pthread_create(&th, NULL, timer, NULL);
 	if (ret != 0)
@@ -123,20 +121,20 @@ int main (int argc, char * argv[])
 		perror("Failed to create the timeout thread\n");
 		return 2;
 	}
-	
+
 	/* Create the new process for the stress test */
 	child = fork();
-	
+
 	if (child == (pid_t)-1)
 	{
 		perror("Failed to create a new process");
 		exit(2);
 	}
-	
+
 	/* The child process executes the test */
 	if (child == (pid_t)0)
 	{
-		
+
 		/* Execute the command */
 		ret = execvp(argv[2], &argv[2]);
 		if (ret == -1)
@@ -149,9 +147,9 @@ int main (int argc, char * argv[])
 		perror("Should not see me");
 		return 2;
 	}
-	
+
 	/* The parent: */
-	
+
 	/* wait for the child process to terminate */
 	chk = waitpid(child, &status, 0);
 	if (chk != child)
@@ -159,17 +157,17 @@ int main (int argc, char * argv[])
 		perror("Got the wrong process image status");
 		return 2;
 	}
-	
+
 	/* Cancel the timer thread in case the process returned by itself */
-	(void) pthread_cancel(th); 
-	
+	(void) pthread_cancel(th);
+
 	ret = pthread_join(th, NULL);
 	if (ret != 0)
 	{
 		perror("Unable to join the timer thread");
 		return 2;
 	}
-	
+
 	/* return */
 	nw = time(NULL);
 	now = localtime(&nw);
@@ -200,4 +198,3 @@ int main (int argc, char * argv[])
 	}
 	exit(WEXITSTATUS(status));
 }
-		

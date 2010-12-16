@@ -7,7 +7,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
- * Will not test the effects of the sched_ss_low_priority, 
+ * Will not test the effects of the sched_ss_low_priority,
  * sched_ss_repl_period, and sched_ss_init_budget members when the scheduling
  * policy of the target process is not SCHED_FIFO, SCHED_RR, or SCHED_SPORADIC.
  * It is implementation-defined.

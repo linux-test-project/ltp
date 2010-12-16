@@ -66,7 +66,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;		   	/* counter for tst_xxx routines.	*/
+extern int Tst_count;
 extern char *TESTDIR;		  	/* temporary dir created by tst_tmpdir()*/
 
 /* Global Variables */
@@ -110,7 +110,6 @@ struct dqblk dq;
 extern void cleanup()
 {
 
-	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
 
@@ -120,9 +119,6 @@ extern void cleanup()
 				"failed to disable the quota on %s", block_dev);
 		}
 	}
-
-	/* Exit with appropriate return code. */
-	tst_exit();
 
 }
 
@@ -164,7 +160,7 @@ void setup() {
 	snprintf(quota_loc, FILENAME_MAX, "%s/%s", mountpoint, quota_file);
 
 	if (QUOTACTL(Q_QUOTAON, quota_loc) != 0) {
-		
+
 		if (errno == ENOENT) {
 			tst_brkm(TCONF, cleanup,
 				"quota file - %s - doesn't exist (is the name "
@@ -239,7 +235,6 @@ main(int ac, char **av)
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 
 		Tst_count = 0;
@@ -269,7 +264,7 @@ main(int ac, char **av)
 
 		}
 
-	}	
+	}
 
 	cleanup();
 

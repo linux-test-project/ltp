@@ -174,7 +174,7 @@ void sighandler(int sig)
 void setup(void)
 {
 	TST_TOTAL = sizeof(siglist) / sizeof(int);
-	/* Pause if that option was specified */
+
 	TEST_PAUSE;
 }
 
@@ -190,6 +190,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

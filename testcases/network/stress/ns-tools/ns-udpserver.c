@@ -18,7 +18,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-
 /*
  * File:
  *	ns-udpserver.c
@@ -54,17 +53,15 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 
-
 /*
  * Gloval variables
  */
 struct sigaction handler;    /* Behavior for a signal */
 int catch_sighup;       /* When catch the SIGHUP, set to non-zero */
 
-
 /*
  * Function: usage()
- * 
+ *
  * Descripton:
  *  Print the usage of this program. Then, terminate this program with
  *  the specified exit value.
@@ -98,7 +95,6 @@ usage(char *program_name, int exit_value)
 			, program_name);
     exit (exit_value);
 }
-
 
 /*
  * Function: set_signal_flag()
@@ -188,7 +184,6 @@ respond_to_client(sock_fd)
 	fatal_error("sendto()");
     free(msgbuf);
 }
-
 
 /*
  *
@@ -287,7 +282,7 @@ main(int argc, char *argv[])
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
     hints.ai_flags = AI_PASSIVE;
-    
+
     /* Translate the network and service information of the server */
     err = getaddrinfo(NULL, portnum, &hints, &res);
     if (err) {
@@ -303,7 +298,7 @@ main(int argc, char *argv[])
     sock_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (sock_fd < 0)
 	fatal_error("socket()");
-    
+
 #ifdef IPV6_V6ONLY
     /* Don't accept IPv4 mapped address if the protocol family is IPv6 */
     if (res->ai_family == PF_INET6) {
@@ -315,24 +310,24 @@ main(int argc, char *argv[])
 
     /* Enable to reuse the socket */
     on = 1;
-    if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(int))) 
+    if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(int)))
 	fatal_error("setsockopt()");
 
     /* Bind to the local address */
-    if (bind(sock_fd, res->ai_addr, res->ai_addrlen) < 0) 
+    if (bind(sock_fd, res->ai_addr, res->ai_addrlen) < 0)
 	fatal_error("bind()");
 
     freeaddrinfo(res);
 
     /* If -b option is specified, work as a daemon */
-    if (background) 
+    if (background)
 	if (daemon(0, 0) < 0)
 	    fatal_error("daemon()");
 
     /* Output any server information to the information file */
     fprintf(info_fp, "PID: %u\n", getpid());
     fflush(info_fp);
-    if (info_fp != stdout) 
+    if (info_fp != stdout)
 	if (fclose(info_fp))
 	    fatal_error("fclose()");
 

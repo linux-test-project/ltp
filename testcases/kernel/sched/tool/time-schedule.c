@@ -28,11 +28,9 @@
     a system. It takes into account SMP machines. True context switches are
     measured.
 
-
     Written by      Richard Gooch   15-SEP-1998
 
     Last updated by Richard Gooch   25-SEP-1998
-
 
 */
 #include <unistd.h>
@@ -68,7 +66,6 @@
 #  include <karma_mt.h>
 #endif
 
-
 #define MAX_ITERATIONS      1000
 
 static unsigned int hog_other_cpus ();
@@ -82,13 +79,11 @@ static unsigned int get_run_queue_size ();
 static unsigned long get_num_switches ();
 static void use_fpu_value (double val);
 
-
 static volatile unsigned int sched_count = 0;
 /*  For yielder  */
 static int pipe_read_fd = -1;
 static int pipe_write_fd = -1;
 static pid_t child = -1;
-
 
 int main (int argc, char **argv)
 {
@@ -283,7 +278,6 @@ int main (int argc, char **argv)
     return (0);
 }   /*  End Function main  */
 
-
 static unsigned int hog_other_cpus ()
 /*  [SUMMARY] Hog other CPUs with a high-priority job.
     [RETURNS] The number of hogged CPUs.
@@ -372,7 +366,7 @@ static void *yielder_main (void *arg)
 
     sched_count = 0;
     write (pipe_write_fd, &ch, 1);
-    while (TRUE)   
+    while (TRUE)
     {
         if (pipe_read_fd >= 0)
         {
@@ -409,7 +403,7 @@ static void run_low_priority (unsigned int num, int read_fd)
             if (geteuid () == 0)
             {
                 struct sched_param sp;
-               
+
                 memset (&sp, 0, sizeof sp);
                 sp.sched_priority = 0;
                 if (sched_setscheduler (0, SCHED_OTHER, &sp) != 0)

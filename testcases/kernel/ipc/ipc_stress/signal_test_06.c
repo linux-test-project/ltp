@@ -58,7 +58,6 @@
 
 #define MAXSIG 1024*1024	/* Number of signals sent to process */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,10 +76,8 @@ void init_sig ();
 void sys_error (const char *, int);
 void error (const char *, int);
 
-
 /* Global variables */
 int signals_received = 0;
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -98,7 +95,7 @@ int main (int argc, char **argv)
 
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
-   
+
 	/* Set up our signal handler */
 	init_sig ();
 
@@ -154,7 +151,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               handler ()                             |
 | ==================================================================== |
@@ -180,7 +176,6 @@ void handler (int signal, int code, struct sigcontext *scp)
 	printf ("\tcaught SIGUSR1 (%d) signal\n", signal);
 	signals_received++;
 }
-
 
 /*---------------------------------------------------------------------+
 |                             init_sig ()                              |
@@ -228,7 +223,6 @@ void init_sig ()
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -243,7 +237,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

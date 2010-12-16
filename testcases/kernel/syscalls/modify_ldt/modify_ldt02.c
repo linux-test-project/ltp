@@ -171,7 +171,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	return 0;
+
 }
 
 int create_segment(void *seg, size_t size)
@@ -217,13 +217,11 @@ void setup(void)
 	memset(&act, 0, sizeof(act));
 	sigemptyset(&act.sa_mask);
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	act.sa_handler = sigsegv_handler;
 	(void)sigaction(SIGSEGV, &act, NULL);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -239,15 +237,13 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 #elif HAVE_MODIFY_LDT
 int main()
 {
 	tst_resm(TCONF,
 		 "modify_ldt is available but not tested on the platform than __i386__");
-	return 0;
+	tst_exit();
 }
 
 #else /* if defined(__i386__) */
@@ -255,7 +251,7 @@ int main()
 int main()
 {
 	tst_resm(TINFO, "modify_ldt02 test only for ix86");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if defined(__i386__) */

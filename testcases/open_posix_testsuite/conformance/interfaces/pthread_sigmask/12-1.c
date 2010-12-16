@@ -2,15 +2,15 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  Steps:
  1. Set the signal mask to only having SIGABRT.
- 2. Call pthread_sigmask again, this time with a randomly generated 
+ 2. Call pthread_sigmask again, this time with a randomly generated
  value of  how that is checked to make sure it does not equal any of the three defined
  values of how which are SIG_SETMASK, SIG_BLOCK, or SIG_UNBLOCK. This should
- cause pthread_sigmask() to return -1. For the second parameter in the 
+ cause pthread_sigmask() to return -1. For the second parameter in the
  pthread_sigmask() function, use a set which contains SIGABRT and SIGALRM.
  3. Now verify using the is_changed() function that the only signal that is still
  in the signal mask is SIGABRT. Neither SIGALRM nor any other signal should be
@@ -28,13 +28,13 @@
 #define NUMSIGNALS 26
 
 int is_changed(sigset_t set, int sig) {
-	
+
 	int i;
-	int siglist[] = {SIGABRT, SIGALRM, SIGBUS, SIGCHLD, 
-		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT, 
-		SIGPIPE, SIGQUIT, SIGSEGV, 
-		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU, 
-		SIGUSR1, SIGUSR2, SIGPOLL, SIGPROF, SIGSYS, 
+	int siglist[] = {SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
+		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
+		SIGPIPE, SIGQUIT, SIGSEGV,
+		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
+		SIGUSR1, SIGUSR2, SIGPOLL, SIGPROF, SIGSYS,
 		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
 	if (sigismember(&set, sig) != 1) {
@@ -133,4 +133,3 @@ int main() {
         }
         return PTS_PASS;
 }
-

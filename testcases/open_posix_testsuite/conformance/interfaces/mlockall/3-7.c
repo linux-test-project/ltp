@@ -19,7 +19,6 @@
 #include <fcntl.h>
 #include "posixtest.h"
 
-
 int main() {
 	void *page_ptr;
 	size_t page_size;
@@ -35,7 +34,7 @@ int main() {
 	fd = open("conformance/interfaces/mlockall/3-7.c", O_RDONLY);
 	if (fd == -1) {
 		perror("An error occurs when calling open()");
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
 	foo = mmap(NULL, page_size, PROT_READ, MAP_SHARED, fd, 0);
@@ -66,4 +65,3 @@ int main() {
 	perror("Unexpected error");
 	return PTS_UNRESOLVED;
 }
-

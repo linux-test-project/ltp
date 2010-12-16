@@ -57,7 +57,6 @@ struct kid_info {
 } ;
 typedef struct kid_info c_info;
 
-
 /* Global variables */
 int	depth = 3;
 int	breadth = 4;
@@ -153,7 +152,6 @@ static void parse_args( int argc, char *argv[] )
 
 }
 
-
 /*--------------------------------------------------------------------------------*
  * num_nodes
  *
@@ -177,7 +175,6 @@ int num_nodes( int b, int d )
 
 	return( sum );
 }
-
 
 /*--------------------------------------------------------------------------------*
  * synchronize_children
@@ -310,7 +307,6 @@ int synchronize_children( c_info *parent )
 
 	return( my_index );
 }
-
 
 /*--------------------------------------------------------------------------------*
  * doit
@@ -488,8 +484,6 @@ void *doit( void *param )
 
 	pthread_exit( 0 );
 }
-
-
 
 /*--------------------------------------------------------------------------------*
  * main

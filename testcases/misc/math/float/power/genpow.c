@@ -35,8 +35,6 @@
 #include        <sys/signal.h>
 #include        <math.h>
 
-
-
 int create_Result_file()
 {
 
@@ -48,7 +46,7 @@ int create_Result_file()
 	F_name = "pow_out.ref";
 	F_namei = "pow_inp.ref";
 	F_namei1 = "1pow_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	fpi = open(F_namei,O_RDONLY,0777);
 	fpi1 = open(F_namei1,O_RDONLY,0777);
@@ -79,17 +77,16 @@ int create_Result_file()
 		}
 		else
 		{
-			for (i = 0; i<nbVal; i++) 
+			for (i = 0; i<nbVal; i++)
 			{
 				write(fp,&tabR[i],sizeof(double));
 			}
-	
+
 			close(fp);
 			return 0;
 		}
 	}
 }
-
 
 int create_Data_file()
 {
@@ -100,7 +97,7 @@ int create_Data_file()
 
 	F_name = "pow_inp.ref";
 	F_name_pow = "1pow_inp.ref";
-	nbVal = 20000; 
+	nbVal = 20000;
 
 	Inc = exp(1);
 	Inc_pow = exp(1)/100;
@@ -121,8 +118,8 @@ int create_Data_file()
 	    	return -1;
         }
         else
-        {	
-		for (i = 0; i<nbVal; i++) 
+        {
+		for (i = 0; i<nbVal; i++)
 		{
 			write(fp,&tabD[i],sizeof(double));
 			write(fp2,&tabD_pow[i],sizeof(double));
@@ -133,11 +130,10 @@ int create_Data_file()
 	}
 }
 
-
 int main(int argc, char  *argv[])
 {
 
-	if (argc > 1) 
+	if (argc > 1)
 	{
 		switch ( atoi(argv[1]) )
 		{

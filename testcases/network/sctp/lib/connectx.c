@@ -56,6 +56,6 @@ sctp_connectx(int fd, struct sockaddr *addrs, int addrcnt)
 			return -1;
 		}
 	}
-			
+
 	return setsockopt(fd, SOL_SCTP, SCTP_SOCKOPT_CONNECTX, addrs, addrs_size);
 }

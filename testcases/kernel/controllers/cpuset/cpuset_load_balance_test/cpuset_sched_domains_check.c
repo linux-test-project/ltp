@@ -42,7 +42,7 @@ int TST_TOTAL = 1;
 
 /*
  * check sched domains in system
- * 
+ *
  * return 0  - sched domains is true
  *        1  - sched domains is wrong, and print error info
  *        -1 - other error
@@ -77,7 +77,7 @@ void check_sched_domains(void)
 		tst_resm(TFAIL, "alloc alldomains space failed.");
 		return;
 	}
-	
+
 	for (i = 0; i < ndomains; i++) {
 		unsigned int cpu;
 		bitmask_or(alldomains, alldomains, domains[i]);

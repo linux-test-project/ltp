@@ -35,7 +35,6 @@ void init_rwlock(struct rwlock *rw)
 #endif
 }
 
-
 void rw_lock_read(struct rwlock *rw)
 {
 	pthread_mutex_lock(&rw->plock);

@@ -54,7 +54,6 @@ void handler(int signo)
         pid_count++;
 }
 
-
 int main(int argc, char* argv[]) {
   char* mem;
   float percent;
@@ -142,7 +141,6 @@ int main(int argc, char* argv[]) {
     }
     else
       pre_mem = sstats.mem_unit*total_free;
-   
 
     /* set maxbytes to the extra amount we want to allocate */
     maxbytes = D-C;
@@ -176,7 +174,7 @@ int main(int argc, char* argv[]) {
     alloc_bytes = (unsigned long) maxbytes;
 
 #elif __WORDSIZE==32
-  while (pid != 0 && maxbytes > ONE_MEGABYTE) 
+  while (pid != 0 && maxbytes > ONE_MEGABYTE)
   {
     i++;
     maxbytes -= ONE_MEGABYTE;
@@ -207,7 +205,7 @@ int main(int argc, char* argv[]) {
   else
     alloc_bytes = maxbytes;
 #endif
- 
+
   if (pid == 0)			/** CHILD **/
   {
     bytecount=chunksize;
@@ -238,13 +236,13 @@ int main(int argc, char* argv[]) {
 
     i=0;
     sysinfo(&sstats);
-   
+
     if (dowrite)
     {
       /* Total Free Post-Test RAM */
       post_mem = (unsigned long long)sstats.mem_unit*sstats.freeram;
       post_mem = post_mem+((unsigned long long)sstats.mem_unit*sstats.freeswap);
-	   
+
       while ((((unsigned long long)pre_mem - post_mem) < (unsigned long long)original_maxbytes) &&
               (pid_count < pid_cntr) )
       {

@@ -678,5 +678,5 @@ int main(int argc, char *argv[])
 		}
 	}
 	fprintf(domain_fp, "delete %s\n", self_domain);
-	return 0;
+	tst_exit();
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -10,7 +10,6 @@
  * Test that the shmatt_t type is an unsigned integer that must be able to
  * store values at least as large than unsigned short.
  */
-
 
 #include <sys/shm.h>
 #include <limits.h>

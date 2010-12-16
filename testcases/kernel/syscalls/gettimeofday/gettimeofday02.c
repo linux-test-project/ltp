@@ -73,7 +73,6 @@ void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	tst_exit();
 }
 
 void help()
@@ -127,5 +126,5 @@ int main(int ac, char **av)
 	tst_resm(TPASS, "gettimeofday monotonous in %s seconds", tlen);
 
 	cleanup();
-	return 0;
+	tst_exit();
 }

@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,12 +51,12 @@ void *my_thread_process (void * arg)
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
 	int i;
-	
+
 	if (run_mode == 1)
 	{
 		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
-	
+
 	nconf = getnetconfigent("udp");
 	if (nconf == (struct netconfig *) NULL)
 	{
@@ -65,22 +65,22 @@ void *my_thread_process (void * arg)
 		pthread_exit (1);
 	}
 
-	transp = svc_tli_create(RPC_ANYFD, nconf, 
+	transp = svc_tli_create(RPC_ANYFD, nconf,
                             (struct t_bind *)NULL,
                             0, 0);
-    
+
     for (i = 0; i < callNb; i++)
 	{
 		svc_unreg(progNum + atoi(arg), VERSNUM);
     	svc_reg(transp, progNum + atoi(arg), VERSNUM,
             	exm_proc, nconf);
-    
+
     	svc_unreg(progNum + atoi(arg), VERSNUM);
-    
+
     	//If we are here, test was sucessfull
     	thread_array_result[atoi(arg)] += 1;
     }
-    
+
     pthread_exit (0);
 }
 
@@ -91,7 +91,7 @@ int main(int argn, char *argc[])
 	//					   argc[3] : Number of threads
 	//					   argc[4] : Number of calls per thread
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -101,21 +101,21 @@ int main(int argn, char *argc[])
 	int i;
 	pthread_t *pThreadArray;
     void *ret;
-    
+
 	progNum = atoi(argc[2]);
 	callNb = atoi(argc[4]);
-	
+
 	if (run_mode == 1)
 	{
 		printf("Server #%d\n", progNum);
 		printf("Thread to create %d\n", threadNb);
 	}
-	
+
 	//Initialization : create threads results array, init elements to 0
 	//Each thread will put function result (pas/fail) into array
 	thread_array_result = (int *)malloc(threadNb * sizeof(int));
 	memset(&thread_array_result[0], 0, threadNb * sizeof(int));
-	
+
 	//Create all threads
 	//Run all threads
 	pThreadArray = (pthread_t *)malloc(threadNb * sizeof(pthread_t));
@@ -129,13 +129,13 @@ int main(int argn, char *argc[])
 	        exit (1);
 	    }
 	}
-			
+
 	//Clean threads
 	for (i = 0; i < threadNb; i++)
 	{
 		(void)pthread_join (pThreadArray[i], &ret);
 	}
-			
+
 	//Check if all threads results are ok
 	test_status = 0;
 	for (i = 0; i < threadNb; i++)
@@ -146,7 +146,7 @@ int main(int argn, char *argc[])
 			break;
 		}
 	}
-	
+
 	if (run_mode == 1)
 	{
 		for (i = 0; i < threadNb; i++)
@@ -154,11 +154,11 @@ int main(int argn, char *argc[])
 			fprintf(stderr, "Result[%d]=%d\n", i, thread_array_result[i]);
 		}
 	}
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }
 
@@ -166,4 +166,3 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 {
 	//Nothing to do here in that test case
 }
-

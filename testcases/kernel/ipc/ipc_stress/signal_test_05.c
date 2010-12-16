@@ -61,7 +61,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <stdio.h>
 #include <string.h>
 #ifdef _LINUX_
@@ -87,10 +86,8 @@ void handler (int, int, struct sigcontext *);
 void sys_error (const char *, int);
 void error (const char *, int);
 
-
 /* Flag set upon receiving SIGCHLD signal */
 int sigchld_flag = 0;
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -107,7 +104,7 @@ int main (int argc, char **argv)
 
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
-   
+
 	/* Set up our signal handler */
 	ignore_signals ();
 
@@ -132,7 +129,7 @@ int main (int argc, char **argv)
 	 *
 	 * Suspend execution of the parent process until either a signal
 	 * that is not blocked or ignored, or until the child process
-	 * completes. 
+	 * completes.
 	 *
 	 * Use the POSIX macro to insure that the child process exited
 	 * normally.
@@ -152,9 +149,8 @@ int main (int argc, char **argv)
 	/* Program completed successfully -- exit */
 	printf ("\nsuccessful!\n");
 
-	return 0;
+	tst_exit();
 }
-
 
 /*---------------------------------------------------------------------+
 |                               child ()                               |
@@ -199,7 +195,6 @@ void child (pid_t pid)
 	exit (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               handler ()                             |
 | ==================================================================== |
@@ -224,7 +219,6 @@ void handler (int signal, int code, struct sigcontext *scp)
 		error (msg, __LINE__);
 	}
 }
-
 
 /*---------------------------------------------------------------------+
 |                           ignore_signals ()                          |
@@ -283,7 +277,6 @@ void ignore_signals ()
 		sys_error ("sigaction (SIGCHLD) failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -298,7 +291,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

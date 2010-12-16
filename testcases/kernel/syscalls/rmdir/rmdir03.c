@@ -131,7 +131,6 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 //test1:       $
@@ -154,14 +153,14 @@ int main(int ac, char **av)
 			perror("stat");
 			tst_brkm(TBROK, cleanup, "failed to stat directory %s "
 				 "in rmdir()", tstdir1);
-			
+
 		}
 		/* set the sticky bit */
 		if (chmod(tstdir1, buf1.st_mode | S_ISVTX) != 0) {
 			perror("chmod");
 			tst_brkm(TBROK, cleanup,
 				 "failed to set the S_ISVTX bit");
-			
+
 		}
 		/* create a sub directory under tstdir1 */
 		if (mkdir(tstdir2, PERMS) == -1) {
@@ -233,16 +232,14 @@ int main(int ac, char **av)
 		(void)rmdir(tstdir4);
 		(void)rmdir(tstdir3);
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /*
  * dochild1()
@@ -333,10 +330,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "test must be run as root");
 	}
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
@@ -370,5 +365,5 @@ void cleanup()
 	/*
 	 * Exit with return code appropriate for results.
 	 */
-	tst_exit();
+
 }

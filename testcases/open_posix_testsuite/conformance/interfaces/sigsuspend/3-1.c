@@ -2,7 +2,7 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  Assumption: The test assumes that this program is run under normal conditions,
@@ -51,13 +51,13 @@ int main()
 		return 2;
 
 	} else {
-		int s; 
+		int s;
 		int exit_status;
 
 		/* parent */
 		sleep(1);
 
-		printf("parent sending child a SIGABRT signal\n");		
+		printf("parent sending child a SIGABRT signal\n");
 		kill (pid, SIGABRT);
 
 		if (wait(&s) == -1) {

@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}				
+				}
 			}
 		} else {
 			rc = -1;
@@ -1184,7 +1184,7 @@ int main(int argc, char **argv)
 
 	remove(DummyFile);
 	remove(DummyTmp);
-	
+
 	rc = umount(mountPt);
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -1198,8 +1198,8 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 }
 
 void *Thread(void *parm)
@@ -1251,7 +1251,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	   
+
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
@@ -1305,7 +1305,7 @@ void *Thread(void *parm)
 			case DM_EVENT_PREUNMOUNT:
 				response = DM_RESP_CONTINUE;
 				break;
-			
+
 			case DM_EVENT_READ:
 			{
 				dm_data_event_t *de = DM_GET_VALUE(dmMsg, ev_data, dm_data_event_t *);

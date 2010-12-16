@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -19,7 +19,6 @@
  */
 
 #include <unistd.h>
-
 
 #if defined(_POSIX_ADVISORY_INFO) || defined(_POSIX_MAPPED_FILES) || \
     defined(_POSIX_MEMLOCK) || defined(_POSIX_MEMORY_PROTECTION) || \

@@ -11,9 +11,8 @@
  * open and map references to the shared memory object have been removed.
  */
 
-
 /* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base 
+   avoid warning if the implementation does not program ftruncate as a base
    interface */
 #define _XOPEN_SOURCE 600
 
@@ -32,7 +31,7 @@
 int main() {
 	int fd;
 	char *buf;
-	
+
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
@@ -42,9 +41,9 @@ int main() {
 	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_NAME);
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
-	
+
 	if (shm_unlink(SHM_NAME) != 0) {
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
@@ -57,10 +56,10 @@ int main() {
 		return PTS_FAIL;
 	} else if (buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;
-	
+
 }

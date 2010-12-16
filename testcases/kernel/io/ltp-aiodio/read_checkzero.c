@@ -33,9 +33,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-
-
-
 char *check_zero(unsigned char *buf, int size)
 {
 	unsigned char *p;
@@ -68,7 +65,7 @@ int read_eof(char *filename)
                fprintf(stderr, "can't open file %s \n",filename);
                exit(1);
 	}
-      
+
 	for (i = 0 ; i < 100000; i++) {
 		off_t offset;
 		char *bufoff;
@@ -90,7 +87,6 @@ int read_eof(char *filename)
 	fprintf(stderr, "read_checkzero done\n");
     return 0;
 }
-
 
 int main(int argc, char **argv)
 {

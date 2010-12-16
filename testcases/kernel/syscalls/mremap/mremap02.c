@@ -110,16 +110,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -155,14 +152,11 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "mremap() Failed, "
 				 "'Unexpected errno %d", TEST_ERRNO);
 		}
-	}			/* End of TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	tst_exit();
-
-}				/* End main */
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -173,10 +167,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get the system page size */
@@ -205,5 +198,5 @@ void cleanup()
 	TEST_CLEANUP;
 
 	/* Exit the program */
-	tst_exit();
+
 }

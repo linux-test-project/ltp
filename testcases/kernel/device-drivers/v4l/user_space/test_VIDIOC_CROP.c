@@ -25,7 +25,6 @@
 
 #include "test_VIDIOC_CROP.h"
 
-
 void do_get_crop(enum v4l2_buf_type type) {
 	int ret1, errno1;
 	struct v4l2_crop crop;
@@ -53,7 +52,6 @@ void test_VIDIOC_G_CROP() {
 	do_get_crop(V4L2_BUF_TYPE_VIDEO_OUTPUT);
 	do_get_crop(V4L2_BUF_TYPE_VIDEO_OVERLAY);
 }
-
 
 void do_get_crop_invalid(enum v4l2_buf_type type) {
 	int ret1, errno1;
@@ -231,7 +229,6 @@ void do_set_crop(enum v4l2_buf_type type) {
 		CU_ASSERT_EQUAL(ret_cap, 0);
 		CU_ASSERT_EQUAL(ret_set, 0);
 		CU_ASSERT_EQUAL(ret_new, 0);
-
 
 		if (ret_cap == 0 && ret_new == 0) {
 
@@ -570,7 +567,6 @@ void do_set_crop(enum v4l2_buf_type type) {
 			CU_ASSERT_EQUAL(errno_new, EINVAL);
 		}
 	}
-
 
 	/*     |   left                                   x   */
 	/* ----+----+-------------------------------------->  */

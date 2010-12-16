@@ -30,7 +30,6 @@ static unsigned invalidpri[NUMINVALID] = {
 		MQ_PRIO_MAX, MQ_PRIO_MAX+1, MQ_PRIO_MAX+5
 };
 
-
 int main()
 {
         char qname[NAMESIZE];
@@ -82,4 +81,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -30,7 +30,7 @@ int main() {
 
 	invalid_policy = 0;
 	/* Linux does not treat minus value as invalid for policy */
-	while (invalid_policy == SCHED_OTHER || 
+	while (invalid_policy == SCHED_OTHER ||
 		invalid_policy == SCHED_FIFO ||
 		invalid_policy == SCHED_RR)
 	invalid_policy++;
@@ -38,7 +38,7 @@ int main() {
 	if (sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
-	}	
+	}
 	old_priority = param.sched_priority;
 
 	old_policy = sched_getscheduler(getpid());
@@ -64,14 +64,13 @@ int main() {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
-		
 
-	if (old_policy == new_policy && 
+	if (old_policy == new_policy &&
 	   old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
-	
+
 	if (param.sched_priority != old_priority) {
 		printf("The param has changed\n");
 	}

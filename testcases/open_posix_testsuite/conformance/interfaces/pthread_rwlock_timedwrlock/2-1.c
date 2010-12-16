@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_rwlock_timedwrlock(pthread_rwlock_t *rwlock)
  *
- *	The timeout shall expire when the absolute time specified by abs_timeout passes, 
+ *	The timeout shall expire when the absolute time specified by abs_timeout passes,
  *	as measured by the clock on which timeouts are based (that is, when the
- *	value of that clock equals or exceeds abs_timeout), or if the absolute time 
+ *	value of that clock equals or exceeds abs_timeout), or if the absolute time
  *	specified by abs_timeout has already been passed at the time of the call.
  *
  * Steps:
@@ -18,7 +18,7 @@
  *     timeout period, meaning this will ensure that the abs_timeout would have already
  *     passed.
  * 4.  The thread locks 'rwlock' for writing, using pthread_rwlock_timedwrlock(). Should
- *	get an ETIMEOUT error. 
+ *	get an ETIMEOUT error.
  */
 
 #define _XOPEN_SOURCE 600
@@ -33,12 +33,12 @@
 #define TIMEOUT 1
 
 static pthread_rwlock_t rwlock;
-static int thread_state; 
+static int thread_state;
 static int currsec1, currsec2;
 static int expired;
 
-/* thread_state indicates child thread state: 
-	1: not in child thread yet; 
+/* thread_state indicates child thread state:
+	1: not in child thread yet;
 	2: just enter child thread ;
 	3: just before child thread exit;
 */
@@ -48,16 +48,16 @@ static int expired;
 #define EXITING_THREAD 3
 
 static void* fn(void *arg)
-{ 
+{
 	struct timespec abs_timeout;
 	int rc;
 	thread_state = ENTERED_THREAD;
 
 	/* Absolute time, not relative. */
 	abs_timeout.tv_sec = currsec1 - TIMEOUT;
-	abs_timeout.tv_nsec = 0;	
-	
-	printf("thread: attempt timed write-lock\n");	
+	abs_timeout.tv_nsec = 0;
+
+	printf("thread: attempt timed write-lock\n");
 	rc = pthread_rwlock_timedwrlock(&rwlock, &abs_timeout);
 	if (rc  == ETIMEDOUT)
 	{
@@ -80,19 +80,19 @@ static void* fn(void *arg)
 		printf("Error in pthread_rwlock_timedwrlock(), error code:%d.\n", rc);
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	/* Get time after the mutex timed out in locking. */
 	currsec2 = time(NULL);
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);
 	return NULL;
 }
- 
+
 int main()
 {
 	int cnt = 0;
 	pthread_t thread1;
-	
+
 	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("Error at pthread_rwlock_init()\n");
@@ -100,14 +100,14 @@ int main()
 	}
 
 	printf("main: attempt write lock\n");
-	/* We have no lock, this write lock should succeed */	
+	/* We have no lock, this write lock should succeed */
 	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_wrlock()\n");
 		return PTS_UNRESOLVED;
 	}
 	printf("main: acquired write lock\n");
-	
+
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread\n");
 	if (pthread_create(&thread1, NULL, fn, NULL) != 0)
@@ -115,15 +115,15 @@ int main()
 		printf("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* If the shared data is not altered by child after 3 seconds,
 	   we regard it as blocked */
 	/* We expect the thread _NOT_ to block */
 	cnt = 0;
 	do{
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 3); 
-		
+	}while (thread_state !=EXITING_THREAD && cnt++ < 3);
+
 	if (thread_state == EXITING_THREAD)
 	{
 		/* the child thread does not block, check the time expired or not */
@@ -145,14 +145,14 @@ int main()
 		printf("Unexpected thread state %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	printf("main: unlock write lock\n");
 	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_unlock()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (pthread_join(thread1, NULL) != 0)
 	{
 		printf("main: Error at pthread_join()\n");
@@ -163,7 +163,7 @@ int main()
 	{
 		printf("main: Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;
-	}	
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

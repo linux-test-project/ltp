@@ -2,7 +2,7 @@
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  rusty.lynch REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
   Test case for assertion #5 of the sigaction system call that verifies
@@ -29,7 +29,7 @@ void handler(int signo, siginfo_t *info, void *context)
 int main()
 {
 	struct sigaction act;
-	
+
 	act.sa_sigaction = handler;
 	act.sa_flags = SA_SIGINFO;
 	sigemptyset(&act.sa_mask);

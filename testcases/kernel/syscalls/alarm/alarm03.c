@@ -121,7 +121,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -173,22 +172,21 @@ int main(int ac, char **av)
 
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	cleanup();
-	tst_exit();
-}				/* End main */
+
+}
 
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	signal(SIGALRM, trapper);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
-}				/* End setup() */
+}
 
 void cleanup()
 {
@@ -197,7 +195,7 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-}				/* End cleanup() */
+}
 
 void trapper(int sig)
 {

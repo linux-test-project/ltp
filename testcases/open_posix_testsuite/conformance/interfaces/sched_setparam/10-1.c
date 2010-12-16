@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -8,7 +8,7 @@
  *  GNU General Public License for more details.
  *
  *
- * Test that the process that is the head of the highest priority list preempt 
+ * Test that the process that is the head of the highest priority list preempt
  * the process calling sched_setparam() when the calling process sets its own
  * priority lower than that of one or more other non-empty process lists.
  *
@@ -71,12 +71,12 @@ int get_ncpu() {
 	sysctl(mib, 2, &ncpu, &len, NULL, 0);
 # else
 #  ifdef HPUX
-	struct pst_dynamic psd; 
+	struct pst_dynamic psd;
 	pstat_getdynamic(&psd, sizeof(psd), 1, 0);
-	ncpu = (int)psd.psd_proc_cnt; 
+	ncpu = (int)psd.psd_proc_cnt;
 #  endif /* HPUX */
 # endif /* BSD */
-#endif /* _SC_NPROCESSORS_ONLN */  
+#endif /* _SC_NPROCESSORS_ONLN */
 
 	return ncpu;
 }
@@ -94,15 +94,14 @@ void kill_children(int *child_pid) {
 	int i;
 
 	for (i=0; i<nb_cpu; i++) {
-		kill(child_pid[i], SIGTERM);		
+		kill(child_pid[i], SIGTERM);
 	}
 }
-
 
 int main() {
         int *child_pid, oldcount, newcount, shm_id, i, j;
 	struct sched_param param;
-	key_t key; 
+	key_t key;
 
 	/* Get the number of CPUs */
 	nb_cpu = get_ncpu();
@@ -143,11 +142,11 @@ int main() {
 		if (child_pid[i] == -1) {
 			perror("An error occurs when calling fork()");
 			for (j=0; j<i; j++) {
-				kill(child_pid[j], SIGTERM);		
+				kill(child_pid[j], SIGTERM);
 			}
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
-			
+
 			child_process();
 
 			printf("This code should not be executed.\n");
@@ -156,7 +155,7 @@ int main() {
 	}
 
 	sleep(1);
-	
+
 	param.sched_priority--;
 
 	oldcount = *shmptr;
@@ -166,13 +165,13 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 	newcount = *shmptr;
-	
+
 	if (newcount == oldcount) {
 		printf("The calling process does not relinquish the processor\n");
 		kill_children(child_pid);
 		return PTS_FAIL;
-	} 
-		
+	}
+
 	printf("Test PASSED\n");
 	kill_children(child_pid);
 	return PTS_PASS;

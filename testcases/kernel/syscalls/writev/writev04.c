@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 
 	setup();		/* set "tstdir", and "testfile" vars */
@@ -275,7 +275,7 @@ int main(int argc, char **argv)
 	close(fd[0]);
 	close(fd[1]);
 	cleanup();
-	return 0;
+
 }
 
 #else
@@ -283,7 +283,7 @@ int main(int argc, char **argv)
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -294,13 +294,12 @@ int main()
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a unique temporary directory and chdir() to it. */
@@ -336,7 +335,6 @@ void cleanup(void)
 	}
 	tst_rmdir();
 
-	tst_exit();
 }
 
 /*

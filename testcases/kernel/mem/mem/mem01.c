@@ -57,7 +57,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -108,7 +108,7 @@
 #include <sys/types.h>
 #include <sys/sysinfo.h>
 #include <stdio.h>
-#include <stdlib.h>   
+#include <stdlib.h>
 #include <sys/user.h>	/* getpagesize() */
 #include <time.h>
 #include <limits.h>
@@ -118,7 +118,6 @@
 
 /* in KB */
 #define PROGRESS_LEAP 100
-
 
 void setup();
 void cleanup();
@@ -130,7 +129,6 @@ size_t get_memsize();
  *  - add option for touch running time (or infinite loop?)
  *  - make it multithreaded with random access to test r/w mm_sem
  */
-
 
 char *TCID="mem01";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
@@ -150,16 +148,14 @@ struct sysinfo info;
 void
 setup()
 {
-    /* capture signals */
+
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
     TEST_PAUSE;
 
     /* make a temp dir and cd to it */
     tst_tmpdir();
-}	/* End setup() */
-
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -174,14 +170,10 @@ cleanup()
      */
     TEST_CLEANUP;
 
-    /* remove files and temp dir */
     tst_rmdir();
 
-    /* exit with return code appropriate for results */
     tst_exit();
-}	/* End cleanup() */
-
-
+}
 
 void help()
 {
@@ -189,7 +181,6 @@ void help()
   printf("  -r      random touching versus linear\n");
   printf("  -v      verbose progress indication\n");
 }
-
 
 /*
  * return MemFree+SwapFree, from /proc/meminfo
@@ -207,12 +198,12 @@ size_t get_memsize()
     tst_resm(TFAIL,"Could not retrieve memory information using sysinfo()");
     cleanup();
   }
- 
-  freeram = (unsigned long long)info.freeram * (unsigned long long)info.mem_unit;     
+
+  freeram = (unsigned long long)info.freeram * (unsigned long long)info.mem_unit;
   tst_resm(TINFO, "Free Mem:\t%llu Mb", freeram/1024/1024);
   res=freeram;
 
-  freeswap = (unsigned long long)info.freeswap * (unsigned long long)info.mem_unit;     
+  freeswap = (unsigned long long)info.freeswap * (unsigned long long)info.mem_unit;
   tst_resm(TINFO, "Free Swap:\t%llu Mb", freeswap/1024/1024);
   res=res+freeswap;
 
@@ -258,7 +249,6 @@ main(int argc, char *argv[])
   char *p, *bigmalloc;
   int loop_count;	/* limited to 16Go on 32 bits systems */
 
-
   pagesize = getpagesize();
 
     /***************************************************************
@@ -290,7 +280,6 @@ main(int argc, char *argv[])
      ***************************************************************/
     for (lc=0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
   	if (!m_opt) {
@@ -323,7 +312,6 @@ main(int argc, char *argv[])
       tst_resm(TINFO,"touching %uMB of malloc'ed memory (%s)",
       			memsize/1024/1024, r_opt?"random":"linear");
 
-
 	loop_count = memsize/pagesize;
 
 	for (i=0; i<loop_count; i++) {
@@ -354,7 +342,6 @@ main(int argc, char *argv[])
 	if (v_opt)
 		printf("\n");
 
-
 	/* This is not mandatory (except in a loop), but it exercise mm again */
 	free(bigmalloc);
 
@@ -364,7 +351,7 @@ main(int argc, char *argv[])
        */
 	tst_resm(TPASS, "malloc - alloc of %dMB succeeded", memsize/1024/1024);
 
-    }	/* End for TEST_LOOPING */
+    }
 
     /***************************************************************
      * cleanup and exit
@@ -372,4 +359,4 @@ main(int argc, char *argv[])
     cleanup();
 
     return 0;
-}	/* End main */
+}

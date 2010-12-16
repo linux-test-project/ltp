@@ -58,7 +58,6 @@ int do_tree_cleanup(char *path, int flag);
 int cleanup_files(char * file, struct stat * statBuff, int flag);
 int cleanup_dirs(char * file, struct stat * statBuff, int flag);
 
-
 int ltp_block_dev_handle = 0;      /* handle to LTP Test block device */
 int ltp_fileHandle = 0;
 char * fileBuf;
@@ -184,13 +183,11 @@ int do_tree_cleanup(char *path, int flag)
       ftw(path, (void *)cleanup_dirs, MAXNUM);
   }
 
-
   return 0;
 }
 int cleanup_files(char * file, struct stat * statBuff, int flag)
 {
     int rc = 0;
-
 
     if (flag == FTW_F) {
         if (unlink(file)) {
@@ -229,7 +226,6 @@ int cleanup_dirs(char * file, struct stat * statBuff, int flag)
     return rc;
 }
 
-
 int do_create_file_test(char * path)
 {
     int i = 0;
@@ -256,7 +252,6 @@ int do_create_file_test(char * path)
     for (i = 0 ; i < FILE_CREATE_COUNT; i++) {
 
         sprintf(dir1,"%2.2x",i);
-
 
         makedir(dir1);
 
@@ -317,7 +312,6 @@ int changedir(char *dir) {
   return 0;
 }
 
-
 int create_file(char *filename)
 {
   int fileHandle;
@@ -372,14 +366,11 @@ int delete_file(char *filename)
     return 0;
 }
 
-
-
 int LTP_fs_open_block_device()
 {
     dev_t devt;
     struct stat statbuf;
     int rc;
-
 
     if (ltp_block_dev_handle == 0) {
 
@@ -412,7 +403,6 @@ int LTP_fs_open_block_device()
                 }
             }
         }
-
 
         /*
          * Check for the /dev/ltp-fs/block_device node, and create if it does not
@@ -479,7 +469,6 @@ int do_random_access_test(int maxNum)
     time_t t;
     int i;
 
-   
     printf("Running random access test...\n");
     changedir(rootPath);
 
@@ -495,7 +484,6 @@ int do_random_access_test(int maxNum)
         perror("/dev/null");
         return(errno);
     }
-
 
     /* 00/00/00/00 */
     for (i = 0 ; i < maxNum ; i++) {
@@ -607,7 +595,6 @@ int do_random_create_delete(int maxNum)
 
   time(&t);
   srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
-
 
   /* 00/00/00/00 */
   for (i = 0 ; i < maxNum && rc != MAXERROR; i++) {

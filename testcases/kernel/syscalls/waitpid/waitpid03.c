@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "d", &ikids_uclinux);
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 		if ((sig_t) signal(SIGTERM, SIG_DFL) == SIG_ERR) {
 			tst_resm(TFAIL, "Signal SIGTERM failed, errno = %d",
 				 errno);
-			tst_exit();
+
 		}
 
 		while (++ikids < MAXUPRC) {
@@ -213,6 +213,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

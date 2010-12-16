@@ -83,10 +83,10 @@ main(int argc, char *argv[])
 	struct sctp_status status;
 	socklen_t status_len;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	/* Create and bind the server socket.  */
         svr_sk = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
@@ -129,21 +129,21 @@ main(int argc, char *argv[])
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
 	ppid = rand(); /* Choose an arbitrary value. */
-	stream = 1; 
+	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
 	out_iov.iov_base = message;
 	out_iov.iov_len = strlen(message) + 1;
-	
-        /* Send the first message from all the clients to the server.  This 
-	 * will create the associations.  
+
+        /* Send the first message from all the clients to the server.  This
+	 * will create the associations.
 	 */
 	for (i = 0; i < MAX_CLIENTS; i++)
 		test_sendmsg(clt_sk[i], &outmessage, 0, strlen(message) + 1);
-        
+
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-        memset(&inmessage, 0, sizeof(inmessage));	
+        memset(&inmessage, 0, sizeof(inmessage));
 	iov.iov_base = big_buffer;
 	iov.iov_len = REALLY_BIG;
 	inmessage.msg_iov = &iov;
@@ -156,22 +156,22 @@ main(int argc, char *argv[])
 		error = test_recvmsg(clt_sk[i], &inmessage, MSG_WAITALL);
 		test_check_msg_notification(&inmessage, error,
 					    sizeof(struct sctp_assoc_change),
-					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	}
 
 	/* Get the communication up message and the data message on the
-	 * server sockets for all the clients.  
+	 * server sockets for all the clients.
 	 */
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		inmessage.msg_controllen = sizeof(incmsg);
 		error = test_recvmsg(svr_sk, &inmessage, MSG_WAITALL);
 		test_check_msg_notification(&inmessage, error,
 					    sizeof(struct sctp_assoc_change),
-					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+					    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 
 		inmessage.msg_controllen = sizeof(incmsg);
 		error = test_recvmsg(svr_sk, &inmessage, MSG_WAITALL);
-		test_check_msg_data(&inmessage, error, strlen(message) + 1, 
+		test_check_msg_data(&inmessage, error, strlen(message) + 1,
 				    MSG_EOR, stream, ppid);
 		sac = (struct sctp_assoc_change *)iov.iov_base;
 		svr_associd[i] = sac->sac_assoc_id;
@@ -215,7 +215,7 @@ main(int argc, char *argv[])
 		memset(&status, 0, sizeof(struct sctp_status));
 		status.sstat_assoc_id = sinfo->sinfo_assoc_id;
 		status_len = sizeof(struct sctp_status);
-		error = getsockopt(svr_sk, SOL_SCTP, SCTP_STATUS, 
+		error = getsockopt(svr_sk, SOL_SCTP, SCTP_STATUS,
 				   &status, &status_len);
 		if ((error != -1) && (errno != EINVAL))
 			tst_brkm(TBROK, NULL,
@@ -231,12 +231,12 @@ main(int argc, char *argv[])
 		error = test_recvmsg(clt_sk[i], &inmessage, MSG_WAITALL);
 		test_check_msg_notification(&inmessage, error,
 					    sizeof(struct sctp_assoc_change),
-					    SCTP_ASSOC_CHANGE, SCTP_COMM_LOST);	
+					    SCTP_ASSOC_CHANGE, SCTP_COMM_LOST);
 
 		close(clt_sk[i]);
 	}
 
-	tst_resm(TPASS, "ABORT an association using SCTP_ABORT"); 
+	tst_resm(TPASS, "ABORT an association using SCTP_ABORT");
 
         /* Indicate successful completion.  */
       tst_exit();

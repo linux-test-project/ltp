@@ -9,7 +9,7 @@
 /*
  * mq_timedreceive() test plan:
  * mq_timedreceive() will fail with EBADF, if mqdes is not a valid message
- * message queue descriptor. 
+ * message queue descriptor.
  */
 
 #include <stdio.h>
@@ -81,4 +81,3 @@ int main()
 	printf("Test PASSED\n");
         return PTS_PASS;
 }
-

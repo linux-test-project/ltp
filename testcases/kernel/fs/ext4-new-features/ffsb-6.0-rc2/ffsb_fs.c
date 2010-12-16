@@ -365,7 +365,6 @@ static ffsb_fs_t *construct_new_fileset(ffsb_fs_t *fs)
 	return fs;
 }
 
-
 struct poll_data {
 	ffsb_fs_t *fs;
 	double    util;

@@ -66,7 +66,6 @@ int openlog (char *filename)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               logmsg ()                              |
 | ==================================================================== |
@@ -80,7 +79,6 @@ void logmsg (const char *args, ...)
 	fflush (logfile);
 }
 #endif
-
 
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
@@ -96,7 +94,6 @@ void sys_error (const char *msg, const char *file, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, file, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

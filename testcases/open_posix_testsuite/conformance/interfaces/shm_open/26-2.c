@@ -13,7 +13,7 @@
  * In most case this test will be unresolved if not run by root.
  * Steps:
  *  1. Create a shared memory object.
- *  2. Set a non zero size for this object (to force the modification of the 
+ *  2. Set a non zero size for this object (to force the modification of the
  *     object when it will be reopen with O_TRUNC set).
  *  3. Set his effective user id to an other user id which is not root.
  *  4. Call shm_open with O_TRUNC set.
@@ -22,7 +22,7 @@
 
 /* getpwent() is part of XSI option */
 #define _XOPEN_SOURCE 600
-  
+
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -55,17 +55,17 @@ int main() {
 	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_NAME);
-		return PTS_UNRESOLVED;	
+		return PTS_UNRESOLVED;
 	}
 
 	if (fstat(fd, &stat_buf) != 0) {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
-	}	
+	}
 	old_uid = stat_buf.st_uid;
-	old_gid = stat_buf.st_gid;	
-	       
+	old_gid = stat_buf.st_gid;
+
 	/* search for the first user which is non root and which is not the
 	   current user */
 	while ((pw = getpwent()) != NULL)
@@ -77,7 +77,7 @@ int main() {
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
@@ -87,10 +87,9 @@ int main() {
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	printf("Testing with user '%s' (uid: %i)\n",
 	       pw->pw_name, pw->pw_uid);
-
 
 	fd = shm_open(SHM_NAME, O_RDWR|O_TRUNC, 0);
 	if (fd == -1) {
@@ -121,4 +120,3 @@ int main() {
 		printf("The group ID has changed.\n");
 	return PTS_FAIL;
 }
-       

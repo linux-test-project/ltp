@@ -11,13 +11,11 @@
  * supported by the implementation.
  */
 
-
 #include <unistd.h>
 #include <sys/mman.h>
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 #if !defined(_POSIX_MEMLOCK) || _POSIX_MEMLOCK == -1
 
@@ -31,9 +29,9 @@ int main() {
 #if _POSIX_MEMLOCK != 0
 int main() {
 	int result;
-	
+
 	result = munlockall();
-	
+
 	if (result == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
@@ -61,7 +59,7 @@ int main() {
 	}
 
 	result = munlockall();
-	
+
 <<<<<<< HEAD
 	if ((result == 0 && memlock > 0) || (result == -1 && memlock <= 0)) {
 =======

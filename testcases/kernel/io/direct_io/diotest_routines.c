@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * NAME
  *      diotest_routines.c
@@ -48,8 +47,6 @@
 
 #include "diotest_routines.h"
 
-
-
 /* **** Routines for buffer actions, comparisions **** */
 
 /*
@@ -75,7 +72,6 @@ vfillbuf(struct iovec *iv, int vcnt, char value)
 		fillbuf(iv->iov_base, iv->iov_len, (char)value);
 	}
 }
-
 
 /*
  * bufcmp: Compare two buffers
@@ -110,8 +106,6 @@ vbufcmp(struct iovec *iv1, struct iovec *iv2, int vcnt)
 	}
 	return 0;
 }
-
-
 
 /*
  * compare_files: Compares two files
@@ -163,7 +157,6 @@ filecmp(char *f1, char *f2)
 	close(fd2);
 	return 0;
 }
-
 
 /* **** Routines to create, wait and destroy child processes **** */
 

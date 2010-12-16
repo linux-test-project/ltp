@@ -113,15 +113,13 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/*
@@ -130,7 +128,6 @@ int main(int ac, char **av)
 		 */
 		TEST(chmod(TESTFILE, PERMS));
 
-		/* check return code of chmod(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL|TTERRNO, "chmod(%s, %#o) failed",
 				 TESTFILE, PERMS);
@@ -163,13 +160,11 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
- }		/* End main */
+ }
 
 /*
  * void
@@ -186,19 +181,16 @@ void setup()
 	gid_t group1_gid;	/* user and process group id's */
 	uid_t user1_uid;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
+
 	}
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Get the uid of guest user - ltpuser1 */
@@ -232,7 +224,7 @@ void setup()
 	/* Set the effective gid of the process to that of user */
 	if (setgid(group1_gid) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "setgid(%d) failed", group1_gid);
-}				/* End setup() */
+}
 
 /*
  * void
@@ -247,9 +239,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove temporary directory and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

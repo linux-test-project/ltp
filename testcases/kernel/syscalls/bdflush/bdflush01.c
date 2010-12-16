@@ -25,14 +25,14 @@
 /*		capability) may call bdflush().				      */
 /*									      */
 /*		If func is negative or 0, and no daemon has been started,     */
-/*		then bdflush() enters the daemon code and never returns.      */	
-/*									      */	
+/*		then bdflush() enters the daemon code and never returns.      */
+/*									      */
 /*		If func is 1, some dirty buffers are written to disk.	      */
 /*		If func is 2 or more and is even (low bit is 0), then address */
 /*		is the address of a long word, and the tuning parameter       */
 /*		numbered (func-2)/2 is returned to the caller in that address.*/
-/*									      */	
-/*		If func is 3 or more and is odd (low bit is 1), then data is  */ 
+/*									      */
+/*		If func is 3 or more and is odd (low bit is 1), then data is  */
 /*		a long word, and the kernel sets tuning parameter numbered    */
 /*		(func-3)/2 to that value.				      */
 /*		    							      */
@@ -43,20 +43,20 @@
 /*		If func is negative or 0 and the daemon successfully starts,  */
 /*		bdflush() never returns. Otherwise, the return value is 0 on  */
 /*		success and -1 on failure, with errno set to indicate the     */
-/*		error.							      */	
-/*									      */	
+/*		error.							      */
+/*									      */
 /*		Errors:							      */
 /*			EBUSY						      */
-/*			    An attempt was made to enter the daemon code after*/ 
+/*			    An attempt was made to enter the daemon code after*/
 /*			    another process has already entered. 	      */
 /*			EFAULT						      */
 /*			   address points outside your accessible address     */
-/*			   space. 					      */	
+/*			   space. 					      */
 /*			EINVAL						      */
 /*			    An attempt was made to read or write an invalid   */
 /*			    parameter number, or to write an invalid value to */
 /*			    a parameter. 				      */
-/*			EPERM						      */		
+/*			EPERM						      */
 /*			    Caller does not have the CAP_SYS_ADMIN capability.*/
 /*									      */
 /* Usage:  <for command-line>						 */
@@ -89,7 +89,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -117,11 +117,11 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /******************************************************************************/
 extern void cleanup() {
 <<<<<<< HEAD
-        /* Remove tmp dir and all files in it */
+
         TEST_CLEANUP;
         tst_rmdir();
 =======
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 >>>>>>> master
@@ -156,7 +156,7 @@ int main(int ac, char **av) {
 	long data;
 <<<<<<< HEAD
         char *msg;              /* message returned from parse_opts */
-	
+
         /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -166,14 +166,13 @@ int main(int ac, char **av) {
 =======
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* Check looping state if -i option given */
 >>>>>>> master
 	Tst_count = 1;
 	for (testno = 0; testno < TST_TOTAL; ++testno) {

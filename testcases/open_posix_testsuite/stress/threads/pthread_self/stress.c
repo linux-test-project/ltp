@@ -14,22 +14,20 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This stress test aims to test the following assertion:
  *  -> pthread_self() returns the thread ID of the calling thread.
  *      Therefore, it never returns the same value for 2 different running threads.
- 
+
  * The steps are:
  * -> Create some threads with different parameters
  * -> Get the threads IDs
  * -> Compare all the threads IDs to find duplicates.
 
  */
- 
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -40,34 +38,34 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <string.h>
  #include <unistd.h>
 
  #include <semaphore.h>
  #include <errno.h>
  #include <signal.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -90,7 +88,6 @@
  * scenar_init(): function to call before use the scenarii array.
  * scenar_fini(): function to call after end of use of the scenarii array.
  */
-
 
 /********************************************************************************************/
 /***********************************    Real Test   *****************************************/
@@ -122,7 +119,7 @@ void * threaded(void * arg)
 {
 	int ret=0;
 	int me = *(int *)arg;
-	
+
 	#if VERBOSE > 6
 	output("[child%d] starting\n", me);
 	#endif
@@ -132,7 +129,7 @@ void * threaded(void * arg)
 	#if VERBOSE > 6
 	output("[child%d] got mutex\n", me);
 	#endif
-	
+
 	running[me]=pthread_self();
 
 	/* Signal we're running */
@@ -142,7 +139,7 @@ void * threaded(void * arg)
 	#if VERBOSE > 6
 	output("[child%d] posted semaphore %p\n", me, &scenarii[me].sem);
 	#endif
-	
+
 	while (!c_boolean)
 	{
 		ret = pthread_cond_wait(&c_synchro, &m_synchro);
@@ -151,14 +148,14 @@ void * threaded(void * arg)
 		output("[child%d] awaken\n", me);
 		#endif
 	}
-	
+
 	ret = pthread_mutex_unlock(&m_synchro);
 	if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
 
 	#if VERBOSE > 6
 	output("[child%d] exiting\n", me);
 	#endif
-	
+
 	return arg;
 }
 
@@ -167,19 +164,19 @@ int main (int argc, char *argv[])
 {
 	int ret=0;
 	struct sigaction sa;
-	
+
 	pthread_t creation[NSCENAR]; /* Thread ID returned in pthread_create */
 	int status[NSCENAR]; /* Status of thread creation */
 	int ids[NSCENAR];
-	
+
 	int i;
-	
+
 	for (sc=0; sc<NSCENAR; sc++)
 		ids[sc]=sc;
-	
+
 	/* Initialize output routine */
 	output_init();
-	
+
 	/* Initialize thread attribute objects */
 	scenar_init();
 
@@ -194,12 +191,12 @@ int main (int argc, char *argv[])
 	#if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
 	#endif
-	
+
 	while (do_it)
 	{
 		/* Initialize the shared data */
 		c_boolean = 0;
-		
+
 		/* Create all the threads */
 		for (sc=0; sc < NSCENAR; sc++)
 		{
@@ -212,11 +209,11 @@ int main (int argc, char *argv[])
 				case 0: /* Operation was expected to succeed */
 					if (status[sc] != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
 					break;
-				
+
 				case 1: /* Operation was expected to fail */
 					if (status[sc] == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
 					break;
-				
+
 				case 2: /* We did not know the expected result */
 				default:
 					/* Nothing */
@@ -226,7 +223,7 @@ int main (int argc, char *argv[])
 		#if VERBOSE > 6
 		output("[parent] threads created\n");
 		#endif
-		
+
 		/* Now wait that all threads are running */
 		for (sc=0; sc < NSCENAR; sc++)
 		{
@@ -244,7 +241,7 @@ int main (int argc, char *argv[])
 		#if VERBOSE > 6
 		output("[parent] Locking the mutex\n");
 		#endif
-		
+
 		ret = pthread_mutex_lock(&m_synchro);
 		if (ret != 0)  {  UNRESOLVED(ret, "Mutex lock failed");  }
 
@@ -253,19 +250,19 @@ int main (int argc, char *argv[])
 		{
 			if (status[sc] != 0) /* The new thread is running */
 				continue;
-			
+
 			if (pthread_equal(creation[sc], running[sc]) == 0)
 			{
 				output("pthread_create returned an ID of %p\n", creation[sc]);
 				output("pthread_self in the thread returned %p\n", running[sc]);
 				FAILED("Error: Values mismatch");
 			}
-			
+
 			for (i=sc+1; i<NSCENAR; i++)
 			{
 				if (status[i] != 0)
 					continue;
-				
+
 				if (pthread_equal(creation[sc], creation[i]))
 				{
 					FAILED("Two different running threads have the same ID");
@@ -275,25 +272,25 @@ int main (int argc, char *argv[])
 		#if VERBOSE > 6
 		output("[parent] No duplicate found\n");
 		#endif
-		
+
 		/* We're done, we can terminate the threads */
 		c_boolean = 1;
 		ret = pthread_mutex_unlock(&m_synchro);
 		if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
-		
+
 		ret = pthread_cond_broadcast(&c_synchro);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to broadcast the cond");  }
 
 		#if VERBOSE > 6
 		output("[parent] Cond broadcasted\n");
 		#endif
-		
+
 		/* Join the joinable threads */
 		for (sc=0; sc < NSCENAR; sc++)
 		{
 			if (status[sc] != 0) /* The new thread is running */
 				continue;
-			
+
 			if (scenarii[sc].detached == 0)
 			{
 				#if VERBOSE > 6
@@ -305,18 +302,16 @@ int main (int argc, char *argv[])
 				output("[parent] Joined %d\n", sc);
 				#endif
 			}
-			
+
 	 	}
 		iterations++;
 	}
-	
+
 	/* We've been asked to stop */
-	
+
 	scenar_fini();
-	
+
 	output("pthread_exit stress test PASSED -- %llu iterations\n",iterations);
-	
+
 	PASSED;
 }
-
-

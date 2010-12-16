@@ -6,7 +6,7 @@
  * source tree.
  *
  *
- * strftime shall return the number of bytes placed into the array.  
+ * strftime shall return the number of bytes placed into the array.
  * Otherwise, it should return 0.
  */
 
@@ -33,4 +33,4 @@ int main()
 	puts ("FAIL");
 	return PTS_FAIL;
     }
-} 
+}

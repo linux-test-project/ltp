@@ -112,7 +112,6 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 			cropcap.pixelaspect.denominator
 			);
 
-
 	} else {
 		CU_ASSERT_EQUAL(ret_cap, -1);
 		CU_ASSERT_EQUAL(errno_cap, EINVAL);
@@ -124,7 +123,6 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 	}
 
 }
-
 
 void test_VIDIOC_CROPCAP() {
 
@@ -256,7 +254,7 @@ void test_VIDIOC_CROPCAP_NULL() {
 		__FILE__, __LINE__, ret_null, errno_null);
 
 	/* Check if at least one type was supported */
-	if (ret_capture == 0 || ret_output == 0 || ret_overlay == 0 || 
+	if (ret_capture == 0 || ret_output == 0 || ret_overlay == 0 ||
 	    ret_private == 0 || ret_private_1 == 0) {
 		/* the parameter shall be validated */
 		CU_ASSERT_EQUAL(ret_null, -1);

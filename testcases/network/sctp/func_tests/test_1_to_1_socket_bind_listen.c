@@ -22,13 +22,13 @@
  * TEST10: INADDR_ANY address and non-zero port
  * TEST11: INADDR_ANY address and zero port
  * TEST12: Local address and zero port
- * 
+ *
  * listen () Tests:
  * ---------------
  * TEST13: Bad socket descriptor
  * TEST14: Invalid socket
  * TEST15: Listening a bound socket
- * 
+ *
  * The SCTP reference implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -181,7 +181,7 @@ main(int argc, char *argv[])
 	/*Assigning a reserved port*/
 	uid = getuid();
 	if (uid != 0) {
-		bind_addr.sin_port = htons(SCTP_RESERVED_PORT);	
+		bind_addr.sin_port = htons(SCTP_RESERVED_PORT);
 		error = bind(sk, (struct sockaddr *) &bind_addr,
 			     sizeof(bind_addr));
 		if (error != -1 || errno != EACCES)
@@ -191,7 +191,7 @@ main(int argc, char *argv[])
 		tst_resm(TPASS, "bind() on reserved port - EACCESS");
 	}
 
-	/*bind() TEST10: INADDR_ANY address and non-zero port, bind() should 
+	/*bind() TEST10: INADDR_ANY address and non-zero port, bind() should
 	succeed*/
 	bind_addr.sin_addr.s_addr = INADDR_ANY;
         bind_addr.sin_port = htons(SCTP_TESTPORT_1);
@@ -202,14 +202,14 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "bind() with INADDR_ANY address and non-zero port - "
 		 "SUCCESS");
-	
+
 	/*Closing the socket which succeed in bind() */
 	close(sk);
 
 	/*Opening the socket again for further test*/
 	sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	/*bind() TEST11: INADDR_ANY address and zero port, bind() should 
+	/*bind() TEST11: INADDR_ANY address and zero port, bind() should
 	succeed*/
         bind_addr.sin_port = 0;
 	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
@@ -226,7 +226,7 @@ main(int argc, char *argv[])
 	/*Opening the socket again for further test*/
 	sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	/*bind() TEST12: local address and zero port, bind() should 
+	/*bind() TEST12: local address and zero port, bind() should
 	succeed*/
         bind_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
         bind_addr.sin_port = 0;
@@ -263,6 +263,6 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "listen() on a bound socket - SUCCESS");
 
 	close(sk);
-	
-	return 0;
+
+	tst_exit();
 }

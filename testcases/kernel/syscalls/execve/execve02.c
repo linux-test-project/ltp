@@ -113,7 +113,6 @@ int main(int ac, char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -192,10 +191,8 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get file name of the passed test file and the absolute path to it.
@@ -257,9 +254,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove files and temp dir */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

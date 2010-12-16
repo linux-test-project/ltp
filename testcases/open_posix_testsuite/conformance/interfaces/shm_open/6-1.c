@@ -19,4 +19,3 @@ int main()
         printf("Will not test the effect of a name which does not begin with the slash\ncharacter because it is implementation-defined.\n");
         return PTS_UNTESTED;
 }
-

@@ -2,14 +2,14 @@
  * Copyright (c) 2004, Bull SA. All rights reserved.
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  */
 
 /*
  * assertion:
  *
- *	The error statuses returned are identical to those returned as the 
+ *	The error statuses returned are identical to those returned as the
  *	result of an aio_read() or aio_write().
  *
  * method:
@@ -69,7 +69,7 @@ int main()
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
 		exit(PTS_UNSUPPORTED);
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_15_1_%d", 
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_15_1_%d",
 		  getpid());
 	unlink(tmpfname);
 
@@ -148,7 +148,7 @@ int main()
 		sleep (1);
 
 	if (num_received != NUM_AIOCBS) {
-		printf(TNAME " Error wrong number of completed requests %d\n",	
+		printf(TNAME " Error wrong number of completed requests %d\n",
 			num_received);
 
 		for (i=0; i<NUM_AIOCBS; i++)

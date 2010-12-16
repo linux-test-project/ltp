@@ -14,8 +14,7 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
- 
- 
+
  * This file is a stress test for the pthread_mutex_init function.
 
  * The steps are:
@@ -26,12 +25,12 @@
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
 #endif
- 
+
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -42,27 +41,27 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <stdarg.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -82,7 +81,7 @@
 /********************************************************************************************/
 char do_it=1;
 #ifndef WITHOUT_XOPEN
-int types[]={PTHREAD_MUTEX_NORMAL, 
+int types[]={PTHREAD_MUTEX_NORMAL,
 					PTHREAD_MUTEX_ERRORCHECK,
 					PTHREAD_MUTEX_RECURSIVE,
 					PTHREAD_MUTEX_DEFAULT};
@@ -104,7 +103,7 @@ void * threaded (void * arg)
 #endif
 	/* We will use mutex from the stack or from malloc'ed memory */
 	char loc = ((me % 5) %2);
-	
+
 	if (loc)
 	{
 		pmtx = &mtx;
@@ -115,27 +114,27 @@ void * threaded (void * arg)
 		if (pmtx == NULL)
 		{ UNRESOLVED(errno, "Memory allocation for mutex failed"); }
 	}
-	
+
 	me %= sz;
-	
+
 	switch (me)
 	{
 		case 0: /* We will initialize the mutex with NULL pointer */
 			pma = NULL;
 			break;
-		
+
 		default: /* We will initialize the mutex with an attribute object */
 			if ((ret = pthread_mutexattr_init(&ma)))
 			{ UNRESOLVED(ret, "Mutex attribute init failed"); }
 			pma = &ma;
-			
-			if (me == 1) 
+
+			if (me == 1)
 				break;
 
 			if ((ret = pthread_mutexattr_settype(&ma, types[me-2])))
 			{ UNRESOLVED(ret, "Mutex attribute settype failed"); }
 	}
-	
+
 	while (do_it)
 	{
 		ret = pthread_mutex_init(pmtx, pma);
@@ -152,14 +151,14 @@ void * threaded (void * arg)
 		if (ret != 0)
 		{ FAILED("Mutex destroy failed");	}
 	}
-			
+
 	if (!loc) /* mutex was malloc'ed */
 		free(pmtx);
-	
+
 	if (me)
 		if ((ret = pthread_mutexattr_destroy(pma)))
 		{ FAILED("Mutex attribute destroy failed at the end"); }
-		
+
 	return NULL;
 }
 
@@ -170,8 +169,6 @@ void sighdl(int sig)
 	while (do_it);
 }
 
-
-
 /******** Parent thread *************/
 int main(int argc, char * argv[])
 {
@@ -179,7 +176,7 @@ int main(int argc, char * argv[])
 	pthread_t threads[N * SCALABILITY_FACTOR];
 	int i;
 	int ret;
-	
+
 	output_init();
 
 	sigemptyset (&sa.sa_mask);
@@ -187,7 +184,7 @@ int main(int argc, char * argv[])
 	sa.sa_handler = sighdl;
 	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{ UNRESOLVED(ret, "Unable to register signal handler"); }
-	
+
 	for (i=0; (i<(N * SCALABILITY_FACTOR) && (ret == 0)); i++)
 	{
 		ret = pthread_create(&threads[i], NULL, threaded, (void *) i);
@@ -199,10 +196,10 @@ int main(int argc, char * argv[])
 		while (do_it);
 		for (; i>0; i--)
 			pthread_join(threads[i-1], NULL);
-		
+
 		UNRESOLVED(ret, "Unable to create enough threads");
 	}
-	
+
 	/* Every threads were created; we now just wait */
 	for (i=0; i<(N * SCALABILITY_FACTOR); i++)
 	{
@@ -213,6 +210,6 @@ int main(int argc, char * argv[])
 	output("pthread_mutex_init stress test passed\n");
 	#endif
 
-	/* Everything went OK */	
+	/* Everything went OK */
 	PASSED;
 }

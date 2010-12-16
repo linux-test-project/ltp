@@ -85,7 +85,7 @@ int main( int argc, char *argv[] )
         switch(atoi(argv[1]))
 	{
 	case 1: printf("%d", PAGE_SIZE);
-		return 0;
+		tst_exit();
 	case 2:
 		buf = (char*) malloc(MB);
                	if (!buf)
@@ -101,7 +101,7 @@ int main( int argc, char *argv[] )
                		barrier();
        		}
 		free(buf);
-		return 0;
+		tst_exit();
 	case 3:
                 /* Trap SIGINT */
                 sa.sa_handler = sigfunc;
@@ -119,7 +119,7 @@ int main( int argc, char *argv[] )
 		}
                 /* wait for signat Int */
                 pause();
-		return 0;
+		tst_exit();
 	default:
 		exit(1);
 	}

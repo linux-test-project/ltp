@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that timer_create() sets errno to EAGAIN if the system doesn't
@@ -14,7 +14,7 @@
  * test will make a best attempt by going up to TIMER_MAX.  If this
  * does not work, test will output PASS and say that results were
  * inconclusive.
- * 
+ *
  * For this test, signal SIGALRM will be used, clock CLOCK_REALTIME
  * will be used.
  */

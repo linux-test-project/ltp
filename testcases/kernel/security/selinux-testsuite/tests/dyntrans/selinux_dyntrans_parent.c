@@ -63,4 +63,3 @@ int main(int argc, char **argv)
 	printf("All systems go\n");
 	exit(0);
 }
-

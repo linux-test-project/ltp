@@ -9,7 +9,7 @@
 /*
  * mq_timedreceive test plan:
  * mq_timedreceive will receive the oldest of the highest priority messages
- * from the message queue. The selected message will be removed from the 
+ * from the message queue. The selected message will be removed from the
  * queue and copied to the buffer pointed by the msg_ptr argument.
  */
 
@@ -74,7 +74,7 @@ int main()
 	if (rvprio != sdprio2) {
 		printf("FAIL: receive priority %d != send priority %d \n", rvprio, sdprio2);
 		failure = 1;
- 	}	
+ 	}
 	ts.tv_sec = time(NULL) + 1;
 	ts.tv_nsec = 0;
         if (mq_timedreceive(mqdes, msgrv2, BUFFER, &rvprio, &ts) == -1) {
@@ -88,8 +88,8 @@ int main()
 	if (rvprio != sdprio1) {
 		printf("FAIL: receive priority %d != send priority %d \n", rvprio, sdprio1);
 		failure = 1;
- 	}	
-	
+ 	}
+
         if (mq_close(mqdes) != 0) {
 		perror(ERROR_PREFIX "mq_close");
 		unresolved = 1;
@@ -113,4 +113,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

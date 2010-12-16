@@ -64,7 +64,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -91,12 +91,10 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -124,12 +122,10 @@ void setup() {
 	tst_tmpdir();
 }
 
-
 /*
  * Macros
  */
 #define SYSCALL_NAME    "mq_notify"
-
 
 /*
  * Global variables
@@ -139,7 +135,6 @@ static char *progname;
 static int notified;
 static int cmp_ok;
 
-
 enum test_type {
 	NORMAL,
 	FD_NONE,
@@ -147,7 +142,6 @@ enum test_type {
 	FD_FILE,
 	ALREADY_REGISTERED,
 };
-
 
 /*
  * Data Structure
@@ -163,7 +157,6 @@ struct test_case {
 #define MSG_SIZE	16
 #define USER_DATA       0x12345678
 
-
 /* Test cases
  *
  *   test status of errors on man page
@@ -171,7 +164,6 @@ struct test_case {
  *   EBADF	      v (not a valid descriptor)
  *   EBUSY	      v (process is already registered for notification)
 */
-
 
 static struct test_case tcase[] = {
 	{ // case00
@@ -217,7 +209,6 @@ static struct test_case tcase[] = {
 		.err	    = EBUSY,
 	},
 };
-
 
 static void sigfunc(int signo, siginfo_t *info, void *data)
 {
@@ -331,7 +322,7 @@ static int do_test(struct test_case *tc)
 			goto EXIT;
 		}
 	}
-	
+
 	/*
 	 * Execute system call
 	 */
@@ -372,8 +363,6 @@ EXIT:
 
 	return result;
 }
-	
-
 
 /*
  * usage()
@@ -388,12 +377,9 @@ static void usage(const char *progname)
 	tst_resm(TINFO,"    -h --help	    Show this message");
 }
 
-
 /*
  * main()
  */
-
-
 
 int main(int ac, char **av) {
 	int result = RESULT_OK;
@@ -409,7 +395,7 @@ int main(int ac, char **av) {
 	};
 
 	progname = basename(av[0]);
-	
+
 <<<<<<< HEAD
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -423,7 +409,6 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -435,21 +420,19 @@ int main(int ac, char **av) {
                 		        break;
 		                default:
                 		        usage(progname);
-                        		
+
                 		}
 		        }
-
 
 		if (ac != optind) {
         	        tst_resm(TINFO,"Options are not match.");
                 	usage(progname);
-                	
+
 	        }
 >>>>>>> master
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -464,7 +447,6 @@ int main(int ac, char **av) {
 				}
 			}
 
-
 			if (ac != optind) {
 				tst_resm(TINFO,"Options are not match.");
 				usage(progname);
@@ -478,7 +460,7 @@ int main(int ac, char **av) {
 					i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
-		
+
 			switch(result) {
 			case RESULT_OK:
 				tst_resm(TPASS, "mq_notify call succeeded");
@@ -490,8 +472,7 @@ int main(int ac, char **av) {
 			}
 
 		}
-	}	
+	}
 	cleanup();
 	tst_exit();
 }
-

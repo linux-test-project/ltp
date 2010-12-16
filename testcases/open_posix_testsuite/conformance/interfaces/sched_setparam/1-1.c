@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-
 void child_proc() {
 	sigset_t sigset;
 	int sig;
@@ -37,10 +36,9 @@ void child_proc() {
 		perror("An error occurs when calling sigwait()");
 		exit(1);
 	}
-	
+
 	exit(0);
 }
-
 
 int main() {
         int result, child_pid, tmp_errno, policy;
@@ -58,7 +56,7 @@ int main() {
 
 	if (sched_getparam(child_pid, &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
-		kill(child_pid, SIGUSR1);		
+		kill(child_pid, SIGUSR1);
 		return PTS_UNRESOLVED;
 	}
 
@@ -73,14 +71,13 @@ int main() {
 	}
 	min_priority = sched_get_priority_min(policy);
 
-	new_priority = param.sched_priority == min_priority ? 
+	new_priority = param.sched_priority == min_priority ?
 		(param.sched_priority = sched_get_priority_max(policy)) :
 		(param.sched_priority = min_priority);
 
-
 	result = sched_setparam(child_pid, &param);
 	tmp_errno = errno;
-	
+
 	if (sched_getparam(child_pid, &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
 		kill(child_pid, SIGUSR1);
@@ -104,7 +101,7 @@ int main() {
 		/* test with a new priority lower than the old one */
 		param.sched_priority = (new_priority -= 2);
 		result = sched_setparam(child_pid, &param);
-		
+
 		if (result == 0 && param.sched_priority == new_priority) {
 			printf("Test PASSED");
 			kill(child_pid, SIGUSR1);

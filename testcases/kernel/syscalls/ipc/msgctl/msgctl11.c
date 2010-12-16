@@ -618,7 +618,6 @@ void setup()
 	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
@@ -682,11 +681,10 @@ void cleanup()
 	if ((status = msgctl(tid, IPC_STAT, NULL)) != -1) {
 		(void)msgctl(tid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "msgctl(tid, IPC_RMID) failed");
-		tst_exit();
+
 	}
 
 	fflush(stdout);
 	tst_rmdir();
-	/* exit with return code appropriate for results */
-	tst_exit();
+
 }

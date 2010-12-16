@@ -8,13 +8,13 @@
  */
 
 /* In x-mode
- * There are several threads that share a mutex, when the owner of mutex is 
- * dead, a waiter locks the mutex and will get EOWNERDEAD. In 
- * PTHREAD_MUTEX_ROBUST_NP Mode, if the owner think he can recover it 
- * to heathy state, he will call pthread_mutex_setconsistency_np to 
- * make the mutex consistent, if the call succeeds, the state of the mutex 
- * will change back to normal. 
- */ 
+ * There are several threads that share a mutex, when the owner of mutex is
+ * dead, a waiter locks the mutex and will get EOWNERDEAD. In
+ * PTHREAD_MUTEX_ROBUST_NP Mode, if the owner think he can recover it
+ * to heathy state, he will call pthread_mutex_setconsistency_np to
+ * make the mutex consistent, if the call succeeds, the state of the mutex
+ * will change back to normal.
+ */
 
 /*
  * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_NP isn't POSIX.
@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include "test.h"
 
-#define THREAD_NUM		2	
+#define THREAD_NUM		2
 
 pthread_mutex_t	mutex;
 
@@ -38,7 +38,7 @@ void *thread_1(void *arg)
 	pthread_exit(NULL);
 	return NULL;
 }
-void *thread_2(void *arg) 
+void *thread_2(void *arg)
 {
 	int state;
 	int rc;
@@ -58,7 +58,7 @@ void *thread_2(void *arg)
 		exit(FAIL);
 	}
 	DPRINTF(stdout,"Thread 2 lock the mutex and return EOWNERDEAD \n");
-	state = 0;	
+	state = 0;
 	if (pthread_mutex_setconsistency_np(&mutex,state) == 0) {
 		pthread_mutex_unlock(&mutex);
 		if (pthread_mutex_lock(&mutex) != 0) {
@@ -82,7 +82,7 @@ void *thread_2(void *arg)
 		if (pthread_mutex_lock(&mutex) != EOWNERDEAD) {
 			EPRINTF("FAIL:The mutex should remain as EOWNERDEAD "
 			       "if the calling to "
-			       "pthread_mutex_setconsistency_np fails, " 
+			       "pthread_mutex_setconsistency_np fails, "
 			       "unlock the mutex will not change the state "
 			       "in x-mode");
 			pthread_mutex_unlock(&mutex);
@@ -101,7 +101,7 @@ void *thread_2(void *arg)
 	return NULL;
 }
 
-int main() 
+int main()
 {
 	pthread_mutexattr_t attr;
 	pthread_t threads[THREAD_NUM];
@@ -122,7 +122,7 @@ int main()
 		return UNRESOLVED;
 	}
 #endif
-	rc = pthread_mutex_init(&mutex, &attr); 
+	rc = pthread_mutex_init(&mutex, &attr);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s",
 			rc, strerror(rc));
@@ -154,4 +154,3 @@ int main()
 	DPRINTF(stdout,"PASS: Test PASSED\n");
 	return PASS;
 }
-

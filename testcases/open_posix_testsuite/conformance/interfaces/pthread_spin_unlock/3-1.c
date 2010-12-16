@@ -1,13 +1,13 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * Test pthread_spin_unlock(pthread_spinlock_t *lock)
  *
  * This case will always PASS.
- * 
+ *
  * The functions may fail if:
  * The pthread_spin_unlock() function may fail if:
  *	[EPERM] The calling thread does not hold the lock.
@@ -15,7 +15,7 @@
  * Steps:
  * 1. Create a thread that will initialize and lock a spinlock
  * 2. Main will try to unlock the spinlock (it doesn't hold the lock)
- * 3. Check the return code to see if it returns [EPERM].  
+ * 3. Check the return code to see if it returns [EPERM].
  *
  * Note: This test will always pass since the standard specifies 'may' fail.
  *
@@ -31,13 +31,13 @@
 #include "posixtest.h"
 
 static pthread_spinlock_t spinlock;
-volatile static int sem; 
+volatile static int sem;
 
 #define INTHREAD 0
 #define INMAIN 1
 
 static void* fn_chld(void *arg)
-{ 
+{
 	int rc = 0;
 
 	/* Initialize spin lock */
@@ -56,7 +56,7 @@ static void* fn_chld(void *arg)
 		exit(PTS_UNRESOLVED);
 	}
 	printf("thread: acquired spin lock\n");
-	
+
 	/* Wait for main to try and unlock this spinlock */
 	sem = INMAIN;
 	while (sem == INMAIN)
@@ -64,24 +64,24 @@ static void* fn_chld(void *arg)
 
 	/* Cleanup just in case */
 	pthread_spin_unlock(&spinlock);
-	
+
 	if (pthread_spin_destroy(&spinlock) != 0)
 	{
 		printf("Error at pthread_spin_destroy()");
 		exit(PTS_UNRESOLVED);
-	}	
+	}
 
 	pthread_exit(0);
 	return NULL;
 }
- 
+
 int main()
 {
 	int rc;
 	pthread_t child_thread;
 
 	sem = INTHREAD;
-	
+
 	/* Create a thread that will initialize and lock a spinlock */
 	printf("main: create thread\n");
 	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
@@ -93,7 +93,7 @@ int main()
 	/* Wait for thread to lock the spinlock */
 	while (sem == INTHREAD)
 		sleep(1);
-	
+
 	printf("main: attempt to unlock a spinlock that we don't own\n");
 	rc = pthread_spin_unlock(&spinlock);
 	if (rc != 0)
@@ -111,7 +111,7 @@ int main()
 		printf("main: Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Test to see the return code of pthread_spin_unlock */
 	if (rc == EPERM)
 	{

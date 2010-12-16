@@ -134,14 +134,14 @@ char *argv[];
 	if (signal(SIGTERM, term) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
 			 "Error setting up SIGTERM signal, ERRNO = %d", errno);
-		tst_exit();
+
 	}
 
 	/* Set up to catch SIGCLD signal */
 	if (signal(SIGCLD, chld) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
 			 "Error setting up SIGCLD signal, ERRNO = %d", errno);
-		tst_exit();
+
 	}
 
 	/* Default argument settings. */
@@ -174,12 +174,12 @@ char *argv[];
 		tst_resm(TINFO,
 			 "USAGE : mkdir09 -c #child_groups -t#test_time -d#directories");
 		tst_resm(TINFO, "Bad argument count.");
-		tst_exit();
+
 	}
 
 	runtest();
 	cleanup();
-	return 0;
+
 }
 
 /*--------------------------------------------------------------*/
@@ -582,16 +582,15 @@ int massmurder()
  *   ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 
-}				/* End setup() */
+}
 
 /***************************************************************
  *  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -613,6 +612,5 @@ void cleanup()
 	/*
 	 *      * Exit with return code appropriate for results.
 	 *           */
-	tst_exit();
 
-}				/* End cleanup() */
+}

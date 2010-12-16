@@ -188,7 +188,6 @@ static void sys_error (const char *, int);
 static void error (const char *, int);
 static void release ();
 
-
 /*
  * Global Variables:
  *
@@ -222,8 +221,6 @@ int 	 num_writers = DEFAULT_NUM_WRITERS;
 
 int 	 shmid[MAX_THREAD_NUMBER + MAX_WRITER_NUMBER];
 
-
-
 /*---------------------------------------------------------------------+
 |                               main                                   |
 | ==================================================================== |
@@ -246,7 +243,6 @@ int main (int argc, char **argv)
 	unsigned long *ulptr;	/* Misc pointer */
 				/* Index into shared memory segment */
 
-
 	/*
 	 * Parse command line arguments and print out program header
 	 */
@@ -263,7 +259,6 @@ int main (int argc, char **argv)
 /*---------------------------------------------------------------------+
 |			shared memory segments                         |
 +---------------------------------------------------------------------*/
-
 
 	for (i=0; i<num_writers; i++) {
         /*
@@ -287,7 +282,6 @@ int main (int argc, char **argv)
 
         *(read_count[i]) = 0;
 
-
         /*
          * Create a shared memory segment for storing the checksums of readers.
          * After creating the shared memory segment, initialize it.
@@ -302,7 +296,6 @@ int main (int argc, char **argv)
         if ((long)(checksum[i] = (unsigned long *) shmat (shmid[j], 0, 0)) == -1)
                 sys_error ("shmat failed", __LINE__);
 
-
 	ulptr=checksum[i];
 
         for (k=0; k < num_readers; k++)
@@ -316,7 +309,6 @@ int main (int argc, char **argv)
          * a series of values .
          */
 
-
 	Size=buffer_size;
 	j++;
 
@@ -325,8 +317,6 @@ int main (int argc, char **argv)
 
         if ((long)(shmptr[i] = shmat (shmid[j], 0, 0)) == -1)
                 sys_error ("shmat failed", __LINE__);
-
-
 
         }
 /*---------------------------------------------------------------------+
@@ -407,7 +397,6 @@ int main (int argc, char **argv)
 	}
 	}
 
-
         for (i = 0; i < num_writers; i++)
         {
                if (pthread_join( writer_th[i], NULL)) {
@@ -428,7 +417,6 @@ int main (int argc, char **argv)
         }
         }
 
-
 	/*
 	 * After the threads complete, check their exit status to insure
 	 * that they ran to completion and then verify the corresponding
@@ -441,7 +429,7 @@ int main (int argc, char **argv)
 
 		if (cksum[i] != *ulptr)
 			error ("checksums do not match", __LINE__);
-	
+
 		}
 	}
 	printf ("\n\tMain: readers calculated segment successfully\n");
@@ -451,8 +439,6 @@ int main (int argc, char **argv)
 
 	return (0);
 }
-
-
 
 /*---------------------------------------------------------------------+
 |                               writer ()                              |
@@ -494,7 +480,6 @@ void *writer (void *parm)
         if (pthread_mutex_unlock (&cond_mutex[num_w]))
                 sys_error ("mutex_unlock(&cond_mutex) failed", __LINE__);
 
-
 	cksum[num_w] = cksum_w;
         printf ("\t\twriter (%03d): shared memory checksum %08lx\n", num_w, cksum_w);
 
@@ -524,7 +509,7 @@ void *reader (void *parm)
 
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
-	 * compute the checksum and release the READ_COUNT lock.     
+	 * compute the checksum and release the READ_COUNT lock.
 	 */
 
 	num_r=num_p % num_readers;
@@ -572,9 +557,6 @@ void *reader (void *parm)
 	printf ("\t\treader (%03d) of writer (%03d): checksum %08lx\n", num_r, num_w, cksum_r);
 	return NULL;
 }
-
-
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
@@ -637,9 +619,6 @@ void parse_args (int argc, char **argv)
 	}
 }
 
-
-
-
 /*---------------------------------------------------------------------+
 |                             release ()                               |
 | ==================================================================== |
@@ -658,7 +637,6 @@ void release ()
                 sys_error ("Can't destroy mutex_r", __LINE__);
         }
 
-
         for (i=0; i<num_writers; i++) {
         /*
          * Release shared memory regions
@@ -676,8 +654,6 @@ void release ()
         }
 }
 
-
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -693,7 +669,6 @@ void sys_error (const char *msg, int line)
 	error (syserr_msg, line);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               error ()                               |
 | ==================================================================== |
@@ -708,5 +683,3 @@ void error (const char *msg, int line)
 	release ();
 	exit (-1);
 }
-
-

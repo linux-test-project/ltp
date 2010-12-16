@@ -29,10 +29,9 @@
 #define POLICY SCHED_FIFO
 
 /* the thread uses this to indicate to main or success */
-int policy_correct = -1;	
+int policy_correct = -1;
 /* the thread uses this to indicate to main or success */
-int priority_correct = -1;	
-
+int priority_correct = -1;
 
 /* Thread function which checks the scheduler settings for itself */
 void * thread(void *tmp)
@@ -76,7 +75,7 @@ int main()
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
+
 	rc = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setinheritsched\n");

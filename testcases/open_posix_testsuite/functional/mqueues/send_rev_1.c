@@ -1,13 +1,13 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- * 
+ *
  * Test two processes can read/write from the same message queue
  * at the same time.
- * 
+ *
  */
 
 #include <sys/mman.h>
@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 /* #ifndef  _POSIX_MESSAGE_PASSING
 	printf("_POSIX_MESSAGE_PASSING is not defined \n");
 	return PTS_UNRESOLVED;
-#endif */ 
-  
+#endif */
+
 	if (((mqd_t) -1) == (mq = mq_open(MQ_NAME, oflag, 0777, &mqstat))) {
 		perror("mq_open doesn't return success \n");
 		return PTS_UNRESOLVED;
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		exit(ret_code);
-		
+
 		break;
 	}
 

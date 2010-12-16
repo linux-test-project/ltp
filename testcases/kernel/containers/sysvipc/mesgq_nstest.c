@@ -79,7 +79,6 @@ int check_mesgq(void *vtest)
 	}
 	tst_exit();
 
-	/* NOT REACHED */
 	return 0;
 }
 
@@ -157,6 +156,5 @@ int main(int argc, char *argv[])
 
 	tst_exit();
 
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }

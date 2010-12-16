@@ -91,13 +91,10 @@ main(int ac, char **av)
 	if ((msg = parse_opts (ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		spec.tv_sec = 1;
@@ -107,7 +104,7 @@ main(int ac, char **av)
 		tst_resm((TEST_RETURN < 0 ? TFAIL | TTERRNO : TPASS),
 			"clock_settime %s",
 			(TEST_RETURN == 0 ? "passed" : "failed"));
-	}		/* End for TEST_LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
@@ -117,7 +114,7 @@ main(int ac, char **av)
 void
 setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root */
@@ -128,7 +125,6 @@ setup(void)
 	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, NULL, "Could not save the current time");
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 

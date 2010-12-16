@@ -14,7 +14,6 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This file is a helper file for the pthread_create tests
  * It defines the following objects:
  * scenarii: array of struct __scenario type.
@@ -23,7 +22,6 @@
  * scenar_fini(): function to call after end of use of the scenarii array.
  *
  */
- 
 
 struct __scenario
 {
@@ -64,12 +62,12 @@ struct __scenario
 #define CASE_POS(det,expl,scp,spa,sco,sta,gua,ssi,desc) CASE(det,expl,scp,spa,sco,sta,gua,ssi,desc,0)
 #define CASE_NEG(det,expl,scp,spa,sco,sta,gua,ssi,desc) CASE(det,expl,scp,spa,sco,sta,gua,ssi,desc,1)
 #define CASE_UNK(det,expl,scp,spa,sco,sta,gua,ssi,desc) CASE(det,expl,scp,spa,sco,sta,gua,ssi,desc,2)
- 
- /*  
+
+ /*
   * This array gives the different combinations of threads attributes for the testcases.
-  * 
+  *
   * Some combinations must be avoided.
-  * -> Do not have a detached thread use an alternative stack; 
+  * -> Do not have a detached thread use an alternative stack;
   *     as we don't know when the thread terminates to free the stack memory
   * -> ... (to be completed)
   *
@@ -127,13 +125,13 @@ void scenar_init()
 	int old;
 	long pagesize, minstacksize;
 	long tsa, tss, tps;
-	
+
 	pagesize	=sysconf(_SC_PAGESIZE);
 	minstacksize 	=sysconf(_SC_THREAD_STACK_MIN);
 	tsa		=sysconf(_SC_THREAD_ATTR_STACKADDR);
 	tss		=sysconf(_SC_THREAD_ATTR_STACKSIZE);
 	tps		=sysconf(_SC_THREAD_PRIORITY_SCHEDULING);
-	
+
 	#if VERBOSE > 0
 	output("System abilities:\n");
 	output(" TSA: %li\n", tsa);
@@ -142,22 +140,21 @@ void scenar_init()
 	output(" pagesize: %li\n", pagesize);
 	output(" min stack size: %li\n", minstacksize);
 	#endif
-	
-	
+
 	if (minstacksize % pagesize)
 	{
 		UNTESTED("The min stack size is not a multiple of the page size");
 	}
-	
+
 	for (i=0; i<NSCENAR; i++)
 	{
 		#if VERBOSE > 2
 		output("Initializing attribute for scenario %i: %s\n", i, scenarii[i].descr);
 		#endif
-		
+
 		ret = pthread_attr_init(&scenarii[i].ta);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to initialize a thread attribute object");  }
-		
+
 		/* Set the attributes according to the scenario */
 		if (scenarii[i].detached == 1)
 		{
@@ -173,7 +170,7 @@ void scenar_init()
 		#if VERBOSE > 4
 		output("Detach state was set sucessfully\n");
 		#endif
-		
+
 		/* Sched related attributes */
 		if (tps>0) /* This routine is dependent on the Thread Execution Scheduling option */
 		{
@@ -190,7 +187,7 @@ void scenar_init()
 		else
 			output("TPS unsupported => inheritsched parameter untouched\n");
 		#endif
-		
+
 		if (tps>0) /* This routine is dependent on the Thread Execution Scheduling option */
 		{
 			if (scenarii[i].schedpolicy == 1)
@@ -213,22 +210,22 @@ void scenar_init()
 		else
 			output("TPS unsupported => sched policy parameter untouched\n");
 		#endif
-		
+
 		if (scenarii[i].schedparam != 0)
 		{
 			struct sched_param sp;
-			
+
 			ret = pthread_attr_getschedpolicy(&scenarii[i].ta, &old);
 			if (ret != 0)  {  UNRESOLVED(ret, "Unable to get sched policy from attribute"); }
-			
+
 			if (scenarii[i].schedparam == 1)
 				sp.sched_priority = sched_get_priority_max(old);
 			if (scenarii[i].schedparam == -1)
 				sp.sched_priority = sched_get_priority_min(old);
-			
+
 			ret = pthread_attr_setschedparam(&scenarii[i].ta, &sp);
 			if (ret != 0)  {  UNRESOLVED(ret, "Failed to set the sched param");  }
-			
+
 		#if VERBOSE > 4
 			output("Sched param was set sucessfully to %i\n", sp.sched_priority);
 		}
@@ -237,25 +234,25 @@ void scenar_init()
 			output("Sched param untouched\n");
 		#endif
 		}
-		
+
 		if (tps>0) /* This routine is dependent on the Thread Execution Scheduling option */
 		{
 			ret = pthread_attr_getscope(&scenarii[i].ta, &old);
 			if (ret != 0)  {  UNRESOLVED(ret, "Failed to get contension scope from thread attribute");  }
-			
+
 			if (scenarii[i].altscope != 0)
 			{
 				if (old == PTHREAD_SCOPE_PROCESS)
 					old = PTHREAD_SCOPE_SYSTEM;
 				else
 					old = PTHREAD_SCOPE_PROCESS;
-				
+
 				ret = pthread_attr_setscope(&scenarii[i].ta, old);
 				//if (ret != 0)  {  UNRESOLVED(ret, "Failed to set contension scope");  }
 				#if VERBOSE > 0
 				if (ret != 0)  {  output("WARNING: The TPS option is claimed to be supported but setscope fails\n");  }
 				#endif
-				
+
 			#if VERBOSE > 4
 				output("Contension scope set to %s\n", old==PTHREAD_SCOPE_PROCESS?"PTHREAD_SCOPE_PROCESS":"PTHREAD_SCOPE_SYSTEM");
 			}
@@ -269,9 +266,9 @@ void scenar_init()
 		else
 			output("TPS unsupported => sched contension scope parameter untouched\n");
 		#endif
-		
+
 		/* Stack related attributes */
-		if ((tss>0) && (tsa>0)) /* This routine is dependent on the Thread Stack Address Attribute 
+		if ((tss>0) && (tsa>0)) /* This routine is dependent on the Thread Stack Address Attribute
 			                   and Thread Stack Size Attribute options */
 		{
 			if (scenarii[i].altstack != 0)
@@ -281,10 +278,10 @@ void scenar_init()
 				/* We will alloc with a simulated guardsize of 1 pagesize */
 				scenarii[i].bottom = malloc(minstacksize + pagesize);
 				if (scenarii[i].bottom == NULL)  {  UNRESOLVED(errno,"Unable to alloc enough memory for alternative stack"); }
-				
+
 				ret = pthread_attr_setstack(&scenarii[i].ta, scenarii[i].bottom, minstacksize);
 				if (ret != 0)  {  UNRESOLVED(ret, "Failed to specify alternate stack");  }
-			
+
 				#if VERBOSE > 1
 				output("Alternate stack created successfully. Bottom=%p, Size=%i\n", scenarii[i].bottom, minstacksize);
 				#endif
@@ -294,7 +291,7 @@ void scenar_init()
 		else
 			output("TSA or TSS unsupported => No alternative stack\n");
 		#endif
-		
+
 		#ifndef WITHOUT_XOPEN
 		if (scenarii[i].guard != 0)
 		{
@@ -308,7 +305,7 @@ void scenar_init()
 			#endif
 		}
 		#endif
-		
+
 		if (tss>0) /* This routine is dependent on the Thread Stack Size Attribute option */
 		{
 			if (scenarii[i].altsize != 0)
@@ -327,7 +324,7 @@ void scenar_init()
 
 		ret = sem_init(&scenarii[i].sem, 0,0);
 		if (ret == -1) {  UNRESOLVED(errno, "Unable to init a semaphore");  }
-		
+
 	}
 	#if VERBOSE > 0
 	output("All %i thread attribute objects were initialized\n\n", NSCENAR);
@@ -338,15 +335,15 @@ void scenar_init()
 void scenar_fini(void)
 {
 	int ret = 0, i;
-	
+
 	for (i=0; i<NSCENAR; i++)
 	{
 		if (scenarii[i].bottom != NULL)
 			free(scenarii[i].bottom);
-		
+
 		ret = sem_destroy(&scenarii[i].sem);
 		if (ret == -1) {  UNRESOLVED(errno, "Unable to destroy a semaphore");  }
-		
+
 		ret = pthread_attr_destroy(&scenarii[i].ta);
 		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy a thread attribute object");  }
 	}
@@ -362,31 +359,31 @@ int main (int argc, char *argv[])
 {
 	int ret=0;
 	pthread_t child;
-	
+
 	/* Initialize output routine */
 	output_init();
-	
+
 	/* Initialize thread attribute objects */
 	scenar_init();
-	
+
 	for (sc=0; sc < NSCENAR; sc++)
 	{
 		#if VERBOSE > 0
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n", sc, scenarii[sc].descr);
 		#endif
-		
+
 		ret = pthread_create(&child, &scenarii[sc].ta, threaded, NULL);
 		switch (scenarii[sc].result)
 		{
 			case 0: /* Operation was expected to succeed */
 				if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
 				break;
-			
+
 			case 1: /* Operation was expected to fail */
 				if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
 				break;
-			
+
 			case 2: /* We did not know the expected result */
 			default:
 				#if VERBOSE > 0
@@ -412,14 +409,14 @@ int main (int argc, char *argv[])
 			}
 		}
 	}
-	
+
 	scenar_fini();
 	#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
 	#endif
-	
+
 	PASSED;
 }
 #endif

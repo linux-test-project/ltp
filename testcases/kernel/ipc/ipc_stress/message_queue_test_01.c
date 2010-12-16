@@ -59,7 +59,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
@@ -95,7 +94,6 @@ static void sys_error (const char *, int);
 static void error (const char *, int);
 static void child (int []);
 enum { READ, WRITE };
-
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -174,7 +172,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               child                                  |
 | ==================================================================== |
@@ -220,7 +217,6 @@ static void child (int fd[])
 	SAFE_FREE(buf);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -235,7 +231,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

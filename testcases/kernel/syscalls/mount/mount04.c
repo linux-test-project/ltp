@@ -157,13 +157,10 @@ int main(int ac, char **av)
 		STD_COPIES = 1;
 	}
 
-	/* perform global setup for test */
 	setup();
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
@@ -193,15 +190,15 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-		}		/* End of TEST CASE LOOPING. */
-	}			/* End for TEST_LOOPING */
+		}
+	}
 
 	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
 
-}				/* End main */
+}
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
@@ -209,7 +206,6 @@ void setup()
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root */
@@ -241,11 +237,10 @@ void setup()
 
 	/* Setup for mount(2) returning errno EACCES. */
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	return;
-}				/* End setup() */
+}
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
@@ -261,7 +256,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it. */
 	tst_rmdir();
 
 	/* Set effective user id back to root */
@@ -271,11 +265,8 @@ void cleanup()
 		perror("seteuid");
 	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
 	return;
-}				/* End cleanup() */
+}
 
 /*
  * issue a help message

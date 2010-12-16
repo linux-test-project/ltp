@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -13,5 +13,3 @@
 #include <sys/shm.h>
 
 struct ipc_perm this_type_should_exist;
-
-

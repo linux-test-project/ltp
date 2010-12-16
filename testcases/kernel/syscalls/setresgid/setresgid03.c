@@ -129,7 +129,6 @@ int main(int argc, char **argv)
 
 	setup();
 
-	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -186,7 +185,7 @@ static int test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
 	/* Get current real, effective and saved group id */
 	if (getresgid(&cur_rgid, &cur_egid, &cur_sgid) == -1) {
 		tst_brkm(TBROK, cleanup, "getresgid() failed");
-		/* NOT REACHED */
+
 	}
 
 	if ((cur_rgid == exp_rgid) && (cur_egid == exp_egid)
@@ -204,7 +203,6 @@ void setup(void)
 {
 	struct passwd *passwd_p;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root  */
@@ -214,20 +212,20 @@ void setup(void)
 
 	if ((passwd_p = getpwnam("root")) == NULL) {
 		tst_brkm(TBROK, NULL, "getpwnam() failed for root");
-		
+
 	}
 	root = *passwd_p;
 
 	if ((passwd_p = getpwnam("bin")) == NULL) {
 		tst_brkm(TBROK, NULL, "bin user id doesn't exist");
-		
+
 	}
 	bin = *passwd_p;
 	bin_gid = bin.pw_gid;
 
 	if ((passwd_p = getpwnam("nobody")) == NULL) {
 		tst_brkm(TBROK, NULL, "nobody user id doesn't exist");
-		
+
 	}
 	nobody = *passwd_p;
 	nobody_gid = nobody.pw_gid;
@@ -239,13 +237,13 @@ void setup(void)
 	if (setresgid(nobody_gid, nobody_gid, nobody_gid) == -1) {
 		tst_brkm(TBROK, NULL, "setup() failed for setting while"
 			 " setting real/effective/saved gid");
-		
+
 	}
 	/* Set euid to nobody */
 	if (setuid(nobody.pw_uid) == -1) {
 		tst_brkm(TBROK, NULL, "setuid failed to "
 			 "to set the effective uid to nodody");
-		
+
 	}
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -267,6 +265,4 @@ void cleanup(void)
 
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

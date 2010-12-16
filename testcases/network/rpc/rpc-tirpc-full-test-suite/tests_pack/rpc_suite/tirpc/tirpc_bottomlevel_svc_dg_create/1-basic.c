@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -42,7 +42,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -51,12 +51,12 @@ int main(int argn, char *argc[])
 	SVCXPRT *transp = NULL;
 
 	transp = svc_dg_create(RPC_ANYFD, 0, 0);/**/
-                             
+
 	test_status = ((SVCXPRT *)transp != NULL) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

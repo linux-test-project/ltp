@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -56,7 +56,7 @@ int main() {
 	param.sched_ss_low_priority = invalid_priority;
 
 	sched_setscheduler(0, SCHED_SPORADIC, &param);
-	
+
 	if (sched_getparam(getpid(), &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
@@ -67,9 +67,8 @@ int main() {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	}
-		
 
-	if (old_policy == new_policy && 
+	if (old_policy == new_policy &&
 	   old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
@@ -82,7 +81,7 @@ int main() {
 		printf("The policy has changed\n");
 	}
 	return PTS_FAIL;
-	
+
 }
 #else
 int main()

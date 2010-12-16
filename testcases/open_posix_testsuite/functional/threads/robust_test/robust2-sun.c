@@ -8,14 +8,14 @@
  */
 
 /* Sun mode
- * There are several threads that share a mutex, When the owner of mutex is 
- * dead, a waiter lock the mutex and will get EOWNERDEAD. In 
- * PTHREAD_MUTEX_ROBUST_SUN_NP Mode, if the owner think he can recover it 
- * to heathy state, he will call pthread_mutex_consistent_np to make 
- * the mutex consistent, if the call succeeds, the state of the mutex 
- * will change back to normal, if the call fails, the state of the mutex 
+ * There are several threads that share a mutex, When the owner of mutex is
+ * dead, a waiter lock the mutex and will get EOWNERDEAD. In
+ * PTHREAD_MUTEX_ROBUST_SUN_NP Mode, if the owner think he can recover it
+ * to heathy state, he will call pthread_mutex_consistent_np to make
+ * the mutex consistent, if the call succeeds, the state of the mutex
+ * will change back to normal, if the call fails, the state of the mutex
  * will remain as EOWNERDEAD.
- */ 
+ */
 
 /*
  * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_SUN_NP isn't
@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include "test.h"
 
-#define THREAD_NUM	2	
+#define THREAD_NUM	2
 
 pthread_mutex_t	mutex;
 
@@ -40,15 +40,15 @@ void *thread_1(void *arg)
 	pthread_exit(NULL);
 	return NULL;
 }
-void *thread_2(void *arg) 
+void *thread_2(void *arg)
 {
 	pthread_t self = pthread_self();
 	int policy = SCHED_FIFO;
 	struct sched_param	param;
 	param.sched_priority = sched_get_priority_min(policy);
 	int rc;
-	
-        rc = pthread_setschedparam(self, policy, &param); 
+
+        rc = pthread_setschedparam(self, policy, &param);
         if (rc != 0) {
 	    EPRINTF("UNRESOLVED: pthread_setschedparam: %d %s",
 	            rc, strerror(rc));
@@ -99,7 +99,7 @@ void *thread_2(void *arg)
 	return NULL;
 }
 
-int main() 
+int main()
 {
 	pthread_mutexattr_t attr;
 	pthread_t threads[THREAD_NUM];
@@ -108,33 +108,33 @@ int main()
 
 	rc = pthread_mutexattr_init(&attr);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_mutexattr_init %d %s", 
+		EPRINTF("UNRESOLVED: pthread_mutexattr_init %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 #if __linux__
 	rc = pthread_mutexattr_setrobust_np(&attr, PTHREAD_MUTEX_ROBUST_SUN_NP);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_mutexattr_setrobust_np %d %s", 
+		EPRINTF("UNRESOLVED: pthread_mutexattr_setrobust_np %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 #endif
 	rc = pthread_mutex_init(&mutex, &attr);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s", 
+		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 	rc = pthread_attr_init(&threadattr);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_attr_init %d %s", 
+		EPRINTF("UNRESOLVED: pthread_attr_init %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
 	rc = pthread_create(&threads[0], &threadattr, thread_1, NULL);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_create %d %s", 
+		EPRINTF("UNRESOLVED: pthread_create %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
@@ -143,7 +143,7 @@ int main()
 
 	rc = pthread_create(&threads[1], &threadattr, thread_2, NULL);
 	if (rc != 0) {
-		EPRINTF("UNRESOLVED: pthread_create %d %s", 
+		EPRINTF("UNRESOLVED: pthread_create %d %s",
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}

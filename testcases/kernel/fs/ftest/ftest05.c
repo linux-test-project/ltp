@@ -543,4 +543,3 @@ static void cleanup(void)
         tst_rmdir();
         tst_exit();
 }
-

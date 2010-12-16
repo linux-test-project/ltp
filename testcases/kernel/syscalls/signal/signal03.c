@@ -178,7 +178,6 @@ void setup(void)
 	/* capture signals in our own handler */
 	tst_sig(NOFORK, sighandler, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -194,6 +193,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

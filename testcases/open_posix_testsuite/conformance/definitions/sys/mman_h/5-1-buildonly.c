@@ -1,4 +1,4 @@
-/* 
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -7,7 +7,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
- * Test that the header defines the MCL_CURRENT symbolic constant for 
+ * Test that the header defines the MCL_CURRENT symbolic constant for
  * mlockall().
  *
  * @pt:ML

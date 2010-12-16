@@ -58,7 +58,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -82,10 +81,8 @@ void init_sig_vec ();
 void sys_error (const char *, int);
 void error (const char *, int);
 
-
 /* Global variables */
 int signals_received = 0;
-
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -106,14 +103,14 @@ int main (int argc, char **argv)
 
 	/*
 	 * Critical section - block SIGILL signal
-	 * 
+	 *
 	 * Block the SIGILL interrupt from interrupting the process
 	 * with the sigprocmask () system function call.
-	 * 
+	 *
 	 * Send the SIGILL interrupt to the process in an attempt to
 	 * disrupt the critial section -- the signal should be blocked.
 	 * Wait one second to insure that the signal has plenty of time
-	 * to reach the process. 
+	 * to reach the process.
 	 */
 #ifdef _LINUX_
 	sigset_t mask;
@@ -135,7 +132,7 @@ int main (int argc, char **argv)
 	 *
 	 * Check to insure that the signal handler has not caught any signals,
 	 * and then unblock all of the signals with the sigsetmask system
-	 * function call. 
+	 * function call.
 	 */
 	if (signals_received > 0)
 		error ("received an unexpected signal during the critical section",
@@ -171,7 +168,6 @@ int main (int argc, char **argv)
 	printf ("\nsuccessful!\n");
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                           init_sig_vec ()                            |
@@ -238,7 +234,6 @@ void handler (int signal)
 	printf ("\treceived signal: (%s)\n", signames[signal]);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -253,7 +248,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

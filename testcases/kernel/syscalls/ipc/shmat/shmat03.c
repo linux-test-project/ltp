@@ -111,12 +111,11 @@ int main(int ac, char **av)
 		/* if it exists, remove the shared memory resource */
 		rm_shm(shm_id_1);
 
-		/* Remove the temporary directory */
 		tst_rmdir();
 	}
 
 	cleanup();
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -166,13 +165,11 @@ void setup(void)
 	/* check for root as process owner */
 	check_root();
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -208,6 +205,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 	unlink("core");
 	tst_rmdir();
 	tst_exit();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
-	return 0;
+	tst_exit();
 }
 
 /*--------------------------------------------------------------*/
@@ -146,7 +146,7 @@ void printinfo()
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */

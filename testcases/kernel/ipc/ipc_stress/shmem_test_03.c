@@ -146,7 +146,6 @@ union semun {
    unsigned short *array;
 } arg;
 
-
 /*---------------------------------------------------------------------+
 |                               main                                   |
 | ==================================================================== |
@@ -301,7 +300,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               child ()                               |
 | ==================================================================== |
@@ -321,7 +319,7 @@ static void child (int num, unsigned char *shmptr)
 
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
-	 * compute the checksum and release the READ_COUNT lock.     
+	 * compute the checksum and release the READ_COUNT lock.
 	 */
 	lock_resource (READ_COUNT);
 	(*read_count)++;
@@ -346,7 +344,6 @@ static void child (int num, unsigned char *shmptr)
 	printf ("\t\tchild (%02d): checksum %08lx\n", num,
 		*(checksum + (sizeof (unsigned long) * num)));
 }
-
 
 /*---------------------------------------------------------------------+
 |                          create_semaphores ()                        |
@@ -377,7 +374,6 @@ static void create_semaphores ()
 		sys_error ("semctl (SETVAL) failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                          delete_semaphores ()                        |
 | ==================================================================== |
@@ -398,7 +394,6 @@ static void delete_semaphores ()
 		sys_error ("semctl (IPC_RMID) failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                          lock_resource ()                            |
 | ==================================================================== |
@@ -418,7 +413,6 @@ static void lock_resource (int semaphore)
 		sys_error ("semop (LOCK) failed", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                          unlock_resource ()                          |
 | ==================================================================== |
@@ -437,7 +431,6 @@ static void unlock_resource (int semaphore)
 	if (semop (semid, &buf, 1) < 0)
 		sys_error ("semop (UNLOCK) failed", __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
@@ -485,7 +478,6 @@ void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                          setup_handler ()                            |
 | ==================================================================== |
@@ -505,7 +497,6 @@ void setup_signal_handlers ()
 		sys_error ("sigaction failed", __LINE__);
 
 }
-
 
 /*---------------------------------------------------------------------+
 |                             handler ()                               |
@@ -539,7 +530,6 @@ void handler (int sig, int code, struct sigcontext *scp)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             cleanup ()                               |
 | ==================================================================== |
@@ -563,7 +553,6 @@ void cleanup ()
 	exit (-1);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -578,7 +567,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

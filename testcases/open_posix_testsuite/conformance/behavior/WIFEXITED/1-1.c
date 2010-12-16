@@ -13,7 +13,7 @@
 
 int main()
 {
-	int s; 
+	int s;
 
 	switch (fork()) {
 	case 0:
@@ -41,5 +41,5 @@ int main()
 	}
 
 	printf("Test FAILED\n");
-	return (PTS_FAIL);	
+	return (PTS_FAIL);
 }

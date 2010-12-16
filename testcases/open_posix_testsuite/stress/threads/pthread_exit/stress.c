@@ -14,7 +14,6 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This file is a stress test for the function pthread_exit.
  *
  * It aims to check that:
@@ -26,10 +25,10 @@
  * while the stress test is running.
  *
  */
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We need the XSI extention for some routines */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -40,33 +39,33 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <unistd.h>
 
  #include <errno.h>
  #include <signal.h>
  #include <semaphore.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -112,30 +111,28 @@ void sighdl(int sig)
 	while (do_it);
 }
 
-
 /* Cleanup handler to make sure the thread is exiting */
 void cleanup(void * arg)
 {
 	int ret = 0;
 	sem_t * sem = (sem_t *) arg;
-	
+
 	/* Signal we're done (especially in case of a detached thread) */
 	do { ret = sem_post(sem); }
 	while ((ret == -1) && (errno == EINTR));
 	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
 }
 
-
 /* Thread routine */
 void * threaded(void * arg)
 {
 	pthread_cleanup_push(cleanup, &scenarii[sc].sem);
-	
+
 	pthread_exit(arg);
 	FAILED("the pthread_exit routine returned");
-	
+
 	pthread_cleanup_pop(1);
-	
+
 	return NULL; /* For the sake of compiler */
 }
 
@@ -145,16 +142,16 @@ int main(int argc, char * argv[])
 	int ret, i;
 	void * rval;
 	struct sigaction sa;
-	
+
 	pthread_t threads[NSCENAR * SCALABILITY_FACTOR * FACTOR];
 	int rets[NSCENAR * SCALABILITY_FACTOR * FACTOR];
-	
+
  	/* Initialize output */
 	output_init();
-	
+
 	/* Initialize scenarii table */
 	scenar_init();
-	
+
 	/* Register the signal handler for SIGUSR1 */
 	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
@@ -166,7 +163,7 @@ int main(int argc, char * argv[])
 	#if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
 	#endif
-	
+
 	while (do_it)
 	{
 		/* Create all the threads */
@@ -177,18 +174,18 @@ int main(int argc, char * argv[])
 				/* Skip the alternative stack threads */
 				if (scenarii[sc].altstack != 0)
 					continue;
-				
+
 				rets[i*NSCENAR + sc] = pthread_create(&threads[i*NSCENAR + sc], &scenarii[sc].ta, threaded, &threads[i*NSCENAR + sc]);
 				switch (scenarii[sc].result)
 				{
 					case 0: /* Operation was expected to succeed */
 						if (rets[i*NSCENAR + sc] != 0)  {  UNRESOLVED(rets[i*NSCENAR + sc], "Failed to create this thread");  }
 						break;
-					
+
 					case 1: /* Operation was expected to fail */
 						if (rets[i*NSCENAR + sc] == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
 						break;
-					
+
 					case 2: /* We did not know the expected result */
 					default:
 						#if VERBOSE > 5
@@ -208,7 +205,7 @@ int main(int argc, char * argv[])
 				}
 			}
 		}
-		
+
 		/* Join all the joinable threads and check the value */
 		for (i=0; i<SCALABILITY_FACTOR * FACTOR; i++)
 		{
@@ -218,7 +215,7 @@ int main(int argc, char * argv[])
 				{
 					ret = pthread_join(threads[i*NSCENAR + sc], &rval);
 					if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
-					
+
 					if (rval !=  (void *)&threads[i*NSCENAR + sc])
 					{
 						output("arg: %p -- got %p -- NULL=%p\n", &threads[i*NSCENAR + sc], rval, NULL);
@@ -227,18 +224,17 @@ int main(int argc, char * argv[])
 				}
 			}
 		}
-		
+
 		iterations++;
 	}
-	
+
 	/* Destroy scenarii attributes */
 	scenar_fini();
-	
+
 	/* Test passed */
 	output("pthread_exit stress test PASSED -- %llu iterations\n",iterations);
 	PASSED;
 }
-
 
 #else /* WITHOUT_XOPEN */
 int main(int argc, char * argv[])

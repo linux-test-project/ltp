@@ -60,7 +60,6 @@
 #include <signal.h>
 #include <limits.h>
 
-
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
@@ -70,7 +69,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -108,7 +107,7 @@ void sighandler(int sig)
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -132,7 +131,7 @@ extern void cleanup() {
 /*									    */
 /******************************************************************************/
 void setup() {
-	
+
 	/* Capture signals if any */
 	act.sa_handler = sighandler;
 	sigfillset(&act.sa_mask);
@@ -142,7 +141,6 @@ void setup() {
 	TEST_PAUSE;
 	tst_tmpdir();
 }
-
 
 /*
  * Macros
@@ -294,7 +292,6 @@ static struct test_case tcase[] = {
 	},
 };
 
-
 /*
  * do_test()
  *
@@ -432,8 +429,6 @@ EXIT:
 	return result;
 }
 
-
-
 /*
  * main()
  */
@@ -451,7 +446,6 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -467,7 +461,7 @@ int main(int ac, char **av) {
 					(ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
-			/*	
+			/*
 			 * Check results
 		 	 */
 			switch(result) {
@@ -481,8 +475,7 @@ int main(int ac, char **av) {
 			}
 
 		}
-	}	
+	}
 	cleanup();
 	tst_exit();
 }
-

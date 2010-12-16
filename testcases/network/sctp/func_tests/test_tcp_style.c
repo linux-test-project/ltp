@@ -81,12 +81,12 @@ main(int argc, char *argv[])
 	char *big_buffer;
 	struct iovec iov;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
 
-	/* Initialize the server and client addresses. */ 
+	/* Initialize the server and client addresses. */
 #if TEST_V6
 	pf_class = PF_INET6;
         svr_loop.v6.sin6_family = AF_INET6;
@@ -148,7 +148,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "connect to non-listening socket");
 
-	/* Do a blocking connect from clt_sk's to listen_sk */      
+	/* Do a blocking connect from clt_sk's to listen_sk */
 	for (i = 0; i < MAX_CLIENTS; i++)
 		test_connect(clt_sk[i], &svr_loop.sa, sizeof(svr_loop));
 
@@ -177,7 +177,7 @@ main(int argc, char *argv[])
 
 		addrlen = sizeof(accept_loop);
 		accept_sk[i] = test_accept(listen_sk, &accept_loop.sa,
-					   &addrlen); 
+					   &addrlen);
 	}
 
 	tst_resm(TPASS, "accept from listening socket");
@@ -249,7 +249,7 @@ main(int argc, char *argv[])
 	/* Do a SHUT_WR on clt_sk[0] to disable any new sends. */
 	test_shutdown(clt_sk[0], SHUT_WR);
 
-	/* Reading on a socket that has received SHUTDOWN should return 0 
+	/* Reading on a socket that has received SHUTDOWN should return 0
 	 * indicating EOF.
 	 */
 	error = recv(accept_sk[0], msgbuf, 100, 0);
@@ -261,12 +261,12 @@ main(int argc, char *argv[])
 
 	/* Read the pending message on clt_sk[0] that was received before
 	 * SHUTDOWN call.
-	 */  
+	 */
 	test_recv(clt_sk[0], msgbuf, 100, 0);
 
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-	memset(&inmessage, 0, sizeof(inmessage));	
+	memset(&inmessage, 0, sizeof(inmessage));
 	iov.iov_base = big_buffer;
 	iov.iov_len = REALLY_BIG;
 	inmessage.msg_iov = &iov;
@@ -309,7 +309,7 @@ main(int argc, char *argv[])
 	/* Send a message to the SHUT_RD socket. */
 	test_send(accept_sk[1], message, strlen(message), 0);
 
-	/* We should not receive the message as the socket is SHUT_RD */ 
+	/* We should not receive the message as the socket is SHUT_RD */
 	error = recv(clt_sk[1], msgbuf, 100, 0);
 	if ((0 != error) || (0 != errno))
 		tst_brkm(TBROK, NULL, "recv on a SHUT_RD socket "
@@ -357,10 +357,10 @@ main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "select error:%d, "
 			 "errno: %d", error, errno);
 
-	/* Now accept the CLOSED association waiting on the listening 
+	/* Now accept the CLOSED association waiting on the listening
 	 * socket.
-	 */  
-	accept2_sk = test_accept(listen_sk, &accept_loop.sa, &addrlen); 
+	 */
+	accept2_sk = test_accept(listen_sk, &accept_loop.sa, &addrlen);
 
 	/* Receive the message sent before doing a close. */
 	test_recv(accept2_sk, msgbuf, 100, 0);
@@ -398,7 +398,7 @@ main(int argc, char *argv[])
 	test_sendto(clt2_sk, message, strlen(message), 0, &svr_loop.sa,
 		    sizeof(svr_loop));
 
-	accept2_sk = test_accept(listen_sk, &accept_loop.sa, &addrlen); 
+	accept2_sk = test_accept(listen_sk, &accept_loop.sa, &addrlen);
 
 	test_recv(accept2_sk, msgbuf, 100, 0);
 
@@ -451,7 +451,7 @@ main(int argc, char *argv[])
 	test_sendmsg(clt2_sk, &outmessage, 0, strlen(message)+1);
 
 	test_recv(accept2_sk, msgbuf, 100, 0);
-	
+
 	tst_resm(TPASS, "sendmsg with no flags");
 
 	close(clt2_sk);
@@ -459,5 +459,5 @@ main(int argc, char *argv[])
 	close(listen_sk);
 
         /* Indicate successful completion.  */
-	return 0;
+	tst_exit();
 }

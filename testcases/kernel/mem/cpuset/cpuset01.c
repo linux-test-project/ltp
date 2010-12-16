@@ -148,7 +148,7 @@ void testcpuset(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
         case 0:
 		for (i = 0; i < nnodes; i++)
-			nmask += exp2f(i); 
+			nmask += exp2f(i);
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
 		mem_hog_cpuset(ncpus > 1 ? ncpus : 1);
@@ -224,7 +224,7 @@ void cleanup(void)
 		tst_resm(TWARN|TERRNO, "rmdir");
 
 	TEST_CLEANUP;
-	tst_exit();
+
 }
 
 void sighandler(int signo LTP_ATTRIBUTE_UNUSED)

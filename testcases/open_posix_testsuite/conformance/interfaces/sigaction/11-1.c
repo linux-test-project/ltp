@@ -2,9 +2,9 @@
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  Rusty.Lynch REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
- 
+
   Test assertion #11 by verifying that SIGCHLD signals are sent to a parent
   when their children are continued after being stopped.
 
@@ -30,7 +30,7 @@
 int child_continued = 0;
 int waiting = 1;
 
-void handler(int signo, siginfo_t *info, void *context) 
+void handler(int signo, siginfo_t *info, void *context)
 {
 	if (info && info->si_code == CLD_CONTINUED) {
 		printf("Child has been stopped\n");
@@ -38,7 +38,6 @@ void handler(int signo, siginfo_t *info, void *context)
 		child_continued++;
 	}
 }
-
 
 int main()
 {
@@ -49,21 +48,21 @@ int main()
 	act.sa_sigaction = handler;
 	act.sa_flags = SA_SIGINFO;
 	sigemptyset(&act.sa_mask);
-	sigaction(SIGCHLD,  &act, 0);     
+	sigaction(SIGCHLD,  &act, 0);
 
 	if ((pid = fork()) == 0) {
 		/* child */
 		while (1) {
-			/* wait forever, or until we are 
+			/* wait forever, or until we are
 			   interrupted by a signal */
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			select(0, NULL, NULL, NULL, &tv);
 		}
-		return 0;
+		tst_exit();
 	} else {
 		/* parent */
-		int s; 		
+		int s;
 		int i;
 
 		/* delay to allow child to get into select call */
@@ -72,7 +71,7 @@ int main()
 		select(0, NULL, NULL, NULL, &tv);
 
 		for (i = 0; i < NUMSTOPS; i++) {
-			struct timeval tv; 
+			struct timeval tv;
 			printf("--> Sending SIGSTOP\n");
 			kill(pid, SIGSTOP);
 
@@ -95,7 +94,7 @@ int main()
 			}
 
 		}
-		
+
 		/* POSIX specifies default action to be abnormal termination */
 		kill(pid, SIGHUP);
 		waitpid(pid, &s, 0);
@@ -122,4 +121,3 @@ int main()
 		"continued. Again, this is not a bug because of the existence of the word *MAY* in the spec.\n");
 	return PTS_PASS;
 }
-

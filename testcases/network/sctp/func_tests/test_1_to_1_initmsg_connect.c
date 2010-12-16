@@ -46,13 +46,13 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
-#include <sctputil.h> 
+#include <sctputil.h>
 
 char *TCID = __FILE__;
 int TST_TOTAL = 1;
 int TST_CNT = 0;
 
-int 
+int
 main (int argc, char **argv)
 {
 	int sk1, sk2, sk3, pf_class;
@@ -70,7 +70,7 @@ main (int argc, char **argv)
 	setvbuf(stderr, NULL, _IONBF, 0);
 
 	/* Opening the socket*/
-	
+
 	pf_class = PF_INET;
 
 	sk1 = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
@@ -115,6 +115,6 @@ main (int argc, char **argv)
 	close (sk1);
 	close (sk2);
 	close (sk3);
-	
+
         return 0;
 }

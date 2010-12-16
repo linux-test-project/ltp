@@ -11,7 +11,7 @@
  *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *   the GNU General Public License for more details.
- *     
+ *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -44,7 +44,6 @@ extern int Tst_count;
 int anyfail();
 void ok_exit();
 /*****  **      **      *****/
-
 
 /*
  *  This test stresses mmaps, specifically the code dealing with
@@ -113,7 +112,6 @@ void ok_exit();
 
 #define SIZE_MAX UINT_MAX
 
-
 extern time_t	time(time_t *);
 extern char	*ctime(const time_t *);
 extern void *malloc(size_t);
@@ -127,7 +125,6 @@ extern int  atoi(const char *);
 char *usage="-p nprocs [-t minutes -w nbytes -s secs -f fsize -S sparseoffset -r -o -m -l -d]";
 
 typedef unsigned char uchar_t; //Ananda 12/17/02
-
 
 void child_mapper(char *file, unsigned procno, unsigned nprocs);
 void child_writer(char *file, uchar_t *buf);
@@ -516,9 +513,8 @@ cleanup:
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
 	ok_exit();
-	return 0;
+	tst_exit();
 }
-
 
 /*
  *  Child process that reads/writes map.  The child stats the file
@@ -566,7 +562,6 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 		perror("sigaction error SIGUSR1");
                 anyfail();
 	}
-
 
 #ifdef LARGE_FILE
 	if ((fd_mapper = open64(file, O_RDWR)) == -1) {
@@ -741,7 +736,6 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
                 anyfail();
 	}
 
-
 	for (;;) {
 #ifdef LARGE_FILE
 		if (fstat64(fd_writer, &statbuf) == -1) {
@@ -791,7 +785,6 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 	}
 	close(fd_writer);
 }
-
 
 /*
  *  Make sure file has all the correct data.
@@ -885,7 +878,7 @@ fileokay(char *file, uchar_t *expbuf)
 			}
 		}
 	}
-				
+
 	return 1;
 }
 
@@ -950,7 +943,6 @@ void ok_exit()
 	tst_exit();
 }
 
-
 int anyfail()
 {
   tst_resm(TFAIL, "Test failed\n");
@@ -960,4 +952,3 @@ int anyfail()
 }
 
 /*****  **      **      *****/
-

@@ -8,7 +8,7 @@
 
 /*
  * mq_receive() test plan:
- * mq_receive() will fail with EAGAIN, if  message queue is empty and 
+ * mq_receive() will fail with EAGAIN, if  message queue is empty and
  * O_NONBLOCK is set in the message queue,
  */
 
@@ -76,4 +76,3 @@ int main()
 	return PTS_PASS;
 
 }
-

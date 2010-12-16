@@ -40,7 +40,6 @@
 #include <sys/ioctl.h>
 #include "../tpci/tpci.h"
 
-
 int ki_generic(int fd, int flag) {
         int                     rc;
         tpci_interface_t        tif;
@@ -100,7 +99,6 @@ int ki_probe_pci_dev(int fd) {
 
 	return rc;
 }
-
 
 int ki_enable_pci(int fd) {
 
@@ -191,6 +189,5 @@ int ki_find_bus(int fd) {
 
         return rc;
 }
-
 
 #endif

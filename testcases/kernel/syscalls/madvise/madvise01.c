@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 	}
 
 	cleanup();
-	return 0;
+
 }
 
 /***************************************************************
@@ -213,15 +213,14 @@ int main(int argc, char *argv[])
  ***************************************************************/
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Create temp directory and change to that */
 	tst_tmpdir();
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -235,13 +234,9 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove temp directory and files */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}				/* End cleanup() */
+}
 
 /***************************************************************
  * check_and_print(advice) - checks the return value

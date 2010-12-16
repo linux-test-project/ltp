@@ -135,7 +135,7 @@ int main(int ac, char **av)
 				if (self_exec(av[0], "") < 0) {
 					tst_resm(TFAIL, "self_exec kid %d "
 						 "failed", kid_count);
-					tst_exit();
+
 				 }
 #else
 				do_exit();
@@ -145,7 +145,7 @@ int main(int ac, char **av)
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid %d failed. errno = "
 					 "%d", kid_count, errno);
-				tst_exit();
+
 			 }
 
 			/* parent */
@@ -364,8 +364,6 @@ int main(int ac, char **av)
 		}
 	}
 
-	return 0;
-
 }
 
 /*
@@ -405,8 +403,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }
 
 void inthandlr()

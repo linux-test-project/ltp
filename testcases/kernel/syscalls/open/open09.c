@@ -128,5 +128,5 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL, "Test failed due to above failures.");
 		}
 	}			/* end for */
-	return 0;
+	tst_exit();
 }

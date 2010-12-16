@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <tirpc/netconfig.h>
@@ -49,35 +49,35 @@ void *server_thread_process (void * arg)
 {
 	//Server process in a thread
 	int err=0;
-	
+
 	if (run_mode == 1)
 	{
 		printf("Server #%d launched\n", atoi(arg));
 		printf("Server Nb : %d\n", progNum + atoi(arg));
 	}
-	
+
 	svc_unreg(progNum + atoi(arg), VERSNUM);
-	
+
 	err = svc_create(exm_proc, progNum + atoi(arg), VERSNUM, "VISIBLE");
-                           
+
 	if (err == 0)
 	{
     	fprintf(stderr, "Cannot create service.\n");
     	exit(1);
 	}
-	
+
 	svc_run();
 
 	fprintf(stderr, "svc_run() returned.  ERROR has occurred.\n");
 	svc_unreg(progNum, VERSNUM);
-	
+
     pthread_exit (0);
 }
 
 //****************************************//
 //***           Main Function          ***//
 //****************************************//
-int main(int argn, char *argc[]) 
+int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
 	//					    argc[2] : Number of threads
@@ -90,7 +90,7 @@ int main(int argn, char *argc[])
     void *ret;
 
 	progNum = atoi(argc[1]);
-	
+
 	pThreadArray = (pthread_t *)malloc(threadNb * sizeof(pthread_t));
 	for (i = 0; i < threadNb; i++)
 	{
@@ -102,7 +102,7 @@ int main(int argn, char *argc[])
 	        exit (1);
 	    }
 	}
-	
+
 	//Clean threads
 	for (i = 0; i < threadNb; i++)
 	{
@@ -131,18 +131,18 @@ char *pingProc(int *dt)
 static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 {
 	//printf("* in Dispatch Func.\n");
-	
-	char *result;            
-	xdrproc_t xdr_argument; 
-	xdrproc_t xdr_result;   
+
+	char *result;
+	xdrproc_t xdr_argument;
+	xdrproc_t xdr_result;
 	int *(*proc)(int *);
-	
+
 	union
 	{
 		int varIn;
 	}argument;
-	
-	switch (rqstp->rq_proc) 
+
+	switch (rqstp->rq_proc)
 	{
 		case PINGPROC:
 		{
@@ -177,9 +177,9 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 		svcerr_decode(transp);
 		return;
 	}
-	
+
 	result = (char *)(*proc)((int *)&argument);
-	
+
 	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
 	{
 		svcerr_systemerr(transp);

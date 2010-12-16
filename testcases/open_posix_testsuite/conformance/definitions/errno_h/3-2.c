@@ -18,7 +18,6 @@
 #define PTP_UNINITIATED 6
 #define PTP_NORESULT    7
 
-
 struct unique {
     int value;
     char *name;
@@ -80,10 +79,10 @@ int main() {
     struct unique *tst;
     int i,ret = PTP_PASS;
     tst = sym;
-    
+
     while (tst->name) {
 	for (i = 0; sym[i].name; i++) {
-	    if (tst->value == sym[i].value 
+	    if (tst->value == sym[i].value
 		&& tst->duplicate != sym[i].value
 		&& strcmp(tst->name,sym[i].name)) {//In case EAGAIN is not equal to EWOULDBLOCK,compare the name
 		printf("%s has a duplicate value with %s\n",

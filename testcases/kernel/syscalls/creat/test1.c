@@ -30,5 +30,5 @@ int main()
 	for (;;) {
 		sleep(1);
 	}
-	return 0;
+	tst_exit();
 }

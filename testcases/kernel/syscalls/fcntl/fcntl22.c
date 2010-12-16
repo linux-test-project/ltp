@@ -170,7 +170,7 @@ int main(int ac, char **av)
 		}
 
 	}			/* end for */
-	return 0;
+
 }
 
 /*
@@ -180,10 +180,8 @@ int main(int ac, char **av)
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Make a temp dir and cd to it */
@@ -223,9 +221,7 @@ void cleanup()
 	close(file);
 
 	TEST_CLEANUP;
-	/* remove temporary directory */
+
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

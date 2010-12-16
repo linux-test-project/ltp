@@ -118,15 +118,13 @@ int main(int ac, char **av)
 		tst_exit();
 	}
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -c option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -140,7 +138,6 @@ int main(int ac, char **av)
 			 */
 			TEST(getgroups(gidsetsize, groups_list));
 
-			/* check return code of getgroups(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
@@ -158,15 +155,14 @@ int main(int ac, char **av)
 					 "expected -1, errno=%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING. */
+		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	  return 0;
-}				/* End main */
+}
 
 /*
  * void
@@ -174,13 +170,12 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}				/* End setup() */
+}
 
 /*
  * no_setup() - Some test conditions for mknod(2) do not any setup.
@@ -203,6 +198,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

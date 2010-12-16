@@ -14,7 +14,6 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertions:
 *
 * If the signal action was set with the signal() function, getting it into oact
@@ -47,21 +46,21 @@ then reinstalling it with act must be valid.
 /***************************   Test framework   *******************************/
 /******************************************************************************/
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
- *    where descr is a description of the error and ret is an int 
+ * UNRESOLVED(ret, descr);
+ *    where descr is a description of the error and ret is an int
  *   (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 #include "posixtest.h"
@@ -251,7 +250,6 @@ int main()
 	{
 		FAILED("handler not executed");
 	}
-
 
 	/* Test passed */
 #if VERBOSE > 0

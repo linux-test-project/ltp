@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,7 +45,7 @@ int main(int argn, char *argc[])
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -57,10 +57,10 @@ int main(int argn, char *argc[])
 	struct netbuf svcaddr;
     char addrbuf[ADDRBUFSIZE];
 	enum clnt_stat cs;
-	int var_snd = 0; 
-	int var_rec = -1; 
+	int var_snd = 0;
+	int var_rec = -1;
 	struct timeval tv;
-	
+
 	//Initialization
     if (run_mode)
     {
@@ -68,7 +68,7 @@ int main(int argn, char *argc[])
 		printf("client : %d\n", client);
 		printf("nconf : %d\n", nconf);
 	}
-	
+
 	tv.tv_sec = 0;
 	tv.tv_usec = 100;
 
@@ -83,13 +83,13 @@ int main(int argn, char *argc[])
 	svcaddr.len = 0;
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
-	
+
 	if (svcaddr.buf == NULL)
 	{
     	printf("5\n");
   		exit(5);
     }
-   
+
 	if (!rpcb_getaddr(progNum, VERSNUM, nconf,
                                &svcaddr, argc[1]))
     {
@@ -97,17 +97,17 @@ int main(int argn, char *argc[])
     	printf("5\n");
     	exit(5);
     }
-	                         
+
 	cs = rpcb_rmtcall(nconf, argc[1], progNum, VERSNUM, PROCNUM,
-	                  (xdrproc_t)xdr_int, (char *)&var_snd, 
+	                  (xdrproc_t)xdr_int, (char *)&var_snd,
 	                  (xdrproc_t)xdr_int, (char *)&var_rec,
 	                  tv, &svcaddr);
-                             
+
 	test_status = (cs == RPC_SUCCESS) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

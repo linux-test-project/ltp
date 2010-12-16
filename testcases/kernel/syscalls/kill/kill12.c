@@ -26,7 +26,7 @@
 >KEYS:  < kill(), wait(), signal()
 >WHAT:  < Check that when a child is killed by its parent, it returns the
    	< correct values to the waiting parent--the child sets signal to
-   	< ignore the kill						
+   	< ignore the kill
 >HOW:   < For each signal: Send that signal to a child that has elected
 	< to catch the signal, check that the correct status was returned
 	< to the waiting parent.
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 				tst_resm(TBROK, "self_exec FAILED - "
 					 "terminating test.");
 				tst_exit();
-				return 0;
+				tst_exit();
 			}
 #else
 			do_child();
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 
 /*--------------------------------------------------------------------*/
 	anyfail();
-	return 0;
+	tst_exit();
 }					/******** END OF MAIN. ********/
 
 /*--------------------------------------------------------------------*/

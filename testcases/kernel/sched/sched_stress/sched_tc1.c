@@ -48,7 +48,6 @@
 #include <sys/resource.h>
 #include   "sched.h"
 
-
 /*
  * Defines:
  *
@@ -74,7 +73,6 @@ void process_file (char *);
 void parse_args (int, char **);
 void signal_handler ();
 
-
 /*
  * Global variables:
  *
@@ -90,7 +88,6 @@ int	verbose   = 0;
 int	debug     = 0;
 int	signaled  = 0;
 char 	*priority = DEFAULT_PRIORITY_TYPE;
-
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -150,7 +147,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                            process_file ()                           |
 | ==================================================================== |
@@ -184,7 +180,6 @@ void process_file (char *filename)
 		sys_error ("fclose failed", __FILE__, __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                           signal_handler ()                          |
 | ==================================================================== |
@@ -204,7 +199,6 @@ void signal_handler (int signal)
 	} else
 		error ("received unexpected signal", __FILE__, __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |

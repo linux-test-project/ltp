@@ -3,18 +3,18 @@
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  rusty.lynch REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
   Test case for assertion #3 of the sigaction system call that shows
-  calling sigaction with a null act argument does not change the 
+  calling sigaction with a null act argument does not change the
   signal handler.
 
   Steps:
   1. Initialize global variable to indicate handler has not been called
   2. Set the signal handler for SIGUSR1 to handler
   3. Call sigaction with a null act
-  4. raise SIGUSR1 
+  4. raise SIGUSR1
   5. Verify handler was called.
 */
 
@@ -33,7 +33,7 @@ int main()
 {
 	struct sigaction act;
 	struct sigaction oact;
-	
+
 	act.sa_handler = handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
@@ -42,13 +42,12 @@ int main()
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (sigaction(SIGUSR1,  0, &oact) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
-
 
 	if (raise(SIGUSR1) == -1) {
 		perror("Unexpected error while attempting to setup test "
@@ -62,6 +61,5 @@ int main()
 	}
 
 	printf("Test FAILED\n");
-	return PTS_FAIL;	
+	return PTS_FAIL;
 }
-

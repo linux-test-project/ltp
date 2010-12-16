@@ -58,7 +58,7 @@ int
 main(int argc, char *argv[])
 {
 	int svr_sk, clt_sk1, clt_sk2, peeloff_sk;
-	sctp_assoc_t svr_associd1, svr_associd2, clt_associd1, clt_associd2; 
+	sctp_assoc_t svr_associd1, svr_associd2, clt_associd1, clt_associd2;
 	sockaddr_storage_t svr_loop, clt_loop1, clt_loop2, clt_loop3;
 	struct iovec iov;
 	struct msghdr inmessage;
@@ -67,12 +67,12 @@ main(int argc, char *argv[])
 	char *big_buffer;
 	int flags;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
 
-	/* Initialize the server and client addresses. */ 
+	/* Initialize the server and client addresses. */
 	svr_loop.v4.sin_family = AF_INET;
 	svr_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
 	svr_loop.v4.sin_port = htons(SCTP_TESTPORT_1);
@@ -111,7 +111,7 @@ main(int argc, char *argv[])
 	if (fcntl(clt_sk1, F_SETFL, flags | O_NONBLOCK) < 0)
 		tst_brkm(TBROK, NULL, "fcntl F_SETFL: %s", strerror(errno));
 
-	/* Do a non-blocking connect from clt_sk1 to svr_sk */      
+	/* Do a non-blocking connect from clt_sk1 to svr_sk */
 	error = connect(clt_sk1, &svr_loop.sa, sizeof(svr_loop));
 	/* Non-blocking connect should return immediately with EINPROGRESS. */
 	if ((error != -1) || (EINPROGRESS != errno))
@@ -145,7 +145,7 @@ main(int argc, char *argv[])
 	error = test_recvmsg(clt_sk1, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	clt_associd1 = sac->sac_assoc_id;
 
@@ -153,11 +153,11 @@ main(int argc, char *argv[])
 	error = test_recvmsg(svr_sk, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	svr_associd1 = sac->sac_assoc_id;
 
-	/* Do a blocking connect from clt_sk2 to svr_sk. 
+	/* Do a blocking connect from clt_sk2 to svr_sk.
 	 * Blocking connect should block until the association is established
 	 * and return success.
 	 */
@@ -167,7 +167,7 @@ main(int argc, char *argv[])
 	error = test_recvmsg(clt_sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	clt_associd2 = sac->sac_assoc_id;
 
@@ -175,13 +175,13 @@ main(int argc, char *argv[])
 	error = test_recvmsg(svr_sk, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	svr_associd2 = sac->sac_assoc_id;
 
 	tst_resm(TPASS, "blocking connect");
 
-	peeloff_sk = test_sctp_peeloff(svr_sk, svr_associd1); 
+	peeloff_sk = test_sctp_peeloff(svr_sk, svr_associd1);
 
 	/* Doing a connect on a peeled off socket should fail. */
 	error = connect(peeloff_sk, &clt_loop3.sa, sizeof(clt_loop3));
@@ -191,7 +191,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "connect on a peeled off socket");
 
-	/* Trying to create an association on a socket that matches an 
+	/* Trying to create an association on a socket that matches an
 	 * existing peeled-off association should fail.
 	 */
 	error = connect(svr_sk, &clt_loop1.sa, sizeof(clt_loop1));
@@ -209,5 +209,5 @@ main(int argc, char *argv[])
 	close(peeloff_sk);
 
         /* Indicate successful completion.  */
-       	return 0; 
+       	tst_exit();
 }

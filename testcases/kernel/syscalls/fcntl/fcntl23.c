@@ -143,7 +143,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 #ifdef F_SETLEASE
@@ -190,28 +189,25 @@ int main(int ac, char **av)
 #else
 		tst_resm(TINFO, "F_SETLEASE not defined, skipping test");
 #endif
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(fname, "tfile_%d", getpid());
@@ -220,7 +216,7 @@ void setup()
 			 "open(%s, O_RDONLY|O_CREAT,0777) Failed, errno=%d : %s",
 			 fname, errno, strerror(errno));
 	}
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -240,9 +236,6 @@ void cleanup()
 			 strerror(errno));
 	}
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

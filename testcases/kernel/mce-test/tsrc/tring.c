@@ -58,7 +58,7 @@ static int mce_ring_add(unsigned long pfn)
 void *thread(void *arg)
 {
 	long i = 0;
-	for (;;) { 
+	for (;;) {
 		if (mce_ring_add(i) >= 0)
 			i++;
 	}
@@ -67,21 +67,21 @@ void *thread(void *arg)
 int main(void)
 {
 	long k;
-	
+
 	pthread_t thr;
 	pthread_create(&thr, NULL, thread, NULL);
 
 	k = 0;
-	for (;;) { 	
-		while (!mce_ring_empty()) { 
+	for (;;) {
+		while (!mce_ring_empty()) {
 			unsigned long pfn;
 			int r = mce_ring_get(&pfn);
 			assert(r != 0);
-			if (pfn != k) 
+			if (pfn != k)
 				printf("got %lu expected %lu delta %ld\n", pfn, k, k-pfn);
 			k++;
 		}
 	}
 
-	return 0;
+	tst_exit();
 }

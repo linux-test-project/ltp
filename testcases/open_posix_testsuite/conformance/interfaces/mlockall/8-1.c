@@ -29,8 +29,7 @@ int main() {
 		printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	perror("Unexpected error");
 	return PTS_UNRESOLVED;
 }
-

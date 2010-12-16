@@ -1,11 +1,11 @@
-/*   
+/*
  * Copyright (c) 2004, QUALCOMM Inc. All rights reserved.
  * Created by:  abisain REMOVE-THIS AT qualcomm DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- * Test that pthread_attr_setinheritsched() sets the inheritance of 
+ * Test that pthread_attr_setinheritsched() sets the inheritance of
  * policy and priority.
 
  * Steps:
@@ -69,7 +69,7 @@ int main()
 	}
 
 	rc = pthread_attr_init(&attr);
-	if (rc != 0) {	
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}

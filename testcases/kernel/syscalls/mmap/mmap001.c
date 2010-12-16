@@ -70,7 +70,7 @@ void setup()
 	if ((filename = strdup(buf)) == NULL) {
 		tst_brkm(TBROK|TERRNO, cleanup, "strdup failed");
 	}
-	
+
 }
 
 void help()

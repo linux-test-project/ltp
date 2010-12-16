@@ -14,7 +14,6 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This scalability sample aims to test the following assertion:
 *  -> The fork() duration does not depend on the # of processes in the system
 
@@ -26,14 +25,13 @@
 * The test fails if the fork duration tends to grow with the # of processes.
 */
 
-
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
 
 /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
-#endif 
+#endif
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -49,29 +47,29 @@
 
 #include <time.h>
 #include <semaphore.h>
-#include <fcntl.h> 
+#include <fcntl.h>
 #include <math.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c" 
+ #include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
+ * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -110,8 +108,6 @@ mes_t;
 
 /* Forward declaration */
 int parse_measure(mes_t * measures);
-
-
 
 sem_t *sem_synchro;
 sem_t *sem_ending;
@@ -378,7 +374,6 @@ int main (int argc, char *argv[])
 	/* Compute the results */
 	ret = parse_measure(&sentinel);
 
-
 	/* Free the resources and output the results */
 
 #if VERBOSE > 5
@@ -399,12 +394,10 @@ int main (int argc, char *argv[])
 		free(m_cur);
 	}
 
-
 	if (ret != 0)
 	{
 		FAILED("The function is not scalable, add verbosity for more information");
 	}
-
 
 #if VERBOSE > 0
 	output("-----\n");
@@ -418,10 +411,6 @@ int main (int argc, char *argv[])
 	PASSED;
 }
 
-
-
-
-
 /***
  * The next function will seek for the better model for each series of measurements.
  *
@@ -429,7 +418,7 @@ int main (int argc, char *argv[])
  * -> Y = a;      -- Error is r1 = avg((Y - Yavg)²);
  * -> Y = aX + b; -- Error is r2 = avg((Y -aX -b)²);
  *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg((X - Xavg)²)
- *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg)); 
+ *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg));
  *                --                       and  _d = sum((X - Xavg)²);
  *                -- and   b = Yavg - a * Xavg
  * -> Y = c * X^a;-- Same as previous, but with log(Y) = a log(X) + b; and b = log(c). Error is r3
@@ -502,7 +491,7 @@ int parse_measure(mes_t * measures)
 
 	/* We start with reading the list to find:
 	 * -> number of elements, to assign an array.
-	 * -> average values 
+	 * -> average values
 	 */
 
 	while (cur->next != NULL)
@@ -534,7 +523,6 @@ int parse_measure(mes_t * measures)
 	output(" Found %d rows\n", N);
 
 #endif
-
 
 	/* We will now alloc the array ... */
 
@@ -617,7 +605,7 @@ int parse_measure(mes_t * measures)
 		r2 += t * t / array_max ;
 
 		/* r3 = avg((y - c.x^a) ²);
-		    t = y - c * x ^ a 
+		    t = y - c * x ^ a
 		      = y - log (LnYavg - (_q[1]/_d[1]) * LnXavg) * x ^ (_q[1]/_d[1])
 		*/
 		t = (Table[ r ].Y
@@ -699,4 +687,3 @@ int parse_measure(mes_t * measures)
 	/* We're done */
 	return ret;
 }
-

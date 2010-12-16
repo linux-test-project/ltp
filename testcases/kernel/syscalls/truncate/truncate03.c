@@ -156,7 +156,7 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
 	/*
@@ -168,9 +168,8 @@ int main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -190,7 +189,6 @@ int main(int ac, char **av)
 			 */
 			TEST(truncate(file_name, TRUNC_LEN));
 
-			/* check return code of truncate(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
@@ -209,15 +207,13 @@ int main(int ac, char **av)
 					 TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}		/* End of TEST CASE LOOPING. */
+		}
 		Tst_count++;	/* incr TEST_LOOP counter */
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	tst_exit();
 
-}				/* End main */
+}
 
 /*
  * void
@@ -233,7 +229,6 @@ void setup()
 	int c, c_total = 0;	/* no. of bytes written to file */
 	char tst_buff[BUF_SIZE];	/* buffer to hold data */
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -254,7 +249,6 @@ void setup()
 	 */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Fill the test buffer with the known data */
@@ -299,7 +293,7 @@ void setup()
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
 	}
-}				/* End setup() */
+}
 
 /*
  * int
@@ -329,7 +323,7 @@ int setup1()
 	 }
 
 	return 0;
-}				/* End setup() */
+}
 
 /*
  * int
@@ -388,9 +382,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

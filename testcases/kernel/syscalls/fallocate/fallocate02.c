@@ -117,7 +117,7 @@ void create_pipe();
 void get_blocksize(int fd);
 
 /* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines */
+extern int Tst_count;
 /* Global Variables */
 char *TCID = "fallocate02";	/* test program identifier */
 char fnamew[255];		/* Files used for testing */
@@ -147,10 +147,10 @@ int block_size;
 int buf_size;
 
 /******************************************************************************
- * Performs all one time clean up for this test on successful   
+ * Performs all one time clean up for this test on successful
  * completion,  premature exit or  failure. Closes all temporary
- * files, removes all temporary directories exits the test with 
- * appropriate return code by calling tst_exit() function.      
+ * files, removes all temporary directories exits the test with
+ * appropriate return code by calling tst_exit() function.
 ******************************************************************************/
 extern void cleanup()
 {
@@ -161,28 +161,22 @@ extern void cleanup()
 	if (close(fdr) == -1)
 		tst_resm(TWARN|TERRNO, "close(%s) failed", fnamer);
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* Exit with appropriate return code. */
-	tst_exit();
 
 }
 
 /*****************************************************************************
- * Performs all one time setup for this test. This function is  
+ * Performs all one time setup for this test. This function is
  * used to create temporary dirs and temporary files
  * that may be used in the course of this test
  ******************************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(fnamer, "tfile_read_%d", getpid());
@@ -285,7 +279,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 		for (test_index = 0; test_index < TST_TOTAL; test_index++) {
 			switch (test_data[test_index].file) {
@@ -299,7 +293,7 @@ int main(int ac, char **av)
 				break;
 			default:
 				tst_brkm(TCONF, cleanup, "invalid test setting");
-				return 0;
+				tst_exit();
 			}
 
 			TEST(fallocate
@@ -331,5 +325,5 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }

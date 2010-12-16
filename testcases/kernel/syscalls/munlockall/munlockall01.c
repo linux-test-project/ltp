@@ -83,16 +83,14 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 
-	/* perform global setup for test */
 	setup();
 
 	/* check looping state */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		TEST(munlockall());
@@ -108,20 +106,18 @@ int main(int ac, char **av)
 
 		}
 	}
-	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 #else
 
 int main()
 {
 	tst_resm(TINFO, "test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* if !defined(UCLINUX) */
@@ -130,7 +126,6 @@ int main()
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/*set the expected errnos */
@@ -140,7 +135,6 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be tested as root");
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
 
@@ -152,6 +146,4 @@ void cleanup()
 {
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

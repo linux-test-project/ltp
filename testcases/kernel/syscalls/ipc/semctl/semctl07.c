@@ -89,7 +89,7 @@ char *argv[];
 	if ((status = semctl(semid, 0, IPC_STAT, arg)) == -1) {
 		tst_resm(TFAIL, "semctl() failed errno = %d", errno);
 		semctl(semid, 1, IPC_RMID, arg);
-		tst_exit();
+
 	}
 
 	/*
@@ -99,69 +99,69 @@ char *argv[];
 	if (arg.buf->sem_nsems != nsems) {
 		tst_resm(TFAIL, "error: unexpected number of sems %lu",
 			 arg.buf->sem_nsems);
-		tst_exit();
+
 	}
 	if (arg.buf->sem_perm.uid != getuid()) {
 		tst_resm(TFAIL, "error: unexpected uid %d",
 			 arg.buf->sem_perm.uid);
-		tst_exit();
+
 	}
 	if (arg.buf->sem_perm.gid != getgid()) {
 		tst_resm(TFAIL, "error: unexpected gid %d",
 			 arg.buf->sem_perm.gid);
-		tst_exit();
+
 	}
 	if (arg.buf->sem_perm.cuid != getuid()) {
 		tst_resm(TFAIL, "error: unexpected cuid %d",
 			 arg.buf->sem_perm.cuid);
-		tst_exit();
+
 	}
 	if (arg.buf->sem_perm.cgid != getgid()) {
 		tst_resm(TFAIL, "error: unexpected cgid %d",
 			 arg.buf->sem_perm.cgid);
-		tst_exit();
+
 	}
 	if ((status = semctl(semid, 0, GETVAL, arg)) == -1) {
 		tst_resm(TFAIL, "semctl(GETVAL) failed errno = %d", errno);
-		tst_exit();
+
 	}
 	arg.val = 1;
 	if ((status = semctl(semid, 0, SETVAL, arg)) == -1) {
 		tst_resm(TFAIL, "SEMCTL(SETVAL) failed errno = %d", errno);
-		tst_exit();
+
 	}
 	if ((status = semctl(semid, 0, GETVAL, arg)) == -1) {
 		tst_resm(TFAIL, "semctl(GETVAL) failed errno = %d", errno);
-		tst_exit();
+
 	}
 	if (status != arg.val) {
 		tst_resm(TFAIL, "error: unexpected value %d", status);
-		tst_exit();
+
 	}
 	if ((status = semctl(semid, 0, GETPID, arg)) == -1) {
 		tst_resm(TFAIL, "semctl(GETPID) failed errno = %d", errno);
-		tst_exit();
+
 	}
 	status = getpid();
 	if (status == 0) {
 		tst_resm(TFAIL, "error: unexpected pid %d", status);
-		tst_exit();
+
 	}
 	if ((status = semctl(semid, 0, GETNCNT, arg)) == -1) {
 		tst_resm(TFAIL, "semctl(GETNCNT) failed errno = %d", errno);
-		tst_exit();
+
 	}
 	if (status != 0) {
 		tst_resm(TFAIL, "error: unexpected semncnt %d", status);
-		tst_exit();
+
 	}
 	if ((status = semctl(semid, 0, GETZCNT, arg)) == -1) {
 		tst_resm(TFAIL, "semctl(GETZCNT) failed errno = %d", errno);
-		tst_exit();
+
 	}
 	if (status != 0) {
 		tst_resm(TFAIL, "error: unexpected semzcnt %d", status);
-		tst_exit();
+
 	}
 
 	tst_resm(TPASS, "semctl07 ran successfully!");
@@ -185,7 +185,6 @@ void setup()
 	 *                   */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
@@ -218,7 +217,6 @@ void cleanup()
 	/* if it exists, remove the semaphore resouce */
 	rm_sema(semid);
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -227,6 +225,4 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

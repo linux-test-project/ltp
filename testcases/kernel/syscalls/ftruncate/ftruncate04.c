@@ -54,7 +54,7 @@
  *
  * Restrictions:
  *	The filesystem containing /tmp MUST have "mand" specified as
- *	a mount option.  This option allows the use of mandatory locks. 
+ *	a mount option.  This option allows the use of mandatory locks.
  */
 
 #include <signal.h>
@@ -110,7 +110,7 @@ void cleanup()
 	kill(cpid, SIGKILL);
 	unlink(filename);
 	tst_rmdir();
-	tst_exit();
+
 }
 
 void doparent()
@@ -295,7 +295,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		
+
 	}
 #ifdef UCLINUX
 	maybe_run_child(&dochild, "dddd", filename, &recstart, &reclen, &ppid);
@@ -314,7 +314,7 @@ int main(int ac, char **av)
 			 " not support mandatory locks. Cannot run this test.");
 		tst_rmdir();
 		tst_exit();
-		
+
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		setvbuf(stdin, 0, _IOLBF, BUFSIZ);
@@ -427,5 +427,5 @@ int main(int ac, char **av)
 		tst_rmdir();
 		tst_exit();
 	}			/* end for */
-	return 0;
+	tst_exit();
 }

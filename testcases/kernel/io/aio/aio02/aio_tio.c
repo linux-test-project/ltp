@@ -86,7 +86,6 @@ int io_wait_run(io_context_t ctx, struct timespec *to)
 	return ret;
 }
 
-
 int io_tio(char *pathname, int flag, int n, int operation)
 {
 	int res, fd = 0, i = 0;
@@ -108,7 +107,7 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	//printf (" res = %d \n", res);
 
 	for (i = 0 ; i < AIO_MAXIO ; i ++) {
-	
+
 		switch (operation) {
 		case IO_CMD_FSYNC :
 		case IO_CMD_FDSYNC :
@@ -124,7 +123,7 @@ int io_tio(char *pathname, int flag, int n, int operation)
 			io_set_callback(&iocb_array[i], work_done);
 			iocbps[i] = &iocb_array[i];
 			offset += AIO_BLKSIZE;
-			
+
 			break;
 		case IO_CMD_PREAD :
 			if (posix_memalign (&bufptr, alignment, AIO_BLKSIZE)) {
@@ -196,7 +195,6 @@ int io_tio(char *pathname, int flag, int n, int operation)
 		  break;
 	}
 
-
 	close (fd);
 
 	for (i = 0 ; i < AIO_MAXIO ; i ++) {
@@ -242,7 +240,7 @@ int test_main(void)
 	if (status) {
 		return status;
 	}
-	
+
 	tst_resm(TINFO, "Running test 5\n");
 	status = io_tio("testdir/file1", O_TRUNC | O_WRONLY,
 			AIO_MAXIO, IO_CMD_PWRITE);

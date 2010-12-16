@@ -94,6 +94,6 @@ int main(int argc, char **argv)
 		printf("client: ...This implies the descriptor was not received\n");
 	else
 		printf("client: ...This implies the descriptor was received\n");
-	
+
 	exit(buf[0]);
 }

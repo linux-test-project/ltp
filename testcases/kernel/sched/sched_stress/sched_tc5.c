@@ -50,7 +50,6 @@
 #include <sys/resource.h>
 #include   "sched.h"
 
-
 /*
  * Defines:
  *
@@ -82,7 +81,6 @@
 void parse_args (int, char **);
 void invert_matrix ();
 
-
 /*
  * Global variables:
  *
@@ -97,7 +95,6 @@ int	debug     = 0;
 int 	priority  = DEFAULT_PRIORITY;
 char	*logfile  = DEFAULT_LOGFILE;
 char 	*priority_type = DEFAULT_PRIORITY_TYPE;
-
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -161,14 +158,13 @@ int main (int argc, char **argv)
 
 	if (fclose (statfile) < 0)
 		sys_error ("fclose failed", __FILE__, __LINE__);
-  
+
 	/*
 	 * Exit with success!
 	 */
 	if (verbose) printf ("\nsuccessful!\n");
 	return (0);
 }
-
 
 /*---------------------------------------------------------------------+
 |                           invert_matrix ()                           |
@@ -228,7 +224,6 @@ printf("sched_tc5: invert_matrix: before form identity matrix\n");
 	}
 printf("sched_tc5: invert_matrix: after form identity matrix\n");
 }
-
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
@@ -309,4 +304,3 @@ debug=1;
 		exit (2);
 	}
 }
-

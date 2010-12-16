@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  * Test that if value.it_interval != 0, the timer is periodic and loaded
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 		perror("timer_settime() did not expire after value.it_value\n");
 		return PTS_UNRESOLVED;
 	}
-		
+
 	for (i = 0; i < 2; i++) {
 		tsbefore.tv_sec=tsafter.tv_sec;
 		tsbefore.tv_nsec=tsafter.tv_nsec;
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 			perror("sigwait() failed\n");
 			return PTS_UNRESOLVED;
 		}
-	
+
 		if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
 			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;

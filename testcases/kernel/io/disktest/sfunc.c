@@ -242,7 +242,6 @@ int pMsg(lvl_t level, const child_args_t *args, char *Msg,...)
 		return rv;
 	}
 
-
 	memset(cpTheMsg, 0, len);
 	sprintf(cpTheMsg, FORMAT, time_str, levelStr, args->pid, VER_STR, args->device, Msg);
 
@@ -518,7 +517,6 @@ OFF_T get_file_size(char *device) {
 	return size;
 }
 
-
 OFF_T get_vsiz(const char *device)
 {
 #ifdef PPC
@@ -555,7 +553,6 @@ OFF_T get_vsiz(const char *device)
 		sizeof(GET_LENGTH_INFORMATION),
 		&dwLength,
 		NULL);
-
 
 	if (bRV) {
 		size = myLengthInfo.Length.QuadPart;
@@ -640,5 +637,3 @@ fmt_time_t format_time(time_t seconds)
 
 	return time_struct;
 }
-
-

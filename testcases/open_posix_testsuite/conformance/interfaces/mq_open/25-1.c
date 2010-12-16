@@ -22,4 +22,3 @@ int main()
 	printf("unsupported names are implementation defined.\n");
 	return PTS_UNTESTED;
 }
-

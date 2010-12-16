@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *									
+ *
  ************************************************************************/
 /************************************************************************/
 /*									*/
@@ -57,7 +57,7 @@ int  TST_TOTAL = 3;		   /* total number of tests in this file.   */
 
 #if defined(HAVE_ASM_LDT_H) && defined(HAVE_STRUCT_USER_DESC)
 /* Extern Global Variables */
-extern int Tst_count;	   /* counter for tst_xxx routines.	 */
+extern int Tst_count;
 extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Extern Global Functions */
@@ -79,7 +79,7 @@ extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 /*										*/
 /******************************************************************************/
 extern void cleanup() {
-	/* Remove tmp dir and all files in it */
+
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -110,13 +110,13 @@ void setup() {
 }
 
 int main(int ac, char **av) {
-	
+
 	thread_area_s u_info;
 
 	setup();
 
 	u_info.entry_number = 6;
-	
+
 	TEST(syscall(__NR_get_thread_area, &u_info));	 //call get_thread_area()
 	if (TEST_RETURN == -1) {
 		tst_brkm(TFAIL|TTERRNO, cleanup, "call get_thread_area() failed");
@@ -154,4 +154,3 @@ int main(void) {
 	tst_brkm(TCONF, NULL, "set_thread_area isn't available for this architecture");
 }
 #endif
-

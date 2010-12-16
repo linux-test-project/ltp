@@ -144,7 +144,6 @@ int main(int ac, char **av)
 	/* set up the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
@@ -188,10 +187,8 @@ void setup()
 
 	umask(0);
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	ltpuser = getpwnam(nobody_uid);
@@ -260,6 +257,4 @@ void cleanup()
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

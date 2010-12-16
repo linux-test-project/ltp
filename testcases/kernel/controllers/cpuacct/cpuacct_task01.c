@@ -8,7 +8,5 @@ int main(void)
 		fp = fopen("txt.x", "w");
 		fclose(fp);
 	}
-	return 0;
+	tst_exit();
 }
-
-

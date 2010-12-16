@@ -107,18 +107,16 @@ int main(int ac, char **av)
 >>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 
-	/* Perform global setup for test */
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		/* Call sigaltstack() to set up an alternate stack */
@@ -126,7 +124,6 @@ int main(int ac, char **av)
 		sigstk.ss_flags = 0;
 		TEST(sigaltstack(&sigstk, &osigstk));
 
-		/* check return code of sigaltstack */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
@@ -187,13 +184,12 @@ int main(int ac, char **av)
 			}
 		}
 		Tst_count++;	/* incr. TEST_LOOP counter */
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 	  return 0;
 
-}				/* End main */
+}
 
 /*
  * void
@@ -205,10 +201,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get the process id of test process */
@@ -269,6 +264,4 @@ void cleanup()
 
 	free(sigstk.ss_sp);
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

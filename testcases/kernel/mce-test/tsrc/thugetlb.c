@@ -5,7 +5,7 @@
 #define _GNU_SOURCE 1
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
 				err("put_semaphore");
 			if (put_semaphore(semid, &sembuffer))
 				err("put_semaphore");
-			return 0;
+			tst_exit();
 		}
 	}
 
@@ -317,5 +317,5 @@ cleanout:
 			exit(2);
 	}
 
-	return 0;
+	tst_exit();
 }

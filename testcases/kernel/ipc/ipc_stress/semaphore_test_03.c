@@ -122,7 +122,6 @@ static void error (const char *, int);
 static void parse_args (int, char **);
 static void catch (int);
 
-
 /*
  * Structures and Global variables:
  *
@@ -223,7 +222,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             test_commands ()                         |
 | ==================================================================== |
@@ -252,7 +250,7 @@ static void test_commands (pid_t proc_pid)
 		printf ("\n\tCreating %d semaphores ...\n", nsems);
 	if ((semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|mode)) < 0)
 		sys_error ("semget (IPC_PRIVATE) failed", __LINE__);
-		   
+
 	/*
 	 * Set the semaphore uid, gid and mode
 	 */
@@ -688,7 +686,7 @@ static void test_commands (pid_t proc_pid)
 	 */
 	if ((semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|mode)) < 0)
 		sys_error ("semget (IPC_PRIVATE) failed", __LINE__);
-		   
+
 	/*
 	 * Set the semaphore uid, gid and mode
 	 */
@@ -725,7 +723,6 @@ static void test_commands (pid_t proc_pid)
 	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
 	SAFE_FREE(arg.array);
-
 
 	/* ------------------------------------------------------------------ */
 	/* TEST # 12 --- semval = 9, sem_op = -1, sem_flg = SEM_UN          */
@@ -922,7 +919,6 @@ static void test_commands (pid_t proc_pid)
 		sys_error ("child process terminated abnormally", __LINE__);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |
 | ==================================================================== |
@@ -972,7 +968,6 @@ void parse_args (int argc, char **argv)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                          setup_signal_handler ()                     |
 | ==================================================================== |
@@ -994,7 +989,6 @@ static void setup_signal_handler ()
         if (sigaction (SIGUSR1, &sigact, NULL) < 0)
                 sys_error ("sigaction failed", __LINE__);
 }
-
 
 /*---------------------------------------------------------------------+
 |                             catch ()                                 |
@@ -1018,7 +1012,6 @@ static void catch (int sig)
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -1033,7 +1026,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

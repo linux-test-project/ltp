@@ -40,7 +40,6 @@
 #include <sys/ioctl.h>
 #include "../tusb/tusb.h"
 
-
 /*
  * this generic function can be used
  * for any test calls that need no
@@ -80,4 +79,3 @@ int ki_generic(int fd, int flag) {
 
         return rc;
 }
-

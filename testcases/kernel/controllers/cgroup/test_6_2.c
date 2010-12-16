@@ -43,6 +43,5 @@ int main(int argc, char **argv)
 		ltp_clone_quick(CLONE_NEWNS, foo, NULL);
 	}
 
-	return 0;
+	tst_exit();
 }
-

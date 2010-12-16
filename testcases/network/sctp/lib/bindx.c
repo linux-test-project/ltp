@@ -3,7 +3,7 @@
  * bindx.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- *    http://www.gnu.org/copyleft/lesser.txt 
+ *    http://www.gnu.org/copyleft/lesser.txt
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -73,6 +73,6 @@ sctp_bindx(int fd, struct sockaddr *addrs, int addrcnt, int flags)
 			return -1;
 		}
 	}
-			
+
 	return setsockopt(fd, SOL_SCTP, setsock_option, addrs, addrs_size);
 }

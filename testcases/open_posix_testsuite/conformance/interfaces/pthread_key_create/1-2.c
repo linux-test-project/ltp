@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_key_create()
@@ -16,7 +16,7 @@
  * Steps:
  * 1. Define and create a key
  * 2. Verify that you can create many threads with the same key value
- * 
+ *
  */
 
 #include <pthread.h>
@@ -67,8 +67,8 @@ int main()
 		{
 			perror("Error creating thread\n");
 			return PTS_UNRESOLVED;
-		}		
-		
+		}
+
 		/* Wait for thread to end */
 		if (pthread_join(new_th, &value_ptr) != 0)
 		{

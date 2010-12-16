@@ -14,22 +14,20 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This scalability sample aims to test the following assertions:
  *  -> If pthread_create fails because of a lack of a resource, or
  	PTHREAD_THREADS_MAX threads already exist, EAGAIN shall be returned.
- *  -> It also tests that the thread creation time does not depend on the # of threads 
+ *  -> It also tests that the thread creation time does not depend on the # of threads
  *     already created.
- 
+
  * The steps are:
  * -> Create threads until failure
 
  */
- 
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -40,7 +38,7 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <string.h>
  #include <unistd.h>
 
@@ -51,27 +49,26 @@
  #include <sys/wait.h>
  #include <math.h>
 
- 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -105,7 +102,6 @@
  * scenar_fini(): function to call after end of use of the scenarii array.
  */
 
-
 /********************************************************************************************/
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
@@ -121,26 +117,24 @@ typedef struct __mes_t
 /* Forward declaration */
 int parse_measure(mes_t * measures);
 
-
-
 pthread_mutex_t m_synchro=PTHREAD_MUTEX_INITIALIZER;
 
 void * threaded(void * arg)
 {
 	int ret=0;
-	
+
 	/* Signal we're done */
 	do { ret = sem_post(&scenarii[sc].sem); }
 	while ((ret == -1) && (errno == EINTR));
 	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
-	
+
 	/* Wait for all threads being created */
 	ret = pthread_mutex_lock(&m_synchro);
 	if (ret != 0)  {  UNRESOLVED(ret, "Mutex lock failed");  }
 	(*(int *)arg) += 1;
 	ret = pthread_mutex_unlock(&m_synchro);
 	if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
-	
+
 	return arg;
 }
 
@@ -149,30 +143,30 @@ int main (int argc, char *argv[])
 	int ret=0;
 	pthread_t child;
 	pthread_t *th;
-	
+
 	int nthreads, ctl, i, tmp;
-	
+
 	struct timespec ts_ref, ts_fin;
 
 	mes_t sentinel;
 	mes_t *m_cur, *m_tmp;
-	
+
 	long PTHREAD_THREADS_MAX = sysconf(_SC_THREAD_THREADS_MAX);
 	long my_max = 1000 * SCALABILITY_FACTOR ;
-	
+
 	/* Initialize the measure list */
 	m_cur = &sentinel;
 	m_cur->next = NULL;
 
 	/* Initialize output routine */
 	output_init();
-	
+
 	if (PTHREAD_THREADS_MAX > 0)
 		my_max = PTHREAD_THREADS_MAX;
-	
+
 	th = (pthread_t *)calloc(1 + my_max, sizeof(pthread_t));
 	if (th == NULL)  {  UNRESOLVED(errno, "Not enough memory for thread storage");  }
-	
+
 	/* Initialize thread attribute objects */
 	scenar_init();
 
@@ -182,7 +176,7 @@ int main (int argc, char *argv[])
 		printf(" %i", sc);
 	printf("\n");
 	#endif
-	
+
 	for (sc=0; sc < NSCENAR; sc++)
 	{
 		if (scenarii[sc].bottom == NULL) /* skip the alternate stacks as we could create only 1 */
@@ -191,11 +185,11 @@ int main (int argc, char *argv[])
 			output("-----\n");
 			output("Starting test with scenario (%i): %s\n", sc, scenarii[sc].descr);
 			#endif
-			
+
 			/* Block every (about to be) created threads */
 			ret = pthread_mutex_lock(&m_synchro);
 			if (ret != 0)  {  UNRESOLVED(ret, "Mutex lock failed");  }
-			
+
 			ctl=0;
 			nthreads=0;
 			m_cur = &sentinel;
@@ -207,11 +201,11 @@ int main (int argc, char *argv[])
 				case 0: /* Operation was expected to succeed */
 					if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
 					break;
-				
+
 				case 1: /* Operation was expected to fail */
 					if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
 					break;
-				
+
 				case 2: /* We did not know the expected result */
 				default:
 					#if VERBOSE > 0
@@ -224,31 +218,31 @@ int main (int argc, char *argv[])
 			}
 			if (ret == 0) /* The new thread is running */
 			{
-				
+
 				while (1) /* we will break */
 				{
 					/* read clock */
 					ret = clock_gettime(CLOCK_REALTIME, &ts_ref);
 					if (ret != 0)  {  UNRESOLVED(errno, "Unable to read clock");  }
-					
+
 					/* create a new thread */
 					ret = pthread_create(&th[nthreads], &scenarii[sc].ta, threaded, &ctl);
-					
+
 					/* stop here if we've got EAGAIN */
 					if (ret == EAGAIN)
 						break;
-					
+
 // temporary hack
 if (ret == ENOMEM)  break;
 					nthreads++;
-					
+
 					/* FAILED if error is != EAGAIN or nthreads > PTHREAD_THREADS_MAX */
-					if (ret != 0)  
+					if (ret != 0)
 					{
 						output("pthread_create returned: %i (%s)\n", ret, strerror(ret));
-						FAILED("pthread_create did not return EAGAIN on a lack of resource");  
+						FAILED("pthread_create did not return EAGAIN on a lack of resource");
 					}
-					if (nthreads > my_max)  
+					if (nthreads > my_max)
 					{
 						if (PTHREAD_THREADS_MAX > 0)
 						{
@@ -259,16 +253,16 @@ if (ret == ENOMEM)  break;
 							break;
 						}
 					}
-					
+
 					/* wait for the semaphore */
 					do { ret = sem_wait(&scenarii[sc].sem); }
 					while ((ret == -1) && (errno == EINTR));
 					if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
-					
+
 					/* read clock */
 					ret = clock_gettime(CLOCK_REALTIME, &ts_fin);
 					if (ret != 0)  {  UNRESOLVED(errno, "Unable to read clock");  }
-					
+
 					/* add to the measure list if nthreads % resolution == 0 */
 					if ((nthreads % RESOLUTION) == 0)
 					{
@@ -283,11 +277,11 @@ if (ret == ENOMEM)  break;
 								m_tmp->_data[tmp]= 0;
 							m_cur->next = m_tmp;
 						}
-						
+
 						/* Add this measure to the next element */
 						m_cur = m_cur->next;
 						m_cur->_data[sc] = ((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000) + ((ts_fin.tv_nsec - ts_ref.tv_nsec) / 1000) ;
-						
+
 						#if VERBOSE > 5
 						output("Added the following measure: sc=%i, n=%i, v=%li\n", sc, nthreads, m_cur->_data[sc]);
 						#endif
@@ -296,11 +290,11 @@ if (ret == ENOMEM)  break;
 				#if VERBOSE > 3
 				output("Could not create anymore thread. Current count is %i\n", nthreads);
 				#endif
-				
+
 				/* Unblock every created threads */
 				ret = pthread_mutex_unlock(&m_synchro);
 				if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
-				
+
 				if (scenarii[sc].detached == 0)
 				{
 					#if VERBOSE > 3
@@ -311,7 +305,7 @@ if (ret == ENOMEM)  break;
 						ret = pthread_join(th[i], NULL);
 						if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
 					}
-					
+
 					ret = pthread_join(child, NULL);
 					if (ret != 0)  {  UNRESOLVED(ret, "Unalbe to join a thread");  }
 
@@ -322,26 +316,25 @@ if (ret == ENOMEM)  break;
 				do {
 					ret = pthread_mutex_lock(&m_synchro);
 					if (ret != 0)  {  UNRESOLVED(ret, "Mutex lock failed");  }
-					
+
 					tmp = ctl;
-					
+
 					ret = pthread_mutex_unlock(&m_synchro);
 					if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
 				} while (tmp != nthreads + 1);
-				
+
 			} /* The thread was created */
-			
+
 	}	} /* next scenario */
-	
+
 	/* Free some memory before result parsing */
 	free(th);
-	
+
 	/* Compute the results */
 	ret = parse_measure(&sentinel);
-	
-	
+
 	/* Free the resources and output the results */
-	
+
 	#if VERBOSE > 5
 	printf("Dump : \n");
 	printf("%8.8s", "nth");
@@ -361,21 +354,17 @@ if (ret == ENOMEM)  break;
 		sentinel.next = m_cur->next;
 		free(m_cur);
 	}
-	
+
 	scenar_fini();
-	
+
 	#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
 	#endif
-	
+
 	PASSED;
 }
-
-
-
-
 
 /***
  * The next function will seek for the better model for each series of measurements.
@@ -384,7 +373,7 @@ if (ret == ENOMEM)  break;
  * -> Y = a;      -- Error is r1 = avg((Y - Yavg)²);
  * -> Y = aX + b; -- Error is r2 = avg((Y -aX -b)²);
  *                -- where a = avg ((X - Xavg)(Y - Yavg)) / avg((X - Xavg)²)
- *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg)); 
+ *                --         Note: We will call _q = sum((X - Xavg) * (Y - Yavg));
  *                --                       and  _d = sum((X - Xavg)²);
  *                -- and   b = Yavg - a * Xavg
  * -> Y = c * X^a;-- Same as previous, but with log(Y) = a log(X) + b; and b = log(c). Error is r3
@@ -409,27 +398,27 @@ struct row
 int parse_measure(mes_t * measures)
 {
 	int ret, i, r;
-	
+
 	mes_t *cur;
-	
+
 	double Xavg[NSCENAR], Yavg[NSCENAR];
 	double LnXavg[NSCENAR], LnYavg[NSCENAR];
-	
-	int N; 
-	
+
+	int N;
+
 	double r1[NSCENAR], r2[NSCENAR], r3[NSCENAR], r4[NSCENAR];
-	
+
 	/* Some more intermediate vars */
 	long double _q[3][NSCENAR];
 	long double _d[3][NSCENAR];
-	
+
 	long double t; /* temp value */
-	
+
 	struct row *Table = NULL;
-	
+
 	/* This array contains the last element of each serie */
 	int array_max[NSCENAR];
-	
+
 	/* Initialize the datas */
 	for (i=0; i<NSCENAR; i++)
 	{
@@ -451,21 +440,21 @@ int parse_measure(mes_t * measures)
 	}
 	N=0;
 	cur = measures;
-	
+
 	#if VERBOSE > 1
 	output("Data analysis starting\n");
 	#endif
-	
+
 	/* We start with reading the list to find:
 	 * -> number of elements, to assign an array.
-	 * -> average values 
+	 * -> average values
 	 */
 	while (cur->next != NULL)
 	{
 		cur = cur->next;
-		
+
 		N++;
-		
+
 		for (i=0; i<NSCENAR; i++)
 		{
 			if (cur->_data[i] != 0)
@@ -478,7 +467,7 @@ int parse_measure(mes_t * measures)
 			}
 		}
 	}
-	
+
 	/* We have the sum; we can divide to obtain the average values */
 	for (i=0; i<NSCENAR; i++)
 	{
@@ -490,24 +479,23 @@ int parse_measure(mes_t * measures)
 			LnYavg[i] /= array_max[i];
 		}
 	}
-	
+
 	#if VERBOSE > 1
 	output(" Found %d rows and %d columns\n", N, NSCENAR);
 	#endif
-	
-	
+
 	/* We will now alloc the array ... */
 	Table = calloc(N, sizeof(struct row));
 	if (Table == NULL)  {  UNRESOLVED(errno, "Unable to alloc space for results parsing");  }
-	
+
 	/* ... and fill it */
 	N = 0;
 	cur = measures;
-	
+
 	while (cur->next != NULL)
 	{
 		cur = cur->next;
-		
+
 		Table[N].X = (long) cur->nthreads;
 		Table[N].LnX = log((double) cur->nthreads);
 		for (i=0; i<NSCENAR; i++)
@@ -522,17 +510,17 @@ int parse_measure(mes_t * measures)
 				Table[N]._lny[i] = Table[N].LnY[i] - LnYavg[i];
 			}
 		}
-		
+
 		N++;
 	}
-	
+
 	/* We won't need the list anymore -- we'll work with the array which should be faster. */
 	#if VERBOSE > 1
 	output(" Data was stored in an array.\n");
 	#endif
-	
+
 	/* We need to read the full array at least twice to compute all the error factors */
-	
+
 	/* In the first pass, we'll compute:
 	 * -> r1 for each scenar.
 	 * -> "a" factor for linear (0), power (1) and exponential (2) approximations -- with using the _d and _q vars.
@@ -545,24 +533,24 @@ int parse_measure(mes_t * measures)
 		for (r=0; r<array_max[i]; r++)
 		{
 			r1[i] += ((double)Table[r]._y[i] / array_max[i]) * (double)Table[r]._y[i];
-			
+
 			_q[0][i] += Table[r]._y[i] * Table[r]._x[i];
 			_d[0][i] += Table[r]._x[i] * Table[r]._x[i];
-			
+
 			_q[1][i] += Table[r]._lny[i] * Table[r]._lnx[i];
 			_d[1][i] += Table[r]._lnx[i] * Table[r]._lnx[i];
-			
+
 			_q[2][i] += Table[r]._lny[i] * Table[r]._x[i];
 			_d[2][i] += Table[r]._x[i] * Table[r]._x[i];
 		}
 	}
-	
+
 	/* First pass is terminated; a2 = _q[0]/_d[0]; a3 = _q[1]/_d[1]; a4 = _q[2]/_d[2] */
 
 	/* In the first pass, we'll compute:
 	 * -> r2, r3, r4 for each scenar.
 	 */
-	
+
 	#if VERBOSE > 1
 	output("Starting second pass...\n");
 	#endif
@@ -573,9 +561,9 @@ int parse_measure(mes_t * measures)
 			/* r2 = avg((y - ax -b)²);  t = (y - ax - b) = (y - yavg) - a (x - xavg); */
 			t = (Table[r]._y[i] - ((_q[0][i] * Table[r]._x[i]) / _d[0][i]));
 			r2[i] += t * t / array_max[i]  ;
-			
-			/* r3 = avg((y - c.x^a) ²);  
-			    t = y - c * x ^ a 
+
+			/* r3 = avg((y - c.x^a) ²);
+			    t = y - c * x ^ a
 			      = y - log (LnYavg - (_q[1]/_d[1]) * LnXavg) * x ^ (_q[1]/_d[1])
 			*/
 			t = (   Table[r].Y[i]
@@ -583,7 +571,7 @@ int parse_measure(mes_t * measures)
 			        * powl(Table[r].X,  (_q[1][i] / _d[1][i]))
 			    )   );
 			r3[i] += t * t / array_max[i] ;
-			
+
 			/* r4 = avg((y - exp(ax+b))²);
 			    t = y - exp(ax+b)
 			      = y - exp(_q[2]/_d[2] * x + (LnYavg - (_q[2]/_d[2] * Xavg)));
@@ -592,7 +580,7 @@ int parse_measure(mes_t * measures)
 			t = (   Table[r].Y[i]
 			      - expl((_q[2][i] / _d[2][i]) * Table[r]._x[i] + LnYavg[i]));
 			r4[i] += t * t / array_max[i] ;
-			
+
 		}
 	}
 
@@ -604,29 +592,29 @@ int parse_measure(mes_t * measures)
 	{
 		#if VERBOSE > 1
 		output("\nScenario: %s\n", scenarii[i].descr);
-		
+
 		output(" # of data: %i\n", array_max[i]);
-		
+
 		output("  Model: Y = k\n");
 		output("       k = %g\n", Yavg[i]);
 		output("    Divergence %g\n", r1[i]);
-		
+
 		output("  Model: Y = a * X + b\n");
 		output("       a = %Lg\n", _q[0][i] / _d[0][i]);
 		output("       b = %Lg\n", Yavg[i] - ((_q[0][i] / _d[0][i]) * Xavg[i]));
 		output("    Divergence %g\n", r2[i]);
-		
+
 		output("  Model: Y = c * X ^ a\n");
 		output("       a = %Lg\n", _q[1][i] / _d[1][i]);
 		output("       c = %Lg\n", logl (LnYavg[i] - (_q[1][i] / _d[1][i]) * LnXavg[i]));
 		output("    Divergence %g\n", r2[i]);
-		
+
 		output("  Model: Y = exp(a * X + b)\n");
 		output("       a = %Lg\n", _q[2][i] / _d[2][i]);
 		output("       b = %Lg\n", LnYavg[i] - ((_q[2][i] / _d[2][i]) * Xavg[i]));
 		output("    Divergence %g\n", r2[i]);
 		#endif
-		
+
 		if (array_max[i] != -1)
 		{
 			/* Compare r1 to other values, with some ponderations */
@@ -638,11 +626,10 @@ int parse_measure(mes_t * measures)
 			#endif
 		}
 	}
-	
+
 	/* We need to free the array */
 	free(Table);
-	
+
 	/* We're done */
 	return ret;
 }
-

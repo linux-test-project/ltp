@@ -149,7 +149,7 @@ void touch_memory_and_echo_node(char *p, int size)
 
 	for (i = 0; i < size; i += pagesize)
 		p[i] = 0xef;
-	
+
 	printf("%d\n", cpuset_addr2node(p));
 }
 
@@ -340,7 +340,7 @@ void *thread2_routine(void __attribute__((unused)) *arg)
 	memset(&sigusr2_action, 0, sizeof(sigusr2_action));
 	sigusr2_action.sa_handler = &sigusr2;
 	sigaction(SIGUSR2, &sigusr2_action, NULL);
-	
+
 	while (!flag_exit)
 		sleep(1);
 
@@ -376,7 +376,7 @@ int main(int argc, char *argv[])
 
 		pthread_sigmask(SIG_BLOCK, &set, NULL);
 	}
-	
+
 	while (!flag_exit)
 		sleep(1);
 
@@ -388,7 +388,7 @@ int main(int argc, char *argv[])
 
 	close(fd);
 
-	return 0;
+	tst_exit();
 }
 
 #else

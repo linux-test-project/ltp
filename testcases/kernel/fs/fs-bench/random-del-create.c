@@ -46,7 +46,6 @@ int main(int ac, char **av)
   time(&t);
   srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
 
-
   /* 00/00/00/00 */
   for (i = 0 ; i < m ; i++) {
     r = random() % m;

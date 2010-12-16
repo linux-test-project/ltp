@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <tirpc/netconfig.h>
@@ -38,14 +38,14 @@
 #define VERSNUM 1
 #define PROCSIMPLEPING	1
 
-char *simplePing_proc(char *i_var) 
+char *simplePing_proc(char *i_var)
 {
 	static int result = 0;
 	result = *i_var;
 	return (char *)&result;
 }
 
-int main(int argn, char *argc[]) 
+int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
 	//					    others arguments depend on server program

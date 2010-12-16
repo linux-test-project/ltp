@@ -60,7 +60,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,13 +85,11 @@ union semun {
 };
 #endif
 
-
 /* Defines
  *
  * NUM_SEMAPHORES: number of semaphores to create
  */
 #define NUM_SEMAPHORES	1
-
 
 /*
  * Function prototypes
@@ -102,7 +99,6 @@ union semun {
  */
 static void sys_error (const char *, int);
 static void error (const char *, int);
-
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -178,7 +174,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -193,7 +188,6 @@ static void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

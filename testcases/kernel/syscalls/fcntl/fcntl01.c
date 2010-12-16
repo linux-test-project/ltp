@@ -288,9 +288,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	tst_sig(FORK, DEF_HANDLER, cleanup);	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 	umask(0);
-	TEST_PAUSE;		/* Pause if that option is specified */
+	TEST_PAUSE;
 	tst_tmpdir();		/* make temp dir and cd to it */
 }
 
@@ -307,9 +307,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

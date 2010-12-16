@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +31,7 @@
 #include <tirpc/rpc/rpc.h>
 #include <sys/socket.h>
 #include <netdb.h>
-        
+
 //Standard define
 #define PINGPROC 1
 #define VERSNUM  1
@@ -47,7 +47,7 @@ bool_t eachResult (char *out, struct sockaddr_in *addr)
 	{
 		return (1);
 	}
-	return (0); 
+	return (0);
 }
 
 int main(int argn, char *argc[])
@@ -56,7 +56,7 @@ int main(int argn, char *argc[])
 	//					   argc[2] : Server Program Number
 	//					   argc[3] : Number of host ready to answer to broadcast
 	//					   other arguments depend on test case
-	
+
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
@@ -67,33 +67,33 @@ int main(int argn, char *argc[])
 	char nettype[16] = "visible";
 	int varSnd = 0;
 	int varRec;
-	
+
 	bool_t eachResult (char *out, struct sockaddr_in *addr);
-	maxAnswer = atoi(argc[3]);	
+	maxAnswer = atoi(argc[3]);
 	currentAnswer = 0;
-	
+
 	//Show information in debug mode...
 	if (run_mode == 1)
 	{
 		printf("progNum : %d\n", progNum);
 		printf("Max SVC : %d\n", maxAnswer);
 	}
-	
+
 	//Call broadcast routine
 	cs = rpc_broadcast(progNum, VERSNUM, PINGPROC,
 						  (xdrproc_t)xdr_int, (char *)&varSnd,
 						  (xdrproc_t)xdr_int, (char *)&varRec,
 						  (resultproc_t) eachResult, nettype);
-	
+
 	if (currentAnswer == maxAnswer)
 		test_status = 0;
-	
+
 	if (cs != RPC_SUCCESS)
 		clnt_perrno(cs);
-	
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
-	
+
 	return test_status;
 }

@@ -1,17 +1,17 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_attr_getinheritsched()
- * 
+ *
  * Steps:
  * 1.  Initialize a pthread_attr_t object using pthread_attr_init()
  * 2.  Call pthread_attr_setinheritsched with inheritsched parameter
  * 3.  Call pthread_attr_getinheritsched to get the inheritsched
- * 
+ *
  */
 
 #include <pthread.h>
@@ -40,16 +40,16 @@ int verify_inheritsched(pthread_attr_t *attr, int schedtype) {
   		if (inheritsched != INHERIT) {
     			perror(ERROR_PREFIX "got wrong inheritsched param");
     			exit(PTS_FAIL);
-  		}	
+  		}
 		break;
 	case EXPLICIT:
   		if (inheritsched != EXPLICIT) {
     			perror(ERROR_PREFIX "got wrong inheritsched param");
     			exit(PTS_FAIL);
-  		}	
+  		}
 		break;
 	}
-        return 0;                                   
+        return 0;
 }
 
 int main()
@@ -85,7 +85,3 @@ int main()
 	printf("Test PASS\n");
 	return PTS_PASS;
 }
-
-
-
-

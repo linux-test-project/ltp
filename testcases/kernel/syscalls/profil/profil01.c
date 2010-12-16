@@ -250,7 +250,7 @@ char *argv[];
 	blexit();
 /*--------------------------------------------------------------*/
 	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
-	return 0;
+	tst_exit();
 }
 
 /*--------------------------------------------------------------*/
@@ -309,6 +309,6 @@ void fail_exit()
 int main(void)
 {
 	/* uClibc does not have profiling support */
-	return 0;
+	tst_exit();
 }
 #endif

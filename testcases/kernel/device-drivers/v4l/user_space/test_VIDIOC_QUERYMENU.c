@@ -86,7 +86,7 @@ static void do_query_menu(__u32 id) {
 		memset(&menu, 0xff, sizeof(menu));
 		menu.id = id;
 		menu.index = i;
-	
+
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYMENU, &menu);
 		errno_query = errno;
 
@@ -117,7 +117,7 @@ static void do_query_menu_invalid(__u32 id) {
 		memset(&menu, 0xff, sizeof(menu));
 		menu.id = id;
 		menu.index = test_index[i];
-	
+
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYMENU, &menu);
 		errno_query = errno;
 
@@ -182,7 +182,6 @@ void test_VIDIOC_QUERYMENU() {
 			default:
 				do_query_menu_invalid(i);
 			}
-
 
 		} else {
 			CU_ASSERT_EQUAL(ret_query, -1);

@@ -14,12 +14,10 @@
 * with this program; if not, write the Free Software Foundation, Inc., 59
 * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
-
 * This sample test aims to check the following assertion:
 *
 *  sem_init returns -1 and sets errno to ENOSPC if the system lacks a resource
 * or SEM_NSEMS_MAX has been reached.
-
 
 * The steps are:
 * -> Try and sem_init SEM_NSEMS_MAX semaphores.
@@ -28,7 +26,6 @@
 * The test fails if the last creation does not return an error.
 
 */
-
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -50,23 +47,23 @@
 /***************************   Test framework   *******************************/
 /******************************************************************************/
 #include "testfrmw.h"
-#include "testfrmw.c" 
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);  
- *    where descr is a description of the error and ret is an int 
+ * UNRESOLVED(ret, descr);
+ *    where descr is a description of the error and ret is an int
  *   (error code for example)
  * FAILED(descr);
  *    where descr is a short text saying why the test has failed.
  * PASSED();
  *    No parameter.
- * 
+ *
  * Both three macros shall terminate the calling process.
  * The testcase shall not terminate in any other maneer.
- * 
+ *
  * The other file defines the functions
  * void output_init()
  * void output(char * string, ...)
- * 
+ *
  * Those may be used to output information.
  */
 
@@ -80,7 +77,6 @@
 /******************************************************************************/
 /***************************    Test case   ***********************************/
 /******************************************************************************/
-
 
 /* The main test function. */
 int main(int argc, char * argv[])
@@ -108,7 +104,6 @@ int main(int argc, char * argv[])
 	{
 		UNRESOLVED(errno, "Failed to alloc space");
 	}
-
 
 	for (i = 0; i < max; i++)
 	{
@@ -146,7 +141,6 @@ int main(int argc, char * argv[])
 
 	free(sems);
 
-
 	/* Test passed */
 #if VERBOSE > 0
 
@@ -156,5 +150,3 @@ int main(int argc, char * argv[])
 
 	PASSED;
 }
-
-

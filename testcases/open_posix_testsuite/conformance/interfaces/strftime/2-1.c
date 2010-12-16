@@ -6,19 +6,17 @@
  * source tree.
  *
  *
- * Modified by the E or O indicate that an alternative format or 
- * specification should be used rather than the one normally used by the 
+ * Modified by the E or O indicate that an alternative format or
+ * specification should be used rather than the one normally used by the
  * unmodified conversion specifier (1-1.c).
  */
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
 #include <langinfo.h>
-#include <time.h> 
+#include <time.h>
 #include "posixtest.h"
-
 
 int main () {
 
@@ -31,7 +29,6 @@ int main () {
     setlocale(LC_TIME, "");
     strftime(text, 256, nl_langinfo (D_T_FMT), local_t);
     printf("STRING IS:   %s\n\n", text);
-
 
 /* use format controls to print the various date/time components. */
 
@@ -95,7 +92,6 @@ int main () {
 	    puts ("PASS");
     }
 
-
     result = strftime(text, 256, "%Od", local_t);
     printf("Od   Bytes %i           %s	", result, text);
     if (result != 2) {
@@ -140,7 +136,6 @@ int main () {
     } else {
 	    puts ("PASS");
     }
-
 
     result = strftime(text, 256, "%OM", local_t);
     printf("OM   Bytes %i           %s	", result, text);
@@ -204,7 +199,6 @@ int main () {
     } else {
 	    puts ("PASS");
     }
-
 
 /*  This section has been commented for known bug in gcc:
  *  result = strftime(text, 256, "%Oy", local_t);

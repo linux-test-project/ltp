@@ -45,7 +45,6 @@ int main(int argc, char **argv)
 		signal(i, handler);
 	}
 
-
 	s = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (s < 0) {
 		perror("socket");

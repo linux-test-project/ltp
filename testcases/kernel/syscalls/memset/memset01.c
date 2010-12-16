@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 								    "Test passed");
 	tst_exit();
 	/* THIS CALL DOES NOT RETURN - EXITS!!  */
-	return 0;
+	tst_exit();
 }
 
 /*--------------------------------------------------------------*/

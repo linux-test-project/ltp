@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (i = 0; test_cases[i].desc != NULL; i++) {
@@ -196,7 +196,6 @@ int main(int argc, char *argv[])
 
 	cleanup();
 
-	tst_exit();
 }
 
 /*
@@ -209,11 +208,10 @@ void setup(void)
 {
 	int fd;
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	
+
 	tst_require_root(NULL);
-	
+
 	TEST_PAUSE;
 	tst_tmpdir();
 
@@ -224,7 +222,7 @@ void setup(void)
 	if (close(fd) == -1) {
 		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
 	}
-	
+
 	if (close(fd) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "close(2) %s", TESTFILE);
 

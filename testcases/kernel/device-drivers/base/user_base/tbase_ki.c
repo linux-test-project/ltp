@@ -68,8 +68,3 @@ int ki_generic(int fd, int flag) {
 
         return rc;
 }
-
-
-
-
-

@@ -1,13 +1,13 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * Test whether message queue can work correctly under lots of usage. 
+ * Test whether message queue can work correctly under lots of usage.
  * 1. Many threads sending/receiving on the same message queue.
- * 2. Set different Priority to the messages in the message queue, to see 
+ * 2. Set different Priority to the messages in the message queue, to see
  * whether the highest priority is received first.
  */
 
@@ -34,7 +34,7 @@ const char *s_msg_ptr[] = {"send_1 1", "send_1 2", "send_1 3", "send_1 4", "send
 char r_msg_ptr[Max_Threads][MAX_MSG][MSG_SIZE];
 mqd_t mq = 0;
 
-int *send(void * ID) 
+int *send(void * ID)
 {
 	int i;
 	int ThreadID = *(int *)ID;
@@ -50,7 +50,7 @@ int *send(void * ID)
 	pthread_exit((void *)0);
 
 }
-int *receive(void * ID) 
+int *receive(void * ID)
 {
 	int i;
 	int ThreadID = *(int *)ID;
@@ -68,7 +68,7 @@ int *receive(void * ID)
 }
 int main(int argc, char *argv[])
 {
-	
+
 	struct mq_attr mqstat;
 	int oflag = O_CREAT|O_NONBLOCK|O_RDWR;
 	pthread_t sed[Max_Threads], rev[Max_Threads];
@@ -91,24 +91,23 @@ int main(int argc, char *argv[])
 	mqstat.mq_maxmsg = MAX_MSG;
 	mqstat.mq_msgsize = MSG_SIZE;
 	mqstat.mq_flags = 0;
-  
+
   	if ((mq = mq_open(MQ_NAME,oflag,0777, &mqstat)) == -1) {
 		printf("mq_open doesn't return success\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	for (i = 0; i < num; i++) {
 		ThreadID[i] = i;
 		pthread_create(&sed[i], NULL, (void *)send, (void *)&ThreadID[i]);
-       	 	pthread_create(&rev[i], NULL, (void *)receive, (void *)&ThreadID[i]);	
+       	 	pthread_create(&rev[i], NULL, (void *)receive, (void *)&ThreadID[i]);
 	}
 
 	for (i = 0; i < num; i++) {
 		pthread_join(sed[i], NULL);
 		pthread_join(rev[i], NULL);
-	}		
+	}
 	mq_close(mq);
 	mq_unlink(MQ_NAME);
 	return PTS_PASS;
 }
-

@@ -38,14 +38,12 @@
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
 
-
 /* NOTE:  This case test the behavior of sgetmask
 # Sometime the returned "Oops"in this case don't mean anything for
 # correct or error, we check the result between different kernel and
 # try to find if there exist different returned code in different kernel
 #
 */
-
 
 #include <stdio.h>
 #include <signal.h>
@@ -60,7 +58,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -87,11 +85,10 @@ int  TST_TOTAL = 2;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
+
         TEST_CLEANUP;
         tst_rmdir();
 
-        /* Exit with appropriate return code. */
         tst_exit();
 }
 
@@ -124,7 +121,7 @@ int main(int ac, char **av) {
         int sig;
 	int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
-	
+
         /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 <<<<<<< HEAD
@@ -137,7 +134,6 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -156,8 +152,7 @@ int main(int ac, char **av) {
 				}
                 	}
 		}
-        }	
+        }
 	cleanup();
         tst_exit();
 }
-

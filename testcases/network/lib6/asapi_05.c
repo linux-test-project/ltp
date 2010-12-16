@@ -56,7 +56,6 @@ void setup(void), cleanup(void);
 
 void icmp6_et(void), icmp6_ft(void);
 
-
 int
 main(int argc, char *argv[])
 {
@@ -77,8 +76,8 @@ main(int argc, char *argv[])
 	}
 
 	cleanup();
-	
-	return 0;
+
+	tst_exit();
 }
 
 enum ttype { EXISTS, ALIAS, VALUE, DEFINED };
@@ -176,7 +175,6 @@ icmp6_et(void)
 	}
 }
 
-
 void
 setup(void)
 {
@@ -187,7 +185,7 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
+
 }
 
 /*

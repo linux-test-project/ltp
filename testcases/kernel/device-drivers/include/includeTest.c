@@ -55,7 +55,6 @@
 #include <asm/uaccess.h>
 #include "includeTest.h"
 
-
 MODULE_AUTHOR("David Cruz <cruzd@us.ibm.com>");
 MODULE_DESCRIPTION(TEST_DRIVER_NAME);
 MODULE_LICENSE("GPL");
@@ -117,7 +116,6 @@ static int test_ioctl(struct inode *ino, struct file *f, unsigned int cmd, unsig
         //0 by default
         return rc;
 }
-
 
 static void option1(void) {
         printk("Module option 1 chosen\n");
@@ -181,7 +179,7 @@ static int test_init_module(void) {
 }
 
 static void test_exit_module(void) {
-       
+
 	int rc;
 
         pm_unregister(ltp_pm_dev);
@@ -189,7 +187,7 @@ static void test_exit_module(void) {
         del_gendisk(gd_ptr);
 
 	rc = unregister_blkdev(INCLUDEMAJOR, DEVICE_NAME);
-	
+
         if (rc < 0) {
                 printk("unregister failed %d\n",rc);
         }
@@ -223,7 +221,6 @@ static void test_vga(void) {
         printk("finished vga test\n");
 }
 
-
 static void test_nfsfh(void) {
 	dev_t dev=0;
 	u32 unfs=0, u32ptr[2];
@@ -248,13 +245,12 @@ static void test_lockd(void) {
 	struct nlm_file file;
 	struct sockaddr_in sin1, sin2;
 	struct file_lock fl1, fl2;
-		
+
 	nlm_compare_locks(&fl1, &fl2);
 	nlm_cmp_addr(&sin1,&sin2);
 	nlmsvc_file_inode(&file);
 	printk("finished lockd test\n");
 }
-
 
 static void test_sunrpc_cache(void) {
 	struct cache_head head;

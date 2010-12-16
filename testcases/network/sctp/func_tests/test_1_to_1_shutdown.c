@@ -71,13 +71,13 @@ main(int argc, char *argv[])
 	char msgbuf[100];
 	int pf_class;
 
-        /* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered.  
-	 */ 
-	setvbuf(stdout, NULL, _IONBF, 0); 
-	setvbuf(stderr, NULL, _IONBF, 0); 
+        /* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
-	/* Initialize the server and client addresses. */ 
+	/* Initialize the server and client addresses. */
 	pf_class = PF_INET;
 
 	lstn_addr.sin_family = AF_INET;
@@ -100,7 +100,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		addrlen = sizeof(acpt_addr);
 		acpt_sk[i] = test_accept(lstn_sk, (struct sockaddr *)&acpt_addr,
-					 &addrlen); 
+					 &addrlen);
 	}
 
 	/*shutdown() TEST1: Bad socket descriptor, EBADF Expected error*/
@@ -129,7 +129,7 @@ main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "shutdown with SHUT_WR flag "
 			 "error:%d, errno:%d", error, errno);
 
-	/* Reading on a socket that has received SHUTDOWN should return 0 
+	/* Reading on a socket that has received SHUTDOWN should return 0
 	 * indicating EOF.
 	 */
 	error = recv(acpt_sk[0], msgbuf, 100, 0);
@@ -139,7 +139,7 @@ main(int argc, char *argv[])
 
 	/* Read the pending message on clnt_sk[0] that was received before
 	 * SHUTDOWN call.
-	 */  
+	 */
 	test_recv(clnt_sk[0], msgbuf, 100, 0);
 
 	/* No more messages and the association is SHUTDOWN, should fail. */
@@ -172,7 +172,7 @@ main(int argc, char *argv[])
 	/* Send a message to the SHUT_RD socket. */
 	test_send(acpt_sk[1], message, strlen(message), 0);
 
-	/* We should not receive the message as the socket is SHUT_RD */ 
+	/* We should not receive the message as the socket is SHUT_RD */
 	error = recv(clnt_sk[1], msgbuf, 100, 0);
 	if ((error != 0) || (errno != 0))
 		tst_brkm(TBROK, NULL, "recv on a SHUT_RD socket "
@@ -180,7 +180,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "shutdown() with SHUT_RD flag - SUCCESS");
 
-	/*shutdown() TEST5: shutdown with SHUT_RDWR flag to disable new 
+	/*shutdown() TEST5: shutdown with SHUT_RDWR flag to disable new
 	receive/send*/
         test_shutdown(clnt_sk[2], SHUT_RDWR);
 
@@ -209,9 +209,8 @@ main(int argc, char *argv[])
 	for (i = 0; i < MAX_CLIENTS; i++)
 		close(acpt_sk[i]);
 
-
 	close(lstn_sk);
 	close(sk);
 
-	return 0;
+	tst_exit();
 }

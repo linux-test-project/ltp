@@ -96,7 +96,6 @@ int parse_args(int c, char *v)
 	return handled;
 }
 
-
 struct periodic_arg {
 	int period;
 	int iterations;

@@ -1,12 +1,12 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  *
  *  If pid=0, then clock_getcpuclockid() will return the CPU-time clock of
  *  the calling process.
- * 
+ *
  */
 
 #define _XOPEN_SOURCE 600
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
         printf("_POSIX_CPUTIME unsupported\n");
         return PTS_UNSUPPORTED;
 #else
-	unsigned long time_to_set;	
+	unsigned long time_to_set;
 	clockid_t clockid_1, clockid_2;
 
 	if (sysconf(_SC_CPUTIME) == -1) {

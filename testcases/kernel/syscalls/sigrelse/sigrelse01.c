@@ -97,7 +97,7 @@
  *	system call times are printed.
  *
 ***************************************************************************/
-
+
 #include <errno.h>
 #include <signal.h>
 #include <unistd.h>
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 	if ((msg =
 	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	}
 #ifdef UCLINUX
 	maybe_run_child(&child, "dd", &pipe_fd[1], &pipe_fd2[0]);
@@ -213,7 +213,6 @@ int main(int argc, char **argv)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
@@ -236,14 +235,13 @@ int main(int argc, char **argv)
 #endif
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	return 0;
 }				/* end main */
 
 /****************************************************************************
@@ -526,7 +524,7 @@ static void child()
 	exit(exit_val);
 
 }				/* end of child */
-
+
 /*****************************************************************************
  *  setup_sigs() : set child up to catch all signals.  If there is
  *       trouble, write message in mesg and return -1, else return 0.
@@ -789,10 +787,9 @@ int sig;
  ***************************************************************/
 void setup()
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* create a temporary directory and go to it */
@@ -827,7 +824,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed: errno=%d",
 			 errno);
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -841,10 +838,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove temporary directory and all files in it. */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}				/* End cleanup() */
+}

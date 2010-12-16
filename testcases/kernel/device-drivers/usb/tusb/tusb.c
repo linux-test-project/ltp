@@ -90,7 +90,6 @@ static int tusb_close(struct inode *ino, struct file *f) {
 	return 0;
 }
 
-
 /*
  * usb stuff
  */
@@ -115,7 +114,6 @@ static int tusb_probe(struct usb_interface *intf,  const struct usb_device_id *i
         return 0;
 
 }
-
 
 static struct usb_device_id tusb_id_table [] = {
 	{
@@ -184,7 +182,7 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
 
 	printk("tusb: Entered the ioctl call\n");
 
-	rc = 0;	
+	rc = 0;
 	inparms = NULL;
 	outparms = NULL;
 
@@ -265,7 +263,6 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
 	return rc;
 }
 
-
 /*
  * test_find_usbdev
  *	using our driver, attempt to find
@@ -316,7 +313,6 @@ static int test_find_usbdev() {
 	return 0;
 }
 
-
 /*
  * test_find_hcd
  *	make call to pci_find_class with correct flags
@@ -336,12 +332,12 @@ static int test_find_hcd() {
 	if (pdev) {
 		printk("tusb: WOOT! Found a usb host controller!\n");
 		printk("tusb: Slot number: %d\n", pdev->devfn);
-	
+
 		memcpy(ltp_usb.pdev, pdev, sizeof(struct pci_dev));
 
 		if (pdev->driver->id_table)
 			printk("tusb: id_table exists\n");
-	
+
 		return 0;
 	}
 	else {
@@ -354,7 +350,7 @@ static int test_find_hcd() {
 #endif
 
 }
-	
+
 /*
  * test_hcd_probe
  * 	make call to usb_hcd_pci_probe which will
@@ -421,14 +417,14 @@ static int test_hcd_remove() {
 		pdev = ltp_usb.pdev;
 		hcd = pci_get_drvdata(pdev);
 	}
-	
+
 	if (!hdrv->stop) {
 		printk("tusb: stop function not found\n");
 		return 1;
 	}
 	else
 		hcd->driver->stop(hcd);
-	
+
 	return 0;
 }
 
@@ -482,9 +478,7 @@ static int test_hcd_resume() {
                 printk("tusb: Resume success\n");
 
         return rc;
-}	
-
-
+}
 
 static int tusb_init_module(void) {
 	int rc;
@@ -517,11 +511,5 @@ static void tusb_exit_module(void) {
 	usb_deregister(&test_usb_driver);
 }
 
-
-
 module_init(tusb_init_module)
 module_exit(tusb_exit_module)
-
-
-
-

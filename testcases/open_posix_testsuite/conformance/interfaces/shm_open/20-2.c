@@ -14,7 +14,7 @@
  */
 
 /* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base 
+   avoid warning if the implementation does not program ftruncate as a base
    interface */
 #define _XOPEN_SOURCE 600
 
@@ -31,10 +31,10 @@
 
 int main() {
 	int fd, result;
-	
+
 	result = shm_unlink(SHM_NAME);
-	if (result != 0 && errno != ENOENT) { 
-		/* The shared memory object exist and shm_unlink can not 
+	if (result != 0 && errno != ENOENT) {
+		/* The shared memory object exist and shm_unlink can not
 		   remove it. */
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;

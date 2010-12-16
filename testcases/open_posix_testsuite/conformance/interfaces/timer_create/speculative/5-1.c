@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that the following scenarios are identical:
@@ -16,7 +16,7 @@
  * of the default signal.
  *
  * Steps:
- * 1.  Set up sigaction structure to catch signal SIGALRM (default signal) on 
+ * 1.  Set up sigaction structure to catch signal SIGALRM (default signal) on
  *     timer expiration
  * 2.  Create timer using timer_create().
  * 3.  Activate timer using timer_settime() and then sleep.
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 	// of time, but nanosleep() was interrupted.
 	if (abs(tsleft.tv_sec-SLEEPDELTA) > ACCEPTABLEDELTA) {
 		printf("Timer did not last for correct amount of time\n");
-		printf("timer: %d != correct %d\n", 
+		printf("timer: %d != correct %d\n",
 				(int) ts.tv_sec- (int) tsleft.tv_sec,
 				TIMERSEC);
 		return PTS_FAIL;

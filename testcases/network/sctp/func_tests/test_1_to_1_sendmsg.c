@@ -17,7 +17,7 @@
  *
  * TEST11: Sending data from server socket to client socket
  * TEST12: Sending data from client socket to server socket
- * TEST13: Sending data from unconnected client to server 
+ * TEST13: Sending data from unconnected client to server
  * TEST14: Sending a message on SHUT_RD socket
  *
  * The SCTP reference implementation is free software;
@@ -119,7 +119,7 @@ main(int argc, char *argv[])
         test_listen(lstn_sk, 10);
 
 	len = sizeof(struct sockaddr_in);
-	
+
 	test_connect(sk, (struct sockaddr *) &conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
@@ -157,7 +157,7 @@ main(int argc, char *argv[])
 			 "descriptor count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "sendmsg() with a bad socket descriptor - EBADF");
-	
+
 	/*sendmsg () TEST2: Invalid socket, ENOTSOCK Expected error*/
 	count = sendmsg(0, &outmessage, flag);
 	if (count != -1 || errno != ENOTSOCK)
@@ -182,7 +182,7 @@ main(int argc, char *argv[])
 			 "pointer count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "sendmsg() with invalid iovec ptr - EFAULT");
-	
+
 	outmessage.msg_iov = &out_iov;
 
 	/*sendmsg () TEST5: Invalid iovec count EINVAL, Expected error*/
@@ -195,7 +195,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sendmsg() with invalid iovec length - EINVAL");
 
 	outmessage.msg_iovlen = 1;
-	
+
 	/*sendmsg () TEST6: Invalid msghdr pointer EFAULT, Expected error*/
 	count = sendmsg(sk, (struct msghdr *)-1, flag);
 	if (count != -1 || errno != EFAULT)
@@ -231,10 +231,10 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "sendmsg() with SCTP_ABORT flag - EINVAL");
 
-	sinfo->sinfo_flags = 0; 
-	
+	sinfo->sinfo_flags = 0;
+
 	test_connect(sk1, (struct sockaddr *) &lstn_addr, len);
-		 
+
 	test_sendmsg(sk1, &outmessage, flag, strlen(message)+1);
 
 	close(sk1);
@@ -272,7 +272,7 @@ main(int argc, char *argv[])
 
 	len = sizeof(struct sockaddr_in);
 	flag = MSG_NOSIGNAL;
-	
+
 	test_connect(sk, (struct sockaddr *) &conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
@@ -344,7 +344,7 @@ main(int argc, char *argv[])
 	close(acpt_sk);
 	sk1 = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	/*sendmsg() TEST13: Sending data from unconnected client socket to 
+	/*sendmsg() TEST13: Sending data from unconnected client socket to
 	server socket*/
 	count = sendmsg(sk1, &outmessage, flag);
 	if (count != msg_count)
@@ -374,5 +374,5 @@ main(int argc, char *argv[])
 	close(sk1);
 	close(lstn_sk);
 	close(acpt_sk);
-	return 0;
+	tst_exit();
 }

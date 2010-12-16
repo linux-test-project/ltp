@@ -1,13 +1,13 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_cond_destroy()
- *   shall destroy the condition variable referenced by 'cond'; 
- *   the condition variable object in effect becomes uninitialized. 
+ *   shall destroy the condition variable referenced by 'cond';
+ *   the condition variable object in effect becomes uninitialized.
  *
  */
 
@@ -28,7 +28,7 @@ int main()
 		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Initialize cond1 with the default condition variable attribute */
 	if ((rc=pthread_cond_init(&cond1,&condattr)) != 0) {
 		fprintf(stderr,"Fail to initialize cond1, rc=%d\n",rc);

@@ -52,7 +52,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern int Tst_count;
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
@@ -79,11 +79,10 @@ int  TST_TOTAL = 3;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
+
         TEST_CLEANUP;
         tst_rmdir();
 
-        /* Exit with appropriate return code. */
         tst_exit();
 }
 
@@ -112,7 +111,6 @@ void setup() {
         tst_tmpdir();
 }
 
-
 void display_status(siginfo_t *infop)
 {
         tst_resm(TINFO,"Process %d terminated:", infop->si_pid);
@@ -128,7 +126,7 @@ int main(int ac, char **av) {
         siginfo_t infop;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
-	
+
         /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 <<<<<<< HEAD
@@ -141,11 +139,10 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     
+
 	TEST(fork());
 	if (TEST_RETURN == 0) {
                 exit(123);
@@ -155,7 +152,7 @@ int main(int ac, char **av) {
 		if (TEST_RETURN == -1) {
                         tst_resm(TFAIL|TTERRNO, "waitid(getpid()) failed");
                         tst_exit();
-		}else 
+		}else
 		    display_status(&infop); //CLD_EXITED = 1
         }
 
@@ -183,12 +180,11 @@ int main(int ac, char **av) {
 	if (TEST_RETURN == -1) {
                 tst_resm(TFAIL|TTERRNO, "waitid(0) failed");
                 tst_exit();
-        } else 
+        } else
 		display_status(&infop); //CLD_KILLED = 2 ; SIGHUP = 1
                 }
-        }	
+        }
         tst_resm(TPASS, "waitid(): system call passed");
 	cleanup();
         tst_exit();
 }
-

@@ -115,13 +115,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* Perform global setup for test */
 		setup();
 
 		/*
@@ -170,16 +167,11 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "call succeeded");
 		}
 
-		/* Call cleanup() to undo setup done for the test. */
 		cleanup();
 
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-	tst_exit();
-}				/* End main */
+}
 
 /*
  * void
@@ -196,10 +188,8 @@ void setup()
 {
 	int pagesz;		/* system's page size */
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get the system page size */
@@ -214,7 +204,6 @@ void setup()
 	/* Get the New size of virtual memory block after resize */
 	newsize = (memsize * 2);
 
-	/* Make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Creat a temporary file used for mapping */
@@ -288,6 +277,5 @@ void cleanup()
 			 TEMPFILE, errno, strerror(errno));
 	}
 
-	/* Remove the temporary directory and files in it. */
 	tst_rmdir();
 }

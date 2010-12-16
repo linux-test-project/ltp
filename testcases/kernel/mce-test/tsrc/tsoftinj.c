@@ -1,7 +1,7 @@
 /*
  * Test soft page offline for process pages using madvise injector.
  * Requires special injection support in the kernel.
- * 
+ *
  * Copyright 2009 Intel Corporation
  *
  * tsoftinj is free software; you can redistribute it and/or
@@ -15,8 +15,8 @@
  * General Public License for more details.
  *
  * You should find a copy of v2 of the GNU General Public License somewhere
- * on your Linux system; if not, write to the Free Software Foundation, 
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ * on your Linux system; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * Author: Andi Kleen
  */
@@ -56,7 +56,7 @@ unsigned meminfo(char *fmt)
 	size_t linelen = 0;
 	unsigned val = 0;
 	while (getline(&line, &linelen, f) > 0) {
-		if (sscanf(line, fmt, &val) == 1) { 
+		if (sscanf(line, fmt, &val) == 1) {
 			found = 1;
 			break;
 		}
@@ -97,7 +97,7 @@ void disk_backed(char *name, int flags)
 	int fd = open(fn, O_RDWR|O_CREAT|O_TRUNC, 0644);
 	if (fd < 0) err("open tmpfile");
 	write(fd, empty, sizeof empty);
-	char *p = checked_mmap(NULL, PS, PROT_READ|PROT_WRITE, 
+	char *p = checked_mmap(NULL, PS, PROT_READ|PROT_WRITE,
 			MAP_SHARED|flags, fd, 0);
 	*(volatile int *)p = 1;
 	offline(ndesc(fn, "disk backed", name), p);
@@ -107,7 +107,7 @@ void disk_backed(char *name, int flags)
 void anonymous(char *name, int flags)
 {
 	char buf[100];
-	char *p = checked_mmap(NULL, PS, PROT_READ|PROT_WRITE, 
+	char *p = checked_mmap(NULL, PS, PROT_READ|PROT_WRITE,
 			MAP_PRIVATE|MAP_ANONYMOUS|flags, 0, 0);
 	printf("anonymous\n");
 	*(volatile int *)p = 1;
@@ -163,7 +163,7 @@ void check(unsigned *count, char *name, unsigned expected)
 	if (diff != expected) {
 		printf("%s: expected %d corrupted pages, got %u\n", name,
 			expected,
-			diff);	
+			diff);
 		if (diff < expected)
 			exitcode = 1;
 	}

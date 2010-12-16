@@ -98,5 +98,5 @@ int main(int argc, char *argv[])
 
 	printf("Prio inheritance support present\n");
 
-	return 0;
+	tst_exit();
 }

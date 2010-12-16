@@ -8,7 +8,7 @@
 
 /*
  * mq_timedreceive test plan:
- * If message can be removed from message queue immediately, the validity 
+ * If message can be removed from message queue immediately, the validity
  * of timout need not be checked.
  *
  * This is a speculative test because if abs_timeout _is_ checked for
@@ -84,4 +84,3 @@ int main()
         printf("Test PASSED\n");
         return PTS_PASS;
 }
-

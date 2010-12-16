@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_cond_signal()
@@ -38,7 +38,7 @@ void alarm_handler(int signo)
 	int i;
 	printf("Error: failed to wakeup all threads\n");
 	for (i=0; i<THREAD_NUM; i++) {	/* cancel threads */
-	    	pthread_cancel(thread[i]); 
+	    	pthread_cancel(thread[i]);
 	}
 
 	exit(PTS_UNRESOLVED);
@@ -48,14 +48,14 @@ void *thr_func(void *arg)
 {
 	int rc;
 	pthread_t self = pthread_self();
-	
+
 	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"[Thread 0x%p] failed to acquire the mutex\n", (void*)self);
 		exit(PTS_UNRESOLVED);
 	}
 	start_num ++;
 	fprintf(stderr,"[Thread 0x%p] started and locked the mutex\n", (void*)self);
-	
+
 	fprintf(stderr,"[Thread 0x%p] is waiting for the cond\n", (void*)self);
 	rc = pthread_cond_wait(&td.cond, &td.mutex);
 	if (rc != 0) {
@@ -96,9 +96,9 @@ int main()
 	while (start_num < THREAD_NUM)	/* waiting for all threads started */
 		usleep(100);
 
-	/* Acquire the mutex to make sure that all waiters are currently  
+	/* Acquire the mutex to make sure that all waiters are currently
 	   blocked on pthread_cond_wait */
-	if (pthread_mutex_lock(&td.mutex) != 0) {	
+	if (pthread_mutex_lock(&td.mutex) != 0) {
 		fprintf(stderr,"Main: Fail to acquire mutex\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -106,8 +106,8 @@ int main()
 		fprintf(stderr,"Main: Fail to release mutex\n");
 		exit(PTS_UNRESOLVED);
 	}
-	
-	/* signal once and check if at least one waiter is wakened */ 
+
+	/* signal once and check if at least one waiter is wakened */
 	fprintf(stderr,"[Main thread] signals a condition\n");
 	rc = pthread_cond_signal(&td.cond);
 	if (rc != 0) {
@@ -120,10 +120,10 @@ int main()
                 printf("Test FAILED\n");
 		/* Cancel the threads */
 		for (i=0; i<THREAD_NUM; i++) {	/* cancel threads */
-	    		pthread_cancel(thread[i]); 
+	    		pthread_cancel(thread[i]);
 		}
                 exit(PTS_FAIL);
-	}	
+	}
 	fprintf(stderr,"[Main thread] %d waiters were wakened\n", waken_num);
 
 	/* Setup alarm handler */
@@ -143,14 +143,14 @@ int main()
 			exit(PTS_UNRESOLVED);
 		}
 		usleep(100);
-	}		
-	
+	}
+
 	if (i >= THREAD_NUM) {
 		fprintf(stderr,"[Main thread] had to signal the condition %i times\n", i+1);
 		fprintf(stderr,"[Main thread] to wake up %i threads\n. Test FAILED.\n", THREAD_NUM);
 		exit(PTS_FAIL);
 	}
-	
+
 	/* join all secondary threads */
 	for (i=0; i<THREAD_NUM; i++) {
 	    	if (pthread_join(thread[i], NULL) != 0) {

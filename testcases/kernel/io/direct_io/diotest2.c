@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * NAME
  *      diotest2.c
@@ -205,8 +204,6 @@ main(int argc, char *argv[])
 	unlink(filename);
 	total++;
 
-
-
 	/* Testblock-2: Write with Direct IO, Read without */
 	action = WRITE_DIRECT;
 	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
@@ -259,7 +256,7 @@ main(int argc, char *argv[])
 			total, iter);
 	}
 	cleanup();
-	return 0;
+
 }
 
 static void setup(void)
@@ -286,7 +283,6 @@ static void cleanup(void)
 
 	tst_rmdir();
 
-	tst_exit();
 }
 
 #else /* O_DIRECT */

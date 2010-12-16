@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+
 	 }
 #ifdef UCLINUX
 	argv0 = argv[0];
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_resm(TFAIL, "Fork Failed, may be OK under stress");
-			tst_exit();
+
 		} else if (pid == 0) {
 
 			/*
@@ -325,8 +325,6 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }
 
 void inthandlr()

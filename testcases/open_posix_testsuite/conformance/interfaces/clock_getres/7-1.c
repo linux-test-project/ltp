@@ -1,7 +1,7 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  * author: adam li
  * Test that clock_getres() returns the resolution of clock_id in res.
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
 	printf("Test FAILED\n");
 	return PTS_FAIL;
-#else	
+#else
 	printf("_POSIX_CPUTIME not supported\n");
 	return PTS_UNSUPPORTED;
 #endif

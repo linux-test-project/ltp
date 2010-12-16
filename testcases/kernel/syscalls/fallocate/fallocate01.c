@@ -112,7 +112,7 @@ void populate_files(int fd);
 void runtest(int, int, loff_t);
 
 /* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines */
+extern int Tst_count;
 /* Global Variables */
 char *TCID = "fallocate01";	/* test program identifier */
 char fname_mode1[255], fname_mode2[255];	/* Files used for testing */
@@ -140,11 +140,11 @@ extern void cleanup()
 	//remove tem directory and  all the files in it
 	tst_rmdir();
 	//Exit with appropriate return code
-	tst_exit();
+
 }
 
 /*****************************************************************************
- * Performs all one time setup for this test. This function is  
+ * Performs all one time setup for this test. This function is
  * used to create temporary dirs and temporary files
  * that may be used in the course of this test
  ******************************************************************************/
@@ -236,7 +236,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping. */
+
 		Tst_count = 0;
 
 		for (mode = DEFAULT; mode <= FALLOC_FL_KEEP_SIZE; mode++) {
@@ -256,7 +256,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	return 0;
+	tst_exit();
 }
 
 /*****************************************************************************

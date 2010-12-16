@@ -38,7 +38,7 @@
 
 /* This is a Functional Test to verify autoclose functionality and the
  * socket option SCTP_AUTOCLOSE that can be used to specify the duration in
- * which an idle association is automatically closed. 
+ * which an idle association is automatically closed.
  */
 
 #include <stdio.h>
@@ -69,10 +69,10 @@ main(int argc, char *argv[])
 	char *message = "hello, world!\n";
 	uint32_t autoclose;
 
-	/* Rather than fflush() throughout the code, set stdout to 
-	 * be unbuffered. 
+	/* Rather than fflush() throughout the code, set stdout to
+	 * be unbuffered.
 	 */
-	setvbuf(stdout, NULL, _IONBF, 0); 
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	loop1.v4.sin_family = AF_INET;
 	loop1.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
@@ -97,15 +97,15 @@ main(int argc, char *argv[])
 	/* Mark sk2 as being able to accept new associations.  */
 	test_listen(sk2, 1);
 
-	/* Set the autoclose duration for the associations created on sk1 
-	 * and sk2 to be 5 seconds.  
-	 */ 
+	/* Set the autoclose duration for the associations created on sk1
+	 * and sk2 to be 5 seconds.
+	 */
 	autoclose = 5;
 	test_setsockopt(sk1, SCTP_AUTOCLOSE, &autoclose, sizeof(autoclose));
 	test_setsockopt(sk2, SCTP_AUTOCLOSE, &autoclose, sizeof(autoclose));
 
 	/* Send the first message.  This will create the association.  */
-	memset(&outmessage, 0, sizeof(outmessage));	
+	memset(&outmessage, 0, sizeof(outmessage));
 	outmessage.msg_name = &loop2;
 	outmessage.msg_namelen = sizeof(loop2);
 	outmessage.msg_iov = &out_iov;
@@ -116,7 +116,7 @@ main(int argc, char *argv[])
 
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-        memset(&inmessage, 0, sizeof(inmessage));	
+        memset(&inmessage, 0, sizeof(inmessage));
 	iov.iov_base = big_buffer;
 	iov.iov_len = REALLY_BIG;
 	inmessage.msg_iov = &iov;
@@ -127,13 +127,13 @@ main(int argc, char *argv[])
 	error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 
 	/* Get the communication up message on sk1.  */
 	error = test_recvmsg(sk1, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);	
+				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 
 	/* Get the first message which was sent.  */
 	error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
@@ -147,13 +147,13 @@ main(int argc, char *argv[])
 	error = test_recvmsg(sk1, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);	
-				
+				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);
+
 	/* Get the shutdown complete notification from sk2. */
 	error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
-				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);	
+				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);
 
 	tst_resm(TPASS, "Autoclose of associations");
 
@@ -162,5 +162,5 @@ main(int argc, char *argv[])
 	close(sk2);
 
 	/* Indicate successful completion.  */
-	return 0;
+	tst_exit();
 }

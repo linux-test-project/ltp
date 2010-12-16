@@ -129,7 +129,7 @@ main(int argc, char *argv[])
 	test_listen(lstn_sk, 1);
 
 	len = sizeof(struct sockaddr_in);
-	
+
 	test_connect(clnt_sk, (struct sockaddr *) &conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *) &acpt_addr, &len);
@@ -209,8 +209,8 @@ main(int argc, char *argv[])
 			 "error:%d, errno:%d", error, errno);
 
 	addr = (struct sockaddr_in *)laddrs;
-	if (addr->sin_port != lstn_addr.sin_port || 
-	    addr->sin_family != lstn_addr.sin_family || 
+	if (addr->sin_port != lstn_addr.sin_port ||
+	    addr->sin_family != lstn_addr.sin_family ||
 	    addr->sin_addr.s_addr != lstn_addr.sin_addr.s_addr)
 		tst_brkm(TBROK, NULL, "sctp_getladdrs comparision failed");
 
@@ -220,7 +220,7 @@ main(int argc, char *argv[])
 	if ((sctp_freeladdrs(laddrs)) < 0)
 		tst_brkm(TBROK, NULL, "sctp_freeladdrs "
 			 "error:%d, errno:%d", error, errno);
-		
+
 	tst_resm(TPASS, "sctp_freeladdrs() - SUCCESS");
 
 	/*sctp_getpaddrs() TEST6: Bad socket descriptor, EBADF Expected error*/
@@ -239,7 +239,7 @@ main(int argc, char *argv[])
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_getpaddrs() with invalid socket - ENOTSOCK");
-	
+
 	/*sctp_getpaddrs() TEST8: socket of different protocol
 	EOPNOTSUPP Expected error*/
 	error = sctp_getpaddrs(sk1, 0, &laddrs);
@@ -249,16 +249,16 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "sctp_getpaddrs() with socket of different protocol - "
 		 "EOPNOTSUPP");
-	
+
 	/*sctp_getpaddrs() TEST9: Getting the peer addresses*/
 	error = sctp_getpaddrs(acpt_sk, 0, &paddrs);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "sctp_getpaddrs with valid socket "
 			 "error:%d, errno:%d", error, errno);
-	
+
 	addr = (struct sockaddr_in *)paddrs;
 	if (addr->sin_port != acpt_addr.sin_port ||
-            addr->sin_family != acpt_addr.sin_family || 
+            addr->sin_family != acpt_addr.sin_family ||
             addr->sin_addr.s_addr != acpt_addr.sin_addr.s_addr)
 		tst_brkm(TBROK, NULL, "sctp_getpaddrs comparision failed");
 
@@ -268,10 +268,10 @@ main(int argc, char *argv[])
 	if ((sctp_freepaddrs(paddrs)) < 0)
 		tst_brkm(TBROK, NULL, "sctp_freepaddrs "
 			 "error:%d, errno:%d", error, errno);
-		
+
 	tst_resm(TPASS, "sctp_freepaddrs() - SUCCESS");
 
 	close(clnt_sk);
 
-	return 0;
+	tst_exit();
 }

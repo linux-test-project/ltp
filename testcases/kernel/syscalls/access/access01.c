@@ -170,7 +170,7 @@ int main(int ac, char **av)
 	/***************************************************************
 	 * parse standard options
 	 ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) 
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 >>>>>>> master
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -184,7 +184,6 @@ int main(int ac, char **av)
 	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		for (tc = 0; tc < Ntc; tc++) {
@@ -221,14 +220,14 @@ int main(int ac, char **av)
 			}
 		}
 
-	}			/* End for TEST_LOOPING */
+	}
 
 	/***************************************************************
 	 * cleanup and exit
 	 ***************************************************************/
 	cleanup();
 	tst_exit();
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -238,15 +237,12 @@ void setup()
 	int fd;
 	struct stat stbuf;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	umask(0);		/* reset umask avoid it affects on modes */
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/*
@@ -295,6 +291,5 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove the temp dir */
 	tst_rmdir();
 }

@@ -1,14 +1,14 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_setspecific()
  *
- * shall acssociate a thread-specific value with a key obtained via a previouse call to 
- * pthread_key_create.  Different threads may bind different values to the same key.  
+ * shall acssociate a thread-specific value with a key obtained via a previouse call to
+ * pthread_key_create.  Different threads may bind different values to the same key.
  * Calling pthread_setspecific with a key value not obtiained from pthread_key_create of after
  * the key has been deleted with pthread_key_delete is undefined.
  *
@@ -18,7 +18,7 @@
  * 3.  Create a thread and bind another value to this key
  * 4.  Compare the values bound to the key between the main thread and the newly created thread,
  *     they should be different and pertaining to what each thread set as the value.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -55,15 +55,15 @@ void *a_thread_func()
 
 int main()
 {
-	pthread_t new_th;	
+	pthread_t new_th;
 
-	/* Create the key */	
+	/* Create the key */
 	if (pthread_key_create(&key, NULL) != 0)
 	{
 		printf("Error: pthread_key_create() failed\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* Bind a value for this main thread */
 	if (pthread_setspecific(key, (void *)(KEY_VALUE_1)) != 0)
 	{
@@ -77,7 +77,7 @@ int main()
 		printf("Error: in pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
-			
+
 	/* Wait for thread to end execution */
 	pthread_join(new_th, NULL);
 

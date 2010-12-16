@@ -13,7 +13,7 @@ int main(void)
 	cur = cap_from_text("all=eip");
 	cap_set_proc(cur);
 	cap_free(cur);
-	return 0;
+	tst_exit();
 #else /* libcap */
 	printf("System doesn't support POSIX capabilities.\n");
 	return 1;

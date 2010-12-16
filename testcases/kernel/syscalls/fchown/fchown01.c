@@ -152,7 +152,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/* Call fchown(2) just once */
@@ -175,15 +174,14 @@ int main(int ac, char **av)
 					 TEST_RETURN);
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
 	cleanup();
 
-	return 0;
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -192,10 +190,8 @@ void setup()
 {
 	char fname[1024];
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a tempdir and change to it */
@@ -205,7 +201,7 @@ void setup()
 	sprintf(fname, "./tmpfile.%d", getpid());
 	if ((Fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
 		tst_brkm(TBROK, cleanup, "Unable to open %s for read/write.  Error:%d, %s", fname, errno, strerror(errno));	/* this exits */
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -220,9 +216,6 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* remove temp dir and files */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

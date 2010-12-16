@@ -71,7 +71,6 @@ int num_shms = 0;
 
 int shm_id_arr[MAXIDS];
 
-
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -85,12 +84,11 @@ int main(int ac, char **av)
 	/* The following loop checks looping state if -i option given */
         if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
              tst_brkm(TCONF, NULL, "Not enough available Hugepages");
-        else             
+        else
              huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
 
 	setup2(huge_pages_shm_to_be_allocated);			/* local  setup */
 
-    
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -98,7 +96,7 @@ int main(int ac, char **av)
 		/*
 		 * use the TEST() macro to make the call
 		 */
-	       
+
 		TEST(shmget(IPC_PRIVATE, huge_pages_shm_to_be_allocated, SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW));
 
 		if (TEST_RETURN != -1) {
@@ -118,26 +116,24 @@ int main(int ac, char **av)
 				 "unexpected error - %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			break;
-		}		
+		}
 	}
 
 	cleanup();
 
-	
-	return 0;
+	tst_exit();
 }
 
 /*
  * setup2() - performs all the ONE TIME setup for this test.
  */
 void setup2(unsigned long huge_pages_shm_to_be_allocated) {
-	/* capture signals */
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/*
@@ -187,7 +183,6 @@ cleanup(void)
 		rm_shm(shm_id_arr[i]);
 	}
 
-	/* Remove the temporary directory */
 	tst_rmdir();
 
 	/*
@@ -196,7 +191,4 @@ cleanup(void)
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
-

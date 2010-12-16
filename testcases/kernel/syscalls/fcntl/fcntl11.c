@@ -87,11 +87,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 /*
@@ -104,13 +101,11 @@ void setup()
 	char template[PATH_MAX];
 	struct sigaction act;
 
-	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	tst_tmpdir();
 
 	umask(0);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	pipe(parent_pipe);
@@ -812,5 +807,5 @@ int main(int ac, char **av)
 		close(fd);
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }

@@ -101,11 +101,11 @@ main(int argc, char *argv[])
         test_listen(lstn_sk, 10);
 
 	len = sizeof(struct sockaddr_in);
-	
+
 	test_connect(sk, (struct sockaddr *) &conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
-	
+
 	msg_count = (strlen(message) + 1);
 
 	flag = MSG_NOSIGNAL;
@@ -162,7 +162,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "recvfrom() on a socket that has received shutdown - "
 		 "EOF");
 
-	/*recvfrom () TEST6:reading the pending message on socket that sent 
+	/*recvfrom () TEST6:reading the pending message on socket that sent
 	SHUTDOWN*/
 	count = recvfrom(sk, message_rcv, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
@@ -189,6 +189,6 @@ main(int argc, char *argv[])
 	close(sk);
 	close(lstn_sk);
 	close(acpt_sk);
-	return 0;
-	
+	tst_exit();
+
 }

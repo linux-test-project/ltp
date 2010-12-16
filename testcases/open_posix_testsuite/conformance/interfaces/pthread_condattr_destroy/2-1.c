@@ -1,28 +1,27 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_condattr_destroy()
  *   A destroyed 'attr' attributes object can be reinitialized using
- *   pthread_condattr_init(); the results of otherwise referencing the 
+ *   pthread_condattr_init(); the results of otherwise referencing the
  *   object after it has been destroyed are undefined.
- * 
+ *
  * Steps:
  * 1.  Initialize a pthread_condattr_t object using pthread_condattr_init()
  * 2.  Destroy that initialized attribute using pthread_condattr_destroy()
  * 3.  Initialize the pthread_condattr_t object again. This should not result
  *     in any error.
- * 
+ *
  */
 
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-
 
 int main()
 {
@@ -54,5 +53,3 @@ int main()
 		return PTS_PASS;
 	}
 }
-
-

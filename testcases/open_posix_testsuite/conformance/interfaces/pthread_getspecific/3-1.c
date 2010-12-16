@@ -1,8 +1,8 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that pthread_getspecific()
@@ -14,7 +14,7 @@
  * Steps:
  * 1.  Create pthread_key_t object and do no specify a key accociated with this key
  * 2.  Call pthread_getspecific() and check that the value returns NULL.
- * 
+ *
  */
 
 #include <pthread.h>
@@ -40,13 +40,13 @@ int main()
 		printf("Test FAILED: Did not return correct value, expected NULL, but got %ld\n", (long)rc);
 		return PTS_FAIL;
 	}
-		
+
 	if (pthread_key_delete(key) != 0)
 	{
 		printf("Error: pthread_key_delete() failed\n");
 		return PTS_UNRESOLVED;
 	}
-		
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }

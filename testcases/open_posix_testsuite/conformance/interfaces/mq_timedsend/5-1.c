@@ -7,7 +7,7 @@
  */
 
 /*
- * Test that if the message queue is full and O_NONBLOCK is not set, 
+ * Test that if the message queue is full and O_NONBLOCK is not set,
  * mq_timedsend() will block until it can place the message in the queue.
  *
  * Test by sending messages in a child process until the message queue is full.
@@ -76,7 +76,7 @@ int main()
 		struct timespec ts;
 
 		/* set up timeout to be as long as possible */
-		ts.tv_sec=INT32_MAX; 
+		ts.tv_sec=INT32_MAX;
 		ts.tv_nsec=0;
 
 		sleep(1);  // give parent time to set up handler
@@ -139,4 +139,3 @@ int main()
 
 	return PTS_UNRESOLVED;
 }
-

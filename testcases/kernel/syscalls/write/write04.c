@@ -221,7 +221,7 @@ void alarm_handler()
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
@@ -254,6 +254,4 @@ void cleanup()
 	unlink(fifo);
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
  }

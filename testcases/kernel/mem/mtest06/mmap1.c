@@ -133,8 +133,6 @@
 						usage(prog); \
                             } while (0)
 
-
-
 int 	   verbose_print = FALSE;/* when called with -v print more info       */
 caddr_t    *map_address;	/* address of the file mapped.	              */
 sigjmp_buf jmpbuf;		/* argument to sigsetjmp and siglongjmp       */
@@ -183,7 +181,6 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     }
 }
 
-
 /******************************************************************************/
 /*									      */
 /* Function:	set_timer						      */
@@ -213,7 +210,6 @@ set_timer(double run_time)		/* period for which test is intended to run   */
 	exit(-1);
     }
 }
-
 
 /******************************************************************************/
 /*									      */
@@ -264,11 +260,10 @@ mkfile(int size	/* size of the temp file that needs to be created.    */ )
             perror("mkfile(): fsync()");
 	    return -1;
         }
-       
+
         return fd;
    }
 }
-
 
 /******************************************************************************/
 /*									      */
@@ -312,14 +307,14 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
             exit_val = MWU_FAIL;
             pthread_exit((void *)exit_val);
         }
-       
+
         if (verbose_print)
             tst_resm(TINFO, "map address = %p", map_address);
 
 	prtln();
 
         memset(map_address, 'a', mwuargs[1]);
-        
+
         if (verbose_print)
             tst_resm(TINFO, "[%d] times done: of total [%d] iterations, "
 			"map_write_unmap():memset() content of memory = %s",
@@ -335,7 +330,6 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
     exit_val = M_SUCCESS;
     pthread_exit((void *)exit_val);
 }
-
 
 /******************************************************************************/
 /*									      */
@@ -373,7 +367,7 @@ read_mem(void *args)		/* number of reads performed		      */
 	    tst_resm(TINFO,
 	        "read_mem() in while loop  %d times to go %ld times",
 		rd_index, rmargs[2]);
-       
+
         if (setjmp(jmpbuf) == 1)
         {
             if (verbose_print)
@@ -389,16 +383,15 @@ read_mem(void *args)		/* number of reads performed		      */
             if (strncmp((char *)map_address, "a", 1) != 0)
             {
                 exit_val = -1;
-		pthread_exit((void *)exit_val);   
+		pthread_exit((void *)exit_val);
             }
             usleep(1);
-	}       
-           
+	}
+
     }
     exit_val = M_SUCCESS;
     pthread_exit((void *)exit_val);
 }
-
 
 /******************************************************************************/
 /*									      */
@@ -427,7 +420,6 @@ usage(char *progname)		/* name of this program			      */
 			    progname);
     exit(-1);
 }
-
 
 /******************************************************************************/
 /*									      */
@@ -464,7 +456,7 @@ main(int  argc,		/* number of input parameters.			      */
     long         chld_args[3];	/* arguments to funcs execed by child process */
     extern  char *optarg;	/* arguments passed to each option	      */
     struct sigaction sigptr;	/* set up signal, for interval timer          */
-   
+
     static struct signal_info
     {
         int  signum;    /* signal number that has to be handled               */
@@ -594,7 +586,7 @@ main(int  argc,		/* number of input parameters.			      */
             tst_resm(TINFO, "created thread[%ld]", thid[1]);
         }
         sched_yield();
-       
+
         for (thrd_ndx = 0; thrd_ndx < 2; thrd_ndx++)
         {
             if (pthread_join(thid[thrd_ndx], (void *)&status[thrd_ndx]))

@@ -18,7 +18,6 @@
  *    test passes.  Otherwise, failure.
  */
 
-
 #include <stdio.h>
 #include <unistd.h>
 #include <semaphore.h>
@@ -26,7 +25,6 @@
 #include <signal.h>
 #include <stdlib.h>
 #include "posixtest.h"
-
 
 #define TEST "6-1"
 #define FUNCTION "sem_post"
@@ -40,7 +38,7 @@ void handler(int signo)
 {
 	if (sem_post(gsemp) == -1) {
 		perror(ERROR_PREFIX "sem_post");
-		exit(PTS_UNRESOLVED); 
+		exit(PTS_UNRESOLVED);
 	}
 }
 
@@ -95,4 +93,3 @@ int main() {
 	sem_unlink(semname);
 	return PTS_PASS;
 }
-

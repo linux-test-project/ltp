@@ -112,13 +112,10 @@ int main(int ac, char **av)
 >>>>>>> master
 	}
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* Perform global setup for test */
 		setup();
 
 		/*
@@ -154,24 +151,18 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "call succeeded");
 		}
 
-		/* Call cleanup() to undo setup done for the test. */
 		cleanup();
 
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-	tst_exit();
-
-}				/* End main */
+}
 
 #else
 
 int main()
 {
 	tst_resm(TINFO, "munmap02 test is not available on uClinux");
-	return 0;
+	tst_exit();
 }
 
 #endif /* ifndef UCLINUX */
@@ -186,7 +177,6 @@ int main()
 void setup()
 {
 
-	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* call signal function to trap the signal generated */
@@ -195,7 +185,6 @@ void setup()
 		tst_exit();
 	}
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* Get the system page size */
@@ -211,7 +200,6 @@ void setup()
 	 */
 	map_len = 3 * page_sz;
 
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	/* Creat a temporary file used for mapping */
@@ -285,7 +273,6 @@ void sig_handler()
 	/* Invoke test cleanup function and exit */
 	cleanup();
 
-	/* exit with return code appropriate for results */
 	tst_exit();
 }
 
@@ -323,6 +310,5 @@ void cleanup()
 			 TEMPFILE, errno, strerror(errno));
 	}
 
-	/* Remove the temporary directory and all files in it */
 	tst_rmdir();
 }

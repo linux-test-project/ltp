@@ -127,5 +127,5 @@ int main(int argc, char **argv)
 	close(fd);
 
 	_exit(0);
-	return 0;
+	tst_exit();
 }

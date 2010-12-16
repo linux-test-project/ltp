@@ -14,7 +14,6 @@
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
 
- 
  * This sample test aims to check the following assertion:
  *
  * This function is a cancelation point: when cancelability
@@ -27,10 +26,10 @@
  * -> cancel the thread
  *   -> the cancelation handler will test if the thread owns the mutex.
  */
- 
+
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
- 
+
  /* We need the XSI extention for the mutex attributes */
 #ifndef WITHOUT_XOPEN
  #define _XOPEN_SOURCE	600
@@ -41,33 +40,33 @@
  #include <pthread.h>
  #include <stdarg.h>
  #include <stdio.h>
- #include <stdlib.h> 
+ #include <stdlib.h>
  #include <unistd.h>
 
  #include <errno.h>
  #include <time.h>
  #include <semaphore.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
  #include "testfrmw.h"
  #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);  
+  * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
   * FAILED(descr);
   *    where descr is a short text saying why the test has failed.
   * PASSED();
   *    No parameter.
-  * 
+  *
   * Both three macros shall terminate the calling process.
   * The testcase shall not terminate in any other maneer.
-  * 
+  *
   * The other file defines the functions
   * void output_init()
   * void output(char * string, ...)
-  * 
+  *
   * Those may be used to output information.
   */
 
@@ -86,7 +85,7 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 
-struct 
+struct
 {
 	pthread_mutex_t mtx;
 	pthread_cond_t cnd;
@@ -96,9 +95,8 @@ struct
 	int bool;
 } data;
 
-
 /****  First handler that will be poped
- *  This one works only with recursive mutexes 
+ *  This one works only with recursive mutexes
  */
 void clnp1 (void * arg)
 {
@@ -128,7 +126,7 @@ void clnp2 (void * arg)
 		ret = sem_wait(&(data.semB));
 	} while ((ret != 0) && (errno == EINTR));
 	if (ret != 0)  {  UNRESOLVED(errno, "Sem wait failed in cleanup handler 2");  }
-	
+
 	return;
 }
 
@@ -141,51 +139,50 @@ void clnp3 (void * arg)
 
 	ret = pthread_mutex_unlock(&(data.mtx));
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to unlock mutex in clean-up handler 3");  }
-	
+
 	if ((data.type == PTHREAD_MUTEX_ERRORCHECK) || (data.type == PTHREAD_MUTEX_RECURSIVE))
 	{
 		ret = pthread_mutex_unlock(&(data.mtx));
 		if (ret == 0)  {  UNRESOLVED(ret, "Was able to unlock unlocked mutex in clean-up handler 3");  }
 	}
-	
+
 	return;
 }
-	
 
 /**** Thread function
- * This function will lock the mutex, then install the cleanup handlers 
+ * This function will lock the mutex, then install the cleanup handlers
  * and wait for the cond. At this point it will be canceled.
  */
 void * threaded (void * arg)
 {
 	int ret;
-	
+
 	ret= pthread_mutex_lock(&(data.mtx));
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex in thread");  }
-	
+
 	/* Tell the main thread we got the lock */
 	do {
 		ret = sem_post(&(data.semA));
 	} while ((ret != 0) && (errno == EINTR));
 	if (ret != 0)  {  UNRESOLVED(errno, "Sem post failed in cleanup handler 2");  }
-	
+
 	pthread_cleanup_push (clnp3, NULL);
 	pthread_cleanup_push (clnp2, NULL);
 	pthread_cleanup_push (clnp1, NULL);
-	
+
 	do {
 		ret = pthread_cond_wait(&(data.cnd), &(data.mtx));
 	} while ((ret == 0) && (data.bool == 0));
-	
+
 	if (ret != 0)  {  UNRESOLVED(ret , "Wait failed");  }  /* We will exit even if the error is timedwait */
-	
+
 	/* If we are here, the thread was not canceled */
 	FAILED("The thread has not been canceled");
-	
+
 	pthread_cleanup_pop(0);
 	pthread_cleanup_pop(0);
 	pthread_cleanup_pop(1);
-	
+
 	return NULL;
 }
 
@@ -199,15 +196,15 @@ int main(int argc, char * argv[])
 	pthread_t th;
 
 	long altclk_ok, pshared_ok;
-	
-	struct 
+
+	struct
 	{
 		char altclk;  /* Want to use alternative clock */
 		char pshared; /* Want to use process-shared primitives */
 		int type;     /* mutex type */
 		char * descr; /* Description of the case */
-		
-	} scenar[] = 
+
+	} scenar[] =
 	{ {0, 0, PTHREAD_MUTEX_NORMAL,     "Normal mutex" }
 #ifdef USE_ALTCLK
 	 ,{1, 0, PTHREAD_MUTEX_NORMAL,     "Normal mutex + altclock cond" }
@@ -227,9 +224,9 @@ int main(int argc, char * argv[])
 	 ,{0, 1, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck pshared mutex" }
 #endif
 	};
-	
+
 	output_init();
-	
+
 	/* Initialize the constants */
 	altclk_ok = sysconf(_SC_CLOCK_SELECTION);
 	if (altclk_ok > 0)
@@ -238,49 +235,49 @@ int main(int argc, char * argv[])
 	if (altclk_ok > 0)
 		output("Implementation supports the MONOTONIC CLOCK but option is disabled in test.\n");
 #endif
-	
+
 	pshared_ok = sysconf(_SC_THREAD_PROCESS_SHARED);
-	
+
 	#if VERBOSE > 0
 	output("Test starting\n");
 	output(" Process-shared primitive %s be tested\n", (pshared_ok>0)?"will":"won't");
 	output(" Alternative clock for cond %s be tested\n", (altclk_ok>0)?"will":"won't");
 	#endif
-	
+
 	ret = sem_init(&(data.semA), 0, 0);
 	if (ret != 0)  {  UNRESOLVED(errno, "Unable to init sem A");  }
-	
+
 	ret = sem_init(&(data.semB), 0, 0);
 	if (ret != 0)  {  UNRESOLVED(errno, "Unable to init sem B");  }
-	
+
 	for (i=0; i< (sizeof(scenar) / sizeof(scenar[0])); i++)
 	{
 		#if VERBOSE > 1
 		output("Starting test for %s\n", scenar[i].descr);
 		#endif
-		
+
 		/* Initialize the data structure */
 		ret = pthread_mutexattr_init(&ma);
 		if (ret != 0)  {  UNRESOLVED(ret, "Mutex attribute object init failed");  }
-		
+
 		ret = pthread_mutexattr_settype(&ma, scenar[i].type);
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to set mutex type");  }
-		
+
 		if ((pshared_ok > 0) && (scenar[i].pshared != 0))
 		{
 			ret = pthread_mutexattr_setpshared(&ma, PTHREAD_PROCESS_SHARED);
 			if (ret != 0)  {  UNRESOLVED(ret, "Unable to set mutex process-shared");  }
 		}
-		
+
 		ret = pthread_condattr_init(&ca);
 		if (ret != 0)  {  UNRESOLVED(ret, "Cond attribute object init failed");  }
-		
+
 		if ((pshared_ok > 0) && (scenar[i].pshared != 0))
 		{
 			ret = pthread_condattr_setpshared(&ca, PTHREAD_PROCESS_SHARED);
 			if (ret != 0)  {  UNRESOLVED(ret, "Unable to set cond process-shared");  }
 		}
-		
+
 		#ifdef USE_ALTCLK
 		if ((altclk_ok > 0) && (scenar[i].altclk != 0))
 		{
@@ -288,94 +285,93 @@ int main(int argc, char * argv[])
 			if (ret != 0)  {  UNRESOLVED(ret, "Unable to set alternative (monotonic) clock for cond");  }
 		}
 		#endif
-		
+
 		ret = pthread_mutex_init(&(data.mtx), &ma);
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to init mutex");  }
-		
+
 		ret = pthread_cond_init(&(data.cnd), &ca);
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to initialize condvar");  }
-		
+
 		ret = pthread_mutexattr_gettype(&ma, &(data.type));
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to get type from mutex attr");  }
 
 		data.bool = 0;
-		
+
 		/** Data is ready, create the thread */
 		#if VERBOSE > 1
 		output("Initialization OK, starting thread\n");
 		#endif
-		
+
 		ret = pthread_create(&th, NULL, threaded, NULL);
 		if (ret != 0)  {  UNRESOLVED(ret, "Thread creation failed");  }
-		
+
 		/** Wait for the thread to be waiting */
 		do {
 			ret = sem_wait(&(data.semA));
 		} while ((ret != 0) && (errno == EINTR));
 		if (ret != 0)  {  UNRESOLVED(errno, "Sem wait failed in main");  }
-		
+
 		ret = pthread_mutex_lock(&(data.mtx));
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to lock mutex in main");  }
-		
+
 		data.bool = 1;
-		
+
 		/** Cancel the thread */
 		ret = pthread_cancel(th);
 		if (ret != 0)  {  UNRESOLVED(ret, "Thread cancelation failed");  }
-		
+
 		sched_yield();
 		#ifndef WITHOUT_XOPEN
 		usleep(100);
 		#endif
-		
+
 		ret = pthread_mutex_unlock(&(data.mtx));
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to unlock mutex in main");  }
-		
+
 		/** Wait for the thread to be executing second cleanup handler */
 		do {
 			ret = sem_wait(&(data.semA));
 		} while ((ret != 0) && (errno == EINTR));
 		if (ret != 0)  {  UNRESOLVED(errno, "Sem wait failed in main");  }
-		
+
 		/** Here the child should own the mutex, we check this */
 		ret = pthread_mutex_trylock(&(data.mtx));
 		if (ret == 0)  {  FAILED("The child did not own the mutex inside the cleanup handler");  }
-		
+
 		/** Let the cleanups go on */
 		do {
 			ret = sem_post(&(data.semB));
 		} while ((ret != 0) && (errno == EINTR));
 		if (ret != 0)  {  UNRESOLVED(errno, "Sem post failed in main");  }
-		
+
 		/** Join the thread */
 		ret = pthread_join(th, &rc);
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to join the thread");  }
 		if (rc != PTHREAD_CANCELED)  {  FAILED("thread was not canceled");  }
-		
+
 		#if VERBOSE > 1
 		output("Test passed for %s\n\n", scenar[i].descr);
 		#endif
-		
+
 		/* Destroy datas */
 		ret = pthread_cond_destroy(&(data.cnd));
 		if (ret != 0)  {  UNRESOLVED(ret, "Cond destroy failed");  }
-		
+
 		ret = pthread_mutex_destroy(&(data.mtx));
 		if (ret != 0)  {  UNRESOLVED(ret, "Mutex destroy failed");  }
-		
+
 		ret = pthread_condattr_destroy(&ca);
 		if (ret != 0)  {  UNRESOLVED(ret, "Cond attribute destroy failed");  }
-		
+
 		ret = pthread_mutexattr_destroy(&ma);
 		if (ret != 0)  {  UNRESOLVED(ret, "Mutex attr destroy failed");  }
 	} /* Proceed to next case */
-	
+
 	ret = sem_destroy(&(data.semA));
 	if (ret != 0)  {  UNRESOLVED(errno, "Sem destroy failed");  }
-	
+
 	ret = sem_destroy(&(data.semB));
 	if (ret != 0)  {  UNRESOLVED(errno, "Sem destroy failed");  }
-	
+
 	PASSED;
 }
-

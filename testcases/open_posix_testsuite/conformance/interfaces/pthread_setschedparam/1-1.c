@@ -1,10 +1,10 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
  * adam.li@intel.com
- * 
+ *
  */
 
  /* Set the sched parameter with pthread_setschedparam() then get */
@@ -22,7 +22,7 @@ void *a_thread_func()
 	policy = SCHED_FIFO;
 	priority = sched_get_priority_min(policy);
 	sparam.sched_priority = priority;
-	
+
 	rc = pthread_setschedparam(pthread_self(), policy, &sparam);
 	if (rc != 0)
 	{
@@ -35,13 +35,13 @@ void *a_thread_func()
 		printf("Error at pthread_getschedparam: rc=%d\n", rc);
 		exit(PTS_UNRESOLVED);
 	}
-	//printf("policy: %d, priority: %d\n", policy_1, sparam.sched_priority);	
+	//printf("policy: %d, priority: %d\n", policy_1, sparam.sched_priority);
 	if (policy_1 != policy || sparam.sched_priority != priority)
 	{
 		printf("pthread_getschedparam did not get the correct value\n");
 		exit(PTS_FAIL);
 	}
-	
+
 	pthread_exit(0);
 	return NULL;
 }
@@ -49,16 +49,14 @@ void *a_thread_func()
 int main()
 {
 	pthread_t new_th;
-	
+
 	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{	
+	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	pthread_join(new_th, NULL);
 	printf("Test PASSED\n");
-	return PTS_PASS;	
+	return PTS_PASS;
 }
-
-

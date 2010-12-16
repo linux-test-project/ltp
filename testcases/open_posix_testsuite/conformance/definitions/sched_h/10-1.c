@@ -1,4 +1,4 @@
-/*   
+/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2.
  *
@@ -31,7 +31,7 @@ struct unique {
 #if defined(_POSIX_SPORADIC_SERVER) && _POSIX_THREAD_SPORADIC_SERVER == 200112L
 	{
 	  SCHED_SPORADIC,"SCHED_SPORADIC"
-	}, 
+	},
 #endif
 	{
 		 SCHED_OTHER, "SCHED_OTHER"

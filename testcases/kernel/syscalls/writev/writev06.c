@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		
+
 	}
 
 	setup();		/* set "tstdir", and "testfile" vars */
@@ -105,21 +105,21 @@ int main(int argc, char **argv)
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGTERM FAILED");
 			cleanup();
-			
+
 		}
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGPIPE FAILED");
 			cleanup();
-			
+
 		}
 
 		if ((fd[0] = open(f_name, O_WRONLY | O_CREAT, 0666)) < 0) {
 			tst_resm(TFAIL, "open(2) failed: fname = %s, "
 				 "errno = %d", f_name, errno);
 			cleanup();
-			
+
 		}
 
 		/*
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
-	return 0;
+
 }
 
 /*
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* capture signals */
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Set up the expected error numbers for -e option */
@@ -236,7 +236,6 @@ void cleanup(void)
 	}
 	tst_rmdir();
 
-	tst_exit();
 }
 
 /*
@@ -261,7 +260,7 @@ void sighandler(int sig)
 		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
 			 f_name, errno);
 		cleanup();
-		
+
 	}
 	exit(sig);
 }

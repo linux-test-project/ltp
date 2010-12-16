@@ -55,7 +55,6 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -80,7 +79,6 @@ int signals_received = 0;
 #define MAXSIG 	1024*1024		/* Max interrupts */
 #define MAXTIME	2			/* Time out (minutes) */
 
-
 /*---------------------------------------------------------------------+
 |                               main ()                                |
 | ==================================================================== |
@@ -97,7 +95,7 @@ int main (int argc, char **argv)
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
 	fflush (stdout);
-   
+
 	/* Set up our signal handler */
 	init_sig ();
 
@@ -130,7 +128,6 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-
 /*---------------------------------------------------------------------+
 |                               handler ()                             |
 | ==================================================================== |
@@ -155,7 +152,6 @@ void handler (int signal, int code, struct sigcontext *scp)
 		error (msg, __LINE__);
 	}
 }
-
 
 /*---------------------------------------------------------------------+
 |                             init_sig ()                              |
@@ -203,7 +199,6 @@ void init_sig ()
 	}
 }
 
-
 /*---------------------------------------------------------------------+
 |                             sys_error ()                             |
 | ==================================================================== |
@@ -218,7 +213,6 @@ void sys_error (const char *msg, int line)
 	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
 	error (syserr_msg, line);
 }
-
 
 /*---------------------------------------------------------------------+
 |                               error ()                               |

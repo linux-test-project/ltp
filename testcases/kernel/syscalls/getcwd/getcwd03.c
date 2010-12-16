@@ -210,11 +210,10 @@ int main(int ac, char **av)
 
 void setup()
 {
-	/* capture signals */
+
 	/* FORK is set here because of the popen() call below */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* create a test directory and cd into it */
@@ -229,8 +228,6 @@ void cleanup()
 	/* print timing stats if that option was specified */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 char *getpwd()

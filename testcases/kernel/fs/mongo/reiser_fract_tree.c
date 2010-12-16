@@ -60,7 +60,6 @@ long bytes_to_consume = 0;	/* create files until their total number of
 				   than 1/10th */
 long byte_total = 0;		/* bytes created so far */
 
-
 /* statistics on sizes of files we attempted to create */
 int fsz_0_100    =0;
 int fsz_100_1k   =0;
@@ -89,7 +88,7 @@ void chngdir(char *name)
 
 /* this is the core statistical distribution function, and it is used for file
    sizes, directory sizes, etc. */
-int determine_size(double median_size, 		
+int determine_size(double median_size,
 		   double max_size	/* The maximal value of size */ )
 {
   /* when x is half of its random range (max_size/median_size), result is
@@ -105,9 +104,8 @@ int determine_size(double median_size,
 
      /* this code does poorly when max_size is not a lot more than median size,
 	and that needs fixing */
-    
-     /* THE NEXT 2 LINES ARE THE HEART OF THE PROGRAM */
 
+     /* THE NEXT 2 LINES ARE THE HEART OF THE PROGRAM */
 
      /* keep x below the value that when multiplied by median size on the next
 	line will equal max_size */
@@ -124,7 +122,6 @@ int determine_size(double median_size,
      size = median_size * (1/(1 - (double_nr_random)/(((double)max_size)/((double) median_size))) -1);
      return ((int) size);
 }
-
 
 /* generate a unique filename */
 void get_name_by_number(long this_files_number, char * str)
@@ -151,13 +148,13 @@ void make_file(int size)
   else if (size <= 1000*1000) fsz_100k_1m++;
   else if (size <= 10*1000*1000) fsz_1m_10m++;
   else fsz_10m_larger++;
-  
+
   /* construct a name for the file */
   get_name_by_number(this_files_number++, str);
   strcpy(fname, path);
   strcat(fname, "/");
   strcat(fname, str);
- 
+
   /* open the file, and deal with the various errors that can occur */
 
   if ((fd = open(fname, O_CREAT|O_EXCL|O_RDWR, 0777)) == -1) {
@@ -181,7 +178,7 @@ void make_file(int size)
   }
   /* write to the file until it is the right size, handling the various error
      conditions appropriately */
- 
+
   while (size > 0) {
     size -= (error = write(fd, write_buffer, (size < write_buffer_size - 1) ? size : (write_buffer_size - 1)));
     if (error == -1) {
@@ -197,7 +194,7 @@ void make_file(int size)
       exit(errno);
     }
   }
- 
+
   /* close the file */
   if (close(fd)) {
     perror("close() failed");
@@ -210,18 +207,18 @@ void make_file(int size)
 void print_stats()
 {
   if (!stats) return;
- 
+
   printf("\n");
   printf("File stats: Units are decimal (1k = 1000)\n");
   printf("files 0-100    : %i\n",fsz_0_100);
   printf("files 100-1K   : %i\n",fsz_100_1k);
   printf("files 1K-10K   : %i\n",fsz_1k_10k);
   printf("files 10K-100K : %i\n",fsz_10k_100k);
-  printf("files 100K-1M  : %i\n",fsz_100k_1m);  
-  printf("files 1M-10M    : %i\n",fsz_1m_10m);    
-  printf("files 10M-larger    : %i\n",fsz_10m_larger); 
-  printf("total bytes written    : %lu\n",byte_total); 
-    
+  printf("files 100K-1M  : %i\n",fsz_100k_1m);
+  printf("files 1M-10M    : %i\n",fsz_1m_10m);
+  printf("files 10M-larger    : %i\n",fsz_10m_larger);
+  printf("total bytes written    : %lu\n",byte_total);
+
 }
 /* predict the number of files that will be created before max_bytes total
    length of files is reached */
@@ -266,7 +263,6 @@ void fill_this_directory(long nr_files_this_directory, long median_file_size, lo
     }
 }
 
-
 /* this will unfortunately handle out of disk space by forever trying */
 /* What we should do in out of space situaltion ? I think we must skip this
    directory and continue files/dirs creation process. Error value (!= 0)
@@ -274,11 +270,11 @@ void fill_this_directory(long nr_files_this_directory, long median_file_size, lo
 int make_directory(char * dirname)
 {
   static long this_directory_number = 0;
- 
+
   strcpy(tdir, path);
   strcat(tdir, "/");
   strcat(tdir, dirname);
-    
+
   if (mkdir(tdir, 0755) == -1) {
     if (errno == ENOSPC) {
       if (!already_whined) {
@@ -292,7 +288,7 @@ int make_directory(char * dirname)
 	already exist.  Thus we ignore EEXIST, and pay attention to all else. */
     if (errno != EEXIST) {
       perror ("mkdir");
-      exit (errno);		
+      exit (errno);
     }
   }
   sprintf(dirname, "d%lu", this_directory_number++);
@@ -342,7 +338,7 @@ void  do_subtree(
      beforehand. I'll code that later.  */
   /* worry about whether 0 or 1 is a problem value */
   this_directory_branching = determine_size(median_dir_branching, max_dir_branching) + 1;
- 
+
   /* create an array holding the number of directories assigned to each
      potential subdirectory */
   dirs_in_subtrees = calloc(this_directory_branching, sizeof(long));
@@ -428,7 +424,7 @@ int main(int argc, char * argv[])
 {
   /* initialized from argv[] */
   long median_file_size,
-    median_dir_branching, 
+    median_dir_branching,
     median_dir_nr_files,
     max_dir_nr_files,
     max_dir_branching,
@@ -454,10 +450,10 @@ int main(int argc, char * argv[])
   /* Figure out how many random files will fit into bytes_to_consume bytes. We
      depend on resetting rand() to get the same result later. */
   nr_of_files = determine_nr_of_files(median_file_size, max_file_size, bytes_to_consume);
- 
+
   strcpy(path, argv[9]);
   mkdir(path, 0755);
-  stats = atol(argv[10]);      
+  stats = atol(argv[10]);
   median_dir_branching = atol(argv[6]);
   max_dir_branching = atol(argv[7]);
   median_dir_nr_files = atol(argv[4]);
@@ -465,7 +461,6 @@ int main(int argc, char * argv[])
   make_fractal_tree(median_file_size, max_file_size, median_dir_nr_files, max_dir_nr_files, median_dir_branching, max_dir_branching, nr_of_files);
   print_stats();
   if (stats) printf("\nreiser_fract_tree finished\n");
-       
+
   return 0;
 }
-

@@ -1,12 +1,12 @@
-/*   
+/*
  * Copyright (c) 2004, Intel Corporation. All rights reserved.
  * Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test pthread_getcpuclockid()
- * 
+ *
  * Steps:
  * 	1. Create a thread
  *	2. pthread_join the created thread
@@ -53,7 +53,7 @@ int main()
                 exit(PTS_UNRESOLVED);
         }
 
-	rc = pthread_getcpuclockid(new_th, &cid); 
+	rc = pthread_getcpuclockid(new_th, &cid);
         if (rc == ESRCH) {
                 printf("pthread_getcpuclockid returns ESRCH "
                        "when thread_id doesn't exist\n");
@@ -63,5 +63,3 @@ int main()
 	}
 	return PTS_PASS;
 }
-
-

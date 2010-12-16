@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,18 +53,18 @@ int main(int argc, char **argv)
      int intRec;
 	 int i;
 	 int sum;
-	 
+
 	 //Initialization
 	 tv.tv_sec = 0;
 	 tv.tv_usec = 100;
-	 
+
 	 for (i = 0; i < MAXITER; i++)
 	 	resTbl[i] = -1;
-	 
+
 	 //Create both client and server handle
      svc = svcraw_create();
-	 
-     if (svc == NULL) 
+
+     if (svc == NULL)
      {
           fprintf(stderr,"Could not create server handle\n");
           exit(5);
@@ -75,15 +75,15 @@ int main(int argc, char **argv)
      	fprintf(stderr, "Error svc_register\n");
      	exit(5);
      }
-     
+
      clnt = clntraw_create(progNum, VERSNUM);
 
-     if (clnt == NULL) 
+     if (clnt == NULL)
      {
           clnt_pcreateerror("raw");
           exit(1);
      }
-     
+
      if (run_mode == 1)
      {
      	printf("CLNT %d\n", clnt);
@@ -94,10 +94,10 @@ int main(int argc, char **argv)
 	 for (i = 0; i < MAXITER; i++)
 	 {
 	 	intSnd = i;
-     	
+
      	gettimeofday(&tv1, &tz);
      	if (clnt_call(clnt, PROCNUM, (xdrproc_t)xdr_int, (char *)&intSnd, (xdrproc_t)xdr_int, (char *)&intRec,
-       	tv) != RPC_SUCCESS) 
+       	tv) != RPC_SUCCESS)
        	{
           	clnt_perror(clnt, "raw");
          	exit(1);
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
      		resTbl[i] = diff;
      	}
      }
-     
+
      //Test all returned values, calc. average
      for (i = 0; i < MAXITER; i++)
      {
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 	 		fprintf(stderr, "%d\n", resTbl[i]);
 	 }
 	 sum = (int)(sum / MAXITER);
-     
+
      printf("%d\n", test_status);
 }
 

@@ -2,28 +2,28 @@
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
- The resulting set shall be the union of the current set and the signal 
+ The resulting set shall be the union of the current set and the signal
  set pointed to by set, if the value of the argument how is SIG_BLOCK.
 
  Steps:
  1. Have main create a new thread and wait for its termination.
- 2. Inside the new thread, set up the signal mask such that it contains 
+ 2. Inside the new thread, set up the signal mask such that it contains
     only SIGABRT.
- 3. Also inside the new thread, using the SIG_BLOCK as the value to 
-    pthread_sigmask's first parameter, add SIGALRM. Now both signals 
+ 3. Also inside the new thread, using the SIG_BLOCK as the value to
+    pthread_sigmask's first parameter, add SIGALRM. Now both signals
     should be in the signal mask of the new thread.
  4. Raise both signals make sure that the handler associated with these
     signals wasn't executed.
  5. Also make sure that both signals are pending.
  6. Pass one of three return codes to the main() function:
-    - A value of -1 if one of the two signals wasn't found pending or 
+    - A value of -1 if one of the two signals wasn't found pending or
       causes the handler to be executed.
-    - A value of 0 if both signals were infact pending and the handler 
+    - A value of 0 if both signals were infact pending and the handler
       wasn't executed.
-    - A value of 1 incase of any UNRESOLVED situation such as an 
+    - A value of 1 incase of any UNRESOLVED situation such as an
       unexpected function failure.
 */
 
@@ -38,7 +38,6 @@ void handler(int signo)
 {
 	handler_called = 1;
 }
-
 
 void *a_thread_func()
 {
@@ -127,7 +126,7 @@ int main() {
 		}
 		else {
 			printf ("Test UNRESOLVED\n");
-			return PTS_UNRESOLVED;			
+			return PTS_UNRESOLVED;
 		}
 	}
 	return PTS_PASS;

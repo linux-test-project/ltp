@@ -1,10 +1,10 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Copyright (c) 2002, Jim Houston.  All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
  * Patched by jim.houston REMOVE-THIS AT attbi DOT com
  * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
+ * of this license, see the COPYING file at the top level of this
  * source tree.
 
  * Test that timers are not inherited across a fork().
@@ -16,7 +16,7 @@
  *     the system does not fork fast enough that there could be a false
  *     failure.  Times will be set large enough that this risk is minimized.]
  * 5.  Set up a signal handler for the timer in the parent and ensure it
- *     is not called by ensuring the child is able to sleep uninterrupted. 
+ *     is not called by ensuring the child is able to sleep uninterrupted.
  *     [Note:  The delay to set up this handler could also cause false
  *     results.]
  *
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if ((pid = fork()) == 0) {
 		/* child here */
 		struct sigaction act;

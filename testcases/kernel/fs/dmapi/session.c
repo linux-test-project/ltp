@@ -153,7 +153,6 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 	}
 
-
 	/*
 	 * TEST    : dm_create_session - NULL newsidp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -257,7 +256,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			delsid = newsid;
-		
+
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated oldsid)\n", szFuncName);
 			rc = dm_create_session(oldsid, szSessionInfo, &newsid);
@@ -599,7 +598,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
 			DMVAR_FAIL();
 		}
-	
+
 		/* Variation clean up */
 	}
 
@@ -667,8 +666,8 @@ int main(int argc, char **argv)
 			rc = dm_getall_sessions(1, sidArray, &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-			
-				if (nelem == 1) { 
+
+				if (nelem == 1) {
 					LogSessions(sidArray, nelem);
 
 					if (newsid == sidArray[0]) {
@@ -766,7 +765,7 @@ int main(int argc, char **argv)
 			rc = dm_getall_sessions(sizeof(sidArray)/sizeof(dm_sessid_t), sidArray, &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-			
+
 				if (nelem == NUM_SESSIONS) {
 					LogSessions(sidArray, nelem);
 
@@ -991,7 +990,7 @@ int main(int argc, char **argv)
 			if (rc == -1) {
 				if (errno == E2BIG) {
 					DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
-				
+
 					if (rlen == strlen(szSessionInfo)+1) {
 						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and expected errno = %d\n", szFuncName, -1, E2BIG);
 						DMVAR_PASS();
@@ -1086,7 +1085,7 @@ int main(int argc, char **argv)
 			rc = dm_query_session(newsid, sizeof(buf), buf, &rlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
-			
+
 				if (rlen == DM_SESSION_INFO_LEN) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buf = \"%s\"\n", buf);
 
@@ -1115,7 +1114,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-		
-	return 0;
+
+	tst_exit();
 
 }

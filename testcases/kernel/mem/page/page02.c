@@ -82,7 +82,6 @@ int main(argc, argv)
 	parent_pid = getpid();
         tst_tmpdir();
 
-
 	if (signal(SIGUSR1, (void (*)())chld) == SIG_ERR) {
 		tst_resm(TBROK,"signal failed");
 		exit(1);
@@ -102,7 +101,6 @@ int main(argc, argv)
 		exit(1);
 	}
 	half_memory_size = memory_size/2;
-
 
 	error_count = 0;
 
@@ -149,7 +147,7 @@ int main(argc, argv)
 				tst_exit();
 			}
 			kill(parent_pid, SIGUSR1);
-		
+
 			down_pointer = up_pointer = memory_pointer +
 			  (memory_size / 2);
 
@@ -215,7 +213,7 @@ int main(argc, argv)
     	tst_rmdir();
     	tst_exit();
 	/**NOT REACHED**/
-	return 0;
+	tst_exit();
 
 }
 

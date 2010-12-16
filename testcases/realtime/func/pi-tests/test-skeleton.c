@@ -43,7 +43,6 @@
 #include <time.h>
 #include <librttest.h>
 
-
 void usage(void)
 {
         rt_help();
@@ -119,6 +118,5 @@ int  main(int argc, char **argv)
 		exit(1);
 	}
 
-	return 0;
+	tst_exit();
 }
-
