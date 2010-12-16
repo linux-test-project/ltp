@@ -135,12 +135,12 @@ main(void)
 	namelen = sizeof(loop);
 	error = getsockname(sk1, &loop.sa, &namelen);
 	if (error != 0)
-		tst_brkm(TBROK, tst_exit, "getsockname: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "getsockname: %s", strerror(errno));
 
 	namelen = sizeof(anyaddr);
 	error = getsockname(sk2, &anyaddr.sa, &namelen);
 	if (error != 0)
-		tst_brkm(TBROK, tst_exit, "getsockname: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "getsockname: %s", strerror(errno));
         
 #if TEST_V6
 	loop.v6.sin6_port = anyaddr.v6.sin6_port;
@@ -249,5 +249,5 @@ main(void)
 	tst_resm(TPASS, "send msgs from a socket with INADDR_ANY bind address");
 
         /* Indicate successful completion.  */
-        return 0;
+      tst_exit();
 }

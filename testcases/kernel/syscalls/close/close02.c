@@ -75,8 +75,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();		/* global setup */
 
@@ -108,7 +112,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}
+ }
 
 /*
  * setup() - performs all ONE TIME setup for this test

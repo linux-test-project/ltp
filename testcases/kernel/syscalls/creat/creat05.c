@@ -78,7 +78,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -112,7 +116,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}
+ }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -148,7 +152,7 @@ void setup()
 	max_open = getdtablesize();
 	/* Allocate memory for stat and ustat structure variables */
 	if ((buf = (int *)malloc(sizeof(int) * max_open - first)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
 	}
 
 	/* now open as many files as we can up to max_open */

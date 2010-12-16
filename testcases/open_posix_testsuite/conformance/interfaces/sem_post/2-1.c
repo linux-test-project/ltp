@@ -45,7 +45,7 @@ int main() {
 		return PTS_UNRESOLVED; 
 	}
 
-	if ((  sem_post(mysemp)) == 0) {
+	if (sem_post(mysemp) == 0) {
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);

@@ -203,10 +203,8 @@ int main(int argc, char *argv[])
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	argv0 = argv[0];
 	maybe_run_child(&do_child, "dd", &sfd, &ufd);
@@ -430,7 +428,7 @@ pid_t start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 		(void)close(ufd);
 		return pid;
 	}
-	 /*NOTREACHED*/ exit(1);
+	exit(1);
 }
 
 void do_child()

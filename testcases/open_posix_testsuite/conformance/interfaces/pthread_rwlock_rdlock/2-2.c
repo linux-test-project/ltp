@@ -254,9 +254,9 @@ int main()
 	}
 	/* we expect the reader get the lock when writer has release the lock*/
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (rd_thread_state !=EXITING_THREAD && cnt++ < 3); 
+	} while (rd_thread_state != EXITING_THREAD && cnt++ < 3); 
 	
 	if (rd_thread_state == ENTERED_THREAD)
 	{

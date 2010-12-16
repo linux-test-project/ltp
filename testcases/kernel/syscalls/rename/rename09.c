@@ -112,9 +112,8 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/*
 	 * perform global setup for test
@@ -134,7 +133,7 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (pid == 0) {	/* first child */
 			/* set to nobody */
@@ -146,14 +145,14 @@ int main(int ac, char **av)
 					 nobody->pw_uid, nobody->pw_uid);
 				perror("setreuid");
 				exit(1);
-			 /*NOTREACHED*/}
+			 }
 
 			/* create the a directory with 0700 permits */
 			if (mkdir(fdir, PERMS) == -1) {
 				tst_resm(TWARN, "mkdir(%s, %#o) Failed",
 					 fdir, PERMS);
 				exit(1);
-			 /*NOTREACHED*/}
+			 }
 
 			/* create "old" file under it */
 			do_file_setup(fname);
@@ -170,7 +169,7 @@ int main(int ac, char **av)
 
 		if ((pid1 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (pid1 == 0) {	/* second child */
 			/* set to bin */
@@ -178,14 +177,14 @@ int main(int ac, char **av)
 				tst_resm(TWARN, "seteuid() failed");
 				perror("setreuid");
 				exit(1);
-			 /*NOTREACHED*/}
+			 }
 
 			/* create "new" directory */
 			if (mkdir(mdir, PERMS) == -1) {
 				tst_resm(TWARN, "mkdir(%s, %#o) failed",
 					 mdir, PERMS);
 				exit(1);
-			 /*NOTREACHED*/}
+			 }
 
 			/* create the new file */
 			do_file_setup(mname);
@@ -202,7 +201,7 @@ int main(int ac, char **av)
 			if (TEST_ERRNO != EACCES) {
 				tst_resm(TFAIL, "Expected EACCES got %d",
 					 TEST_ERRNO);
-			 /*NOTREACHED*/} else {
+			 } else {
 				tst_resm(TPASS, "rename() returned EACCES");
 			}
 
@@ -241,7 +240,7 @@ int main(int ac, char **av)
 	 */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -252,8 +251,8 @@ void setup()
 {
 	/* must run as root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must run test as root");
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK, NULL, "Must run test as root");
+	 }
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);

@@ -82,7 +82,7 @@ char    *s;
     float   num;
 
     nconv = sscanf(s, "%f%c%c", &num, &mult, &junk);
-    if (nconv == 0 || nconv == 3 )
+    if (nconv == 0 || nconv == 3)
 	return -1;
 
     if (nconv == 1)
@@ -117,7 +117,7 @@ char    *s;
     float   num;
 
     nconv = sscanf(s, "%f%c%c", &num, &mult, &junk);
-    if (nconv == 0 || nconv == 3 )
+    if (nconv == 0 || nconv == 3)
 	return -1;
 
     if (nconv == 1)
@@ -157,7 +157,7 @@ char    *s;
     double  num;
 
     nconv = sscanf(s, "%lf%c%c", &num, &mult, &junk);
-    if (nconv == 0 || nconv == 3 )
+    if (nconv == 0 || nconv == 3)
 	return -1;
 
     if (nconv == 1)
@@ -189,7 +189,7 @@ main(int argc, char **argv)
 {
     int ind;
 
-    if (argc == 1 ) {
+    if (argc == 1) {
 	fprintf(stderr, "missing str_to_bytes() parameteres\n");
 	exit(1);
     }

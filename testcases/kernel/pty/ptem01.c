@@ -532,6 +532,6 @@ main(int argc, char **argv)
  	 * all done
 	 */
 	tst_exit();
-	/*NOTREACHED*/
+	
 	return 0;
 }

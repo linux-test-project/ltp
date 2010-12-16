@@ -87,7 +87,7 @@ main(int argc, char *argv[])
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, 0, 0);
 	if (msg != NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	pid = getpid();
@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 		do_tests();
 
 	cleanup();
-	/* NOTREACHED */
+	
 	return(0);
 }	/* End main */
 

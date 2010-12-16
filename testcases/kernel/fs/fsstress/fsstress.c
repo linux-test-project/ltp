@@ -530,7 +530,7 @@ append_pathname(pathname_t *name, char *str)
 		fprintf(stderr, "fsstress: append_pathname failure\n");
 		chdir(homedir);
 		abort();
-		/* NOTREACHED */
+		
 	}
 #endif
 	name->path = realloc(name->path, name->len + 1 + len);
@@ -612,7 +612,7 @@ check_cwd(void)
 	chdir(homedir);
 	fprintf(stderr, "fsstress: check_cwd failure\n");
 	abort();
-	/* NOTREACHED */
+	
 #endif
 }
 
@@ -873,7 +873,7 @@ get_fname(int which, long r, pathname_t *name, flist_t **flpp, fent_t **fepp,
 	abort();
 #endif
 	return -1;
-	/* NOTREACHED */
+	
 }
 
 void

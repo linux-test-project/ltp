@@ -162,7 +162,7 @@ void setup()
 
 	/* Check whether we are root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* set the expected errnos... */

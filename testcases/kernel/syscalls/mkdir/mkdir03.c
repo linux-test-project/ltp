@@ -139,7 +139,11 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/*
@@ -192,7 +196,7 @@ int main(int ac, char **av)
 	 */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }				/* End main */
 
 /*
@@ -252,7 +256,7 @@ void setup5()
 	/* create a file */
 	if ((fileHandle2 = creat(tstfile5, PERMS)) == -1) {
 		tst_brkm(TBROK, cleanup, "creat a file failed");
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*

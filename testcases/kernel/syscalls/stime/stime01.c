@@ -99,11 +99,15 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Perform global setup for test */
 	setup();
@@ -127,7 +131,7 @@ int main(int ac, char **av)
 		 * to as far as clock skew is concerned :P.
 		 */
 		if (gettimeofday(&real_time_tv, NULL) < 0) {
-			tst_brkm(TBROK|TERRNO, tst_exit,
+			tst_brkm(TBROK|TERRNO, NULL,
 				"failed to get current time via gettimeofday(2)");
 		}
 
@@ -207,7 +211,7 @@ void setup()
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit,
+		tst_brkm(TBROK, NULL,
 			"you must be root to execute this test!");
 	}
 

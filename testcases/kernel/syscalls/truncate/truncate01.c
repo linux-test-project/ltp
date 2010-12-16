@@ -101,7 +101,11 @@ int main(int ac, char **av)
 	off_t file_length;	/* test file length */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -145,7 +149,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "stat(2) of "
 						 "%s failed, error:%d",
 						 TESTFILE, errno);
-				 /*NOTREACHED*/}
+				 }
 				stat_buf.st_mode &= ~S_IFREG;
 				file_length = stat_buf.st_size;
 
@@ -172,7 +176,7 @@ int main(int ac, char **av)
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -213,7 +217,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Write to the file 1k data from the buffer */
 	while (c_total < FILE_SIZE) {
@@ -221,7 +225,7 @@ void setup()
 			tst_brkm(TBROK, cleanup,
 				 "write(2) on %s Failed, errno=%d : %s",
 				 TESTFILE, errno, strerror(errno));
-		 /*NOTREACHED*/} else {
+		 } else {
 			c_total += c;
 		}
 	}
@@ -231,7 +235,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TESTFILE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 }				/* End setup() */
 
 /*

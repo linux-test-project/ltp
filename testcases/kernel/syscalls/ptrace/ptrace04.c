@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 	char *msg;
 
 	if (ARRAY_SIZE(regs) == 0)
-		tst_brkm(TCONF, tst_exit,
+		tst_brkm(TCONF, NULL,
 			"test not supported for your arch (yet)");
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)))

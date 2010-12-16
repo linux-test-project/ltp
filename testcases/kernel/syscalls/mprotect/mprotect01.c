@@ -121,7 +121,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();		/* global setup */
@@ -166,7 +170,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	return 0;
- /*NOTREACHED*/}
+ }
 
 #else
 
@@ -195,7 +199,7 @@ void setup2()
 	addr2 = (char *)malloc(PAGESIZE);
 	if (addr2 == NULL) {
 		tst_brkm(TINFO, cleanup, "malloc failed");
-	 /*NOTREACHED*/}
+	 }
 	addr2++;		/* Ensure addr2 is not page aligned */
 }
 
@@ -207,7 +211,7 @@ void setup3()
 	fd = open("/etc/passwd", O_RDONLY);
 	if (fd < 0) {
 		tst_brkm(TBROK, cleanup, "open failed");
-	 /*NOTREACHED*/}
+	 }
 
 	/*
 	 * mmap the PAGESIZE bytes as read only.
@@ -215,7 +219,7 @@ void setup3()
 	addr3 = mmap(0, PAGESIZE, PROT_READ, MAP_SHARED, fd, 0);
 	if (addr3 < 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*

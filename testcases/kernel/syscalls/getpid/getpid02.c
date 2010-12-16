@@ -90,11 +90,8 @@ int main(int ac, char **av)
 	int status;		/* exit status of child process */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	/* Perform global setup for test */
 	setup();
@@ -104,19 +101,11 @@ int main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/*
-		 * Invoke getpid() to get the process id of
-		 * the test process.
-		 */
 		TEST(getpid());
 
 		/* Save the process id returned by getpid() */
 		proc_id = TEST_RETURN;
 
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/* Fork a child now */
 			if ((pid = FORK_OR_VFORK()) < 0) {
@@ -132,10 +121,13 @@ int main(int ac, char **av)
 				}
 				exit(0);
 			} else {	/* parent process */
-				wait(&status);
-
+				if (wait(&status) == -1) {
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "wait failed");
+				}
 				/* Check exit status of child */
-				if (WEXITSTATUS(status) != 0) {
+				if (WIFEXITED(status) &&
+				    WEXITSTATUS(status) != 0) {
 					tst_resm(TFAIL, "getpid() returned "
 						 "invalid pid %d", proc_id);
 				} else {
@@ -151,7 +143,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -178,7 +170,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

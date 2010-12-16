@@ -57,7 +57,6 @@ int main() {
 	if (sem_getvalue(mysemp, &val) == -1) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
-
 	} else if (val == 0) {
 		puts("TEST PASSED");
 		sem_unlink(semname);

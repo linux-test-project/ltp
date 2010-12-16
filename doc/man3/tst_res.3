@@ -70,9 +70,6 @@ char *\fItmesg, [arg ...]\fR)
 .br
 extern int Tst_range;
 .br
-extern int Tst_lpstart;
-.br
-extern int Tst_lptotal;
 \fR
 .SH DESCRIPTION
 .SS Introduction
@@ -81,11 +78,11 @@ standard out in a consistent manner.  It is assumed that tests using this
 library have a distinct number of test cases, and that each test case is
 distinct and uniquely identified by the test case number.  It is also assumed
 that test case results are printed in consecutive order, starting with 1.
-The library maintains a set of global variables (\fBTCID, TST_TOTAL,
-Tst_count, Tst_range, Tst_lpstart\fR, \fBTst_lptotal\fR), which are used by
-the various functions to format the results and to keep track of the current
-result reporting state (i.e. how many total test cases there are, and how
-many have been reported so far) for the calling test.
+The library maintains a set of global variables (\fBTCID\fR, \fBTST_TOTAL\fR,
+\fBTst_count\fR), which are used by the various functions to format the
+results and to keep track of the current result reporting state (i.e. how many
+total test cases there are, and how many have been reported so far) for the
+calling test.
 .P
 The \fBTCID\fR and \fBTST_TOTAL\fR global variables are externed in the
 library, and MUST be defined/initialized by tests using the library.
@@ -96,9 +93,7 @@ reported.
 The other global variables are available as externs to tests linked with
 tst_res.o.  \fBTst_count\fR is the running count of the number of test
 results that have been reported so far.  The library initializes it to 0, and
-it should not be modified by the test.  \fBTst_range\fR, \fBTst_lpstart\fR,
-and \fBTst_lptotal\fR are used by to control how many test results are
-reported under certain conditions, by some of the functions in this library.
+it should not be modified by the test.
 The details are described below under the appropriate functions.
 .SS Arguments
 .RS 5
@@ -268,7 +263,10 @@ All output lines are discarded.
 
 char *TCID = "tsttcs01"; /* set test case identifier */
 int TST_TOTAL = 15;      /* set total number of test results */
+<<<<<<< HEAD
 extern int Tst_count;    /* access count of results completed */
+=======
+>>>>>>> master
 
 main()
 {
@@ -299,8 +297,6 @@ Sample output:
 tsttcs01    1       PASS  :  Able to create MAXUP processes
 tsttcs01    2       FAIL  :  Too many processes (MAXUP+1) created
 tsttcs01    3       BROK  :  tabinfo(PROCTAB, &tbs) failed; errno = 13: Permission denied
-tsttcs01    4-10    BROK  :  Remaining cases broken
-tsttcs01    0       WARN  :  cleanup(): kill(0, SIGALRM) failed; errno = 3: No such process
 .fi
 .SH "SEE ALSO"
 utst_res(1),
@@ -316,16 +312,8 @@ If an invalid test type is specified.
 .P
 If \fBTst_count\fR is negative.
 .P
-If \fBTst_range\fR is non-positive.
-.P
-If \fBTst_range\fR is > 1, and the test type is \fBTINFO\fR or \fBTWARN\fR.
-.P
-If one of the \fBtst_brk[loop][m]()\fR routines is called with a test type
+If one of the \fBtst_brk[m]()\fR routines is called with a test type
 other than \fBTFAIL, TBROK, TCONF\fR, or \fBTRETR\fR.
-.P
-If \fBTst_lpstart\fR is negative.
-.P
-If \fBTst_lptotal\fR is non-positive.
 .P
 If there are any problems opening/reading/writing the contents of \fIfname\fR.
 .RE
@@ -337,4 +325,3 @@ it is not advised.
 .P
 The programmer is free to alter the value of \fBTst_count\fR causing possible
 test result order problems.
-

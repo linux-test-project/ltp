@@ -169,7 +169,7 @@ static long str_to_l(const char *str, const char *name)
 	long i = strtol(str, &end, 10);
 
 	if (*end != '\0')
-		tst_brkm(TBROK, tst_exit, "Invalid parameter '%s' passed. (%s)",
+		tst_brkm(TBROK, NULL, "Invalid parameter '%s' passed. (%s)",
 		         name, str);
 
 	return i;

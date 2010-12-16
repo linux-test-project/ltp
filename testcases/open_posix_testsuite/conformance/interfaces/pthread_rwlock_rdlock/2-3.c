@@ -184,10 +184,10 @@ int main()
 	
 	/* We expect the wr_thread to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
-	
+	} while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
+
 	if (wr_thread_state == EXITING_THREAD)
 	{
 		printf("wr_thread did not block on write lock, when a reader owns the lock\n");
@@ -210,9 +210,9 @@ int main()
 	
 	/* We expect the rd_thread get the read lock*/
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (rd_thread_state !=EXITING_THREAD && cnt++ < 3); 
+	} while (rd_thread_state != EXITING_THREAD && cnt++ < 3); 
 	
 	if (rd_thread_state == ENTERED_THREAD)
 	{
@@ -234,9 +234,9 @@ int main()
 	
 	/* we expect the writer get the lock */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
+	} while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
 	if (wr_thread_state == ENTERED_THREAD)
 	{

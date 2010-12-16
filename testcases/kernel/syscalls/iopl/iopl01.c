@@ -89,10 +89,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL))
-	    != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/* perform global setup for test */
 	setup();
@@ -139,8 +137,8 @@ void setup()
 
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
+	 }
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;

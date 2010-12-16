@@ -99,9 +99,6 @@ extern void cleanup()
 	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
-
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -133,67 +130,43 @@ void setup()
 int main(int argc, char *argv[])
 {
 	int fd, fl;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
-		tst_resm(TCONF,
-			 "This test can only run on kernels that are 2.6.27 and higher");
-		tst_exit();
+		tst_brkm(TCONF, NULL,
+		    "This test can only run on kernels that are 2.6.27 and higher");
 	}
 	setup();
 
-	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			fd = syscall(__NR_eventfd2, 1, 0);
-			if (fd == -1) {
-				tst_resm(TFAIL, "eventfd2(0) failed");
-				cleanup();
-				tst_exit();
-			}
-			fl = fcntl(fd, F_GETFL);
-			if (fl == -1) {
-				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
-			}
-			if (fl & O_NONBLOCK) {
-				tst_resm(TFAIL,
-					 "eventfd2(0) sets non-blocking mode");
-				cleanup();
-				tst_exit();
-			}
-			close(fd);
-
-			fd = syscall(__NR_eventfd2, 1, EFD_NONBLOCK);
-			if (fd == -1) {
-				tst_resm(TFAIL,
-					 "eventfd2(EFD_NONBLOCK) failed");
-				cleanup();
-				tst_exit();
-			}
-			fl = fcntl(fd, F_GETFL);
-			if (fl == -1) {
-				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
-			}
-			if ((fl & O_NONBLOCK) == 0) {
-				tst_resm(TFAIL,
-					 "eventfd2(EFD_NONBLOCK) does not set non-blocking mode");
-				cleanup();
-				tst_exit();
-			}
-			close(fd);
-			tst_resm(TPASS, "eventfd2(EFD_NONBLOCK) PASSED");
-			cleanup();
-		}
+	Tst_count = 0;
+	fd = syscall(__NR_eventfd2, 1, 0);
+	if (fd == -1) {
+		tst_brkm(TFAIL, cleanup, "eventfd2(0) failed");
 	}
+	fl = fcntl(fd, F_GETFL);
+	if (fl == -1) {
+		tst_brkm(TBROK, cleanup, "fcntl failed");
+	}
+	if (fl & O_NONBLOCK) {
+		tst_brkm(TFAIL, cleanup,
+		    "eventfd2(0) sets non-blocking mode");
+	}
+	close(fd);
+
+	fd = syscall(__NR_eventfd2, 1, EFD_NONBLOCK);
+	if (fd == -1) {
+		tst_brkm(TFAIL, cleanup, "eventfd2(EFD_NONBLOCK) failed");
+	}
+	fl = fcntl(fd, F_GETFL);
+	if (fl == -1) {
+		tst_brkm(TBROK, cleanup, "fcntl failed");
+	}
+	if ((fl & O_NONBLOCK) == 0) {
+		tst_brkm(TFAIL, cleanup,
+			 "eventfd2(EFD_NONBLOCK) didn't set non-blocking mode");
+	}
+	close(fd);
+	tst_resm(TPASS, "eventfd2(EFD_NONBLOCK) PASSED");
+
+	cleanup();
 	tst_exit();
 }

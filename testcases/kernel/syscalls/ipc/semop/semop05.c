@@ -117,7 +117,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "dd", &i_uclinux, &sem_id_1);
@@ -218,7 +222,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

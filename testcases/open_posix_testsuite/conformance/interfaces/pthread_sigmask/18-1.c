@@ -213,7 +213,11 @@ void * test(void * arg)
 			j %= 2 * NSIG;
 
 			if (j >= NSIG)
+<<<<<<< HEAD
 				ret = sigdelset(&set, signals[j - NSIG]);
+=======
+				ret = sigdelset(&set, signals[j-NSIG]);
+>>>>>>> master
 			else
 				ret = sigaddset(&set, signals[j]);
 
@@ -368,4 +372,3 @@ int main (int argc, char * argv[])
 #endif
 	PASSED;
 }
-

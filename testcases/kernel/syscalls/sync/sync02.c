@@ -97,10 +97,16 @@ int main(int ac, char **av)
 	char read_buffer[BUFSIZ];	/* buffer used to read data from file */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	/* Perform global setup for test */
 	setup();
@@ -129,7 +135,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "lseek() "
 						 "failed on %s, error=%d",
 						 TEMP_FILE, errno);
-				 /*NOTREACHED*/}
+				 }
 
 				/* Read the contents of file */
 				if (read(fildes, read_buffer,
@@ -147,7 +153,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup,
 						 "read() Fails on %s, error=%d",
 						 TEMP_FILE, errno);
-				 /*NOTREACHED*/}
+				 }
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
@@ -157,7 +163,7 @@ int main(int ac, char **av)
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -191,7 +197,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR | O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Write the buffer data into file */
 	if (write(fildes, write_buffer, strlen(write_buffer) + 1) !=
@@ -199,7 +205,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "write() failed to write buffer data to %s",
 			 TEMP_FILE);
-	 /*NOTREACHED*/}
+	 }
 
 }				/* End setup() */
 

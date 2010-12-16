@@ -196,37 +196,42 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	struct group *junk;
+
 	tst_require_root(NULL);
 	
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if ((nobody = getpwnam("nobody")) == NULL) {
-		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
+		tst_brkm(TBROK, NULL, "getpwnam(\"nobody\") failed");
 	}
 
 	if (setgid(nobody->pw_gid) == -1) {
-		tst_resm(TINFO, "setgid failed to "
-			 "to set the effective gid to %d", nobody->pw_gid);
-		perror("setgid");
+		tst_brkm(TBROK|TERRNO, NULL,
+		    "setgid failed to set the effective gid to %d",
+		    nobody->pw_gid);
 	}
 	if (setuid(nobody->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", nobody->pw_uid);
-		perror("setuid");
+		tst_brkm(TBROK|TERRNO, NULL,
+		    "setuid failed to to set the effective uid to %d",
+		    nobody->pw_uid);
 	}
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	root = *(getgrnam("root"));
-	root_gr_gid = root.gr_gid;
+#define GET_GID(group)	do {		\
+	junk = getgrnam(#group);	\
+	if (junk == NULL) {		\
+		tst_brkm(TBROK|TERRNO, NULL, "getgrnam(\"%s\") failed", #group); \
+	}				\
+	group ## _gr_gid = junk->gr_gid;\
+} while (0)
 
-	users = *(getgrnam("users"));
-	users_gr_gid = users.gr_gid;
-
-	bin = *(getgrnam("bin"));
-	bin_gr_gid = bin.gr_gid;
+	GET_GID(root);
+	GET_GID(users);
+	GET_GID(bin);
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -246,10 +251,7 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void gid_verify(struct group *rg, struct group *eg, char *when)
 {

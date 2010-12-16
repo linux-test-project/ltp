@@ -58,7 +58,6 @@ extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID = "tkill02";  /* Test program identifier.*/
 int  testno;
-int  TST_TOTAL = 2;		   /* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -117,55 +116,32 @@ struct test_case_t {
 	{ 99999, ESRCH }
 };
 
+int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
+
 int main(int ac, char **av) {
 	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
-	int i, succeed=0, fail=0;
-	
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	int i;
 
 	setup();
 
-	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
+	for (i = 0; i < TST_TOTAL; i++) {
 
-			for (i=0; i<2; i++) {
+		TEST(syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
 
-				TEST(syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
-
-				if (TEST_RETURN == -1) {
-				    	if (TEST_ERRNO == test_cases[i].exp_errno) {
-						tst_resm(TINFO|TTERRNO,
-							"tkill call with "
-							"tid=%d got expected "
-							"errno",
-							test_cases[i].tid);
-						succeed++;
-					} else {
-						tst_resm(TFAIL|TTERRNO,
-							"tkill call with "
-							"tid=%d got unexpected "
-							"errno",
-							test_cases[i].tid);
-						fail++;
-					}
-				} else {
-					tst_resm(TINFO,
-						"tkill with tid=%d succeeded "
-						"unexpectedly",
-						test_cases[i].tid);
-				}
-			}
-
-			if (fail != 0) {
-				tst_brkm(TFAIL|TERRNO, cleanup, "tkill failed");
+		if (TEST_RETURN == -1) {
+		    	if (TEST_ERRNO == test_cases[i].exp_errno) {
+				tst_resm(TINFO|TTERRNO,
+				    "tkill(%d, SIGUSR1) failed as expected",
+				    test_cases[i].tid);
 			} else {
-				tst_resm(TPASS, "tkill() passed");
+				tst_brkm(TFAIL|TTERRNO, cleanup,
+				    "tkill(%d, SIGUSR1) failed unexpectedly",
+				    test_cases[i].tid);
 			}
+		} else {
+			tst_brkm(TFAIL, cleanup,
+			    "tkill(%d) succeeded unexpectedly",
+			    test_cases[i].tid);
 		}
 	}
 	cleanup();

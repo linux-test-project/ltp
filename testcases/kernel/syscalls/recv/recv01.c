@@ -115,9 +115,15 @@ int main(int argc, char *argv[])
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 #ifdef UCLINUX
 	argv0 = argv[0];
@@ -156,7 +162,7 @@ int main(int argc, char *argv[])
 	}
 	cleanup();
 
-	/* NOTREACHED */
+	
 	return 0;
 }				/* End main */
 
@@ -261,7 +267,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 		return pid;
 	}
 
-	 /*NOTREACHED*/ exit(1);
+	  exit(1);
 }
 
 void do_child()

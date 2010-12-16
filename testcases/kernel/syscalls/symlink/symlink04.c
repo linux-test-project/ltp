@@ -97,11 +97,15 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Perform global setup for test */
 	setup();
@@ -140,7 +144,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "lstat(2) of "
 						 "%s failed, error:%d", SYMFILE,
 						 errno);
-				 /*NOTREACHED*/}
+				 }
 
 				/* Check if the st_mode contains a link  */
 				if (!S_ISLNK(stat_buf.st_mode)) {
@@ -162,13 +166,13 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup,
 				 "unlink(%s) Failed, errno=%d : %s",
 				 SYMFILE, errno, strerror(errno));
-		 /*NOTREACHED*/}
+		 }
 		Tst_count++;	/* incr TEST_LOOP counter */
 	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -200,7 +204,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Close the temporary file created above */
 	if (close(fd) == -1) {

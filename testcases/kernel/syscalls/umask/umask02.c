@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	setup();
 
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 				 "values");
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -129,4 +129,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

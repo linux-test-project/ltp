@@ -109,8 +109,6 @@ int setup2();		/* setup function to test chmod for EACCES */
 int setup3();		/* setup function to test chmod for ENOTDIR */
 int longpath_setup();	/* setup function to test chmod for ENAMETOOLONG */
 
-char *get_high_address();	/* Function from ltp-Lib */
-
 char *test_home;		/* variable to hold TESTHOME env. */
 char Longpathname[PATH_MAX + 2];
 char High_address_node[64];
@@ -160,7 +158,11 @@ int main(int ac, char **av)
 	struct passwd *ltpuser;
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -232,7 +234,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}		/* End main */
+ }		/* End main */
 
 /*
  * void
@@ -253,7 +255,7 @@ void setup()
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* Pause if that option was specified */

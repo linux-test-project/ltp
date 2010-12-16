@@ -190,7 +190,11 @@ forkchldrn(int **pidlst, int numchld, int action, int (*chldfunc)())
 			killchldrn(pidlst, i, SIGTERM);
 			return(-1);
 		}
+<<<<<<< HEAD
 		if (cpid == 0 ) exit((*chldfunc)(i, action));
+=======
+		if ( cpid == 0 ) exit((*chldfunc)(i, action));
+>>>>>>> master
 		else *(*pidlst+i) = cpid;
 	}
 	return 0;

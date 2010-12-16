@@ -28,8 +28,12 @@ int main()
 	int sig;
 
 	/* Empty set of blocked signals */
+<<<<<<< HEAD
 	if ((sigemptyset(&newmask) == -1) || 
 	    (sigemptyset(&pendingset) == -1))
+=======
+	if (sigemptyset(&newmask) == -1 || sigemptyset(&pendingset) == -1)
+>>>>>>> master
 	{
 		printf("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;

@@ -81,8 +81,12 @@ int main(int ac, char **av)
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();
 
@@ -113,7 +117,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -138,20 +142,20 @@ void setup()
 	if ((in_fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-	 /*NOTREACHED*/}
+	 }
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(in_fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	close(in_fd);
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 
 	/* Make fulfilled out_fd. */
 	if (socketpair(PF_UNIX, SOCK_DGRAM, 0, p) < 0) {
 		tst_brkm(TBROK, cleanup, "socketpair failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 
 	/* Don't close.
 	   You cannot write nothing on out_fd if ignored_fd is closed. */

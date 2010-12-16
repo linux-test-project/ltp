@@ -100,11 +100,15 @@ int main(int ac, char **av)
 	void *alt_stk;		/* address of alternate stack for signal */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Perform global setup for test */
 	setup();
@@ -187,7 +191,7 @@ int main(int ac, char **av)
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -215,7 +219,7 @@ void setup()
 	if ((sigaction(SIGUSR1, &act, &oact)) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigaction() fails in setup, errno=%d", errno);
-	 /*NOTREACHED*/}
+	 }
 
 	/* Send the signal to the test process */
 	kill(my_pid, SIGUSR1);
@@ -230,7 +234,7 @@ void setup()
 	if ((sigstk.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "could not allocate memory for the alternate stack");
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*

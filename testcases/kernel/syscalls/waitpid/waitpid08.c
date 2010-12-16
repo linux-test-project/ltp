@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 #ifdef UCLINUX
 	argv0 = argv[0];
 
@@ -219,7 +219,7 @@ void do_child_1(void)
 			tst_resm(TFAIL, "Kill of child %d "
 				 "failed, errno = %d", i, errno);
 			tst_exit();
-		 /*NOTREACHED*/}
+		 }
 	}
 
 	/*
@@ -352,7 +352,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void inthandlr()
 {

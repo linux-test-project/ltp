@@ -137,7 +137,11 @@ int main(int ac, char **av)
 	int pid;
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -153,11 +157,11 @@ int main(int ac, char **av)
 
 	if (pid == -1) {
 		tst_brkm(TBROK, cleanup, "fork() failed");
-	 /*NOTREACHED*/} else if (pid == 0) {
+	 } else if (pid == 0) {
 		if ((ltpuser = getpwnam(LTPUSER1)) == NULL) {
 			tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
 				 LTPUSER1);
-		 /*NOTREACHED*/}
+		 }
 
 		/* get uid of user */
 		user_uid = ltpuser->pw_uid;
@@ -219,7 +223,7 @@ int main(int ac, char **av)
 	}
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -291,7 +295,7 @@ int setup1()
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
 		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
 			 LTPUSER2);
-	 /*NOTREACHED*/}
+	 }
 
 	/* get uid/gid of user accordingly */
 	user_uid = ltpuser->pw_uid;
@@ -300,7 +304,7 @@ int setup1()
 	if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d",
 			 TEMP_FILE, errno);
-	 /*NOTREACHED*/}
+	 }
 
 	return 0;
 }				/* End of setup1 */

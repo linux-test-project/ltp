@@ -182,7 +182,7 @@ int main(int ac, char **av)
 
 			/* Switch to nobody user */
 			if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-				tst_brkm(TBROK, tst_exit, "\"nobody\" user"
+				tst_brkm(TBROK, NULL, "\"nobody\" user"
 					 "not present");
 			}
 			if (setuid(ltpuser->pw_uid) == -1) {
@@ -221,7 +221,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -239,7 +239,7 @@ void setup()
 		if (Type != NULL) {
 			free(Type);
 		}
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* Switch to nobody user */
@@ -247,13 +247,13 @@ void setup()
 		if (Type != NULL) {
 			free(Type);
 		}
-		tst_brkm(TBROK, tst_exit, "\"nobody\" user not present");
+		tst_brkm(TBROK, NULL, "\"nobody\" user not present");
 	}
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		if (Type != NULL) {
 			free(Type);
 		}
-		tst_brkm(TBROK, tst_exit, "setuid failed to set the "
+		tst_brkm(TBROK, NULL, "setuid failed to set the "
 			 "effective uid to %d", ltpuser->pw_uid);
 	}
 	/* make a temp directory */

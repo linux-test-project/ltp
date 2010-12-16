@@ -102,9 +102,15 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* Perform global setup for test */
@@ -184,7 +190,7 @@ void setup()
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
 	}
 
 	/* capture signals */
@@ -195,7 +201,7 @@ void setup()
 
 	/* Get current bin directory */
 	if (getcwd(bin_dir, sizeof(bin_dir)) == NULL) {
-		tst_brkm(TBROK, tst_exit,
+		tst_brkm(TBROK, NULL,
 			 "getcwd(3) fails to get working directory of process");
 	}
 
@@ -204,7 +210,7 @@ void setup()
 
 	/* get the name of the temporary directory */
 	if ((tmp_dir = getcwd(tmp_dir, 0)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "getcwd failed");
+		tst_brkm(TBROK, NULL, "getcwd failed");
 	}
 
 	if ((pwent = getpwnam("bin")) == NULL) {

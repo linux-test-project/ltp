@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 	/*send () TEST1: Bad socket descriptor, EBADF Expected error*/
 	count = send(-1, message, len_snd, flag);
 	if (count != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "send with a bad socket "
+		tst_brkm(TBROK, NULL, "send with a bad socket "
 			 "descriptor count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() with a bad socket descriptor - EBADF");
@@ -120,7 +120,7 @@ main(int argc, char *argv[])
 	/*send () TEST2: Invalid socket, ENOTSOCK Expected error*/
 	count = send(0, message, len_snd, flag);
 	if (count != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "send with invalid socket "
+		tst_brkm(TBROK, NULL, "send with invalid socket "
 			 "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() with invalid socket - ENOTSOCK");
@@ -128,7 +128,7 @@ main(int argc, char *argv[])
 	/*send () TEST3: send on listening socket, EPIPE Expected error*/
 	count = send(lstn_sk, message, len_snd, flag);
 	if (count != -1 || errno != EPIPE)
-		tst_brkm(TBROK, tst_exit, "send on a listening socket "
+		tst_brkm(TBROK, NULL, "send on a listening socket "
 			 "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() on a listening socket - EPIPE");
@@ -137,7 +137,7 @@ main(int argc, char *argv[])
        /* FIXME this test should pass. Don't catch why...  */
 	count = send(sk, (char *)0x1, len_snd, flag);
 	if (count != -1 || errno != EFAULT)
-		tst_brkm(TBROK, tst_exit, "send with invalid message "
+		tst_brkm(TBROK, NULL, "send with invalid message "
 			 "pointer count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() with invalid message ptr - EFAULT");
@@ -154,7 +154,7 @@ main(int argc, char *argv[])
 	/*send () TEST5: send on closed association, EPIPE Expected error*/
 	count = send(acpt1_sk, message, len_snd, flag);
 	if (count != -1 || errno != EPIPE)
-		tst_brkm(TBROK, tst_exit, "send on a closed association "
+		tst_brkm(TBROK, NULL, "send on a closed association "
 			 "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() on a closed association - EPIPE");
@@ -190,7 +190,7 @@ main(int argc, char *argv[])
 	/*send() TEST6: Sending data from client socket to server socket*/
 	count = send(sk, message, msg_count, flag);
 	if (count != msg_count)
-		tst_brkm(TBROK, tst_exit, "send from client to server "
+		tst_brkm(TBROK, NULL, "send from client to server "
                          "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() from client to server - SUCCESS");
@@ -202,7 +202,7 @@ main(int argc, char *argv[])
 	/*send() TEST7: Sending data from accept socket to client socket*/
 	count = send(acpt_sk, message, msg_count, flag);
 	if (count != msg_count)
-		tst_brkm(TBROK, tst_exit, "send from accept socket to client "
+		tst_brkm(TBROK, NULL, "send from accept socket to client "
                          "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() from accept socket to client - SUCCESS");

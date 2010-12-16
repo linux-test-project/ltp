@@ -149,11 +149,15 @@ int main(int ac, char **av)
 	char *file_name;	/* ptr. for file name whose mode is modified */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
-	uid_t User_id;		/* Effective user id of a test process */
-	gid_t Group_id;		/* Effective group id of a test process */
+	uid_t user_id;		/* Effective user id of a test process */
+	gid_t group_id;		/* Effective group id of a test process */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -169,8 +173,8 @@ int main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Set uid/gid values to that of test process */
-	User_id = geteuid();
-	Group_id = getegid();
+	user_id = geteuid();
+	group_id = getegid();
 
 	/* Check looping state if -c option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -190,7 +194,7 @@ int main(int ac, char **av)
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
-			TEST(chown(file_name, User_id, Group_id));
+			TEST(chown(file_name, user_id, group_id));
 
 			/* Check return code from chown(2) */
 			if (TEST_RETURN != -1) {
@@ -221,7 +225,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
-/*NOTREACHED*/
+
 }		/* End main */
 
 /*
@@ -245,7 +249,7 @@ void setup()
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1)

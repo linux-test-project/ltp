@@ -246,10 +246,10 @@ setup(void)
 
 	/* Check whether we are root*/
 	if (geteuid() != 0)
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 
 	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
-		tst_brkm(TBROK, tst_exit, "Clock gettime failed");
+		tst_brkm(TBROK, NULL, "Clock gettime failed");
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);

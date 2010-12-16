@@ -154,22 +154,19 @@ int main(int ac, char **av)
 	Num_flags = sizeof(Flags) / sizeof(int);
 	TST_TOTAL = 3 * Num_flags;
 
+<<<<<<< HEAD
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
+=======
+>>>>>>> master
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
@@ -224,24 +221,13 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-
-	return 0;
+	tst_exit();
 }				/* end main() */
 
-/***********************************************************
- *
- *	This function does the actual running of the tests.
- *
- ***********************************************************/
 int testrun(int flag, int bytes, int ti)
 {
 
-	void cleanup();
-
-	int fildes,		/* temporary file's descriptor */
-	 i;			/* counter */
-
-	int ret;
+	int fildes, i, ret;
 
 	struct stat buffer;	/* buffer of memory required for stat command */
 
@@ -339,8 +325,4 @@ void cleanup()
 
 	/* remove temporary directory and all files in it. */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-
 }				/* End cleanup() */

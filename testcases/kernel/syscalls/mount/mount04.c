@@ -131,8 +131,7 @@ int main(int ac, char **av)
 	/* Check for mandatory option of the testcase */
 	if (Dflag == 0) {
 		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
-			 " mounting with -D option, Run '%s  -h' for option "
-			 " information.", TCID);
+			 " mounting with -D option.");
 		tst_exit();
 	}
 
@@ -200,7 +199,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -216,7 +215,7 @@ void setup()
 	/* Check whether we are root */
 	if (geteuid() != 0) {
 		free(Type);
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	ltpuser = getpwnam(nobody_uid);

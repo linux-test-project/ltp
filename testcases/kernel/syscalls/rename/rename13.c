@@ -89,9 +89,8 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/*
 	 * perform global setup for test
@@ -124,14 +123,14 @@ int main(int ac, char **av)
 			if (stat(mname, &buf2) == -1) {
 				tst_brkm(TBROK, cleanup, "failed to stat file "
 					 "%s in rename()", mname);
-				/* NOTREACHED */
+				
 			}
 
 			/* check the existence of "old", and get the status */
 			if (stat(fname, &buf1) == -1) {
 				tst_brkm(TBROK, cleanup, "failed to stat file "
 					 "%s in rename()", fname);
-				/* NOTREACHED */
+				
 			}
 
 			/* verify the new file is the same as the original */
@@ -161,7 +160,7 @@ int main(int ac, char **av)
 	 * cleanup and exit
 	 */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -188,7 +187,7 @@ void setup()
 	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"
 			 "in rename()", fname);
-		/* NOTREACHED */
+		
 	}
 
 	/* save the dev and inode */
@@ -199,7 +198,7 @@ void setup()
 	if (link(fname, mname) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "link from %s to %s failed!", fname, mname);
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*
@@ -219,8 +218,4 @@ void cleanup()
 	 */
 	tst_rmdir();
 
-	/*
-	 * Exit with return code appropriate for results.
-	 */
-	tst_exit();
 }

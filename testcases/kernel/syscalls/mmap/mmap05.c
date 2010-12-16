@@ -95,7 +95,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 size_t page_sz;			/* system page size */
 volatile char *addr;		/* addr of memory mapped region */
 int fildes;			/* file descriptor for temporary file */
-volatile int pass = 0;		/* pass flag perhaps set to 1 in sig_handler */
+volatile int pass = 0;
 sigjmp_buf env;			/* environment for sigsetjmp/siglongjmp */
 
 void setup();			/* Main setup function of test */
@@ -108,7 +108,6 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	char file_content;	/* tempfile content */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -166,8 +165,7 @@ int main(int ac, char **av)
 
 		/* Unmap mapped memory and reset pass in case we are looping */
 		if (munmap((void *)addr, page_sz) != 0) {
-			tst_brkm(TFAIL, cleanup, "munmap() fails to unmap the "
-				 "memory, errno=%d", errno);
+			tst_brkm(TFAIL|TERRNO, cleanup, "munmap failed");
 		}
 		pass = 0;
 
@@ -201,7 +199,7 @@ void setup(void)
 	}
 
 	/* Allocate space for the test buffer */
-	if ((tst_buff = (char *)calloc(page_sz, sizeof(char))) == NULL) {
+	if ((tst_buff = calloc(page_sz, sizeof(char))) == NULL) {
 		tst_brkm(TFAIL, NULL, "calloc failed (tst_buff)");
 	}
 
@@ -247,7 +245,7 @@ void setup(void)
 }
 
 /*
- * sig_handler() - Signal Cathing function.
+ * sig_handler() - Signal Catching function.
  *   This function gets executed when the test process receives
  *   the signal SIGSEGV while trying to access the contents of memory which
  *   is not accessible.

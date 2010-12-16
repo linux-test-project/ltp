@@ -86,7 +86,7 @@ SYM newsym()
 {
     SYM h;
 
-    if((h=(SYM)malloc(sizeof(struct symh))) == NULL) {
+    if ((h=(SYM)malloc(sizeof(struct symh))) == NULL) {
         sym_error="sym header malloc failed!";
         return(NULL);
     }
@@ -102,7 +102,7 @@ mknode(struct sym *next, char *key, void *data)
 {
     struct sym *n;
 
-    if((n=(struct sym *)malloc(sizeof(struct sym))) == NULL) {
+    if ((n=(struct sym *)malloc(sizeof(struct sym))) == NULL) {
       sym_error="sym node malloc failed!";
       return(NULL);
     }
@@ -111,7 +111,7 @@ mknode(struct sym *next, char *key, void *data)
     n->key  = strdup(key);
     n->data = data;
 
-    if(n->key == NULL) {
+    if (n->key == NULL) {
       sym_error="sym node strdup(key) failed!";
       return(NULL);
     }
@@ -124,8 +124,8 @@ mknode(struct sym *next, char *key, void *data)
 static struct sym *
 find_key1(struct sym *sym, char *key)
 {
-    while(sym != NULL)
-      if(strcmp(sym->key, key) == 0)
+    while (sym != NULL)
+      if (strcmp(sym->key, key) == 0)
         return(sym);
     else
       sym=sym->next;
@@ -140,20 +140,20 @@ add_key(SYM sym, char *key, void *data)
 {
     register struct sym *sn;
 
-    if(sym->sym == NULL)
+    if (sym->sym == NULL)
     {
       sym->sym = mknode(NULL, key, data);
-      if(sym->sym == NULL)
+      if (sym->sym == NULL)
       {
         return(-1);
       }
     }
     else
     {
-      for( sn=sym->sym; sn!=NULL && sn->next != NULL; sn=sn->next );
+      for (sn=sym->sym; sn!=NULL && sn->next != NULL; sn=sn->next);
       sn->next = mknode(NULL, key, data);
       assert(sn->next != NULL);
-      if(sn->next == NULL)
+      if (sn->next == NULL)
         return(-1);
     }
     return(0);
@@ -206,39 +206,39 @@ sym_put(SYM sym, char *key, void *data, int flags)
     SYM csym, ncsym;		/* search: current symbol table */
     struct sym *nsym = NULL;	/* search: found symbol entry */
 
-    if(sym == NULL)
+    if (sym == NULL)
       return(EINVAL);
 
     nkey = strdup(key);
     keys = splitstr(key, ",",NULL);
 
-    if(keys == NULL)
+    if (keys == NULL)
       return(EINVAL);
 
-    for(kk=(char **)keys, csym = sym;
+    for (kk=(char **)keys, csym = sym;
       *kk != NULL && (nsym=find_key1(csym->sym, *kk)) != NULL;
       csym=nsym->data) {
 
-      if(*++kk == NULL)
+      if (*++kk == NULL)
         break;
 
-	if(nsym->data == NULL) { /* fatal error */
+	if (nsym->data == NULL) { /* fatal error */
 	    free(nkey);
 	    splitstr_free(keys);
 	    return(ENOTDIR);
 	}
-	if( ((SYM) (nsym->data))->magic != SYM_MAGIC ) {
+	if (((SYM) (nsym->data))->magic != SYM_MAGIC) {
 	    free(nkey);
 	    splitstr_free(keys);
 	    return(ENOTDIR);
 	}
     }
 
-    if(*kk == NULL) {		/* found a complete match */
+    if (*kk == NULL) {		/* found a complete match */
 	free(nkey);
 	splitstr_free(keys);
 
-	if(flags == PUT_REPLACE) {
+	if (flags == PUT_REPLACE) {
 	    nsym->data = data;
 	    return(0);
 	} else {
@@ -247,8 +247,8 @@ sym_put(SYM sym, char *key, void *data, int flags)
     }
 
     /* csym is a ptr to a list */
-    for(;*kk != NULL; kk++) {
-	if(*(kk+1) != NULL) {
+    for (;*kk != NULL; kk++) {
+	if (*(kk+1) != NULL) {
 	    add_key(csym, *kk, (void *)(ncsym=newsym()));
 	    csym = ncsym;
 	} else {
@@ -275,34 +275,34 @@ void * sym_get(SYM sym, char *key)
     SYM csym;			/* search: current symbol table */
     struct sym *nsym = NULL;	/* search: found symbol entry */
 
-    if(sym == NULL)
+    if (sym == NULL)
 	return(NULL);
 
     nkey=strdup(key);
     keys = splitstr(nkey, ",", NULL);
-    if(keys == NULL)
+    if (keys == NULL)
 	return(NULL);
 
-    for(kk=(char **)keys, csym = sym;
+    for (kk=(char **)keys, csym = sym;
 	*kk != NULL && (nsym=find_key1(csym->sym, *kk)) != NULL;
 	csym=nsym->data) {
 
-	if(*++kk == NULL)
+	if (*++kk == NULL)
 	    break;
 
-	if(nsym->data == NULL) { /* fatal error */
+	if (nsym->data == NULL) { /* fatal error */
 	    free(nkey);
 	    splitstr_free(keys);
 	    return(NULL);
 	}
-	if( ((SYM)(nsym->data))->magic != SYM_MAGIC ) {
+	if (((SYM)(nsym->data))->magic != SYM_MAGIC) {
 	    free(nkey);
 	    splitstr_free(keys);
 	    return(NULL);
 	}
     }
 
-    if(*kk == NULL) {		/* found a complete match */
+    if (*kk == NULL) {		/* found a complete match */
 	splitstr_free(keys);
 	free(nkey);
 	return(nsym->data);
@@ -338,11 +338,11 @@ int
 	 */
     case R_CURSOR:
 	csym = (SYM) sym_get(sym, (char *)key->data);
-	if( csym == NULL || csym->magic != SYM_MAGIC ) {
+	if (csym == NULL || csym->magic != SYM_MAGIC) {
 	    return(2);
 	}
 	sym->cursor = csym->sym;
-	if(sym->cursor == NULL)
+	if (sym->cursor == NULL)
 	    return(1);
 	key->data = sym->cursor->key;
 	data->data = sym->cursor->data;
@@ -351,7 +351,7 @@ int
 
     case R_FIRST:
 	sym->cursor = sym->sym;
-	if(sym->cursor == NULL)
+	if (sym->cursor == NULL)
 	    return(1);
 	key->data = sym->cursor->key;
 	data->data = sym->cursor->data;
@@ -359,11 +359,11 @@ int
 	return(0);
 
     case R_NEXT:
-	if(sym->cursor == NULL)
+	if (sym->cursor == NULL)
 	    return(1);
 	sym->cursor = sym->cursor->next;
 
-	if(sym->cursor == NULL)
+	if (sym->cursor == NULL)
 	    return(1);
 
 	key->data = sym->cursor->key;
@@ -390,11 +390,11 @@ sym_dump(SYM sym, int depth)
     register struct sym *se;	/* symbol entry */
     register int d;
 
-    if(sym == NULL || sym->magic != SYM_MAGIC)
+    if (sym == NULL || sym->magic != SYM_MAGIC)
 	return -1;
 
-    for(se=sym->sym;se != NULL;se=se->next) {
-	for(d=0;d < depth; d++) {
+    for (se=sym->sym;se != NULL;se=se->next) {
+	for (d=0;d < depth; d++) {
 	    putchar('"');	putchar(' ');
 	}
 	printf("%s\n", se->key);
@@ -413,23 +413,23 @@ sym_dump_s(SYM sym, int depth)
     register struct sym *se;	/* symbol entry */
     register int d;
 
-    if(sym == NULL)
+    if (sym == NULL)
 	return 0;
 
-    if(sym->magic != SYM_MAGIC) {
-	for(d=0;d < depth; d++) {
+    if (sym->magic != SYM_MAGIC) {
+	for (d=0;d < depth; d++) {
 	    putchar('"');	putchar(' ');
 	}
 	printf(" = %s\n", (char *)sym);
 	return 0;
     }
 
-    for(se=sym->sym;se != NULL;se=se->next) {
-	for(d=0;d < depth; d++) {
+    for (se=sym->sym;se != NULL;se=se->next) {
+	for (d=0;d < depth; d++) {
 	    putchar('"');	putchar(' ');
 	}
 	printf("%s", se->key);
-	if(((SYM)se->data)->magic == SYM_MAGIC) {
+	if (((SYM)se->data)->magic == SYM_MAGIC) {
 	    putchar('\n');
 	    sym_dump_s((SYM)se->data, depth+1);
 	} else {
@@ -447,26 +447,26 @@ sym_rm(SYM sym, int flags)
 {
     register struct sym *se, *nse;	/* symbol entry */
 
-    if(sym == NULL)
+    if (sym == NULL)
 	return 0;
 
-    if(sym->magic != SYM_MAGIC) {
-	if(!(flags&RM_DATA))
+    if (sym->magic != SYM_MAGIC) {
+	if (!(flags&RM_DATA))
 	    free(sym);
 	return 0;
     }
 
-    for(se=sym->sym;se != NULL;) {
+    for (se=sym->sym;se != NULL;) {
 	sym_rm((SYM)se->data, flags);
 	nse=se->next;
-	if(flags & RM_KEY)
+	if (flags & RM_KEY)
 	    free(se->key);
-	if(flags & RM_DATA)
+	if (flags & RM_DATA)
 	    free(se->data);
 	free(se);
 	se=nse;
     }
-    if(!(flags&RM_DATA))
+    if (!(flags&RM_DATA))
 	free(sym);
     return 0;
 }

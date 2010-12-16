@@ -107,7 +107,11 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/*
@@ -135,7 +139,7 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "fork() failed");
-			/* NOTREACHED */
+			
 		}
 
 		if (pid == 0) {	/* first child */
@@ -147,7 +151,7 @@ int main(int ac, char **av)
 					 "effective gid to %d",
 					 ltpuser1->pw_gid, ltpuser1->pw_gid);
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			/* being ltupuser1 */
 			rval = setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid);
@@ -158,7 +162,7 @@ int main(int ac, char **av)
 					 "effective uid to %d",
 					 ltpuser1->pw_uid, ltpuser1->pw_uid);
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 
 			/*
@@ -171,7 +175,7 @@ int main(int ac, char **av)
 					 " a directory with Set "
 					 " group ID turn on ");
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			if (stat(tstdir1, &buf1) == -1) {
 				perror("stat");
@@ -179,18 +183,18 @@ int main(int ac, char **av)
 					 "failed to stat the new directory"
 					 "in mkdir()");
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			if (chmod(tstdir1, buf1.st_mode | S_ISGID) != 0) {
 				perror("chmod");
 				tst_resm(TFAIL, "failed to set S_ISGID bit");
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 
 			/* Successfully create the parent directory */
 			exit(0);
-			/* NOTREACHED */
+			
 		}
 		wait(&status);
 		if (WEXITSTATUS(status) != 0) {
@@ -211,7 +215,7 @@ int main(int ac, char **av)
 		if ((pid1 = FORK_OR_VFORK()) < 0) {
 			perror("fork failed");
 			tst_brkm(TFAIL, cleanup, "fork() failed");
-			/* NOTREACHED */
+			
 		} else if (pid1 == 0) {	/* second child */
 
 			/* being user ltpuser2 */
@@ -223,7 +227,7 @@ int main(int ac, char **av)
 					 ltpuser2->pw_gid, ltpuser2->pw_gid);
 				perror("setregid");
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			rval = setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid);
 			if (rval < 0) {
@@ -233,7 +237,7 @@ int main(int ac, char **av)
 					 ltpuser2->pw_uid, ltpuser2->pw_uid);
 				perror("setreuid");
 				exit(1);
-				/* NOTREACHED */
+				
 
 			}
 
@@ -247,7 +251,7 @@ int main(int ac, char **av)
 					 " a directory %s under %s ", tstdir2,
 					 tstdir1);
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			/*
 			 * check the group ID
@@ -259,14 +263,14 @@ int main(int ac, char **av)
 					 "failed to stat the new directory"
 					 "in mkdir()");
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			if (stat(tstdir1, &buf1) == -1) {
 				tst_resm(TFAIL,
 					 "failed to stat the new directory"
 					 "in mkdir()");
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			if (buf.st_gid != buf1.st_gid) {
 				tst_resm(TFAIL, "mkdir() FAILED to inherit "
@@ -274,7 +278,7 @@ int main(int ac, char **av)
 					 " directory %d",
 					 buf.st_gid, buf1.st_gid);
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 
 			/* check the S_ISGID  bit */
@@ -283,11 +287,11 @@ int main(int ac, char **av)
 					 " the S_ISGID bit from parent "
 					 " directory");
 				exit(1);
-				/* NOTREACHED */
+				
 			}
 			/* PASS */
 			exit(0);
-			/* NOTREACHED */
+			
 		}
 
 		waitpid(pid1, &status, 0);
@@ -298,7 +302,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "Test to attempt to make a directory"
 				 " inherits group ID FAILED");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 	}			/* End for TEST_LOOPING */
 
@@ -307,7 +311,7 @@ int main(int ac, char **av)
 	 */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }				/* End main */
 
 /*

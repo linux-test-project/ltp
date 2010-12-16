@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	/* set "tstdir", and "testfile" vars */
 	setup();
@@ -162,12 +162,12 @@ int main(int argc, char **argv)
 		if (signal(SIGTERM, sighandler) == SIG_ERR) {
 			perror("signal: SIGTERM");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
 			perror("signal: SIGPIPE");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		init_buffs(buf_list);
 
@@ -175,24 +175,24 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
 			cleanup();
-		 /*NOTREACHED*/} else
+		 } else
 		    if ((nbytes = write(fd[0], buf_list[2], K_1)) != K_1) {
 			tst_resm(TFAIL,
 				 "write failed: nbytes = %d, " "errno = %d",
 				 nbytes, errno);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		if (close(fd[0]) < 0) {
 			tst_resm(TFAIL, "close failed: errno: %d", errno);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0) {
 			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 //block1: /* given vector length -1, writev() return EINVAL. */
 		tst_resm(TINFO, "Enter Block 1");
 		fail = 0;
@@ -443,7 +443,7 @@ int main(int argc, char **argv)
 	close(fd[0]);
 	close(fd[1]);
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*
@@ -521,7 +521,7 @@ int init_buffs(char *pbufs[])
 		default:
 			tst_resm(TFAIL, "Error detected: init_buffs()");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 	}
 	return 0;
 }
@@ -560,7 +560,7 @@ void sighandler(int sig)
 		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
 			 f_name, errno);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 	exit(sig);
 }
 

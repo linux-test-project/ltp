@@ -105,9 +105,6 @@ extern void cleanup() {
 	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
-
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -138,7 +135,6 @@ void setup() {
 /*
  * Global variables
  */
-static int opt_debug;
 static char *progname;
 
 enum test_type {
@@ -351,11 +347,6 @@ static int do_test (struct test_case *tc)
 	if (tc->policy == MPOL_DEFAULT)
 		nodemask_zero(&nodemask);
 	cmp_ok = tc->policy == policy && (tc->from_node == NONE || nodemask_equal(&nodemask,&getnodemask));
-	if (opt_debug) {
-		nodemask_dump("nodemask Expect:", &nodemask);
-		nodemask_dump("nodemask Result:", &getnodemask);
-		tst_resm(TINFO,"policy E:%d R:%d", tc->policy, policy);
-	}
 TEST_END:
 	/*
 	 * Check results
@@ -367,96 +358,40 @@ TEST_END:
 
 
 /*
- * usage()
- */
-
-void usage(const char *progname)
-{
-	tst_resm(TINFO, "usage: %s [options]", progname);
-	tst_resm(TINFO, "This is a regression test program of %s system call.", SYSCALL_NAME);
-	tst_resm(TINFO, "options:");
-	tst_resm(TINFO, "    -d --debug	   Show debug messages");
-	tst_resm(TINFO, "    -h --help	    Show this message");
-
-	tst_resm(TINFO,"NG");
-	exit(1);
-}
-
-
-/*
  * main()
  */
 
 
 
 int main(int argc, char **argv) {
-	int c, i, lc, ret;
-	char *msg;	      /* message returned from parse_opts */
-
-	struct option long_options[] = {
-		{ "debug", no_argument, 0, 'd' },
-		{ "help",  no_argument, 0, 'h' },
-		{ NULL, 0, NULL, 0 }
-	};
-
-	progname = basename(argv[0]);
-
-	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	     tst_exit();
-	}
+	int i, ret;
 
 	setup();
 
-	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	ret = 0;
 
-		Tst_count = 0;
-
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-
-			TEST(c = getopt_long(argc, argv, "dh", long_options, NULL));
-
-			while (TEST_RETURN != -1) {
-				switch (c) {
-				case 'd':
-					opt_debug = 1;
-					break;
-				default:
-					usage(progname);
-					// NOTREACHED
-				}
-			}
-
-			/*
-			 * Execute test
-		 	 */
-			for (i = 0; i < (int)(sizeof(tcase) / sizeof(*tcase)); i++) {
-				tst_resm(TINFO, "(case%02d) START", i);
-				ret = do_test(&tcase[i]);
-				tst_resm((ret == 0 ? TPASS : TFAIL | TERRNO),
-					 "(case%02d) END", i);
-			}
-		
-		}
-
+	/*
+	 * Execute test
+	 */
+	for (i = 0; ret == 0 && i < (int)(sizeof(tcase) / sizeof(*tcase));
+	    i++) {
+		tst_resm(TINFO, "(case%02d) START", i);
+		ret = do_test(&tcase[i]);
+		tst_resm((ret == 0 ? TPASS : TFAIL|TERRNO), "(case%02d) END",
+		    i);
 	}
 
 	cleanup();
 	tst_exit();
 
-
 }
 #else
 int main(void) {
-	tst_resm(TBROK, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
-	return 0;
+	tst_brkm(TBROK, NULL, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
 }
 #endif
 #else
 int main(void) {
-	tst_resm(TCONF, "System doesn't have required numa support");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "System doesn't have required numa support");
 }
 #endif

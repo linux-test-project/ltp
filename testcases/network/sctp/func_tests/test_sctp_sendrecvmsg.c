@@ -150,14 +150,14 @@ int main(int argc, char *argv[])
 	error = getsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &oldlen, &len);
        
 	if (error)
-		tst_brkm(TBROK, tst_exit, "can't get rcvbuf size: %s",
+		tst_brkm(TBROK, NULL, "can't get rcvbuf size: %s",
 			 strerror(errno));
 
 	len = SMALL_RCVBUF; /* Really becomes 2xlen when set. */
 
 	error = setsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &len, sizeof(len));
 	if (error)
-		tst_brkm(TBROK, tst_exit, "setsockopt(SO_RCVBUF): %s",
+		tst_brkm(TBROK, NULL, "setsockopt(SO_RCVBUF): %s",
 			 strerror(errno));
 
        /* Mark sk2 as being able to accept new associations.  */
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 			   sizeof(oldlen));
 
 	if (error)
-		tst_brkm(TBROK, tst_exit, "setsockopt(SO_RCVBUF): %s",
+		tst_brkm(TBROK, NULL, "setsockopt(SO_RCVBUF): %s",
 			 strerror(errno));
 
 	/* Get the communication up message on sk1.  */
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 	error = getsockopt(sk1, IPPROTO_SCTP, SCTP_STATUS, &gstatus, &len);
 
 	if (error)
-		tst_brkm(TBROK, tst_exit, "can't get rwnd size: %s",
+		tst_brkm(TBROK, NULL, "can't get rwnd size: %s",
 			strerror(errno));
 	tst_resm(TINFO, "creating a fillmsg of size %d",
 		gstatus.sstat_rwnd+RWND_SLOP);
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 	test_check_buf_data(big_buffer, error, msg_flags, &sinfo,
 			    strlen(nottlmsg) + 1, MSG_EOR, stream, ppid); 
 	if (0 != strncmp(big_buffer, nottlmsg, strlen(nottlmsg)))
-		tst_brkm(TBROK, tst_exit, "sctp_recvmsg: Wrong Message !!!");
+		tst_brkm(TBROK, NULL, "sctp_recvmsg: Wrong Message !!!");
 
 	tst_resm(TPASS, "sctp_recvmsg msg with zero ttl");
 
@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
 				    SCTP_SEND_FAILED, 0);
 	ssf = (struct sctp_send_failed *)big_buffer;
 	if (0 != strncmp(ttlmsg, (char *)ssf->ssf_data, strlen(ttlmsg) + 1))
-		tst_brkm(TBROK, tst_exit, "SEND_FAILED data mismatch");
+		tst_brkm(TBROK, NULL, "SEND_FAILED data mismatch");
 
 	tst_resm(TPASS, "sctp_recvmsg SEND_FAILED for message with ttl");
 
@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
 		ssf = (struct sctp_send_failed *)big_buffer;
 		if (0 != strncmp(&ttlfrag[offset], (char *)ssf->ssf_data,
 				 SMALL_MAXSEG))
-			tst_brkm(TBROK, tst_exit, "SEND_FAILED data mismatch");
+			tst_brkm(TBROK, NULL, "SEND_FAILED data mismatch");
 		offset += SMALL_MAXSEG;
 	} while (!(ssf->ssf_info.sinfo_flags & 0x01)); /* LAST FRAG */
 

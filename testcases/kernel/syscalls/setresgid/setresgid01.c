@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 static int test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
@@ -203,19 +203,19 @@ void setup(void)
 
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
+	 }
 
 	if ((passwd_p = getpwnam("root")) == NULL) {
-		tst_brkm(TBROK, tst_exit, "getpwnam() failed for root");
-		/* NOTREACHED */
+		tst_brkm(TBROK, NULL, "getpwnam() failed for root");
+		
 	}
 	root = *passwd_p;
 	root_gid = root.pw_gid;
 
 	if ((passwd_p = getpwnam("nobody")) == NULL) {
-		tst_brkm(TBROK, tst_exit, "nobody user id doesn't exist");
-		/* NOTREACHED */
+		tst_brkm(TBROK, NULL, "nobody user id doesn't exist");
+		
 	}
 	nobody = *passwd_p;
 	nobody_gid = nobody.pw_gid;
@@ -242,4 +242,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

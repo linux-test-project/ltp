@@ -114,7 +114,11 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
+<<<<<<< HEAD
 	if ((msg = parse_opts(ac, av, NULL, NULL))
+=======
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+>>>>>>> master
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -153,7 +157,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -171,12 +175,12 @@ void setup(void)
 
 	/* Check whether we are root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* Save current domainname */
 	if ((getdomainname(old_domain_name, MAX_NAME_LEN)) < 0) {
-		tst_brkm(TBROK, tst_exit, "getdomainname() failed while"
+		tst_brkm(TBROK, NULL, "getdomainname() failed while"
 			 " getting current domain name");
 	}
 

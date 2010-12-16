@@ -290,15 +290,15 @@ lio_parse_io_arg1(char *string)
     /*
      * Determine if token is a valid string.
      */
-    for(ind=0; ind<sizeof(Lio_info1)/sizeof(struct lio_info_type); ind++) {
-        if ( strcmp(string, Lio_info1[ind].token) == 0 ) {
+    for (ind=0; ind<sizeof(Lio_info1)/sizeof(struct lio_info_type); ind++) {
+        if (strcmp(string, Lio_info1[ind].token) == 0) {
             mask |= Lio_info1[ind].bits;
             found = 1;
             break;
         }
     }
 
-    if ( found == 0 ) {
+    if (found == 0) {
 	return -1;
     }
 
@@ -317,7 +317,7 @@ lio_help1(char *prefix)
 {
     unsigned int ind;
 
-    for(ind=0; ind<sizeof(Lio_info1)/sizeof(struct lio_info_type); ind++) {
+    for (ind=0; ind<sizeof(Lio_info1)/sizeof(struct lio_info_type); ind++) {
         printf("%s %s : %s\n", prefix,
             Lio_info1[ind].token, Lio_info1[ind].desc);
     }
@@ -347,7 +347,7 @@ lio_parse_io_arg2(char *string, char **badtoken)
    unsigned int ind;
    char chr;
 
-   if ( token == NULL )
+   if (token == NULL)
         return -1;
 
    for (;;) {
@@ -361,8 +361,8 @@ lio_parse_io_arg2(char *string, char **badtoken)
 	 * Determine if token is a valid string or number and if
 	 * so, add the bits to the mask.
           */
-        for(ind=0; ind<sizeof(Lio_info2)/sizeof(struct lio_info_type); ind++) {
-	    if ( strcmp(token, Lio_info2[ind].token) == 0 ) {
+        for (ind=0; ind<sizeof(Lio_info2)/sizeof(struct lio_info_type); ind++) {
+	    if (strcmp(token, Lio_info2[ind].token) == 0) {
 	        mask |= Lio_info2[ind].bits;
 	        found = 1;
 	        break;
@@ -373,8 +373,8 @@ lio_parse_io_arg2(char *string, char **badtoken)
 	 * If token does not match one of the defined tokens, determine
          * if it is a number, if so, add the bits.
 	 */
-	if ( !found ) {
-	    if (sscanf(token, "%i%c", &tmp, &chr) == 1 ) {
+	if (!found) {
+	    if (sscanf(token, "%i%c", &tmp, &chr) == 1) {
                 mask |= tmp;
 	        found=1;
 	    }
@@ -383,7 +383,7 @@ lio_parse_io_arg2(char *string, char **badtoken)
         *cc = savecc;
 
         if (!found) {  /* token is not valid */
-            if ( badtoken != NULL)
+            if (badtoken != NULL)
                 *badtoken = token;
             return(-1);
         }
@@ -409,7 +409,7 @@ lio_help2(char *prefix)
 {
     unsigned int ind;
 
-    for(ind=0; ind<sizeof(Lio_info2)/sizeof(struct lio_info_type); ind++) {
+    for (ind=0; ind<sizeof(Lio_info2)/sizeof(struct lio_info_type); ind++) {
 	printf("%s %s : %s\n", prefix,
 	    Lio_info2[ind].token, Lio_info2[ind].desc);
     }
@@ -424,7 +424,7 @@ lio_help2(char *prefix)
 static void
 lio_async_signal_handler(int sig)
 {
-	if ( Debug_level )
+	if (Debug_level)
 	    printf("DEBUG %s/%d: received signal %d, a signal caught %d times\n",
 		__FILE__, __LINE__, sig, Received_signal+1);
 
@@ -442,7 +442,7 @@ lio_async_signal_handler(int sig)
 static void
 lio_async_callback_handler(sigval_t sigval)
 {
-	if ( Debug_level )
+	if (Debug_level)
 	    printf("DEBUG %s/%d: received callback, nbytes=%ld, a callback called %d times\n",
 		__FILE__, __LINE__, (long)sigval.sival_int, Received_callback+1);
 
@@ -567,15 +567,15 @@ long wrd;	/* to allow future features, use zero for now */
     /*
      * If LIO_RANDOM bit specified, get new method randomly.
      */
-    if ( method & LIO_RANDOM ) {
-	if( Debug_level > 3 )
+    if (method & LIO_RANDOM) {
+	if (Debug_level > 3)
 		printf("DEBUG %s/%d: method mask to choose from: %#o\n", __FILE__, __LINE__, method );
 	method = lio_random_methods(method);
-	if ( Debug_level > 2 )
+	if (Debug_level > 2)
 	    printf("DEBUG %s/%d: random chosen method %#o\n", __FILE__, __LINE__, method);
     }
 
-    if ( errmsg != NULL )
+    if (errmsg != NULL)
 	*errmsg = Errormsg;
 
     Rec_signal=Received_signal;	/* get the current number of signals received */
@@ -614,22 +614,22 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
     aiolist[0] = &aiocbp;
 
-    if( (ret = lseek( fd, 0, SEEK_CUR )) == -1 ){
+    if ((ret = lseek( fd, 0, SEEK_CUR )) == -1) {
 	ret = 0;
 	/* If there is an error and it is not ESPIPE then kick out the error.
 	 * If the fd is a fifo then we have to make sure that
 	 * lio_random_methods() didn't select pwrite/pread; if it did then
 	 * switch to write/read.
 	 */
-	if( errno == ESPIPE ){
-		if( method & LIO_IO_SYNCP ){
-			if( omethod & LIO_RANDOM ){
+	if (errno == ESPIPE) {
+		if (method & LIO_IO_SYNCP) {
+			if (omethod & LIO_RANDOM) {
 				method &= ~LIO_IO_SYNCP;
 				method |= LIO_IO_SYNC;
-				if( Debug_level > 2 )
+				if (Debug_level > 2)
 					printf("DEBUG %s/%d: random chosen method switched to %#o for fifo\n", __FILE__, __LINE__, method );
 			}
-			else if( Debug_level ){
+			else if (Debug_level) {
 				printf("DEBUG %s/%d: pwrite will fail when it writes to a fifo\n",
 				       __FILE__, __LINE__ );
 			}
@@ -655,14 +655,14 @@ long wrd;	/* to allow future features, use zero for now */
      * Otherwise there is not necessary a signal handler to trap
      * the signal.
      */
-    if ( sig && !(method & LIO_USE_SIGNAL) &&
-	! (method & LIO_WAIT_SIGTYPES) ){
+    if (sig && !(method & LIO_USE_SIGNAL) &&
+	! (method & LIO_WAIT_SIGTYPES) ) {
 
 	sig=0;	/* ignore signal parameter */
     }
 
 #if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
-    if ( sig && (method & LIO_WAIT_CBTYPES) )
+    if (sig && (method & LIO_WAIT_CBTYPES))
 	sig=0; /* ignore signal parameter */
 #endif
 
@@ -674,7 +674,7 @@ long wrd;	/* to allow future features, use zero for now */
      *** restoring the signal handler could be added ***
      */
 
-    if ( sig &&  (method & LIO_WAIT_SIGTYPES) ){
+    if (sig &&  (method & LIO_WAIT_SIGTYPES)) {
 #ifdef CRAY
         sigctl(SCTL_REG, sig, lio_async_signal_handler);
 #endif
@@ -685,7 +685,7 @@ long wrd;	/* to allow future features, use zero for now */
 #endif /* sgi */
     }
 #if defined(sgi)
-    else if( method & LIO_WAIT_CBTYPES ){
+    else if (method & LIO_WAIT_CBTYPES) {
 	/* sival_int just has to be something that I can use
 	 * to identify the callback, and "size" happens to be handy...
 	 */
@@ -695,7 +695,7 @@ long wrd;	/* to allow future features, use zero for now */
     }
 #endif
 #if defined(__linux__) && !defined(__UCLIBC__)
-	else if( method & LIO_WAIT_CBTYPES ){
+	else if (method & LIO_WAIT_CBTYPES) {
 		/* sival_int just has to be something that I can use
 		 * to identify the callback, and "size" happens to be handy...
 		 */
@@ -713,7 +713,7 @@ long wrd;	/* to allow future features, use zero for now */
      * bytes written/read.
      */
 
-	if ( (method & LIO_IO_SYNC) || (method & (LIO_IO_TYPES | LIO_IO_ATYPES)) == 0 ){
+	if ((method & LIO_IO_SYNC) || (method & (LIO_IO_TYPES | LIO_IO_ATYPES)) == 0) {
 	/*
 	 * write(2) is used if LIO_IO_SYNC bit is set or not none
          * of the LIO_IO_TYPES bits are set (default).
@@ -723,10 +723,10 @@ long wrd;	/* to allow future features, use zero for now */
 	    "write(%d, buf, %d)", fd, size);
 	io_type="write";
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
-        while(1) {
+        while (1) {
           if (((ret = write(fd, buffer, size)) == -1) && errno!=EAGAIN && errno!=EINTR) {
             sprintf(Errormsg, "%s/%d write(%d, buf, %d) ret:-1, errno=%d %s",
                     __FILE__, __LINE__,
@@ -734,8 +734,8 @@ long wrd;	/* to allow future features, use zero for now */
             return -errno;
           }
 
-          if(ret!=-1) {
-            if ( ret != size ) {
+          if (ret!=-1) {
+            if (ret != size) {
               sprintf(Errormsg,
                       "%s/%d write(%d, buf, %d) returned=%d",
                       __FILE__, __LINE__,
@@ -744,7 +744,7 @@ long wrd;	/* to allow future features, use zero for now */
               buffer+=ret;
             }
             else {
-              if ( Debug_level > 1 )
+              if (Debug_level > 1)
                 printf("DEBUG %s/%d: write completed without error (ret %d)\n",
                        __FILE__, __LINE__, ret);
 
@@ -756,13 +756,13 @@ long wrd;	/* to allow future features, use zero for now */
 
     }
 
-    else if ( method & LIO_IO_ASYNC ) {
+    else if (method & LIO_IO_ASYNC) {
 #ifdef CRAY
 	sprintf(Lio_SysCall,
 	    "writea(%d, buf, %d, &status, %d)", fd, size, sig);
 	io_type="writea";
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
@@ -781,25 +781,25 @@ long wrd;	/* to allow future features, use zero for now */
 	    "aio_write(fildes=%d, buf, nbytes=%d, signo=%d)", fd, size, sig);
 	io_type="aio_write";
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
-	if( sig )
+	if (sig)
 		sighold( sig );
 	if ((ret = aio_write(&aiocbp)) == -1) {
 	    sprintf(Errormsg,
 		"%s/%d aio_write(fildes=%d, buf, nbytes=%d, signo=%d) ret:-1, errno=%d %s",
 		    __FILE__, __LINE__,
 		fd, size, sig, errno, strerror(errno));
-	    if( sig )
+	    if (sig)
 		sigrelse( sig );
 	    return -errno;
 	}
 #endif
     } /* LIO_IO_ASYNC */
 
-    else if ( method & LIO_IO_SLISTIO ) {
+    else if (method & LIO_IO_SLISTIO) {
 #ifdef CRAY
 	request.li_opcode = LO_WRITE;
 	request.li_fildes = fd;
@@ -818,12 +818,12 @@ long wrd;	/* to allow future features, use zero for now */
 		"listio(LC_WAIT, &req, 1) LO_WRITE, fd:%d, nbyte:%d",
                 fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
 	sigoff();
-	if ( listio(listio_cmd, &request, 1) == -1 ) {
+	if (listio(listio_cmd, &request, 1) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
@@ -831,7 +831,7 @@ long wrd;	/* to allow future features, use zero for now */
             return -errno;
         }
 
-	if ( Debug_level > 1 )
+	if (Debug_level > 1)
             printf("DEBUG %s/%d: %s did not return -1\n",
 		__FILE__, __LINE__, Lio_SysCall);
 
@@ -849,22 +849,22 @@ long wrd;	/* to allow future features, use zero for now */
 		"lio_listio(LIO_WAIT, aiolist, 1, NULL) LIO_WRITE, fd:%d, nbyte:%d, sig:%d",
                 fd, size, sig );
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
-	if( sig )
+	if (sig)
 	    sighold( sig );
-	if ( lio_listio(listio_cmd, aiolist, 1, NULL) == -1 ) {
+	if (lio_listio(listio_cmd, aiolist, 1, NULL) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
-	    if( sig )
+	    if (sig)
 		sigrelse( sig );
             return -errno;
         }
 
-	if ( Debug_level > 1 )
+	if (Debug_level > 1)
             printf("DEBUG %s/%d: %s did not return -1\n",
 		__FILE__, __LINE__, Lio_SysCall);
 
@@ -873,7 +873,7 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
     } /* LIO_IO_SLISTIO */
 
-    else if ( method & LIO_IO_ALISTIO ) {
+    else if (method & LIO_IO_ALISTIO) {
 #ifdef CRAY
 	request.li_opcode = LO_WRITE;
 	request.li_fildes = fd;
@@ -892,12 +892,12 @@ long wrd;	/* to allow future features, use zero for now */
 		"listio(LC_START, &req, 1) LO_WRITE, fd:%d, nbyte:%d",
                 fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
 	sigoff();
-	if ( listio(listio_cmd, &request, 1) == -1 ) {
+	if (listio(listio_cmd, &request, 1) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
@@ -914,17 +914,17 @@ long wrd;	/* to allow future features, use zero for now */
 		"lio_listio(LIO_NOWAIT, aiolist, 1, NULL) LIO_WRITE, fd:%d, nbyte:%d",
                 fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
-	if( sig )
+	if (sig)
 		sighold( sig );
-	if ( lio_listio(listio_cmd, aiolist, 1, NULL) == -1 ) {
+	if (lio_listio(listio_cmd, aiolist, 1, NULL) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
-	    if( sig )
+	    if (sig)
 		sigrelse( sig );
             return -errno;
         }
@@ -932,13 +932,13 @@ long wrd;	/* to allow future features, use zero for now */
     }/* LIO_IO_ALISTIO */
 
 #ifndef CRAY
-    else if ( method & LIO_IO_SYNCV ) {
+    else if (method & LIO_IO_SYNCV) {
 	io_type="writev(2)";
 
 	sprintf(Lio_SysCall,
 		"writev(%d, &iov, 1) nbyte:%d", fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 	if ((ret = writev(fd, &iov, 1)) == -1) {
@@ -948,13 +948,13 @@ long wrd;	/* to allow future features, use zero for now */
 	    return -errno;
 	}
 
-	if ( ret != size ) {
+	if (ret != size) {
             sprintf(Errormsg,
 		"%s/%d writev(%d, iov, 1) nbyte:%d returned=%d",
 		    __FILE__, __LINE__,
 		    fd, size, ret);
         }
-        else if ( Debug_level > 1 )
+        else if (Debug_level > 1)
             printf("DEBUG %s/%d: writev completed without error (ret %d)\n",
                 __FILE__, __LINE__, ret);
 
@@ -963,13 +963,13 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
 
 #if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
-    else if ( method & LIO_IO_SYNCP ) {
+    else if (method & LIO_IO_SYNCP) {
 	io_type="pwrite(2)";
 
 	sprintf(Lio_SysCall,
 						"pwrite(%d, buf, %d, %lld)", fd, size, (long long)poffset);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 	if ((ret = pwrite(fd, buffer, size, poffset)) == -1) {
@@ -979,13 +979,13 @@ long wrd;	/* to allow future features, use zero for now */
 	    return -errno;
 	}
 
-	if ( ret != size ) {
+	if (ret != size) {
             sprintf(Errormsg,
 		"%s/%d pwrite(%d, buf, %d, %lld) returned=%d",
 		    __FILE__, __LINE__,
 							fd, size, (long long)poffset, ret);
         }
-        else if ( Debug_level > 1 )
+        else if (Debug_level > 1)
             printf("DEBUG %s/%d: pwrite completed without error (ret %d)\n",
                 __FILE__, __LINE__, ret);
 
@@ -1013,7 +1013,7 @@ long wrd;	/* to allow future features, use zero for now */
      * return the error value (errno) to the caller.
      * Note: Errormsg should already have been updated.
      */
-    if ( ret < 0 ) {
+    if (ret < 0) {
 	return ret;
     }
 
@@ -1021,7 +1021,7 @@ long wrd;	/* to allow future features, use zero for now */
      * If i/o was not waited for (may not have been completed at this time),
      * return the size that was requested.
      */
-    if ( ret == 1 )
+    if (ret == 1)
 	return size;
 
     /*
@@ -1117,15 +1117,15 @@ long wrd;	/* to allow future features, use zero for now */
     /*
      * If LIO_RANDOM bit specified, get new method randomly.
      */
-    if ( method & LIO_RANDOM ) {
-	if( Debug_level > 3 )
+    if (method & LIO_RANDOM) {
+	if (Debug_level > 3)
 		printf("DEBUG %s/%d: method mask to choose from: %#o\n", __FILE__, __LINE__, method );
 	method = lio_random_methods(method);
-	if ( Debug_level > 2 )
+	if (Debug_level > 2)
 	    printf("DEBUG %s/%d: random chosen method %#o\n", __FILE__, __LINE__, method);
     }
 
-    if ( errmsg != NULL )
+    if (errmsg != NULL)
 	*errmsg = Errormsg;
 
     Rec_signal=Received_signal;	/* get the current number of signals received */
@@ -1164,22 +1164,22 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
     aiolist[0] = &aiocbp;
 
-    if( (ret = lseek( fd, 0, SEEK_CUR )) == -1 ){
+    if ((ret = lseek( fd, 0, SEEK_CUR )) == -1) {
 	ret = 0;
 	/* If there is an error and it is not ESPIPE then kick out the error.
 	 * If the fd is a fifo then we have to make sure that
 	 * lio_random_methods() didn't select pwrite/pread; if it did then
 	 * switch to write/read.
 	 */
-	if( errno == ESPIPE ){
-		if( method & LIO_IO_SYNCP ){
-			if( omethod & LIO_RANDOM ){
+	if (errno == ESPIPE) {
+		if (method & LIO_IO_SYNCP) {
+			if (omethod & LIO_RANDOM) {
 				method &= ~LIO_IO_SYNCP;
 				method |= LIO_IO_SYNC;
-				if( Debug_level > 2 )
+				if (Debug_level > 2)
 					printf("DEBUG %s/%d: random chosen method switched to %#o for fifo\n", __FILE__, __LINE__, method );
 			}
-			else if( Debug_level ){
+			else if (Debug_level) {
 				printf("DEBUG %s/%d: pread will fail when it reads from a fifo\n",
 				       __FILE__, __LINE__ );
 			}
@@ -1205,14 +1205,14 @@ long wrd;	/* to allow future features, use zero for now */
      * Otherwise there is not necessarily a signal handler to trap
      * the signal.
      */
-    if ( sig && !(method & LIO_USE_SIGNAL) &&
-        ! (method & LIO_WAIT_SIGTYPES) ){
+    if (sig && !(method & LIO_USE_SIGNAL) &&
+        ! (method & LIO_WAIT_SIGTYPES) ) {
 
         sig=0;  /* ignore signal parameter */
     }
 
 #if defined(sgi) || (defined(__linux__)&& !defined(__UCLIBC__))
-    if ( sig && (method & LIO_WAIT_CBTYPES) )
+    if (sig && (method & LIO_WAIT_CBTYPES))
 	sig=0; /* ignore signal parameter */
 #endif
 
@@ -1224,7 +1224,7 @@ long wrd;	/* to allow future features, use zero for now */
      *** restoring the signal handler could be added ***
      */
 
-    if ( sig &&  (method & LIO_WAIT_SIGTYPES) ){
+    if (sig &&  (method & LIO_WAIT_SIGTYPES)) {
 #ifdef CRAY
 	    sigctl(SCTL_REG, sig, lio_async_signal_handler);
 #endif
@@ -1235,7 +1235,7 @@ long wrd;	/* to allow future features, use zero for now */
 #endif /* CRAY */
     }
 #if defined(sgi)
-    else if( method & LIO_WAIT_CBTYPES ){
+    else if (method & LIO_WAIT_CBTYPES) {
 	    aiocbp.aio_sigevent.sigev_notify = SIGEV_CALLBACK;
 	    aiocbp.aio_sigevent.sigev_func = lio_async_callback_handler;
 	    /* sival_int just has to be something that I can use
@@ -1245,7 +1245,7 @@ long wrd;	/* to allow future features, use zero for now */
     }
 #endif
 #if defined(__linux__) && !defined(__UCLIBC__)
-	else if( method & LIO_WAIT_CBTYPES ){
+	else if (method & LIO_WAIT_CBTYPES) {
 		aiocbp.aio_sigevent.sigev_notify = SIGEV_THREAD;
 		aiocbp.aio_sigevent.sigev_notify_function = lio_async_callback_handler;
 		/* sival_int just has to be something that I can use
@@ -1264,7 +1264,7 @@ long wrd;	/* to allow future features, use zero for now */
      * bytes written/read.
      */
 
-	if ( (method & LIO_IO_SYNC) || (method & (LIO_IO_TYPES | LIO_IO_ATYPES)) == 0 ){
+	if ((method & LIO_IO_SYNC) || (method & (LIO_IO_TYPES | LIO_IO_ATYPES)) == 0) {
 	/*
 	 * read(2) is used if LIO_IO_SYNC bit is set or not none
          * of the LIO_IO_TYPES bits are set (default).
@@ -1274,11 +1274,11 @@ long wrd;	/* to allow future features, use zero for now */
 	    "read(%d, buf, %d)", fd, size);
 	io_type="read";
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
-        while(1) {
+        while (1) {
           if (((ret = read(fd, buffer, size)) == -1) && errno!=EINTR && errno!=EAGAIN) {
             sprintf(Errormsg, "%s/%d read(%d, buf, %d) ret:-1, errno=%d %s",
                     __FILE__, __LINE__,
@@ -1286,9 +1286,9 @@ long wrd;	/* to allow future features, use zero for now */
             return -errno;
           }
 
-          if(ret==0) return 0;
-          if(ret!=-1) {
-            if ( ret != size ) {
+          if (ret==0) return 0;
+          if (ret!=-1) {
+            if (ret != size) {
               sprintf(Errormsg,
                       "%s/%d read(%d, buf, %d) returned=%d",
                       __FILE__, __LINE__,
@@ -1297,7 +1297,7 @@ long wrd;	/* to allow future features, use zero for now */
               buffer+=ret;
             }
             else {
-              if ( Debug_level > 1 )
+              if (Debug_level > 1)
                 printf("DEBUG %s/%d: read completed without error (ret %d)\n",
                        __FILE__, __LINE__, ret);
 
@@ -1309,13 +1309,13 @@ long wrd;	/* to allow future features, use zero for now */
 
     }
 
-    else if ( method & LIO_IO_ASYNC ) {
+    else if (method & LIO_IO_ASYNC) {
 #ifdef CRAY
 	sprintf(Lio_SysCall,
 	    "reada(%d, buf, %d, &status, %d)", fd, size, sig);
 	io_type="reada";
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
@@ -1334,25 +1334,25 @@ long wrd;	/* to allow future features, use zero for now */
 	    "aio_read(fildes=%d, buf, nbytes=%d, signo=%d)", fd, size, sig);
 	io_type="aio_read";
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
-	if( sig )
+	if (sig)
 		sighold( sig );
 	if ((ret = aio_read(&aiocbp)) == -1) {
 	    sprintf(Errormsg,
 		"%s/%d aio_read(fildes=%d, buf, nbytes=%d, signo=%d) ret:-1, errno=%d %s",
 		    __FILE__, __LINE__,
 		fd, size, sig, errno, strerror(errno));
-	    if( sig )
+	    if (sig)
 		sigrelse( sig );
 	    return -errno;
 	}
 #endif
     } /* LIO_IO_ASYNC */
 
-    else if ( method & LIO_IO_SLISTIO ) {
+    else if (method & LIO_IO_SLISTIO) {
 #ifdef CRAY
 	request.li_opcode = LO_READ;
 	request.li_fildes = fd;
@@ -1371,12 +1371,12 @@ long wrd;	/* to allow future features, use zero for now */
 		"listio(LC_WAIT, &req, 1) LO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
 	sigoff();
-	if ( listio(listio_cmd, &request, 1) == -1 ) {
+	if (listio(listio_cmd, &request, 1) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
@@ -1384,7 +1384,7 @@ long wrd;	/* to allow future features, use zero for now */
             return -errno;
         }
 
-	if ( Debug_level > 1 )
+	if (Debug_level > 1)
             printf("DEBUG %s/%d: %s did not return -1\n",
 		__FILE__, __LINE__, Lio_SysCall);
 
@@ -1400,22 +1400,22 @@ long wrd;	/* to allow future features, use zero for now */
 		"lio_listio(LIO_WAIT, aiolist, 1, NULL) LIO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
-	if( sig )
+	if (sig)
 		sighold( sig );
-	if ( lio_listio(listio_cmd, aiolist, 1, NULL) == -1 ) {
+	if (lio_listio(listio_cmd, aiolist, 1, NULL) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
-	    if( sig )
+	    if (sig)
 		sigrelse( sig );
             return -errno;
         }
 
-	if ( Debug_level > 1 )
+	if (Debug_level > 1)
             printf("DEBUG %s/%d: %s did not return -1\n",
 		__FILE__, __LINE__, Lio_SysCall);
 
@@ -1424,7 +1424,7 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
     }/* LIO_IO_SLISTIO */
 
-    else if ( method & LIO_IO_ALISTIO ) {
+    else if (method & LIO_IO_ALISTIO) {
 #ifdef CRAY
 	request.li_opcode = LO_READ;
 	request.li_fildes = fd;
@@ -1443,12 +1443,12 @@ long wrd;	/* to allow future features, use zero for now */
 		"listio(LC_START, &req, 1) LO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
 	sigoff();
-	if ( listio(listio_cmd, &request, 1) == -1 ) {
+	if (listio(listio_cmd, &request, 1) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
@@ -1465,17 +1465,17 @@ long wrd;	/* to allow future features, use zero for now */
 		"lio_listio(LIO_NOWAIT, aiolist, 1, NULL) LIO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 
-	if( sig )
+	if (sig)
 		sighold( sig );
-	if ( lio_listio(listio_cmd, aiolist, 1, NULL) == -1 ) {
+	if (lio_listio(listio_cmd, aiolist, 1, NULL) == -1) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
 		Lio_SysCall, fd, size, errno, strerror(errno));
-	    if( sig )
+	    if (sig)
 		sigrelse( sig );
             return -errno;
         }
@@ -1483,13 +1483,13 @@ long wrd;	/* to allow future features, use zero for now */
     } /* LIO_IO_ALISTIO */
 
 #ifndef CRAY
-    else if ( method & LIO_IO_SYNCV ) {
+    else if (method & LIO_IO_SYNCV) {
 	io_type="readv(2)";
 
 	sprintf(Lio_SysCall,
 		"readv(%d, &iov, 1) nbyte:%d", fd, size);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 	if ((ret = readv(fd, &iov, 1)) == -1) {
@@ -1499,13 +1499,13 @@ long wrd;	/* to allow future features, use zero for now */
 	    return -errno;
 	}
 
-	if ( ret != size ) {
+	if (ret != size) {
             sprintf(Errormsg,
 		"%s/%d readv(%d, iov, 1) nbyte:%d returned=%d",
 		    __FILE__, __LINE__,
 		    fd, size, ret);
         }
-        else if ( Debug_level > 1 )
+        else if (Debug_level > 1)
             printf("DEBUG %s/%d: readv completed without error (ret %d)\n",
                 __FILE__, __LINE__, ret);
 
@@ -1514,13 +1514,13 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
 
 #if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
-    else if ( method & LIO_IO_SYNCP ) {
+    else if (method & LIO_IO_SYNCP) {
 	io_type="pread(2)";
 
 	sprintf(Lio_SysCall,
 						"pread(%d, buf, %d, %lld)", fd, size, (long long)poffset);
 
-        if ( Debug_level ) {
+        if (Debug_level) {
 	    printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__, Lio_SysCall);
         }
 	if ((ret = pread(fd, buffer, size, poffset)) == -1) {
@@ -1530,13 +1530,13 @@ long wrd;	/* to allow future features, use zero for now */
 	    return -errno;
 	}
 
-	if ( ret != size ) {
+	if (ret != size) {
             sprintf(Errormsg,
 		"%s/%d pread(%d, buf, %d, %lld) returned=%d",
 		    __FILE__, __LINE__,
 							fd, size, (long long)poffset, ret);
         }
-        else if ( Debug_level > 1 )
+        else if (Debug_level > 1)
             printf("DEBUG %s/%d: pread completed without error (ret %d)\n",
                 __FILE__, __LINE__, ret);
 
@@ -1565,7 +1565,7 @@ long wrd;	/* to allow future features, use zero for now */
      * return the error value (errno) to the caller.
      * Note: Errormsg should already have been updated.
      */
-    if ( ret < 0 ) {
+    if (ret < 0) {
 	return ret;
     }
 
@@ -1573,7 +1573,7 @@ long wrd;	/* to allow future features, use zero for now */
      * If i/o was not waited for (may not have been completed at this time),
      * return the size that was requested.
      */
-    if ( ret == 1 )
+    if (ret == 1)
 	return size;
 
     /*
@@ -1617,20 +1617,20 @@ int lio_check_asyncio(char *io_type, int size, struct iosw *status)
     int ret;
 
 #ifdef CRAY
-    if ( status->sw_error ) {
+    if (status->sw_error) {
         sprintf(Errormsg,
             "%s/%d %s, sw_error set = %d %s, sw_count = %d",
 		__FILE__, __LINE__, io_type,
             status->sw_error, strerror(status->sw_error), status->sw_count);
         return -status->sw_error;
     }
-    else if ( status->sw_count != size ) {
+    else if (status->sw_count != size) {
         sprintf(Errormsg,
             "%s/%d %s, sw_count not as expected(%d), but actual:%d",
 		__FILE__, __LINE__, io_type,
             size, status->sw_count);
     }
-    else if ( Debug_level > 1 ) {
+    else if (Debug_level > 1) {
         printf("DEBUG %s/%d: %s completed without error (sw_error == 0, sw_count == %d)\n",
             __FILE__, __LINE__, io_type, status->sw_count);
     }
@@ -1646,16 +1646,16 @@ int lio_check_asyncio(char *io_type, int size, struct iosw *status)
      * completion signal here otherwise it'll hang around and bite us
      * later.
      */
-    if( aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL )
+    if (aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL)
 	sigrelse( aiocbp->aio_sigevent.sigev_signo );
 
     ret = aio_error( aiocbp );
 
-    while( ret == EINPROGRESS ){
+    while (ret == EINPROGRESS) {
 	ret = aio_error( aiocbp );
 	++cnt;
     }
-    if( cnt > 1 ){
+    if (cnt > 1) {
 	sprintf(Errormsg,
 		"%s/%d %s, aio_error had to loop on EINPROGRESS, cnt=%d; random method %#o; sigev_notify=%s",
 		__FILE__, __LINE__, io_type, cnt, method,
@@ -1669,7 +1669,7 @@ int lio_check_asyncio(char *io_type, int size, struct iosw *status)
 	return -ret;
     }
 
-    if( ret != 0 ){
+    if (ret != 0) {
 	sprintf(Errormsg,
 		"%s/%d %s, aio_error = %d %s; random method %#o",
 		__FILE__, __LINE__, io_type,
@@ -1678,16 +1678,16 @@ int lio_check_asyncio(char *io_type, int size, struct iosw *status)
 	return -ret;
     }
     ret = aio_return( aiocbp );
-    if( ret != size ){
+    if (ret != size) {
 	sprintf(Errormsg,
 		"%s/%d %s, aio_return not as expected(%d), but actual:%d",
 		__FILE__, __LINE__, io_type,
 		size, ret);
 
 #ifdef BUG1_workaround
-	if( ret == 0 ){
+	if (ret == 0) {
 		ret = size;
-		if( Debug_level > 1 ){
+		if (Debug_level > 1) {
 			printf("WARN %s/%d: %s completed with bug1_workaround (aio_error == 0, aio_return now == %d)\n",
 			       __FILE__, __LINE__, io_type, ret);
 		}
@@ -1695,7 +1695,7 @@ int lio_check_asyncio(char *io_type, int size, struct iosw *status)
 #endif /* BUG1_workaround */
 
     }
-    else if( Debug_level > 1 ){
+    else if (Debug_level > 1) {
         printf("DEBUG %s/%d: %s completed without error (aio_error == 0, aio_return == %d)\n",
             __FILE__, __LINE__, io_type, ret);
     }
@@ -1741,28 +1741,28 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 	const struct aiocb *aioary[1];
 #endif
 
-    if ( (method & LIO_WAIT_RECALL)
+    if ((method & LIO_WAIT_RECALL)
 #if defined(sgi) || (defined(__linux__)&& !defined(__UCLIBC__))
 	|| (method & LIO_WAIT_CBSUSPEND)
 	|| (method & LIO_WAIT_SIGSUSPEND)
 #endif
-	|| ((method & LIO_WAIT_TYPES) == 0) ){
+	|| ((method & LIO_WAIT_TYPES) == 0) ) {
 	/*
 	 * If method has LIO_WAIT_RECALL bit set or method does
 	 * not have any wait method bits set (default), use recall/aio_suspend.
          */
 #ifdef CRAY
-        if ( Debug_level > 2 )
+        if (Debug_level > 2)
             printf("DEBUG %s/%d: wait method : recall\n", __FILE__, __LINE__);
         sigon();
-        if ( recall(fd, 1, statptr) ) {
+        if (recall(fd, 1, statptr)) {
 	    sprintf(Errormsg, "%s/%d recall(%d, 1, stat) failed, errno:%d %s",
 		    __FILE__, __LINE__,
 		fd, errno, strerror(errno));
 	    return -errno;
 	}
 #else
-        if ( Debug_level > 2 )
+        if (Debug_level > 2)
             printf("DEBUG %s/%d: wait method : aio_suspend, sigev_notify=%s\n", __FILE__, __LINE__,
     		(aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL ? "signal" :
 		 aiocbp->aio_sigevent.sigev_notify == SIGEV_NONE ? "none" :
@@ -1774,9 +1774,9 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 
 	aioary[0] = aiocbp;
 	ret = aio_suspend( aioary, 1, NULL );
-	if( (ret == -1) && (errno == EINTR) ){
-		if( aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL ){
-			if( Debug_level > 2 ){
+	if ((ret == -1) && (errno == EINTR)) {
+		if (aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL) {
+			if (Debug_level > 2) {
 				printf("DEBUG %s/%d: aio_suspend received EINTR, sigev_notify=SIGEV_SIGNAL -- ok\n",
 				       __FILE__, __LINE__ );
 			}
@@ -1794,7 +1794,7 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 			return -errno;
 		}
 	}
-	else if ( ret ) {
+	else if (ret) {
 	    sprintf(Errormsg, "%s/%d aio_suspend(fildes=%d, aioary, 1, NULL) failed, errno:%d %s",
 		    __FILE__, __LINE__,
 		fd, errno, strerror(errno));
@@ -1802,8 +1802,8 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 	}
 #endif
 
-    } else if ( method & LIO_WAIT_ACTIVE ) {
-        if ( Debug_level > 2 )
+    } else if (method & LIO_WAIT_ACTIVE) {
+        if (Debug_level > 2)
             printf("DEBUG %s/%d: wait method : active\n", __FILE__, __LINE__);
 #ifdef CRAY
         sigon();
@@ -1812,7 +1812,7 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 	 * change to non-zero.
  	 */
         cnt=0;
-        while ( (*statptr)->sw_flag == 0 &&
+        while ((*statptr)->sw_flag == 0 &&
 		(*statptr)->sw_count == 0 &&
 		(*statptr)->sw_error == 0 ) {
 	   cnt++;
@@ -1820,25 +1820,25 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 #else
 	/* loop while aio_error() returns EINPROGRESS */
 	cnt=0;
-	while(1){
+	while (1) {
 		ret = aio_error( aiocbp );
-		if( (ret == 0) || (ret != EINPROGRESS) ){
+		if ((ret == 0) || (ret != EINPROGRESS)) {
 			break;
 		}
 		++cnt;
 	}
 
 #endif
-	if ( Debug_level > 5 && cnt && (cnt % 50) == 0 )
+	if (Debug_level > 5 && cnt && (cnt % 50) == 0)
 		printf("DEBUG %s/%d: wait active cnt = %d\n",
 		    __FILE__, __LINE__, cnt);
 
-    } else if ( method & LIO_WAIT_SIGPAUSE ) {
-        if ( Debug_level > 2 )
+    } else if (method & LIO_WAIT_SIGPAUSE) {
+        if (Debug_level > 2)
             printf("DEBUG %s/%d: wait method : sigpause\n", __FILE__, __LINE__);
 #ifdef sgi
 	/* note: don't do the sigon() for CRAY in this case.  why? -- roehrich 6/11/97 */
-	if( aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL )
+	if (aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL)
 		sigrelse( aiocbp->aio_sigevent.sigev_signo );
 	else {
 		printf("DEBUG %s/%d: sigev_notify != SIGEV_SIGNAL\n", __FILE__, __LINE__ );
@@ -1847,13 +1847,13 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 #endif
         pause();
 
-    } else if ( method & LIO_WAIT_SIGACTIVE ) {
-        if ( Debug_level > 2 )
+    } else if (method & LIO_WAIT_SIGACTIVE) {
+        if (Debug_level > 2)
             printf("DEBUG %s/%d: wait method : sigactive\n", __FILE__, __LINE__);
 #ifdef CRAY
         sigon();
 #else
-	if( aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL )
+	if (aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL)
 		sigrelse( aiocbp->aio_sigevent.sigev_signo );
 	else {
 		printf("DEBUG %s/%d: sigev_notify != SIGEV_SIGNAL\n", __FILE__, __LINE__ );
@@ -1861,7 +1861,7 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 	}
 #endif
 	/* loop waiting for signal */
-        while ( Received_signal == Rec_signal ){
+        while (Received_signal == Rec_signal) {
 #ifdef CRAY
                 sigon();
 #else
@@ -1869,8 +1869,8 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 #endif
 	}
 
-    } else if ( method & LIO_WAIT_NONE ) {
-        if ( Debug_level > 2 )
+    } else if (method & LIO_WAIT_NONE) {
+        if (Debug_level > 2)
             printf("DEBUG %s/%d: wait method : none\n", __FILE__, __LINE__);
 	/* It's broken because the aiocb/iosw is an automatic variable in
 	 * lio_{read,write}_buffer, so when the function returns and the
@@ -1888,7 +1888,7 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
         return -1;
     }
     else {
-	if( Debug_level > 2 )
+	if (Debug_level > 2)
 	    printf("DEBUG %s/%d: no wait method was chosen\n", __FILE__, __LINE__ );
 	return -1;
     }
@@ -1952,35 +1952,35 @@ char **argv;
     char *symbols = NULL;
     int die_on_err = 0;
 
-    while( (c = getopt(argc,argv,"s:di:")) != -1 ){
-	switch(c){
+    while ((c = getopt(argc,argv,"s:di:")) != -1) {
+	switch(c) {
 	case 's': symbols = optarg; break;
 	case 'd': ++die_on_err; break;
 	case 'i': iter = atoi(optarg); break;
 	}
     }
 
-    if ((fd=open("unit_test_file", O_CREAT|O_RDWR|O_TRUNC, 0777)) == -1 ) {
+    if ((fd=open("unit_test_file", O_CREAT|O_RDWR|O_TRUNC, 0777)) == -1) {
 	perror("open(unit_test_file, O_CREAT|O_RDWR|O_TRUNC, 0777) failed");
 	exit(1);
     }
 
     Debug_level=9;
 
-    if ( symbols != NULL ) {
-        if ( (method=lio_parse_io_arg2(symbols,  &err)) == -1 ){
+    if (symbols != NULL) {
+        if ((method=lio_parse_io_arg2(symbols,  &err)) == -1) {
 	    printf("lio_parse_io_arg2(%s, &err) failed, bad token starting at %s\n",
 	    symbols, err);
-	    if( die_on_err )
+	    if (die_on_err)
 		exit(1);
 	}
 	else
 	    printf("lio_parse_io_arg2(%s, &err) returned %#o\n", symbols, method);
 
 	exit_status = 0;
-        for(ind=0; ind < iter; ind++ ) {
+        for (ind=0; ind < iter; ind++) {
 	  memset( buffer, 'A', 4096 );
-	  if( lseek(fd, 0, 0) == -1 ){
+	  if (lseek(fd, 0, 0) == -1) {
 		printf("lseek(fd,0,0), %d, failed, errno %d\n",
 		       __LINE__, errno );
 		++exit_status;
@@ -1992,7 +1992,7 @@ char **argv;
             printf("lio_write_buffer returned %d\n", ret);
 
 	  memset( buffer, 'B', 4096 );
-          if( lseek(fd, 0, 0) == -1 ){
+          if (lseek(fd, 0, 0) == -1) {
 		printf("lseek(fd,0,0), %d, failed, errno %d\n",
 		       __LINE__, errno );
 		++exit_status;
@@ -2003,15 +2003,15 @@ char **argv;
           } else
             printf("lio_read_buffer returned %d\n", ret);
 
-	  for( i = 0; i < 4096; ++i ){
-		if( buffer[i] != 'A' ){
+	  for (i = 0; i < 4096; ++i) {
+		if (buffer[i] != 'A') {
 			printf("  buffer[%d] = %d\n", i, buffer[i] );
 			++exit_status;
 			break;
 		}
 	  }
 
-	  if( exit_status )
+	  if (exit_status)
 		exit(exit_status);
 
 	}
@@ -2020,10 +2020,10 @@ char **argv;
 	exit(0);
     }
 
-    for(ind=0; ind < sizeof(Unit_info)/sizeof(struct unit_info_t); ind++ ) {
+    for (ind=0; ind < sizeof(Unit_info)/sizeof(struct unit_info_t); ind++) {
 
 	printf("\n********* write %s ***************\n", Unit_info[ind].str);
-	if( lseek(fd, 0, 0) == -1 ){
+	if (lseek(fd, 0, 0) == -1) {
 		printf("lseek(fd,0,0), %d, failed, errno %d\n",
 		       __LINE__, errno );
 		++exit_status;
@@ -2035,14 +2035,14 @@ char **argv;
 	    printf(">>>>> lio_write_buffer(fd,0%x,buffer,%d,%d,err,0) returned -1,\n   err = %s\n",
 		   Unit_info[ind].method, size, Unit_info[ind].sig, err);
 	    ++exit_status;
-	    if( die_on_err )
+	    if (die_on_err)
 		exit(exit_status);
         } else{
 	    printf("lio_write_buffer returned %d\n", ret);
 	}
 
 	printf("\n********* read %s ***************\n", Unit_info[ind].str);
-	if( lseek(fd, 0, 0) == -1 ){
+	if (lseek(fd, 0, 0) == -1) {
 		printf("lseek(fd,0,0), %d, failed, errno %d\n",
 		       __LINE__, errno );
 		++exit_status;
@@ -2053,17 +2053,17 @@ char **argv;
 	    printf(">>>>> lio_read_buffer(fd,0%x,buffer,%d,%d,err,0) returned -1,\n   err = %s\n",
 		   Unit_info[ind].method, size, Unit_info[ind].sig, err);
 	    ++exit_status;
-	    if( die_on_err )
+	    if (die_on_err)
 		exit(exit_status);
         } else {
 	    printf("lio_read_buffer returned %d\n", ret);
 	}
 
-	  for( i = 0; i < 4096; ++i ){
-		if( buffer[i] != 'A' ){
+	  for (i = 0; i < 4096; ++i) {
+		if (buffer[i] != 'A') {
 			printf("  buffer[%d] = %d\n", i, buffer[i] );
 			++exit_status;
-			if( die_on_err )
+			if (die_on_err)
 				exit(exit_status);
 			break;
 		}

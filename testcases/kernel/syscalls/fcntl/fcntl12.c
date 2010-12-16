@@ -65,7 +65,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -85,7 +89,7 @@ int main(int ac, char **av)
 		if (pid < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			cleanup();
-		 /*NOTREACHED*/} else if (pid == 0) {	/* child */
+		 } else if (pid == 0) {	/* child */
 			max_files = getdtablesize();
 			for (i = 0; i < max_files; i++) {
 				if ((fd = open(fname, O_CREAT | O_RDONLY,
@@ -113,7 +117,7 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

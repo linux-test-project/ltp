@@ -152,5 +152,5 @@ void cleanup()
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
 	tst_exit();
-	/* NOTREACHED */
+	
 }

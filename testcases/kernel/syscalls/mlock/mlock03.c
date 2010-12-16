@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		fp = fopen("/proc/self/maps", "r");

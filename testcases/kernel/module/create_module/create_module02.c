@@ -167,7 +167,7 @@ main(int argc, char **argv)
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
@@ -204,9 +204,7 @@ main(int argc, char **argv)
 		}
 	}
 	cleanup();
-
-	/*NOTREACHED*/
-	return 0;
+	tst_exit();
 }
 
 int
@@ -226,7 +224,7 @@ cleanup1(void)
 {
 	 /* Change effective user id to root */
          if (seteuid(0) == -1) {
-		tst_brkm(TBROK, tst_exit, "seteuid failed to set the effective"
+		tst_brkm(TBROK, NULL, "seteuid failed to set the effective"
 			" uid to root");
          }
 }
@@ -248,7 +246,7 @@ cleanup2(void)
 {
 	 /* Remove loadable module entry */
 	if (delete_module(modname) == -1) {
-		tst_brkm(TBROK, tst_exit, "Failed to delete module entry"
+		tst_brkm(TBROK, NULL, "Failed to delete module entry"
 			" for %s", modname);
 	}
 }
@@ -263,21 +261,16 @@ setup(void)
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check whether it is root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-		/*NOTREACHED*/
-	}
+	tst_require_root(NULL);
 
 	if (tst_kvercmp(2,5,48) >= 0)
-		tst_brkm(TCONF, tst_exit, "This test will not work on "
+		tst_brkm(TCONF, NULL, "This test will not work on "
 				"kernels after 2.5.48");
 
         /* Check for nobody_uid user id */
 	 if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Required user %s doesn't exists",
+		tst_brkm(TBROK, NULL, "Required user %s doesn't exists",
 				nobody_uid);
-		/*NOTREACHED*/
 	 }
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
@@ -293,7 +286,7 @@ setup(void)
 
 	/* Get unique module name for each child process */
 	if (sprintf(modname, "%s_%d",BASEMODNAME, getpid()) == -1) {
-		tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
+		tst_brkm(TBROK, NULL, "Failed to initialize module name");
 	}
 }
 
@@ -310,8 +303,4 @@ cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-	/*NOTREACHED*/
 }

@@ -150,11 +150,11 @@ void setup() {
 	/* Create temporary directories */
 
 	if (geteuid() != 0) {
-		tst_brkm(TCONF, tst_exit,
+		tst_brkm(TCONF, NULL,
 			"You must be root in order to execute this test");
 	}
 	if ((quota_loc = malloc(FILENAME_MAX)) == NULL) {
-		tst_brkm(TCONF | TERRNO, tst_exit,
+		tst_brkm(TCONF | TERRNO, NULL,
 			"couldn't allocate memory for the quota loc buffer");
 	}
 

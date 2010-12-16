@@ -204,7 +204,7 @@ main(int argc, char *argv[])
 		error = getsockopt(svr_sk, SOL_SCTP, SCTP_STATUS,
 				   &status, &status_len);
 		if (error)
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				 "getsockopt(SCTP_STATUS): %s",
 				 strerror(errno));
 
@@ -218,7 +218,7 @@ main(int argc, char *argv[])
 		error = getsockopt(svr_sk, SOL_SCTP, SCTP_STATUS, 
 				   &status, &status_len);
 		if ((error != -1) && (errno != EINVAL))
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				 "getsockopt(SCTP_STATUS) "
 				 "error:%d errno:%d", error, errno);
 	}
@@ -239,5 +239,5 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "ABORT an association using SCTP_ABORT"); 
 
         /* Indicate successful completion.  */
-        return 0;
+      tst_exit();
 }

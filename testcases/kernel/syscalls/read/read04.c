@@ -77,8 +77,12 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();		/* global setup for test */
 
@@ -89,7 +93,7 @@ int main(int ac, char **av)
 
 		if ((rfild = open(fname, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "can't open for reading");
-		 /*NOTREACHED*/}
+		 }
 		TEST(read(rfild, prbuf, BUFSIZ));
 
 		if (TEST_RETURN == -1) {
@@ -114,10 +118,10 @@ int main(int ac, char **av)
 		}
 		if (close(rfild) == -1) {
 			tst_brkm(TBROK, cleanup, "close() failed");
-		 /*NOTREACHED*/}
+		 }
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -141,10 +145,10 @@ void setup(void)
 	if ((fild = creat(fname, 0777)) == -1) {
 		tst_brkm(TBROK, cleanup, "creat(%s, 0777) Failed, errno = %d"
 			 " : %s", fname, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	if (write(fild, palfa, TST_SIZE) != TST_SIZE) {
 		tst_brkm(TBROK, cleanup, "can't write to Xread");
-	 /*NOTREACHED*/}
+	 }
 	close(fild);
 }
 

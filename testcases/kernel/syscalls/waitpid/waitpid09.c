@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");
 #endif
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 
 	if ((pid = FORK_OR_VFORK()) < 0) {
 		tst_brkm(TFAIL, cleanup, "Fork Failed");
-	 /*NOTREACHED*/} else if (pid == 0) {
+	 } else if (pid == 0) {
 		/*
 		 * Child:
 		 * Set up to catch SIGINT.  The kids will wait till a
@@ -121,12 +121,12 @@ int main(int argc, char **argv)
 			fail = 0;
 			if ((pid = FORK_OR_VFORK()) < 0) {
 				tst_brkm(TFAIL, cleanup, "Fork failed.");
-			 /*NOTREACHED*/} else if (pid == 0) {	/* child */
+			 } else if (pid == 0) {	/* child */
 #ifdef UCLINUX
 				if (self_exec(argv[0], "") < 0) {
 					tst_brkm(TFAIL, cleanup,
 						 "self_exec failed");
-				 /*NOTREACHED*/}
+				 }
 #else
 				do_exit();
 #endif
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 
 			if ((pid = FORK_OR_VFORK()) < 0) {
 				tst_brkm(TFAIL, cleanup, "Second fork failed.");
-			 /*NOTREACHED*/} else if (pid == 0) {	/* child */
+			 } else if (pid == 0) {	/* child */
 				exit(0);
 			} else {	/* parent */
 				/* Give the child time to startup and exit */
@@ -251,13 +251,13 @@ int main(int argc, char **argv)
 
 		}
 		cleanup();
-	 /*NOTREACHED*/} else {	/* parent */
+	 } else {	/* parent */
 		/* wait for the child to return */
 		waitpid(pid, &status, 0);
 		if (WEXITSTATUS(status) != 0) {
 			tst_brkm(TBROK, cleanup, "child returned bad "
 				 "status");
-		 /*NOTREACHED*/}
+		 }
 	}
 
 	return 0;
@@ -274,7 +274,7 @@ void setup_sigint(void)
 		tst_brkm(TFAIL, cleanup, "signal SIGINT failed, errno = %d",
 			 errno);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*
@@ -307,7 +307,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void inthandlr()
 {

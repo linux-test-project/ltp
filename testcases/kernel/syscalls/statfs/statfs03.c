@@ -57,7 +57,6 @@
 #include "usctest.h"
 #include <pwd.h>
 
-extern char *TESTDIR;
 char *TCID = "statfs03";
 int TST_TOTAL = 1;
 int fileHandle = 0;
@@ -136,9 +135,9 @@ void setup()
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
-	if (chmod(TESTDIR, S_IRWXU) == -1)
-		tst_brkm(TBROK, cleanup, "chmod(%s,700) failed; errno %d: %s",
-			 TESTDIR, errno, strerror(errno));
+	if (chmod(get_tst_tmpdir(), S_IRWXU) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, 700) failed",
+			 get_tst_tmpdir());
 
 	/* create a test file */
 	sprintf(fname, "%s.%d", fname, getpid());
@@ -147,15 +146,16 @@ void setup()
 	} else {
 		sprintf(path, "%s/%s", fname, fname);
 		if ((fileHandle = creat(path, 0444)) == -1) {
-			tst_resm(TFAIL, "creat (2) FAILED to creat temp file");
+			tst_brkm(TFAIL|TERRNO, "creat (2) FAILED to creat temp file");
 		}
 	}
 
 	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "getpwnam failed");
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
+		tst_resm(TINFO|TERRNO, "seteuid failed to "
 			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
 	}
 
 }

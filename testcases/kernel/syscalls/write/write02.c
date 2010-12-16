@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL))) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	setup();		/* global setup for test */
 
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
 		if ((fild = creat(pfiln, 0777)) == -1) {
 			tst_brkm(TBROK, cleanup, "Can't creat Xwrit");
-		 /*NOTREACHED*/}
+		 }
 		for (iws = BUFSIZ; iws > 0; iws--) {
 			if ((cwrite = write(fild, pwbuf, iws)) != iws) {
 				TEST_ERROR_LOG(errno);
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 		close(fild);
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

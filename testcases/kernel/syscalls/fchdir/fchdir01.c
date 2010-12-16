@@ -58,9 +58,10 @@
 #include "test.h"
 #include "usctest.h"
 
-#include <errno.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include <string.h>
 
 void cleanup(void);
@@ -84,9 +85,8 @@ int main(int ac, char **av)
 	int r_val;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
@@ -98,8 +98,7 @@ int main(int ac, char **av)
 
 		/* get the name of the test dirctory */
 		if ((temp_dir = (getcwd(temp_dir, 0))) == NULL) {
-			tst_brkm(TBROK, cleanup, "%s - getcwd() in main() "
-				 "failed", TCID);
+			tst_brkm(TBROK, cleanup, "getcwd failed");
 		}
 
 		/*
@@ -107,8 +106,7 @@ int main(int ac, char **av)
 		 */
 
 		if ((r_val = mkdir(TEST_DIR, MODES)) == -1) {
-			tst_brkm(TBROK, cleanup, "%s - mkdir() in main() "
-				 "failed", TCID);
+			tst_brkm(TBROK, cleanup, "mkdir failed");
 		}
 
 		if ((fd = open(TEST_DIR, O_RDONLY)) == -1) {
@@ -122,8 +120,7 @@ int main(int ac, char **av)
 		TEST(fchdir(fd));
 
 		if (TEST_RETURN == -1) {
-			tst_brkm(TFAIL, cleanup, "%s call failed - errno = %d :"
-				 " %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_brkm(TFAIL|TTERRNO, cleanup, "fchdir call failed");
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
 				check_functionality();
@@ -162,8 +159,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -172,35 +168,29 @@ int main(int ac, char **av)
 void check_functionality(void)
 {
 	char *buf = NULL;
-	char **bufptr = &buf;
 	char *dir;
 
 	/*
 	 * Get the current directory path.
 	 */
 	if ((buf = (getcwd(buf, 0))) == NULL) {
-		tst_brkm(TBROK, cleanup, "%s - getcwd() in "
-			 "check_functionality() failed", TCID);
+		tst_brkm(TBROK, cleanup, "getcwd failed");
 	}
 
 	/*
 	 * strip off all but the last directory name in the
 	 * current working directory.
 	 */
-	do {
-		if ((dir = strsep(bufptr, "/")) == NULL) {
-			tst_brkm(TBROK, cleanup, "%s - strsep() in "
-				 "check_functionality() failed", TCID);
-		}
-	} while (*bufptr != NULL);
+	if ((dir = basename(buf)) == NULL)
+		tst_brkm(TBROK, cleanup, "basename failed");
 
 	/*
 	 * Make sure we are in the right place.
 	 */
 	if (strcmp(TEST_DIR, dir) == 0) {
-		tst_resm(TPASS, "%s call succeeded", TCID);
+		tst_resm(TPASS, "fchdir call succeeded");
 	} else {
-		tst_resm(TFAIL, "%s functionality test failed", TCID);
+		tst_resm(TFAIL, "fchdir call failed");
 	}
 }
 
@@ -233,7 +223,4 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

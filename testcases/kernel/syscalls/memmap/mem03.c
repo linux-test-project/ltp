@@ -141,7 +141,7 @@ int main()
 	/* clean up and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

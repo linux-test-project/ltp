@@ -57,7 +57,6 @@
 
 /* Extern Global Variables */
 extern int  Tst_count;               /* counter for tst_xxx routines.         */
-extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID     = "mmap-corruption01"; /* test program identifier.          */

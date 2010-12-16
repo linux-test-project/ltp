@@ -194,12 +194,12 @@ void setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigemptyset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	if (sigfillset(&sigset2) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigfillset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Set the signal handler function to catch the signal */
 	sa_new.sa_handler = sig_handler;
@@ -207,14 +207,14 @@ void setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigaction() failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Read the test process's current signal mask. */
 	if (sigprocmask(SIG_UNBLOCK, 0, &sigset1) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigprocmask() Failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 }				/* End setup() */
 
 /*

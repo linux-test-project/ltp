@@ -155,9 +155,9 @@ void scenar_init()
 		{
 
 			if (scenarii[ i ].explicitsched == 1)
-				ret = pthread_attr_setinheritsched(&scenarii[ i ].ta, PTHREAD_EXPLICIT_SCHED);
+				ret = pthread_attr_setinheritsched(&scenarii[i].ta, PTHREAD_EXPLICIT_SCHED);
 			else
-				ret = pthread_attr_setinheritsched(&scenarii[ i ].ta, PTHREAD_INHERIT_SCHED);
+				ret = pthread_attr_setinheritsched(&scenarii[i].ta, PTHREAD_INHERIT_SCHED);
 
 			if (ret != 0)
 			{
@@ -289,22 +289,26 @@ void scenar_init()
 #endif
 
 		/* Stack related attributes */
+<<<<<<< HEAD
 		if ((tss > 0) && (tsa > 0))     /* This routine is dependent on the Thread Stack Address Attribute and Thread Stack Size Attribute options */
+=======
+		if (tss > 0 && tsa > 0)     /* This routine is dependent on the Thread Stack Address Attribute and Thread Stack Size Attribute options */
+>>>>>>> master
 		{
 
-			if (scenarii[ i ].altstack != 0)
+			if (scenarii[i].altstack != 0)
 			{
 				/* This is slightly more complicated. We need to alloc a new stack
 				and free it upon test termination */
 				/* We will alloc with a simulated guardsize of 1 pagesize */
-				scenarii[ i ].bottom = malloc(minstacksize + pagesize);
+				scenarii[i].bottom = malloc(minstacksize + pagesize);
 
-				if (scenarii[ i ].bottom == NULL)
+				if (scenarii[i].bottom == NULL)
 				{
 					UNRESOLVED(errno, "Unable to alloc enough memory for alternative stack");
 				}
 
-				ret = pthread_attr_setstack(&scenarii[ i ].ta, scenarii[ i ].bottom, minstacksize);
+				ret = pthread_attr_setstack(&scenarii[i].ta, scenarii[ i ].bottom, minstacksize);
 
 				if (ret != 0)
 				{
@@ -329,6 +333,10 @@ void scenar_init()
 		if (scenarii[ i ].guard != 0)
 		{
 			if (scenarii[ i ].guard == 1)
+				ret = pthread_attr_setguardsize( &scenarii[ i ].ta, 0 );
+
+			if (scenarii[ i ].guard == 2)
+				ret = pthread_attr_setguardsize( &scenarii[ i ].ta, pagesize );
 				ret = pthread_attr_setguardsize(&scenarii[ i ].ta, 0);
 
 			if (scenarii[ i ].guard == 2)

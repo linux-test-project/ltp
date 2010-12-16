@@ -86,7 +86,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "d", &sig_uclinux);
 #endif
@@ -209,7 +209,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -279,4 +279,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

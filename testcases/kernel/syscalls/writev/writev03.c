@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* set "tstdir", and "testfile" vars */
 	setup();
@@ -126,13 +126,13 @@ int main(int argc, char **argv)
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGTERM FAILED");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGPIPE FAILED");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		memset(buf_list[0], 0, K_1);
 		memset(buf_list[1], 0, K_1);
@@ -141,24 +141,24 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "open(2) failed: fname = %s, "
 				 "errno = %d", f_name, errno);
 			cleanup();
-		 /*NOTREACHED*/} else {
+		 } else {
 			if ((nbytes = write(fd[0], buf_list[1], K_1)) != K_1) {
 				tst_resm(TFAIL, "write(2) failed: nbytes "
 					 "= %d, errno = %d", nbytes, errno);
 				cleanup();
-			 /*NOTREACHED*/}
+			 }
 		}
 
 		if (close(fd[0]) < 0) {
 			tst_resm(TFAIL, "close failed: errno = %d", errno);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0) {
 			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 //block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
@@ -352,7 +352,7 @@ void sighandler(int sig)
 		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
 			 f_name, errno);
 		cleanup();
-	 /*NOTREACHED*/}
+	 }
 	exit(sig);
 }
 

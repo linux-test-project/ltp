@@ -153,7 +153,7 @@ int main(int argc, char * argv[])
 	/* Wait for the semaphore */
 	ret = sem_wait(&sem);
 
-	if ((ret != 0) && (errno != EINTR))
+	if (ret != 0 && errno != EINTR)
 	{
 		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}

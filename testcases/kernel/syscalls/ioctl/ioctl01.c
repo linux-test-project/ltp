@@ -115,7 +115,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	if (!Devflag) {
@@ -126,7 +130,7 @@ int main(int ac, char **av)
 	}
 
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	setup();
@@ -168,7 +172,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*

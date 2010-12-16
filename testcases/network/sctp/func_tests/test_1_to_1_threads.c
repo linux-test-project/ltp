@@ -178,7 +178,7 @@ main(void)
 			status = pthread_create(&thread[cnt], &attr,
 						relay, (void*)(uintptr_t)cnt);
 			if (status)
-				tst_brkm(TBROK, tst_exit, "pthread_create "
+				tst_brkm(TBROK, NULL, "pthread_create "
                          		 "failed status:%d, errno:%d", status,
 					 errno);
 		}
@@ -187,7 +187,7 @@ main(void)
 		for (cnt = 1; cnt < THREADS ; cnt++) {
 			exit_status = pthread_join (thread[cnt], &result);
 			if (exit_status == -1)
-				tst_brkm(TBROK, tst_exit, "pthread_join "
+				tst_brkm(TBROK, NULL, "pthread_join "
                          		 "Thread #%d exited with status:%d",
 					 cnt, exit_status);
 		}

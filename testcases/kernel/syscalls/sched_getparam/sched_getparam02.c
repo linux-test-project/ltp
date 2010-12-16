@@ -95,10 +95,8 @@ int main(int ac, char **av)
 	pid_t child_pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL))
-	    != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/* perform global setup for test */
 	setup();
@@ -160,11 +158,9 @@ int main(int ac, char **av)
 
 	}			/* End for TEST_LOOPING */
 
-	/* cleanup and exit */
 	cleanup();
-
-	 /*NOTREACHED*/ return 0;
-
+	tst_exit();
+	
 }				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
@@ -190,7 +186,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */

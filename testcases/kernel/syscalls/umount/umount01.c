@@ -178,7 +178,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -193,7 +193,7 @@ void setup()
 		if (Fstype != NULL) {
 			free(Fstype);
 		}
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* make a temp directory */

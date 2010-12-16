@@ -101,8 +101,7 @@ int main(int argc, char **argv)
 
 	setup();
 	//tempdir();            /* move to new directory */ 12/20/2003
-/*--------------------------------------------------------------------*/
-	blenter();		/*<<<<<ENTER DATA HERE<<<<<<<< */
+	blenter();
 
 	exno = 1;
 

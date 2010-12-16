@@ -143,15 +143,15 @@ main(int argc, char *argv[])
 	/* Set clt_sk1 as non-blocking. */
 	flags = fcntl(clt_sk1, F_GETFL, 0);
 	if (flags < 0)
-		tst_brkm(TBROK, tst_exit, "fcntl F_GETFL: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "fcntl F_GETFL: %s", strerror(errno));
 	if (fcntl(clt_sk1, F_SETFL, flags | O_NONBLOCK) < 0)
-		tst_brkm(TBROK, tst_exit, "fcntl F_SETFL: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "fcntl F_SETFL: %s", strerror(errno));
 
 	/* Do a non-blocking connectx from clt_sk1 to svr_sk */      
 	error = sctp_connectx(clt_sk1, (struct sockaddr *)svr_try, NUMADDR);
 	/* Non-blocking connectx should return immediately with EINPROGRESS. */
 	if ((error != -1) || (EINPROGRESS != errno))
-		tst_brkm(TBROK, tst_exit, "non-blocking connectx error: %d"
+		tst_brkm(TBROK, NULL, "non-blocking connectx error: %d"
 			 "errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking connectx");
@@ -161,7 +161,7 @@ main(int argc, char *argv[])
 	 */
 	error = sctp_connectx(clt_sk1, (struct sockaddr *)svr_try, NUMADDR);
 	if ((error != -1) || (EISCONN != errno))
-		tst_brkm(TBROK, tst_exit, "connectx on a socket to create an "
+		tst_brkm(TBROK, NULL, "connectx on a socket to create an "
 			 "assoc that is already established error:%d errno:%d",
 			 error, errno);
 
@@ -222,7 +222,7 @@ main(int argc, char *argv[])
 	/* Doing a connectx on a peeled off socket should fail. */
 	error = sctp_connectx(peeloff_sk, (struct sockaddr *)clt_loop3, NUMADDR);
 	if ((error != -1) || (EISCONN != errno))
-		tst_brkm(TBROK, tst_exit, "connectx on a peeled off socket "
+		tst_brkm(TBROK, NULL, "connectx on a peeled off socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connectx on a peeled off socket");
@@ -232,7 +232,7 @@ main(int argc, char *argv[])
 	 */
 	error = sctp_connectx(svr_sk, (struct sockaddr *)clt_loop1, NUMADDR);
 	if ((error != -1) || (EADDRNOTAVAIL != errno))
-		tst_brkm(TBROK, tst_exit, "connectx to create an assoc that "
+		tst_brkm(TBROK, NULL, "connectx to create an assoc that "
 			 "matches a peeled off assoc error:%d errno:%d",
 			 error, errno);
 

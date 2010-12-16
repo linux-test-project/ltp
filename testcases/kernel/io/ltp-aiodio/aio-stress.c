@@ -704,7 +704,11 @@ int build_oper(struct thread_info *t, struct io_oper *oper, int num_ios,
     if ((oper->started_ios + num_ios) > oper->total_ios)
         num_ios = oper->total_ios - oper->started_ios;  
 
+<<<<<<< HEAD
     for (i = 0 ; i < num_ios ; i++) {
+=======
+    for ( i = 0 ; i < num_ios ; i++) {
+>>>>>>> master
 	io = build_iocb(t, oper);
 	if (!io) {
 	    return -1;   

@@ -76,9 +76,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
@@ -103,19 +102,17 @@ int main(int ac, char **av)
 
 		switch (TEST_ERRNO) {
 		case EBADF:
-			tst_resm(TPASS, "expected failure - errno = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TPASS, "failed with EBADF");
 			break;
 		default:
-			tst_brkm(TFAIL, cleanup, "call failed with an "
-				 "unexpected error - %d : %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_brkm(TFAIL|TTERRNO, cleanup,
+			    "call failed with an unexpected error");
 		}
 	}
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -150,7 +147,4 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

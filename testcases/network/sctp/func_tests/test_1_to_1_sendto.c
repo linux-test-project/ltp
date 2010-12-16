@@ -109,7 +109,7 @@ main(int argc, char *argv[])
 	count = sendto(sk, message, msg_count, flag,
 		       (const struct sockaddr *) &conn_addr, len);
 	if (count != msg_count)
-		tst_brkm(TBROK, tst_exit, "sendto from client to server "
+		tst_brkm(TBROK, NULL, "sendto from client to server "
                          "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "sendto() from client to server - SUCCESS");
@@ -122,7 +122,7 @@ main(int argc, char *argv[])
 	count = sendto(acpt_sk, message, msg_count, flag,
 		       (const struct sockaddr *) &svr_addr, len);
 	if (count != msg_count)
-		tst_brkm(TBROK, tst_exit, "sendto from accept socket to client "
+		tst_brkm(TBROK, NULL, "sendto from accept socket to client "
                          "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "sendto() from accept socket to client - SUCCESS");
@@ -139,7 +139,7 @@ main(int argc, char *argv[])
         count = sendto(sk1, message, msg_count, flag,
 		       (const struct sockaddr *) &conn_addr, len);
         if (count != msg_count)
-		tst_brkm(TBROK, tst_exit, "sendto from unconnected client to "
+		tst_brkm(TBROK, NULL, "sendto from unconnected client to "
 			 "server count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "sendto() from unconnected client to server - SUCCESS");

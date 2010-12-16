@@ -113,28 +113,10 @@ int main(int ac, char **av)
 
 	/* Disable test if the version of the kernel is less than 2.6.16 */
 	if ((tst_kvercmp(2, 6, 16)) < 0) {
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.16 and higher");
-		exit(0);
+		tst_brkm(TCONF, NULL,
+		    "This test can only run on kernels that are 2.6.16 and higher");
 	}
 
-	/* report failure if run with stubs */
-#ifdef __NR_fstatat64
-	if (__NR_fstatat64 == 0)
-#endif
-#ifdef __NR_newfstatat
-		if (__NR_newfstatat == 0)
-#endif
-		{
-			tst_resm(TFAIL,
-				 "fstatat() Failed, neither __NR_fstatat64 "
-				 "no __NR_newfstatat is implemented ");
-			exit(0);
-		}
-
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -167,16 +149,11 @@ int main(int ac, char **av)
 				 ***************************************************************/
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "fstatat() returned the expected  errno %d: %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_resm(TPASS|TTERRNO,
+						 "fstatat() failed as expected");
 				}
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL,
-					 "fstatat() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "fstatat failed")
 			}
 		}
 
@@ -186,8 +163,7 @@ int main(int ac, char **av)
 	 * cleanup and exit
 	 ***************************************************************/
 	cleanup();
-
-	return (0);
+	tst_exit();
 }				/* End main */
 
 void setup_every_copy()
@@ -201,32 +177,32 @@ void setup_every_copy()
 
 	ret = mkdir(pathname, 0700);
 	if (ret < 0) {
-		perror("mkdir: ");
-		exit(-1);
+		perror("mkdir");
+		exit(1);
 	}
 
 	dirfd = open(pathname, O_DIRECTORY);
 	if (dirfd < 0) {
-		perror("open: ");
-		exit(-1);
+		perror("open");
+		exit(1);
 	}
 
 	fd = open(testfile, O_CREAT | O_RDWR, 0600);
 	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
+		perror("open");
+		exit(1);
 	}
 
 	fd = open(testfile2, O_CREAT | O_RDWR, 0600);
 	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
+		perror("open");
+		exit(1);
 	}
 
 	fd = open(testfile3, O_CREAT | O_RDWR, 0600);
 	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
+		perror("open");
+		exit(1);
 	}
 
 	fds[0] = fds[1] = fds[4] = dirfd;
@@ -249,7 +225,7 @@ void setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -268,7 +244,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-}				/* End cleanup() */
+}

@@ -85,9 +85,8 @@ int main(int ac, char **av)
 	int fork_1, fork_2;	/* ret values in parent */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
 
 	setup();
 
@@ -111,7 +110,7 @@ int main(int ac, char **av)
 
 		if ((fork_1 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-		 /*NOTREACHED*/}
+		}
 
 		if (fork_1 == 0) {	/* 1st child */
 			if (close(pipefd[0]) != 0) {
@@ -131,26 +130,25 @@ int main(int ac, char **av)
 
 		/* parent */
 
-		waitpid(fork_1, &wtstatus, 0);
-		if (WEXITSTATUS(wtstatus) != 0) {
-			tst_brkm(TBROK, cleanup, "problem detected in child, "
-				 "wait status %d, errno = %d", wtstatus, errno);
+		if (waitpid(fork_1, &wtstatus, 0) == -1)
+			tst_brkm(TBROK, cleanup, "waitpid failed");
+		if (WIFEXITED(wstatus) && WEXITSTATUS(wtstatus) != 0) {
+			tst_brkm(TBROK, cleanup, "child exited abnormally");
 		}
 
 		if ((fork_2 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (fork_2 == 0) {	/* 2nd child */
 			if (close(pipefd[0]) != 0) {
-				tst_resm(TWARN, "pipefd[0] close "
-					 "failed, errno = %d", errno);
+				perror("pipefd[0] close failed");
 				exit(1);
 			}
 
 			for (i = 0; i < PIPEWRTCNT / 2; ++i) {
 				if (write(pipefd[1], "B", 1) != 1) {
-					tst_resm(TWARN, "write to pipe failed");
+					perror("write to pipe failed");
 					exit(1);
 				}
 			}
@@ -159,16 +157,17 @@ int main(int ac, char **av)
 
 		/* parent */
 
-		waitpid(fork_2, &wtstatus, 0);
+		if (waitpid(fork_2, &wtstatus, 0) == -1)
+			tst_brkm(TBROK, cleanup, "waitpid failed");
 		if (WEXITSTATUS(wtstatus) != 0) {
 			tst_brkm(TBROK, cleanup, "problem detected in child, "
 				 "wait status %d, errno = %d", wtstatus, errno);
 		}
 
 		if (close(pipefd[1]) != 0) {
-			tst_brkm(TBROK, cleanup, "pipefd[1] close failed, "
-				 "errno = %d", errno);
-		 /*NOTREACHED*/}
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "pipefd[1] close failed");
+		}
 
 		while ((red = safe_read(pipefd[0], rebuf, 100)) > 0) {
 			for (i = 0; i < red; i++) {
@@ -187,8 +186,8 @@ int main(int ac, char **av)
 		}
 
 		if (red == -1) {
-			tst_brkm(TBROK, cleanup, "Failure reading pipefd pipe, "
-				 "errno = %d", errno);
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "reading pipefd pipe failed");
 		}
 
 		if (Bcnt == Acnt && Bcnt == (PIPEWRTCNT / 2)) {
@@ -203,7 +202,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -229,7 +228,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

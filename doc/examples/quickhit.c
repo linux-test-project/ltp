@@ -37,61 +37,61 @@
 /* $Id: quickhit.c,v 1.2 2000/10/10 21:57:51 nstraz Exp $ */
 /**********************************************************
  * 
- *    OS Test - Silicon Graphics, Inc.
+ *	OS Test - Silicon Graphics, Inc.
  * 
- *    TEST IDENTIFIER	: link03
+ *	TEST IDENTIFIER	: link03
  * 
- *    EXECUTED BY	: anyone
+ *	EXECUTED BY	: anyone
  * 
- *    TEST TITLE	: multi links tests
+ *	TEST TITLE	: multi links tests
  * 
- *    PARENT DOCUMENT	: usctpl01
+ *	PARENT DOCUMENT	: usctpl01
  * 
- *    TEST CASE TOTAL	: 2
+ *	TEST CASE TOTAL	: 2
  * 
- *    WALL CLOCK TIME	: 1
+ *	WALL CLOCK TIME	: 1
  * 
- *    CPU TYPES		: ALL
+ *	CPU TYPES		: ALL
  * 
- *    AUTHOR		: Richard Logan
+ *	AUTHOR		: Richard Logan
  * 
- *    CO-PILOT		: William Roske
+ *	CO-PILOT		: William Roske
  * 
- *    DATE STARTED	: 03/31/94
+ *	DATE STARTED	: 03/31/94
  * 
- *    INITIAL RELEASE	: UNICOS 7.0
+ *	INITIAL RELEASE	: UNICOS 7.0
  * 
- *    TEST CASES
+ *	TEST CASES
  * 
  * 	1.) link(2) returns...(See Description)
  *	
- *    INPUT SPECIFICATIONS
+ *	INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *	-N #links : Use #links links every iteration
  * 
- *    OUTPUT SPECIFICATIONS
+ *	OUTPUT SPECIFICATIONS
  * 	
- *    DURATION
+ *	DURATION
  * 	Terminates - with frequency and infinite modes.
  * 
- *    SIGNALS
+ *	SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
- *    RESOURCES
+ *	RESOURCES
  * 	None
  * 
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
+ *	ENVIRONMENTAL NEEDS
+ *	  No run-time environmental needs.
  * 
- *    SPECIAL PROCEDURAL REQUIREMENTS
+ *	SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
  * 
- *    INTERCASE DEPENDENCIES
+ *	INTERCASE DEPENDENCIES
  * 	None
  * 
- *    DETAILED DESCRIPTION
+ *	DETAILED DESCRIPTION
  *	This is a Phase I test for the link(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
@@ -118,8 +118,9 @@
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <string.h>
 #include <signal.h>
+#include <string.h>
+#include <stdio.h>
  /* test.h and usctest.h are the two header files that are required by the
   * quickhit package.  They contain function and macro declarations which you
   * can use in your test programs
@@ -131,16 +132,14 @@
   * steps are usually put in separate functions for clarity.  The help function
   * is only needed when you are adding new command line options.
   */
-void setup(); 
-void help();
-void cleanup();
+static void setup(void);
+static void help(void);
+static void cleanup(void);
 
-char *TCID="link03";		/* Test program identifier.    */
-int TST_TOTAL=2;    		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
-extern int Tst_nobuf;
+char *TCID = "link03";		/* Test program identifier.	*/
+int TST_TOTAL = 2;		/* Total number of test cases. */
 
-int exp_enos[]={0, 0};
+int exp_enos[] = {0, 0};
 
 #define BASENAME	"lkfile"
 
@@ -156,12 +155,12 @@ int Nlinks=0;
  * option.  Long options are not supported at this time. 
  */
 char *Nlinkarg;
-int Nflag=0;
+int Nflag = 0;
 
 /* for test specific parse_opts options */
 option_t options[] = {
-        { "N:",  &Nflag, &Nlinkarg },   /* -N #links */
-        { NULL, NULL, NULL }
+		{ "N:",  &Nflag, &Nlinkarg },   /* -N #links */
+		{ NULL, NULL, NULL }
 };
 
 /***********************************************************************
@@ -170,148 +169,149 @@ option_t options[] = {
 int
 main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    struct stat fbuf, lbuf;
-    int cnt;
-    int nlinks;
-    char lname[255];
+	int lc;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	struct stat fbuf, lbuf;
+	int cnt;
+	int nlinks;
+	char lname[255];
 
-    Tst_nobuf=1;
-
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-    /* start off by parsing the command line options.  We provide a function
-     * that understands many common options to control looping.  If you are not
-     * adding any new options, pass NULL in place of options and &help.
-     */
-    if ( (msg=parse_opts(ac, av, options, &help)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
-
-    if ( Nflag ) {
-	if (sscanf(Nlinkarg, "%i", &Nlinks) != 1 ) {
-	    tst_brkm(TBROK, NULL, "--N option arg is not a number");
-	    tst_exit();
+	/***************************************************************
+	 * parse standard options
+	 ***************************************************************/
+	/* start off by parsing the command line options.  We provide a function
+	 * that understands many common options to control looping.  If you are
+	 * not adding any new options, pass NULL in place of options and &help.
+	 */
+	if ((msg=parse_opts(ac, av, options, &help)) != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
-	if ( Nlinks > 1000 ) {
-	    tst_resm(TWARN, "--N option arg > 1000 - may get errno:%d (EMLINK)",
-		EMLINK);
+
+	if (Nflag) {
+		if (sscanf(Nlinkarg, "%i", &Nlinks) != 1) {
+			tst_brkm(TBROK, NULL, "--N option arg is not a number");
+		}
+		if (Nlinks > 1000) {
+			tst_resm(TWARN,
+				"--N option arg > 1000 - may get errno:%d "
+				"(EMLINK)", EMLINK);
+		}
 	}
-    }
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
-    /* Next you should run a setup routine to make sure your environment is
-     * sane.
-     */
-    setup();
+	/***************************************************************
+	 * perform global setup for test
+	 ***************************************************************/
+	/* Next you should run a setup routine to make sure your environment is
+	 * sane.
+	 */
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state 
-     ***************************************************************/
-    /* TEST_LOOPING() is a macro that will make sure the test continues
-     * looping according to the standard command line args. 
-     */
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	/***************************************************************
+	 * check looping state 
+	 ***************************************************************/
+	/* TEST_LOOPING() is a macro that will make sure the test continues
+	 * looping according to the standard command line args. 
+	 */
+	for (lc=0; TEST_LOOPING(lc); lc++) {
 
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-	if ( Nlinks )
-	    nlinks = Nlinks;
+	if (Nlinks)
+		nlinks = Nlinks;
 	else
-	    /* min of 10 links and max of a 100 links */
-	    nlinks = (lc%90)+10;
+		/* min of 10 links and max of a 100 links */
+		nlinks = (lc%90)+10;
 
-	for(cnt=1; cnt < nlinks; cnt++) {
+	for (cnt=1; cnt < nlinks; cnt++) {
 	
-	    sprintf(lname, "%s%d", Basename, cnt);
-            /*
-	     *  Call link(2)
-	     */
-	    /* Use the TEST() macro to wrap your syscalls.  It saves the return
-	     * to TEST_RETURN and the errno to TEST_ERRNO
-	     */
-	    TEST(link(Fname, lname));
-	
-	    /* check return code */
-	    if ( TEST_RETURN == -1 ) {
-		/* To gather stats on errnos returned, log the errno */
-	        TEST_ERROR_LOG(TEST_ERRNO);
-		/* If you determine that testing shouldn't continue, report your
-		 * results using tst_brkm().  The remaining test cases will be
-		 * marked broken.  TFAIL is the result type for a test failure,
-		 * cleanup is the cleanup routine to call, and the rest is your
-		 * message in printf form.
+		sprintf(lname, "%s%d", Basename, cnt);
+		/*
+		 *  Call link(2)
 		 */
-	        tst_brkm(TFAIL, cleanup, "link(%s, %s) Failed, errno=%d : %s",
-		     Fname, lname, TEST_ERRNO, strerror(TEST_ERRNO));
-	    } 
+		/* Use the TEST() macro to wrap your syscalls. It saves the
+		 * return code to TEST_RETURN and the errno to TEST_ERRNO
+		 */
+		TEST(link(Fname, lname));
+	
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			/* To gather stats on errnos returned, log the errno */
+			TEST_ERROR_LOG(TEST_ERRNO);
+			/* If you determine that testing shouldn't continue,
+			 * report your results using tst_brkm(). The remaining
+			 * testcases will be marked broken.  TFAIL is the
+			 * result type for a test failure, cleanup is the
+			 * cleanup routine to call, and the rest is your
+			 * message in printf form.
+			 */
+			tst_brkm(TFAIL|TTERRNO, cleanup, "link(%s, %s) failed",
+			    Fname, lname);
+		} 
 	}
-	    
+		
 	/***************************************************************
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
-	if ( STD_FUNCTIONAL_TEST ) {
-	    stat(Fname, &fbuf);
+	if (STD_FUNCTIONAL_TEST) {
+		stat(Fname, &fbuf);
 
-	    for(cnt=1; cnt < nlinks; cnt++) {
-                sprintf(lname, "%s%d", Basename, cnt);
+		for (cnt=1; cnt < nlinks; cnt++) {
+			sprintf(lname, "%s%d", Basename, cnt);
 
-		stat(lname, &lbuf);
-		if ( fbuf.st_nlink <= 1 || lbuf.st_nlink <= 1 ||
-			(fbuf.st_nlink != lbuf.st_nlink) ) {
+			if (stat(lname, &lbuf) == -1) {
+				tst_brkm(TBROK|TERRNO, cleanup,
+				    "stat(%s) failed", lname);
+			}
+			else if ( fbuf.st_nlink <= 1 || lbuf.st_nlink <= 1 ||
+			    (fbuf.st_nlink != lbuf.st_nlink) ) {
 
-		    /* When you have results to report, and testing can
-		     * continue, use tst_resm() to record those results.  Use
-		     * TFAIL if the test case failed and your message in printf
-		     * style.
-		     */
-		    tst_resm(TFAIL,
-			"link(%s, %s[1-%d]) ret %d for %d files, stat values do not match %d %d",
-			Fname, Basename, nlinks, TEST_RETURN, nlinks,
-			fbuf.st_nlink, lbuf.st_nlink);
-		    break;
+				/* When you have results to report, and testing
+				 * can continue, use tst_resm() to record those
+				 * results. Use TFAIL if the test case failed
+				 * and your message in printf style.
+				 */
+				tst_resm(TFAIL,
+				"link(%s, %s[1-%d]) ret %d for %d files, stat "
+				"values do not match %d %d",
+				Fname, Basename, nlinks, TEST_RETURN, nlinks,
+				fbuf.st_nlink, lbuf.st_nlink);
+				break;
+			}
 		}
-	    }
-	    if ( cnt >= nlinks ) {
-		/* Here the test case passed so we use TPASS */
-		tst_resm(TPASS,
-		    "link(%s, %s[1-%d]) ret %d for %d files, stat linkcounts match %d",
-		    Fname, Basename, nlinks, TEST_RETURN, nlinks,
-		    fbuf.st_nlink);
-	    }
-	} 
-	else
-	    Tst_count++;
+		if (cnt >= nlinks) {
+			/* Here the test case passed so we use TPASS */
+			tst_resm(TPASS,
+			    "link(%s, %s[1-%d]) ret %d for %d files, stat "
+			    "linkcounts match %d",
+			    Fname, Basename, nlinks, TEST_RETURN, nlinks,
+			    fbuf.st_nlink);
+		}
+	} else
+		Tst_count++;
 
-	/* Here we clean up after the test case so we can do another iteration.
-	 */
-	for(cnt=1; cnt < nlinks; cnt++) {
-        
-            sprintf(lname, "%s%d", Basename, cnt);
+		/* Here we clean up after the test case so we can do another
+		 * iteration.
+		 */
+		for (cnt=1; cnt < nlinks; cnt++) {
+			sprintf(lname, "%s%d", Basename, cnt);
 
-	    if (unlink(lname) == -1) {
-		tst_res(TWARN, "unlink(%s) Failed, errno=%d : %s",
-			Fname, errno, strerror(errno));
-	    }
-	}
+			if (unlink(lname) == -1) {
+				tst_res(TWARN, "unlink(%s) failed", Fname);
+			}
+		}
 
-    }	/* End for TEST_LOOPING */
+	}	/* End for TEST_LOOPING */
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
-    cleanup();
+	/***************************************************************
+	 * cleanup and exit
+	 ***************************************************************/
+	cleanup();
+	tst_exit();
 
-    return 0;
 }	/* End main */
 
 /***************************************************************
@@ -321,10 +321,10 @@ main(int ac, char **av)
  * standard out.  Your help function will be called after the standard options
  * have been printed
  */
-void
-help()
+static void
+help(void)
 {
-    printf("  -N #links : create #links hard links every iteration\n");
+	printf("  -N #links : create #links hard links every iteration\n");
 }
 
 /***************************************************************
@@ -333,57 +333,53 @@ help()
 void 
 setup()
 {
-    int fd;
+	int fd;
 
-    /* You will want to enable some signal handling so you can capture
-     * unexpected signals like SIGSEGV. 
-     */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* You will want to enable some signal handling so you can capture
+	 * unexpected signals like SIGSEGV. 
+	 */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    /* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
-     * fork the test with the -c option.  You want to make sure you do this
-     * before you create your temporary directory.
-     */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code
+	 * to fork the test with the -c option.  You want to make sure you do
+	 * this before you create your temporary directory.
+	 */
+	TEST_PAUSE;
 
-    /* If you are doing any file work, you should use a temporary directory.  We
-     * provide tst_tmpdir() which will create a uniquely named temporary
-     * directory and cd into it.  You can now create files in the current
-     * directory without worrying.
-     */
-    tst_tmpdir();
+	/* If you are doing any file work, you should use a temporary directory.
+	 * We provide tst_tmpdir() which will create a uniquely named temporary
+	 * directory and cd into it.  You can now create files in the current
+	 * directory without worrying.
+	 */
+	tst_tmpdir();
 
-    sprintf(Fname,"%s_%d", BASENAME, getpid());
-    if ((fd = open(Fname,O_RDWR|O_CREAT,0700)) == -1) {
-       tst_brkm(TBROK, cleanup,
-		"open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-		Fname, errno, strerror(errno));
-    } else if (close(fd) == -1) {
-       tst_res(TWARN, "close(%s) Failed, errno=%d : %s",
-	       Fname, errno, strerror(errno));
-    }
-    sprintf(Basename, "%s_%d.", BASENAME, getpid());
+	sprintf(Fname, "%s_%d", BASENAME, getpid());
+	if ((fd = open(Fname, O_RDWR|O_CREAT, 0700)) == -1) {
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "open(%s, O_RDWR|O_CREAT,0700) failed",
+		    Fname);
+	} else if (close(fd) == -1) {
+		tst_res(TWARN|TERRNO, "close(%s) failed", Fname);
+	}
+	sprintf(Basename, "%s_%d.", BASENAME, getpid());
 }
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
-cleanup()
+static void 
+cleanup(void)
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* If you use a temporary directory, you need to be sure you remove it. Use
-     * tst_rmdir() to do it automatically.  
-     */
-    tst_rmdir();
-
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* If you use a temporary directory, you need to be sure you remove it.
+	 * Use tst_rmdir() to do it automatically.  
+	 */
+	tst_rmdir();
 }

@@ -136,23 +136,14 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
@@ -166,13 +157,8 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "stat(%s, &statter) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL, "stat(%s, &statter) failed", fname);
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
@@ -183,12 +169,9 @@ int main(int ac, char **av)
 
 	}			/* End for TEST_LOOPING */
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
+	tst_exit();
 
-	return 0;
 }				/* End main */
 
 /***************************************************************
@@ -213,8 +196,8 @@ void setup()
 	}
 
 	if (close(fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_resm(TWARN|TERRNO, "close(%s) failed",
+			 fname);
 	}
 }				/* End setup() */
 
@@ -232,7 +215,4 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */

@@ -106,9 +106,8 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/*
 	 * perform global setup for test
@@ -134,7 +133,7 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (pid == 0) {	/* child */
 			/* set to nobody */
@@ -142,7 +141,7 @@ int main(int ac, char **av)
 				tst_resm(TWARN, "setreuid failed");
 				perror("setreuid");
 				exit(1);
-			 /*NOTREACHED*/}
+			 }
 
 			/* rename "old" to "new" */
 			TEST(rename(fname, mname));
@@ -150,7 +149,7 @@ int main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				exit(1);
-			 /*NOTREACHED*/}
+			 }
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
@@ -159,7 +158,7 @@ int main(int ac, char **av)
 					 "Expected EPERM or EACCES, got %d",
 					 TEST_ERRNO);
 				exit(1);
-			 /*NOTREACHED*/} else {
+			 } else {
 				tst_resm(TPASS,
 					 "rename returned EPERM or EACCES");
 			}
@@ -179,12 +178,8 @@ int main(int ac, char **av)
 		}
 	}			/* End for TEST_LOOPING */
 
-	/*
-	 * cleanup and exit
-	 */
 	cleanup();
-
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -195,8 +190,8 @@ void setup()
 {
 	/* must run as root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must run this as root");
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK, NULL, "Must run this as root");
+	 }
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -216,17 +211,17 @@ void setup()
 	/* create a directory */
 	if (mkdir(fdir, PERMS) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
-	 /*NOTREACHED*/}
+	 }
 
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s", fdir);
-		/* NOTREACHED */
+		
 	}
 
 	/* set the sticky bit */
 	if (chmod(fdir, buf1.st_mode | S_ISVTX) != 0) {
 		tst_brkm(TBROK, cleanup, "failed to set the S_ISVTX bit");
-		/* NOTREACHED */
+		
 	}
 
 	/* create a file under fdir */
@@ -252,9 +247,4 @@ void cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-
-	/*
-	 * Exit with return code appropriate for results.
-	 */
-	tst_exit();
 }

@@ -105,8 +105,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -144,7 +148,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 

@@ -40,8 +40,12 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
+<<<<<<< HEAD
 	if ((0 == its.it_value.tv_sec) &&
 	    (0 == its.it_value.tv_nsec)) {
+=======
+	if (0 == its.it_value.tv_sec && 0 == its.it_value.tv_nsec) {
+>>>>>>> master
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

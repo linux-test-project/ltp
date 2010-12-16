@@ -107,9 +107,15 @@ int main(int ac, char **av)
 	int nwrite;		/* no. of bytes written by pwrite() */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* Perform global setup for test */
@@ -255,7 +261,7 @@ void init_buffers()
 		write_buf[count] = (char *)malloc(K1);
 
 		if (write_buf[count] == NULL) {
-			tst_brkm(TBROK, tst_exit, "malloc() failed ");
+			tst_brkm(TBROK, NULL, "malloc() failed ");
 		}
 		memset(write_buf[count], count, K1);
 	}

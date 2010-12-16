@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	/*
 	 * perform global setup for the test
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -123,7 +123,7 @@ void setup(void)
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1) {

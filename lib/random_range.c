@@ -357,7 +357,7 @@ char	**errp;
          * If max is less than 2gb, then the value can fit in 32 bits
          * and the standard lrand48() routine can be used.
          */
-        if ( max <= (long)2147483647 ) {
+        if (max <= (long)2147483647) {
             return (long) (min + (((long)lrand48() % nmults) * mult));
         } else {
             /*
@@ -449,7 +449,7 @@ char	**errp;
          * If max is less than 2gb, then the value can fit in 32 bits
          * and the standard lrand48() routine can be used.
          */
-        if ( max <= (long)2147483647 ) {
+        if (max <= (long)2147483647) {
             return (long) (min + (((long)lrand48() % nmults) * mult));
         } else {
             /*
@@ -540,7 +540,7 @@ char		**errp;
 	 * If max is less than 2gb, then the value can fit in 32 bits
 	 * and the standard lrand48() routine can be used.
 	 */
-	if ( max <= (long)2147483647 ) {
+	if (max <= (long)2147483647) {
     	    return (long long) (min + (((long long)lrand48() % nmults) * mult));
 	} else {
 	    /*
@@ -577,19 +577,19 @@ divider(long long min, long long max, long long cnt, long long rand)
      * if we get to a count of more than 32, we should have gotten
      * to 2gb.
      */
-    if ( cnt > 32 )
+    if (cnt > 32)
        return -1;
 
     /*
      * Only get a random number the first time.
      */
-    if ( cnt == 0 || rand < -1 ) {
+    if (cnt == 0 || rand < -1) {
         rand = (long long)lrand48();  /* 32 bit random number */
     }
 
     diff = max - min;
 
-    if ( diff <= 2147483647 )
+    if (diff <= 2147483647)
 	return min + rand;
 
     half = diff/(long long)2;   /* half the distance between min and max */
@@ -600,13 +600,13 @@ printf("divider: min=%lld, max=%lld, cnt=%lld, rand=%lld\n", min, max, cnt, rand
 printf("   diff = %lld, half = %lld,   med = %lld\n", diff, half, med);
 #endif
 
-    if ( half <= 2147483647 ) {
+    if (half <= 2147483647) {
         /*
          * If half is smaller than 2gb, we can use the random number
          * to pick the number within the min to med or med to max
          * if the cnt bit of rand is zero or one, respectively.
          */
-        if ( rand & (1<<cnt) )
+        if (rand & (1<<cnt))
 	    return med + rand;
         else
 	    return min + rand;
@@ -615,7 +615,7 @@ printf("   diff = %lld, half = %lld,   med = %lld\n", diff, half, med);
 	 * recursively call ourself to reduce the value to the bottom half
 	 * or top half (bit cnt is set).
          */
-        if ( rand & (1<<cnt) ) {
+        if (rand & (1<<cnt)) {
 	    return divider(med, max, cnt+1, rand);
 	} else {
 	    return divider(min, med, cnt+1, rand);
@@ -656,7 +656,7 @@ random_bit(long mask)
     long bit;           /* used to count bits and num of set bits choosen */
     int nshift;         /* used to count bit shifts */
 
-    if ( mask == 0 )
+    if (mask == 0)
         return 0;
 
     /*
@@ -665,8 +665,8 @@ random_bit(long mask)
 #ifndef CRAY
 
         bit=1L;
-        for ( nshift=0; (unsigned int)nshift<sizeof(long)*8; nshift++) {
-                if ( mask & bit )
+        for (nshift=0; (unsigned int)nshift<sizeof(long)*8; nshift++) {
+                if (mask & bit)
                         nbits++;
                 bit=bit<<1;
         }
@@ -688,7 +688,7 @@ random_bit(long mask)
     nshift=0;
     while (bit) {
         /* check if the current one's bit is set */
-        if ( mask & 1L ) {
+        if (mask & 1L) {
             bit--;
         }
         mask = mask >> 1;
@@ -721,7 +721,7 @@ char **argv;
     ret=random_bit(mask);
     printf("random_bit(%#o) returned %#o\n", mask, ret);
 
-    if ( argc >= 3 ) {
+    if (argc >= 3) {
         iter=atoi(argv[1]);
         for (ind=2; ind<argc; ind++) {
             printf("Calling random_bit %d times for mask %#o\n", iter, mask);
@@ -775,17 +775,17 @@ char **argv;
     long valbound[PARTNUM];
     long long lvalbound[PARTNUM];
 
-    for (ind=0; ind<PARTNUM; ind++ )
+    for (ind=0; ind<PARTNUM; ind++)
 	cntarr[ind]=0;
 
-    if ( argc < 2 ) {
+    if (argc < 2) {
         printf("Usage: %s func [iterations] \n", argv[0]);
 	printf("func can be random_range, random_rangel, random_rangell\n");
 	exit(1);
     }
 
-    if ( argc >= 3 ) {
-        if ( sscanf(argv[2], "%i", &iter) != 1 ) {
+    if (argc >= 3) {
+        if (sscanf(argv[2], "%i", &iter) != 1) {
             printf("Usage: %s [func iterations] \n", argv[0]);
 	    printf("argv[2] is not a number\n");
 	    exit(1);
@@ -796,32 +796,32 @@ char **argv;
     /*
      * random_rangel ()
      */
-    if ( strcmp(argv[1], "random_rangel") == 0 ) {
+    if (strcmp(argv[1], "random_rangel") == 0) {
 	ltmin=lmax;
         part = lmax/PARTNUM;
-        for(ind=0; ind<PARTNUM; ind++) {
+        for (ind=0; ind<PARTNUM; ind++) {
 	    valbound[ind]=part*ind;
         }
 
-	for(cnt=0; cnt<iter; cnt++) {
+	for (cnt=0; cnt<iter; cnt++) {
 	    lret=random_rangel(lmin, lmax, lmult, NULL);
-	    if ( iter < 100 )
+	    if (iter < 100)
 	        printf("%ld\n", lret);
-	    if ( lret < ltmin )
+	    if (lret < ltmin)
 		ltmin = lret;
-	    if ( lret > ltmax )
+	    if (lret > ltmax)
 		ltmax = lret;
-	    for(ind=0; ind<PARTNUM-1; ind++) {
-		if ( valbound[ind]  < lret && lret <= valbound[ind+1] ) {
+	    for (ind=0; ind<PARTNUM-1; ind++) {
+		if (valbound[ind]  < lret && lret <= valbound[ind+1]) {
 		    cntarr[ind]++;
 		    break;
 		}
 	    }
-	    if ( lret > valbound[PARTNUM-1] ) {
+	    if (lret > valbound[PARTNUM-1]) {
 		cntarr[PARTNUM-1]++;
 	    }
         }
-        for(ind=0; ind<PARTNUM-1; ind++) {
+        for (ind=0; ind<PARTNUM-1; ind++) {
 	    printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", ind+1,
 	        valbound[ind], valbound[ind+1], cntarr[ind],
 	        (float)(cntarr[ind]/(float)iter));
@@ -831,36 +831,36 @@ char **argv;
 	    (float)(cntarr[PARTNUM-1]/(float)iter));
 	printf("  min=%ld,  max=%ld\n", ltmin, ltmax);
 
-    } else if ( strcmp(argv[1], "random_rangell") == 0 ) {
+    } else if (strcmp(argv[1], "random_rangell") == 0) {
        /*
 	* random_rangell() unit test
         */
 	 lltmin=llmax;
         lpart = llmax/PARTNUM;
-        for(ind=0; ind<PARTNUM; ind++) {
+        for (ind=0; ind<PARTNUM; ind++) {
 	    lvalbound[ind]=(long long)(lpart*ind);
         }
 
-	for(cnt=0; cnt<iter; cnt++) {
+	for (cnt=0; cnt<iter; cnt++) {
 	    llret=random_rangell(llmin, llmax, llmult, NULL);
-	    if ( iter < 100 )
+	    if (iter < 100)
 	        printf("random_rangell returned %lld\n", llret);
-            if ( llret < lltmin )
+            if (llret < lltmin)
                 lltmin = llret;
-            if ( llret > lltmax )
+            if (llret > lltmax)
                 lltmax = llret;
 
-	    for(ind=0; ind<PARTNUM-1; ind++) {
-		if ( lvalbound[ind]  < llret && llret <= lvalbound[ind+1] ) {
+	    for (ind=0; ind<PARTNUM-1; ind++) {
+		if (lvalbound[ind]  < llret && llret <= lvalbound[ind+1]) {
 		    cntarr[ind]++;
 		    break;
 		}
 	    }
-	    if ( llret > lvalbound[PARTNUM-1] ) {
+	    if (llret > lvalbound[PARTNUM-1]) {
 		cntarr[PARTNUM-1]++;
 	    }
         }
-        for(ind=0; ind<PARTNUM-1; ind++) {
+        for (ind=0; ind<PARTNUM-1; ind++) {
             printf("%2d %-13lld to  %-13lld   %5ld %4.4f\n", ind+1,
                 lvalbound[ind], lvalbound[ind+1], cntarr[ind],
                 (float)(cntarr[ind]/(float)iter));
@@ -876,30 +876,30 @@ char **argv;
          */
 	itmin=imax;
         part = imax/PARTNUM;
-        for(ind=0; ind<PARTNUM; ind++) {
+        for (ind=0; ind<PARTNUM; ind++) {
 	    valbound[ind]=part*ind;
         }
 
-	for(cnt=0; cnt<iter; cnt++) {
+	for (cnt=0; cnt<iter; cnt++) {
 	    lret=random_range(imin, imax, imult, NULL);
-	    if ( iter < 100 )
+	    if (iter < 100)
 	        printf("%ld\n", lret);
-            if ( lret < itmin )
+            if (lret < itmin)
                 itmin = lret;
-            if ( lret > itmax )
+            if (lret > itmax)
                 itmax = lret;
 
-	    for(ind=0; ind<PARTNUM-1; ind++) {
-		if ( valbound[ind]  < lret && lret <= valbound[ind+1] ) {
+	    for (ind=0; ind<PARTNUM-1; ind++) {
+		if (valbound[ind]  < lret && lret <= valbound[ind+1]) {
 		    cntarr[ind]++;
 		    break;
 		}
 	    }
-	    if ( lret > valbound[PARTNUM-1] ) {
+	    if (lret > valbound[PARTNUM-1]) {
 		cntarr[PARTNUM-1]++;
 	    }
         }
-        for(ind=0; ind<PARTNUM-1; ind++) {
+        for (ind=0; ind<PARTNUM-1; ind++) {
 	    printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", ind+1,
 	        valbound[ind], valbound[ind+1], cntarr[ind],
 	        (float)(cntarr[ind]/(float)iter));

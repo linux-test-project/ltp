@@ -124,33 +124,11 @@ static char *device;
 static int Tflag = 0;
 static int Dflag = 0;
 
-static struct test_case_t {
-	char *err_desc;		/* error description            */
-	int exp_errno;		/* Expected error no            */
-	char *exp_errval;	/* Expected error value string  */
-} testcases[] = {
-	{
-	"Fstype not configured", ENODEV, "ENODEV"}, {
-	"Not a block device", ENOTBLK, "ENOTBLK"}, {
-	"Already mounted/busy", EBUSY, "EBUSY"}, {
-	"Cannot remount as read-only", EBUSY, "EBUSY"}, {
-	"Invalid  device ", EINVAL, "EINVAL"}, {
-	"Invalid  fstype ", EINVAL, "EINVAL"}, {
-	"Attempted remounted without mounting ", EINVAL, "EINVAL"}, {
-	"Invalid address space for fstype", EFAULT, "EFAULT"}, {
-	"Invalid address space for Device", EFAULT, "EFAULT"}, {
-	"Pathname too long", ENAMETOOLONG, "ENAMETOOLONG"}, {
-	"Pathname empty", ENOENT, "ENOENT"}, {
-	"Directory not found", ENOENT, "ENOENT"}, {
-	"Not a Directory", ENOTDIR, "ENOTDIR"}
-};
-
-/* Total number of test cases. */
-int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
-
 static int exp_enos[] = { ENODEV, ENOTBLK, EBUSY, EINVAL, EFAULT, ENAMETOOLONG,
 	ENOENT, ENOTDIR, 0
 };
+
+int TST_TOTAL = (sizeof(exp_enos) / sizeof(exp_enos[0])) - 1;
 
 static option_t options[] = {	/* options supported by mount02 test */
 	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
@@ -163,25 +141,17 @@ int main(int ac, char **av)
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	/* Check for mandatory option of the testcase */
-	if (Dflag == 0) {
+	if (Dflag == 0)
 		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
-			 " mounting with -D option, Run '%s  -h' for option "
-			 " information.", TCID);
-		tst_exit();
-	}
+			 " mounting with -D option.");
 
-	Type = (char *)malloc(FSTYPE_LEN);
-	if (!Type) {
-		tst_brkm(TBROK, NULL, "malloc - alloc of %d failed",
-			 FSTYPE_LEN);
-		tst_exit();
+	Type = malloc(FSTYPE_LEN);
+	if (Type == NULL) {
+		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
 	}
 
 	if (Tflag == 1) {
@@ -210,10 +180,8 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 
-			if (setup_test(i, lc)) {
-				tst_resm(TWARN, "Not able to test mount(2) for "
-					 "error %s as setup failed",
-					 testcases[i].exp_errval);
+			if (setup_test(i, lc) != 0) {
+				tst_resm(TWARN, "testcase setup failed");
 				continue;
 			}
 
@@ -224,27 +192,19 @@ int main(int ac, char **av)
 			TEST(mount(Device, Mntpoint, Fstype, Flag, NULL));
 
 			/* check return code */
-			if ((TEST_RETURN == -1) &&
-			    (TEST_ERRNO == testcases[i].exp_errno)) {
-				tst_resm(TPASS, "mount(2) expected failure; "
-					 "Got errno - %s : %s",
-					 testcases[i].exp_errval,
-					 testcases[i].err_desc);
+			if (TEST_RETURN == -1 && TEST_ERRNO == exp_enos[i]) {
+				tst_resm(TPASS|TERRNO,
+				    "mount got expected failure");
 			} else {
 				if (umount(mntpoint) == -1) {
-					tst_brkm(TBROK, cleanup, "umount(2) "
-						 "failed to umount mntpoint %s "
-						 "errno - %d : %s", Mntpoint,
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "umount of %s failed", Mntpoint);
 				}
-				tst_resm(TFAIL, "mount(2) failed to produce "
-					 "expected error; %d, errno:%s got %d",
-					 testcases[i].exp_errno,
-					 testcases[i].exp_errval, TEST_ERRNO);
+				tst_resm(TFAIL|TERRNO,
+				    "mount(2) failed to produce expected "
+				    "error (%d)",
+				    exp_enos[i]);
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			(void)cleanup_test(i);
 
@@ -254,8 +214,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
-
+	tst_exit();
 }				/* End main */
 
 /*
@@ -287,9 +246,8 @@ int setup_test(int i, int cnt)
 			Device = Path;
 			return 0;
 		} else {
-			tst_resm(TWARN, "mknod(2) failed to creat device %s "
-				 "errno = %d : %s", Path, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TWARN, "mknod(2) failed to create device: %s",
+			    Path);
 			return 1;
 		}
 	case 2:
@@ -297,9 +255,9 @@ int setup_test(int i, int cnt)
 
 		TEST(mount(Device, Mntpoint, Fstype, 0, NULL));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN, "mount(2) failed to mount device %s "
-				 "errno = %d : %s", device, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TWARN|TTERRNO,
+			    "mount(2) failed to mount device %s",
+			    device);
 			return 1;
 		}
 		return 0;
@@ -308,23 +266,19 @@ int setup_test(int i, int cnt)
 
 		TEST(mount(Device, Mntpoint, Fstype, 0, NULL));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN, "mount(2) failed to mount device %s "
-				 "errno = %d : %s", device, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TWARN|TTERRNO,
+			    "mount(2) failed to mount device %s", device);
 			return 1;
 		}
 		if (getcwd(Path, PATH_MAX) == NULL) {
-			tst_resm(TWARN, "getcwd() failed to get current working"
-				 " directory errno = %d : %s", errno,
-				 strerror(errno));
+			tst_resm(TWARN|TERRNO, "getcwd failed");
 			return 1;
 		}
 		sprintf(temp, "/%s/t3_%d", mntpoint, cnt);
 		strcat(Path, temp);
 		if ((fd = open(Path, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
-			tst_resm(TWARN, "open() failed to create a file "
-				 " %s errno = %d : %s", Path, errno,
-				 strerror(errno));
+			tst_resm(TWARN|TERRNO, "open() failed to create %s",
+			    Path);
 			return 1;
 		}
 		Flag = MS_REMOUNT | MS_RDONLY;
@@ -376,17 +330,13 @@ int setup_test(int i, int cnt)
 		/* Setup for mount(2) returning errno ENOTDIR. */
 
 		if (getcwd(Path, PATH_MAX) == NULL) {
-			tst_resm(TWARN, "getcwd() failed to get current working"
-				 " directory errno = %d : %s", errno,
-				 strerror(errno));
+			tst_resm(TWARN, "getcwd failed");
 			return 1;
 		}
 		sprintf(temp, "/t_%d_%d", getpid(), cnt);
 		strcat(Path, temp);
 		if ((fd = open(Path, O_CREAT, S_IRWXU)) == -1) {
-			tst_resm(TWARN, "open() failed to create a file "
-				 " %s errno = %d : %s", Path, errno,
-				 strerror(errno));
+			tst_resm(TWARN, "open failed to create %s", Path);
 			return 1;
 		} else {
 			Mntpoint = Path;
@@ -422,9 +372,7 @@ int cleanup_test(int i)
 	case 2:
 		TEST(umount(mntpoint));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN, "umount(2) Failed while unmounting"
-				 " errno %d for testcase %s", TEST_ERRNO,
-				 testcases[i].exp_errval);
+			tst_resm(TWARN|TTERRNO, "umount failed");
 		}
 		break;
 	case 12:
@@ -440,21 +388,16 @@ void setup()
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		free(Type);
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	/* make a temp directory */
 	tst_tmpdir();
 
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
-	if (mkdir(mntpoint, DIR_MODE)) {
-		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
-			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
-			 strerror(errno));
+	if (mkdir(mntpoint, DIR_MODE) == -1) {
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
+		    mntpoint, DIR_MODE);
 	}
 
 	/* set up expected error numbers */
@@ -462,8 +405,6 @@ void setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-
-	return;
 }				/* End setup() */
 
 /*
@@ -482,11 +423,6 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it. */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-	return;
 }				/* End cleanup() */
 
 /*

@@ -70,7 +70,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -99,7 +103,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -120,7 +124,7 @@ void setup()
 
 	if (mknod(fname, S_IFIFO | 0644, (dev_t) NULL) == -1) {
 		tst_brkm(TBROK, cleanup, "mknod FAILED");
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*

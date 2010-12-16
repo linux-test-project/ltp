@@ -295,7 +295,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/* NOTREACHED */
+		
 	}
 #ifdef UCLINUX
 	maybe_run_child(&dochild, "dddd", filename, &recstart, &reclen, &ppid);
@@ -314,7 +314,7 @@ int main(int ac, char **av)
 			 " not support mandatory locks. Cannot run this test.");
 		tst_rmdir();
 		tst_exit();
-		/* NOTREACHED */
+		
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		setvbuf(stdin, 0, _IOLBF, BUFSIZ);

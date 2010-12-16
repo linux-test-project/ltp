@@ -63,7 +63,7 @@ int main(int ac, char **av)
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSIkNG ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	setup();		/* global setup for test */
 
@@ -126,7 +126,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

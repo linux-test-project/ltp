@@ -76,7 +76,7 @@
 char *TCID = "alarm07";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int almreceived = 0;		/* flag to indicate SIGALRM received or not */
+int alarms_received = 0;		/* flag to indicate SIGALRM received or not */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -86,15 +86,14 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int time_sec = 3;	/* time for which alarm is set */
 	int sleep_time = 5;	/* waiting time for the SIGALRM signal */
+	int status;
+	int time_sec = 3;	/* time for which alarm is set */
 	pid_t cpid;		/* child process id */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/* Perform global setup for test */
 	setup();
@@ -122,20 +121,26 @@ int main(int ac, char **av)
 		if (STD_FUNCTIONAL_TEST) {
 			if (cpid == 0) {	/* Child process */
 				/*
-				 * For child process if almreceived is 0
+				 * For child process if alarms_received is 0
 				 * means alarm request is cleared.
 				 */
-				if (almreceived == 0) {
-					printf("Functionality of alarm(%u) "
-					    "successful\n", time_sec);
+				if (alarms_received == 0) {
+					exit(0);
 				} else {
 					printf("alarm request not cleared in "
-					    "child, almreceived:%d\n",
-					    almreceived);
+					    "child; alarms received:%d\n",
+					    alarms_received);
+					exit(1);
 				}
 			} else {	/* Parent process */
 				/* Wait for child to complete execution */
-				wait(0);
+				if (wait(&status) == -1)
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "wait failed");
+				if (!WIFEXITED(status) ||
+				    WEXITSTATUS(status) != 0)
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "child exited abnormally");
 			}
 		} else {
 			tst_resm(TPASS, "call returned %ld", TEST_RETURN);
@@ -145,8 +150,8 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	return 0;
- /*NOTREACHED*/}		/* End main */
+	tst_exit();
+}		/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -162,8 +167,7 @@ void setup()
 
 	/* Set the signal catching function */
 	if (signal(SIGALRM, sigproc) == SIG_ERR) {
-		tst_brkm(TFAIL|TERRNO, cleanup,
-			 "signal() fails to catch SIGALARM");
+		tst_brkm(TFAIL|TERRNO, cleanup, "signal(SIGALRM, ..) failed");
 	}
 }
 
@@ -175,7 +179,7 @@ void setup()
  */
 void sigproc(int sig)
 {
-	almreceived = almreceived + 1;
+	alarms_received++;
 }
 
 /*
@@ -189,7 +193,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

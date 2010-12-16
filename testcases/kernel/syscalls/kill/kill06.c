@@ -83,7 +83,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
@@ -126,7 +130,7 @@ int main(int ac, char **av)
 			/* Kill all processes in this process group */
 			TEST(kill(-getpgrp(), TEST_SIG));
 			sleep(300);
-			 /*NOTREACHED*/
+			 
 			    tst_resm(TINFO, "%d never recieved a"
 				     " signal", getpid());
 			exit(exno);
@@ -159,7 +163,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*
@@ -170,7 +174,7 @@ void do_child()
 	int exno = 1;
 
 	sleep(299);
-	 /*NOTREACHED*/
+	 
 	    tst_resm(TINFO, "%d never recieved a" " signal", getpid());
 	exit(exno);
 }

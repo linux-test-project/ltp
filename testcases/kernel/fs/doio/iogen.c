@@ -1157,7 +1157,7 @@ int 	nbytes;
 		   fd, f.l_whence, (long long)f.l_start, (long long)f.l_len);*/
 
 	    /* non-zeroing reservation */
-	    if (fcntl( fd, F_RESVSP, &f ) == -1) {
+	    if (fcntl(fd, F_RESVSP, &f) == -1) {
 		fprintf(stderr,
 			"iogen%s:  Could not fcntl(F_RESVSP) %d bytes in file %s: %s (%d)\n",
 			TagName, nbytes, path, SYSERR, errno);
@@ -1631,31 +1631,31 @@ char	*opts;
      * Supply defaults
      */
 
-    if (! L_opt) {
+    if (!L_opt) {
 	    Minstrides = 1;
 	    Maxstrides = 255;
     }
 
-    if (! m_opt)
+    if (!m_opt)
 	Offset_Mode = str_lookup(Omode_Map, "sequential");
 
-    if (! i_opt)
+    if (!i_opt)
 	Iterations = 0;
 
-    if (! t_opt)
+    if (!t_opt)
 	Mintrans = 1;
 
-    if (! T_opt)
+    if (!T_opt)
 	Maxtrans = 256 * BSIZE;
 
-    if (! O_opt)
+    if (!O_opt)
 	Oflags = Ocbits = Ocblks = 0;
 
     /*
      * Supply default async io completion strategy types.
      */
 
-    if (! a_opt) {
+    if (!a_opt) {
 	    for (mp = Aio_Strat_Map; mp->m_string != NULL; mp++) {
 		    Aio_Strat_List[Naio_Strat_Types++] = mp;
 	    }
@@ -1665,7 +1665,7 @@ char	*opts;
      * Supply default syscalls.  Default is read,write,reada,writea,listio.
      */
 
-    if (! s_opt) {
+    if (!s_opt) {
 	Nsyscalls = 0;
 	Syscall_List[Nsyscalls++] = str_lookup(Syscall_Map, "read");
 	Syscall_List[Nsyscalls++] = str_lookup(Syscall_Map, "write");
@@ -1704,7 +1704,7 @@ char	*opts;
      * Supply default file io flags - defaut is 'buffered,raw,sync,ldraw'.
      */
 
-    if (! f_opt && Fileio) {
+    if (!f_opt && Fileio) {
 	    Nflags = 0;
 	    Flag_List[Nflags++] = str_lookup(Flag_Map, "buffered");
 	    Flag_List[Nflags++] = str_lookup(Flag_Map, "sync");

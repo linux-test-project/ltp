@@ -78,7 +78,7 @@ main(int argc, char *argv[])
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
@@ -90,7 +90,7 @@ main(int argc, char *argv[])
 	}
 	cleanup();
 
-	/* NOTREACHED */
+	
 	return(0);
 }	/* End main */
 
@@ -108,7 +108,7 @@ gaiv4(void)
 	char *p;
 
 	if (gethostname(hostname, sizeof(hostname)) < 0)
-		tst_brkm(TBROK, tst_exit, "gethostname failed - %s",
+		tst_brkm(TBROK, NULL, "gethostname failed - %s",
 			strerror(errno));
 	strncpy(shortname, hostname, MAXHOSTNAMELEN);
 	shortname[MAXHOSTNAMELEN] = '\0';
@@ -514,7 +514,7 @@ gaiv6(void)
 	char *p;
 
 	if (gethostname(hostname, sizeof(hostname)) < 0)
-		tst_brkm(TBROK, tst_exit, "gethostname failed - %s",
+		tst_brkm(TBROK, NULL, "gethostname failed - %s",
 			strerror(errno));
 	strncpy(shortname, hostname, MAXHOSTNAMELEN);
 	shortname[MAXHOSTNAMELEN] = '\0';

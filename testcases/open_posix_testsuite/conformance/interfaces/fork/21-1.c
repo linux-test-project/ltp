@@ -124,7 +124,7 @@ int main(int argc, char * argv[])
 	/* Initialize the semaphore */
 	sem = sem_open("/fork_21_1", O_CREAT, O_RDWR, 0);
 
-	if (sem == (sem_t *) SEM_FAILED)
+	if (sem == (sem_t*) SEM_FAILED)
 	{
 		UNRESOLVED(errno, "Failed to open the semaphore");
 	}
@@ -179,7 +179,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}

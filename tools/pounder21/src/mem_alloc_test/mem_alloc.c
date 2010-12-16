@@ -115,9 +115,9 @@ sig_usr(int signo)			// signal hanlder for SIGUSR1 and SIGUSR2
 void 
 TELL_WAIT(void)
 {
-	if(signal(SIGUSR1, sig_usr) == SIG_ERR)
+	if (signal(SIGUSR1, sig_usr) == SIG_ERR)
 		unix_error("signal (SIGUSR1) FAILED");
-	if(signal(SIGUSR2, sig_usr) == SIG_ERR)
+	if (signal(SIGUSR2, sig_usr) == SIG_ERR)
 		unix_error("signal (SIGUSR2) FAILED");
 
 	sigemptyset(&zeromask);
@@ -125,7 +125,7 @@ TELL_WAIT(void)
 	sigaddset(&newmask, SIGUSR1);
 	sigaddset(&newmask, SIGUSR2);
 
-	if(sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0)
+	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0)
 		unix_error("signal (SIG_BLOCK) FAILED");
 }
 
@@ -161,12 +161,12 @@ TELL_CHILD(pid_t pid)
 void 
 WAIT_PARENT(void)
 {
-	while(sigflag == 0)
+	while (sigflag == 0)
 		sigsuspend(&zeromask);		// wait for child
 	sigflag = 0;
 
 	// reset signal mask to original value
-	if(sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
 		unix_error("signal (SIG_SETMASK) FAILED");
 }
 
@@ -178,12 +178,12 @@ WAIT_PARENT(void)
 void
 WAIT_CHILD(void)
 {
-	while(sigflag == 0)
+	while (sigflag == 0)
 		sigsuspend(&zeromask);		// wait for parent
 	sigflag = 0;
 
 	// reset signal mask to original value
-	if(sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
 		unix_error("signal (SIG_SETMASK) FAILED");
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,13 +264,13 @@ malloc_data(void)
 
 	src   = sbrk(incr);
 
-	if(((void *) src == (void *) -1) && (errno == ENOMEM))  {	// error handling
+	if (((void *) src == (void *) -1) && (errno == ENOMEM))  {	// error handling
 		src      = sbrk(-(2*incr)); 	// freeing some space for later library calls
 		sbrk_num-= 2;
 		end_addr = src + (-(2*incr));	// update end of heap
 	} else {							// sucess case
 		// must write to data, write once for each 1KB
-		for(i = 0x0; i < incr ; i += PAGE_SIZE)		
+		for (i = 0x0; i < incr ; i += PAGE_SIZE)		
 			src[i] = '*';
 		++sbrk_num;			// update global sbrk() call counter when success 
 		return_value = 1;		// update return value to true
@@ -296,11 +296,11 @@ dealloc_data(void)
 	long i;					// loop counter
 	long old_sbrk_num = sbrk_num;		// save old sbrk_num counter, because sbrk_num will be updated
 
-	for(i = 0; i < old_sbrk_num; ++i) {
+	for (i = 0; i < old_sbrk_num; ++i) {
 		src = sbrk(-incr);
 
 		// error handling: Fatal Fail
-		if(((void *) src == (void *) -1) && (errno == ENOMEM)) 
+		if (((void *) src == (void *) -1) && (errno == ENOMEM)) 
 			goto OUT;		// error
 
 		--sbrk_num;			// update # of sbrk() call
@@ -334,28 +334,28 @@ handle_COW(void)
 	char * i;				// loop counter
 
 	// error handling: Make sure the start_addr is not NULL
-	if(start_addr == NULL) {
+	if (start_addr == NULL) {
 		user_error("start_addr from parent is not initialized");
 		goto OUT;
  	}
 
 	// error handling: Make sure the end_addr is not NULL
-	if(end_addr == NULL) {
+	if (end_addr == NULL) {
 		user_error("end_addr from parent is not initialized");
 		goto OUT;
 	}
 
 	// Writing to heap
-	if(start_addr < end_addr) {		// Heap grows up to higher address
-		for(i = start_addr; i < end_addr; i += PAGE_SIZE) {
-			if((freeswap() + freeram()) < COMMITTED_AS) 
+	if (start_addr < end_addr) {		// Heap grows up to higher address
+		for (i = start_addr; i < end_addr; i += PAGE_SIZE) {
+			if ((freeswap() + freeram()) < COMMITTED_AS) 
 				goto OUT;
 			*i = 'u';
 		}
 		return_value = 1;
-	} else if(start_addr > end_addr) {	// Heap grows down to lower address
-		for(i = end_addr; i > start_addr; i -= PAGE_SIZE) {
-			if((freeswap() + freeram()) < COMMITTED_AS) 
+	} else if (start_addr > end_addr) {	// Heap grows down to lower address
+		for (i = end_addr; i > start_addr; i -= PAGE_SIZE) {
+			if ((freeswap() + freeram()) < COMMITTED_AS) 
 				goto OUT;
 			*i = 'd';	
 		}
@@ -382,8 +382,8 @@ eat_mem(void)
 	start_addr = sbrk(0);
 
 	// eating memory
-	while((freeswap() + freeram()) > COMMITTED_AS) {
-		if(!malloc_data()) 
+	while ((freeswap() + freeram()) > COMMITTED_AS) {
+		if (!malloc_data()) 
 			return;
 	}
 
@@ -405,8 +405,8 @@ eat_mem_no_exit(void)
 	start_addr = sbrk(0);
 
 	// eating memory
-	while((freeswap() + freeram()) > COMMITTED_AS) {
-		if(!malloc_data()) 
+	while ((freeswap() + freeram()) > COMMITTED_AS) {
+		if (!malloc_data()) 
 			break;
 	}		
 }
@@ -431,17 +431,17 @@ START:
 	pid = pid < 0 ? -1 : pid;
 	
 	switch(pid) {
-		case -1: if(!dealloc_data())			
+		case -1: if (!dealloc_data())			
 				unix_error("SBRK(-incr) FROM DEALLOC_DATA() FAILED. FATAL!!!");
 		         goto LAST_CONDITION;
 
-		case 0 : if(!handle_COW()) {		// Re-touch child pages
+		case 0 : if (!handle_COW()) {		// Re-touch child pages
 				print_sysinfo();	// FINAL RESULT, LAST RESOURCES
 				exit(0);		// child can't allocate no more, DONE!!!
 			 }
 			 goto START;
 
-		default: if(waitpid(-1,NULL,0) != pid) 	// Parent Waiting
+		default: if (waitpid(-1,NULL,0) != pid) 	// Parent Waiting
 				unix_error("WAIT_PID FAILED. FATAL!!!");
 			 exit(0);
 	}

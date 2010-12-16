@@ -214,7 +214,7 @@ main(int argc, char *argv[])
 	error = test_getsockopt(sk1, SCTP_DISABLE_FRAGMENTS, &disable_frag,
 				&optlen);
 	if ((error != 0) && (disable_frag != 1))
-		tst_brkm(TBROK, tst_exit, "getsockopt(SCTP_DISABLE_FRAGMENTS) "
+		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DISABLE_FRAGMENTS) "
 			 "error:%d errno:%d disable_frag:%d",
 			 error, errno, disable_frag);
 
@@ -229,7 +229,7 @@ main(int argc, char *argv[])
 	outmessage.msg_iov->iov_len = msg_len;
 	error = sendmsg(sk1, &outmessage, 0);
 	if ((error != -1) || (errno != EMSGSIZE))
-       		tst_brkm(TBROK, tst_exit, "Send a message that exceeds "
+       		tst_brkm(TBROK, NULL, "Send a message that exceeds "
 			 "assoc frag point error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "Send a message that exceeds assoc frag point");

@@ -33,53 +33,53 @@
 /* $Id: access03.c,v 1.8 2009/03/23 13:35:39 subrata_modak Exp $ */
 /**********************************************************
  *
- *    OS Test - Silicon Graphics, Inc.
+ *	OS Test - Silicon Graphics, Inc.
  *
- *    TEST IDENTIFIER	: access03
+ *	TEST IDENTIFIER	: access03
  *
- *    EXECUTED BY	: anyone
+ *	EXECUTED BY	: anyone
  *
- *    TEST TITLE	: EFAULT error testing for access(2)
+ *	TEST TITLE	: EFAULT error testing for access(2)
  *
- *    PARENT DOCUMENT	: acstds01
+ *	PARENT DOCUMENT	: acstds01
  *
- *    TEST CASE TOTAL	: 8
+ *	TEST CASE TOTAL	: 8
  *
- *    WALL CLOCK TIME	: 1
+ *	WALL CLOCK TIME	: 1
  *
- *    CPU TYPES		: ALL
+ *	CPU TYPES		: ALL
  *
- *    AUTHOR		: Kathy Olmsted
+ *	AUTHOR		: Kathy Olmsted
  *
- *    CO-PILOT		: Tom Hampson
+ *	CO-PILOT		: Tom Hampson
  *
- *    DATE STARTED	: 05/13/92
+ *	DATE STARTED	: 05/13/92
  *
- *    INITIAL RELEASE	: UNICOS 7.0
+ *	INITIAL RELEASE	: UNICOS 7.0
  *
- *    TEST CASES
+ *	TEST CASES
  *
  *	access(2) test for errno(s) EFAULT.
  *
- *    INPUT SPECIFICATIONS
+ *	INPUT SPECIFICATIONS
  *	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
- *    DURATION
+ *	DURATION
  *	Terminates - with frequency and infinite modes.
  *
- *    SIGNALS
+ *	SIGNALS
  *	Uses SIGUSR1 to pause before test if option set.
  *	(See the parse_opts(3) man page).
  *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
+ *	ENVIRONMENTAL NEEDS
+ *	  No run-time environmental needs.
  *
- *    DETAILED DESCRIPTION
+ *	DETAILED DESCRIPTION
  *
  *	Setup:
  *	  Setup signal handling.
- *        Make and change to a temporary directory.
+ *		Make and change to a temporary directory.
  *	  Pause for SIGUSR1 if option specified.
  *
  *	Test:
@@ -87,12 +87,12 @@
  *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno.
- *        If doing functional test
- *            check the errno returned and print result message
+ *		If doing functional test
+ *			check the errno returned and print result message
  *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- *        Remove the temporary directory and exit.
+ *		Remove the temporary directory and exit.
  *
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
@@ -106,12 +106,10 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
-char *get_high_address();
-
-char *TCID = "access03";	/* Test program identifier.    */
+char *TCID = "access03";	/* Test program identifier.	*/
 int TST_TOTAL = 8;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
@@ -126,23 +124,20 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
+<<<<<<< HEAD
     /***************************************************************
      * parse standard options
      ***************************************************************/
+=======
+>>>>>>> master
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
 	/* set the expected errnos. */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
@@ -161,9 +156,6 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
@@ -197,9 +189,6 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
@@ -233,9 +222,6 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
@@ -269,9 +255,6 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
@@ -305,9 +288,6 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
@@ -341,9 +321,6 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
@@ -377,9 +354,6 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
@@ -395,8 +369,8 @@ int main(int ac, char **av)
 				}
 			} else {
 				tst_resm(TFAIL,
-					 "access(high_address,X_OK) succeeded unexpectedly.");
-
+				    "access(high_address, X_OK) succeeded "
+				    "unexpectedly.");
 			}
 		}
 
@@ -405,52 +379,44 @@ int main(int ac, char **av)
 		 *  F_OK on high pointer (sbrk(0)+1) for path
 		 */
 
-		/* Call access(2) */
 		TEST(access(get_high_address(), F_OK));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access((char*)sbrk(0)+1,F_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_resm(TPASS|TTERRNO,
+					    "access((char*)sbrk(0)+1,F_OK) "
+					    "failed as expected with EFAULT");
 				} else {
-					tst_resm(TFAIL,
-						 "access((char*)sbrk(0)+1,F_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
+					tst_resm(TFAIL|TTERRNO,
+					    "access((char*)sbrk(0)+1,F_OK) "
+					    " did not fail with EFAULT");
 				}
 			} else {
 				tst_resm(TFAIL,
-					 "access((char*)sbrk(0)+1,F_OK) succeeded unexpectedly.");
-
+					 "access((char*)sbrk(0)+1,F_OK) "
+					 "succeeded unexpectedly.");
 			}
 		}
 
 	}			/* End for TEST_LOOPING */
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
+	/***************************************************************
+	 * cleanup and exit
+	 ***************************************************************/
 	cleanup();
-
-	return 0;
+	tst_exit();
 }				/* End main */
 
 #else
 
 int main()
 {
-	tst_resm(TINFO, "test is not available on uClinux");
+	tst_resm(TCONF, "test is not available on uClinux");
 	return 0;
 }
 
@@ -471,12 +437,12 @@ void setup()
 	tst_tmpdir();
 
 	bad_addr =
-	    mmap(0, 1, PROT_NONE, MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0,
-		 0);
+		mmap(0, 1, PROT_NONE,
+		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -493,5 +459,4 @@ void cleanup()
 	/* remove the temporary directory and exit with
 	   return code appropriate for results */
 	tst_rmdir();
-	tst_exit();
-}				/* End cleanup() */
+}

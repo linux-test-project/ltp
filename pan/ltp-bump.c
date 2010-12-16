@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	zoo_t zoo;
 	int sig = SIGINT;
 
-	while((c = getopt(argc, argv, "a:s:12")) != -1) {
+	while ((c = getopt(argc, argv, "a:s:12")) != -1) {
 		switch(c) {
 			case 'a':
 				active = (char*)malloc(strlen(optarg)+1);

@@ -89,10 +89,10 @@ void do_sendfile(void)
 
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (stat(in_file, &sb) < 0) {
 		tst_brkm(TBROK, cleanup, "stat failed: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 
 	offset = -1;
 	TEST(sendfile(out_fd, in_fd, &offset, sb.st_size));
@@ -155,11 +155,11 @@ void setup()
 	if ((fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-	 /*NOTREACHED*/}
+	 }
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	close(fd);
 	sprintf(out_file, "out.%d", getpid());
 }
@@ -242,8 +242,12 @@ int main(int ac, char **av)
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(&do_child, "");
@@ -261,5 +265,5 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }

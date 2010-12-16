@@ -82,14 +82,14 @@ int main(int argc, char **argv)
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "fork failed");
-		 /*NOTREACHED*/} else if (pid > 0) {	/* parent */
+		 } else if (pid > 0) {	/* parent */
 			waitpid(pid, &status, 0);
 			_exit(0);
 		} else {	/* child */
 			pid1 = setsid();
 			if (pid1 < 0) {
 				tst_brkm(TFAIL, cleanup, "setsid failed");
-			 /*NOTREACHED*/}
+			 }
 			TEST(vhangup());
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL, "vhangup() failed, errno:%d",
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -131,4 +131,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

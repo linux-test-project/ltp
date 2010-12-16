@@ -323,7 +323,7 @@ main(int argc, char **argv)
     }
 
     coll = get_collection(filename, optind, argc, argv);
-    if(!coll)
+    if (!coll)
         exit(1);
     if (coll->cnt == 0) {
 	fprintf(stderr,
@@ -501,7 +501,7 @@ main(int argc, char **argv)
 		if (++c >= coll->cnt)
 		    c = 0;
 
-	} /* while( (num_active < keep_active) && (starts != 0) ) */
+	} /* while ((num_active < keep_active) && (starts != 0)) */
 
 	if (starts == 0)
 	{ 
@@ -942,7 +942,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
     /* if the child couldn't go through with the exec, 
      * clean up the mess, note it, and move on
      */
-    if(read(errpipe[0], &errlen, sizeof(errlen))) {
+    if (read(errpipe[0], &errlen, sizeof(errlen))) {
 	int status;
 	time_t end_time;
 	int termid;
@@ -1033,7 +1033,7 @@ get_collection(char *file, int optind, int argc, char **argv)
     int i;
 
     buf = slurp(file);
-    if(!buf)
+    if (!buf)
         return NULL;
 
     coll = (struct collection *) malloc(sizeof(struct collection));
@@ -1295,21 +1295,21 @@ wait_handler( int sig )
 {
     static int lastsent = 0;
 
-    if( sig == 0 ){
+    if (sig == 0) {
 	lastsent = 0;
     } else {
 	rec_signal = sig;
-	if( sig == SIGUSR2 )
+	if (sig == SIGUSR2)
 	    return;
-	if( lastsent == 0 )
+	if (lastsent == 0)
 	    send_signal = sig;
-	else if( lastsent == SIGUSR1 )
+	else if (lastsent == SIGUSR1)
 	    send_signal = SIGINT;
-	else if( lastsent == sig )
+	else if (lastsent == sig)
 	    send_signal = SIGTERM;
-	else if( lastsent == SIGTERM )
+	else if (lastsent == SIGTERM)
 	    send_signal = SIGHUP;
-	else if( lastsent == SIGHUP )
+	else if (lastsent == SIGHUP)
 	    send_signal = SIGKILL;
 	lastsent = send_signal;
     }

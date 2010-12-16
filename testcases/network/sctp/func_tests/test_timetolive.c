@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 	error = getsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &orig_len,
 			   &len);
 	if (error)
-		tst_brkm(TBROK, tst_exit, "can't get rcvbuf size: %s",
+		tst_brkm(TBROK, NULL, "can't get rcvbuf size: %s",
 			strerror(errno));
 	/* Set the MAXSEG to something smallish. */
 	{
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 	error = setsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &len,
 			   sizeof(len));
 	if (error)
-		tst_brkm(TBROK, tst_exit, "setsockopt(SO_RCVBUF): %s",
+		tst_brkm(TBROK, NULL, "setsockopt(SO_RCVBUF): %s",
 			 strerror(errno));
 
        /* Mark sk2 as being able to accept new associations.  */
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 			   sizeof(orig_len));
 
 	if (error)
-		tst_brkm(TBROK, tst_exit, "setsockopt(SO_RCVBUF): %s",
+		tst_brkm(TBROK, NULL, "setsockopt(SO_RCVBUF): %s",
 			strerror(errno));
 
         /* Get the first data message which was sent.  */
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
 	error = getsockopt(sk1, IPPROTO_SCTP, SCTP_STATUS, &gstatus, &len);
 	
 	if (error)
-		tst_brkm(TBROK, tst_exit, "can't get rwnd size: %s",
+		tst_brkm(TBROK, NULL, "can't get rwnd size: %s",
 			strerror(errno));
 	tst_resm(TINFO, "Creating fillmsg of size %d",
 		 gstatus.sstat_rwnd+RWND_SLOP);
@@ -348,7 +348,7 @@ int main(int argc, char *argv[])
 	test_check_msg_data(&inmessage, error, strlen(nottlmsg) + 1,
 			    MSG_EOR, stream, ppid);
 	if (0 != strncmp(iov.iov_base, nottlmsg, strlen(nottlmsg)+1))
-		tst_brkm(TBROK, tst_exit, "Received Wrong Message !!!");
+		tst_brkm(TBROK, NULL, "Received Wrong Message !!!");
 
 	tst_resm(TPASS, "Receive message with no timeout");
 
@@ -363,7 +363,7 @@ int main(int argc, char *argv[])
 				    SCTP_SEND_FAILED, 0);
 	ssf = (struct sctp_send_failed *)iov.iov_base;
 	if (0 != strncmp(ttlmsg, (char *)ssf->ssf_data, strlen(ttlmsg) + 1))
-		tst_brkm(TBROK, tst_exit, "SEND_FAILED data mismatch");
+		tst_brkm(TBROK, NULL, "SEND_FAILED data mismatch");
 
 	tst_resm(TPASS, "Receive SEND_FAILED for message with timeout");
 
@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
 		ssf = (struct sctp_send_failed *)iov.iov_base;
 		if (0 != strncmp(&ttlfrag[offset], (char *)ssf->ssf_data,
 				 SMALL_MAXSEG))
-			tst_brkm(TBROK, tst_exit, "SEND_FAILED data mismatch");
+			tst_brkm(TBROK, NULL, "SEND_FAILED data mismatch");
 		offset += SMALL_MAXSEG;
 	} while (!(ssf->ssf_info.sinfo_flags & 0x01)); /* LAST_FRAG */
 
@@ -401,5 +401,5 @@ int main(int argc, char *argv[])
         close(sk2);
 
         /* Indicate successful completion.  */
-        return 0;
+      tst_exit();
 }

@@ -151,7 +151,7 @@ int main(void)
         inmessage.msg_controllen = sizeof(incmsg);
         error = recvmsg(sk2, &inmessage, MSG_WAITALL);
         if (error > 0)
-                tst_brkm(TBROK, tst_exit, "recvmsg on a socket neither"
+                tst_brkm(TBROK, NULL, "recvmsg on a socket neither"
 			 "listening nor established error: %d", error);
 
 	tst_resm(TPASS, "recvmsg on a socket neither listening nor "
@@ -302,7 +302,7 @@ int main(void)
 	outmessage.msg_namelen = 0;
 	bytes_sent = sendmsg(sk1, &outmessage, MSG_NOSIGNAL);
 	if ((bytes_sent > 0) || (EPIPE != errno))
-		tst_brkm(TBROK, tst_exit, "sendmsg with NULL associd and "
+		tst_brkm(TBROK, NULL, "sendmsg with NULL associd and "
 			 "NULL msg_name error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "sendmsg with NULL associd and NULL msg_name");
@@ -311,7 +311,7 @@ int main(void)
 	sinfo->sinfo_assoc_id = associd2;
 	bytes_sent = sendmsg(sk1, &outmessage, MSG_NOSIGNAL);
 	if ((bytes_sent > 0) || (EPIPE != errno))
-		tst_brkm(TBROK, tst_exit, "sendmsg with incorrect associd "
+		tst_brkm(TBROK, NULL, "sendmsg with incorrect associd "
 			 "error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "sendmsg with incorrect associd");
@@ -344,7 +344,7 @@ int main(void)
 
 	n_laddrs = sctp_getladdrs(sk1, associd1, &laddrs); 
 	if (n_laddrs <= 0)
-                tst_brkm(TBROK, tst_exit, "sctp_getladdrs: %s",
+                tst_brkm(TBROK, NULL, "sctp_getladdrs: %s",
 			 strerror(errno));
 
 	tst_resm(TPASS, "sctp_getladdrs");
@@ -374,7 +374,7 @@ int main(void)
 
 	n_paddrs = sctp_getpaddrs(sk1, associd1, &paddrs); 
 	if (n_paddrs <= 0)
-                tst_brkm(TBROK, tst_exit, "sctp_getpaddrs: %s",
+                tst_brkm(TBROK, NULL, "sctp_getpaddrs: %s",
 			 strerror(errno));
 
 	tst_resm(TPASS, "sctp_getpaddrs");

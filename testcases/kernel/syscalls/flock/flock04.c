@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	/* global setup */
 	setup();
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 
 	cleanup();
 	return 0;
- /*NOTREACHED*/}
+ }
 
 /*
  * setup()
@@ -229,4 +229,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

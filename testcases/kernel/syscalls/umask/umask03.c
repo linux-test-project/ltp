@@ -75,10 +75,16 @@ int main(int argc, char **argv)
 	unsigned low9mode;
 
 	/* parse standard options */
+<<<<<<< HEAD
 	if ((msg = parse_opts(argc, argv, NULL, NULL))
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL))
+	    != NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();		/* global setup */
 
@@ -106,7 +112,7 @@ int main(int argc, char **argv)
 							 "mask didnot take",
 							 low9mode,
 							 (~mskval & 0777));
-					 /*NOTREACHED*/}
+					 }
 				}
 			}
 			close(fildes);
@@ -116,7 +122,7 @@ int main(int argc, char **argv)
 				 "previous value for all masks");
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 

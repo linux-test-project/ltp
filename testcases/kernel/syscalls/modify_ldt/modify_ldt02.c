@@ -102,8 +102,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();		/* global setup */
 
@@ -120,7 +124,7 @@ int main(int ac, char **av)
 		seg[0] = 12345;
 		if (create_segment(seg, sizeof(seg)) == -1) {
 			tst_brkm(TINFO, cleanup, "Creation of segment failed");
-		 /*NOTREACHED*/}
+		 }
 
 		val = read_segment(0);
 
@@ -144,7 +148,7 @@ int main(int ac, char **av)
 
 		if (create_segment(0, 10) == -1) {
 			tst_brkm(TINFO, cleanup, "Creation of segment failed");
-		 /*NOTREACHED*/}
+		 }
 
 		tst_flush();
 		if ((pid = FORK_OR_VFORK()) == 0) {

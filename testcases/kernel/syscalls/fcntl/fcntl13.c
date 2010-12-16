@@ -58,7 +58,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -182,7 +186,7 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exit block 4");
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

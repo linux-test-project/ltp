@@ -157,49 +157,55 @@ int main(int argc, char* argv[]) {
     pid_list[i]=pid;
 
 #if defined (_s390_) /* s390's 31bit addressing requires smaller chunks */
-  while ((pid!=0) && (maxbytes > 500*1024*1024))
+#define FIVE_HUNDRED_KB	(500*1024*1024)
+#define ONE_MEGABYTE	(1024*1024*1024)
+#define THREE_MEGABYTES	(3*ONE_MEGABYTE)
+  while (pid != 0 && maxbytes > FIVE_HUNDRED_KB)
   {
     i++;
-    maxbytes=maxbytes-(500*1024*1024);
-    pid=fork();
-    if (pid != 0)
+    maxbytes -= FIVE_HUNDRED_KB;
+    pid = fork();
+    if (pid != 0) {
       pid_cntr++;
-      pid_list[i]=pid;
+      pid_list[i] = pid;
+    }
   }
-  if (maxbytes > 500*1024*1024)
-    alloc_bytes=500*1024*1024;
+  if (maxbytes > FIVE_HUNDRED_KB)
+    alloc_bytes FIVE_HUNDRED_KB;
   else
-    alloc_bytes=(unsigned long)maxbytes;
+    alloc_bytes = (unsigned long) maxbytes;
 
 #elif __WORDSIZE==32
-  while ((pid!=0) && (maxbytes > 1024*1024*1024))
+  while (pid != 0 && maxbytes > ONE_MEGABYTE) 
   {
     i++;
-    maxbytes=maxbytes-(1024*1024*1024);
-    pid=fork();
-    if (pid != 0)
+    maxbytes -= ONE_MEGABYTE;
+    pid = fork();
+    if (pid != 0) {
       pid_cntr++;
       pid_list[i]=pid;
+    }
   }
-  if (maxbytes > 1024*1024*1024)
-    alloc_bytes=1024*1024*1024;
+  if (maxbytes > ONE_MEGABYTE)
+    alloc_bytes = ONE_MEGABYTE;
   else
-    alloc_bytes=(unsigned long)maxbytes;
+    alloc_bytes = (unsigned long)maxbytes;
 
 #elif __WORDSIZE==64
-  while ((pid!=0) && (maxbytes > (unsigned long long)3*1024*1024*1024))
+  while (pid!=0 && maxbytes > THREE_MEGABYTES)
   {
     i++;
-    maxbytes=maxbytes-(unsigned long long)3*1024*1024*1024;
+    maxbytes -= THREE_MEGABYTES;
     pid=fork();
-    if (pid != 0)
+    if (pid != 0) {
       pid_cntr++;
-      pid_list[i]=pid;
+      pid_list[i] = pid;
+    }
   }
-  if (maxbytes > (unsigned long long)3*1024*1024*1024)
-    alloc_bytes=(unsigned long long)3*1024*1024*1024;
+  if (maxbytes > THREE_MEGABYTES)
+    alloc_bytes = THREE_MEGABYTES;
   else
-    alloc_bytes=(unsigned long)maxbytes;
+    alloc_bytes = maxbytes;
 #endif
  
   if (pid == 0)			/** CHILD **/

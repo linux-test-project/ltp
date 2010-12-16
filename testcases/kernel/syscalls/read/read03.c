@@ -74,7 +74,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -108,7 +112,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -130,13 +134,13 @@ void setup(void)
 
 	if (mknod(fifo, S_IFIFO | 0777, 0) < 0) {
 		tst_brkm(TBROK, cleanup, "mknod() failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (stat(fifo, &buf) != 0) {
 		tst_brkm(TBROK, cleanup, "stat() failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if ((buf.st_mode & S_IFIFO) == 0) {
 		tst_brkm(TBROK, cleanup, "Mode does not indicate fifo file");
-	 /*NOTREACHED*/}
+	 }
 
 	rfd = open(fifo, O_RDONLY | O_NONBLOCK);
 	wfd = open(fifo, O_WRONLY | O_NONBLOCK);

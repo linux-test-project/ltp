@@ -131,7 +131,7 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "socketcall() failed"
 				 " as expected for %s", TC.desc);
 		} else {
-			tst_brkm(TFAIL, tst_exit, "socketcall()"
+			tst_brkm(TFAIL, NULL, "socketcall()"
 				 " Failed with wrong experrno"
 				 " =%d got: errno=%d : %s",
 				 TC.experrno, TEST_ERRNO, strerror(TEST_ERRNO));

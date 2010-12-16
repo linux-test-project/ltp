@@ -100,9 +100,8 @@ int main(int ac, char **av)
 	void do_child(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	}
 
         if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
              tst_brkm(TCONF, cleanup, "Not enough available Hugepages");

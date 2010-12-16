@@ -34,7 +34,7 @@ static void child_signal(int sig)
 	int status;
 	if (sig != SIGCHLD) {
  die:
-		tst_brkm(TBROK, tst_exit, "child signal %i: %s\n", sig, strsignal(sig));
+		tst_brkm(TBROK, NULL, "child signal %i: %s\n", sig, strsignal(sig));
 		kill(pid, SIGKILL);
 		exit(1);
 	}

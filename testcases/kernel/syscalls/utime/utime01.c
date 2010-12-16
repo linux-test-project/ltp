@@ -105,7 +105,11 @@ int main(int ac, char **av)
 	time_t pres_time;	/* file modification/access/present time */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -163,7 +167,7 @@ int main(int ac, char **av)
 						 "failed to get present time "
 						 "after utime, error=%d",
 						 errno);
-				 /*NOTREACHED*/}
+				 }
 
 				/*
 				 * Get the modification and access times of
@@ -173,7 +177,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "stat(2) of "
 						 "%s failed, error:%d",
 						 TEMP_FILE, TEST_ERRNO);
-				 /*NOTREACHED*/}
+				 }
 				modf_time = stat_buf.st_mtime;
 				access_time = stat_buf.st_atime;
 
@@ -199,7 +203,7 @@ int main(int ac, char **av)
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -233,20 +237,20 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "creat(%s, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Close the temporary file created */
 	if (close(fildes) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s:",
 			 TEMP_FILE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Get the current time */
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "time() failed to get current time, errno=%d", errno);
-	 /*NOTREACHED*/}
+	 }
 
 	/*
 	 * Sleep for a second so that mod time and access times will be

@@ -199,7 +199,7 @@ void * threaded(void * arg)
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}

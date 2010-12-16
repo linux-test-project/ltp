@@ -97,8 +97,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();		/* global setup */
 
@@ -134,7 +138,7 @@ int main(int ac, char **av)
 				if ((rval = kill(pid, siglist[i])) != 0) {
 					tst_brkm(TBROK, cleanup,
 						 "call to kill failed");
-				 /*NOTREACHED*/}
+				 }
 
 				if (siglist[i] == pass) {
 					tst_resm(TPASS,
@@ -151,7 +155,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 

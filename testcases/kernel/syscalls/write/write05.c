@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	/* global setup */
 	setup();
@@ -119,19 +119,19 @@ int main(int argc, char **argv)
 		if (fd < 0) {
 			tst_resm(TFAIL, "creating a new file failed");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 		if (write(fd, bad_addr, 10) != -1) {
 			tst_resm(TFAIL, "write() on an invalid buffer "
 				 "succeeded, but should have failed");
 			cleanup();
-		 /*NOTREACHED*/} else {
+		 } else {
 			TEST_ERROR_LOG(errno);
 			if (errno != EFAULT) {
 				tst_resm(TFAIL, "write() returned illegal "
 					 "errno: expected EFAULT, got %d",
 					 errno);
 				cleanup();
-			 /*NOTREACHED*/}
+			 }
 			tst_resm(TPASS, "received EFAULT as expected.");
 		}
 		tst_resm(TINFO, "Exit Block 2");
@@ -180,7 +180,7 @@ int main(int argc, char **argv)
 		close(fd);
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*
@@ -236,4 +236,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

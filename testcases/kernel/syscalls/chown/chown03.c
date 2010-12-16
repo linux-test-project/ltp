@@ -101,11 +101,15 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	uid_t User_id;		/* Owner id of the test file. */
-	gid_t Group_id;		/* Group id of the test file. */
+	uid_t user_id;		/* Owner id of the test file. */
+	gid_t group_id;		/* Group id of the test file. */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -120,15 +124,15 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Get the euid/egid of the process */
-		User_id = geteuid();
-		Group_id = getegid();
+		user_id = geteuid();
+		group_id = getegid();
 
 		/*
 		 * Call chown(2) with different user id and
 		 * group id (numeric values) to set it on testfile.
 		 */
 
-		TEST(chown(TESTFILE, -1, Group_id));
+		TEST(chown(TESTFILE, -1, group_id));
 
 		/* check return code of chown(2) */
 		if (TEST_RETURN == -1) {
@@ -153,12 +157,12 @@ int main(int ac, char **av)
 			/*
 			 * Check for expected Ownership ids set on testfile.
 			 */
-			if ((stat_buf.st_uid != User_id) ||
-			    (stat_buf.st_gid != Group_id)) {
+			if ((stat_buf.st_uid != user_id) ||
+			    (stat_buf.st_gid != group_id)) {
 				tst_resm(TFAIL, "%s: Incorrect ownership"
 					 "set to %d %d, Expected %d %d",
 					 TESTFILE, stat_buf.st_uid,
-					 stat_buf.st_gid, User_id, Group_id);
+					 stat_buf.st_gid, user_id, group_id);
 			}
 
 			/*
@@ -183,7 +187,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
-/*NOTREACHED*/
+
 }		/* End main */
 
 /*

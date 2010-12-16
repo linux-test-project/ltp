@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 		printf("Returned code is -1.\n");
 		return PTS_FAIL;
 	}
-	if (errno != 0) {
+	if (errno != 0 ) {
 		perror("Unexpected error");
 		return PTS_FAIL;
 	}

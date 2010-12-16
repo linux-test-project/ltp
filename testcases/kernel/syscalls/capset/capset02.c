@@ -137,10 +137,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL))
-	    != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	maybe_run_child(&child_func, "");
 #endif
@@ -175,7 +173,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -198,7 +196,7 @@ void setup()
 	 */
 	header.version = _LINUX_CAPABILITY_VERSION;
 	if ((capget(&header, &data)) == -1) {
-		tst_brkm(TBROK|TERRNO, tst_exit, "capget() failed");
+		tst_brkm(TBROK|TERRNO, NULL, "capget() failed");
 	}
 
 }				/* End setup() */
@@ -216,9 +214,6 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
 
 void child_func()

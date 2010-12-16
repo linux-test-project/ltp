@@ -29,8 +29,8 @@ int main(void)
 #else
 int main(void)
 {
-	tst_brkm(TCONF, tst_exit, "libaio missing");
-	/* NOTREACHED */
+	tst_brkm(TCONF, NULL, "libaio missing");
+	
 	return 0;
 }
 #endif

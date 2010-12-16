@@ -107,9 +107,15 @@ int main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* Perform global setup for test */
@@ -153,7 +159,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -189,7 +195,7 @@ void setup()
 	if (mkdir(PREAD_TEMPDIR, 0777) != 0) {
 		tst_resm(TFAIL, "mkdir() failed to create" " test directory");
 		exit(1);
-		/* NOTREACHED */
+		
 	}
 
 	/* open temporary directory used for test */
@@ -214,7 +220,7 @@ void init_buffers()
 		read_buf[count] = (char *)malloc(K1);
 
 		if (read_buf[count] == NULL) {
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				 "malloc() failed on read buffers");
 		}
 	}

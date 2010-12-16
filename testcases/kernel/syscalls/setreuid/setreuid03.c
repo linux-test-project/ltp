@@ -142,7 +142,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Perform global setup for test */
 	setup();
@@ -204,7 +204,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -220,12 +220,12 @@ void setup(void)
 	if (getpwnam("nobody") == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	if (getpwnam("bin") == NULL) {
 		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -267,7 +267,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void uid_verify(struct passwd *ru, struct passwd *eu, char *when)
 {

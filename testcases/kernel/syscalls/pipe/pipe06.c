@@ -64,9 +64,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
 
 	setup();
 
@@ -86,18 +85,14 @@ int main(int ac, char **av)
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO != EMFILE) {
-			tst_resm(TFAIL, "unexpected error - %d : %s - "
-				 "expected EMFILE", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "pipe failed unexpectedly");
 		} else {
-			tst_resm(TPASS, "expected failure - "
-				 "errno = %d : %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TPASS, "failed with EMFILE");
 		}
 
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -119,8 +114,8 @@ void setup()
 		pipe_ret = pipe(pipes);
 		if (pipe_ret < 0) {
 			if (errno != EMFILE) {
-				tst_brkm(TBROK, cleanup, "got unexpected "
-					 "error - %d", errno);
+				tst_brkm(TBROK|TTERRNO, cleanup,
+				    "didn't get EMFILE");
 			}
 			break;
 		}
@@ -138,7 +133,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

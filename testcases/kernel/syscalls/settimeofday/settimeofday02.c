@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -159,7 +159,7 @@ void setup(void)
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Switch to nobody user for correct error code collection */
 	ltpuser = getpwnam(nobody_uid);
@@ -181,7 +181,7 @@ void setup(void)
 	if ((gettimeofday(&tp, (struct timezone *)&tp)) == -1) {
 		tst_brkm(TBROK, cleanup, "gettimeofday failed. "
 			 "errno=%d", errno);
-	 /*NOTREACHED*/}
+	 }
 	save_tv_sec = tp.tv_sec;
 	save_tv_usec = tp.tv_usec;
 }
@@ -201,7 +201,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void restore_time(void)
 {

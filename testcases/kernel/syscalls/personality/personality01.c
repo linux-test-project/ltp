@@ -75,7 +75,6 @@ int pers[] = { PER_LINUX, PER_LINUX_32BIT, PER_SVR4, PER_SVR3, PER_SCOSVR3,
 	PER_IRIX32, PER_IRIXN32, PER_IRIX64
 };
 
-#ifdef __NR_personality
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
@@ -83,9 +82,8 @@ int main(int ac, char **av)
 	int i, start_pers;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
@@ -145,15 +143,8 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
-}
-#else
-int main(int ac, char **av)
-{
-	tst_resm(TCONF, "personality() not defined in your system");
 	tst_exit();
 }
-#endif
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
@@ -178,7 +169,4 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

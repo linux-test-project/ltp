@@ -46,8 +46,6 @@ void cleanup(void)
 	 * print errno log if that option was specified
 	 */
 	TEST_CLEANUP;
-
-	tst_exit();
 }
 
 /*
@@ -71,10 +69,8 @@ int main(int argc, char **argv)
 	io_context_t ctx;
 	int expected_return;
 
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
 
 	setup();
 

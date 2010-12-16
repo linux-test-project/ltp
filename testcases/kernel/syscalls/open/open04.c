@@ -75,7 +75,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -106,7 +110,7 @@ int main(int ac, char **av)
 	close(fd);
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -137,7 +141,7 @@ void setup()
 
 	/* Allocate memory for stat and ustat structure variables */
 	if ((buf = (int *)malloc(sizeof(int) * nfile - first)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
 	}
 
 	for (ifile = first; ifile <= nfile; ifile++) {

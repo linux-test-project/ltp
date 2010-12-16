@@ -53,8 +53,9 @@
 #include <sys/syscall.h>
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
-#if defined(__NR_inotify_init) && defined(HAVE_SYS_INOTIFY_H)
+#if defined(HAVE_SYS_INOTIFY_H)
 #include <sys/inotify.h>
 
 #ifndef IN_MOVE_SELF
@@ -135,7 +136,7 @@ int main(int ac, char **av)
 		 * generate sequence of events
 		 */
 		if (chmod(".", 0755) < 0) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "chmod(\".\", 0755) failed");
 		}
 		event_set[Tst_count].mask = IN_ISDIR | IN_ATTRIB;
@@ -143,7 +144,7 @@ int main(int ac, char **av)
 		Tst_count++;
 
 		if ((fd = creat(FILE_NAME1, 0755)) == -1) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "creat(\"%s\", 755) failed",
 				 FILE_NAME1);
 		}
@@ -156,7 +157,7 @@ int main(int ac, char **av)
 		Tst_count++;
 
 		if (close(fd) == -1) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "close(%s) failed", FILE_NAME1);
 		}
 		event_set[Tst_count].mask = IN_CLOSE_WRITE;
@@ -164,7 +165,7 @@ int main(int ac, char **av)
 		Tst_count++;
 
 		if (rename(FILE_NAME1, FILE_NAME2) == -1) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "rename(%s, %s) failed",
 				 FILE_NAME1, FILE_NAME2);
 		}
@@ -176,14 +177,14 @@ int main(int ac, char **av)
 		Tst_count++;
 
 		if (getcwd(fname1, BUF_SIZE) == NULL) {
-			tst_brkm(TBROK | TERRNO, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "getcwd(%p, %d) failed", fname1,
 				 BUF_SIZE);
 		}
 
 		snprintf(fname2, BUF_SIZE, "%s.rename1", fname1);
 		if (rename(fname1, fname2) == -1) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "rename(%s, %s) failed", fname1, fname2);
 		}
 		event_set[Tst_count].mask = IN_MOVE_SELF;
@@ -191,7 +192,7 @@ int main(int ac, char **av)
 		Tst_count++;
 
 		if (unlink(FILE_NAME2) == -1) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "unlink(%s) failed", FILE_NAME2);
 		}
 		event_set[Tst_count].mask = IN_DELETE;
@@ -206,12 +207,12 @@ int main(int ac, char **av)
 		 */
 		snprintf(fname3, BUF_SIZE, "%s.rename2", fname1);
 		if (rename(fname2, fname3) == -1) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "rename(%s, %s) failed", fname2, fname3);
 		}
 
 		if (rename(fname3, fname1) == -1) {
-			tst_brkm(TBROK, cleanup,
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "rename(%s, %s) failed", fname3, fname1);
 		}
 		event_set[Tst_count].mask = IN_MOVE_SELF;
@@ -226,8 +227,8 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		int len, i = 0, test_num = 0;
-		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
-			tst_brkm(TBROK, cleanup,
+		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) == -1) {
+			tst_brkm(TBROK|TERRNO, cleanup,
 				 "read(%d, buf, %d) failed",
 				 fd_notify, EVENT_BUF_LEN);
 
@@ -361,17 +362,7 @@ int TST_TOTAL = 0;		/* Total number of test cases. */
 
 int main(void)
 {
-#ifndef __NR_inotify_init
-	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
-	tst_resm(TCONF,
-		 "Inotify syscall can be found at kernel 2.6.13 or higher.");
-	return 0;
-#endif
-#ifndef HAVE_SYS_INOTIFY_H
-	tst_resm(TBROK, "can't find header sys/inotify.h");
-	return 1;
-#endif
-	return 0;
+	tst_brkm(TCONF, NULL, "system doesn't have required inotify support");
 }
 
 #endif

@@ -86,7 +86,11 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/*
@@ -112,7 +116,7 @@ int main(int ac, char **av)
 		if (mkdir(tstdir, PERMS) == -1) {
 			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
 				 tstdir, PERMS);
-		 /*NOTREACHED*/}
+		 }
 		/* call rmdir using TEST macro */
 
 		TEST(rmdir(tstdir));
@@ -142,7 +146,7 @@ int main(int ac, char **av)
 	 */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 

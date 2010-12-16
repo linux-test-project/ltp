@@ -92,7 +92,11 @@ int main(int ac, char **av)
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 	setup();
 
@@ -105,11 +109,11 @@ int main(int ac, char **av)
 		if ((fin = popen(pwd, "r")) == NULL) {
 			tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
 			tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
-		 /*NOTREACHED*/}
+		 }
 		while (fgets(pwd_buf, sizeof(pwd_buf), fin) != NULL) {
 			if ((cp = strchr(pwd_buf, '\n')) == NULL) {
 				tst_brkm(TBROK, cleanup, "pwd output too long");
-			 /*NOTREACHED*/}
+			 }
 			*cp = 0;
 			cp_cur = pwd_buf;
 		}
@@ -124,7 +128,7 @@ int main(int ac, char **av)
 		do_block7();
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 void do_block1()		//valid cwd[]: -> Should work fine

@@ -98,9 +98,15 @@ int main(int ac, char **av)
 	int status, child_pid;
 
 	/* parse standard options */
+<<<<<<< HEAD
 	if ((msg = parse_opts(ac, av, NULL, NULL))
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* perform global setup for test */
@@ -142,7 +148,7 @@ again:
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 

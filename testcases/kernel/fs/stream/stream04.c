@@ -51,6 +51,8 @@ char progname[] = "stream04()" ;
 char tempfile1[40]="";
 long ftell();
 
+/* XXX: add setup and cleanup */
+
 /*--------------------------------------------------------------------*/
 int main(int ac, char *av[])
 {
@@ -65,11 +67,8 @@ int main(int ac, char *av[])
          /*
           * parse standard options
           */
-        if ((msg = parse_opts(ac, av, NULL) {
-                         tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-                 tst_exit();
-                 /*NOTREACHED*/
-         }
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+                 tst_resm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_tmpdir();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -79,7 +78,7 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block0:
 		if ((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
+			tst_resm(TFAIL|TERRNO,"fopen(%s) a+ failed: %s", tempfile1);
 			tst_rmdir();
 			tst_exit();
 		}

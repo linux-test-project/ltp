@@ -98,8 +98,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();		/* global setup */
 
@@ -122,7 +126,7 @@ int main(int ac, char **av)
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID,
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			 /*NOTREACHED*/}
+			 }
 
 			if (STD_FUNCTIONAL_TEST) {
 				/*
@@ -135,7 +139,7 @@ int main(int ac, char **av)
 				if ((rval = kill(pid, siglist[i])) != 0) {
 					tst_brkm(TBROK, cleanup, "call to "
 						 "kill failed");
-				 /*NOTREACHED*/}
+				 }
 
 				if (fail == 0) {
 					tst_resm(TPASS, "%s call succeeded",
@@ -153,7 +157,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 

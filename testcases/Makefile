@@ -25,32 +25,17 @@ top_srcdir		?= ..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 # XXX (garrcoop):
-# 1. ballista is broken (working on it).
-# 2. kdump shouldn't be compiled by default, because it's runtime based and
+# 1. kdump shouldn't be compiled by default, because it's runtime based and
 #    WILL crash the build host (the tests need to be fixed to just build, not
 #    run).
-FILTER_OUT_DIRS		:= ballista kdump open%
+FILTER_OUT_DIRS		:= kdump
+
+ifneq ($(WITH_OPEN_POSIX_TESTSUITE),yes)
+FILTER_OUT_DIRS		+= open_posix_testsuite
+endif
 
 ifneq ($(WITH_REALTIME_TESTSUITE),yes)
 FILTER_OUT_DIRS		+= realtime
 endif
-
-#
-# XXX (garrcoop): disabling the open_posix_testsuite by request from Subrata
-# due to build times (open_posix_testsuite runs serially by design to
-# deterministically catch build errors -- see
-# testcases/open_posix_testsuite/Makefile for more details).
-#
-#trunk-all: open_posix_testsuite-all
-#
-#trunk-clean:: open_posix_testsuite-clean
-#
-#trunk-install: open_posix_testsuite-install
-
-open_posix_testsuite:
-	mkdir -p $@
-
-open_posix_testsuite-%: open_posix_testsuite
-	$(MAKE) -C $^ top_srcdir=$(abs_top_srcdir)/testcases/$^ $*
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

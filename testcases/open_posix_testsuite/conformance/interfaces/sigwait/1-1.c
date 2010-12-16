@@ -69,7 +69,6 @@ int main()
 		return PTS_FAIL;
 	}
 
-
 	/* Call sigwait and test if it passed/failed*/
 	if (sigwait(&newmask, &sig) != 0)
 	{

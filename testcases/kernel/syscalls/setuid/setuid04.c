@@ -77,8 +77,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	/*
 	 * perform global setup for the test
@@ -101,7 +105,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -114,7 +118,7 @@ void do_master_child()
 	int status;
 
 	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, tst_exit,
+		tst_brkm(TBROK, NULL,
 			 "setuid failed to set the effective uid to %d",
 			 ltpuser->pw_uid);
 	}
@@ -143,7 +147,7 @@ void do_master_child()
 
 		pid = FORK_OR_VFORK();
 		if (pid < 0)
-			tst_brkm(TBROK, tst_exit, "Fork failed");
+			tst_brkm(TBROK, NULL, "Fork failed");
 
 		if (pid == 0) {
 			int tst_fd2;
@@ -182,7 +186,7 @@ void do_master_child()
 void setup(void)
 {
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	ltpuser = getpwnam(nobody_uid);

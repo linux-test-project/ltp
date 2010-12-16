@@ -192,7 +192,7 @@ int main (int argc, char *argv[])
 		}
 
 		/* create a new child */
-		pr[ nprocesses ] = fork();
+		pr[nprocesses] = fork();
 
 		if (pr[nprocesses] == -1)
 		{
@@ -219,7 +219,12 @@ int main (int argc, char *argv[])
 			}
 		}
 
+<<<<<<< HEAD
 		if (pr[nprocesses] == 0) {
+=======
+		if (pr[nprocesses] == 0)
+		{
+>>>>>>> master
 			/* Child */
 			/* Post the synchro semaphore*/
 

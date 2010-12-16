@@ -1303,7 +1303,7 @@ main(int argc, char **argv)
 
 		default:
 			usage();
-			/* NOTREACHED */
+			
 		}
 	argc -= optind;
 	argv += optind;

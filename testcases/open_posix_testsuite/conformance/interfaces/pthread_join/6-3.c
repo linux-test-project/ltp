@@ -210,12 +210,12 @@ void * test(void * arg)
 		{
 			ret = pthread_create(&child, &scenarii[ sc ].ta, threaded, NULL);
 
-			if ((scenarii[ sc ].result == 0) && (ret != 0))
+			if ((scenarii[sc].result == 0) && (ret != 0))
 			{
 				UNRESOLVED(ret, "Failed to create this thread");
 			}
 
-			if ((scenarii[ sc ].result == 1) && (ret == 0))
+			if ((scenarii[sc].result == 1) && (ret == 0))
 			{
 
 				UNRESOLVED(-1, "An error was expected but the thread creation succeeded");
@@ -262,14 +262,14 @@ int main (int argc, char * argv[])
 	sa.sa_flags = 0;
 	sa.sa_handler = sighdl1;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
+	if ((ret = sigaction(SIGUSR1, &sa, NULL)) == -1)
 	{
 		UNRESOLVED(ret, "Unable to register signal handler1");
 	}
 
 	sa.sa_handler = sighdl2;
 
-	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
+	if ((ret = sigaction(SIGUSR2, &sa, NULL)) == -1)
 	{
 		UNRESOLVED(ret, "Unable to register signal handler2");
 	}

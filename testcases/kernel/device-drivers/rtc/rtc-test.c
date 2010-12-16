@@ -203,7 +203,7 @@ int main(int argc, char **argv)
        rtc_fd = open(rtc_dev, O_RDONLY);
 
        if (rtc_fd < 0)
-               tst_brkm(TBROK | TERRNO, tst_exit, "couldn't open %s", rtc_dev);
+               tst_brkm(TBROK | TERRNO, NULL, "couldn't open %s", rtc_dev);
 
        /*Read and alarm tests*/
        read_alarm_test();
@@ -214,5 +214,5 @@ int main(int argc, char **argv)
        close(rtc_fd);
 
        tst_resm(TINFO, "RTC Tests Done!");
-       return 0;
+     tst_exit();
 }

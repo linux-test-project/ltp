@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
+	
 	return 0;
 }
 

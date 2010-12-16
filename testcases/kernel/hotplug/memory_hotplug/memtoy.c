@@ -435,7 +435,7 @@ parse_command_line_args(int argc, char *argv[])
 		case 'h':
 		case 'x':
 			usage(NULL);
-			/*NOTREACHED*/
+			
 			break;
 
 		case 'V':
@@ -490,7 +490,7 @@ main(int argc, char *argv[])
 
 	if (error /* || argc==1 */) {
 		usage(NULL);
-		/*NOTREACHED*/
+		
 	}
 
 	/*

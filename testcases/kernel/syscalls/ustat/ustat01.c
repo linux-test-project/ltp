@@ -88,9 +88,15 @@ int main(int argc, char *argv[])
 	char *msg;
 
 	/*parse standard options */
+<<<<<<< HEAD
 	if ((msg = parse_opts(argc, argv, NULL, NULL))
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL))
+	    != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* perform global setup for test */
@@ -131,19 +137,19 @@ void setup()
 
 	/* Allocate memory for stat and ustat structure variables */
 	if ((buf = (struct stat *)malloc(sizeof(struct stat))) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
 	}
 
 	if ((ubuf = (struct ustat *)malloc(sizeof(struct ustat))) == NULL) {
 		free(buf);
-		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
 	}
 
 	/*Find out device number for a file-system */
 	if (stat("/", buf) != 0) {
 		free(buf);
 		free(ubuf);
-		tst_brkm(TBROK, tst_exit, "Couldn't find device number");
+		tst_brkm(TBROK, NULL, "Couldn't find device number");
 	}
 
 	dev_num = buf->st_dev;

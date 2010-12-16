@@ -158,7 +158,6 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
-	/* child */
 	if (child == 0)
 	{
 		/* Check the values are read -- so that the mappings were inherited */
@@ -186,7 +185,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}
@@ -220,4 +219,3 @@ int main(int argc, char * argv[])
 #endif
 	PASSED;
 }
-

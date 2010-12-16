@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 	len = sizeof(struct sockaddr_in);
 	error = connect(-1, (const struct sockaddr *) &conn_addr, len);
 	if (error != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "connect with bad socket "
+		tst_brkm(TBROK, NULL, "connect with bad socket "
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() with bad socket descriptor - EBADF");
@@ -122,7 +122,7 @@ main(int argc, char *argv[])
 	/*connect () TEST2: Invalid socket, ENOTSOCK Expected error*/
 	error = connect(0, (const struct sockaddr *) &conn_addr, len);
 	if (error != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "connect with invalid socket "
+		tst_brkm(TBROK, NULL, "connect with invalid socket "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() with invalid socket - ENOTSOCK");
@@ -130,7 +130,7 @@ main(int argc, char *argv[])
 	/*connect () TEST3: Invalid address, EFAULT Expected error*/
 	error = connect(sk, (const struct sockaddr *) -1, len);
 	if (error != -1 || errno != EFAULT)
-		tst_brkm(TBROK, tst_exit, "connect with invalid address "
+		tst_brkm(TBROK, NULL, "connect with invalid address "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() with invalid address - EFAULT");
@@ -138,7 +138,7 @@ main(int argc, char *argv[])
 	/*connect () TEST4: Invalid address length, EINVAL Expected error*/
 	error = connect(sk, (const struct sockaddr *) &conn_addr, (len - 3));
 	if (error != -1 || errno != EINVAL)
-		tst_brkm(TBROK, tst_exit, "connect with invalid address length "
+		tst_brkm(TBROK, NULL, "connect with invalid address length "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() with invalid address length - EINVAL");
@@ -147,7 +147,7 @@ main(int argc, char *argv[])
 	conn_addr.sin_family = 9090; /*Assigning invalid address family*/
         error = connect(sk, (const struct sockaddr *) &conn_addr, len);
         if (error != -1 || errno != EINVAL)
-		tst_brkm(TBROK, tst_exit, "connect with invalid address family "
+		tst_brkm(TBROK, NULL, "connect with invalid address family "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() with invalid address family - EINVAL");
@@ -161,7 +161,7 @@ main(int argc, char *argv[])
 		error = connect(clnt_sk[i], (const struct sockaddr *)&conn_addr,
 			      len);
 		if (error < 0)
-			tst_brkm(TBROK, tst_exit, "valid blocking connect "
+			tst_brkm(TBROK, NULL, "valid blocking connect "
 				 "error:%d, errno:%d", error, errno);
 	}
 
@@ -172,7 +172,7 @@ main(int argc, char *argv[])
 	/*Now that accept queue is full, the below connect should fail*/
 	error = connect(clnt2_sk, (const struct sockaddr *) &conn_addr, len);
 	if (error != -1 || errno != ECONNREFUSED)
-		tst_brkm(TBROK, tst_exit, "connect when accept queue is full "
+		tst_brkm(TBROK, NULL, "connect when accept queue is full "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() when accept queue is full - ECONNREFUSED");
@@ -185,7 +185,7 @@ main(int argc, char *argv[])
 	/*connect () TEST8: from a listening socket, EISCONN Expect error*/
 	error = connect(lstn_sk, (const struct sockaddr *) &lstn_addr, len);
 	if (error != -1 || errno != EISCONN)
-		tst_brkm(TBROK, tst_exit, "connect on a listening socket "
+		tst_brkm(TBROK, NULL, "connect on a listening socket "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() on a listening socket - EISCONN");
@@ -194,7 +194,7 @@ main(int argc, char *argv[])
 	i=0;
 	error = connect(acpt_sk[i], (const struct sockaddr *) &lstn_addr, len);
         if (error != -1 || errno != EISCONN)
-		tst_brkm(TBROK, tst_exit, "connect on an established socket "
+		tst_brkm(TBROK, NULL, "connect on an established socket "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() on an established socket - EISCONN");
@@ -209,7 +209,7 @@ main(int argc, char *argv[])
 	 */
 	error = connect(sk1, (const struct sockaddr *)&conn_addr, len);
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "Re-establish an association that "
+		tst_brkm(TBROK, NULL, "Re-establish an association that "
 				 "is closed error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect() to re-establish a closed association - "

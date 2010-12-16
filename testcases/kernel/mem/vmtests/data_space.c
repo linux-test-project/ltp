@@ -85,6 +85,11 @@ int	okexit(int);
 char	*prog;				/* invoked name */
 int	chld_flag = 0;
 
+void cleanup(void)
+{
+	tst_rmdir();
+}
+
 int usage(prog)
 	char	*prog;
 {
@@ -122,8 +127,7 @@ int main(argc, argv)
 			bd_arg(argv[i-1]);
 		if (nchild > MAXCHILD)
 		{
-			tst_resm(TBROK,"FAILURE, %d children exceeded maximum allowed\n", nchild);
-			tst_exit();
+			tst_brkm(TBROK, NULL, "FAILURE, %d children exceeded maximum allowed", nchild);
 		}
 	} else
 		usage(prog);
@@ -134,26 +138,21 @@ int main(argc, argv)
 
 	if (sigset(SIGTERM, (void (*)())term) == SIG_ERR)
 	{
-		tst_resm(TBROK,"first sigset failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "first sigset failed");
 	}
 	if (sigset(SIGUSR1, (void (*)())chld) == SIG_ERR)
 	{
-		tst_resm(TBROK,"sigset shichld");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "sigset shichld");
 	}
 
 	runtest();
-	/**NOT REACHED**/
-        return 0;
+	tst_exit();
 }
 
 int bd_arg(str)
 	char *str;
 {
-	tst_resm(TCONF,"Bad argument - %s - could not parse as number.\n", str);
-	tst_exit();
-	return 0;
+	tst_brkm(TCONF, NULL, "Bad argument - %s - could not parse as number.\n", str);
 }
 
 int runtest()
@@ -174,11 +173,7 @@ int runtest()
 		}
 		if (child < 0)
 		{
-			tst_resm(TBROK,"Fork failed (may be OK if under stress)");
-                        tst_resm(TINFO, "System resource may be too low.\n");
-                        tst_resm(TBROK, "Reason: %s\n", strerror(errno));
-                        tst_rmdir();
-                        tst_exit();
+			tst_resm(TBROK|TERRNO, cleanup, "fork failed");
 		}
 		allchild[i]=child;
 		while (!chld_flag)
@@ -216,11 +211,6 @@ int runtest()
         (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
                 : tst_resm(TPASS, "Test passed");
 	sync();				/* safeness */
-        tst_rmdir();
-        tst_exit();
-
-        /**NOT REACHED**/
-	return 0;
 }
 
 /*
@@ -501,7 +491,7 @@ int chld()
 int massmurder()
 {
 	int i;
-	for (i=0 ; i < MAXCHILD ; i++)
+	for (i = 0 ; i < MAXCHILD ; i++)
 	{
 		if (allchild[i])
 		{

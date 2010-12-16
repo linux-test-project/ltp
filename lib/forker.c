@@ -136,7 +136,7 @@ char *prefix;
 {
   switch (fork()) {
   case -1:
-    if ( prefix != NULL )
+    if (prefix != NULL)
         fprintf(stderr, "%s: In %s background(), fork() failed, errno:%d %s\n",
 	    prefix, __FILE__, errno, strerror(errno));
     exit(errno);
@@ -170,12 +170,12 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 
     Forker_pids[ind]=0;
 
-    for ( cnt=1; cnt < ncopies; cnt++ ) {
+    for (cnt=1; cnt < ncopies; cnt++) {
 
 	switch ( mode ) {
         case 1  :	/* only 1 direct child */
-	    if ( (pid = fork()) == -1 ) {
-		if ( prefix != NULL )
+	    if ((pid = fork()) == -1) {
+		if (prefix != NULL)
 		    fprintf(stderr, "%s: %s,forker(): fork() failed, errno:%d %s\n",
 			prefix, __FILE__, errno, strerror(errno));
 	        return 0;
@@ -185,12 +185,12 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 	    switch (pid ) {
             case 0:     /* child - continues the forking */
 
-		if ( Forker_npids < FORKER_MAX_PIDS )
+		if (Forker_npids < FORKER_MAX_PIDS)
                     Forker_pids[Forker_npids-1]=getpid();
                 break;
 
             default:    /* parent - stop the forking */
-		if ( Forker_npids < FORKER_MAX_PIDS )
+		if (Forker_npids < FORKER_MAX_PIDS)
                     Forker_pids[Forker_npids-1]=pid;
                 return cnt-1;
             }
@@ -198,8 +198,8 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 	    break;
 
 	default :	/* all new processes are childern of parent */
-	    if ( (pid = fork()) == -1 ) {
-		if ( prefix != NULL )
+	    if ((pid = fork()) == -1) {
+		if (prefix != NULL)
 		    fprintf(stderr, "%s: %s,forker(): fork() failed, errno:%d %s\n",
 			prefix, __FILE__, errno, strerror(errno));
 	        return cnt-1;
@@ -208,12 +208,12 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 
 	    switch (pid ) {
 	    case 0:	/* child - stops the forking */
-		if ( Forker_npids < FORKER_MAX_PIDS )
+		if (Forker_npids < FORKER_MAX_PIDS)
                     Forker_pids[Forker_npids-1]=getpid();
 	        return cnt;
 
 	    default:	/* parent - continues the forking */
-		if ( Forker_npids < FORKER_MAX_PIDS )
+		if (Forker_npids < FORKER_MAX_PIDS)
                     Forker_pids[Forker_npids-1]=pid;
                 break;
             }
@@ -221,7 +221,7 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 	}
     }
 
-    if ( Forker_npids < FORKER_MAX_PIDS )
+    if (Forker_npids < FORKER_MAX_PIDS)
         Forker_pids[Forker_npids]=0;
     return cnt-1;
 
@@ -245,18 +245,18 @@ char **argv;
     int ret;
     int ind;
 
-    if ( argc == 1 ) {
+    if (argc == 1) {
 	printf("Usage: %s ncopies [mode]\n", argv[0]);
 	exit(1);
     }
 
-    if ( sscanf(argv[1], "%i", &ncopies) != 1 ) {
+    if (sscanf(argv[1], "%i", &ncopies) != 1) {
 	printf("%s: ncopies argument must be integer\n", argv[0]);
 	exit(1);
     }
 
-    if ( argc == 3 )
-	if ( sscanf(argv[2], "%i", &mode) != 1 ) {
+    if (argc == 3)
+	if (sscanf(argv[2], "%i", &mode) != 1) {
         printf("%s: mode argument must be integer\n", argv[0]);
         exit(1);
     }
@@ -273,7 +273,7 @@ char **argv;
     printf("%d My version of Forker_pids[],  Forker_npids = %d\n",
 	getpid(), Forker_npids);
 
-    for (ind=0; ind<Forker_npids; ind++){
+    for (ind=0; ind<Forker_npids; ind++) {
 	printf("%d ind:%-2d pid:%d\n", getpid(), ind, Forker_pids[ind]);
     }
 

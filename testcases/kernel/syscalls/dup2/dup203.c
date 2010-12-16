@@ -69,7 +69,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -90,31 +94,31 @@ int main(int ac, char **av)
 
 		if ((fd0 = creat(filename0, 0666)) == -1) {
 			tst_brkm(TBROK, cleanup, "cannot create first file");
-		 /*NOTREACHED*/}
+		 }
 		if (write(fd0, filename0, strlen(filename0)) == -1) {
 			tst_brkm(TBROK, cleanup, "filename0: write(2) failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if ((fd1 = creat(filename1, 0666)) == -1) {
 			tst_brkm(TBROK, cleanup, "Cannot create second file");
-		 /*NOTREACHED*/}
+		 }
 		if (write(fd1, filename1, strlen(filename1)) == -1) {
 			tst_brkm(TBROK, cleanup, "filename1: write(2) failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (close(fd0) == -1) {
 			tst_brkm(TBROK, cleanup, "close(2) fd0 failed");
-		 /*NOTREACHED*/}
+		 }
 		if ((fd0 = open(filename0, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "open(2) on filename0 failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (close(fd1) == -1) {
 			tst_brkm(TBROK, cleanup, "close(2) fd1 failed");
-		 /*NOTREACHED*/}
+		 }
 		if ((fd1 = open(filename1, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "open(2) on filename1 failed");
-		 /*NOTREACHED*/}
+		 }
 
 		TEST(dup2(fd0, fd1));
 
@@ -129,7 +133,7 @@ int main(int ac, char **av)
 			memset(buf, 0, sizeof(buf));
 			if (read(fd2, buf, sizeof(buf)) == -1) {
 				tst_brkm(TBROK, cleanup, "read(2) failed");
-			 /*NOTREACHED*/}
+			 }
 			if (strcmp(buf, filename0) != 0) {
 				tst_resm(TFAIL, "read from file got bad data");
 			}
@@ -155,19 +159,19 @@ int main(int ac, char **av)
 
 		if ((fd0 = creat(filename0, 0666)) == -1) {
 			tst_brkm(TBROK, cleanup, "Cannot create first file");
-		 /*NOTREACHED*/}
+		 }
 		if (fcntl(fd0, F_SETFD, 1) == -1) {
 			tst_brkm(TBROK, cleanup, "setting close on exec flag "
 				 "on fd0 failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if ((fd2 = creat(filename1, 0666)) == -1) {
 			tst_brkm(TBROK, cleanup, "Cannot create second file");
-		 /*NOTREACHED*/}
+		 }
 
 		if (close(fd2) == -1) {
 			tst_brkm(TBROK, cleanup, "close(2) fd_closed failed");
-		 /*NOTREACHED*/}
+		 }
 
 		TEST(dup2(fd0, fd2));
 
@@ -183,11 +187,11 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "fcntl F_GETFD on fd1 failed - "
 					 "Expected rval of 0, got %d", rval);
 				break;
-			 /*NOTREACHED*/}
+			 }
 			if (!((rval = fcntl(fd0, F_GETFL, 0)) && O_WRONLY)) {
 				tst_resm(TFAIL, "fctnl F_GETFL bad rval on fd0 "
 					 "Expected 1 got %#x", rval);
-			 /*NOTREACHED*/}
+			 }
 			tst_resm(TPASS, "dup2 test 2 functionality is correct");
 		} else {
 			tst_resm(TPASS, "call succeeded");
@@ -201,7 +205,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

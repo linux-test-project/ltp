@@ -115,13 +115,9 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	/*
-	 * perform global setup for test
-	 */
 	setup();
 
 	/* set the expected errnos... */
@@ -159,11 +155,8 @@ int main(int ac, char **av)
 		}
 	}			/* End for TEST_LOOPING */
 
-	/*
-	 * cleanup and exit
-	 */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -212,9 +205,4 @@ void cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-
-	/*
-	 * Exit with return code appropriate for results.
-	 */
-	tst_exit();
 }

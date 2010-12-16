@@ -220,16 +220,14 @@ int test_epoll_create(unsigned int num_rand_attempts)
 	num_epoll_create_test_calls++;
 	epoll_fd = epoll_create(fd_set_size);
 	if (epoll_fd >= 0) {
-		tst_resm(TFAIL,
-			 "epoll_create with negative set size returned a valid fd (errno = %d:%s)",
-			 errno, strerror(errno));
+		tst_resm(TFAIL|TERRNO,
+			 "epoll_create with negative set size succeeded unexpectedly");
 		num_epoll_create_test_fails++;
 		close(epoll_fd);
 	} else {
 		if (errno != EINVAL) {
-			tst_resm(TFAIL,
-				 "epoll_create with negative set size failed to set errno to EINVAL (%d:%s)",
-				 errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO,
+				 "epoll_create with negative set size didn't set errno to EINVAL");
 			num_epoll_create_test_fails++;
 		} else {
 			tst_resm(TPASS, "epoll_create with negative set size");
@@ -618,7 +616,7 @@ int test_epoll_ctl(int epoll_fd)
 						/* Now test the result */
 						if (!((result == RES_PASS)
 						      || (result == RES_PASS_RETV_MAT_ERRNO_IGN))) {
-							if (result > sizeof(result_strings) / sizeof(const char *)) {
+							if (result > (sizeof(result_strings) / sizeof(const char *))) {
 							/* Returned a result which has no corresponding text description */
 								EPOLL_CTL_TEST_FAIL
 								    ("FIXME FIX ME BUG in Test Program itself!");
@@ -660,8 +658,7 @@ int main(int argc, char **argv)
 
 	/* Get the current time */
 	if (gettimeofday(&tv, NULL) != 0) {
-		tst_brkm(TBROK, NULL, "gettimeofday failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "gettimeofday failed");
 	} else {
 		tst_resm(TINFO, "gettimeofday() works");
 	}
@@ -680,7 +677,7 @@ int main(int argc, char **argv)
 	/* Create an epoll_fd for testing epoll_ctl */
 	epoll_fd = epoll_create(BACKING_STORE_SIZE_HINT);
 	if (epoll_fd < 0) {
-		return -1;
+		tst_brkm(TFAIL|TERRNO, NULL, "epoll_create failed");
 	}
 
 	tst_resm(TINFO, "Testing epoll_ctl");
@@ -689,15 +686,14 @@ int main(int argc, char **argv)
 		/* ctl test(s) failed */
 	}
 
-	return 0;
+	tst_exit();
 }
 
 #else
 
 int main(void)
 {
-	tst_resm(TCONF, "No epoll support found.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "No epoll support found.");
 }
 
 #endif

@@ -73,7 +73,7 @@ main(void)
 	/*TEST1 Getting the default values using getsockopt()*/
 	ret = getsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &grtoinfo, &len);
 	if (ret < 0)
-		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_RTOINFO "
+		tst_brkm(TBROK, NULL, "getsockopt SCTP_RTOINFO "
 			 "ret:%d, errno:%d", ret, errno);
 
 	tst_resm(TPASS, "getsockopt() SCTP_RTOINFO - SUCCESS");
@@ -87,7 +87,7 @@ main(void)
 	ret = setsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &srtoinfo, 
 		sizeof(struct sctp_rtoinfo));
 	if (ret < 0)
-		tst_brkm(TBROK, tst_exit, "setsockopt SCTP_RTOINFO "
+		tst_brkm(TBROK, NULL, "setsockopt SCTP_RTOINFO "
 			 "ret:%d, errno:%d", ret, errno);
 
 	tst_resm(TPASS, "setsockopt() SCTP_RTOINFO - SUCCESS");
@@ -95,14 +95,14 @@ main(void)
 	/*Getting the values which are set using setsockopt()*/
 	ret = getsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &grtoinfo, &len);
 	if (ret < 0)
-		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_RTOINFO "
+		tst_brkm(TBROK, NULL, "getsockopt SCTP_RTOINFO "
 			 "ret:%d, errno:%d", ret, errno);
 
 	/* TEST3 Compare the get values with the set values. */ 
 	if (srtoinfo.srto_initial != grtoinfo.srto_initial &&
             srtoinfo.srto_max != grtoinfo.srto_max &&
             srtoinfo.srto_min != grtoinfo.srto_min)
-		tst_brkm(TBROK, tst_exit, "setsockopt/getsockopt SCTP_RTOINFO "
+		tst_brkm(TBROK, NULL, "setsockopt/getsockopt SCTP_RTOINFO "
 			 "compare failed");
 
 	tst_resm(TPASS, "setsockopt()/getsockopt SCTP_RTOINFO compare - "

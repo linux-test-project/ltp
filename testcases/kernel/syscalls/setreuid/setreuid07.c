@@ -75,8 +75,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	/*
 	 * perform global setup for the test
@@ -100,7 +104,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -206,7 +210,7 @@ void do_master_child()
 void setup(void)
 {
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	ltpuser = getpwnam(nobody_uid);

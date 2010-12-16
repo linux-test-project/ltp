@@ -146,7 +146,11 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/*
@@ -210,7 +214,7 @@ int main(int ac, char **av)
 	 * cleanup and exit
 	 */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -230,7 +234,7 @@ void set_condition(int num)
 		if (mkdir(tstdir1, PERMS) == -1) {
 			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
 				 tstdir1, PERMS);
-		 /*NOTREACHED*/}
+		 }
 
 		/* create a file under tstdir1 */
 		do_file_setup(tstfile);
@@ -251,7 +255,7 @@ void set_condition(int num)
 		/* create a file */
 		if ((fd = creat(tstfile, PERMS)) == -1) {
 			tst_brkm(TBROK, cleanup, "creat() failed");
-		 /*NOTREACHED*/}
+		 }
 		close(fd);
 		break;
 	default:

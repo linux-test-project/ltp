@@ -105,7 +105,7 @@ char **errmsg;
 	chr=buffer;
 	total=bsize;
 
-	if ( errmsg != NULL ) {
+	if (errmsg != NULL) {
 	    *errmsg = Errmsg;
 	}
 
@@ -124,7 +124,7 @@ char **errmsg;
                 for (cnt=0;cnt< bsize;cnt++) {
 		    expbits = ((offset+cnt)%8 & 0177);
 
-		    if ( buffer[cnt] != expbits ) {
+		    if (buffer[cnt] != expbits) {
 			sprintf(Errmsg,
 			    "data mismatch at offset %d, exp:%#lo, act:%#o",
 			    offset+cnt, expbits, buffer[cnt]);
@@ -149,7 +149,7 @@ char **errmsg;
 	for (cnt=0; cnt<bsize; chr++, cnt++) {
 	    actbits = (long)*chr;
 
-	    if ( actbits != expbits ) {
+	    if (actbits != expbits) {
 		sprintf(Errmsg, "data mismatch at offset %d, exp:%#lo, act:%#lo",
 		    offset+cnt, expbits, actbits);
 		return offset+cnt;
@@ -178,7 +178,7 @@ char **ag;
     int ret;
     char *errmsg;
 
-    if ((buffer=(unsigned char *)malloc(size)) == NULL ) {
+    if ((buffer=(unsigned char *)malloc(size)) == NULL) {
 	perror("malloc");
 	exit(2);
     }
@@ -191,7 +191,7 @@ printf("***** for a ****************************\n");
     ret=databinchk('a', buffer, size, 0, &errmsg);
     printf("databinchk('a', buffer, %d, 0, &errmsg) returned %d: %s\n",
 	size, ret, errmsg);
-    if ( ret == -1 )
+    if (ret == -1)
 	printf("\tPASS return value of -1 as expected\n");
     else
 	printf("\tFAIL return value %d, expected -1\n", ret);
@@ -200,7 +200,7 @@ printf("***** for a ****************************\n");
     ret=databinchk('a', &buffer[1], size-1, offset, &errmsg);
     printf("databinchk('a', &buffer[1], %d, %d, &errmsg) returned %d: %s\n",
 	size, offset, ret, errmsg);
-    if ( ret == -1 )
+    if (ret == -1)
 	printf("\tPASS return value of -1 as expected\n");
     else
 	printf("\tFAIL return value %d, expected -1\n", ret);
@@ -212,7 +212,7 @@ printf("***** for a ****************************\n");
     ret=databinchk('a', &buffer[1], size-1, offset+1, &errmsg);
     printf("databinchk('a', &buffer[1], %d, %d, &errmsg) returned %d: %s\n",
 	size-1, offset+1, ret, errmsg);
-    if ( ret == number )
+    if (ret == number)
 	printf("\tPASS return value of %d as expected\n", number);
     else
 	printf("\tFAIL return value %d, expected %d\n", ret, number);
@@ -226,7 +226,7 @@ printf("***** for c ****************************\n");
     ret=databinchk('c', buffer, size, 0, &errmsg);
     printf("databinchk('c', buffer, %d, 0, &errmsg) returned %d: %s\n",
 	size, ret, errmsg);
-    if ( ret == -1 )
+    if (ret == -1)
 	printf("\tPASS return value of -1 as expected\n");
     else
 	printf("\tFAIL return value %d, expected -1\n", ret);
@@ -235,7 +235,7 @@ printf("***** for c ****************************\n");
     ret=databinchk('c', &buffer[1], size-1, offset, &errmsg);
     printf("databinchk('c', &buffer[1], %d, %d, &errmsg) returned %d: %s\n",
 	size, offset, ret, errmsg);
-    if ( ret == -1 )
+    if (ret == -1)
 	printf("\tPASS return value of -1 as expected\n");
     else
 	printf("\tFAIL return value %d, expected -1\n", ret);
@@ -247,7 +247,7 @@ printf("***** for c ****************************\n");
     ret=databinchk('c', &buffer[1], size-1, offset+1, &errmsg);
     printf("databinchk('c', &buffer[1], %d, %d, &errmsg) returned %d: %s\n",
 	size-1, offset+1, ret, errmsg);
-    if ( ret == number )
+    if (ret == number)
 	printf("\tPASS return value of %d as expected\n", number);
     else
 	printf("\tFAIL return value %d, expected %d\n", ret, number);
@@ -260,7 +260,7 @@ printf("***** for C ****************************\n");
     ret=databinchk('C', buffer, size, 0, &errmsg);
     printf("databinchk('C', buffer, %d, 0, &errmsg) returned %d: %s\n",
 	size, ret, errmsg);
-    if ( ret == -1 )
+    if (ret == -1)
 	printf("\tPASS return value of -1 as expected\n");
     else
 	printf("\tFAIL return value %d, expected -1\n", ret);
@@ -269,7 +269,7 @@ printf("***** for C ****************************\n");
     ret=databinchk('C', &buffer[18], size-18, 18, &errmsg);
     printf("databinchk('C', &buffer[18], %d, 18, &errmsg) returned %d: %s\n",
 	size-18, ret, errmsg);
-    if ( ret == -1 )
+    if (ret == -1)
 	printf("\tPASS return value of -1 as expected\n");
     else
 	printf("\tFAIL return value %d, expected -1\n", ret);
@@ -283,7 +283,7 @@ printf("***** for C ****************************\n");
     printf("databinchk('C', &buffer[18], %d, 18, &errmsg) returned %d: %s\n",
 	size-18, ret, errmsg);
 
-    if ( ret == 20 || ret == 21 )
+    if (ret == 20 || ret == 21)
 	printf("\tPASS return value of %d or %d as expected\n",
 	    20, 21);
     else

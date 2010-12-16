@@ -110,9 +110,15 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
+<<<<<<< HEAD
 	if ((msg = parse_opts(ac, av, NULL, NULL))
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* perform global setup for test */
@@ -152,7 +158,7 @@ int main(int ac, char **av)
 	/*Clean up and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/*End of main */
 
 /* setup() - performs all ONE TIME setup for this test */
@@ -171,19 +177,19 @@ void setup()
 
 	/* Allocating memory for ustat and stat structure variables */
 	if ((ubuf = (struct ustat *)malloc(sizeof(struct ustat))) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
 	}
 
 	if ((buf = (struct stat *)malloc(sizeof(struct stat))) == NULL) {
 		free(ubuf);
-		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
 	}
 
 	/* Finding out a valid device number */
 	if (stat("/", buf) != 0) {
 		free(buf);
 		free(ubuf);
-		tst_brkm(TBROK, tst_exit, "stat(2) failed. Exiting without"
+		tst_brkm(TBROK, NULL, "stat(2) failed. Exiting without"
 			 "invoking ustat(2)");
 	}
 	dev_num[1] = buf->st_dev;

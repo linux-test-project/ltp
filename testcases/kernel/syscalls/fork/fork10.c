@@ -71,8 +71,12 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	/*
 	 * perform global setup for the test
@@ -91,18 +95,18 @@ int main(int ac, char **av)
 		if ((fildes = creat(fnamebuf, 0600)) < 0) {
 			tst_brkm(TBROK, cleanup, "Parent: cannot open %s for "
 				 "write, errno = %d", fnamebuf, errno);
-		 /*NOTREACHED*/}
+		 }
 		write(fildes, "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n", 27);
 		close(fildes);
 
 		if ((fildes = open(fnamebuf, 0)) == -1) {
 			tst_brkm(TBROK, cleanup, "Parent: cannot open %s for "
 				 "reading", fnamebuf);
-		 /*NOTREACHED*/}
+		 }
 
 		if ((pid = fork()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (pid == 0) {	/* child */
 			tst_resm(TINFO, "fork child A");
@@ -117,7 +121,7 @@ int main(int ac, char **av)
 			/* parent starts second child */
 			if ((pid = fork()) == -1) {
 				tst_brkm(TBROK, cleanup, "fork() #2 failed");
-			 /*NOTREACHED*/}
+			 }
 
 			if (pid == 0) {	/* child */
 				if (read(fildes, chilchar, 1) <= 0) {
@@ -159,7 +163,7 @@ int main(int ac, char **av)
 	close(fildes);
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*

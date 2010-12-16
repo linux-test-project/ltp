@@ -95,8 +95,12 @@ int main(int ac, char **av)
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();
 
@@ -135,7 +139,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -158,19 +162,19 @@ void setup()
 	if ((in_fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-	 /*NOTREACHED*/}
+	 }
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(in_fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	close(in_fd);
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	sprintf(out_file, "out.%d", getpid());
 	if ((out_fd = open(out_file, O_TRUNC | O_CREAT | O_RDWR, 0777)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*

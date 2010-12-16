@@ -88,9 +88,8 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/*
 	 * perform global setup for test
@@ -131,7 +130,7 @@ int main(int ac, char **av)
 	 * cleanup and exit
 	 */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -157,7 +156,7 @@ void setup()
 	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"
 			 "in rename()", fname);
-		/* NOTREACHED */
+		
 	}
 
 	/* save "old"'s dev and ino */
@@ -167,16 +166,16 @@ void setup()
 	/* create another directory */
 	if (stat(mdir, &buf2) != -1) {
 		tst_brkm(TBROK, cleanup, "tmp directory %s found!", mdir);
-	 /*NOTREACHED*/}
+	 }
 
 	if (mkdir(mdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", mdir);
-	 /*NOTREACHED*/}
+	 }
 
 	if (stat(mdir, &buf2) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s "
 			 "in rename()", mdir);
-		/* NOTREACHED */
+		
 	}
 
 	/* save "new"'s dev and ino */

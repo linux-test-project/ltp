@@ -116,9 +116,15 @@ int main(int ac, char **av)
 	int ngroups_max = sysconf(_SC_NGROUPS_MAX);	/* max no. of groups in the current system */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	groups_list = malloc(ngroups_max * sizeof(GID_T));
@@ -181,7 +187,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -193,7 +199,7 @@ void setup()
 {
 
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* capture signals */

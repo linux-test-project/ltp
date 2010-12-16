@@ -78,17 +78,17 @@ void drop_root(int keep_perms)
 		prctl(PR_SET_KEEPCAPS, 1);
 	ret = setresuid(1000, 1000, 1000);
 	if (ret) {
-		tst_brkm(TFAIL | TERRNO, tst_exit, "Error dropping root privs\n");
+		tst_brkm(TFAIL | TERRNO, NULL, "Error dropping root privs\n");
 		tst_exit();
 	}
 	if (keep_perms) {
 		cap_t cap = cap_from_text("=eip");
 		int ret;
 		if (!cap)
-			tst_brkm(TBROK | TERRNO, tst_exit, "cap_from_text failed\n");
+			tst_brkm(TBROK | TERRNO, NULL, "cap_from_text failed\n");
 		ret = cap_set_proc(cap);
 		if (ret < 0)
-			tst_brkm(TBROK | TERRNO, tst_exit, "cap_set_proc failed\n");
+			tst_brkm(TBROK | TERRNO, NULL, "cap_set_proc failed\n");
 		cap_free(cap);
 	}
 }
@@ -124,7 +124,7 @@ void create_fifo(void)
 
 	ret = mkfifo(FIFOFILE, S_IRWXU | S_IRWXG | S_IRWXO);
 	if (ret == -1 && errno != EEXIST)
-		tst_brkm(TFAIL | TERRNO, tst_exit, "failed creating %s\n", FIFOFILE);
+		tst_brkm(TFAIL | TERRNO, NULL, "failed creating %s\n", FIFOFILE);
 }
 
 void write_to_fifo(char *buf)
@@ -143,7 +143,7 @@ void read_from_fifo(char *buf)
 	memset(buf, 0, 200);
 	fd = open(FIFOFILE, O_RDONLY);
 	if (fd < 0)
-		tst_brkm(TFAIL | TERRNO, tst_exit, "Failed opening fifo\n");
+		tst_brkm(TFAIL | TERRNO, NULL, "Failed opening fifo\n");
 	read(fd, buf, 199);
 	close(fd);
 }
@@ -160,7 +160,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 
 	pid = fork();
 	if (pid < 0)
-		tst_brkm(TFAIL | TERRNO, tst_exit, "%s: failed fork\n", __FUNCTION__);
+		tst_brkm(TFAIL | TERRNO, NULL, "%s: failed fork\n", __FUNCTION__);
 	if (pid == 0) {
 		drop_root(keepperms);
 		print_my_caps();
@@ -170,7 +170,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 		snprintf(buf, 200, "failed to run as %s\n", capstxt);
 		cap_free(capstxt);
 		write_to_fifo(buf);
-		tst_brkm(TFAIL, tst_exit, "%s: exec failed\n", __FUNCTION__);
+		tst_brkm(TFAIL, NULL, "%s: exec failed\n", __FUNCTION__);
 	} else {
 		p = buf;
 		while (1) {
@@ -184,7 +184,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 		}
 		p = index(buf, '.');
 		if (!p)
-			tst_brkm(TFAIL, tst_exit, "got a bad message from print_caps\n");
+			tst_brkm(TFAIL, NULL, "got a bad message from print_caps\n");
 		p += 1;
 		actual_caps = cap_from_text(p);
 		if (cap_compare(actual_caps, expected_caps) != 0) {

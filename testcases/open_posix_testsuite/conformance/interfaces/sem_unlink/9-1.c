@@ -95,7 +95,7 @@ void * threaded (void * arg)
 	{
 		ret = sem_wait(arg);
 	}
-	while ((ret != 0) && (errno == EINTR));
+	while (ret != 0 && errno == EINTR);
 
 	if (ret != 0)
 	{

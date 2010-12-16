@@ -464,7 +464,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 		fd = open(tmpname, file_flag, file_mode);
 		if (fd < 0) {
 			tst_brkm(TBROK, cleanup, "open failed");
-		 /*NOTREACHED*/}
+		 }
 
 		/* write some dummy data to the file */
 		(void)write(fd, FILEDATA, 10);
@@ -664,7 +664,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 #ifdef UCLINUX
 	maybe_run_child(dochild_uc, "ddddd", &kid_uc, &parent, &test,

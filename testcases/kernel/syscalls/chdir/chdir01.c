@@ -81,7 +81,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();		/* global setup */
@@ -97,13 +101,13 @@ int main(int ac, char **av)
 
 		if ((ret = chdir(testdir)) != 0) {
 			tst_brkm(TBROK|TERRNO, cleanup, "chdir(%s) failed", testdir);
-		 /*NOTREACHED*/}
+		 }
 		if ((fd = creat(filname, 0000)) == -1) {
 			tst_brkm(TBROK|TERRNO, cleanup, "creat(%s) failed", filname);
-		 /*NOTREACHED*/}
+		 }
 		if ((ddir = opendir(".")) == NULL) {
 			tst_brkm(TBROK|TERRNO, cleanup, "opendir(.) failed");
-		 /*NOTREACHED*/}
+		 }
 
 		filenames[0] = ".";
 		filenames[1] = "..";
@@ -136,7 +140,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}
+ }
 
 /*
  * setup() - performs all ONE TIME setup for this test

@@ -102,9 +102,6 @@ extern void cleanup()
 	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
-
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -136,66 +133,40 @@ void setup()
 int main(int argc, char *argv[])
 {
 	int fd, coe;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
-		tst_resm(TCONF,
-			 "This test can only run on kernels that are 2.6.27 and higher");
-		tst_exit();
+		tst_brkm(TCONF, cleanup,
+		    "This test can only run on kernels that are 2.6.27 and higher");
 	}
 	setup();
 
-	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			fd = syscall(__NR_eventfd2, 1, 0);
-			if (fd == -1) {
-				tst_resm(TFAIL, "eventfd2(0) failed");
-				cleanup();
-				tst_exit();
-			}
-			coe = fcntl(fd, F_GETFD);
-			if (coe == -1) {
-				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
-			}
-			if (coe & FD_CLOEXEC) {
-				tst_resm(TFAIL,
-					 "eventfd2(0) set close-on-exec flag");
-				cleanup();
-				tst_exit();
-			}
-			close(fd);
-
-			fd = syscall(__NR_eventfd2, 1, EFD_CLOEXEC);
-			if (fd == -1) {
-				tst_resm(TFAIL, "eventfd2(EFD_CLOEXEC) failed");
-				cleanup();
-				tst_exit();
-			}
-			coe = fcntl(fd, F_GETFD);
-			if (coe == -1) {
-				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
-			}
-			if ((coe & FD_CLOEXEC) == 0) {
-				tst_resm(TFAIL,
-					 "eventfd2(EFD_CLOEXEC) does not set close-on-exec flag");
-				cleanup();
-				tst_exit();
-			}
-			close(fd);
-			tst_resm(TPASS, "eventfd2(EFD_CLOEXEC) Passed");
-			cleanup();
-		}
+	fd = syscall(__NR_eventfd2, 1, 0);
+	if (fd == -1) {
+		tst_brkm(TFAIL, cleanup, "eventfd2(0) failed");
 	}
+	coe = fcntl(fd, F_GETFD);
+	if (coe == -1) {
+		tst_brkm(TBROK, cleanup, "fcntl failed");
+	}
+	if (coe & FD_CLOEXEC) {
+		tst_brkm(TFAIL, cleanup, "eventfd2(0) set close-on-exec flag");
+	}
+	close(fd);
+
+	fd = syscall(__NR_eventfd2, 1, EFD_CLOEXEC);
+	if (fd == -1) {
+		tst_brkm(TFAIL, cleanup, "eventfd2(EFD_CLOEXEC) failed");
+	}
+	coe = fcntl(fd, F_GETFD);
+	if (coe == -1) {
+		tst_brkm(TBROK, cleanup, "fcntl failed");
+	}
+	if ((coe & FD_CLOEXEC) == 0) {
+		tst_brkm(TFAIL, cleanup,
+			 "eventfd2(EFD_CLOEXEC) does not set close-on-exec flag");
+	}
+	close(fd);
+	tst_resm(TPASS, "eventfd2(EFD_CLOEXEC) Passed");
+	cleanup();
 	tst_exit();
 }

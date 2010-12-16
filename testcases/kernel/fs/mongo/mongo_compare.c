@@ -75,22 +75,22 @@ main(int argc, char **argv)
     strcpy(out2,argv[3]);
     strcat(out2,".html");
 
-    if ((f1=fopen(argv[1],"r")) == NULL) {
+    if ((f1 = fopen(argv[1], "r")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], argv[1] );
     	return 1;
     }
 
-    if ((f2=fopen(argv[2],"r")) == NULL) {
+    if ((f2 = fopen(argv[2], "r")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], argv[2] );
     	return 1;
     }
 
-    if ((f3=fopen(out1,"wr")) == NULL) {
+    if ((f3 = fopen(out1,"wr")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], out1 );
     	return 1;
     }
 
-    if ((f4=fopen(out2,"wr")) == NULL) {
+    if ((f4 = fopen(out2,"wr")) == NULL) {
 	fprintf(stderr, "%s: can't open %s\n", argv[0], out2 );
     	return 1;
     }
@@ -132,7 +132,7 @@ main(int argc, char **argv)
 	     else {
 	         k=0; p=line3;
 	         while (*p++ != 0) {
-	             if ((*p != ' ') && (*p != '\n')) k++;
+	             if (*p != ' ' && *p != '\n') k++;
 	         }
 	         if (k > 0) {
 	             fprintf(f4, "<tt>%s</tt><br>\n", line3);

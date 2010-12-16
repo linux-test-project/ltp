@@ -111,9 +111,9 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "%s PASSED", TCID);
 			}
 			cleanup();
-		 /*NOTREACHED*/} else if (pid < 0) {
+		 } else if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "fork failed");
-		 /*NOTREACHED*/}
+		 }
 
 		/*
 		 * Set up to catch SIGINT.  The kids will wait till a SIGINT
@@ -136,17 +136,17 @@ int main(int ac, char **av)
 					tst_resm(TFAIL, "self_exec kid %d "
 						 "failed", kid_count);
 					tst_exit();
-				 /*NOTREACHED*/}
+				 }
 #else
 				do_exit();
 #endif
-			 /*NOTREACHED*/}
+			 }
 
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid %d failed. errno = "
 					 "%d", kid_count, errno);
 				tst_exit();
-			 /*NOTREACHED*/}
+			 }
 
 			/* parent */
 			fork_kid_pid[kid_count] = ret_val;
@@ -377,7 +377,7 @@ void setup_sigint(void)
 	if ((sig_t) signal(SIGINT, inthandlr) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup, "signal SIGINT failed, errno = %d",
 			 errno);
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*
@@ -407,7 +407,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void inthandlr()
 {

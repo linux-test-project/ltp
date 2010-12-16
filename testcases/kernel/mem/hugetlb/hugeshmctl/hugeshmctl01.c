@@ -125,12 +125,11 @@ int main(int ac, char **av)
 	void check_functionality(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	}
 
         if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-             tst_brkm(TCONF, tst_exit, "Not enough available Hugepages");
+             tst_brkm(TCONF, NULL, "Not enough available Hugepages");
         else             
              huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
 
@@ -199,7 +198,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
+	
 	return 0;
 }
 

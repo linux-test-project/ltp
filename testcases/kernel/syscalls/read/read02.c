@@ -112,7 +112,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -151,7 +155,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -178,7 +182,7 @@ void setup(void)
 
 	if (write(fd3, "A", 1) != 1) {
 		tst_brkm(TBROK, cleanup, "can't write to fd3");
-	 /*NOTREACHED*/}
+	 }
 	close(fd3);
 	if ((fd3 = open(fname, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");

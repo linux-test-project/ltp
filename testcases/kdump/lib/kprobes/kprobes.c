@@ -19,7 +19,7 @@ long jdo_fork(unsigned long clone_flags, unsigned long stack_start,
          clone_flags, stack_size, regs);
   /* Always end with a call to jprobe_return(). */
   jprobe_return();
-  /*NOTREACHED*/
+  
   return 0;
 }
 

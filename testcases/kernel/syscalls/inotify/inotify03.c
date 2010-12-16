@@ -48,8 +48,9 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
-#if defined(HAVE_SYS_INOTIFY_H) && defined(__NR_inotify_init)
+#if defined(HAVE_SYS_INOTIFY_H)
 #include <sys/inotify.h>
 
 #define EVENT_MAX 1024
@@ -115,7 +116,7 @@ int main(int ac, char **av)
 	int len, i, test_num;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) options, &help)) != NULL)
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	/* Check for mandatory option of the testcase */
@@ -283,8 +284,7 @@ void setup()
 			tst_brkm(TCONF, cleanup,
 				 "inotify is not configured in this kernel.");
 		} else {
-			tst_brkm(TBROK|TERRNO, cleanup,
-				 "inotify_init() failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "inotify_init failed");
 		}
 	}
 
@@ -311,7 +311,7 @@ void cleanup()
 	if (mount_flag) {
 		TEST(umount(mntpoint));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN|TTERRNO, "umount(2) failed ");
+			tst_resm(TWARN|TTERRNO, "umount(%s) failed", mntpoint);
 		}
 	}
 
@@ -342,17 +342,7 @@ int TST_TOTAL = 0;		/* Total number of test cases. */
 
 int main()
 {
-#ifndef __NR_inotify_init
-	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
-	tst_resm(TCONF,
-		 "Inotify syscall can be found at kernel 2.6.13 or higher.");
-	return 0;
-#endif
-#ifndef HAVE_SYS_INOTIFY_H
-	tst_resm(TBROK, "can't find header sys/inotify.h");
-	return 1;
-#endif
-	return 0;
+	tst_brkm(TCONF, NULL, "system doesn't have required inotify support");
 }
 
 #endif

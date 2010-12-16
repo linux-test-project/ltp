@@ -76,9 +76,8 @@ int main(int ac, char **av)
 	char rbuf[BUFSIZ];
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
 
 	setup();
 
@@ -90,8 +89,8 @@ int main(int ac, char **av)
 		TEST(pipe(fildes));
 
 		if (TEST_RETURN == -1)
-			tst_brkm(TBROK, cleanup, "pipe() failed unexpectedly "
-				 "- errno %d", TEST_ERRNO);
+			tst_brkm(TBROK|TTERRNO, cleanup,
+			    "pipe() failed unexpectedly");
 
 		TEST(write(fildes[0], "A", 1));
 		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF)
@@ -107,13 +106,13 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "expected failure reading from "
 				 "write end of pipe");
 		else
-			tst_resm(TFAIL, "success when reading from "
+			tst_resm(TFAIL|TTERRNO, "success when reading from "
 				 "write end of pipe ret=%ld, "
-				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+				 "errno=%d", TEST_RETURN);
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -139,7 +138,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

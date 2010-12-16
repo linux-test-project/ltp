@@ -108,7 +108,7 @@ sem_t * common()
 	{
 		ret = sem_wait(sem);
 	}
-	while ((ret != 0) && (errno == EINTR));
+	while (ret != 0 && errno == EINTR);
 
 	if (ret != 0)
 	{
@@ -241,7 +241,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
 	{
 		FAILED("Child 'sem_close' exited abnormally");
 	}
@@ -253,7 +253,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
 	{
 		FAILED("Child '_exit' exited abnormally");
 	}
@@ -265,7 +265,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
 	{
 		FAILED("Child 'exec' exited abnormally");
 	}

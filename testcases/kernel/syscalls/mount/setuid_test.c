@@ -32,7 +32,7 @@
 
 /* Save the effective and real UIDs. */
 
-static uid_t euid, ruid;
+static uid_t ruid;
 
 /* Restore the effective UID to its original value. */
 
@@ -55,9 +55,8 @@ int main(void)
 {
 	int exit_status;
 
-/* Save the real and effective user IDs.  */
+	/* Save the real and effective user IDs.  */
 	ruid = getuid();
-	euid = geteuid();
 	exit_status = do_setuid();
 
 	exit(exit_status);

@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/* NOTREACHED */
+		
 	}
 
 	setup();
@@ -149,4 +149,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

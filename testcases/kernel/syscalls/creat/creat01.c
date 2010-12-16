@@ -94,7 +94,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();		/* set "tstdir", and "testfile" variables */
@@ -126,7 +130,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}
+ }
 
 /*
  * functest1() - check the functionality of the first test by making sure
@@ -151,7 +155,7 @@ void functest2()
 
 	if (stat(filename, &buf) < 0) {
 		tst_brkm(TBROK, cleanup, "failed to stat test file");
-	 /*NOTREACHED*/}
+	 }
 	if (buf.st_size != 0) {
 		tst_resm(TFAIL, "creat() FAILED to truncate "
 			 "file to zero bytes");
@@ -167,7 +171,7 @@ void setup()
 {
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1)

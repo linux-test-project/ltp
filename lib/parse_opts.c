@@ -265,7 +265,7 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
     /*
      *  Loop through av parsing options.
      */
-    while ( (opt = getopt(ac, av, optionstr)) > 0) {
+    while ((opt = getopt(ac, av, optionstr)) > 0) {
 
 	STD_argind = optind;
 #if DEBUG > 0
@@ -291,7 +291,7 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
 		case 'I': /* Time duration */
 			options |= OPT_duration;
 			STD_LOOP_DURATION = atof(optarg);
-			if ( STD_LOOP_DURATION == 0.0 ) STD_INFINITE=1;
+			if (STD_LOOP_DURATION == 0.0) STD_INFINITE=1;
 			break;
 		case 'c': /* Copies */
 			options |= OPT_copies;
@@ -322,24 +322,24 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
 
             /* Check all the user specified options */
             found=0;
-	    for(i = 0; user_optarr[i].option; ++i) {
+	    for (i = 0; user_optarr[i].option; ++i) {
 
 		if (opt == user_optarr[i].option[0]) {
                     /* Yup, This is a user option, set the flag and look for argument */
-		    if ( user_optarr[i].flag ) {
+		    if (user_optarr[i].flag) {
                         *user_optarr[i].flag=1;
 		    }
                     found++;
 
 		    /* save the argument at the user's location */
-                    if ( user_optarr[i].option[strlen(user_optarr[i].option)-1] == ':' ) {
+                    if (user_optarr[i].option[strlen(user_optarr[i].option)-1] == ':') {
                         *user_optarr[i].arg=optarg;
                     }
                     break;  /* option found - break out of the for loop */
                 }
             }
 	    /* This condition "should never happen".  SO CHECK FOR IT!!!! */
-            if ( ! found ) {
+            if (! found) {
                 sprintf(Mesg2,
 		    "parse_opts: ERROR - option:\"%c\" NOT FOUND... INTERNAL ERROR", opt);
                 return(Mesg2);
@@ -354,11 +354,11 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
     /*
      * Turn on debug
      */
-    if ( (ptr=getenv("USC_DEBUG")) != NULL ) {
+    if ((ptr=getenv("USC_DEBUG")) != NULL) {
 	Debug=1;
         printf("env USC_DEBUG is defined, turning on debug\n");
     }
-    if ( (ptr=getenv("USC_VERBOSE")) != NULL ) {
+    if ((ptr=getenv("USC_VERBOSE")) != NULL) {
 	Debug=1;
         printf("env USC_VERBOSE is defined, turning on debug\n");
     }
@@ -368,16 +368,16 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * a number, use that number as iteration count (same as -c option).
      * The -c option with arg will be used even if this env var is set.
      */
-    if ( !(options & OPT_iteration) && (ptr=getenv(USC_ITERATION_ENV)) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1) {
-            if ( k == 0 ) {   /* if arg is 0, set infinite loop flag */
+    if (!(options & OPT_iteration) && (ptr=getenv(USC_ITERATION_ENV)) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1) {
+            if (k == 0) {   /* if arg is 0, set infinite loop flag */
                 STD_INFINITE=1;
-		if ( Debug )
+		if (Debug)
 		   printf("Using env %s, set STD_INFINITE to 1\n",
 			USC_ITERATION_ENV);
             } else {            /* else, set the loop count to the arguement */
                 STD_LOOP_COUNT=k;
-		if ( Debug )
+		if (Debug)
 		   printf("Using env %s, set STD_LOOP_COUNT to %d\n",
 			USC_ITERATION_ENV, k);
             }
@@ -388,9 +388,9 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * If the USC_NO_FUNC_CHECK environmental variable is set, we'll
      * unset the STD_FUNCTIONAL_TEST variable.
      */
-    if ( !(options & OPT_nofunccheck) && (ptr=getenv(USC_NO_FUNC_CHECK)) != NULL ) {
+    if (!(options & OPT_nofunccheck) && (ptr=getenv(USC_NO_FUNC_CHECK)) != NULL) {
         STD_FUNCTIONAL_TEST=0; /* Turn off functional testing */
-	if ( Debug )
+	if (Debug)
 	    printf("Using env %s, set STD_FUNCTIONAL_TEST to 0\n",
 		USC_NO_FUNC_CHECK);
     }
@@ -401,27 +401,27 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * The -I option with arg will be used even if this env var is set.
      */
 
-    if ( !(options & OPT_duration) && (ptr=getenv(USC_LOOP_WALLTIME)) != NULL ) {
-        if ( sscanf(ptr, "%f", &ftmp) == 1 && ftmp >= 0.0 ) {
+    if (!(options & OPT_duration) && (ptr=getenv(USC_LOOP_WALLTIME)) != NULL) {
+        if (sscanf(ptr, "%f", &ftmp) == 1 && ftmp >= 0.0) {
 	    STD_LOOP_DURATION=ftmp;
-	    if ( Debug )
+	    if (Debug)
 	        printf("Using env %s, set STD_LOOP_DURATION to %f\n",
 		    USC_LOOP_WALLTIME, ftmp);
-            if ( STD_LOOP_DURATION == 0.0 ) {   /* if arg is 0, set infinite loop flag */
+            if (STD_LOOP_DURATION == 0.0) {   /* if arg is 0, set infinite loop flag */
                 STD_INFINITE=1;
-	        if ( Debug )
+	        if (Debug)
 	            printf("Using env %s, set STD_INFINITE to 1\n", USC_LOOP_WALLTIME);
 	    }
         }
     }
-    if ( !(options & OPT_duration) && (ptr=getenv("USC_DURATION")) != NULL ) {
-        if ( sscanf(ptr, "%f", &ftmp) == 1 && ftmp >= 0.0 ) {
+    if (!(options & OPT_duration) && (ptr=getenv("USC_DURATION")) != NULL) {
+        if (sscanf(ptr, "%f", &ftmp) == 1 && ftmp >= 0.0) {
 	    STD_LOOP_DURATION=ftmp;
-	    if ( Debug )
+	    if (Debug)
 	        printf("Using env USC_DURATION, set STD_LOOP_DURATION to %f\n", ftmp);
-            if ( STD_LOOP_DURATION == 0.0 ) {   /* if arg is 0, set infinite loop flag */
+            if (STD_LOOP_DURATION == 0.0) {   /* if arg is 0, set infinite loop flag */
                 STD_INFINITE=1;
-	        if ( Debug )
+	        if (Debug)
 	            printf("Using env USC_DURATION, set STD_INFINITE to 1\n");
 	    }
         }
@@ -431,10 +431,10 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * use that number as delay in factional seconds (same as -P option).
      * The -P option with arg will be used even if this env var is set.
      */
-    if ( !(options & OPT_delay) && (ptr=getenv(USC_LOOP_DELAY)) != NULL ) {
-        if ( sscanf(ptr, "%f", &ftmp) == 1 && ftmp >= 0.0 ) {
+    if (!(options & OPT_delay) && (ptr=getenv(USC_LOOP_DELAY)) != NULL) {
+        if (sscanf(ptr, "%f", &ftmp) == 1 && ftmp >= 0.0) {
 	    STD_LOOP_DELAY=ftmp;
-	    if ( Debug )
+	    if (Debug)
 		printf("Using env %s, set STD_LOOP_DELAY = %f\n",
 		    USC_LOOP_DELAY, ftmp);
         }
@@ -445,9 +445,9 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * use that number as copies (same as -c option).
      * The -c option with arg will be used even if this env var is set.
      */
-    if ( !(options & OPT_copies) && (ptr=getenv(USC_COPIES)) != NULL ) {
-        if ( sscanf(ptr, "%d", &STD_COPIES) == 1 && STD_COPIES >= 0 ) {
-	    if ( Debug )
+    if (!(options & OPT_copies) && (ptr=getenv(USC_COPIES)) != NULL) {
+        if (sscanf(ptr, "%d", &STD_COPIES) == 1 && STD_COPIES >= 0) {
+	    if (Debug)
 		printf("Using env %s, set STD_COPIES = %d\n",
 		    USC_COPIES, STD_COPIES);
         }
@@ -457,94 +457,94 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
      * The following are special system testing envs to turn on special
      * hooks in the code.
      */
-    if ( (ptr=getenv("USC_TP_BARRIER")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_TP_BARRIER")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
 	    STD_TP_barrier=k;
 	}
         else
 	    STD_TP_barrier=1;
-	if ( Debug )
+	if (Debug)
 	    printf("using env USC_TP_BARRIER, Set STD_TP_barrier to %d\n",
 	        STD_TP_barrier);
     }
 
-    if ( (ptr=getenv("USC_LP_BARRIER")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_LP_BARRIER")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
 	    STD_LP_barrier=k;
 	}
         else
 	    STD_LP_barrier=1;
-	if ( Debug )
+	if (Debug)
 	    printf("using env USC_LP_BARRIER, Set STD_LP_barrier to %d\n",
 	        STD_LP_barrier);
     }
 
-    if ( (ptr=getenv("USC_TP_SHMEM")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_TP_SHMEM")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
             STD_TP_shmem_sz=k;
-	    if ( Debug )
+	    if (Debug)
 	        printf("Using env USC_TP_SHMEM, Set STD_TP_shmem_sz to %d\n",
 		    STD_TP_shmem_sz);
         }
     }
 
-    if ( (ptr=getenv("USC_LP_SHMEM")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_LP_SHMEM")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
             STD_LP_shmem=k;
-	    if ( Debug )
+	    if (Debug)
 	        printf("Using env USC_LP_SHMEM, Set STD_LP_shmem to %d\n",
 		    STD_LP_shmem);
         }
     }
 
-    if ( (ptr=getenv("USC_LD_SHMEM")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_LD_SHMEM")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
             STD_LD_shmem=k;
-	    if ( Debug )
+	    if (Debug)
 	        printf("Using env USC_LD_SHMEM, Set STD_LD_shmem to %d\n",
 		    STD_LD_shmem);
         }
     }
 
-    if ( (ptr=getenv("USC_TP_SBRK")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_TP_SBRK")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
             STD_TP_sbrk=k;
-	    if ( Debug )
+	    if (Debug)
 	        printf("Using env USC_TP_SBRK, Set STD_TP_sbrk to %d\n",
 		    STD_TP_sbrk);
         }
     }
 
 #if !defined(UCLINUX)
-    if ( (ptr=getenv("USC_LP_SBRK")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_LP_SBRK")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
             STD_LP_sbrk=k;
-	    if ( Debug )
+	    if (Debug)
 	        printf("Using env USC_LP_SBRK, Set STD_LP_sbrk to %d\n",
 		    STD_LP_sbrk);
         }
     }
 #endif /* if !defined(UCLINUX) */
 
-    if ( (ptr=getenv("USC_LP_RECFUN")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_LP_RECFUN")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
 	    STD_LP_recfun=k;
-	    if ( STD_bigstack != (struct usc_bigstack_t *)NULL )
+	    if (STD_bigstack != NULL)
 		STD_bigstack=(struct usc_bigstack_t *)
 			malloc(sizeof(struct usc_bigstack_t));
-	    if ( Debug )
+	    if (Debug)
                 printf("Using env USC_LP_RECFUN, Set STD_LP_recfun to %d\n",
 		    STD_LP_recfun);
         }
     }
 
-    if ( (ptr=getenv("USC_LD_RECFUN")) != NULL ) {
-        if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
+    if ((ptr=getenv("USC_LD_RECFUN")) != NULL) {
+        if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
 	    STD_LD_recfun=k;
-	    if ( STD_bigstack != (struct usc_bigstack_t *)NULL )
+	    if (STD_bigstack != NULL)
 		STD_bigstack=(struct usc_bigstack_t *)
 			malloc(sizeof(struct usc_bigstack_t));
-	    if ( Debug )
+	    if (Debug)
                 printf("Using env USC_LD_RECFUN, Set STD_LD_recfun to %d\n",
 		    STD_LD_recfun);
         }
@@ -585,7 +585,7 @@ STD_opts_help()
 {
     int i;
 
-    for(i = 0; std_options[i].optstr; ++i) {
+    for (i = 0; std_options[i].optstr; ++i) {
 	if (std_options[i].help)
 	    printf("%s", std_options[i].help);
     }
@@ -617,7 +617,7 @@ usc_global_setup_hook()
     /*
      * Fork STD_COPIES-1 copies.
      */
-    for(cnt=1;cnt<STD_COPIES;cnt++) {
+    for (cnt=1;cnt<STD_COPIES;cnt++) {
         switch(fork() ) {
 	    case -1:
 		fprintf(stderr, "%s: fork() failed, errno:%d %s\n",
@@ -635,7 +635,7 @@ usc_global_setup_hook()
     /*
      * pause waiting for sigusr1.
      */
-    if ( STD_PAUSE ) {
+    if (STD_PAUSE) {
         _TMP_FUNC = (int (*)())signal(SIGUSR1, STD_go);
         pause();
         signal(SIGUSR1, (void (*)())_TMP_FUNC);
@@ -643,13 +643,13 @@ usc_global_setup_hook()
 
 #if !defined(UCLINUX)
 
-    if ( STD_TP_sbrk || STD_LP_sbrk) {
+    if (STD_TP_sbrk || STD_LP_sbrk) {
 	STD_start_break=sbrk(0);	/* get original sbreak size */
     }
 
-    if ( STD_TP_sbrk ) {
+    if (STD_TP_sbrk) {
 	sbrk(STD_TP_sbrk);
-	if ( Debug )
+	if (Debug)
 	    printf("after sbrk(%d)\n", STD_TP_sbrk);
     }
 
@@ -717,10 +717,10 @@ int counter;
      * duration of STD_LOOP_DURATION seconds (fractional) or
      * doing loop delays, get the clocks per second.
      */
-    if ( first_time ) {
+    if (first_time) {
 
 	first_time=0;
-	if ( STD_LOOP_DELAY || STD_LOOP_DURATION ) {
+	if (STD_LOOP_DELAY || STD_LOOP_DURATION) {
 	    hertz = get_timepersec();
 	}
 
@@ -729,7 +729,7 @@ int counter;
 	 * clocks.
 	 */
 
-	if ( STD_LOOP_DURATION) {
+	if (STD_LOOP_DURATION) {
 	    ct=get_current_time();
 	    stop_time=(int)((float)hertz * STD_LOOP_DURATION) + ct;
 	}
@@ -738,7 +738,7 @@ int counter;
 	 * If doing delay each iteration, calcuate the number
 	 * of clocks for each delay.
 	 */
-	if ( STD_LOOP_DELAY ) {
+	if (STD_LOOP_DELAY) {
 	    delay=(int)((float)hertz * STD_LOOP_DELAY);
 	}
 
@@ -750,15 +750,15 @@ int counter;
      * The delay will happen before determining if
      * there will be another iteration.
      */
-    else if ( STD_LOOP_DELAY ) {
+    else if (STD_LOOP_DELAY) {
 	ct=get_current_time();
         end=ct+delay;
-        while ( ct < end ) {
+        while (ct < end) {
 	    /*
 	     * The following are special test hooks in the delay loop.
 	     */
-	    if ( STD_LD_recfun ) {
-		if ( Debug )
+	    if (STD_LD_recfun) {
+		if (Debug)
 		    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n",
 		        STD_LD_recfun);
 		usc_recressive_func(0, STD_LD_recfun, *STD_bigstack);
@@ -768,27 +768,27 @@ int counter;
 	}
     }
 
-    if ( STD_INFINITE ) {
+    if (STD_INFINITE) {
 	keepgoing++;
     }
 
-    if ( STD_LOOP_COUNT && counter < STD_LOOP_COUNT ) {
+    if (STD_LOOP_COUNT && counter < STD_LOOP_COUNT) {
 	keepgoing++;
     }
 
-    if ( STD_LOOP_DURATION != 0.0 && get_current_time() < stop_time ) {
+    if (STD_LOOP_DURATION != 0.0 && get_current_time() < stop_time) {
 	keepgoing++;
     }
 
-    if ( keepgoing == 0 )
+    if (keepgoing == 0)
 	return 0;
 
     /*
      * The following code allows special system testing hooks.
      */
 
-    if ( STD_LP_recfun ) {
-	if ( Debug )
+    if (STD_LP_recfun) {
+	if (Debug)
 	    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n",
 	        STD_LP_recfun);
 	usc_recressive_func(0, STD_LP_recfun, *STD_bigstack);
@@ -796,15 +796,15 @@ int counter;
 
 #if !defined(UCLINUX)
 
-    if ( STD_LP_sbrk ) {
-	if ( Debug )
+    if (STD_LP_sbrk) {
+	if (Debug)
 	    printf("about to do sbrk(%d)\n", STD_LP_sbrk);
 	sbrk(STD_LP_sbrk);
     }
 #endif
 
 
-    if ( keepgoing )
+    if (keepgoing)
 	return 1;
     else
         return 0;	/* done - stop iterating */
@@ -820,7 +820,7 @@ int cnt;
 int max;
 struct usc_bigstack_t bstack;
 {
-    if ( cnt < max )
+    if (cnt < max)
 	usc_recressive_func(cnt+1, max, bstack);
 
 }

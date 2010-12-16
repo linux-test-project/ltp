@@ -81,9 +81,8 @@ int main(int ac, char **av)
 	int retval = 0, status, e_code;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
 
 	setup();
 
@@ -119,7 +118,7 @@ int main(int ac, char **av)
 
 		if (forkstat == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (forkstat == 0) {	/* child */
 			red = safe_read(fd[0], rebuf, written);
@@ -152,7 +151,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -178,7 +177,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

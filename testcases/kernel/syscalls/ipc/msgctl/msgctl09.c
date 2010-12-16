@@ -127,7 +127,11 @@ char *argv[];
 	/* parse standard options */
 	if ((msg =
 	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux,

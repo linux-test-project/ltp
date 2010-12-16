@@ -433,7 +433,7 @@ int main(int ac, char **av) {
 					(ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
-		
+
 			/*
 			 * Check results
 	 		 */

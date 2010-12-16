@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	setup();
 	testcpuset();
 	cleanup();
@@ -179,7 +179,7 @@ void testcpuset(void)
 void setup(void)
 {
 	if (count_numa() == 1)
-		tst_brkm(TCONF, tst_exit, "required a NUMA system.");
+		tst_brkm(TCONF, NULL, "required a NUMA system.");
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 	if (mkdir(CPATH, 0777) == -1)

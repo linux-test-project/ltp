@@ -49,12 +49,12 @@ Establish(ArgStruct *p)
     it a message containing our tid. If we are the receiving side,
     just wait for a message.
     */
-    if ( p->tr ) {
+    if (p->tr) {
 #ifdef DEBUG
 	printf("this is the transmitter\n");
 #endif
 	tasks_status = pvm_tasks( 0, &ntasks, &taskp );
-	if ( ntasks != 2 ) {
+	if (ntasks != 2) {
 	    printf("Error, too many processes in parallel machine \n");
 	    printf("Start a clean machine.  n=%d\n", ntasks);
 	    exit(-1);
@@ -62,13 +62,13 @@ Establish(ArgStruct *p)
 
 	/* Since there are two tasks, one is ours the other is the receiver */
 	p->prot.othertid = -1;
-	if ( taskp[0].ti_tid == p->prot.mytid ) {
+	if (taskp[0].ti_tid == p->prot.mytid) {
 	    p->prot.othertid = taskp[1].ti_tid;
 	}
-	if ( taskp[1].ti_tid == p->prot.mytid ) {
+	if (taskp[1].ti_tid == p->prot.mytid) {
 	    p->prot.othertid = taskp[0].ti_tid;
 	}
-	if ( p->prot.othertid == -1 ) {
+	if (p->prot.othertid == -1) {
 	    printf("Error, cannot find other (receiving) task \n");
 	    printf("Id's:  %d %d  \n",taskp[0].ti_tid,taskp[1].ti_tid);
 	}
@@ -90,7 +90,7 @@ Establish(ArgStruct *p)
 	/* Receive any message from any task */
 	buffer_id = pvm_recv(-1, -1);
 
-	if ( buffer_id < 0 ) {
+	if (buffer_id < 0) {
 	    printf("Error on receive in receiver\n");
 	    exit(-1);
 	}

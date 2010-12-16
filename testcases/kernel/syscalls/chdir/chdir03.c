@@ -88,7 +88,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -165,7 +169,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}
+ }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -176,7 +180,7 @@ void setup()
 
 	/* make sure the process ID is root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root.");
+		tst_brkm(TBROK, NULL, "Test must be run as root.");
 	}
 
 	/* capture signals */

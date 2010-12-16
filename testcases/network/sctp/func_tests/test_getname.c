@@ -94,7 +94,7 @@ main(int argc, char *argv[])
 	/* Verify that getsockname() on an unconnected socket works fine. */
 	error = getsockname(svr_sk, (struct sockaddr *)&svr_local_addr, &len);
 	if (0 != error)
-		tst_brkm(TBROK, tst_exit, "getsockname: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "getsockname: %s", strerror(errno));
 
 	tst_resm(TPASS, "getsockname on an unconnected socket");
 
@@ -103,7 +103,7 @@ main(int argc, char *argv[])
 	/* Verify that getpeername() on an unconnected socket fails. */
 	error = getpeername(svr_sk, (struct sockaddr *)&svr_peer_addr, &len);
 	if ((-1 != error) || (ENOTCONN != errno))
-		tst_brkm(TBROK, tst_exit, "getpeername on an unconnected "
+		tst_brkm(TBROK, NULL, "getpeername on an unconnected "
 			 "socket error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getpeername on an unconnected socket");
@@ -127,7 +127,7 @@ main(int argc, char *argv[])
 	/* Get the client's local address. */
 	error = getsockname(clt_sk, (struct sockaddr *)&clt_local_addr, &len);
 	if (0 != error)
-		tst_brkm(TBROK, tst_exit, "getsockname on a connected client "
+		tst_brkm(TBROK, NULL, "getsockname on a connected client "
 			 "socket: %s", strerror(errno));
 
 	tst_resm(TPASS, "getsockname on a connected client socket");
@@ -137,7 +137,7 @@ main(int argc, char *argv[])
 	/* Get the client's peer address. */
 	error = getpeername(clt_sk, (struct sockaddr *)&clt_peer_addr, &len);
 	if (0 != error)
-		tst_brkm(TBROK, tst_exit, "getpeername on a connected client "
+		tst_brkm(TBROK, NULL, "getpeername on a connected client "
 			 "socket: %s", strerror(errno));
 
 	tst_resm(TPASS, "getpeername on a connected client socket");
@@ -152,7 +152,7 @@ main(int argc, char *argv[])
 	error = getsockname(accept_sk, (struct sockaddr *)&svr_local_addr,
 				&len);
 	if (0 != error)
-		tst_brkm(TBROK, tst_exit, "getsockname on a connected server "
+		tst_brkm(TBROK, NULL, "getsockname on a connected server "
 			 "socket: %s", strerror(errno));
 
 	tst_resm(TPASS, "getsockname on a connected server socket");
@@ -163,36 +163,36 @@ main(int argc, char *argv[])
 	error = getpeername(accept_sk, (struct sockaddr *)&svr_peer_addr,
 				&len);
 	if (0 != error)
-		tst_brkm(TBROK, tst_exit, "getpeername on a connected server "
+		tst_brkm(TBROK, NULL, "getpeername on a connected server "
 			 "socket: %s", strerror(errno));
 
 	tst_resm(TPASS, "getpeername on a connected server socket");
 
 	if (svr_local_addr.v4.sin_port != clt_peer_addr.v4.sin_port)
-		tst_brkm(TBROK, tst_exit, "Server's local port(%d) doesn't "
+		tst_brkm(TBROK, NULL, "Server's local port(%d) doesn't "
 			 "match Client's peer port(%d)\n",
 			 svr_local_addr.v4.sin_port, clt_peer_addr.v4.sin_port);
 
 	if (svr_peer_addr.v4.sin_port != clt_local_addr.v4.sin_port)
-		tst_brkm(TBROK, tst_exit, "Server's peer port(%d) doesn't "
+		tst_brkm(TBROK, NULL, "Server's peer port(%d) doesn't "
 			 "match Client's local port(%d)\n",
 			 svr_peer_addr.v4.sin_port, clt_local_addr.v4.sin_port);
 #if TEST_V6
 	if (memcmp(&svr_local_addr, &clt_peer_addr, len) != 0)
-		tst_brkm(TBROK, tst_exit, "Server's local address and client's "
+		tst_brkm(TBROK, NULL, "Server's local address and client's "
 			 "peer addresses do not match\n");
 
 	if (memcmp(&svr_peer_addr, &clt_local_addr, len) != 0)
-		tst_brkm(TBROK, tst_exit, "Server's peer address and client's "
+		tst_brkm(TBROK, NULL, "Server's peer address and client's "
 			 "local addresses do not match\n");
 #else
 	if (svr_local_addr.v4.sin_addr.s_addr !=
 		 		clt_peer_addr.v4.sin_addr.s_addr)
-		tst_brkm(TBROK, tst_exit, "Server's local address and client's "
+		tst_brkm(TBROK, NULL, "Server's local address and client's "
 			 "peer addresses do not match\n");
 	if (svr_peer_addr.v4.sin_addr.s_addr !=
 		 		clt_local_addr.v4.sin_addr.s_addr)
-		tst_brkm(TBROK, tst_exit, "Server's peer address and client's "
+		tst_brkm(TBROK, NULL, "Server's peer address and client's "
 			 "local addresses do not match\n");
 #endif
 	tst_resm(TPASS, "getsockname/getpeername server/client match");
@@ -202,7 +202,7 @@ main(int argc, char *argv[])
 	/*getsockname():  Bad socket descriptor, EBADF expected error*/
 	error = getsockname(-1, (struct sockaddr *)&clt_local_addr, &len);
 	if (error != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "getsockname on a bad socket "
+		tst_brkm(TBROK, NULL, "getsockname on a bad socket "
 			 "descriptor. error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockname on a bad socket descriptor - EBADF");
@@ -210,7 +210,7 @@ main(int argc, char *argv[])
 	/*getsockname(): Invalid socket, ENOTSOCK expected error*/
 	error = getsockname(0, (struct sockaddr *)&clt_local_addr, &len);
 	if (error != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "getsockname on an invalid socket "
+		tst_brkm(TBROK, NULL, "getsockname on an invalid socket "
 			 "error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockname on an invalid socket - ENOTSOCK");
@@ -218,7 +218,7 @@ main(int argc, char *argv[])
 	/*getsockname(): Invalid structure, EFAULT expected error*/
 	error = getsockname(clt_sk, (struct sockaddr *)-1, &len);
 	if (error != -1 || errno != EFAULT)
-		tst_brkm(TBROK, tst_exit, "getsockname with invalid buffer "
+		tst_brkm(TBROK, NULL, "getsockname with invalid buffer "
 			 "error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockname with invalid buffer - EFAULT");
@@ -228,7 +228,7 @@ main(int argc, char *argv[])
 	/*getpeername():  Bad socket descriptor, EBADF expected error*/
 	error = getpeername(-1, (struct sockaddr *)&clt_local_addr, &len);
 	if (error != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "getpeername on a bad socket "
+		tst_brkm(TBROK, NULL, "getpeername on a bad socket "
 			 "descriptor. error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getpeername on a bad socket descriptor - EBADF");
@@ -236,7 +236,7 @@ main(int argc, char *argv[])
 	/*getpeername(): Invalid socket, ENOTSOCK expected error*/
 	error = getpeername(0, (struct sockaddr *)&clt_local_addr, &len);
 	if (error != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "getpeername on an invalid socket "
+		tst_brkm(TBROK, NULL, "getpeername on an invalid socket "
 			 "error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getpeername on an invalid socket - ENOTSOCK");
@@ -244,7 +244,7 @@ main(int argc, char *argv[])
 	/*getpeername(): Invalid structure, EFAULT expected error*/
 	error = getpeername(clt_sk, (struct sockaddr *)-1, &len);
 	if (error != -1 || errno != EFAULT)
-		tst_brkm(TBROK, tst_exit, "getpeername with invalid buffer "
+		tst_brkm(TBROK, NULL, "getpeername with invalid buffer "
 			 "error:%d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getpeername with invalid buffer - EFAULT");

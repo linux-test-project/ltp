@@ -29,12 +29,6 @@
 */
 
 
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
-/********************************************************************************************/
-/****************************** standard includes *****************************************/
-/********************************************************************************************/
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -46,11 +40,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h> 
-/********************************************************************************************/
-/******************************   Test framework   *****************************************/
-/********************************************************************************************/
+
 #include "testfrmw.h"
- #include "testfrmw.c" 
+#include "testfrmw.c" 
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);  
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -69,9 +61,6 @@
  * Those may be used to output information.
  */
 
-/********************************************************************************************/
-/********************************** Configuration ******************************************/
-/********************************************************************************************/
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
@@ -79,10 +68,6 @@
 #define SEM_NAME "/set_getval_stress"
 
 #define INIT_VAL 0
-
-/********************************************************************************************/
-/***********************************    Test case  *****************************************/
-/********************************************************************************************/
 
 char do_it = 1;
 long long iterations = 0;
@@ -92,16 +77,18 @@ void sighdl(int sig)
 {
 	/* do_it = 0 */
 
-	do
-	{
+	do {
 		do_it = 0;
-	}
-	while (do_it);
+	} while (do_it);
 }
 
 
 /* Thread function */
+<<<<<<< HEAD
 void* threaded(void *arg)
+=======
+void* threaded(void * arg)
+>>>>>>> master
 {
 	int ret = 0;
 
@@ -109,8 +96,7 @@ void* threaded(void *arg)
 		/* sem_post */
 		ret = sem_post(arg);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Failed to post the semaphore");
 		}
 
@@ -119,8 +105,7 @@ void* threaded(void *arg)
 			ret = sem_wait(arg);
 		} while ((ret != 0) && (errno == EINTR));
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Failed to wait for the semaphore");
 		}
 
@@ -150,13 +135,11 @@ int main (int argc, char *argv[])
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
-	{
+	if ((ret = sigaction (SIGUSR1, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL)))
-	{
+	if ((ret = sigaction (SIGALRM, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
@@ -213,8 +196,7 @@ int main (int argc, char *argv[])
 			UNRESOLVED(errno, "Failed to get sem value");
 		}
 
-		if ((value != INIT_VAL) && (value != INIT_VAL + 1))
-		{
+		if ((value != INIT_VAL) && (value != INIT_VAL + 1)) {
 			output("Got value %d, expected %d or %d only\n",
 			        value, INIT_VAL, INIT_VAL + 1);
 			FAILED("sem_getvalue returned an invalid value for the named semaphore");
@@ -227,8 +209,7 @@ int main (int argc, char *argv[])
 			UNRESOLVED(errno, "Failed to get sem value");
 		}
 
-		if ((value != INIT_VAL) && (value != INIT_VAL + 1))
-		{
+		if ((value != INIT_VAL) && (value != INIT_VAL + 1)) {
 			output("Got value %d, expected %d or %d only\n",
 			        value, INIT_VAL, INIT_VAL + 1);
 			FAILED("sem_getvalue returned an invalid value for the unnamed semaphore");
@@ -273,5 +254,3 @@ int main (int argc, char *argv[])
 
 	PASSED;
 }
-
-

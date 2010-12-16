@@ -187,8 +187,13 @@ int main(int argc, char * argv[])
 	{
 		/* Check the struct was copied */
 
+<<<<<<< HEAD
 		if ((mystruct.one != 1) || (mystruct.two != 2) ||
 		    (mystruct.three != 3) || (mystruct.four != (void *) 4))
+=======
+		if ((mystruct.one != 1) || (mystruct.two != 2) || (mystruct.three != 3) || (mystruct.four != (void *) 4))
+>>>>>>> f4b7b4f00f2c5def7898c62f58d09b454eabd2ca
+>>>>>>> master
 		{
 			FAILED("The struct data was not copied to the child process");
 		}

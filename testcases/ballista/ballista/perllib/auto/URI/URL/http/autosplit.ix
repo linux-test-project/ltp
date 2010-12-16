@@ -1,5 +1,0 @@
-# Index created by AutoSplit for ./blib/lib/URI/URL/http.pm (file acts as timestamp)
-package URI::URL::http;
-sub keywords ;
-sub query_form ;
-1;

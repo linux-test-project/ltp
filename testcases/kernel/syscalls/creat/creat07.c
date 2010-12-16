@@ -84,7 +84,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	if (!Fflag) {
@@ -164,7 +168,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}
+ }
 
 /*
  * help() - Prints out the help message for the -F option defined
@@ -198,12 +202,12 @@ void setup()
 		path = dname;
 	else {
 		if ((pwd = getcwd(NULL, 0)) == NULL) {
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				 "Could not get current directory");
 		}
 		path = malloc(strlen(pwd) + strlen(dname) + 2);
 		if (path == NULL) {
-			tst_brkm(TBROK, tst_exit, "Cannot alloc path string");
+			tst_brkm(TBROK, NULL, "Cannot alloc path string");
 		}
 		sprintf(path, "%s/%s", pwd, dname);
 	}
@@ -215,14 +219,14 @@ void setup()
 	 */
 	cmd = malloc(strlen(path) + strlen(bname) + 15);
 	if (cmd == NULL) {
-		tst_brkm(TBROK, tst_exit, "Cannot alloc command string");
+		tst_brkm(TBROK, NULL, "Cannot alloc command string");
 	}
 
 	sprintf(cmd, "cp -p %s/%s .", path, bname);
 	res = system(cmd);
 	free(cmd);
 	if (res == -1) {
-		tst_brkm(TBROK, tst_exit, "Cannot copy file %s", fname);
+		tst_brkm(TBROK, NULL, "Cannot copy file %s", fname);
 	}
 
 	fname = bname;

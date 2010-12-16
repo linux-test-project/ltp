@@ -103,11 +103,15 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	uid_t User_id;		/* Owner id of the test file. */
-	gid_t Group_id;		/* Group id of the test file. */
+	uid_t user_id;		/* Owner id of the test file. */
+	gid_t group_id;		/* Group id of the test file. */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -122,15 +126,15 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Get the euid/egid of the process */
-		User_id = geteuid();
-		Group_id = getegid();
+		user_id = geteuid();
+		group_id = getegid();
 
 		/*
 		 * Call fchwon(2) with different user id and
 		 * group id (numeric values) to set it on
 		 * testfile.
 		 */
-		TEST(fchown(fildes, -1, Group_id));
+		TEST(fchown(fildes, -1, group_id));
 
 		/* check return code of fchown(2) */
 		if (TEST_RETURN == -1) {
@@ -157,11 +161,11 @@ int main(int ac, char **av)
 			 * Check for expected Ownership ids
 			 * set on testfile.
 			 */
-			if ((stat_buf.st_uid != User_id) ||
-			    (stat_buf.st_gid != Group_id)) {
+			if ((stat_buf.st_uid != user_id) ||
+			    (stat_buf.st_gid != group_id)) {
 				tst_resm(TFAIL, "%s: Incorrect "
 					 "ownership set, Expected %d %d",
-					 TESTFILE, User_id, Group_id);
+					 TESTFILE, user_id, group_id);
 			}
 
 			/*
@@ -185,7 +189,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return (0);
+	  return (0);
 }				/* End main */
 
 /*
@@ -202,7 +206,7 @@ void setup()
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1) {

@@ -101,8 +101,8 @@ rmobj(char *obj, char **errmsg)
    static char   err_msg[1024];     /* error message */
 
    /* Determine the file type */
-   if ( lstat(obj, &statbuf) < 0 ) {
-      if ( errmsg != NULL ) {
+   if (lstat(obj, &statbuf) < 0) {
+      if (errmsg != NULL) {
          sprintf(err_msg, "lstat(%s) failed; errno=%d: %s",
                  obj, errno, SYSERR);
          *errmsg = err_msg;
@@ -111,12 +111,12 @@ rmobj(char *obj, char **errmsg)
    }
 
    /* Take appropriate action, depending on the file type */
-   if ( (statbuf.st_mode & S_IFMT) == S_IFDIR ) {
+   if ((statbuf.st_mode & S_IFMT) == S_IFDIR) {
       /* object is a directory */
 
       /* Do NOT perform the request if the directory is "/" */
-      if ( !strcmp(obj, "/") ) {
-         if ( errmsg != NULL ) {
+      if (!strcmp(obj, "/")) {
+         if (errmsg != NULL) {
             sprintf(err_msg, "Cannot remove /");
             *errmsg = err_msg;
          }
@@ -124,9 +124,9 @@ rmobj(char *obj, char **errmsg)
       }
 
       /* Open the directory to get access to what is in it */
-      if ( (dir = opendir(obj)) == NULL ) {
-         if ( rmdir(obj) != 0 ) {
-            if ( errmsg != NULL ) {
+      if ((dir = opendir(obj)) == NULL) {
+         if (rmdir(obj) != 0) {
+            if (errmsg != NULL) {
                sprintf(err_msg, "rmdir(%s) failed; errno=%d: %s",
                        obj, errno, SYSERR);
                *errmsg = err_msg;
@@ -138,17 +138,17 @@ rmobj(char *obj, char **errmsg)
       }
 
       /* Loop through the entries in the directory, removing each one */
-      for ( dir_ent = (struct dirent *)readdir(dir);
+      for (dir_ent = (struct dirent *)readdir(dir);
             dir_ent != NULL;
             dir_ent = (struct dirent *)readdir(dir)) {
 
          /* Don't remove "." or ".." */
-         if ( !strcmp(dir_ent->d_name, ".") || !strcmp(dir_ent->d_name, "..") )
+         if (!strcmp(dir_ent->d_name, ".") || !strcmp(dir_ent->d_name, ".."))
             continue;
 
          /* Recursively call this routine to remove the current entry */
          sprintf(dirobj, "%s/%s", obj, dir_ent->d_name);
-         if ( rmobj(dirobj, errmsg) != 0 )
+         if (rmobj(dirobj, errmsg) != 0)
             ret_val = -1;
       }
 
@@ -157,12 +157,12 @@ rmobj(char *obj, char **errmsg)
 
       /* If there were problems removing an entry, don't attempt to
          remove the directory itself */
-      if ( ret_val == -1 )
+      if (ret_val == -1)
          return -1;
 
       /* Get the link count, now that all the entries have been removed */
-      if ( lstat(obj, &statbuf) < 0 ) {
-         if ( errmsg != NULL ) {
+      if (lstat(obj, &statbuf) < 0) {
+         if (errmsg != NULL) {
             sprintf(err_msg, "lstat(%s) failed; errno=%d: %s",
                     obj, errno, SYSERR);
             *errmsg = err_msg;
@@ -171,10 +171,10 @@ rmobj(char *obj, char **errmsg)
       }
 
       /* Remove the directory itself */
-      if ( statbuf.st_nlink >= 3 ) {
+      if (statbuf.st_nlink >= 3) {
          /* The directory is linked; unlink() must be used */
-         if ( unlink(obj) < 0 ) {
-            if ( errmsg != NULL ) {
+         if (unlink(obj) < 0) {
+            if (errmsg != NULL) {
                sprintf(err_msg, "unlink(%s) failed; errno=%d: %s",
                        obj, errno, SYSERR);
                *errmsg = err_msg;
@@ -183,8 +183,8 @@ rmobj(char *obj, char **errmsg)
          }
       } else {
          /* The directory is not linked; remove() can be used */
-         if ( remove(obj) < 0 ) {
-            if ( errmsg != NULL ) {
+         if (remove(obj) < 0) {
+            if (errmsg != NULL) {
                sprintf(err_msg, "remove(%s) failed; errno=%d: %s",
                        obj, errno, SYSERR);
                *errmsg = err_msg;
@@ -194,8 +194,8 @@ rmobj(char *obj, char **errmsg)
       }
    } else {
       /* object is not a directory; just use unlink() */
-      if ( unlink(obj) < 0 ) {
-         if ( errmsg != NULL ) {
+      if (unlink(obj) < 0) {
+         if (errmsg != NULL) {
             sprintf(err_msg, "unlink(%s) failed; errno=%d: %s",
                     obj, errno, SYSERR);
             *errmsg = err_msg;

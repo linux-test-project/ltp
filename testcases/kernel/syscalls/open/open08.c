@@ -102,7 +102,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -142,7 +146,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -162,14 +166,14 @@ void setup(void)
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setgid(ltpuser->pw_gid) == -1) {
-		tst_brkm(TBROK | TERRNO, tst_exit, "setgid(%d) failed",
+		tst_brkm(TBROK | TERRNO, NULL, "setgid(%d) failed",
 			ltpuser->pw_gid);
 	} else if (setuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK | TERRNO, tst_exit, "setuid(%d) failed",
+		tst_brkm(TBROK | TERRNO, NULL, "setuid(%d) failed",
 			ltpuser->pw_uid);
 	}
 

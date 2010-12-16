@@ -94,9 +94,15 @@ int main(int ac, char **av)
 	int PASS_FLAG = 0;	/* used for checking group array */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* Perform global setup for test */
@@ -158,7 +164,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -174,7 +180,7 @@ void setup()
 
 	/* Make sure the calling process is super-user only */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be ROOT to run this test.");
+		tst_brkm(TBROK, NULL, "Must be ROOT to run this test.");
 	}
 
 	/* Pause if that option was specified */

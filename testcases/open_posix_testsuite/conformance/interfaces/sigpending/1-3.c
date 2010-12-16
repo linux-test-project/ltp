@@ -56,8 +56,13 @@ void handler(int signo)
 		exit(-1);
 	}
 
+<<<<<<< HEAD
 	if ((sigismember(&pendingset, SIGALRM) == 1) &&
 	    (sigismember(&pendingset, SIGCONT) == 1)) {
+=======
+	if (sigismember(&pendingset, SIGALRM) == 1 &&
+	    sigismember(&pendingset, SIGCONT) == 1) {
+>>>>>>> master
 		printf("All pending signals found\n");
 		if ((sigismember(&pendingset, SIGHUP) == 0) &&
 			(sigismember(&pendingset, SIGABRT) == 0) &&

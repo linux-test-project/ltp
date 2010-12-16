@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Perform global setup for test */
 	setup();
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork failed");
-		 /*NOTREACHED*/} else if (pid == 0) {	/* child */
+		 } else if (pid == 0) {	/* child */
 			for (i = 0; i < TST_TOTAL; i++) {
 				/* Set the real or effective user id */
 				TEST(setreuid(*test_data[i].real_uid,
@@ -218,7 +218,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -234,17 +234,17 @@ void setup(void)
 	if (getpwnam("nobody") == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	if (getpwnam("daemon") == NULL) {
 		tst_brkm(TBROK, NULL, "daemon must be a valid user.");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	if (getuid() != 0) {
 		tst_resm(TBROK, "Must be run as root");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -282,7 +282,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void uid_verify(struct passwd *ru, struct passwd *eu, char *when)
 {

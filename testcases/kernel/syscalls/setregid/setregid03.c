@@ -141,7 +141,7 @@ int main(int ac, char **av)
 		/* set the appropriate ownership values */
 		if (setregid(sys_gr_gid, bin_gr_gid) == -1) {
 			tst_brkm(TBROK, NULL, "Initial setregid failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (seteuid(nobody_pw_uid) == -1) {
 			tst_brkm(TBROK, NULL, "Initial seteuid failed");

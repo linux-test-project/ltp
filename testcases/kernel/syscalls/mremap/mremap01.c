@@ -104,9 +104,15 @@ int main(int ac, char **av)
 	int ind;		/* counter variable */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* Check looping state if -i option given */
@@ -172,7 +178,7 @@ int main(int ac, char **av)
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -198,7 +204,7 @@ void setup()
 
 	/* Get the system page size */
 	if ((pagesz = getpagesize()) < 0) {
-		tst_brkm(TFAIL, tst_exit,
+		tst_brkm(TFAIL, NULL,
 			 "getpagesize() fails to get system page size");
 	}
 

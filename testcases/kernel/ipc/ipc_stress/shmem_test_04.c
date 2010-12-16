@@ -309,7 +309,7 @@ int main (int argc, char **argv)
 	cleanup(0);
 
 	return 0;
-	/*NOTREACHED*/
+	
 }
 
 static void cleanup (int rc)

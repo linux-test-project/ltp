@@ -79,7 +79,7 @@ void sighandler(int sig)
 {
 	if (sig == SIGINT)
 		return;
-	// NOTREACHED
+	
 	return;
 }
 
@@ -372,6 +372,7 @@ EXIT:
 
 int main(int ac, char **av) {
 	int result = RESULT_OK;
+<<<<<<< HEAD
 	int i;
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
@@ -396,6 +397,63 @@ int main(int ac, char **av) {
 					i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
+=======
+        int c;
+        int i;
+        int lc;                 /* loop counter */
+        char *msg;              /* message returned from parse_opts */
+
+	struct option long_options[] = {
+                { "debug", no_argument, 0, 'd' },
+                { "help",  no_argument, 0, 'h' },
+                { NULL, 0, NULL, 0 }
+        };
+
+	progname = strchr(av[0], '/');
+        progname = progname ? progname + 1 : av[0];	
+	
+        /* parse standard options */
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+             tst_exit();
+           }
+
+        setup();
+
+        /* Check looping state if -i option given */
+        for (lc = 0; TEST_LOOPING(lc); ++lc) {
+                Tst_count = 0;
+                for (testno = 0; testno < TST_TOTAL; ++testno) {
+			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
+			 while (TEST_RETURN != -1) {
+		                switch (c) {
+                		case 'd':
+		                        opt_debug = 1;
+                		        break;
+		                default:
+                		        usage(progname);
+                        		
+                		}
+		        }
+
+
+		if (ac != optind) {
+        	        tst_resm(TINFO,"Options are not match.");
+                	usage(progname);
+                	
+	        }
+
+		/*
+		* Execute test
+         	*/
+	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+        	        int ret;
+	                tst_resm(TINFO,"(case%02d) START", i);
+	                ret = do_test(&tcase[i]);
+	                tst_resm(TINFO,"(case%02d) END => %s", i, (ret == 0) ? "OK" : "NG");
+	                result |= ret;
+        	}
+>>>>>>> master
 		
 			switch (result) {
 			case RESULT_OK:

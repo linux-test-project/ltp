@@ -121,7 +121,11 @@ int main(int ac, char **av)
 	pid_t pid;
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -197,7 +201,7 @@ int main(int ac, char **av)
 							 "present time after "
 							 "utime, error=%d",
 							 errno);
-					 /*NOTREACHED*/}
+					 }
 
 					/*
 					 * Get the modification and access
@@ -209,7 +213,7 @@ int main(int ac, char **av)
 							 "stat(2) of %s failed, "
 							 "error:%d", TEMP_FILE,
 							 TEST_ERRNO);
-					 /*NOTREACHED*/}
+					 }
 					modf_time = stat_buf.st_mtime;
 					access_time = stat_buf.st_atime;
 
@@ -246,7 +250,7 @@ int main(int ac, char **av)
 	}
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -284,7 +288,7 @@ void setup()
 
 	/* get the name of the temporary directory */
 	if ((tmpd = getcwd(tmpd, 0)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "getcwd failed");
+		tst_brkm(TBROK, NULL, "getcwd failed");
 	}
 
 	/* Creat a temporary file under above directory */
@@ -292,14 +296,14 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "creat(%s, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Close the temporary file created */
 	if (close(fildes) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s:",
 			 TEMP_FILE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/*
 	 * Make sure that specified Mode permissions set as
@@ -309,7 +313,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "chmod(%s) Failed, errno=%d : %s:",
 			 TEMP_FILE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	if (chmod(tmpd, 0711) != 0) {
 		tst_brkm(TBROK, cleanup, "chmod() failed");
@@ -318,7 +322,7 @@ void setup()
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
 		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
 			 LTPUSER2);
-	 /*NOTREACHED*/}
+	 }
 
 	/* get uid/gid of user accordingly */
 	user_uid = ltpuser->pw_uid;
@@ -331,13 +335,13 @@ void setup()
 	if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d",
 			 TEMP_FILE, errno);
-	 /*NOTREACHED*/}
+	 }
 
 	/* Get the current time */
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "time() failed to get current time, errno=%d", errno);
-	 /*NOTREACHED*/}
+	 }
 
 	/*
 	 * Sleep for a second so that mod time and access times will be

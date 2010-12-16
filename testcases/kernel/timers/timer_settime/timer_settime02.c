@@ -92,7 +92,7 @@ main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
 			(char *) NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/* perform global setup for test */
@@ -193,7 +193,7 @@ setup(void)
 	TEST_PAUSE;
 
 	if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0)
-		tst_brkm(TBROK, tst_exit, "timer_create failed");
+		tst_brkm(TBROK, NULL, "timer_create failed");
 }
 
 /*

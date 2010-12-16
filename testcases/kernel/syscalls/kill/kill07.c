@@ -95,7 +95,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
@@ -153,7 +157,7 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-		 /*NOTREACHED*/}
+		 }
 
 		if (STD_FUNCTIONAL_TEST) {
 			/*
@@ -180,11 +184,11 @@ int main(int ac, char **av)
 		}
 		if (shmdt(flag)) {
 			tst_brkm(TBROK, cleanup, "shmdt failed ");
-		 /*NOTREACHED*/}
+		 }
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*
@@ -206,7 +210,7 @@ void do_child()
 	int exno = 1;
 
 	sleep(300);
-	 /*NOTREACHED*/ tst_resm(TINFO, "Child never recieved a signal");
+	  tst_resm(TINFO, "Child never recieved a signal");
 	exit(exno);
 }
 

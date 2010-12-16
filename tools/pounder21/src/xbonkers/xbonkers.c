@@ -265,7 +265,7 @@ static void slide_window(Display *disp, Window *win, unsigned long desk_w, unsig
 	w = clamp_value(w, 0, desk_w);
 	h = clamp_value(h, 0, desk_h);
 
-	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")){
+	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")) {
 		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW", 
 			0, x, y, w, h);
 	} else {
@@ -281,7 +281,7 @@ static void move_window(Display *disp, Window *win, unsigned long desk_w, unsign
 	w = get_randnum(150, desk_w);
 	h = get_randnum(150, desk_h);
 	
-	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")){
+	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")) {
 		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW", 
 			0, x, y, w, h);
 	} else {

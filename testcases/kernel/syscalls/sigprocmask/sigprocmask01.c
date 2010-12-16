@@ -103,7 +103,11 @@ int main(int ac, char **av)
 	pid_t my_pid;		/* test process id */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -175,7 +179,7 @@ int main(int ac, char **av)
 						tst_brkm(TFAIL, cleanup,
 							 "sigismember() failed, "
 							 "error:%d", errno);
-					 /*NOTREACHED*/}
+					 }
 
 					/*
 					 * Invoke sigprocmask() again to
@@ -190,7 +194,7 @@ int main(int ac, char **av)
 							 "sigprocmask() failed "
 							 "to unblock signal, "
 							 "error=%d", errno);
-					 /*NOTREACHED*/}
+					 }
 					if (sig_catch) {
 						tst_resm(TPASS, "Functionality "
 							 "of sigprocmask() "
@@ -213,7 +217,7 @@ int main(int ac, char **av)
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -242,12 +246,12 @@ void setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigemptyset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	if (sigfillset(&sigset2) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigfillset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Set the signal handler function to catch the signal */
 	sa_new.sa_handler = sig_handler;
@@ -255,7 +259,7 @@ void setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigaction() failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/*
 	 * Add specified signal (SIGINT) to the signal set
@@ -265,7 +269,7 @@ void setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigaddset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 }				/* End setup() */
 
 /*

@@ -151,11 +151,8 @@ int main(int ac, char **av)
 	int ind;		/* counter to test different test conditions */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	 /*NOTREACHED*/}
 
 	/*
 	 * Invoke setup function to call individual test setup functions
@@ -216,7 +213,7 @@ int main(int ac, char **av)
 	 * in the setup().
 	 */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -237,7 +234,7 @@ void setup()
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1) {
@@ -300,25 +297,25 @@ int setup1()
 	/* Creat a test directory */
 	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-	 /*NOTREACHED*/}
+	 }
 
 	/* Creat a test file under above test directory */
 	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	/* Close the test file */
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Modify mode permissions on test directory */
 	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	 /*NOTREACHED*/}
+	 }
 	return 0;
 }
 
@@ -340,13 +337,13 @@ int setup2()
 		tst_brkm(TBROK, cleanup,
 			 "open(2) on t_file failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	/* Close the test file created above */
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(t_file) Failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	return 0;
 }
 
@@ -390,7 +387,4 @@ void cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */

@@ -121,7 +121,7 @@ void * sendsig (void * arg)
 	{
 #ifdef WITH_SYNCHRO
 
-		if ((ret = sem_wait(thearg->sem)))
+		if ((ret = sem_wait(thearg->sem)) == -1)
 		{
 			UNRESOLVED(errno, "Sem_wait in sendsig");
 		}
@@ -147,7 +147,7 @@ void sighdl1(int sig)
 {
 #ifdef WITH_SYNCHRO
 
-	if (sem_post(&semsig1))
+	if (sem_post(&semsig1) == -1)
 	{
 		UNRESOLVED(errno, "Sem_post in signal handler 1");
 	}
@@ -160,7 +160,7 @@ void sighdl2(int sig)
 {
 #ifdef WITH_SYNCHRO
 
-	if (sem_post(&semsig2))
+	if (sem_post(&semsig2) == -1)
 	{
 		UNRESOLVED(errno, "Sem_post in signal handler 2");
 	}
@@ -222,14 +222,14 @@ int main (int argc, char * argv[])
 	sa.sa_flags = 0;
 	sa.sa_handler = sighdl1;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)) == -1)
 	{
 		UNRESOLVED(ret, "Unable to register signal handler1");
 	}
 
 	sa.sa_handler = sighdl2;
 
-	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
+	if ((ret = sigaction (SIGUSR2, &sa, NULL)) == -1)
 	{
 		UNRESOLVED(ret, "Unable to register signal handler2");
 	}
@@ -255,19 +255,19 @@ int main (int argc, char * argv[])
 	}
 
 #ifdef WITH_SYNCHRO
-	if (sem_init(&semsig1, 0, 1))
+	if (sem_init(&semsig1, 0, 1) == -1)
 	{
 		UNRESOLVED(errno, "Semsig1  init");
 	}
 
-	if (sem_init(&semsig2, 0, 1))
+	if (sem_init(&semsig2, 0, 1) == -1)
 	{
 		UNRESOLVED(errno, "Semsig2  init");
 	}
 
 #endif
 
-	if ((ret = pthread_create(&th_work, NULL, test, NULL)))
+	if ((ret = pthread_create(&th_work, NULL, test, NULL)) == -1)
 	{
 		UNRESOLVED(ret, "Worker thread creation failed");
 	}
@@ -281,7 +281,7 @@ int main (int argc, char * argv[])
 
 
 
-	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) & arg1)))
+	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) & arg1)) != 0)
 	{
 		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
 	}
@@ -298,12 +298,9 @@ int main (int argc, char * argv[])
 
 
 	/* Now stop the threads and join them */
-	do
-	{
+	do {
 		do_it = 0;
-	}
-	while (do_it);
-
+	} while (do_it);
 
 	if ((ret = pthread_join(th_sig1, NULL)))
 	{

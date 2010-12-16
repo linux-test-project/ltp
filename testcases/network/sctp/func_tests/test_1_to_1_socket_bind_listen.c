@@ -99,7 +99,7 @@ main(int argc, char *argv[])
         /* socket() TEST1: Invalid domain, EAFNOSUPPORT Expected error */
         sk = socket(-1, SOCK_STREAM, IPPROTO_SCTP);
         if (sk != -1 || errno != EAFNOSUPPORT)
-		tst_brkm(TBROK, tst_exit, "socket() with invalid domain "
+		tst_brkm(TBROK, NULL, "socket() with invalid domain "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "socket() with invalid domain - EAFNOSUPPORT");
@@ -107,7 +107,7 @@ main(int argc, char *argv[])
 	/*socket() TEST2 : Invalid type, EINVAL Expected error*/
         sk = socket(pf_class, -1, IPPROTO_SCTP);
         if (sk != -1 || errno != EINVAL)
-		tst_brkm(TBROK, tst_exit, "socket() with invalid type "
+		tst_brkm(TBROK, NULL, "socket() with invalid type "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "socket() with invalid type - EINVAL");
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 	/*socket() TEST3: opening a socket*/
         sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
         if (sk < 0)
-		tst_brkm(TBROK, tst_exit, "valid socket() call "
+		tst_brkm(TBROK, NULL, "valid socket() call "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "socket() - SUCCESS");
@@ -123,7 +123,7 @@ main(int argc, char *argv[])
 	/*bind() TEST4: Invalid structure, EFAULT Expected error */
         error = bind(sk, (struct sockaddr *)-1, sizeof(struct sockaddr_in));
         if (error != -1 || errno != EFAULT)
-		tst_brkm(TBROK, tst_exit, "bind() with invalid address ptr "
+		tst_brkm(TBROK, NULL, "bind() with invalid address ptr "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid address ptr - EFAULT");
@@ -135,7 +135,7 @@ main(int argc, char *argv[])
 
 	error = bind(sk, (struct sockaddr *) &bind_addr, sizeof(bind_addr)-2);
         if (error != -1 || errno != EINVAL)
-		tst_brkm(TBROK, tst_exit, "bind() with invalid address length "
+		tst_brkm(TBROK, NULL, "bind() with invalid address length "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid address length - EINVAL");
@@ -143,7 +143,7 @@ main(int argc, char *argv[])
 	/*bind() TEST6: Invalid socket descriptor, ENOTSOCK Expect Error*/
 	error = bind(0, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
 	if (error != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "bind() with invalid socket "
+		tst_brkm(TBROK, NULL, "bind() with invalid socket "
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid socket descriptor - ENOTSOCK");
@@ -153,7 +153,7 @@ main(int argc, char *argv[])
 	bind_addr.sin_addr.s_addr = inet_addr(SCTP_INV_LOOPBACK);
 	error = bind(sk, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
         if (error != -1 || errno != EADDRNOTAVAIL)
-		tst_brkm(TBROK, tst_exit, "bind() with invalid local "
+		tst_brkm(TBROK, NULL, "bind() with invalid local "
 			 "address error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid local address - EADDRNOTAVAIL");
@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 
 	error = bind(sk, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
 	if (error != -1 || errno != EINVAL)
-		tst_brkm(TBROK, tst_exit, "bind() on an already bound socket "
+		tst_brkm(TBROK, NULL, "bind() on an already bound socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() on an already bound socket - EINVAL");
@@ -185,7 +185,7 @@ main(int argc, char *argv[])
 		error = bind(sk, (struct sockaddr *) &bind_addr,
 			     sizeof(bind_addr));
 		if (error != -1 || errno != EACCES)
-			tst_brkm(TBROK, tst_exit, "bind() on reserverd port "
+			tst_brkm(TBROK, NULL, "bind() on reserverd port "
 			 "error:%d, errno:%d", error, errno);
 
 		tst_resm(TPASS, "bind() on reserved port - EACCESS");
@@ -197,7 +197,7 @@ main(int argc, char *argv[])
         bind_addr.sin_port = htons(SCTP_TESTPORT_1);
 	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "bind() with INADDR_ANY address and "
+		tst_brkm(TBROK, NULL, "bind() with INADDR_ANY address and "
 			 "non-zero port error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with INADDR_ANY address and non-zero port - "
@@ -214,7 +214,7 @@ main(int argc, char *argv[])
         bind_addr.sin_port = 0;
 	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "bind() with INADDR_ANY address and "
+		tst_brkm(TBROK, NULL, "bind() with INADDR_ANY address and "
 			 "zero port error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with INADDR_ANY address and zero port - "
@@ -232,7 +232,7 @@ main(int argc, char *argv[])
         bind_addr.sin_port = 0;
 	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "bind() with local address and "
+		tst_brkm(TBROK, NULL, "bind() with local address and "
 			 "zero port error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with local address and zero port - "
@@ -241,7 +241,7 @@ main(int argc, char *argv[])
 	/*listen() TEST13: Bad socket descriptor EBADF, Expected error*/
 	error = listen(-1, 3);
 	if (error != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "listen() with bad socket descriptor "
+		tst_brkm(TBROK, NULL, "listen() with bad socket descriptor "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "listen() with bad socket descriptor - EBADF");
@@ -249,7 +249,7 @@ main(int argc, char *argv[])
 	/*listen() TEST14: Invalid socket ENOTSOCK, Expected error*/
 	error = listen(0, 3);
 	if (error != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "listen() with invalid socket "
+		tst_brkm(TBROK, NULL, "listen() with invalid socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "listen() with invalid socket - ENOTSOCK");
@@ -257,7 +257,7 @@ main(int argc, char *argv[])
 	/*listen() TEST15:listen on a bound socket, should succeed*/
 	error = listen(sk, 3);
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "listen() on a bound socket "
+		tst_brkm(TBROK, NULL, "listen() on a bound socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "listen() on a bound socket - SUCCESS");

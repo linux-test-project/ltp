@@ -82,9 +82,8 @@ int main(int ac, char **av)
 	void do_child(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	}
 
         if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
              tst_brkm(TCONF, cleanup, "Not enough available Hugepages");
@@ -107,7 +106,7 @@ int main(int ac, char **av)
 		do_child();
 
 		tst_exit();
-		/*NOTREACHED*/
+		
 	} else {		/* parent */
 		/* wait for the child to return */
 		if (waitpid(pid, &status, 0) == -1) {
@@ -121,7 +120,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/* NOTREACHED */
+	
 	return 0;
 }
 

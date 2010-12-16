@@ -81,11 +81,11 @@ int  TST_TOTAL = 3;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
-        TEST_CLEANUP;
-        tst_rmdir();
-        /* Exit with appropriate return code. */
-        tst_exit();
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -107,15 +107,15 @@ extern void cleanup() {
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
 
-        tst_tmpdir();
+	tst_tmpdir();
 }
 
 #define ENTER(normal) tst_resm(TINFO, "Enter block %d: test %d (%s)", \
-                         block, Tst_count, normal?"NORMAL":"ERROR");
+		 block, Tst_count, normal?"NORMAL":"ERROR");
 
 char tmpname[40];
 int parent;
@@ -124,81 +124,81 @@ int block = 1;
 
 
 int main(int ac, char **av) {
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int lc;                 /* loop counter */
+	char *msg;              /* message returned from parse_opts */
 
-        kernel_timer_t created_timer_id;
-        struct sigevent ev;
-        struct itimerspec spec;
+	kernel_timer_t created_timer_id;
+	struct sigevent ev;
+	struct itimerspec spec;
 
-	
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-        setup();
+	setup();
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-	        for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     ENTER(1);
-	                ev.sigev_value = (sigval_t)0;
-	                ev.sigev_signo = SIGALRM;
-	                ev.sigev_notify = SIGEV_SIGNAL;
-	                TEST(syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &created_timer_id ));
-			TEST( syscall(__NR_timer_gettime, created_timer_id, &spec ));
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			ENTER(1);
+			ev.sigev_value = (sigval_t)0;
+			ev.sigev_signo = SIGALRM;
+			ev.sigev_notify = SIGEV_SIGNAL;
+			TEST(syscall(__NR_timer_create, CLOCK_REALTIME, &ev,
+				&created_timer_id));
+			TEST(syscall(__NR_timer_gettime, created_timer_id,
+				&spec));
 			if (TEST_RETURN == 0) {
-			      tst_resm(TPASS, "Block %d: test %d PASSED", block, Tst_count );
-	                } else {
-				tst_resm(TFAIL, "Block %d: test %d FAILED... errno = %d : %s", block, Tst_count,TEST_ERRNO, strerror(TEST_ERRNO) );
-				cleanup();
-        			tst_exit();
-			 }
-	
+				tst_resm(TPASS, "Block %d: test %d PASSED",
+					block, Tst_count);
+			} else {
+				tst_brkm(TFAIL|TERRNO, cleanup,
+				    "Block %d: test %d FAILED",
+				    block, Tst_count);
+			}
 
-			
 /*
 
 ERRORS
        -EINVAL
-              An invalid timer_id value was specified.
+	      An invalid timer_id value was specified.
 */
-                ENTER(0);
-                TEST( syscall(__NR_timer_gettime, -1, &spec ));
-		if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
-                        tst_resm(TPASS, "Block %d: test %d PASSED", block, Tst_count );
-	        } else {
-			tst_resm(TFAIL, "Block %d: test %d FAILED... errno = %d : %s", block, Tst_count,TEST_ERRNO, strerror(TEST_ERRNO) );
-			cleanup();
-        		tst_exit();
-                }
+			ENTER(0);
+			TEST(syscall(__NR_timer_gettime, -1, &spec));
+			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
+				tst_resm(TPASS,
+				    "Block %d: test %d PASSED",
+				    block, Tst_count);
+			} else {
+				tst_brkm(TFAIL|TERRNO, cleanup,
+				    "Block %d: test %d FAILED",
+				    block, Tst_count);
+			}
 
 /*
 
        -EFAULT
-              An invalid address of setting was specified.
+	      An invalid address of setting was specified.
 */
 
+			ENTER(0);
+			TEST(syscall(__NR_timer_gettime, created_timer_id,
+			    NULL));
+			if (TEST_RETURN < 0 && TEST_ERRNO == EFAULT ) {
+				tst_resm(TPASS,
+				    "Block %d: test %d PASSED",
+				    block, Tst_count);
+			} else {
+				tst_brkm(TFAIL|TERRNO, cleanup,
+				    "Block %d: test %d FAILED",
+				    block, Tst_count);
+			}
 
-                ENTER(0);
-                TEST( syscall(__NR_timer_gettime, created_timer_id, NULL ));
-		if (TEST_RETURN < 0 && TEST_ERRNO == EFAULT) {
-                       tst_resm(TPASS, "Block %d: test %d PASSED", block, Tst_count );
-	        } else {
-			tst_resm(TFAIL, "Block %d: test %d FAILED... errno = %d : %s", block, Tst_count,TEST_ERRNO, strerror(TEST_ERRNO) );
-			cleanup();
-        		tst_exit();
-                }
+		}
+	}
 
-
-
-
-                }
-        }	
 	cleanup();
-        tst_exit();
-}
+	tst_exit();
 
+}

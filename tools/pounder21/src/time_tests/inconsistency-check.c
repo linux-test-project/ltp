@@ -32,11 +32,11 @@
 /* returns 1 if a <= b, 0 otherwise */
 static inline int in_order(struct timespec a, struct timespec b)
 {
-	if(a.tv_sec < b.tv_sec)
+	if (a.tv_sec < b.tv_sec)
 		return 1;
-	if(a.tv_sec > b.tv_sec)
+	if (a.tv_sec > b.tv_sec)
 		return 0;
-	if(a.tv_nsec > b.tv_nsec)
+	if (a.tv_nsec > b.tv_nsec)
 		return 0;
 	return 1;
 }
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	long now, then;
 	int clock_type = CLOCK_MONOTONIC;
 	
-	if(argc > 1)
+	if (argc > 1)
 		seconds = atol(argv[1]);	
 
 	/* make sure CLOCK_MONOTONIC is supported */
@@ -64,27 +64,27 @@ int main(int argc, char *argv[])
 	
 	/* timestamp start of test */
 	system("date");
-	while(seconds == -1 || now - then < seconds){
+	while (seconds == -1 || now - then < seconds) {
 		inconsistent = 0;
 
 		/* Fill list */
-		for(i=0; i < CALLS_PER_LOOP; i++)
+		for (i=0; i < CALLS_PER_LOOP; i++)
 			clock_gettime(clock_type, &list[i]);
 		
 		/* Check for inconsistencies */
-		for(i=0; i < CALLS_PER_LOOP-1; i++)
-			if(!in_order(list[i],list[i+1]))
+		for (i=0; i < CALLS_PER_LOOP-1; i++)
+			if (!in_order(list[i],list[i+1]))
 				inconsistent = i;
 
 		/* display inconsistency */
-		if(inconsistent){
+		if (inconsistent) {
 			unsigned long long delta;
-			for(i=0; i < CALLS_PER_LOOP; i++){
-				if(i == inconsistent)
+			for (i=0; i < CALLS_PER_LOOP; i++) {
+				if (i == inconsistent)
 					printf("--------------------\n");
 				printf("%lu:%lu\n",list[i].tv_sec,
 							list[i].tv_nsec);
-				if(i == inconsistent + 1 )
+				if (i == inconsistent + 1 )
 					printf("--------------------\n");
 			}
 			delta = list[inconsistent].tv_sec*NSEC_PER_SEC;

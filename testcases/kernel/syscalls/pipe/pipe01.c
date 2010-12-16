@@ -78,9 +78,8 @@ int main(int ac, char **av)
 	int greater, length;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
 
 	setup();
 
@@ -106,16 +105,16 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "write() failed");
 			}
 
-			if ((written < 0) || (written > 26)) {
+			if (written < 0 || written > 26) {
 				tst_resm(TFAIL, "Condition #1 test failed");
 				continue;
 			}
 
 			if ((red = safe_read(fildes[0], rebuf, written)) == -1) {
-				tst_brkm(TBROK, cleanup, "read() failed");
+				tst_brkm(TBROK|TERRNO, cleanup, "read() failed");
 			}
 
-			if ((red < 0) || (red > written)) {
+			if (red < 0 || red > written) {
 				tst_resm(TFAIL, "Condition #2 test failed");
 				continue;
 			}
@@ -132,7 +131,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -158,7 +157,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

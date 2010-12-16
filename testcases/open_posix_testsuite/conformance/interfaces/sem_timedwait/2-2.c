@@ -38,13 +38,13 @@ int main() {
 	int sts, val;
 
 
-        if (sem_init (&mysemp, 0, 0) == -1) {
-                perror(ERROR_PREFIX "sem_init");
-                return PTS_UNRESOLVED;
-        }
+	if (sem_init (&mysemp, 0, 0) == -1) {
+		perror(ERROR_PREFIX "sem_init");
+		return PTS_UNRESOLVED;
+	}
 
 	ts.tv_sec=time(NULL)+1;
-        ts.tv_nsec=0;
+	ts.tv_nsec=0;
 
 	/* Try to lock Semaphore */
 	sts = sem_timedwait(&mysemp, &ts);
@@ -54,17 +54,17 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-        if (sem_getvalue(&mysemp, &val) == -1) {
-                perror(ERROR_PREFIX "sem_getvalue");
-                return PTS_UNRESOLVED;
-        }
+	if (sem_getvalue(&mysemp, &val) == -1) {
+		perror(ERROR_PREFIX "sem_getvalue");
+		return PTS_UNRESOLVED;
+	}
 
-       if ((val == 1) && (sts == -1)) {
-                 puts("TEST PASSED");
-                 sem_destroy(&mysemp);
-                 return PTS_PASS;
-       } else {
-                 puts("TEST FAILED");
-                 return PTS_FAIL;
-       }
+	if ((val == 1) && (sts == -1)) {
+		puts("TEST PASSED");
+		sem_destroy(&mysemp);
+		return PTS_PASS;
+	} else {
+		puts("TEST FAILED");
+		return PTS_FAIL;
+	}
 }

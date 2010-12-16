@@ -121,15 +121,19 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int ind;		/* counter variable for chmod(2) tests */
-	uid_t User_id;		/* user id of the user set for testfile */
-	gid_t Group_id;		/* group id of the user set for testfile */
+	uid_t user_id;		/* user id of the user set for testfile */
+	gid_t group_id;		/* group id of the user set for testfile */
 	int fildes;		/* File descriptor for testfile */
 	int test_flag;		/* test condition specific flag variable */
 	char *file_name;	/* ptr. for test file name */
 	char *test_desc;	/* test specific message */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -147,8 +151,8 @@ int main(int ac, char **av)
 			fildes = Test_cases[ind].fd;
 			file_name = Test_cases[ind].pathname;
 			test_desc = Test_cases[ind].desc;
-			User_id = Test_cases[ind].user_id;
-			Group_id = Test_cases[ind].group_id;
+			user_id = Test_cases[ind].user_id;
+			group_id = Test_cases[ind].group_id;
 			test_flag = Test_cases[ind].test_flag;
 
 			if (fildes == 1) {
@@ -162,7 +166,7 @@ int main(int ac, char **av)
 			 * group id (numeric values) to set it on
 			 * testfile.
 			 */
-			TEST(fchown(fildes, User_id, Group_id));
+			TEST(fchown(fildes, user_id, group_id));
 
 			/* check return code of fchown(2) */
 			if (TEST_RETURN == -1) {
@@ -190,12 +194,12 @@ int main(int ac, char **av)
 				 * Check for expected Ownership ids
 				 * set on testfile.
 				 */
-				if ((stat_buf.st_uid != User_id) ||
-				    (stat_buf.st_gid != Group_id)) {
+				if ((stat_buf.st_uid != user_id) ||
+				    (stat_buf.st_gid != group_id)) {
 					tst_resm(TFAIL, "%s: Incorrect"
 						 " ownership set, Expected %d "
 						 "%d", file_name,
-						 User_id, Group_id);
+						 user_id, group_id);
 				}
 
 				/*
@@ -232,7 +236,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return (0);
+	  return (0);
 }				/* End main */
 
 /*

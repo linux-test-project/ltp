@@ -67,7 +67,7 @@ char *av[];
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 /*--------------------------------------------------------------------*/
 	local_flag = PASSED;

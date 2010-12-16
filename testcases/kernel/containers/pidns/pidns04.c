@@ -82,7 +82,11 @@ static int child_fn1(void *ttype)
        	close(fd[0]);
 
 	/* Comparing the values to make sure pidns is created correctly */
+<<<<<<< HEAD
 	if (( cpid == CHILD_PID) && ( ppid == PARENT_PID )) {
+=======
+	if (( cpid == CHILD_PID) && ( ppid == PARENT_PID ) ) {
+>>>>>>> master
 		tst_resm(TINFO, "PIDNS test is running inside container");
 		kill(INIT_PID, SIGKILL);
 		/* Verifying whether the container init is not killed, "

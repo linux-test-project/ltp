@@ -75,7 +75,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -90,7 +94,7 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (pid == 0) {	/* child */
 			if (seteuid(nobody->pw_uid) == -1) {
@@ -137,7 +141,7 @@ int main(int ac, char **av)
 		}
 	}
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -147,7 +151,7 @@ void setup()
 {
 	/* test must be run as root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must run test as root");
+		tst_brkm(TBROK, NULL, "Must run test as root");
 	}
 
 	/* capture signals */
@@ -165,7 +169,7 @@ void setup()
 
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
 		tst_brkm(TBROK, cleanup, "open() failed, errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*

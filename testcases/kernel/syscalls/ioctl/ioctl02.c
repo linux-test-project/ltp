@@ -114,7 +114,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "dS", &parentpid, &childtty);
@@ -128,7 +132,7 @@ int main(int ac, char **av)
 	}
 
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	setup();
@@ -146,7 +150,7 @@ int main(int ac, char **av)
 
 		if ((childpid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if (childpid == 0) {	/* child */
 #ifdef UCLINUX
@@ -169,7 +173,7 @@ int main(int ac, char **av)
 			kill(childpid, SIGTERM);
 			waitpid(childpid, NULL, 0);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		/* run the parent test */
 		if ((rval = run_ptest()) == -1) {
@@ -210,7 +214,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 void do_child()

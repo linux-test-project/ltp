@@ -109,10 +109,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL))
-	    != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
@@ -146,8 +144,8 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
+	tst_exit();
 
-	 /*NOTREACHED*/ return 0;
 }
 
 /*
@@ -179,7 +177,4 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

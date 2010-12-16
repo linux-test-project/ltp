@@ -60,45 +60,28 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	* perform global setup for test
-	***************************************************************/
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/***************************************************************
-	* check looping state if -c option given
-	***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-
-		/*
-		 * TEST CASE:
-		 * statvfs
-		 */
-		;
 
 		/* Call statvfs(2) */
 		TEST(statvfs(TEST_PATH, &buf));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL|TTERRNO,
-				 "statvfs - Basic sanity test failed");
+			tst_resm(TFAIL|TERRNO, "statvfs(%s, ...) failed",
+			    TEST_PATH);
 		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TPASS, "statvfs - Basic sanity test,PASS");
+			tst_resm(TPASS, "statvfs(%s, ...) passed");
 		}
 
 	}			/* End for TEST_LOOPING */
@@ -116,7 +99,7 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-}				/* End main */
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -128,7 +111,7 @@ void setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}				/* End setup() */
+}
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -141,4 +124,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-}				/* End cleanup() */
+}

@@ -126,11 +126,15 @@ int main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int fd;			/* test file descriptor */
 	int ind;		/* counter to test different test conditions */
-	uid_t User_id;		/* Effective user id of a test process */
-	gid_t Group_id;		/* Effective group id of a test process */
+	uid_t user_id;		/* Effective user id of a test process */
+	gid_t group_id;		/* Effective group id of a test process */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -146,8 +150,8 @@ int main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Set uid/gid values to that of test process */
-	User_id = geteuid();
-	Group_id = getegid();
+	user_id = geteuid();
+	group_id = getegid();
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -169,7 +173,7 @@ int main(int ac, char **av)
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
-			TEST(fchown(fd, User_id, Group_id));
+			TEST(fchown(fd, user_id, group_id));
 
 			/* Check return code from fchown(2) */
 			if (TEST_RETURN == -1) {
@@ -199,7 +203,7 @@ int main(int ac, char **av)
 	 */
 	cleanup();
 
-	 /*NOTREACHED*/ return (0);
+	  return (0);
 }				/* End main */
 
 /*

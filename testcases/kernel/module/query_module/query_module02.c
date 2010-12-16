@@ -144,7 +144,7 @@ main(int argc, char **argv)
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
@@ -175,7 +175,7 @@ main(int argc, char **argv)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
+	
 	return 0;
 }
 
@@ -191,7 +191,7 @@ setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if (tst_kvercmp(2,5,48) >= 0)
-		tst_brkm(TCONF, tst_exit, "This test will not work on "
+		tst_brkm(TCONF, NULL, "This test will not work on "
 				"kernels after 2.5.48");
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
@@ -222,5 +222,5 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
+	
 }

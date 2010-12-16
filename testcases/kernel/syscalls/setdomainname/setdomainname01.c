@@ -123,7 +123,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -136,12 +136,12 @@ void setup()
 
 	/* Check whether we are root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* Save current domain name */
 	if ((getdomainname(old_domain_name, sizeof(old_domain_name))) < 0) {
-		tst_brkm(TBROK, tst_exit, "getdomainname() failed while"
+		tst_brkm(TBROK, NULL, "getdomainname() failed while"
 			 " getting current domain name");
 	}
 

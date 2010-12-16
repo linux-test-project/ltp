@@ -120,7 +120,11 @@ char *argv[];
 	/* parse standard options */
 	if ((msg =
 	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux,
@@ -452,7 +456,11 @@ void setup()
 		cleanup();
 
 	MSGMNI = nr_msgqs - get_used_msgqueues();
+<<<<<<< HEAD
 	if (MSGMNI > MAXNPROCS)
+=======
+	if ( MSGMNI > MAXNPROCS )
+>>>>>>> master
 		MSGMNI = MAXNPROCS;
 	if (MSGMNI <= 0) {
 		tst_resm(TBROK,

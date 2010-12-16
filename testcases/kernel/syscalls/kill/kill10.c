@@ -226,25 +226,25 @@ int main(int ac, char **av)
 	Tst_nobuf = 1;
 
 	if ((msg = parse_opts(ac, av, options, &help))) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	if (nflag) {
 		if (sscanf(narg, "%i", &num_procs) != 1) {
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 			    "-n option arg is not a number");
 		}
 	}
 	if (gflag) {
 		if (sscanf(garg, "%i", &num_pgrps) != 1) {
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 			    "-g option arg is not a number");
 		}
 	}
 
 	if (dflag) {
 		if (sscanf(darg, "%i", &debug_flag) != 1) {
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 			    "-d option arg is not a number");
 		}
 	}

@@ -81,7 +81,6 @@
 #endif
 
 char *TCID = "hugemmap05";
-char *TESTDIR;
 int TST_TOTAL = 1, Tst_count;
 static char nr_hugepages[BUFSIZ], nr_overcommit_hugepages[BUFSIZ];
 static char buf[BUFSIZ], line[BUFSIZ], path[BUFSIZ], pathover[BUFSIZ];
@@ -114,7 +113,7 @@ int main(int argc, char *argv[])
 
 	msg = parse_opts(argc, argv, options, usage);
 	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	if (opt_sysfs) {
 		strncpy(path, _PATH_SYS_2M_HUGE,
 			strlen(_PATH_SYS_2M_HUGE) + 1);
@@ -155,7 +154,7 @@ static void overcommit(void)
 		if (shmid == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "shmget");
 	} else {
-		snprintf(s, BUFSIZ, "%s/hugemmap05/file", TESTDIR);
+		snprintf(s, BUFSIZ, "%s/hugemmap05/file", get_tmp_tstdir());
 		fd = open(s, O_CREAT | O_RDWR, 0755);
 		if (fd == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "open");
@@ -279,7 +278,7 @@ static void cleanup(void)
 		tst_resm(TWARN|TERRNO, "write");
 	close(fd);
 	
-	snprintf(buf, BUFSIZ, "%s/hugemmap05", TESTDIR);
+	snprintf(buf, BUFSIZ, "%s/hugemmap05", get_tst_tmpdir());
 	if (umount(buf) == -1)
 		tst_resm(TWARN|TERRNO, "umount");
 	if (shmid != -1) {
@@ -363,7 +362,7 @@ static void setup(void)
 			"failed to change nr_hugepages.");
 	close(fd);
 
-	snprintf(buf, BUFSIZ, "%s/hugemmap05", TESTDIR);
+	snprintf(buf, BUFSIZ, "%s/hugemmap05", get_tst_tmpdir());
 	if (mkdir(buf, 0700) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir");
 	if (mount(NULL, buf, "hugetlbfs", 0, NULL) == -1)

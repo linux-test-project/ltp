@@ -83,7 +83,11 @@ int main(int ac, char **av)
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -103,10 +107,10 @@ int main(int ac, char **av)
 		sprintf(dir1, "getcwd1.%d", getpid());
 		if (mkdir(dir1, 00755) < 0) {
 			tst_brkm(TBROK, cleanup, "mkdir(2) failed");
-		 /*NOTREACHED*/}
+		 }
 		if (chdir(dir1) != 0) {
 			tst_brkm(TBROK, cleanup, "chdir(2) failed");
-		 /*NOTREACHED*/}
+		 }
 
 		pwd1 = getpwd();
 		if (getcwd(cwd1, sizeof cwd1) == NULL) {
@@ -118,7 +122,7 @@ int main(int ac, char **av)
 			tst_brkm(TFAIL, cleanup, "getcwd() returned unexpected "
 				 "working directory: expected: %s, got: %s\n",
 				 pwd1, cwd1);
-		 /*NOTREACHED*/}
+		 }
 
 		tst_resm(TINFO, "getcwd(2) succeeded in returning correct path "
 			 "for dir1");
@@ -134,12 +138,12 @@ int main(int ac, char **av)
 		if (symlink(dir1, dir2) < 0) {
 			tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d",
 				 errno);
-		 /*NOTREACHED*/}
+		 }
 
 		if (chdir(dir2) != 0) {
 			tst_brkm(TBROK, cleanup, "chdir(2) failed: errno: %d",
 				 errno);
-		 /*NOTREACHED*/}
+		 }
 
 		pwd2 = getpwd();
 		if (getcwd(cwd2, sizeof cwd2) == NULL) {
@@ -153,7 +157,7 @@ int main(int ac, char **av)
 		    ((n = readlink(dir2, link2, sizeof(link2))) < 0)) {
 			tst_brkm(TBROK, cleanup, "readlink(2) failed: errno:%d",
 				 errno);
-		 /*NOTREACHED*/}
+		 }
 
 		/*
 		 * Finally compare the pwd, cwd, link informations:
@@ -201,7 +205,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 void setup()
@@ -240,11 +244,11 @@ char *getpwd()
 	if ((fin = popen(pwd, "r")) == NULL) {
 		tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
 		tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
-	 /*NOTREACHED*/}
+	 }
 	while (fgets(buf, BUFSIZ, fin) != NULL) {
 		if ((cp = strchr(buf, '\n')) == NULL) {
 			tst_brkm(TBROK, cleanup, "pwd output too long");
-		 /*NOTREACHED*/}
+		 }
 		*cp = 0;
 		cp_cur = buf;
 	}

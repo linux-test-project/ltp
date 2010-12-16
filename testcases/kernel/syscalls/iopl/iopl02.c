@@ -188,7 +188,7 @@ void cleanup1()
 {
 	/* reset user as root */
 	if (seteuid(0) == -1) {
-		tst_brkm(TBROK, tst_exit, "Failed to set uid as root");
+		tst_brkm(TBROK, NULL, "Failed to set uid as root");
 	}
 }
 
@@ -201,12 +201,12 @@ void setup()
 
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
 	}
 
 	/* Check if "nobody" user id exists */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "\"nobody\" user id doesn't exist");
+		tst_brkm(TBROK, NULL, "\"nobody\" user id doesn't exist");
 	}
 
 	/* Set up the expected error numbers for -e option */

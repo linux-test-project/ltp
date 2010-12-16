@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 static int test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
@@ -209,25 +209,25 @@ void setup(void)
 
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
+	 }
 
 	if ((passwd_p = getpwnam("root")) == NULL) {
-		tst_brkm(TBROK, tst_exit, "getpwnam() failed for root");
-		/* NOTREACHED */
+		tst_brkm(TBROK, NULL, "getpwnam() failed for root");
+		
 	}
 	root = *passwd_p;
 
 	if ((passwd_p = getpwnam("bin")) == NULL) {
-		tst_brkm(TBROK, tst_exit, "bin user id doesn't exist");
-		/* NOTREACHED */
+		tst_brkm(TBROK, NULL, "bin user id doesn't exist");
+		
 	}
 	bin = *passwd_p;
 	bin_gid = bin.pw_gid;
 
 	if ((passwd_p = getpwnam("nobody")) == NULL) {
-		tst_brkm(TBROK, tst_exit, "nobody user id doesn't exist");
-		/* NOTREACHED */
+		tst_brkm(TBROK, NULL, "nobody user id doesn't exist");
+		
 	}
 	nobody = *passwd_p;
 	nobody_gid = nobody.pw_gid;
@@ -237,15 +237,15 @@ void setup(void)
 
 	/* Set real/effective/saved gid to nobody */
 	if (setresgid(nobody_gid, nobody_gid, nobody_gid) == -1) {
-		tst_brkm(TBROK, tst_exit, "setup() failed for setting while"
+		tst_brkm(TBROK, NULL, "setup() failed for setting while"
 			 " setting real/effective/saved gid");
-		/* NOTREACHED */
+		
 	}
 	/* Set euid to nobody */
 	if (setuid(nobody.pw_uid) == -1) {
-		tst_brkm(TBROK, tst_exit, "setuid failed to "
+		tst_brkm(TBROK, NULL, "setuid failed to "
 			 "to set the effective uid to nodody");
-		/* NOTREACHED */
+		
 	}
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -269,4 +269,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

@@ -241,6 +241,7 @@ static int do_test(struct test_case *tc)
 	 * Execute system call
 	 */
 	memset(tv, 0, 2 * sizeof(struct timeval));
+<<<<<<< HEAD
 	tv[0].tv_sec = tc->a_sec;
 	tv[1].tv_sec = tc->m_sec;
 	TEST(len = strlen(fpath));
@@ -267,6 +268,34 @@ static int do_test(struct test_case *tc)
 		else
 			TEST(sys_ret = utimes(fpath, NULL));
 	}
+=======
+        tv[0].tv_sec = tc->a_sec;
+        tv[1].tv_sec = tc->m_sec;
+        TEST(len = strlen(fpath));
+        if (tc->ttype == FILE_NOT_EXIST) {
+                c = fpath[len - 1];
+                fpath[len - 1] = '\0';
+        }
+        errno = 0;
+        if (tc->ttype == NO_FNAME) {
+                /**
+                 * Note (garrcoop):
+                 *
+                 * If you do NULL directly, then gcc [4.3] will complain when
+                 * one specifies -Wnonnull in CPPFLAGS. This is a negative
+                 * test, but let's not allow the compiler to complain about
+                 * something trivial like this.
+                 **/
+                const char *dummy = NULL;
+                TEST(sys_ret = utimes(dummy, tv));
+        }
+        else {
+                if (tc->user == NULL)
+                        TEST(sys_ret = utimes(fpath, tv));
+                else
+                        TEST(sys_ret = utimes(fpath, NULL));
+        }
+>>>>>>> master
 	sys_errno = errno;
 	if (tc->ttype == FILE_NOT_EXIST)
 		fpath[len - 1] = c;
@@ -315,6 +344,7 @@ EXIT2:
 
 int main(int ac, char **av) {
 	int result = RESULT_OK;
+<<<<<<< HEAD
 	int i;
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
@@ -341,6 +371,63 @@ int main(int ac, char **av) {
 					i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
+=======
+        int c;
+        int i;
+        int lc;                 /* loop counter */
+        char *msg;              /* message returned from parse_opts */
+
+	struct option long_options[] = {
+                { "debug", no_argument, 0, 'd' },
+                { "help",  no_argument, 0, 'h' },
+                { NULL, 0, NULL, 0 }
+        };
+
+	progname = strchr(av[0], '/');
+        progname = progname ? progname + 1 : av[0];	
+	
+        /* parse standard options */
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+             tst_exit();
+           }
+
+        setup();
+
+        /* Check looping state if -i option given */
+        for (lc = 0; TEST_LOOPING(lc); ++lc) {
+                Tst_count = 0;
+                for (testno = 0; testno < TST_TOTAL; ++testno) {
+			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
+			 while (TEST_RETURN != -1) {
+		                switch (c) {
+                		case 'd':
+		                        opt_debug = 1;
+                		        break;
+		                default:
+                		        usage(progname);
+                        		
+                		}
+		        }
+
+
+		if (ac != optind) {
+        	        tst_resm(TINFO,"Options are not match.");
+                	usage(progname);
+                	
+	        }
+
+		/*
+		* Execute test
+         	*/
+	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+        	        int ret;
+	                tst_resm(TINFO,"(case%02d) START", i);
+	                ret = do_test(&tcase[i]);
+	                tst_resm(TINFO,"(case%02d) END => %s", i, (ret == 0) ? "OK" : "NG");
+	                result |= ret;
+        	}
+>>>>>>> master
 		
 			/*
 			 * Check results

@@ -111,9 +111,15 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* Perform global setup for test */
@@ -168,7 +174,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -198,7 +204,7 @@ void setup()
 
 	/* Get the system page size */
 	if ((memsize = getpagesize()) < 0) {
-		tst_brkm(TBROK, tst_exit,
+		tst_brkm(TBROK, NULL,
 			 "getpagesize() failed to get system page size");
 	}
 
@@ -214,7 +220,7 @@ void setup()
 	 */
 	shmid = shmget(shmkey, newsize, IPC_CREAT | SHM_MODE);
 	if (shmid == -1) {
-		tst_brkm(TBROK, tst_exit, "shmget() Failed to create a shared "
+		tst_brkm(TBROK, NULL, "shmget() Failed to create a shared "
 			 "memory, error:%d", errno);
 	}
 

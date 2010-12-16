@@ -5563,7 +5563,7 @@ static void show_devices()
         printf("%s ", devices[k]);
         close(fd);
     };
-    printf("\n"); // <<<<<<<<<<<<<<<<<<<<<
+    printf("\n");
     for (k = 0; k < MAX_SG_DEVS; k++) {
         make_dev_name(name, NULL, k, do_numeric);
         fd = open(name, O_RDWR | O_NONBLOCK);

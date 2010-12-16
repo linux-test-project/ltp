@@ -93,12 +93,8 @@ struct test_case_t {
 	dev_t *olddev;
 	ino_t *oldino;
 } TC[] = {
-	/* comment goes here */
-	{
-	fname, mname, "file", &f_olddev, &f_oldino},
-	    /* comment goes here */
-	{
-	fdir, mdir, "directory", &d_olddev, &d_oldino}
+	{ fname, mname, "file", &f_olddev, &f_oldino},
+	{ fdir, mdir, "directory", &d_olddev, &d_oldino}
 };
 
 int main(int ac, char **av)
@@ -110,10 +106,8 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
-
 	/*
 	 * perform global setup for test
 	 */
@@ -145,7 +139,7 @@ int main(int ac, char **av)
 				if (stat(TC[i].name2, &buf2) == -1) {
 					tst_brkm(TBROK, cleanup, "stat of %s "
 						 "failed", TC[i].desc);
-					/* NOTREACHED */
+					
 				}
 
 				/*
@@ -186,16 +180,13 @@ int main(int ac, char **av)
 
 		/* remove the new directory */
 		if (rmdir(mdir) == -1) {
-			tst_brkm(TBROK, cleanup, "Could not remove "
-				 "directory %s", mdir);
-		 /*NOTREACHED*/}
+			tst_brkm(TBROK, cleanup, "Couldn't remove directory %s",
+			    mdir);
+		}
 	}			/* End for TEST_LOOPING */
 
-	/*
-	 * cleanup and exit
-	 */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -230,7 +221,7 @@ void setup2()
 	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"
 			 "in rename()", fname);
-		/* NOTREACHED */
+		
 	}
 
 	/* save original file's dev and ino */
@@ -243,11 +234,11 @@ void setup2()
 	/* create "old" directory */
 	if (mkdir(fdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
-	 /*NOTREACHED*/}
+	}
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s"
 			 "in rename()", fdir);
-		/* NOTREACHED */
+		
 	}
 
 	d_olddev = buf1.st_dev;
@@ -256,7 +247,7 @@ void setup2()
 	/* create another directory */
 	if (mkdir(mdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", mdir);
-	 /*NOTREACHED*/}
+	}
 }
 
 /*
@@ -275,9 +266,4 @@ void cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-
-	/*
-	 * Exit with return code appropriate for results.
-	 */
-	tst_exit();
 }

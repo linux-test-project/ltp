@@ -145,7 +145,7 @@ parent(int masterfd, int childpid)
 			default:
 				tst_brkm(TFAIL, cleanup,
 					"unexpected data message");
-				/*NOTREACHED*/
+				
 			}
 		}
 	}
@@ -250,6 +250,6 @@ int main(int argc, char **argv)
 	}
 /*--------------------------------------------------------------------*/
 	cleanup();
-	/* NOTREACHED */
+	
 	return 0;
 }

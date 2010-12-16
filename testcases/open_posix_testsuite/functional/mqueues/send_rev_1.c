@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		exit(ret_code);
-		/* NOTREACHED */
+		
 		break;
 	}
 

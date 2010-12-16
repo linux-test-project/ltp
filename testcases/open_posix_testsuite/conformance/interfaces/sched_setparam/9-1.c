@@ -158,11 +158,19 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < (nb_cpu - 1); i++) {
 		child_pid[i] = fork();
 		if (child_pid[i] == -1) {
 			perror("An error occurs when calling fork()");
 			for (j = 0; j < i; j++) {
+=======
+	for (i=0; i<nb_cpu-1; i++) {
+		child_pid[i] = fork();
+		if (child_pid[i] == -1) {
+			perror("An error occurs when calling fork()");
+			for (j=0; j<i; j++) {
+>>>>>>> master
 				kill(child_pid[j], SIGTERM);		
 			}
 			return PTS_UNRESOLVED;
@@ -178,7 +186,11 @@ int main() {
 	child_pid[i] = fork();
 	if (child_pid[i] == -1) {
 		perror("An error occurs when calling fork()");
+<<<<<<< HEAD
 		for (j = 0; j < i; j++) {
+=======
+		for (j=0; j<i; j++) {
+>>>>>>> master
 			kill(child_pid[j], SIGTERM);		
 		}
 		return PTS_UNRESOLVED;

@@ -164,7 +164,7 @@ main(int argc, char **argv)
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	if (STD_COPIES != 1) {
@@ -210,9 +210,7 @@ main(int argc, char **argv)
 		}
 	}
 	cleanup();
-
-	/*NOTREACHED*/
-	return 0;
+	tst_exit();
 }
 
 int
@@ -264,7 +262,7 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 			 * Find entry for atleast one symbol, checking for
 			 * EXP_FUNC_NAME symbol, if found return SUCCESS.
 			 */
-			for (i = 0; i < ret; i++, vals +=2) {
+			for (i = 0; i < ret; i++, vals += 2) {
 
 				/* buf + vals[1] - address of symbol name */
 				if (!strcmp(buf + vals[1], EXP_FUNC_NAME)) {
@@ -379,14 +377,10 @@ setup(void)
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-		/*NOTREACHED*/
-	}
+	tst_require_root(NULL);
 
 	if (tst_kvercmp(2,5,48) >= 0)
-		tst_brkm(TCONF, tst_exit, "This test will not work on "
+		tst_brkm(TCONF, NULL, "This test will not work on "
 				"kernels after 2.5.48");
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
@@ -413,7 +407,4 @@ cleanup(void)
 
 	TEST_CLEANUP;
 	tst_rmdir();
-	/* exit with return code appropriate for results */
-	tst_exit();
-	/*NOTREACHED*/
 }

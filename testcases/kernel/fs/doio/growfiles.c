@@ -2310,7 +2310,7 @@ int just_trunc;		/* lseek has already been done for you */
 	ret=trunc(fd);
 #else
 	ret=ftruncate(fd, new_offset );
-	if ((ret == 0) && (Debug > 3)) {
+	if (ret == 0 && Debug > 3) {
                 printf("%s: %d DEBUG4 %s/%d: ftruncated to offset %d, %d bytes from end\n",
                     Progname, Pid, __FILE__, __LINE__, new_offset, trunc_incr);
 	}
@@ -2678,7 +2678,7 @@ int no_file_check;	/* if set, do not do file content check */
 	    /*
 	     * Read the whole file in a single read
 	     */
-	    if ((buf=(char *)malloc(fsize)) == NULL) {
+	    if ((buf = (char *)malloc(fsize)) == NULL) {
 			fprintf(stderr, "%s%s: %s/%d: malloc(%d) failed: %s\n", Progname, TagName,
 				__FILE__, __LINE__, fsize, strerror(errno));
 			fflush(stderr);

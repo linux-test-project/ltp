@@ -123,12 +123,11 @@ struct test_data_t {
 	unsigned int flags;
 	int error;
 } test_data[] = {
-	{
-	&bfd, 0, 1, SYNC_FILE_RANGE_WRITE, EBADF}, {
-	&sfd, 0, 1, SYNC_FILE_RANGE_WAIT_AFTER, ESPIPE}, {
-	&filed, -1, 1, SYNC_FILE_RANGE_WAIT_BEFORE, EINVAL}, {
-	&filed, 0, -1, SYNC_FILE_RANGE_WRITE, EINVAL}, {
-	&filed, 0, 1, SYNC_FILE_RANGE_INVALID, EINVAL}
+	{ &bfd, 0, 1, SYNC_FILE_RANGE_WRITE, EBADF},
+	{ &sfd, 0, 1, SYNC_FILE_RANGE_WAIT_AFTER, ESPIPE},
+	{ &filed, -1, 1, SYNC_FILE_RANGE_WAIT_BEFORE, EINVAL},
+	{ &filed, 0, -1, SYNC_FILE_RANGE_WRITE, EINVAL},
+	{ &filed, 0, 1, SYNC_FILE_RANGE_INVALID, EINVAL}
 };
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
@@ -161,15 +160,11 @@ extern void cleanup()
 
 	/* close the file we have open */
 	if (close(filed) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", filename,
-			 errno, strerror(errno));
+		tst_resm(TWARN|TERRNO, "close(%s) failed", filename);
 	}
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -203,15 +198,11 @@ void setup()
 
 	sprintf(filename, "tmpfile_%d", getpid());
 	if ((filed = open(filename, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 filename, errno, strerror(errno));
-
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed", filename);
 	}
 
-	sfd = open(spl_file, O_RDWR | O_CREAT, 0700);
-
-	return;
+	sfd = open(spl_file, O_RDWR|O_CREAT, 0700);
 }
 
 /*****************************************************************************
@@ -258,71 +249,55 @@ static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
 /*	     On success - exits with 0 exit value.			  */
 /*									    */
 /******************************************************************************/
-int main(int ac,		/* number of command line parameters		      */
-	 char **av)
-{				/* pointer to the array of the command line parameters.   */
+int main(int ac, char **av)
+{
 
 	int test_index = 0;
-	int lc;
 	char *msg;
 
- /***************************************************************
-	      parse standard options$
-  ********************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 #if defined(__powerpc__) || defined(__powerpc64__)	/* for PPC, kernel version > 2.6.21 needed */
 	if (tst_kvercmp(2, 16, 22) < 0) {
-		tst_resm(TCONF, "System doesn't support execution of the test");
-		tst_exit();
+		tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
 	}
 #else
 	/* For other archs, need kernel version > 2.6.16 */
 
 	if (tst_kvercmp(2, 6, 17) < 0) {
-		tst_resm(TCONF, "System doesn't support execution of the test");
-		tst_exit();
+		tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
 	}
 #endif
 
-/* perform global test setup, call setup() function. */
 	setup();
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping. */
-		Tst_count = 0;
+	for (test_index = 0; test_index < TST_TOTAL; test_index++) {
+		TEST(syncfilerange
+		     (*(test_data[test_index].fd),
+		      test_data[test_index].offset,
+		      test_data[test_index].nbytes,
+		      test_data[test_index].flags));
 
-		for (test_index = 0; test_index < TST_TOTAL; test_index++) {
-			TEST(syncfilerange
-			     (*(test_data[test_index].fd),
-			      test_data[test_index].offset,
-			      test_data[test_index].nbytes,
-			      test_data[test_index].flags));
+		if (TEST_RETURN != -1) {
+			tst_resm(TFAIL,
+				"call succeeded unexpectedly (%ld != -1)",
+				TEST_RETURN);
+			continue;
+		}
 
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL,
-					"call succeeded unexpectedly "
-					"(%ld != -1)", TEST_RETURN);
-				continue;
-			}
+		TEST_ERROR_LOG(TEST_ERRNO);
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO == test_data[test_index].error) {
-				tst_resm(TPASS, "expected failure - "
-					 "errno = %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "unexpected error - %d : %s - "
-					 "expected %d", TEST_ERRNO,
-					 strerror(TEST_ERRNO),
-					 test_data[test_index].error);
-			}
+		if (TEST_ERRNO == test_data[test_index].error) {
+			tst_resm(TPASS|TTERRNO, "got expected error");
+		} else {
+			tst_resm(TFAIL|TTERRNO, "got unexpected error; "
+				 "expected %d",
+				 test_data[test_index].error);
 		}
 
 	}
 
 	cleanup();
-	return 0;
+	tst_exit();
 }

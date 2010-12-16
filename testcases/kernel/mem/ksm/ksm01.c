@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 
 	msg = parse_opts(argc, argv, options, usage);
 	if (msg != (char *)NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
@@ -121,30 +121,30 @@ void ksmtest(void)
 	if (opt_size) {
 		size = atoi(opt_sizestr);
 		if (size < 1)
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				"size cannot be less than 1.");
 	}
 	if (opt_num) {
 		num = atoi(opt_numstr);
 		if (num < 3)
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				"process number cannot be less 3.");
 	}
 	child = malloc(num);
 	if (child == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
+		tst_brkm(TBROK|TERRNO, NULL, "malloc");
 
 	memory = malloc(num * sizeof(**memory));
 	if (memory == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
+		tst_brkm(TBROK|TERRNO, NULL, "malloc");
 
 	switch (child[0] = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, tst_exit, "fork");
+		tst_brkm(TBROK|TERRNO, NULL, "fork");
 	case 0:
 		tst_resm(TINFO, "child 0 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 
 		tst_resm(TINFO, "child 0 continues...");
 
@@ -154,20 +154,20 @@ void ksmtest(void)
 			size);
 		memory[0] = malloc(size * sizeof(*memory));
 		if (memory[0] == NULL)
-			tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
+			tst_brkm(TBROK|TERRNO, NULL, "malloc");
 		for (j = 0; j < size; j++) {
 			memory[0][j] = mmap(NULL, MB, PROT_READ|PROT_WRITE,
 					MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			if (memory[0][j] == MAP_FAILED)
-				tst_brkm(TBROK|TERRNO, tst_exit, "mmap");
+				tst_brkm(TBROK|TERRNO, NULL, "mmap");
 			if (madvise(memory[0][j], MB, MADV_MERGEABLE) == -1)
-				tst_brkm(TBROK|TERRNO, tst_exit, "madvise");
+				tst_brkm(TBROK|TERRNO, NULL, "madvise");
 			for (i = 0; i < MB; i++)
 				memory[0][j][i] = 'c';
 		}
 		tst_resm(TINFO, "child 0 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 
 		tst_resm(TINFO, "child 0 continues...");
 		verify('c', 0, 0, size, 0, MB);
@@ -179,44 +179,44 @@ void ksmtest(void)
 		/* Unmerge. */
 		tst_resm(TINFO, "child 0 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 
 		tst_resm(TINFO, "child 0 continues...");
 		verify('d', 0, 0, size, 0, MB);
 		/* Stop. */
 		tst_resm(TINFO, "child 0 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 		tst_resm(TINFO, "child 0 continues...");
 		exit(0);
 	}
 	switch (child[1] = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, tst_exit, "fork");
+		tst_brkm(TBROK|TERRNO, NULL, "fork");
 	case 0:
 		tst_resm(TINFO, "child 1 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 		tst_resm(TINFO, "child 1 continues...");
 		tst_resm(TINFO, "child 1 allocates %d MB filled with 'a'.",
 			size);
 		memory[1] = malloc(size * sizeof(*memory));
 		if (memory[1] == NULL)
-			tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
+			tst_brkm(TBROK|TERRNO, NULL, "malloc");
 		for (j = 0; j < size; j++) {
 			memory[1][j] = mmap(NULL, MB, PROT_READ|PROT_WRITE,
 					MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			if (memory[1][j] == MAP_FAILED)
-				tst_brkm(TBROK|TERRNO, tst_exit, "mmap");
+				tst_brkm(TBROK|TERRNO, NULL, "mmap");
 			if (madvise(memory[1][j], MB, MADV_MERGEABLE) == -1)
-				tst_brkm(TBROK|TERRNO, tst_exit, "madvise");
+				tst_brkm(TBROK|TERRNO, NULL, "madvise");
 			for (i = 0; i < MB; i++)
 				memory[1][j][i] = 'a';
 		}
 
 		tst_resm(TINFO, "child 1 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 		tst_resm(TINFO, "child 1 continues...");
 		verify('a', 1, 0, size, 0, MB);
 		tst_resm(TINFO, "child 1 changes memory content to 'b'.");
@@ -227,7 +227,7 @@ void ksmtest(void)
 
 		tst_resm(TINFO, "child 1 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 		tst_resm(TINFO, "child 1 continues...");
 		verify('b', 1, 0, size, 0, MB);
 		tst_resm(TINFO, "child 1 changes memory content to 'd'");
@@ -236,7 +236,7 @@ void ksmtest(void)
 				memory[1][j][i] = 'd';
 		}
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 
 		tst_resm(TINFO, "child 1 continues...");
 		verify('d', 1, 0, size, 0, MB);
@@ -246,7 +246,7 @@ void ksmtest(void)
 		/* Unmerge. */
 		tst_resm(TINFO, "child 1 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 		tst_resm(TINFO, "child 1 continues...");
 		verify('e', 1, size - 1, size, MB - 1, MB);
 		verify('d', 1, 0, size - 1, 0, MB - 1);
@@ -254,42 +254,42 @@ void ksmtest(void)
 		/* Stop. */
 		tst_resm(TINFO, "child 1 stops.");
 		if (raise(SIGSTOP) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+			tst_brkm(TBROK|TERRNO, NULL, "kill");
 		tst_resm(TINFO, "child 1 continues...");
 		exit(0);
 	}
 	for (k = 2; k < num; k++) {
 		switch (child[k] = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, tst_exit, "fork");
+			tst_brkm(TBROK|TERRNO, NULL, "fork");
 		case 0:
 			tst_resm(TINFO, "child %d stops.", k);
 			if (raise(SIGSTOP) == -1)
-				tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+				tst_brkm(TBROK|TERRNO, NULL, "kill");
 			tst_resm(TINFO, "child %d continues...", k);
 			tst_resm(TINFO, "child %d allocates %d "
 				"MB filled with 'a'.", k, size);
 			memory[k] = malloc(size * sizeof(*memory));
 			if (memory[k] == NULL)
-				tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
+				tst_brkm(TBROK|TERRNO, NULL, "malloc");
 			for (j = 0; j < size; j++) {
 				memory[k][j] = mmap(NULL, MB,
 						PROT_READ|PROT_WRITE,
 						MAP_ANONYMOUS
 						|MAP_PRIVATE, -1, 0);
 				if (memory[k][j] == MAP_FAILED)
-					tst_brkm(TBROK|TERRNO, tst_exit,
+					tst_brkm(TBROK|TERRNO, NULL,
 						"mmap");
 				if (madvise(memory[k][j], MB,
 						MADV_MERGEABLE) == -1)
-					tst_brkm(TBROK|TERRNO, tst_exit,
+					tst_brkm(TBROK|TERRNO, NULL,
 						"madvise");
 				for (i = 0; i < MB; i++)
 					memory[k][j][i] = 'a';
 			}
 			tst_resm(TINFO, "child %d stops.", k);
 			if (raise(SIGSTOP) == -1)
-				tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+				tst_brkm(TBROK|TERRNO, NULL, "kill");
 			tst_resm(TINFO, "child %d continues...", k);
 			tst_resm(TINFO, "child %d changes memory content to "
 				"'d'", k);
@@ -300,13 +300,13 @@ void ksmtest(void)
 			/* Unmerge. */
 			tst_resm(TINFO, "child %d stops.", k);
 			if (raise(SIGSTOP) == -1)
-				tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+				tst_brkm(TBROK|TERRNO, NULL, "kill");
 			tst_resm(TINFO, "child %d continues...", k);
 
 			/* Stop. */
 			tst_resm(TINFO, "child %d stops.", k);
 			if (raise(SIGSTOP) == -1)
-				tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+				tst_brkm(TBROK|TERRNO, NULL, "kill");
 			tst_resm(TINFO, "child %d continues...", k);
 			exit(0);
 		}
@@ -315,120 +315,120 @@ void ksmtest(void)
 	snprintf(buf, BUFSIZ, "%s%s", _PATH_KSM, "run");
 	fd = open(buf, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "open");
+		tst_brkm(TBROK|TERRNO, NULL, "open");
 	if (write(fd, "1", 1) != 1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "write");
+		tst_brkm(TBROK|TERRNO, NULL, "write");
 	close(fd);
 	snprintf(buf, BUFSIZ, "%s%s", _PATH_KSM, "pages_to_scan");
 	snprintf(buf2, BUFSIZ, "%d", size * 256 * num);
 	fd = open(buf, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "open");
+		tst_brkm(TBROK|TERRNO, NULL, "open");
 	if (write(fd, buf2, strlen(buf2)) != strlen(buf2))
-		tst_brkm(TBROK|TERRNO, tst_exit, "write");
+		tst_brkm(TBROK|TERRNO, NULL, "write");
 	close(fd);
 
 	snprintf(buf, BUFSIZ, "%s%s", _PATH_KSM, "sleep_millisecs");
 	fd = open(buf, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "open");
+		tst_brkm(TBROK|TERRNO, NULL, "open");
 	if (write(fd, "0", 1) != 1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "write");
+		tst_brkm(TBROK|TERRNO, NULL, "write");
 	close(fd);
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
 		if (waitpid(child[k], &status, WUNTRACED) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "waitpid");
+			tst_brkm(TBROK|TERRNO, NULL, "waitpid");
 		if (!WIFSTOPPED(status))
-			tst_brkm(TBROK, tst_exit, "child %d was not stopped.",
+			tst_brkm(TBROK, NULL, "child %d was not stopped.",
 				k);
 	}
 	tst_resm(TINFO, "resume all children.");
 	for (k = 0; k < num; k++) {
 		if (kill(child[k], SIGCONT) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill child[%d]", k);
+			tst_brkm(TBROK|TERRNO, NULL, "kill child[%d]", k);
 	}
 	group_check(1, 2, size * num * 256 - 2, 0, 0, 0, size * 256 * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "waitpid");
+		tst_brkm(TBROK|TERRNO, NULL, "waitpid");
 	if (!WIFSTOPPED(status))
-		tst_brkm(TBROK, tst_exit, "child 1 was not stopped.");
+		tst_brkm(TBROK, NULL, "child 1 was not stopped.");
 
 	/* Child 1 changes all pages to 'b'. */
 	tst_resm(TINFO, "resume child 1.");
 	if (kill(child[1], SIGCONT) == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+		tst_brkm(TBROK|TERRNO, NULL, "kill");
 	group_check(1, 3, size * num * 256 - 3, 0, 0, 0, size * 256 * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "waitpid");
+		tst_brkm(TBROK|TERRNO, NULL, "waitpid");
 	if (!WIFSTOPPED(status))
-		tst_brkm(TBROK, tst_exit, "child 1 was not stopped.");
+		tst_brkm(TBROK, NULL, "child 1 was not stopped.");
 
 	/* All children change pages to 'd'. */
 	tst_resm(TINFO, "resume all children.");
 	for (k = 0; k < num; k++) {
 		if (kill(child[k], SIGCONT) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill child[%d]", k);
+			tst_brkm(TBROK|TERRNO, NULL, "kill child[%d]", k);
 	}
 	group_check(1, 1, size * num * 256 - 1, 0, 0, 0, size * 256 * num);
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
 		if (waitpid(child[k], &status, WUNTRACED) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "waitpid");
+			tst_brkm(TBROK|TERRNO, NULL, "waitpid");
 		if (!WIFSTOPPED(status))
-			tst_brkm(TBROK, tst_exit, "child %d was not stopped.",
+			tst_brkm(TBROK, NULL, "child %d was not stopped.",
 				k);
 	}
 	/* Child 1 changes pages to 'e'. */
 	tst_resm(TINFO, "resume child 1.");
 	if (kill(child[1], SIGCONT) == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+		tst_brkm(TBROK|TERRNO, NULL, "kill");
 	group_check(1, 1, size * num * 256 - 2, 0, 1, 0, size * 256 * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "waitpid");
+		tst_brkm(TBROK|TERRNO, NULL, "waitpid");
 	if (!WIFSTOPPED(status))
-		tst_brkm(TBROK, tst_exit, "child 1 was not stopped.");
+		tst_brkm(TBROK, NULL, "child 1 was not stopped.");
 
 	tst_resm(TINFO, "resume all children.");
 	for (k = 0; k < num; k++) {
 		if (kill(child[k], SIGCONT) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill child[%d]", k);
+			tst_brkm(TBROK|TERRNO, NULL, "kill child[%d]", k);
 	}
 	tst_resm(TINFO, "KSM unmerging...");
 	snprintf(buf, BUFSIZ, "%s%s", _PATH_KSM, "run");
 	fd = open(buf, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "open");
+		tst_brkm(TBROK|TERRNO, NULL, "open");
 	if (write(fd, "2", 1) != 1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "write");
+		tst_brkm(TBROK|TERRNO, NULL, "write");
 	group_check(2, 0, 0, 0, 0, 0, size * 256 * num);
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
 		if (waitpid(child[k], &status, WUNTRACED) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "waitpid");
+			tst_brkm(TBROK|TERRNO, NULL, "waitpid");
 		if (!WIFSTOPPED(status))
-			tst_brkm(TBROK, tst_exit, "child %d was not stopped.",
+			tst_brkm(TBROK, NULL, "child %d was not stopped.",
 				k);
 	}
 	tst_resm(TINFO, "resume all children.");
 	for (k = 0; k < num; k++) {
 		if (kill(child[k], SIGCONT) == -1)
-			tst_brkm(TBROK|TERRNO, tst_exit, "kill child[%d]", k);
+			tst_brkm(TBROK|TERRNO, NULL, "kill child[%d]", k);
 	}
 	tst_resm(TINFO, "stop KSM.");
 	if (lseek(fd, 0, SEEK_SET) == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "lseek");
+		tst_brkm(TBROK|TERRNO, NULL, "lseek");
 	if (write(fd, "0", 1) != 1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "write");
+		tst_brkm(TBROK|TERRNO, NULL, "write");
 	close(fd);
 	group_check(0, 0, 0, 0, 0, 0, size * 256 * num);
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0)
@@ -445,9 +445,9 @@ void setup(void)
 	snprintf(buf, BUFSIZ, "%s%s", _PATH_KSM, "run");
 	if (stat(buf, &new) == -1) {
 		if (errno == ENOENT)
-			tst_brkm(TCONF, tst_exit, "no KSM.");
+			tst_brkm(TCONF, NULL, "no KSM.");
 		else
-			tst_brkm(TBROK, tst_exit, "stat");
+			tst_brkm(TBROK, NULL, "stat");
 	}
 	/*
 	 * setup a default signal hander and a
@@ -477,9 +477,9 @@ void check(char *path, char *path2, long int value)
 	snprintf(buf, BUFSIZ, "%s%s", _PATH_KSM, path);
 	fp = fopen(buf, "r");
 	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "fopen");
+		tst_brkm(TBROK|TERRNO, NULL, "fopen");
 	if (fgets(buf, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "fgets");
+		tst_brkm(TBROK|TERRNO, NULL, "fgets");
 	fclose(fp);
 
 	tst_resm(TINFO, "%s is %ld.", path, atol(buf));
@@ -487,9 +487,9 @@ void check(char *path, char *path2, long int value)
 		snprintf(buf2, BUFSIZ, "%s%s", _PATH_KSM, path2);
 		fp = fopen(buf2, "r");
 		if (fp == NULL)
-			tst_brkm(TBROK|TERRNO, tst_exit, "fopen");
+			tst_brkm(TBROK|TERRNO, NULL, "fopen");
 		if (fgets(buf2, BUFSIZ, fp) == NULL)
-			tst_brkm(TBROK|TERRNO, tst_exit, "fgets");
+			tst_brkm(TBROK|TERRNO, NULL, "fgets");
 		fclose(fp);
 
 		tst_resm(TINFO, "%s is %ld.", path2, atol(buf2));
@@ -508,7 +508,7 @@ void verify(char value, int proc, int start, int end, int start2, int end2)
 
 	s = malloc((end - start) * (end2 - start2));
 	if (s == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
+		tst_brkm(TBROK|TERRNO, NULL, "malloc");
 
 	tst_resm(TINFO, "child %d verifies memory content.", proc);
 	memset(s, value, (end - start) * (end2 - start2));

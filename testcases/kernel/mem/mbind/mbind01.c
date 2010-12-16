@@ -67,11 +67,11 @@ int main(int argc, char** argv)
 	pagesize = getpagesize();
 	msg = parse_opts(argc, argv, options, usage);
 	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	if (opt_node) {
 		node = atoi(optarg);
 		if (node < 1)
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				"Number of NUMA nodes cannot be less that 1.");
 		numa_bitmask_setbit(nmask, node);
 	} else
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 		addr = mmap(NULL, pagesize*3, PROT_READ|PROT_WRITE,
 			MAP_ANON|MAP_PRIVATE, 0, 0);
 		if (addr == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, tst_exit, "mmap");
+			tst_brkm(TBROK|TERRNO, NULL, "mmap");
 
 		tst_resm(TINFO, "pid = %d addr = %p", getpid(), addr);
 		/* make page populate */
@@ -92,19 +92,19 @@ int main(int argc, char** argv)
 		err = mbind(addr+pagesize, pagesize, MPOL_BIND, nmask->maskp,
 			nmask->size, MPOL_MF_MOVE_ALL);
 		if (err != 0)
-			tst_brkm(TBROK|TERRNO, tst_exit, "mbind1");
+			tst_brkm(TBROK|TERRNO, NULL, "mbind1");
 
 		/* second mbind */
 		err = mbind(addr, pagesize*3, MPOL_DEFAULT, NULL, 0, 0);
 		if (err != 0)
-			tst_brkm(TBROK|TERRNO, tst_exit, "mbind2");
+			tst_brkm(TBROK|TERRNO, NULL, "mbind2");
 
 		/* /proc/self/maps in the form of
 		   "00400000-00406000 r-xp 00000000". */
 		sprintf(string, "%p", addr);
 		fp = fopen("/proc/self/maps", "r");
 		if (fp == NULL)
-			tst_brkm(TBROK|TERRNO, tst_exit, "fopen");
+			tst_brkm(TBROK|TERRNO, NULL, "fopen");
 
 		while (fgets(buf, BUFSIZ, fp) != NULL) {
 			/* Find out the 1st VMAs. */
@@ -124,7 +124,7 @@ int main(int argc, char** argv)
 		}
 		fclose(fp);
 		if (munmap(addr, pagesize*3) == -1)
-			tst_brkm(TWARN|TERRNO, tst_exit, "munmap");
+			tst_brkm(TWARN|TERRNO, NULL, "munmap");
 	}
 	return 0;
 }

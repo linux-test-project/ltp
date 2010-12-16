@@ -60,7 +60,11 @@ int TST_TOTAL = 2;
 void buf_init(void )
 {
     static int seed = 0;
+<<<<<<< HEAD
     if (seed == 0)
+=======
+    if ( seed == 0 )
+>>>>>>> master
         seed = DefaultSeed;
     srand(seed);
 }
@@ -82,7 +86,11 @@ int write_file(off_t num_blocks, const char *filename)
     uint8_t buf[BLOCKSIZE];
 
     fd = open(filename, O_RDWR|O_CREAT|O_TRUNC|O_LARGEFILE, FILE_MODE);
+<<<<<<< HEAD
     if (fd < 0) {
+=======
+    if ( fd < 0 ) {
+>>>>>>> master
         perror(TCID);
         return(-1);
     }
@@ -92,7 +100,11 @@ int write_file(off_t num_blocks, const char *filename)
 			tst_resm(TINFO, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
         buf_fill(buf);
         rv = write(fd, buf, BLOCKSIZE);
+<<<<<<< HEAD
         if (rv != BLOCKSIZE) {
+=======
+        if ( rv != BLOCKSIZE ) {
+>>>>>>> master
             ret = -1;
             break;
         }
@@ -112,7 +124,11 @@ int verify_file(off_t num_blocks, const char *filename)
     char buf_read[BLOCKSIZE];
 
     fd = open(filename, O_RDONLY);
+<<<<<<< HEAD
     if (fd < 0) {
+=======
+    if ( fd < 0 ) {
+>>>>>>> master
         perror(TCID);
         return(-1);
     }
@@ -123,7 +139,11 @@ int verify_file(off_t num_blocks, const char *filename)
         	tst_resm(TINFO, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
         buf_fill(buf_actual);
         rv = read(fd, buf_read, BLOCKSIZE);
+<<<<<<< HEAD
         if (rv != BLOCKSIZE) {
+=======
+        if ( rv != BLOCKSIZE ) {
+>>>>>>> master
             ret = -1;
             break;
         }
@@ -131,7 +151,11 @@ int verify_file(off_t num_blocks, const char *filename)
             int ba, br;
             ba = buf_actual[n] & 0xff;
             br = buf_read[n] & 0xff;
+<<<<<<< HEAD
             if (ba != br) {
+=======
+            if ( ba != br ) {
+>>>>>>> master
                 if (Verbosity > 2)
                 	tst_resm(TINFO, "Mismatch: block=%lld +%d bytes offset=%lld read: %02xh actual: %02xh\n",
                     (long long int)block, n, (long long int)((block*BLOCKSIZE)+n), br, ba);
@@ -173,7 +197,11 @@ void parse_args(int argc, char **argv)
             { 0, 0, 0, 0 }
         };
         c = getopt_long(argc, argv, "hvb:o:s:", long_options, &option_index);
+<<<<<<< HEAD
         if (c == -1)
+=======
+        if ( c == -1 )
+>>>>>>> master
             break;
         switch(c) {
             case 'b':
@@ -223,7 +251,11 @@ int main(int argc, char *argv[])
     tst_resm(TINFO, "Writing %lld blocks of %d bytes to '%s'\n", (long long int)NumBlocks, BLOCKSIZE, Filename);
     buf_init();
     rv = write_file(NumBlocks, Filename);
+<<<<<<< HEAD
     if (rv == 0) {
+=======
+    if ( rv == 0 ) {
+>>>>>>> master
         tst_resm(TPASS, "Write: Success");
     } else {
         tst_resm(TFAIL, "Write: Failure");
@@ -232,7 +264,11 @@ int main(int argc, char *argv[])
     tst_resm(TINFO, "Verifying %lld blocks in '%s'\n", (long long int)NumBlocks, Filename);
     buf_init();
     rv = verify_file(NumBlocks, Filename);
+<<<<<<< HEAD
     if (rv == 0) {
+=======
+    if ( rv == 0 ) {
+>>>>>>> master
         tst_resm(TPASS ,"Verify: Success\n");
     } else {
         tst_resm(TFAIL, "Verify: Failure");

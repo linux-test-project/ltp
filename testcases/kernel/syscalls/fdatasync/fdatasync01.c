@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 	/* perform global cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }				/* End main */
 
@@ -139,13 +139,13 @@ void setup(void)
 	/* Initialize unique filename for each child process */
 	if (sprintf(filename, "fdatasync_%d", getpid()) <= 0) {
 		tst_brkm(TBROK, cleanup, "Failed to initialize filename");
-	 /*NOTREACHED*/}
+	 }
 	if ((fd = open(filename, O_CREAT | O_WRONLY, 0777)) == -1) {	//mode must be specified when O_CREATE is in the flag
 		tst_brkm(TBROK, cleanup, "open() failed");
-	 /*NOTREACHED*/}
+	 }
 	if ((write(fd, filename, strlen(filename) + 1)) == -1) {
 		tst_brkm(TBROK, cleanup, "write() failed");
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*
@@ -168,4 +168,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

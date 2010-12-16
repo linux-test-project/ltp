@@ -137,15 +137,15 @@ void setup()
 
 	/* switch to nobody user */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "\"nobody\"user not present");
+		tst_brkm(TBROK, NULL, "\"nobody\"user not present");
 	}
 
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, tst_exit, "seteuid failed to "
+		tst_brkm(TBROK, NULL, "seteuid failed to "
 			 "to set the effective uid to %d", ltpuser->pw_uid);
 	}
 

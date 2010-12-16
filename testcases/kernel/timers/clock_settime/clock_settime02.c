@@ -122,11 +122,11 @@ setup(void)
 
 	/* Check whether we are root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	/* Save the current time specifications */
 	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
-		tst_brkm(TBROK, tst_exit, "Could not save the current time");
+		tst_brkm(TBROK, NULL, "Could not save the current time");
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;

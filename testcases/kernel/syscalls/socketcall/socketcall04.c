@@ -147,7 +147,7 @@ int main(int ac, char **av)
 void setup1(void)
 {
 	if ((s = socket(TC.domain, TC.type, TC.pro)) == -1) {
-		tst_brkm(TBROK, tst_exit, "socket creation failed");
+		tst_brkm(TBROK, NULL, "socket creation failed");
 	}
 	args[0] = s;
 	args[1] = 1;

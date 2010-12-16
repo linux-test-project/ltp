@@ -90,9 +90,8 @@ int main(int ac, char **av)
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -115,42 +114,47 @@ int main(int ac, char **av)
 			 * TEST call is made.
 			 */
 			if (seteuid(ltpuser1->pw_uid) != 0) {
-				tst_resm(TINFO, "setreuid failed in child #1");
+				perror("setreuid failed in child #1");
 				exit(1);
 			}
 			if (mkdir(good_dir, 00400) != 0) {
-				tst_resm(TINFO, "mkdir failed in child #1");
+				perror("mkdir failed in child #1");
 				exit(1);
 			}
 			if ((fd = open(good_dir, O_RDONLY)) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "open of directory failed");
+				perror("opening directory failed");
 			}
 
 			TEST(fchdir(fd));
 
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
+				printf("Call succeeded unexpectedly\n");
+				exit(1);
 			} else if (TEST_ERRNO != EACCES) {
-				tst_resm(TFAIL, "expected EACCES - got %d",
-					 TEST_ERRNO);
+				printf("Expected %d - got %d\n",
+				    EACCES, TEST_ERRNO);
+				exit(1);
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TPASS, "expected failure - errno = %d"
-					 " : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				printf("Got EACCES\n");
 			}
 
 			/* reset the process ID to the saved ID (root) */
 			if (setuid(0) == -1) {
-				tst_resm(TINFO, "setuid(0) failed");
+				perror("setuid(0) failed");
 			}
 
-		} else {	/* parent */
-			wait(&status);
-
-			/* let the child carry on */
-			exit(0);
+		} else {
+			if (wait(&status) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			else if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+				tst_brkm(TBROK, cleanup,
+				    "child exited abnormally (wait status = "
+				    "%d", status);
+			else {
+				/* let the child carry on */
+				exit(0);
+			}
 		}
 
 		/* clean up things in case we are looping */
@@ -161,7 +165,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -173,7 +177,7 @@ void setup()
 
 	/* make sure the process ID is root */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root.");
+		tst_brkm(TBROK, NULL, "Test must be run as root.");
 	}
 
 	/* capture signals */
@@ -211,7 +215,4 @@ void cleanup()
 	 * Delete the test directory created in setup().
 	 */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

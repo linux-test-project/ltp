@@ -393,7 +393,7 @@ void catch_child()
 {
 	tst_resm(TFAIL, "Unexpected death of child process");
 	cleanup();
- /*NOTREACHED*/}
+ }
 
 void catch_alarm()
 {
@@ -415,7 +415,7 @@ void catch_alarm()
 	tst_resm(TFAIL, "Alarm expired, deadlock not detected");
 	tst_resm(TWARN, "You may need to kill child processes by hand");
 	cleanup();
- /*NOTREACHED*/}
+ }
 
 int main(int ac, char **av)
 {
@@ -426,7 +426,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child1, "nddddddddd", 1, &file_fd,
@@ -449,7 +453,7 @@ int main(int ac, char **av)
 	if (setup()) {		/* global testup */
 		tst_resm(TINFO, "setup failed");
 		cleanup();
-	 /*NOTREACHED*/}
+	 }
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -473,7 +477,7 @@ int main(int ac, char **av)
 		} else if (child_pid1 < 0) {
 			perror("Fork failed: child 1");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		/* parent */
 
@@ -497,7 +501,7 @@ int main(int ac, char **av)
 					 "1 failed");
 			}
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 
 		/* parent */
 
@@ -526,7 +530,7 @@ int main(int ac, char **av)
 					 "failed");
 			}
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 		/* parent */
 
 		close(parent_pipe[1]);

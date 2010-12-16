@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 int setup1(void)
@@ -177,7 +177,7 @@ void cleanup2(void)
 {
 	/* close special file */
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, tst_exit, "Failed to close fd of %s", SPL_FILE);
+		tst_brkm(TBROK, NULL, "Failed to close fd of %s", SPL_FILE);
 	}
 }
 
@@ -215,4 +215,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

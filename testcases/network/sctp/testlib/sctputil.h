@@ -134,7 +134,7 @@ static inline int test_socket(int domain, int type, int protocol)
 {
 	int sk = socket(domain, type, protocol);
         if (-1 == sk)
-                tst_brkm(TBROK, tst_exit, "socket: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "socket: %s", strerror(errno));
 	return sk;
 }
 
@@ -146,7 +146,7 @@ static inline int test_bind(int sk, struct sockaddr *addr, socklen_t addrlen)
 	setsockopt(sk, SOL_SOCKET, SO_REUSEADDR, &true_const, sizeof(int));
 	error = bind(sk, addr, addrlen);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "bind: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "bind: %s", strerror(errno));
 	return error;
 }
 
@@ -154,7 +154,7 @@ static inline int test_bindx_add(int sk, struct sockaddr *addr, int count)
 {
 	int error = sctp_bindx(sk, addr, count, SCTP_BINDX_ADD_ADDR);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "bindx (add): %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "bindx (add): %s", strerror(errno));
 	return error;
 }
 
@@ -162,7 +162,7 @@ static inline int test_listen(int sk, int backlog)
 {
 	int error = listen(sk, backlog);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "listen: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "listen: %s", strerror(errno));
 	return error;
 }
 
@@ -170,7 +170,7 @@ static inline int test_connect(int sk, struct sockaddr *addr, socklen_t addrlen)
 {
 	int error = connect(sk, addr, addrlen);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "connect: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "connect: %s", strerror(errno));
 	return error;
 }
 
@@ -178,7 +178,7 @@ static inline int test_connectx(int sk, struct sockaddr *addr, int count)
 {
 	int error = sctp_connectx(sk, addr, count);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "connectx: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "connectx: %s", strerror(errno));
 	return error;
 }
 
@@ -186,7 +186,7 @@ static inline int test_accept(int sk, struct sockaddr *addr, socklen_t *addrlen)
 {
 	int error = accept(sk, addr, addrlen);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "accept: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "accept: %s", strerror(errno));
 	return error;
 }
 
@@ -194,7 +194,7 @@ static inline int test_send(int sk, const void *msg, size_t len, int flags)
 {
 	int error = send(sk, msg, len, flags);
         if (len != error)
-                tst_brkm(TBROK, tst_exit, "send: error:%d errno:%d",
+                tst_brkm(TBROK, NULL, "send: error:%d errno:%d",
 			 error, errno);
 	return error;
 }
@@ -204,7 +204,7 @@ static inline int test_sendto(int sk, const void *msg, size_t len, int flags,
 {
 	int error = sendto(sk, msg, len, flags, to, tolen);
         if (len != error)
-                tst_brkm(TBROK, tst_exit, "sendto: error:%d errno:%d",
+                tst_brkm(TBROK, NULL, "sendto: error:%d errno:%d",
 			 error, errno);
 	return error;
 }
@@ -214,7 +214,7 @@ static inline int test_sendmsg(int sk, const struct msghdr *msg, int flags,
 {
 	int error = sendmsg(sk, msg, flags);
         if (msglen != error)
-                tst_brkm(TBROK, tst_exit, "sendmsg: error:%d errno:%d",
+                tst_brkm(TBROK, NULL, "sendmsg: error:%d errno:%d",
 			 error, errno);
 	return error;
 }
@@ -223,7 +223,7 @@ static inline int test_recv(int sk, void *buf, size_t len, int flags)
 {
 	int error = recv(sk, buf, len, flags);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "recv: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "recv: %s", strerror(errno));
 	return error;
 }
 
@@ -231,7 +231,7 @@ static inline int test_recvmsg(int sk, struct msghdr *msg, int flags)
 {
 	int error = recvmsg(sk, msg, flags);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "recvmsg: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "recvmsg: %s", strerror(errno));
 	return error;
 }
 
@@ -239,7 +239,7 @@ static inline int test_shutdown(int sk, int how)
 {
 	int error = shutdown(sk, how);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "shutdown: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "shutdown: %s", strerror(errno));
 	return error;
 }
 
@@ -248,7 +248,7 @@ static inline int test_getsockopt(int sk, int optname, void *optval,
 {
 	int error = getsockopt(sk, SOL_SCTP, optname, optval, optlen);
 	if (error)
-		tst_brkm(TBROK, tst_exit, "getsockopt(%d): %s", optname,
+		tst_brkm(TBROK, NULL, "getsockopt(%d): %s", optname,
 			 strerror(errno));
 	return error;
 }
@@ -258,7 +258,7 @@ static inline int test_setsockopt(int sk, int optname, const void *optval,
 {
 	int error = setsockopt(sk, SOL_SCTP, optname, optval, optlen);
 	if (error)
-		tst_brkm(TBROK, tst_exit, "setsockopt(%d): %s", optname,
+		tst_brkm(TBROK, NULL, "setsockopt(%d): %s", optname,
 			 strerror(errno));
 	return error;
 }
@@ -267,7 +267,7 @@ static inline int test_sctp_peeloff(int sk, sctp_assoc_t assoc_id)
 {
 	int error = sctp_peeloff(sk, assoc_id);
         if (-1 == error)
-                tst_brkm(TBROK, tst_exit, "sctp_peeloff: %s", strerror(errno));
+                tst_brkm(TBROK, NULL, "sctp_peeloff: %s", strerror(errno));
 	return error;
 }
 
@@ -280,7 +280,7 @@ static inline int test_sctp_sendmsg(int s, const void *msg, size_t len,
 	int error = sctp_sendmsg(s, msg, len, to, tolen, ppid, flags, stream_no,
 	  		         timetolive, context);
 	if (len != error)
-		tst_brkm(TBROK, tst_exit, "sctp_sendmsg: error:%d errno:%d",
+		tst_brkm(TBROK, NULL, "sctp_sendmsg: error:%d errno:%d",
 			 error, errno);
 	return error;			
 }
@@ -291,7 +291,7 @@ static inline int test_sctp_send(int s, const void *msg, size_t len,
 {
 	int error = sctp_send(s, msg, len, sinfo, flags);
 	if (len != error)
-		tst_brkm(TBROK, tst_exit, "sctp_send: error:%d errno:%d",
+		tst_brkm(TBROK, NULL, "sctp_send: error:%d errno:%d",
 			 error, errno);
 	return error;			
 }
@@ -303,7 +303,7 @@ static inline int test_sctp_recvmsg(int sk, void *msg, size_t len,
 {
 	int error = sctp_recvmsg(sk, msg, len, from, fromlen, sinfo, msg_flags);
 	if (-1 == error)
-		tst_brkm(TBROK, tst_exit, "sctp_recvmsg: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "sctp_recvmsg: %s", strerror(errno));
 	return error;			
 }
 
@@ -311,7 +311,7 @@ static inline void *test_malloc(size_t size)
 {
 	void *buf = malloc(size);
         if (NULL == buf)
-                tst_brkm(TBROK, tst_exit, "malloc failed");
+                tst_brkm(TBROK, NULL, "malloc failed");
 	return buf;
 }
 

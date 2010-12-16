@@ -95,9 +95,15 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
+<<<<<<< HEAD
 	if ((msg = parse_opts(ac, av, NULL, NULL))
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* perform global setup for test */
@@ -128,7 +134,7 @@ int main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -141,8 +147,8 @@ void setup()
 
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
+	 }
 
 	/*
 	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed
@@ -174,7 +180,7 @@ void cleanup()
 	 * Reset I/O privileges for the specified port.
 	 */
 	if ((ioperm(io_addr, NUM_BYTES, TURN_OFF)) == -1) {
-		tst_brkm(TBROK, tst_exit, "ioperm() cleanup failed");
+		tst_brkm(TBROK, NULL, "ioperm() cleanup failed");
 	}
 
 	/*

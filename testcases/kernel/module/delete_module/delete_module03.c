@@ -99,7 +99,7 @@ char *TCID = "delete_module03";
 static int exp_enos[] = {EWOULDBLOCK, 0};
 int TST_TOTAL = 1;
 
-static int setup(void);
+static void setup(void);
 static void cleanup(void);
 
 int
@@ -110,10 +110,8 @@ main(int argc, char **argv)
 	char cmd[50];
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t*) NULL, NULL)) !=
-	    (char *) NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
@@ -144,10 +142,7 @@ main(int argc, char **argv)
 		goto END;
         }
 
-	tst_tmpdir();
-	if (setup() != 0) {
-		return 1;
-	}
+	setup();
 
 	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -176,31 +171,22 @@ END:
 		return 1;
 	}
 
-	/*NOTREACHED*/
-	return 0;
+	tst_exit();
 }
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-int
+void
 setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether it is root  */
-	if (geteuid() != 0) {
-		tst_resm(TBROK, "Must be root for this test!");
-		return 1;
-	}
+	tst_require_root(NULL);
 
-	/*
-	if (tst_kvercmp(2,5,48) >= 0)
-		tst_brkm(TCONF, tst_exit, "This test will not work on "
-					  "kernels after 2.5.48");
-	*/
+	tst_tmpdir();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -209,8 +195,6 @@ setup(void)
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
 	TEST_PAUSE;
-	return 0;
-
 }
 
 /*
@@ -236,7 +220,4 @@ cleanup(void)
 	 */
 	TEST_CLEANUP;
 	tst_rmdir();
-	/* exit with return code appropriate for results */
-	tst_exit();
-	/*NOTREACHED*/
 }

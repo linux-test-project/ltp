@@ -38,13 +38,13 @@
  *
  */
 
-#include <stdio.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 /*****	LTP Port	*****/
 #include "test.h"
@@ -53,21 +53,27 @@
 #define FAILED 0
 #define PASSED 1
 
-//char progname[]= "abort1()";
 char *TCID = "abort01";
 
 int local_flag = PASSED;
 int block_number;
 FILE *temp;
 int TST_TOTAL = 1;
-extern int Tst_count;
 
-int anyfail();
+void setup(void)
+{
+	temp = stderr;
+	tst_tmpdir();
+}
+
+void cleanup(void)
+{
+	unlink("core");
+	tst_rmdir();
+}
+
 int instress();
 void setup();
-void terror();
-void fail_exit();
-void ok_exit();
 int forkfail();
 void do_child();
 
@@ -81,85 +87,75 @@ int main(int argc, char *argv[])
 	int core, sig, ex;
 	char *msg;
 
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	core = sig = ex = 0;
+
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
 
-	setup();		/* temp file is now open */
-/*--------------------------------------------------------------*/
+	setup();
 
 	for (i = 0; i < ITER; i++) {
 
 		if ((kidpid = FORK_OR_VFORK()) == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv[0], "")) {
-				terror("self_exec failed (may be OK if under stress)");
-				if (instress())
-					ok_exit();
-				forkfail();
+				if (!instress())
+					perror("fork failed");
+					exit(1);
+				}
 			}
 #else
 			do_child();
 #endif
 		}
 		if (kidpid < 0) {
-			terror("Fork failed (may be OK if under stress)");
-			if (instress())
-				ok_exit();
-			forkfail();
+			if (!instress())
+				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 		}
 		count = 0;
 		while ((child = wait(&status)) > 0) {
 			count++;
 		}
 		if (count != 1) {
-			fprintf(temp, "\twrong # children waited on.\n");
-			fprintf(temp, "\tgot %d, expected %d\n", count, 1);
-			fail_exit();
+			tst_brkm(TBROK, cleanup,
+			    "wrong # children waited on; got %d, expected 1",
+			    count);
 		}
-		/*
-		   sig = status & 0177;
-		   core = status & 0200;
-		   ex = (status & 0xFF00) >> 8;
-		 */
-		/*****	LTP Port	*****/
-		sig = WTERMSIG(status);
+		if (WIFSIGNALED(status)) {
+
 #ifdef WCOREDUMP
-		core = WCOREDUMP(status);
+			core = WCOREDUMP(status);
 #endif
-		ex = WIFEXITED(status);
+			sig = WTERMSIG(status);
+
+		}
+		if (WIFEXITED(status))
+			ex = WIFEXITED(status);
+
 		/**************/
-		if (!core) {
-			fprintf(temp, "\tChild did not return core bit set!\n");
-			fprintf(temp, "\t  iteration %d, exit stat = 0x%x\n",
-				i, status);
-			fprintf(temp, "\tCore = %d, sig = %d, ex = %d\n",
-				core, sig, ex);
-			local_flag = FAILED;
+		if (core == 0) {
+			tst_brkm(TFAIL, cleanup,
+			    "Child did not dump core; exit code = %d, "
+			    "signal = %d", ex, sig);
+		} else {
+			tst_resm(TPASS, "abort dumped core");
 		}
-		if (sig != SIGIOT) {
-			fprintf(temp, "\tChild did not exit with SIGIOT (%d)\n",
-				SIGIOT);
-			fprintf(temp, "\t  iteration %d, exit stat = 0x%x\n",
-				i, status);
-			fprintf(temp, "\tCore = %d, sig = %d, ex = %d\n",
-				core, sig, ex);
-			local_flag = FAILED;
+
+		if (sig == SIGIOT) {
+			tst_resm(TPASS, "abort raised SIGIOT");
+		} else {
+			tst_brkm(TFAIL, cleanup,
+			    "Child did not raise SIGIOT (%d); exit code = %d, "
+			    "signal = %d", SIGIOT, ex, sig);
 		}
-		if (local_flag == FAILED)
-			break;
+
 	}
 
-/*--------------------------------------------------------------*/
-/* Clean up any files created by test before call to anyfail.	*/
-
-	unlink("core");
-	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
-	return 0;
+	cleanup();
+	tst_exit();
 }
 
 /*--------------------------------------------------------------*/
@@ -167,24 +163,8 @@ int main(int argc, char *argv[])
 void do_child()
 {
 	abort();
-	fprintf(temp, "\tchild - abort failed.\n");
-	exit(0);
-}
-
-/******	LTP Port	*****/
-int anyfail()
-{
-	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") :
-				tst_resm(TPASS, "Test passed");
-	tst_rmdir();
-	tst_exit();
-	return 0;
-}
-
-void setup()
-{
-	temp = stderr;
-	tst_tmpdir();
+	fprintf(stderr, "\tchild - abort failed.\n");
+	exit(1);
 }
 
 int instress()
@@ -193,30 +173,3 @@ int instress()
 		 "System resources may be too low; fork(), select() etc are likely to fail.");
 	return 1;
 }
-
-void terror(char *message)
-{
-	tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
-}
-
-void fail_exit()
-{
-	local_flag = FAILED;
-	anyfail();
-
-}
-
-void ok_exit()
-{
-	local_flag = PASSED;
-	tst_resm(TINFO, "Test passed");
-}
-
-int forkfail()
-{
-	fprintf(temp, "\t\tFORK FAILED - terminating test.\n");
-	tst_exit();
-	return 0;
-}
-
-/*****************/

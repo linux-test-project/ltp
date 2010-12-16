@@ -68,7 +68,7 @@ myexit (int x)
     tst_resm (TFAIL, "Test failed");
   else
     tst_resm (TPASS, "Test passed");
-  tst_exit();
+ tst_exit();
 }
 
 #if defined(__linux__)
@@ -167,8 +167,13 @@ char *av[];
 	dir[0] = '\0';
 	sprintf(pname,"%s.%d",PPATH,getpid());
 
+<<<<<<< HEAD
 	if ((toutput=getenv("TOUTPUT")) != NULL) {
 	    if (strcmp( toutput, "NOPASS") == 0) {
+=======
+	if ( (toutput=getenv("TOUTPUT")) != NULL ) {
+	    if ( strcmp( toutput, "NOPASS") == 0 ) {
+>>>>>>> master
 		quiet=1;
 	    }
 	}
@@ -282,7 +287,11 @@ char *av[];
 			break;
 
     		case 'I':
+<<<<<<< HEAD
      			if ((iotype=lio_parse_io_arg1(optarg)) == -1) {
+=======
+     			if ((iotype=lio_parse_io_arg1(optarg)) == -1 ) {
+>>>>>>> master
          		    fprintf(stderr,
              			"%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
              			TCID);
@@ -446,14 +455,18 @@ char *av[];
 	writebuf[size-1] = 'A';	/* to detect partial read/write problem */
 
 	if ((sem_id = semget(IPC_PRIVATE, 1, IPC_CREAT|S_IRWXU)) == -1) {
-		tst_brkm(TBROK, tst_exit, "Couldn't allocate semaphore: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "Couldn't allocate semaphore: %s", strerror(errno));
 	}
 
 	if (semctl(sem_id, 0, SETVAL, u) == -1)
-		tst_brkm(TBROK, tst_exit, "Couldn't initialize semaphore value: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "Couldn't initialize semaphore value: %s", strerror(errno));
 
 	if (background) {
+<<<<<<< HEAD
 	    if ((n=fork()) == -1) {
+=======
+	    if ((n=fork() ) == -1) {
+>>>>>>> master
 		tst_resm (TFAIL, "fork() failed: %s", strerror(errno));
 		exit(1);
 	    }
@@ -527,7 +540,7 @@ printf("child after fork pid = %d\n", getpid());
 				exit(1);
 			}
 			if (ndelay && fcntl(write_fd, F_SETFL, O_NONBLOCK) == -1) {
-				tst_brkm(TBROK, tst_exit, "Failed setting the pipe to nonblocking mode: %s", strerror(errno));
+				tst_brkm(TBROK, NULL, "Failed setting the pipe to nonblocking mode: %s", strerror(errno));
 			}
 		}
 		else {
@@ -541,7 +554,7 @@ printf("child after fork pid = %d\n", getpid());
 		};
 
 		if (semop(sem_id, &sem_op, 1) == -1)
-			tst_brkm(TBROK, tst_exit, "Couldn't raise the semaphore: %s", strerror(errno));
+			tst_brkm(TBROK, NULL, "Couldn't raise the semaphore: %s", strerror(errno));
 
 
 		pid_word = (int *)&writebuf[0];
@@ -598,7 +611,7 @@ printf("child after fork pid = %d\n", getpid());
 				exit(1);
 			}
 			if (ndelay && fcntl(read_fd, F_SETFL, O_NONBLOCK) == -1) {
-				tst_brkm(TBROK, tst_exit, "Failed setting the pipe to nonblocking mode: %s", strerror(errno));
+				tst_brkm(TBROK, NULL, "Failed setting the pipe to nonblocking mode: %s", strerror(errno));
 			}
 		}
 		else {
@@ -615,7 +628,7 @@ printf("child after fork pid = %d\n", getpid());
 			if (errno == EINTR) {
 				continue;
 			}
-			tst_brkm(TBROK, tst_exit, "Couldn't wait on semaphore: %s", strerror(errno));
+			tst_brkm(TBROK, NULL, "Couldn't wait on semaphore: %s", strerror(errno));
 		}
 
 		for (i=num_wrters*num_writes; i > 0 || loop; --i) {
@@ -693,7 +706,11 @@ output:
 			tst_resm (TFAIL, "1 FAIL %d data errors on pipe, read size = %d, %s %s",
 			          error,size,pipe_type,blk_type);
 		else
+<<<<<<< HEAD
 			if (!quiet)
+=======
+			if ( !quiet )
+>>>>>>> master
 				tst_resm (TPASS, "1 PASS %d pipe reads complete, read size = %d, %s %s",
 				          count+1,size,pipe_type,blk_type);
 

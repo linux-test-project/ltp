@@ -102,7 +102,7 @@ int main(int argc, char * argv[])
 	/* Create the semaphore */
 	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 2);
 
-	if ((sem == SEM_FAILED) && (errno == EEXIST))
+	if (sem == SEM_FAILED && errno == EEXIST)
 	{
 		sem_unlink(SEM_NAME);
 		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 2);
@@ -116,7 +116,11 @@ int main(int argc, char * argv[])
 	/* Use the semaphore to change its value. */
 	do {
 		ret = sem_wait(sem);
+<<<<<<< HEAD
 	} while ((ret != 0) && (errno == EINTR));
+=======
+	} while (ret != 0 && errno == EINTR);
+>>>>>>> master
 
 	if (ret != 0)
 	{

@@ -675,7 +675,7 @@ int main(int argc, char **argv)
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/* NOTREACHED */
+		
 	}
 
 	setup();
@@ -729,7 +729,7 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if (tst_kvercmp(2, 6, 22) < 0)
-		tst_brkm(TCONF, tst_exit, "2.6.22 or greater kernel required");
+		tst_brkm(TCONF, NULL, "2.6.22 or greater kernel required");
 
 	/* Create a temporary directory & chdir there */
 	tst_tmpdir();

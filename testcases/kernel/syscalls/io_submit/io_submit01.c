@@ -78,8 +78,12 @@ int main(int argc, char **argv)
 
 	if ((msg =
 	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();
 
@@ -175,7 +179,7 @@ int main(int argc, char **argv)
 		rval = io_setup(1, &ctx);
 		if (rval != 0) {
 			tst_brkm(TBROK, cleanup, "io_setup failed: %d", rval);
-		 /*NOTREACHED*/}
+		 }
 
 		TEST(io_submit(ctx, 1, iocbs));
 		if (TEST_RETURN == 0) {

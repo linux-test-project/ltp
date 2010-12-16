@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");
 #endif
@@ -114,9 +114,9 @@ int main(int argc, char **argv)
 				tst_resm(TPASS, "%s PASSED", TCID);
 			}
 			cleanup();
-		 /*NOTREACHED*/} else if (pid < 0) {
+		 } else if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "fork failed");
-		 /*NOTREACHED*/}
+		 }
 
 		/*
 		 * Set up to catch SIGINT.  The kids will wait till a SIGINT
@@ -139,17 +139,17 @@ int main(int argc, char **argv)
 					tst_resm(TFAIL, "self_exec kid %d "
 						 "failed", kid_count);
 					tst_exit();
-				 /*NOTREACHED*/}
+				 }
 #else
 				do_exit();
 #endif
-			 /*NOTREACHED*/}
+			 }
 
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid %d failed. errno = "
 					 "%d", kid_count, errno);
 				tst_exit();
-			 /*NOTREACHED*/}
+			 }
 
 			/* parent */
 			fork_kid_pid[kid_count] = ret_val;
@@ -174,7 +174,7 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "Kill of child %d failed, "
 					 "errno = %d", i, errno);
 				tst_exit();
-			 /*NOTREACHED*/}
+			 }
 		}
 
 		/*
@@ -324,7 +324,7 @@ void setup_sigint(void)
 	if ((sig_t) signal(SIGINT, inthandlr) == SIG_ERR) {
 		tst_resm(TFAIL, "signal SIGINT failed, errno = %d", errno);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 }
 
 /*
@@ -357,7 +357,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void inthandlr()
 {

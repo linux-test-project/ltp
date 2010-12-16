@@ -79,7 +79,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();		/* global setup */
@@ -94,7 +98,7 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "fcntl remote locking feature not "
 				 "implemented in the kernel: exitting");
 			cleanup();
-		 /*NOTREACHED*/} else {
+		 } else {
 			tst_resm(TPASS, "fcntl on file failed: Test " "PASSED");
 		}
 	}

@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	setup();
 
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -171,7 +171,7 @@ void setup(void)
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -185,7 +185,7 @@ void setup(void)
 	if ((gettimeofday(&tp, (struct timezone *)&tp1)) == -1) {
 		tst_brkm(TBROK, cleanup, "gettimeofday failed. "
 			 "errno=%d", errno);
-	 /*NOTREACHED*/}
+	 }
 	save_tv_sec = tp.tv_sec;
 	save_tv_usec = tp.tv_usec;
 }
@@ -213,4 +213,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

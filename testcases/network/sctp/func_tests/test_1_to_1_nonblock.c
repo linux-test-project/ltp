@@ -114,18 +114,18 @@ main(int argc, char *argv[])
 	/*Setting server socket non-blocking*/
 	sflag = fcntl(lstn_sk, F_GETFL, 0);
 	if (sflag < 0)
-		tst_brkm(TBROK, tst_exit, "fcnt F_GETFL failed "
+		tst_brkm(TBROK, NULL, "fcnt F_GETFL failed "
                          "sflag:%d, errno:%d", sflag, errno);
 
 	error = fcntl(lstn_sk, F_SETFL, sflag | O_NONBLOCK);
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "fcnt F_SETFL failed "
+		tst_brkm(TBROK, NULL, "fcnt F_SETFL failed "
                          "error:%d, errno:%d", error, errno);
 
 	/* TEST1: accept should return EAGAIN instead blocking. */
 	error = accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
 	if (error != -1 || errno != EAGAIN)
-		tst_brkm(TBROK, tst_exit, "non-blocking accept "
+		tst_brkm(TBROK, NULL, "non-blocking accept "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking accept() - EAGAIN");
@@ -134,17 +134,17 @@ main(int argc, char *argv[])
 	/*Set client socket as non-blocking*/
 	cflag = fcntl(sk, F_GETFL, 0);
 	if (cflag < 0)
-		tst_brkm(TBROK, tst_exit, "fcnt F_GETFL failed "
+		tst_brkm(TBROK, NULL, "fcnt F_GETFL failed "
                          "cflag:%d, errno:%d", cflag, errno);
 
 	error = fcntl(sk, F_SETFL, sflag | O_NONBLOCK);
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "fcnt F_SETFL failed "
+		tst_brkm(TBROK, NULL, "fcnt F_SETFL failed "
                          "error:%d, errno:%d", error, errno);
 
 	error = connect(sk, (const struct sockaddr *) &conn_addr, len);
 	if (error != -1 || errno != EINPROGRESS)
-		tst_brkm(TBROK, tst_exit, "non-blocking connect "
+		tst_brkm(TBROK, NULL, "non-blocking connect "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking connect() - EINPROGRESS");
@@ -152,7 +152,7 @@ main(int argc, char *argv[])
 	/* TEST3: Now that connect() called, accept will succeed */
 	acpt_sk = accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
 	if (acpt_sk < 0)
-		tst_brkm(TBROK, tst_exit, "accept after a non-blocking connect "
+		tst_brkm(TBROK, NULL, "accept after a non-blocking connect "
                          "error:%d, errno:%d", error, errno);
 	
 	tst_resm(TPASS, "accept() after a non-blocking connect - SUCCESS");
@@ -197,7 +197,7 @@ main(int argc, char *argv[])
 	/* TEST4: recvmsg() should return EAGAIN instead blocking */
 	error = recvmsg(sk, &inmessage, MSG_WAITALL);
 	if (error != -1 || errno != EAGAIN)
-		tst_brkm(TBROK, tst_exit, "non-blocking recvmsg "
+		tst_brkm(TBROK, NULL, "non-blocking recvmsg "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking recvmsg() - EAGAIN");

@@ -61,10 +61,10 @@ static char buf[1024];
 	_exit(103);						\
     }								\
     buf[local_n] = '\0';					\
-}while(0)
+}while (0)
 
 /* evals 'x' twice */
-#define SET_IF_DESIRED(x,y) do{  if(x) *(x) = (y); }while(0)
+#define SET_IF_DESIRED(x,y) do{  if (x) *(x) = (y); }while (0)
 
 
 /***********************************************************************/
@@ -119,7 +119,7 @@ int uptime(double *restrict uptime_secs, double *restrict idle_secs) {
 
 unsigned long long Hertz;
 
-static void old_Hertz_hack(void){
+static void old_Hertz_hack(void) {
   unsigned long long user_j, nice_j, sys_j, other_j;  /* jiffies (clock ticks) */
   double up_1, up_2, seconds;
   unsigned long long jiffies;
@@ -135,13 +135,13 @@ static void old_Hertz_hack(void){
     sscanf(buf, "cpu %Lu %Lu %Lu %Lu", &user_j, &nice_j, &sys_j, &other_j);
     FILE_TO_BUF(UPTIME_FILE,uptime_fd);  sscanf(buf, "%lf", &up_2);
     /* uptime(&up_2, NULL); */
-  } while((long long)( (up_2-up_1)*1000.0/up_1 )); /* want under 0.1% error */
+  } while ((long long)( (up_2-up_1)*1000.0/up_1 )); /* want under 0.1% error */
   setlocale(LC_NUMERIC, savelocale);
   jiffies = user_j + nice_j + sys_j + other_j;
   seconds = (up_1 + up_2) / 2;
   h = (unsigned)( (double)jiffies/seconds/smp_num_cpus );
   /* actual values used by 2.4 kernels: 32 64 100 128 1000 1024 1200 */
-  switch(h){
+  switch(h) {
   case    9 ...   11 :  Hertz =   10; break; /* S/390 (sometimes) */
   case   18 ...   22 :  Hertz =   20; break; /* user-mode Linux */
   case   30 ...   34 :  Hertz =   32; break; /* ia64 emulator */
@@ -175,27 +175,27 @@ static void old_Hertz_hack(void){
 extern char** environ;
 
 /* for ELF executables, notes are pushed before environment and args */
-static unsigned long find_elf_note(unsigned long findme){
+static unsigned long find_elf_note(unsigned long findme) {
   unsigned long *ep = (unsigned long *)environ;
-  while(*ep++);
-  while(*ep){
-    if(ep[0]==findme) return ep[1];
+  while (*ep++);
+  while (*ep) {
+    if (ep[0]==findme) return ep[1];
     ep+=2;
   }
   return 42;
 }
 
 static void init_libproc(void) __attribute__((constructor));
-static void init_libproc(void){
+static void init_libproc(void) {
   /* ought to count CPUs in /proc/stat instead of relying
    * on glibc, which foolishly tries to parse /proc/cpuinfo
    */
   smp_num_cpus = sysconf(_SC_NPROCESSORS_CONF); // or _SC_NPROCESSORS_ONLN
-  if(smp_num_cpus<1) smp_num_cpus=1; /* SPARC glibc is buggy */
+  if (smp_num_cpus<1) smp_num_cpus=1; /* SPARC glibc is buggy */
 
-  if(linux_version_code > LINUX_VERSION(2, 4, 0)){ 
+  if (linux_version_code > LINUX_VERSION(2, 4, 0)) { 
     Hertz = find_elf_note(AT_CLKTCK);
-    if(Hertz!=42) return;
+    if (Hertz!=42) return;
     fprintf(stderr, "2.4 kernel w/o ELF notes? -- report to albert@users.sf.net\n");
   }
   old_Hertz_hack();
@@ -211,7 +211,7 @@ static void init_libproc(void){
 #define NAN (-0.0)
 #endif
 #define JT unsigned long long
-void five_cpu_numbers(double *restrict uret, double *restrict nret, double *restrict sret, double *restrict iret, double *restrict wret){
+void five_cpu_numbers(double *restrict uret, double *restrict nret, double *restrict sret, double *restrict iret, double *restrict wret) {
     double tmp_u, tmp_n, tmp_s, tmp_i, tmp_w;
     double scale;  /* scale values to % */
     static JT old_u, old_n, old_s, old_i, old_w;
@@ -224,7 +224,7 @@ void five_cpu_numbers(double *restrict uret, double *restrict nret, double *rest
     FILE_TO_BUF(STAT_FILE,stat_fd);
     sscanf(buf, "cpu %Lu %Lu %Lu %Lu %Lu", &new_u, &new_n, &new_s, &new_i, &new_w);
     ticks_past = (new_u+new_n+new_s+new_i+new_w)-(old_u+old_n+old_s+old_i+old_w);
-    if(ticks_past){
+    if (ticks_past) {
       scale = 100.0 / (double)ticks_past;
       tmp_u = ( (double)new_u - (double)old_u ) * scale;
       tmp_n = ( (double)new_n - (double)old_n ) * scale;
@@ -286,7 +286,7 @@ typedef struct mem_table_struct {
   unsigned *slot; /* slot in return struct */
 } mem_table_struct;
 
-static int compare_mem_table_structs(const void *a, const void *b){
+static int compare_mem_table_structs(const void *a, const void *b) {
   return strcmp(((const mem_table_struct*)a)->name,((const mem_table_struct*)b)->name);
 }
 
@@ -352,7 +352,7 @@ unsigned kb_inactive;
 unsigned kb_mapped;
 unsigned kb_pagetables;
 
-void meminfo(void){
+void meminfo(void) {
   char namebuf[16]; /* big enough to hold any row name */
   mem_table_struct findme = { namebuf, NULL};
   mem_table_struct *found;
@@ -392,11 +392,11 @@ void meminfo(void){
   kb_inactive = ~0U;
 
   head = buf;
-  for(;;){
+  for (;;) {
     tail = strchr(head, ':');
-    if(!tail) break;
+    if (!tail) break;
     *tail = '\0';
-    if(strlen(head) >= sizeof(namebuf)){
+    if (strlen(head) >= sizeof(namebuf)) {
       head = tail+1;
       goto nextline;
     }
@@ -405,18 +405,18 @@ void meminfo(void){
         sizeof(mem_table_struct), compare_mem_table_structs
     );
     head = tail+1;
-    if(!found) goto nextline;
+    if (!found) goto nextline;
     *(found->slot) = strtoul(head,&tail,10);
 nextline:
     tail = strchr(head, '\n');
-    if(!tail) break;
+    if (!tail) break;
     head = tail+1;
   }
-  if(!kb_low_total){  /* low==main except with large-memory support */
+  if (!kb_low_total) {  /* low==main except with large-memory support */
     kb_low_total = kb_main_total;
     kb_low_free  = kb_main_free;
   }
-  if(kb_inactive==~0U){
+  if (kb_inactive==~0U) {
     kb_inactive = kb_inact_dirty + kb_inact_clean + kb_inact_laundry;
   }
   kb_swap_used = kb_swap_total - kb_swap_free;
@@ -432,7 +432,7 @@ typedef struct vm_table_struct {
   unsigned *slot;       /* slot in return struct */
 } vm_table_struct;
 
-static int compare_vm_table_structs(const void *a, const void *b){
+static int compare_vm_table_structs(const void *a, const void *b) {
   return strcmp(((const vm_table_struct*)a)->name,((const vm_table_struct*)b)->name);
 }
 
@@ -462,7 +462,7 @@ unsigned vm_pageoutrun;  // times kswapd ran page reclaim
 unsigned vm_allocstall; // times a page allocator ran direct reclaim
 unsigned vm_pgrotated; // pages rotated to the tail of the LRU for immediate reclaim
 
-void vminfo(void){
+void vminfo(void) {
   char namebuf[16]; /* big enough to hold any row name */
   vm_table_struct findme = { namebuf, NULL};
   vm_table_struct *found;
@@ -499,11 +499,11 @@ void vminfo(void){
   FILE_TO_BUF(VMINFO_FILE,vminfo_fd);
 
   head = buf;
-  for(;;){
+  for (;;) {
     tail = strchr(head, ' ');
-    if(!tail) break;
+    if (!tail) break;
     *tail = '\0';
-    if(strlen(head) >= sizeof(namebuf)){
+    if (strlen(head) >= sizeof(namebuf)) {
       head = tail+1;
       goto nextline;
     }
@@ -512,15 +512,15 @@ void vminfo(void){
         sizeof(vm_table_struct), compare_vm_table_structs
     );
     head = tail+1;
-    if(!found) goto nextline;
+    if (!found) goto nextline;
     *(found->slot) = strtoul(head,&tail,10);
 nextline:
 
-//if(found) fprintf(stderr,"%s=%d\n",found->name,*(found->slot));
+//if (found) fprintf(stderr,"%s=%d\n",found->name,*(found->slot));
 //else      fprintf(stderr,"%s not found\n",findme.name);
 
     tail = strchr(head, '\n');
-    if(!tail) break;
+    if (!tail) break;
     head = tail+1;
   }
 }

@@ -177,7 +177,7 @@ main(int argc, char *argv[])
 	/*sctp_getladdrs() TEST1: Bad socket descriptor, EBADF Expected error*/
 	error = sctp_getladdrs(-1, 0, &laddrs);
 	if (error != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "sctp_getladdrs with a bad socket "
+		tst_brkm(TBROK, NULL, "sctp_getladdrs with a bad socket "
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_getladdrs() with a bad socket descriptor - "
@@ -186,7 +186,7 @@ main(int argc, char *argv[])
 	/*sctp_getladdrs() TEST2: Invalid socket, ENOTSOCK Expected error*/
 	error = sctp_getladdrs(0, 0, &laddrs);
 	if (error != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "sctp_getladdrs with invalid socket "
+		tst_brkm(TBROK, NULL, "sctp_getladdrs with invalid socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_getladdrs() with invalid socket - ENOTSOCK");
@@ -196,7 +196,7 @@ main(int argc, char *argv[])
         sk1 = socket(pf_class, SOCK_STREAM, IPPROTO_IP);
 	error = sctp_getladdrs(sk1, 0, &laddrs);
 	if (error != -1 || errno != EOPNOTSUPP)
-		tst_brkm(TBROK, tst_exit, "sctp_getladdrs with socket of "
+		tst_brkm(TBROK, NULL, "sctp_getladdrs with socket of "
 			 "different protocol error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_getladdrs() with socket of different protocol - "
@@ -205,20 +205,20 @@ main(int argc, char *argv[])
 	/*sctp_getladdrs() TEST4: Getting the local addresses*/
 	error = sctp_getladdrs(lstn_sk, 0, &laddrs);
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "sctp_getladdrs with valid socket "
+		tst_brkm(TBROK, NULL, "sctp_getladdrs with valid socket "
 			 "error:%d, errno:%d", error, errno);
 
 	addr = (struct sockaddr_in *)laddrs;
 	if (addr->sin_port != lstn_addr.sin_port || 
 	    addr->sin_family != lstn_addr.sin_family || 
 	    addr->sin_addr.s_addr != lstn_addr.sin_addr.s_addr)
-		tst_brkm(TBROK, tst_exit, "sctp_getladdrs comparision failed");
+		tst_brkm(TBROK, NULL, "sctp_getladdrs comparision failed");
 
 	tst_resm(TPASS, "sctp_getladdrs() - SUCCESS");
 
 	/*sctp_freealddrs() TEST5: freeing the local address*/
 	if ((sctp_freeladdrs(laddrs)) < 0)
-		tst_brkm(TBROK, tst_exit, "sctp_freeladdrs "
+		tst_brkm(TBROK, NULL, "sctp_freeladdrs "
 			 "error:%d, errno:%d", error, errno);
 		
 	tst_resm(TPASS, "sctp_freeladdrs() - SUCCESS");
@@ -226,7 +226,7 @@ main(int argc, char *argv[])
 	/*sctp_getpaddrs() TEST6: Bad socket descriptor, EBADF Expected error*/
 	error = sctp_getpaddrs(-1, 0, &paddrs);
 	if (error != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "sctp_getpaddrs with a bad socket "
+		tst_brkm(TBROK, NULL, "sctp_getpaddrs with a bad socket "
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_getpaddrs() with a bad socket descriptor - "
@@ -235,7 +235,7 @@ main(int argc, char *argv[])
 	/*sctp_getpaddrs() TEST7: Invalid socket, ENOTSOCK Expected error*/
 	error = sctp_getpaddrs(0, 0, &paddrs);
 	if (error != -1 || errno != ENOTSOCK)
-		tst_brkm(TBROK, tst_exit, "sctp_getpaddrs with invalid socket "
+		tst_brkm(TBROK, NULL, "sctp_getpaddrs with invalid socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_getpaddrs() with invalid socket - ENOTSOCK");
@@ -244,7 +244,7 @@ main(int argc, char *argv[])
 	EOPNOTSUPP Expected error*/
 	error = sctp_getpaddrs(sk1, 0, &laddrs);
 	if (error != -1 || errno != EOPNOTSUPP)
-		tst_brkm(TBROK, tst_exit, "sctp_getpaddrs with socket of "
+		tst_brkm(TBROK, NULL, "sctp_getpaddrs with socket of "
 			 "different protocol error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_getpaddrs() with socket of different protocol - "
@@ -253,20 +253,20 @@ main(int argc, char *argv[])
 	/*sctp_getpaddrs() TEST9: Getting the peer addresses*/
 	error = sctp_getpaddrs(acpt_sk, 0, &paddrs);
 	if (error < 0)
-		tst_brkm(TBROK, tst_exit, "sctp_getpaddrs with valid socket "
+		tst_brkm(TBROK, NULL, "sctp_getpaddrs with valid socket "
 			 "error:%d, errno:%d", error, errno);
 	
 	addr = (struct sockaddr_in *)paddrs;
 	if (addr->sin_port != acpt_addr.sin_port ||
             addr->sin_family != acpt_addr.sin_family || 
             addr->sin_addr.s_addr != acpt_addr.sin_addr.s_addr)
-		tst_brkm(TBROK, tst_exit, "sctp_getpaddrs comparision failed");
+		tst_brkm(TBROK, NULL, "sctp_getpaddrs comparision failed");
 
 	tst_resm(TPASS, "sctp_getpaddrs() - SUCCESS");
 
 	/*sctp_freeapddrs() TEST10: freeing the peer address*/
 	if ((sctp_freepaddrs(paddrs)) < 0)
-		tst_brkm(TBROK, tst_exit, "sctp_freepaddrs "
+		tst_brkm(TBROK, NULL, "sctp_freepaddrs "
 			 "error:%d, errno:%d", error, errno);
 		
 	tst_resm(TPASS, "sctp_freepaddrs() - SUCCESS");

@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
 	/* Initialize first times */
 	st_time = times(&ini_tms);
 
-	if (st_time == (clock_t) -1)
+	if (st_time == -1)
 	{
 		UNRESOLVED(errno, "times failed");
 	}
@@ -158,7 +158,7 @@ int main(int argc, char * argv[])
 			UNRESOLVED(errno, "times failed");
 		}
 
-		if (child_tms.tms_utime + child_tms.tms_stime >= sysconf(_SC_CLK_TCK))
+		if ((child_tms.tms_utime + child_tms.tms_stime) >= sysconf(_SC_CLK_TCK))
 		{
 			FAILED("The tms struct was not reset during fork() operation");
 		}
@@ -167,7 +167,7 @@ int main(int argc, char * argv[])
 		{
 			cur_time = times(&child_tms);
 
-			if (cur_time == (clock_t) -1)
+			if (cur_time == -1)
 			{
 				UNRESOLVED(errno, "times failed");
 			}
@@ -184,14 +184,12 @@ int main(int argc, char * argv[])
 
 	if (ctl != child)
 	{
-		UNRESOLVED(errno, "Waitpid returned the wrong PID")
-		;
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
 	{
-		FAILED("Child exited abnormally")
-		;
+		FAILED("Child exited abnormally");
 	}
 
 	/* Check the children times were reported as expected */
@@ -213,7 +211,7 @@ int main(int argc, char * argv[])
 
 #endif
 
-	if (cur_time == (clock_t) -1)
+	if (cur_time == -1)
 	{
 		UNRESOLVED(errno, "times failed");
 	}

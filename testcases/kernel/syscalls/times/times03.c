@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 			pid2 = FORK_OR_VFORK();
 			if (pid2 < 0) {
 				tst_brkm(TFAIL, cleanup, "Fork failed");
-			 /*NOTREACHED*/} else if (pid2 == 0) {
+			 } else if (pid2 == 0) {
 
 				/* Spend some cycles in userspace */
 
@@ -237,7 +237,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 
@@ -303,4 +303,4 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

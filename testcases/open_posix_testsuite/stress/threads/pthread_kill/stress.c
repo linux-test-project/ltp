@@ -101,7 +101,7 @@ void floodsighdl(int sig)
 }
 
 /* Signals flood receiver thread */
-void * flood_receiver(void *arg)
+void* flood_receiver(void *arg)
 {
 	int ret = 0;
 	/* register the signal handler for this one thread */
@@ -189,10 +189,13 @@ void * sync_rec(void * arg)
 	}
 
 	/* wait until termination */
-	do
-	{
+	do {
 		sched_yield();
+<<<<<<< HEAD
 	} while (*(int *) arg);
+=======
+	} while (*( int * ) arg);
+>>>>>>> master
 
 	return NULL;
 }

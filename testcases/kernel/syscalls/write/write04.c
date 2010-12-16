@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	 }
 
 	/* global setup */
 	setup();
@@ -101,15 +101,15 @@ int main(int argc, char **argv)
 		if (mknod(fifo, S_IFIFO | 0777, 0) < 0) {
 			tst_resm(TBROK, "mknod() failed, errno: %d", errno);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 		if (stat(fifo, &buf) != 0) {
 			tst_resm(TBROK, "stat() failed, errno: %d", errno);
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 		if ((buf.st_mode & S_IFIFO) == 0) {
 			tst_resm(TBROK, "Mode does not indicate fifo file");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 #if 0
 		sigset(SIGALRM, alarm_handler);
 #endif
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 		if (sigsetjmp(jmp, 1)) {
 			tst_resm(TBROK, "setjmp() failed");
 			cleanup();
-		 /*NOTREACHED*/}
+		 }
 		(void)alarm(10);	/* set alarm for 10 seconds */
 		wfd = open(fifo, O_WRONLY | O_NONBLOCK);
 		(void)alarm(0);
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 		unlink(fifo);
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 void alarm_handler()
@@ -256,4 +256,4 @@ void cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }

@@ -202,7 +202,7 @@ main(int argc, char *argv[])
 	/* Verify that a peeled off socket is not allowed to do a listen().  */
 	error = listen(peeloff_sk[0], 1);
 	if (error != -1)
-		tst_brkm(TBROK, tst_exit, "listen on a peeled off socket "
+		tst_brkm(TBROK, NULL, "listen on a peeled off socket "
 			 "error: %d, errno: %d", error, errno); 
 
 	tst_resm(TPASS, "listen on a peeled off socket");
@@ -213,7 +213,7 @@ main(int argc, char *argv[])
 	 */
 	if ((-1 != sctp_peeloff(peeloff_sk[0], svr_associd[0])) ||
 	    (EINVAL != errno))
-		tst_brkm(TBROK, tst_exit, "sctp_peeloff on a peeled off "
+		tst_brkm(TBROK, NULL, "sctp_peeloff on a peeled off "
 			 "socket error:%d, errno:%d",
 			 error, errno);
 

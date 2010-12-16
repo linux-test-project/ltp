@@ -121,7 +121,7 @@ void * controler (void * arg)
 	/* Wait until the policy has been changed. */
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
+	if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 	/* let the controler control */
 	ret = pthread_barrier_wait(&bar);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
+	if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		UNRESOLVED(ret, "barrier wait failed");
 	}

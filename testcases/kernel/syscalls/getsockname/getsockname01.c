@@ -112,7 +112,11 @@ int main(int argc, char *argv[])
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(argc, argv, NULL, NULL);
+=======
+	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -146,7 +150,7 @@ int main(int argc, char *argv[])
 	}
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }				/* End main */
 
 void setup(void)

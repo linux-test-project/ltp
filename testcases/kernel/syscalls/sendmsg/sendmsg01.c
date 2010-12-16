@@ -230,7 +230,11 @@ int main(int argc, char *argv[])
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(argc, argv, NULL, NULL);
+=======
+	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -343,7 +347,7 @@ pid_t start_server(struct sockaddr_in * sin0, struct sockaddr_un * sun0)
 		return pid;
 	}
 
-	 /*NOTREACHED*/ exit(1);
+	  exit(1);
 }
 
 void do_child()

@@ -87,7 +87,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();		/* global setup */
@@ -100,7 +104,7 @@ int main(int ac, char **av)
 
 		if ((fd = open(file1, O_RDWR | O_CREAT, 0777)) < 0) {	//mode must be specified when O_CREATE is in the flag
 			tst_brkm(TBROK, cleanup, "open failed");
-		 /*NOTREACHED*/}
+		 }
 		(void)write(fd, buf, strlen(buf));
 
 		/*
@@ -109,7 +113,7 @@ int main(int ac, char **av)
 		addr = mmap(0, strlen(buf), PROT_READ, MAP_SHARED, fd, 0);
 		if (addr < 0) {
 			tst_brkm(TBROK, cleanup, "mmap failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
@@ -119,17 +123,17 @@ int main(int ac, char **av)
 			(void)memcpy((void *)addr, (void *)buf, strlen(buf));
 			tst_resm(TINFO, "memcpy() did not generate SIGSEGV");
 			exit(1);
-		 /*NOTREACHED*/}
+		 }
 
 		/* parent */
 		(void)waitpid(pid, &status, 0);
 		if (WIFEXITED(status) == 0) {
 			tst_brkm(TBROK, cleanup, "chiled exited abnormally");
-		 /*NOTREACHED*/}
+		 }
 		/* exit status should be 1 */
 		if (WEXITSTATUS(status) != 1) {
 			tst_brkm(TBROK, cleanup, "child failed");
-		 /*NOTREACHED*/}
+		 }
 
 		/*
 		 * Change the protection to WRITE.
@@ -154,7 +158,7 @@ int main(int ac, char **av)
 				if (WIFEXITED(status) == 0) {
 					tst_brkm(TBROK, cleanup, "child exited "
 						 "abnormally");
-				 /*NOTREACHED*/}
+				 }
 				/*
 				 * if we get a SIGSEGV, the exit status
 				 * will be 1.
@@ -187,7 +191,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 #else

@@ -498,7 +498,7 @@ static void tbio_request(request_queue_t *q)
 
 static int tbio_open(struct inode *inode , struct file *filep)
 {
-	if (! Device.bdev) {
+	if (!Device.bdev) {
 		Device.bdev = inode->i_bdev;
 		//atomic_inc((atomic_t)&Device.bdev->bd_part_count);
 	}

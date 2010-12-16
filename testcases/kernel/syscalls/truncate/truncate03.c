@@ -149,7 +149,11 @@ int main(int ac, char **av)
 	int ind;
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -211,7 +215,7 @@ int main(int ac, char **av)
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -234,7 +238,7 @@ void setup()
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1) {
@@ -263,7 +267,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TEST_FILE1, FILE_MODE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Write to the file 1k data from the buffer */
 	while (c_total < FILE_SIZE) {
@@ -271,7 +275,7 @@ void setup()
 			tst_brkm(TBROK, cleanup,
 				 "write(2) on %s Failed, errno=%d : %s",
 				 TEST_FILE1, errno, strerror(errno));
-		 /*NOTREACHED*/} else {
+		 } else {
 			c_total += c;
 		}
 	}
@@ -281,7 +285,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
@@ -322,7 +326,7 @@ int setup1()
 	/* Change mode permissions on test file */
 	if (chmod(TEST_FILE1, NEW_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", TEST_FILE1);
-	 /*NOTREACHED*/}
+	 }
 
 	return 0;
 }				/* End setup() */
@@ -345,13 +349,13 @@ int setup2()
 		tst_brkm(TBROK, cleanup,
 			 "open(2) on t_file failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	/* Close the file created above */
 	if (close(fildes) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(t_file) Failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 	return 0;
 }
 

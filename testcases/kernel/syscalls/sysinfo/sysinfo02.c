@@ -92,8 +92,12 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+=======
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
+	 }
 
 	setup();		/* Global setup */
 
@@ -113,10 +117,10 @@ int main(int ac, char **av)
 			/* Test Failed */
 			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, Expected -1"
 				 "returned %d/n", TEST_ERRNO);
-		 /*NOTREACHED*/}
+		 }
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 
 }
 

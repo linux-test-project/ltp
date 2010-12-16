@@ -131,7 +131,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Perform global setup for test */
 	setup();
@@ -147,11 +147,11 @@ int main(int ac, char **av)
 		if (setresuid(root_pw_uid, bin_pw_uid, bin_pw_uid)
 		    == -1) {
 			tst_brkm(TFAIL, cleanup, "Initial setresuid failed");
-		 /*NOTREACHED*/}
+		 }
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork failed");
-		 /*NOTREACHED*/} else if (pid == 0) {	/* child */
+		 } else if (pid == 0) {	/* child */
 
 			for (i = 0; i < TST_TOTAL; i++) {
 
@@ -199,7 +199,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 }
 
 /*
@@ -214,18 +214,18 @@ void setup(void)
 	if (getpwnam("nobody") == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	if (getpwnam("bin") == NULL) {
 		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	/* Check that the test process id is root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	root = *(getpwnam("root"));
 	root_pw_uid = root.pw_uid;
@@ -259,7 +259,7 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+ }
 
 void
 uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *when)
@@ -268,7 +268,7 @@ uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *when)
 	if (getresuid(&cur_ru, &cur_eu, &cur_su) != 0) {
 		flag = -1;
 		tst_brkm(TBROK, cleanup, "Set getresuid() failed");
-	 /*NOTREACHED*/}
+	 }
 	if ((cur_ru != ru->pw_uid) || (cur_eu != eu->pw_uid) || (cur_su !=
 								 su->pw_uid)) {
 		tst_resm(TFAIL, "ERROR: %s real uid = %d; effective uid = %d; "

@@ -66,11 +66,8 @@ int main(int ac, char *av[])
          /*
           * parse standard options
           */
-        if ((msg = parse_opts(ac, av, NULL) {
-                         tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-                 tst_exit();
-                 /*NOTREACHED*/
-        }
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+                 tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_tmpdir();
         local_flag = PASSED;
 
@@ -220,6 +217,6 @@ int main(int ac, char *av[])
 	} /* end for */
 	tst_rmdir();
 	tst_exit();
-	/* NOTREACHED */
+	
 	return 0;
 }

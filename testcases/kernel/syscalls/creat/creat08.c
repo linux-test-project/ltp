@@ -97,7 +97,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+	 }
 
 	if (issu() != 0) {
 		tst_resm(TINFO, "Must be root to run this test.");

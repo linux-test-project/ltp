@@ -663,7 +663,7 @@ main(void)
 	cleanup_function();
 
 	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
-	 /*NOTREACHED*/ return 0;
+	  return 0;
 /*--------------------------------------------------------------*/
 }
 

@@ -106,9 +106,15 @@ int main(int ac, char **av)
 	int nread;		/* no. of bytes read by pread() */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+	if (msg != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	/* Perform global setup for test */
@@ -194,7 +200,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -289,7 +295,7 @@ void init_buffers()
 		read_buf[count] = (char *)malloc(K1);
 
 		if ((write_buf[count] == NULL) || (read_buf[count] == NULL)) {
-			tst_brkm(TBROK, tst_exit,
+			tst_brkm(TBROK, NULL,
 				 "malloc() failed on read/write buffers");
 		}
 		memset(write_buf[count], count, K1);

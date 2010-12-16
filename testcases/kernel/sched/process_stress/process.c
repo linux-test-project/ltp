@@ -1217,5 +1217,5 @@ dprt("value of nodesum is initiallized to: %d\n", nodesum);
 	doit(); 		/* spawn off processes */
 	prtln();
 	return 0;
-	/* NOTREACHED */
+	
 }

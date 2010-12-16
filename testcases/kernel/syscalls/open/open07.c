@@ -112,7 +112,11 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+=======
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 	}
 
 	setup();
@@ -167,7 +171,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 void setupfunc_test1()
@@ -178,10 +182,10 @@ void setupfunc_test1()
 	sprintf(file2, "open03.2.%d", getpid());
 	if ((fd1 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	strcpy(TC[0].filename, file2);
 }
 
@@ -193,10 +197,10 @@ void setupfunc_test2()
 	sprintf(file2, "open03.4.%d", getpid());
 	if (mkdir(file1, 00700) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	strcpy(TC[1].filename, file2);
 }
 
@@ -209,13 +213,13 @@ void setupfunc_test3()
 	sprintf(file3, "open03.7.%d", getpid());
 	if ((fd2 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (symlink(file2, file3) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	strcpy(TC[2].filename, file3);
 }
 
@@ -228,13 +232,13 @@ void setupfunc_test4()
 	sprintf(file3, "open03.10.%d", getpid());
 	if (mkdir(file1, 00700) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	if (symlink(file2, file3) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 /*NOTREACHED*/}
+	 }
 	strcpy(TC[3].filename, file3);
 }
 
@@ -246,10 +250,10 @@ void setupfunc_test5()
 	sprintf(file2, "open12.4.%d", getpid());
 	if (mkdir(file1, 00700) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) failed: errno: %d", errno);
-	/*NOTREACHED*/}
+	}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	/*NOTREACHED*/}
+	}
 	strcpy(TC[4].filename, file2);
 	strcat(TC[4].filename, "/");
 }

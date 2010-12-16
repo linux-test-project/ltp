@@ -289,14 +289,12 @@ int main (int argc, char * argv[])
 	arg2.sem = &semsig2;
 #endif
 
-
-
-	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) & arg1)))
+	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) &arg1)))
 	{
 		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
 	}
 
-	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *) & arg2)))
+	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *) &arg2)))
 	{
 		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
 	}

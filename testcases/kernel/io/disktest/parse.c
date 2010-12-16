@@ -730,7 +730,11 @@ int make_assumptions(child_args_t *args)
 		/* use stat to get file properties, and use to set -I */
 		rv = stat(args->device, &stat_buf);
 		if (0 == rv) {
+<<<<<<< HEAD
 			if (IS_FILE(stat_buf.st_mode)) {
+=======
+			if (IS_FILE(stat_buf.st_mode) ) {
+>>>>>>> master
 				strncat(args->argstr, "(-I f) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 				args->flags |= CLD_FLG_FILE;
 			} else if (IS_BLK(stat_buf.st_mode)) {
@@ -949,7 +953,11 @@ int check_conclusions(child_args_t *args)
 	rv = stat(args->device, &stat_buf);
 	if (0 == rv) { /* no error on call to stat, compare against -I option */
 		/* files are usually file type */
+<<<<<<< HEAD
 		if ((args->flags & CLD_FLG_FILE) && !IS_FILE(stat_buf.st_mode)) {
+=======
+		if ((args->flags & CLD_FLG_FILE) && !IS_FILE(stat_buf.st_mode) ) {
+>>>>>>> master
 			pMsg(ERR, args, "Can't open non-file filespec with file device type, -If.\n");
 			return(-1);
 		}

@@ -43,4 +43,4 @@ clean:
 	$(MAKE) -f Makefile $@
 
 release: | autotools distclean
-	tar -cvz --exclude "$(TARBALL)" -f $(TARBALL) *
+	tar -cvz --exclude "$(TARBALL)" -f $(TARBALL) .

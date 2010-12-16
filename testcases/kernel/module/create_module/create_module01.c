@@ -92,7 +92,7 @@ main(int argc, char **argv)
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 			(char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/* perform global setup for test */
@@ -115,7 +115,7 @@ main(int argc, char **argv)
 			tst_resm(TPASS, "create_module() returned 0x%x",
 				TEST_RETURN);
 			if (delete_module(modname) != 0) {
-				tst_brkm(TBROK, tst_exit, "Failed to delete"
+				tst_brkm(TBROK, NULL, "Failed to delete"
 					"loadable module entry for %s",
 					modname);
 			}
@@ -125,7 +125,7 @@ main(int argc, char **argv)
 	/* perform global cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
+	
 	return 0;
 
 }	/* End main */
@@ -137,14 +137,10 @@ setup(void)
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-		/*NOTREACHED*/
-	}
+	tst_require_root(NULL);
 
 	if (tst_kvercmp(2,5,48) >= 0)
-		tst_brkm(TCONF, tst_exit, "This test will not work on "
+		tst_brkm(TCONF, NULL, "This test will not work on "
 				"kernels after 2.5.48");
 
 	/* Pause if that option was specified
@@ -154,7 +150,7 @@ setup(void)
 
 	/* Initialize unique module name for each child process */
 	if (sprintf(modname, "%s_%d",BASEMODNAME, getpid()) == -1) {
-		tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
+		tst_brkm(TBROK, NULL, "Failed to initialize module name");
 	}
 }
 
@@ -188,6 +184,6 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
+	
 }
 

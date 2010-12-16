@@ -42,6 +42,7 @@ int     local_flag;
 #define PASSED 1
 #define FAILED 0
 
+/* XXX: add setup and cleanup. */
 
 char progname[] = "stream01()" ;
 char tempfile1[40]="";
@@ -59,11 +60,8 @@ int main(int ac, char *av[])
          /*
           * parse standard options
           */
-        if ((msg = parse_opts(ac, av, NULL) {
-                        tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-                 tst_exit();
-                 /*NOTREACHED*/
-         }
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
         local_flag = PASSED;
 	tst_tmpdir();
@@ -79,16 +77,14 @@ int main(int ac, char *av[])
 		}
 		fwrite("a",1,1,stream);
 		if ((stream=freopen(tempfile2,"a+",stream)) == NULL) {
-			tst_resm(TFAIL,"freopen(%s) a+ failed: %s", tempfile2, strerror(errno));
-			tst_exit();
+			tst_brkm(TFAIL|TERRNO, NULL, "freopen(%s) a+ failed", tempfile2);
 		}
 		fwrite("a",1,1,stream);
 		fclose(stream);
 
 		/* now check that a single "a" is in each file */
 		if ((stream=fopen(tempfile1,"r")) == NULL) {
-			tst_resm(TFAIL,"fopen(%s) r failed: %s", tempfile1, strerror(errno));
-			tst_exit();
+			tst_brkm(TFAIL|TERRNO, NULL, "fopen(%s) r failed", tempfile1);
 		}
 		else {
 			for (i=0; i<10; i++) buf[i]=0;
@@ -100,8 +96,7 @@ int main(int ac, char *av[])
 			fclose(stream);
 		}
 		if ((stream=fopen(tempfile2,"r")) == NULL) {
-			tst_resm(TFAIL,"fopen(%s) r failed: %s", tempfile2, strerror(errno));
-			tst_exit();
+			tst_brkm(TFAIL|TERRNO, NULL, "fopen(%s) r failed", tempfile2);
 		}
 		else {
 			for (i=0; i<10; i++) buf[i]=0;
@@ -112,13 +107,13 @@ int main(int ac, char *av[])
 			}
 			fclose(stream);
 		}
-		 if (local_flag == PASSED) {
+		if (local_flag == PASSED) {
 			tst_resm(TPASS, "Test passed.");
-		 } else {
+		} else {
 			tst_resm(TFAIL, "Test failed.");
-		 }
+		}
 
-		 local_flag = PASSED;
+		local_flag = PASSED;
 
 	/*--------------------------------------------------------------------*/
 		unlink(tempfile1);
@@ -127,5 +122,4 @@ int main(int ac, char *av[])
 	} /* end for */
 	tst_rmdir();
 	tst_exit();
-	return 0;
 }

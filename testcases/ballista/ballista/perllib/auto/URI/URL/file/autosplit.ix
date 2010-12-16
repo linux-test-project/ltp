@@ -1,8 +1,0 @@
-# Index created by AutoSplit for ./blib/lib/URI/URL/file.pm (file acts as timestamp)
-package URI::URL::file;
-sub newlocal ;
-sub unix_path ;
-sub dos_path ;
-sub mac_path ;
-sub vms_path ;
-1;

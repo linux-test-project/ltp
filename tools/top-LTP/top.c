@@ -188,16 +188,16 @@ SCB_NUM1(P_CPU, pcpu)
 static int sort_P_TME (const proc_t **P, const proc_t **Q)
 {
    if (Frame_ctimes) {
-      if ( ((*P)->cutime + (*P)->cstime + (*P)->utime + (*P)->stime)
+      if (((*P)->cutime + (*P)->cstime + (*P)->utime + (*P)->stime)
         < ((*Q)->cutime + (*Q)->cstime + (*Q)->utime + (*Q)->stime) )
            return SORT_lt;
-      if ( ((*P)->cutime + (*P)->cstime + (*P)->utime + (*P)->stime)
+      if (((*P)->cutime + (*P)->cstime + (*P)->utime + (*P)->stime)
         > ((*Q)->cutime + (*Q)->cstime + (*Q)->utime + (*Q)->stime) )
            return SORT_gt;
    } else {
-      if ( ((*P)->utime + (*P)->stime) < ((*Q)->utime + (*Q)->stime))
+      if (((*P)->utime + (*P)->stime) < ((*Q)->utime + (*Q)->stime))
          return SORT_lt;
-      if ( ((*P)->utime + (*P)->stime) > ((*Q)->utime + (*Q)->stime))
+      if (((*P)->utime + (*P)->stime) > ((*Q)->utime + (*Q)->stime))
          return SORT_gt;
    }
    return SORT_eq;
@@ -787,8 +787,8 @@ static int selection_type;
 static uid_t selection_uid;
 
 // FIXME: this is "temporary" code we hope
-static int good_uid(const proc_t *restrict const pp){
-   switch(selection_type){
+static int good_uid(const proc_t *restrict const pp) {
+   switch(selection_type) {
    case 'p':
       return 1;
    case 0:
@@ -808,19 +808,19 @@ static int good_uid(const proc_t *restrict const pp){
 }
 
 // swiped from ps, and ought to be in libproc
-static const char *parse_uid(const char *restrict const str, uid_t *restrict const ret){
+static const char *parse_uid(const char *restrict const str, uid_t *restrict const ret) {
    struct passwd *passwd_data;
    char *endp;
    unsigned long num;
    static const char uidrange[] = "User ID out of range.";
    static const char uidexist[] = "User name does not exist.";
    num = strtoul(str, &endp, 0);
-   if(*endp != '\0'){  /* hmmm, try as login name */
+   if (*endp != '\0') {  /* hmmm, try as login name */
       passwd_data = getpwnam(str);
-      if(!passwd_data)    return uidexist;
+      if (!passwd_data)    return uidexist;
       num = passwd_data->pw_uid;
    }
-   if(num > 0xfffffffeUL) return uidrange;
+   if (num > 0xfffffffeUL) return uidrange;
    *ret = num;
    return 0;
 }
@@ -996,7 +996,7 @@ static void prochlp (proc_t *this)
    const HST_t *ptr;
    tmp.pid = this->pid;
    ptr = bsearch(&tmp, hist_sav, maxt_sav, sizeof tmp, sort_HST_t);
-   if(ptr) tics -= ptr->tics;
+   if (ptr) tics -= ptr->tics;
 }
 #endif
 
@@ -1241,7 +1241,7 @@ static void rc_bugless (const RCF_t *const rc) {
 
    fprintf(stderr,"\n%d %d %f %d\n"
       , rc->mode_altscr, rc->mode_irixps, rc->delay_time, rc->win_index);
-   while(i < 4) {
+   while (i < 4) {
       w = &rc->win[i++];
       fprintf(stderr, "<%s> <%s> %d %08x %d %d %d %d %d\n"
          , w->winname, w->fieldscur, w->sortindx, w->winflags, w->maxtasks
@@ -1495,11 +1495,11 @@ static void rc_write_old (FILE *fp) {
    *cp++ = tmp + '0';
 
    tmp = Curwin->rc.winflags;
-// if ( Secure_mode)       *cp++ = 's';     // stupid to have in local rcfile
-   if ( tmp & Show_CTIMES) *cp++ = 'S';
-   if ( tmp & Show_CMDLIN) *cp++ = 'c';
+// if (Secure_mode)       *cp++ = 's';     // stupid to have in local rcfile
+   if (tmp & Show_CTIMES) *cp++ = 'S';
+   if (tmp & Show_CMDLIN) *cp++ = 'c';
    if (~tmp & Show_IDLEPS) *cp++ = 'i';
-// if (                  ) *cp++ = 'H';     // 'H' = show threads (yea, sure)
+// if () *cp++ = 'H';     // 'H' = show threads (yea, sure)
    if (~tmp & View_MEMORY) *cp++ = 'm';
    if (~tmp & View_LOADAV) *cp++ = 'l';
    if (~tmp & View_STATES) *cp++ = 't';
@@ -1590,7 +1590,7 @@ static void confighlp (char *fields) {
    for (;;) {
       c = *cp++;
       if (!c) break;
-      if(isupper(c)) upper[c&0x1f]++;
+      if (isupper(c)) upper[c&0x1f]++;
       else           lower[c&0x1f]++;
    }
 
@@ -1772,7 +1772,7 @@ static void parse_args (char **args)
 	          std_err(fmtmk("bad file arg; failed to fopen '%s' for reading",cp));
 	       retcode = fscanf(datafile, " MaxTasks:%d RunningTasks:%d SleepingTasks:%d StoppedTasks:%d ZombieTasks:%d", 
 		                &Task1, &Task2, &Task3, &Task4, &Task5);
-	       while( retcode == 5 )
+	       while ( retcode == 5 )
                {
 		  loopcntr++;
                   fgets(buff, BUFF_SIZE, datafile);
@@ -1905,7 +1905,7 @@ static void parse_args (char **args)
                   if (errmsg) std_err(errmsg);
                   selection_type = 'u';
                   cp += snprintf(Curwin->colusrnam, USRNAMSIZ-1, "%s", cp); // FIXME: junk
-               } while(0);
+               } while (0);
                break;
             case 'U':
                do {
@@ -1918,7 +1918,7 @@ static void parse_args (char **args)
                   if (errmsg) std_err(errmsg);
                   selection_type = 'U';
                   cp += snprintf(Curwin->colusrnam, USRNAMSIZ-1, "%s", cp); // FIXME: junk
-               } while(0);
+               } while (0);
                break;
             default :
                std_err(fmtmk("unknown argument '%c'\nusage:\t%s%s"
@@ -2701,7 +2701,7 @@ static void do_key (unsigned c)
                break;
             }
             selection_type = 'u';
-         } while(0);
+         } while (0);
          break;
 
       case 'U':
@@ -2723,7 +2723,7 @@ static void do_key (unsigned c)
                break;
             }
             selection_type = 'U';
-         } while(0);
+         } while (0);
          break;
 
       case 'w':
@@ -2954,7 +2954,7 @@ static proc_t **summary_show (void)
 
       smpcpu = cpus_refresh(smpcpu);
 
-      if ( CHKw(Curwin, View_CPUSUM)) {
+      if (CHKw(Curwin, View_CPUSUM)) {
          // display just the 1st /proc/stat line
          summaryhlp(&smpcpu[Cpu_tot], "Cpu(s):");
 	 if (o_flag)
@@ -3192,7 +3192,7 @@ static void window_show (proc_t **ppt, WIN_t *q, int *lscr)
    lwin = 1;
    i = 0;
 
-   while ( -1 != ppt[i]->pid && *lscr < Max_lines  &&  (!q->winlines || (lwin <= q->winlines)) ) {
+   while (-1 != ppt[i]->pid && *lscr < Max_lines  &&  (!q->winlines || (lwin <= q->winlines))) {
       if ((CHKw(q, Show_IDLEPS) || ('S' != ppt[i]->state && 'Z' != ppt[i]->state))
       && good_uid(ppt[i]) ) {
          /*

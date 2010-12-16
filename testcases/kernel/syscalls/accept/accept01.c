@@ -111,10 +111,15 @@ int main(int ac, char *av[])
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
+=======
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+>>>>>>> master
 
 	setup();
 
@@ -145,7 +150,7 @@ int main(int ac, char *av[])
 		}
 	}
 	cleanup();
-	return 0;
+	tst_exit();
 }				/* End main */
 
 void setup(void)
@@ -164,7 +169,6 @@ void setup(void)
 void cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_exit();
 }
 
 void setup0(void)
@@ -172,8 +176,7 @@ void setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			 "errno: %s", strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "error opening /dev/null");
 }
 
 void cleanup0(void)

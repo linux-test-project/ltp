@@ -80,7 +80,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define TESTFILE	"testfile"
 #define SFILE		"slink_file"
 
@@ -110,12 +110,19 @@ void cleanup(void);
 int main(int argc, char *argv[])
 {
 	struct stat stat_buf;
-	int lc, i;
+	int lc;
 	char *msg;
+	int i;
 
+<<<<<<< HEAD
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
+=======
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+>>>>>>> master
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -128,7 +135,7 @@ int main(int argc, char *argv[])
 			char *test_desc = test_cases[i].desc;
 
 			/*
-			 * Call lchwon(2) with different user id and
+			 * Call lchown(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * symlink of testfile.
 			 */
@@ -154,26 +161,28 @@ int main(int argc, char *argv[])
 					         "%s failed, errno %d",
 						 SFILE, TEST_ERRNO);
 				}
-
-				if (user_id == (uid_t)-1) {
+				if (user_id == -1) {
 					if (i > 0)
 						user_id = test_cases[i-1].user_id;
 					else
 						user_id = geteuid();
 				}
-
-				if (group_id == (gid_t)-1) {
+				if (group_id == -1) {
 					if (i > 0)
-						group_id = test_cases[i - 1].group_id;
+						group_id = test_cases[i-1].group_id;
 					else
 						group_id = getegid();
 				}
 
+				/*
+				 * Check for expected Ownership ids
+				 * set on testfile.
+				 */
 				if ((stat_buf.st_uid != user_id) ||
 				    (stat_buf.st_gid != group_id)) {
 					tst_resm(TFAIL,
 						 "%s: incorrect ownership set, "
-						 "expected %u %u", SFILE,
+						 "Expected %d %d", SFILE,
 						 user_id, group_id);
 				} else {
 					tst_resm(TPASS, "lchown() succeeds to "
@@ -186,6 +195,7 @@ int main(int argc, char *argv[])
 	}
 
 	cleanup();
+
 	tst_exit();
 }
 
@@ -202,21 +212,24 @@ void setup(void)
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 	
-	tst_require_root(tst_exit);
+	tst_require_root(NULL);
 	
 	TEST_PAUSE;
 	tst_tmpdir();
 
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "open(2) %s mode %o failed",
-		         TESTFILE, FILE_MODE);
+		tst_brkm(TBROK, cleanup, "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE, FILE_MODE);
+	}
+	if (close(fd) == -1) {
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
 	}
 	
 	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close(2) %s", TESTFILE);
+		tst_brkm(TBROK|TERRNO, cleanup, "close(2) %s", TESTFILE);
 
 	if (symlink(TESTFILE, SFILE) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "symlink(2) %s to %s failed",
+		tst_brkm(TBROK|TERRNO, cleanup, "symlink(2) %s to %s failed",
 		         TESTFILE, SFILE);
 	}
 }

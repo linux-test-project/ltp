@@ -90,8 +90,8 @@ char *TCID = "stat02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { 0 };
-uid_t User_id;			/* eff. user id/group id of test process */
-gid_t Group_id;
+uid_t user_id;			/* eff. user id/group id of test process */
+gid_t group_id;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -105,11 +105,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	/* Perform global setup for test */
 	setup();
@@ -145,8 +142,8 @@ int main(int ac, char **av)
 				 * Verify the data returned by stat(2)
 				 * aganist the expected data.
 				 */
-				if ((stat_buf.st_uid != User_id) ||
-				    (stat_buf.st_gid != Group_id) ||
+				if ((stat_buf.st_uid != user_id) ||
+				    (stat_buf.st_gid != group_id) ||
 				    (stat_buf.st_size != FILE_SIZE) ||
 				    ((stat_buf.st_mode & MASK) != NEW_MODE)) {
 					tst_resm(TFAIL, "Functionality of "
@@ -164,9 +161,8 @@ int main(int ac, char **av)
 		Tst_count++;	/* incr TEST_LOOP counter */
 	}			/* End for TEST_LOOPING */
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -190,7 +186,7 @@ void setup()
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1) {
@@ -213,7 +209,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+	 }
 
 	/* Fill the test buffer with the known data */
 	for (i = 0; i < BUF_SIZE; i++) {
@@ -223,29 +219,24 @@ void setup()
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {
 		if ((wbytes = write(fd, tst_buff, sizeof(tst_buff))) <= 0) {
-			tst_brkm(TBROK, cleanup,
-				 "write(2) on %s Failed, errno=%d : %s",
-				 TESTFILE, errno, strerror(errno));
-		 /*NOTREACHED*/} else {
+			tst_brkm(TBROK|TERRNO, cleanup, "write to %s failed", TESTFILE);
+		} else {
 			write_len += wbytes;
 		}
 	}
 
 	if (close(fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
+		tst_resm(TWARN|TERRNO, "closing %s failed", TESTFILE);
 	}
 
 	/* Modify mode permissions on the testfile */
 	if (chmod(TESTFILE, NEW_MODE) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "chmod(2) on %s Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK|TERRNO, cleanup, "chmodding %s failed", TESTFILE);
+	 }
 
 	/* Get the uid/gid of the process */
-	User_id = getuid();
-	Group_id = getgid();
+	user_id = getuid();
+	group_id = getgid();
 
 }				/* End setup() */
 
@@ -264,7 +255,4 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */

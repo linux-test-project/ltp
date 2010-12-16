@@ -87,13 +87,13 @@ void *a_thread_func()
 
 	if (sigismember(&pending_set, SIGABRT) == -1)
 	{
-		perror("Unexpected error while attempting to use sigismember.\n");
+		perror("Unexpected error while attempting to use sigismember.");
 		pthread_exit((void*) - 1);
 	}
 
 	if (sigismember(&pending_set, SIGABRT) != 1)
 	{
-		perror("FAIL: sigismember did not return 1\n");
+		perror("FAIL: sigismember did not return 1");
 		pthread_exit((void*) 1);
 	}
 
@@ -102,7 +102,7 @@ void *a_thread_func()
 
 	if (pthread_sigmask(SIG_SETMASK, &blocked_set, NULL) == -1)
 	{
-		perror("Unexpected error while attempting to use pthread_sigmask.\n");
+		perror("Unexpected error while attempting to use pthread_sigmask.");
 		pthread_exit((void*) 1);
 	}
 
@@ -111,7 +111,7 @@ void *a_thread_func()
 	if (!handler_called)
 	{
 		printf("FAIL: Old signal was not removed from mask.\n");
-		pthread_exit((void*) - 1);
+		pthread_exit((void*) -1);
 	}
 
 	pthread_exit((void*) 0);
@@ -122,7 +122,7 @@ void *a_thread_func()
 int main()
 {
 
-	int * thread_return_value;
+	int *thread_return_value;
 
 	pthread_t new_thread;
 
@@ -132,7 +132,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_join(new_thread, (void*) & thread_return_value) != 0)
+	if (pthread_join(new_thread, (void*) &thread_return_value) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -160,4 +160,3 @@ int main()
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-

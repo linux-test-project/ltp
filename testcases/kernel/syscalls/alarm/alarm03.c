@@ -112,24 +112,13 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int e_code, status, retval = 0;
+	int status, retval = 0;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
@@ -178,9 +167,7 @@ int main(int ac, char **av)
 			}
 			/* wait for the child to finish */
 			wait(&status);
-			/* make sure the child returned a good exit status */
-			e_code = status >> 8;
-			if ((e_code != 0) || (retval != 0)) {
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "Failures reported above");
 			}
 
@@ -189,8 +176,7 @@ int main(int ac, char **av)
 	}			/* End for TEST_LOOPING */
 
 	cleanup();
-
-	return 0;
+	tst_exit();
 }				/* End main */
 
 void setup()
@@ -211,9 +197,6 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
 
 void trapper(int sig)

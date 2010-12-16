@@ -19,7 +19,7 @@ int main() {
 	int result;
 
 	result = mlockall(MCL_CURRENT);
-	if (result == 0 && errno == 0){
+	if (result == 0 && errno == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == 0) {

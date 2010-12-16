@@ -82,7 +82,11 @@ int main(int argc, char **argv)
 	size_t len_ptr;		/* size of structure struct robust_list_head */
 	int retval;
 
+<<<<<<< HEAD
 	msg = parse_opts(argc, argv, NULL, NULL);
+=======
+	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();

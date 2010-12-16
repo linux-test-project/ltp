@@ -156,10 +156,8 @@ main(int argc, char **argv)
 	char *msg; 		 /* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	     (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
@@ -198,9 +196,7 @@ main(int argc, char **argv)
 		}
 	}
 	cleanup();
-
-	/*NOTREACHED*/
-	return 0;
+	tst_exit();
 }
 
 int
@@ -220,7 +216,7 @@ cleanup1(void)
 {
 	/* Change effective user id to root */
 	if (seteuid(0) == -1) {
-		tst_brkm(TBROK, tst_exit, "seteuid failed to set the effective"
+		tst_brkm(TBROK, NULL, "seteuid failed to set the effective"
 					  " uid to root");
 	}
 }
@@ -238,20 +234,19 @@ setup(void)
 
 	/* Check whether it is root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-		/*NOTREACHED*/
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
+		
 	}
 
 	/*if (tst_kvercmp(2,5,48) >= 0)
-		tst_brkm(TCONF, tst_exit, "This test will not work on "
+		tst_brkm(TCONF, NULL, "This test will not work on "
 					  "kernels after 2.5.48");
 	 */
 
 	/* Check for nobody_uid user id */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Required user %s doesn't exists",
+		tst_brkm(TBROK, NULL, "Required user %s doesn't exists",
 			 nobody_uid);
-		/*NOTREACHED*/
 	}
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
@@ -267,7 +262,7 @@ setup(void)
 
 	/* Get unique module name for each child process */
 	if (sprintf(modname, "%s_%d", BASEMODNAME, getpid()) <= 0) {
-		tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
+		tst_brkm(TBROK, NULL, "Failed to initialize module name");
 	}
         bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
         if (bad_addr == MAP_FAILED) {
@@ -290,8 +285,4 @@ cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-	/*NOTREACHED*/
 }

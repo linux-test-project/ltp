@@ -2466,9 +2466,9 @@ fmt_listio(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 	if (errbuf == NULL) {
 		errbuf = (char *)malloc(32768);
 		if (errbuf == NULL) {
-		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
-			return NULL;
+			doio_fprintf(stderr, "malloc failed, %s/%d\n",
+				__FILE__, __LINE__);
+				return NULL;
 		}
 	}
 
@@ -3275,7 +3275,7 @@ do_rw(req)
 			}
 #endif /* CRAY */
 #ifdef sgi
-			for (i=0; s->aioid[i] != -1; i++) {
+			for (i = 0; s->aioid[i] != -1; i++) {
 				if (s->aioid == NULL) {
 					doio_fprintf(stderr,
 						     "aioid == NULL!\n");
@@ -4068,7 +4068,7 @@ int nbytes;
 			     nbytes, cp, ip, ip & 0x3f);
 
 		free(cp);
-		if ((cp = malloc_space = malloc( nbytes + 0x40 )) == NULL) {
+		if ((cp = malloc_space = malloc(nbytes + 0x40)) == NULL) {
 		    doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
 				 nbytes, SYSERR, errno);
 		    return -1;
@@ -4358,7 +4358,7 @@ signal_info(int sig, siginfo_t *info, void *v)
 			break;
 		}
 
-		if (! haveit) {
+		if (!haveit) {
 			if ((info->si_signo == SIGSEGV) ||
 			   (info->si_signo == SIGBUS) ) {
 				doio_fprintf(stderr, "signal_info  si_signo %d si_errno %d si_code = %d  si_addr=%p  active_mmap_rw=%d havesigint=%d\n",

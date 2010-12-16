@@ -49,8 +49,9 @@
 #include <sys/syscall.h>
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
-#if defined(HAVE_SYS_INOTIFY_H) && defined(__NR_inotify_init)
+#if defined(HAVE_SYS_INOTIFY_H)
 #include <sys/inotify.h>
 
 #define EVENT_MAX 1024
@@ -119,64 +120,56 @@ int main(int ac, char **av)
 		 * generate sequence of events
 		 */
 		if (chmod(fname, 0755) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "chmod(%s, 0755) Failed, errno=%d : %s",
-				 fname, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "chmod(%s, 0755) failed", fname);
 		}
 		event_set[Tst_count] = IN_ATTRIB;
 		Tst_count++;
 
 		if ((fd = open(fname, O_RDONLY)) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-				 fname, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 		}
 		event_set[Tst_count] = IN_OPEN;
 		Tst_count++;
 
 		if (read(fd, buf, BUF_SIZE) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "read(%d, buf, %d) Failed, errno=%d : %s",
-				 fd, BUF_SIZE, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "read(%d, buf, %d) failed", fd, BUF_SIZE);
 		}
 		event_set[Tst_count] = IN_ACCESS;
 		Tst_count++;
 
 		if (close(fd) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "close(%s) Failed, errno=%d : %s",
-				 fname, errno, strerror(errno));
+			tst_brkm(TBROK, cleanup, "close(%s) failed", fname);
 		}
 		event_set[Tst_count] = IN_CLOSE_NOWRITE;
 		Tst_count++;
 
 		if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-				 fname, errno, strerror(errno));
+			    "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 		}
 		event_set[Tst_count] = IN_OPEN;
 		Tst_count++;
 
 		if (write(fd, buf, BUF_SIZE) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "write(%d, %s, 1) Failed, errno=%d : %s",
-				 fd, fname, errno, strerror(errno));
+			    "write(%d, %s, 1) failed", fd, fname);
 		}
 		event_set[Tst_count] = IN_MODIFY;
 		Tst_count++;
 
 		if (close(fd) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "close(%s) Failed, errno=%d : %s",
-				 fname, errno, strerror(errno));
+			    "close(%s) failed", fname);
 		}
 		event_set[Tst_count] = IN_CLOSE_WRITE;
 		Tst_count++;
 
 		if (TST_TOTAL != Tst_count) {
 			tst_brkm(TBROK, cleanup,
-				 "TST_TOTAL and Tst_count are not equal");
+			     "TST_TOTAL and Tst_count are not equal");
 		}
 		Tst_count = 0;
 
@@ -186,9 +179,8 @@ int main(int ac, char **av)
 		int len, i = 0, test_num = 0;
 		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
 			tst_brkm(TBROK, cleanup,
-				 "read(%d, buf, %d) Failed, errno=%d : %s",
-				 fd_notify, EVENT_BUF_LEN, errno,
-				 strerror(errno));
+			    "read(%d, buf, %d) failed",
+			    fd_notify, EVENT_BUF_LEN);
 
 		}
 
@@ -221,8 +213,8 @@ int main(int ac, char **av)
 			i += EVENT_SIZE + event->len;
 		}
 		for (; test_num < TST_TOTAL; test_num++) {
-			tst_resm(TFAIL, "don't get event: mask=%x ",
-				 event_set[test_num]);
+			tst_resm(TFAIL, "didn't get event: mask=%x",
+			    event_set[test_num]);
 
 		}
 
@@ -253,16 +245,13 @@ void setup()
 			 fname);
 	}
 	if ((write(fd, fname, 1)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "write(%d, %s, 1) failed",
-			 fd, fname);
+		tst_brkm(TBROK|TERRNO, cleanup, "write(%d, %s, 1) failed",
+		    fd, fname);
 	}
 
 	/* close the file we have open */
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) failed",
-			 fname);
+		tst_brkm(TBROK, cleanup, "close(%s) failed", fname);
 	}
 	if ((fd_notify = myinotify_init()) < 0) {
 		if (errno == ENOSYS) {
@@ -275,8 +264,8 @@ void setup()
 
 	if ((wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS)) < 0) {
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed",
-			 fd_notify, fname);
+		    "inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed",
+		    fd_notify, fname);
 	};
 
 }				/* End setup() */
@@ -314,17 +303,7 @@ int TST_TOTAL = 0;		/* Total number of test cases. */
 
 int main(void)
 {
-#ifndef __NR_inotify_init
-	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
-	tst_resm(TCONF,
-		 "Inotify syscall can be found at kernel 2.6.13 or higher.");
-	return 0;
-#endif
-#ifndef HAVE_SYS_INOTIFY_H
-	tst_resm(TBROK, "can't find header sys/inotify.h");
-	return 1;
-#endif
-	return 0;
+	tst_brkm(TCONF, NULL, "system doesn't have required inotify support");
 }
 
 #endif

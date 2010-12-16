@@ -235,7 +235,7 @@ int npackets;
 		i = sendto( s, outpack, cc, 0, &whereto, sizeof(whereto) );
 
 		if (i < 0 || i != cc)  {
-			if (i<0)  perror("sendto");
+			if (i < 0)  perror("sendto");
 			printf("pingpong6: wrote %s %d chars, ret=%d\n",hostname,cc,i);
 			fflush(stdout);
 			}

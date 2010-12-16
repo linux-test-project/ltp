@@ -85,8 +85,8 @@
 char *TCID = "fstat04";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-uid_t User_id;			/* user id/group id of test process */
-gid_t Group_id;
+uid_t user_id;			/* user id/group id of test process */
+gid_t group_id;
 int fildes;			/* File descriptor of testfile */
 
 char nobody_uid[] = "nobody";
@@ -102,7 +102,11 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
+<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
+=======
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+>>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -137,8 +141,8 @@ int main(int ac, char **av)
 			 * Verify the data returned by fstat(2)
 			 * aganist the expected data.
 			 */
-			if ((stat_buf.st_uid != User_id) ||
-			    (stat_buf.st_gid != Group_id) ||
+			if ((stat_buf.st_uid != user_id) ||
+			    (stat_buf.st_gid != group_id) ||
 			    (stat_buf.st_size != FILE_SIZE) ||
 			    ((stat_buf.st_mode & MASK) != FILE_MODE)) {
 				tst_resm(TFAIL, "Functionality of fstat(2) on "
@@ -155,7 +159,7 @@ int main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -177,7 +181,7 @@ void setup()
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1)
@@ -211,8 +215,8 @@ void setup()
 	}
 
 	/* Get the uid/gid of the process */
-	User_id = getuid();
-	Group_id = getgid();
+	user_id = getuid();
+	group_id = getgid();
 
 }				/* End setup() */
 

@@ -178,12 +178,12 @@ void setup()
 
 	/* Test should be executed as root user */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
 	/* Keep the host name before starting the test */
 	if ((ret = gethostname(hname, sizeof(hname))) < 0) {
-		tst_brkm(TBROK, tst_exit, "gethostname() failed while"
+		tst_brkm(TBROK, NULL, "gethostname() failed while"
 			 " getting current host name");
 	}
 

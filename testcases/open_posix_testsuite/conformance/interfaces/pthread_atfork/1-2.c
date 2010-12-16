@@ -159,7 +159,7 @@ void * threaded(void * arg)
 		exit(PTS_PASS);
 	}
 
-	if (!pthread_equal(ch, threads[ 0 ]))
+	if (!pthread_equal(ch, threads[0]))
 	{
 		FAILED("prepare handler was not called in the thread s context");
 	}
@@ -177,7 +177,7 @@ void * threaded(void * arg)
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
 	{
 		FAILED("Child exited abnormally");
 	}

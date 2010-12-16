@@ -202,14 +202,14 @@ parse_open_flags(char *string, char **badname)
 
    while ( 1 ) {
 
-      for(; ((*cc != ',') && (*cc != '\0')); cc++);
+      for (; ((*cc != ',') && (*cc != '\0')); cc++);
       savecc = *cc;
       *cc = '\0';
 
       found = 0;
 
-      for(ind=0; ind < sizeof(Open_flags)/sizeof(struct open_flag_t); ind++) {
-          if ( strcmp(name, Open_flags[ind].symbol) == 0 ) {
+      for (ind=0; ind < sizeof(Open_flags)/sizeof(struct open_flag_t); ind++) {
+          if (strcmp(name, Open_flags[ind].symbol) == 0) {
               bits |= Open_flags[ind].flag;
 	      found=1;
 	      break;
@@ -218,13 +218,13 @@ parse_open_flags(char *string, char **badname)
 
       *cc = savecc;	/* restore string */
 
-      if ( found == 0 ) {	/* invalid name */
-         if ( badname != NULL )
+      if (found == 0) {	/* invalid name */
+         if (badname != NULL)
            *badname = name;
          return -1;
       }
 
-      if ( savecc == '\0' )
+      if (savecc == '\0')
 	break;
 
       name = ++cc;
@@ -253,7 +253,7 @@ openflags2symbols(int openflags, char *sep, int mode)
      * bits are not set, assume O_RDONLY.
      */
 
-    if ( (bits & (O_WRONLY | O_RDWR)) == 0 ) {
+    if ((bits & (O_WRONLY | O_RDWR)) == 0) {
 	strcat(Open_symbols, "O_RDONLY");
 	havesome=1;
     }
@@ -261,10 +261,10 @@ openflags2symbols(int openflags, char *sep, int mode)
     /*
      *  Loop through all but O_RDONLY elments of Open_flags
      */
-    for(ind=1; ind < size; ind++) {
+    for (ind=1; ind < size; ind++) {
 
-	if ( (bits & Open_flags[ind].flag) == Open_flags[ind].flag ) {
-	    if ( havesome )
+	if ((bits & Open_flags[ind].flag) == Open_flags[ind].flag) {
+	    if (havesome)
 		strcat(Open_symbols, sep);
 
 	    strcat(Open_symbols, Open_flags[ind].symbol);
@@ -279,8 +279,8 @@ openflags2symbols(int openflags, char *sep, int mode)
      * If not all bits were identified and mode was equal to 1,
      * added UNKNOWN_SYMBOL to return string
      */
-    if ( bits && mode == 1 )  {    /* not all bits were identified */
-        if ( havesome )
+    if (bits && mode == 1)  {    /* not all bits were identified */
+        if (havesome)
             strcat(Open_symbols, sep);
 	strcat(Open_symbols,  UNKNOWN_SYMBOL);
     }
@@ -306,18 +306,18 @@ char **argv;
     int ret;
     char *err;
 
-    if (argc == 1 ) {
+    if (argc == 1) {
 	printf("Usage: %s openflagsbits\n\t%s symbols\n", argv[0], argv[0]);
 	exit(1);
     }
 
-    if ( sscanf(argv[1], "%i", &bits) == 1 ) {
+    if (sscanf(argv[1], "%i", &bits) == 1) {
 	printf("openflags2symbols(%#o, \",\", 1) returned %s\n",
 	    bits, openflags2symbols(bits, ",", 1));
 
     } else {
 	ret=parse_open_flags(argv[1], &err);
-	if ( ret == -1 )
+	if (ret == -1)
 	    printf("parse_open_flags(%s, &err) returned -1, err = %s\n",
 	        argv[0], err);
         else

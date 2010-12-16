@@ -79,7 +79,7 @@
 char *TCID = "alarm05";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int almreceived = 0;		/* flag to indicate SIGALRM received or not */
+int alarms_received = 0;		/* flag to indicate SIGALRM received or not */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -97,10 +97,8 @@ int main(int ac, char **av)
 	int sleep_time2 = 6;	/* waiting time for the signal */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/* Perform global setup for test */
 	setup();
@@ -110,10 +108,10 @@ int main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* Reset almreceived for every iteration, since it has
+		/* Reset alarms_received for every iteration, since it has
 		 * old values from previous iterations (if any) and not
 		 * a value of zero */
-		almreceived = 0;
+		alarms_received = 0;
 
 		/*
 		 * Call First alarm() with non-zero time parameter
@@ -140,10 +138,10 @@ int main(int ac, char **av)
 		 * the amount of time previously remaining in the
 		 * alarm clock of the calling process, and
 		 * sigproc() executed when SIGALRM received by the
-		 * process, the variable almreceived is set.
+		 * process, the variable alarms_received is set.
 		 */
 		if (STD_FUNCTIONAL_TEST) {
-			if ((almreceived == 1) &&
+			if ((alarms_received == 1) &&
 			    (ret_val2 == (time_sec1 - sleep_time1))) {
 
 				/*
@@ -163,19 +161,17 @@ int main(int ac, char **av)
 				}
 			} else {
 				tst_resm(TFAIL, "alarm(%u) fails, returned %d, "
-					 "almreceived:%d",
-					 time_sec2, ret_val2, almreceived);
+					 "alarms_received:%d",
+					 time_sec2, ret_val2, alarms_received);
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
 	}			/* End for TEST_LOOPING */
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-
-	return 0;
- /*NOTREACHED*/}
+	tst_exit(); 
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -204,7 +200,7 @@ void setup()
  */
 void sigproc(int sig)
 {
-	almreceived = almreceived + 1;
+	alarms_received++;
 }
 
 /*
@@ -219,7 +215,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

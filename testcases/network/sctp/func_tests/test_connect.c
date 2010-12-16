@@ -107,15 +107,15 @@ main(int argc, char *argv[])
 	/* Set clt_sk1 as non-blocking. */
 	flags = fcntl(clt_sk1, F_GETFL, 0);
 	if (flags < 0)
-		tst_brkm(TBROK, tst_exit, "fcntl F_GETFL: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "fcntl F_GETFL: %s", strerror(errno));
 	if (fcntl(clt_sk1, F_SETFL, flags | O_NONBLOCK) < 0)
-		tst_brkm(TBROK, tst_exit, "fcntl F_SETFL: %s", strerror(errno));
+		tst_brkm(TBROK, NULL, "fcntl F_SETFL: %s", strerror(errno));
 
 	/* Do a non-blocking connect from clt_sk1 to svr_sk */      
 	error = connect(clt_sk1, &svr_loop.sa, sizeof(svr_loop));
 	/* Non-blocking connect should return immediately with EINPROGRESS. */
 	if ((error != -1) || (EINPROGRESS != errno))
-		tst_brkm(TBROK, tst_exit, "non-blocking connect error: %d"
+		tst_brkm(TBROK, NULL, "non-blocking connect error: %d"
 			 "errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking connect");
@@ -125,7 +125,7 @@ main(int argc, char *argv[])
 	 */
 	error = connect(clt_sk1, &svr_loop.sa, sizeof(svr_loop));
 	if ((error != -1) || (EISCONN != errno))
-		tst_brkm(TBROK, tst_exit, "connect on a socket to create an "
+		tst_brkm(TBROK, NULL, "connect on a socket to create an "
 			 "assoc that is already established error:%d errno:%d",
 			 error, errno);
 
@@ -186,7 +186,7 @@ main(int argc, char *argv[])
 	/* Doing a connect on a peeled off socket should fail. */
 	error = connect(peeloff_sk, &clt_loop3.sa, sizeof(clt_loop3));
 	if ((error != -1) || (EISCONN != errno))
-		tst_brkm(TBROK, tst_exit, "connect on a peeled off socket "
+		tst_brkm(TBROK, NULL, "connect on a peeled off socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "connect on a peeled off socket");
@@ -196,7 +196,7 @@ main(int argc, char *argv[])
 	 */
 	error = connect(svr_sk, &clt_loop1.sa, sizeof(clt_loop1));
 	if ((error != -1) || (EADDRNOTAVAIL != errno))
-		tst_brkm(TBROK, tst_exit, "connect to create an assoc that "
+		tst_brkm(TBROK, NULL, "connect to create an assoc that "
 			 "matches a peeled off assoc error:%d errno:%d",
 			 error, errno);
 
