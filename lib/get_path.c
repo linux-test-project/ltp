@@ -73,7 +73,7 @@ int tst_get_path(const char *prog_name, char *buf, size_t buf_len)
 		size = strlen(buf);
 
 		/*
-		 * "::" inside $PATH, $PATH ending with ':' or $PATH strarting
+		 * "::" inside $PATH, $PATH ending with ':' or $PATH starting
 		 * with ':' should be expanded into current working directory.
 		 */
 		if (size == 0) {
