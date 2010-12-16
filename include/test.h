@@ -211,6 +211,7 @@ void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
  */
 void tst_tmpdir(void);
 void tst_rmdir(void);
+char *get_tst_tmpdir(void);
 
 /*
  * Function from lib/get_high_address.c

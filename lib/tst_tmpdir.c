@@ -97,9 +97,22 @@ static void tmpdir_cleanup();
 /*
  * Define global variables.
  */
-extern char *TCID;		 /* defined/initialized in main() */
-extern int  TST_TOTAL;	/* defined/initialized in main() */
-static char *TESTDIR;	 /* the directory created */
+extern char *TCID;		/* defined/initialized in main() */
+static char *TESTDIR = NULL;	/* the directory created */
+
+/* 
+ * Return a copy of the test temp directory as seen by LTP. This is for
+ * path-oriented tests like chroot, etc, that may munge the path a bit.
+ *
+ * FREE VARIABLE AFTER USE IF IT IS REUSED!
+ */
+char *
+get_tst_tmpdir(void)
+{
+	if (TESTDIR == NULL)
+		return NULL;
+	return strdup(TESTDIR);
+}
 
 /*
  * tst_tmpdir() - Create a unique temporary directory and chdir() to it.
@@ -113,20 +126,17 @@ static char *TESTDIR;	 /* the directory created */
  *		cleans up afer itself and calls tst_exit() (i.e. does
  *		not return).
  */
-#undef	FN_NAME
-#define  FN_NAME  "tst_tmpdir()"
-
 void tst_tmpdir(void)
 {
- 	char template[PATH_MAX];		/* template for mkstemp, mkdtemp */
-  	int  no_cleanup = 0;	  /* !0 means TDIRECTORY env var was set */
-	char *env_tmpdir;		 /* temporary storage for TMPDIR env var */
+	char template[PATH_MAX];
+	int  no_cleanup = 0;	/* !0 means TDIRECTORY env var was set */
+	char *env_tmpdir;	/* temporary storage for TMPDIR env var */
 	/* This is an AWFUL hack to figure out if mkdtemp() is available */
 #if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2,2)
 #define HAVE_MKDTEMP 1
 #endif
 
-		/*
+	/*
 	 * If the TDIRECTORY env variable is not set, a temp dir will be
 	 * created.
 	 */
@@ -163,10 +173,10 @@ void tst_tmpdir(void)
 		/* Make the temporary directory in one shot using mkdtemp. */
 		if (mkdtemp(template) == NULL)
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: mkdtemp(%s) failed", FN_NAME, template);
+				"%s: mkdtemp(%s) failed", __func__, template);
 		if ((TESTDIR = strdup(template)) == NULL) {
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: strdup(%s) failed", FN_NAME, template);
+				"%s: strdup(%s) failed", __func__, template);
 		}
 #else
 		int tfd;
@@ -174,18 +184,18 @@ void tst_tmpdir(void)
 		/* Make the template name, then the directory */
 		if ((tfd = mkstemp(template)) == -1)
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: mkstemp(%s) failed", FN_NAME, template);
+				"%s: mkstemp(%s) failed", __func__, template);
 		if (close(tfd) == -1) {
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: close() failed", FN_NAME);
+				"%s: close() failed", __func__);
 		}
 		if (unlink(template) == -1) {
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: unlink(%s) failed", FN_NAME, template);
+				"%s: unlink(%s) failed", __func__, template);
 		}
 		if ((TESTDIR = strdup(template)) == NULL) {
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: strdup(%s) failed", FN_NAME, template);
+				"%s: strdup(%s) failed", __func__, template);
 		}
 		if (mkdir(TESTDIR, DIR_MODE)) {
 			/* If we start failing with EEXIST, wrap this section in
@@ -193,7 +203,7 @@ void tst_tmpdir(void)
 			 */
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
 				"%s: mkdir(%s, %#o) failed",
-				FN_NAME, TESTDIR, DIR_MODE);
+				__func__, TESTDIR, DIR_MODE);
 		}
 #endif
 
@@ -222,19 +232,19 @@ void tst_tmpdir(void)
 	 */
 	if (chdir(TESTDIR) == -1) {
 		tst_brkm(TBROK|TERRNO, NULL, "%s: chdir(%s) failed",
-		    FN_NAME, TESTDIR);
+		    __func__, TESTDIR);
 
 		/* Try to remove the directory */
 		if (!no_cleanup && rmdir(TESTDIR) == -1) {
 			tst_resm(TWARN|TERRNO, "%s: rmdir(%s) failed",
-			    FN_NAME, TESTDIR);
+			    __func__, TESTDIR);
 		}
 
 		tmpdir_cleanup();
 	}
 
 #if UNIT_TEST
-	printf("CWD is %s\n", getcwd((char *)NULL, PATH_MAX));
+	printf("CWD is %s\n", getcwd(NULL, PATH_MAX));
 #endif
 
 }  /* tst_tmpdir() */
@@ -248,9 +258,6 @@ void tst_tmpdir(void)
  *			 environment variable is set, no cleanup will be
  *			 attempted.
  */
-#undef	FN_NAME
-#define  FN_NAME  "tst_rmdir()"
-
 void tst_rmdir(void)
 {
 	struct stat buf1;
@@ -276,16 +283,15 @@ void tst_rmdir(void)
 	 * Check that TESTDIR is not NULL.
 	 */
 	if (TESTDIR == NULL) {
-		tst_resm(TWARN, "%s: TESTDIR was NULL; no removal attempted",
-			 FN_NAME);
+		tst_resm(TWARN,
+		    "%s: TESTDIR was NULL; no removal attempted", __func__);
 		return;
 	}
 
 	if ((parent_dir = malloc(PATH_MAX))) {
-		tst_brkm(TBROK|TERRNO, NULL, "%s: malloc(%d) failed",
-		    FN_NAME, PATH_MAX);
 		/* Make sure that we exit quickly and noisily. */
-		exit(1);
+		tst_brkm(TBROK|TERRNO, NULL,
+		    "%s: malloc(%d) failed", __func__, PATH_MAX);
 	}
 
 	/*
@@ -293,9 +299,9 @@ void tst_rmdir(void)
 	 * have disastrous effects in a test run by root.
 	 */
 	/* XXX: a temp directory that's '/' seems stupid and dangerous anyways. */
-	if (stat(TESTDIR, &buf1) == 0 && stat("/", &buf2) &&
+	if (stat(TESTDIR, &buf1) == 0 && stat("/", &buf2) == 0 &&
 	    buf1.st_ino == buf2.st_ino) {
-		tst_resm(TWARN, "%s: will not remove /", FN_NAME);
+		tst_resm(TWARN, "%s: will not remove /", __func__);
 		return;
 	}
 
@@ -304,7 +310,7 @@ void tst_rmdir(void)
 	 * be escaped in invocations of rm(1)/rmdir(1).
 	 */
 	if (strchr(TESTDIR, '*') != NULL) {
-		tst_resm(TWARN, "%s: will not remove *", FN_NAME);
+		tst_resm(TWARN, "%s: will not remove *", __func__);
 		return;
 	}
 
@@ -321,7 +327,7 @@ void tst_rmdir(void)
 		strcpy(parent_dir, TESTDIR);
 	}
 	if ((parent_dir = dirname(parent_dir)) == NULL) {
-		tst_resm(TWARN|TERRNO, "%s: dirname failed", FN_NAME);
+		tst_resm(TWARN|TERRNO, "%s: dirname failed", __func__);
 		return;
 	}
 
@@ -330,8 +336,9 @@ void tst_rmdir(void)
 	 */
 	if (chdir(parent_dir) != 0) {
 		tst_resm(TWARN|TERRNO,
-			 "%s: chdir(%s) failed\nAttempting to remove temp dir anyway",
-			 FN_NAME, parent_dir);
+			 "%s: chdir(%s) failed\nAttempting to remove temp dir "
+			 "anyway",
+			 __func__, parent_dir);
 	}
 
 	/*
@@ -339,7 +346,7 @@ void tst_rmdir(void)
 	 */
 	if (rmobj(TESTDIR, &errmsg) == -1)
 		tst_resm(TWARN, "%s: rmobj(%s) failed: %s",
-			 FN_NAME, TESTDIR, errmsg);
+			 __func__, TESTDIR, errmsg);
 
 }  /* tst_rmdir() */
 
@@ -350,14 +357,11 @@ void tst_rmdir(void)
  *			 It prints a warning message via tst_resm(), and
  *			 then calls tst_exit().
  */
-#undef  FN_NAME
-#define FN_NAME "tst_tmpdir()"
-
 static void
 tmpdir_cleanup()
 {
 	tst_brkm(TWARN, NULL,
-	    "%s: no user cleanup function called before exiting", FN_NAME);
+	    "%s: no user cleanup function called before exiting", __func__);
 }  /* tmpdir_cleanup() */
 
 
@@ -366,6 +370,8 @@ tmpdir_cleanup()
  * Unit test code: Takes input from stdin and can make the following
  *		 calls: tst_tmpdir(), tst_rmdir().
  ****************************************************************************/
+extern int  TST_TOTAL;		/* defined/initialized in main() */
+
 int  TST_TOTAL = 10;
 char *TCID = "TESTTCID";
 
