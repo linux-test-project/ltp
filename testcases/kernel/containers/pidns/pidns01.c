@@ -42,7 +42,7 @@
 *
 * History:
 *
-* FLAG DATE     	NAME           		DESCRIPTION
+* FLAG DATE     	NAME	   		DESCRIPTION
 * 27/12/07  RISHIKESH K RAJAK <risrajak@in.ibm.com> Created this test
 *
 *******************************************************************************************/
@@ -60,7 +60,7 @@
 #include "libclone.h"
 
 char *TCID = "pid_namespace1";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 #define CHILD_PID       1
 #define PARENT_PID      0
@@ -70,72 +70,49 @@ int TST_TOTAL=1;
  */
 int child_fn1(void *ttype)
 {
+	int exit_val;
 	pid_t cpid, ppid;
 	cpid = getpid();
 	ppid = getppid();
 
 	tst_resm(TINFO, "PIDNS test is running inside container\n");
-	if (( cpid == CHILD_PID) &&
-		( ppid == PARENT_PID ) )
-	{
-                tst_resm(TPASS, "Success:" );
+	if (cpid == CHILD_PID && ppid == PARENT_PID) {
+		printf("Got expected cpid and ppid\n");
+		exit_val = 0;
+	} else {
+		printf("Got unexpected result of cpid=%d ppid=%d\n",
+		    cpid, ppid);
+		exit_val = 1;
 	}
-	else
-	{
-		tst_resm(TFAIL, "FAIL: Got unexpected result of"
-			" cpid=%d ppid=%d\n", cpid, ppid);
-	}
-	cleanup();
 
-	return 0;
+	return exit_val;
 }
-
-/***********************************************************************
-*   M A I N
-***********************************************************************/
 
 int main(int argc, char *argv[])
 {
-	int ret, status;
+	int status;
 
-	ret = do_clone_unshare_test(T_CLONE,
-				CLONE_NEWPID, child_fn1, NULL);
+	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
 
-	/* check return code */
-	if (ret == -1) {
-		tst_resm(TFAIL, "clone() Failed, errno = %d :"
-			" %s", ret, strerror(ret));
-		/* Cleanup & continue with next test case */
-		cleanup();
+	if (TEST_RETURN == -1) {
+		tst_brkm(TFAIL|TTERRNO, cleanup, "clone failed");
+	} else if ((wait(&status)) == -1) {
+		tst_brkm(TWARN|TERRNO, cleanup, "wait failed");
 	}
 
-	/* Wait for child to finish */
-	if ((wait(&status)) < 0) {
-		tst_resm(TWARN, "wait() failed, skipping this"
-			" test case");
-		/* Cleanup & continue with next test case */
-		cleanup();
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+		tst_resm(TFAIL, "child exited abnormally");
+	else if (WIFSIGNALED(status)) {
+		tst_resm(TFAIL, "child was killed with signal = %d",
+		    WTERMSIG(status));
 	}
 
-	if (WTERMSIG(status)) {
-		tst_resm(TWARN, "child exited with signal %d",
-			 WTERMSIG(status));
-	}
-
-        /* cleanup and exit */
 	cleanup();
-
 	tst_exit();
-
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
 static void cleanup()
 {
 	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
-
 }

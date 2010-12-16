@@ -55,10 +55,10 @@ int check_mqueue(void *vtest)
 	close(p1[1]);
 	close(p2[0]);
 
-	if (read(p1[0], buf, 3) < 0)
+	if (read(p1[0], buf, 3) < 0) {
 		perror("read(p1[0], ..) failed");
 		exit(1);
-	else {
+	} else {
 
 		mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL,
 				0777, NULL);

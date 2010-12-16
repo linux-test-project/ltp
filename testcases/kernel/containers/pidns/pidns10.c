@@ -60,63 +60,51 @@ int child_fn(void *);
  */
 int child_fn(void *arg)
 {
+	int exit_val, ret;
 	pid_t pid, ppid;
 
 	/* Set process id and parent pid */
 	pid = getpid();
 	ppid = getppid();
 	if (pid != CHILD_PID || ppid != PARENT_PID) {
-		tst_resm(TBROK, "cinit: pidns is not created.");
-		CLEANUP();
+		printf("cinit: pidns was not created.\n");
+		return 1;
 	}
 
-	if (kill(-1, SIGUSR1) != -1) {
-		tst_resm(TFAIL, "cinit: kill(-1, sig) should have failed");
-		CLEANUP();
+	if ((ret = kill(-1, SIGUSR1)) == -1 && errno == ESRCH) {
+		printf("cinit: kill(-1, sig) failed with -1 / ESRCH as "
+		    "expected\n");
+		exit_val = 0;
+	} else {
+		printf("cinit: kill(-1, sig) didn't fail with -1 / ESRCH "
+		    "(%d); failed with %d / %d instead", ESRCH, ret, errno);
+		exit_val = 1;
 	}
-
-	if (errno == ESRCH)
-		tst_resm(TPASS, "cinit: expected kill(-1, sig) failure.");
-	else
-		tst_resm(TFAIL, "cinit: kill(-1, sig) failure is not ESRCH, "
-				"but %s", strerror(errno));
-
-	/* CLEANUP and exit */
-	CLEANUP();
-	exit(0);
+	exit(exit_val);
 }
-
-/***********************************************************************
-*   M A I N
-***********************************************************************/
 
 int main(int argc, char *argv[])
 {
-	int status, ret;
+	int status;
 	pid_t pid;
 
 	pid = getpid();
 
 	/* Container creation on PID namespace */
-	ret = do_clone_unshare_test(T_CLONE,\
-					CLONE_NEWPID, child_fn, NULL);
-	if (ret != 0) {
-		tst_resm(TBROK, "parent: clone() failed. rc=%d(%s)",\
-				ret, strerror(errno));
-		/* Cleanup & continue with next test case */
-		CLEANUP();
+	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL));
+	if (TEST_RETURN == -1) {
+		tst_brkm(TBROK|TTERRNO, CLEANUP, "clone failed");
 	}
 
 	sleep(1);
 	if (wait(&status) < 0)
 		tst_resm(TWARN, "parent: waitpid() failed.");
 
-	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-		tst_resm(TBROK, "parent: container was terminated by %s",\
-				strsignal(WTERMSIG(status)));
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+		tst_resm(TBROK, "container was terminated abnormally");
 
 	CLEANUP();
-	exit(0);
+	tst_exit();
 }
 
 /*

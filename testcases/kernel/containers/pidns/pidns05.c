@@ -28,14 +28,14 @@
 * 4. The parent process will kill child[3] by passing SIGKILL
 * 5. Now parent process, verifies the child containers 4 & 5 are destroyed.
 * 6. If they are killed then
-*	Test PASSed
-*  else Test FAILed.
+*	Test passed
+*  else Test failed.
 *
 * Test Name: pidns05
 *
 * History:
 *
-* FLAG DATE     	NAME           		        DESCRIPTION
+* FLAG DATE     	NAME	   			DESCRIPTION
 * 31/10/08  Veerendra C <vechandr@in.ibm.com> 	Verifies killing of NestedCont's
 *
 *******************************************************************************/
@@ -60,17 +60,13 @@ char *TCID = "pidns05";
 int TST_TOTAL = 1;
 int fd[2];
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup()
+void
+cleanup(void)
 {
-	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
-
 }
-int max_pid()
+
+int max_pid(void)
 {
 	FILE *fp;
 	int ret;
@@ -118,7 +114,8 @@ int find_cinit_pids(pid_t *pids)
 */
 int create_nested_container(void *vtest)
 {
-	int ret, count, *level ;
+	int exit_val;
+	int ret, count, *level;
 	pid_t cpid, ppid;
 	cpid = getpid();
 	ppid = getppid();
@@ -131,29 +128,31 @@ int create_nested_container(void *vtest)
 	close(fd[0]);
 
 	/* Comparing the values to make sure pidns is created correctly */
-	if ((cpid != CINIT_PID) || (ppid != PARENT_PID)) {
-		tst_resm(TFAIL, "FAIL: Got unexpected result of"
-		" cpid=%d ppid=%d\n", cpid, ppid);
-		cleanup();
+	if (cpid != CINIT_PID || ppid != PARENT_PID) {
+		printf("Got unexpected cpid and/or ppid (cpid=%d ppid=%d)\n",
+		    cpid, ppid);
+		exit_val = 1;
 	}
 	if (count > 1) {
 		count--;
 		ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID,
 				create_nested_container, (void *) &count);
 		if (ret == -1) {
-			tst_resm(TFAIL, "clone() Failed, errno = %d : %s\n" ,
-				 ret, strerror(ret));
-			cleanup();
-		}
+			printf("clone failed; errno = %d : %s\n" ,
+			    ret, strerror(ret));
+			exit_val = 1;
+		} else
+			exit_val = 0;
 	} else {
 		/* Sending mesg, 'Nested containers created' through the pipe */
 		write(fd[1], mesg, (strlen(mesg)+1));
+		exit_val = 0;
 	}
 
 	close(fd[1]);
 	pause();
 
-	return 0;
+	return exit_val;
 }
 
 void kill_nested_containers()
@@ -169,7 +168,7 @@ void kill_nested_containers()
 	/* After killing child container, getting the New PID list */
 	new_count = find_cinit_pids(pids_new);
 
-	/*Verifyng if the child containers are destroyed when parent is killed*/
+	/* Verifying that the child containers were destroyed when parent is killed*/
 	if (orig_count - 2 != new_count)
 		status = -1;
 
@@ -185,16 +184,17 @@ void kill_nested_containers()
 		tst_resm(TFAIL, "Failed to kill the sub-containers of "
 				"the container %d\n", pids[MAX_DEPTH - 3]);
 
-	/* Loops through the containers created,  to exit from sleep() */
+	/* Loops through the containers created to exit from sleep() */
 	for (i = 0; i < MAX_DEPTH; i++) {
-		kill(pids[i], SIGKILL);
-		waitpid(pids[i], &status, 0);
+		if (waitpid(pids[i], &status, 0) == -1)
+			tst_resm(TFAIL|TERRNO, "waitpid(%d, ...) failed",
+			    pids[i]);
+		else {
+			kill(pids[i], SIGKILL);
+			waitpid(pids[i], &status, 0);
+		}
 	}
 }
-
-/***********************************************************************
-*   M A I N
-***********************************************************************/
 
 int main(int argc, char *argv[])
 {
@@ -203,13 +203,26 @@ int main(int argc, char *argv[])
 	pid_t pid, pgid;
 	int count = MAX_DEPTH;
 
+	/* 
+	 * XXX (garrcoop): why in the hell is this fork-wait written this way?
+	 * This doesn't add up with the pattern used for the rest of the tests,
+	 * so I'm pretty damn sure this test is written incorrectly.
+	 */
 	pid = fork();
-	if (pid < 0) {
-		perror("fork()");
-		exit(1);
-	} else if (pid) {
-		wait(&status);
-		exit(0);
+	if (pid == -1) {
+		tst_brkm(TBROK|TERRNO, NULL, "fork failed");
+	} else if (pid != 0) {
+		/*
+		 * NOTE: use waitpid so that we know we're waiting for the
+		 * _top-level_ child instead of a spawned subcontainer.
+		 *
+		 * XXX (garrcoop): Might want to mask SIGCHLD in the top-level
+		 * child too, or not *shrugs*.
+		 */
+		if (waitpid(pid, &status, 0) == -1) {
+			perror("wait failed");
+		}
+		exit(status);
 	}
 
 	/* To make all the containers share the same PGID as its parent */
@@ -219,14 +232,12 @@ int main(int argc, char *argv[])
 	pgid = getpgid(pid);
 	ret = pipe(fd);
 	if (ret == -1)
-		tst_brkm(TBROK, cleanup, "pipe() failed, errno %d", errno);
+		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
 
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID,
-				create_nested_container, (void *) &count);
-	if (ret == -1) {
-		tst_resm(TFAIL, "clone() Failed, errno = %d : %s\n" ,
-			 ret, strerror(ret));
-		cleanup();
+	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID,
+	    create_nested_container, (void *)&count));
+	if (TEST_RETURN == -1) {
+		tst_brkm(TFAIL|TTERRNO, cleanup, "clone failed");
 	}
 
 	close(fd[1]);
@@ -235,14 +246,12 @@ int main(int argc, char *argv[])
 	close(fd[0]);
 	if (nbytes > 0)
 		tst_resm(TINFO, " %d %s", MAX_DEPTH, readbuffer);
-	else {
-		tst_resm(TFAIL, "Unable to create %d containers\n", MAX_DEPTH);
-		cleanup();
-	}
+	else
+		tst_brkm(TFAIL, cleanup, "unable to create %d containers",
+		    MAX_DEPTH);
 
-	/* Kill the container created  */
+	/* Kill the container created */
 	kill_nested_containers();
-	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();

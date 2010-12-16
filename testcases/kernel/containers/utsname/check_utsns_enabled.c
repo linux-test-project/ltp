@@ -26,50 +26,25 @@
 #include "../libclone/libclone.h"
 #include "test.h"
 
+
+
 int dummy(void *v)
 {
 	return 0;
 }
 
-/*
- * Not really expecting anyone to use this on a 2.6.19-rc kernel,
- * else we may get some false positives here.
- */
-#if 0
-int kernel_version_newenough()
-{
-	int ret;
-	struct utsname buf;
-	char *s;
-	int maj, min, micro;
-
-	ret = uname(&buf);
-	if (ret == -1) {
-		perror("uname");
-		return 0;
-	}
-	s = buf.release;
-	sscanf(s, "%d.%d.%d", &maj, &min, &micro);
-	if (maj < 2)
-		return 0;
-	if (min < 6)
-		return 0;
-	if (micro < 19)
-		return 0;
-	return 1;
-}
-#endif  /* Library is already provided by LTP*/
 int main()
 {
 	int pid;
 
-	//if (!kernel_version_newenough())
-	if (tst_kvercmp(2,6,19) < 0)
+	if (tst_kvercmp(2, 6, 19) < 0)
 		return 1;
 
 	pid = ltp_clone_quick(CLONE_NEWUTS, dummy, NULL);
 
-	if (pid == -1)
+	if (pid == -1) {
+		perror("ltp_clone_quick");
 		return 3;
-	tst_exit();
+	}
+	return 0;
 }

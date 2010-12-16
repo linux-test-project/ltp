@@ -33,11 +33,6 @@
 *    else,
 *	sets FAIL
 *
-* History:
-*
-* FLAG DATE     	NAME				Description.
-* 21/10/08  	Veerendra C <vechandr@in.ibm.com> Verifies killing of processes
-*							in container.
 *******************************************************************************/
 #define _GNU_SOURCE 1
 #include <stdio.h>
@@ -53,20 +48,15 @@
 
 #define CINIT_PID       1
 #define PARENT_PID      0
-#define FAKE_PID	1230
+#define FAKE_PID	-1
 
 char *TCID = "pidns06";
 int TST_TOTAL = 1;
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	     completion or premature exit.
- */
 void cleanup()
 {
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
-
 }
 
 /*
@@ -83,75 +73,60 @@ static int kill_pid_in_childfun(void *vtest)
 	par_pid = (int *)vtest;
 
 	/* Checking the values to make sure pidns is created correctly */
-	if ((cpid != CINIT_PID) || (ppid != PARENT_PID)) {
-		tst_resm(TFAIL, "Unexpected result for Container: "
-				" init pid=%d parent pid=%d\n", cpid, ppid);
-		cleanup();
+	if (cpid != CINIT_PID || ppid != PARENT_PID) {
+		printf("Unexpected result for Container: init "
+		    "pid=%d ppid=%d\n", cpid, ppid);
+		exit(1);
 	}
 
 	/*
-	* While trying kill() of the pid of the parent namespace..
-	* Check to see if the errno was set to the expected, value of 3 : ESRCH
-	*/
+	 * While trying kill() of the pid of the parent namespace..
+	 * Check to see if the errno was set to the expected, value of 3 : ESRCH
+	 */
 	ret = kill(*par_pid, SIGKILL);
 	if (ret == -1 && errno == ESRCH) {
-		tst_resm(TPASS, "Container: tried kill() on the parent "
-			 "pid %d: errno set to %d (%s), as expected\n",
-			 *par_pid, errno , strerror(errno));
+		printf("Container: killing parent pid=%d failed as expected "
+		    "with ESRCH\n", *par_pid);
 	} else {
-		tst_resm(TFAIL, "Container: tried kill() on the parent "
-			"pid %d, errno set to %d, (%s), expected %d, (%s). \n"
-			"\t\t\t\tReturn value is %d, expected -1.\n" ,
-			*par_pid, errno , strerror(errno), 3, strerror(3), ret);
+		printf("Container: killing parent pid=%d, didn't fail as "
+		    "expected with ESRCH (%d) and a return value of -1. Got "
+		    "%d (\"%s\") and a return value of %d instead.\n",
+		    *par_pid, ESRCH, errno, strerror(errno), ret);
+		exit(1);
 	}
 	/*
-	* While killing non-existent pid in the container,
-	* Check to see if the errno was set to the expected, value of 3 : ESRCH
-	*/
+	 * While killing non-existent pid in the container,
+	 * Check to see if the errno was set to the expected, value of 3 : ESRCH
+	 */
 	ret = kill(FAKE_PID, SIGKILL);
 	if (ret == -1 && errno == ESRCH) {
-		tst_resm(TPASS, "Container: While killing non existent pid"
-				" errno set to %d : %s, as expected\n" ,
-				errno , strerror(errno));
+		printf("Container: killing non-existent pid failed as expected "
+		    "with ESRCH\n");
 	} else {
-		tst_resm(TFAIL, "Container: While killing non-existent pid"
-				" errno set to %d : %s expected %d : %s. \n"
-				"\t\t\t\tReturn value is %d, expected -1.\n" ,
-				errno, strerror(errno), 3, strerror(3), ret);
+		printf("Container: killing non-existent pid, didn't fail as "
+		    "expected with ESRCH (%d) and a return value of -1. Got "
+		    "%d (\"%s\") and a return value of %d instead.\n",
+		    ESRCH, errno, strerror(errno), ret);
+		exit(1);
 	}
 
-	cleanup();
-
-	return 0;
+	exit(0);
 }
-
-/*********************************************************************
-*   M A I N
-***********************************************************************/
 
 int main()
 {
-	int ret, status;
+	int status;
 	pid_t pid = getpid();
 
 	tst_resm(TINFO, "Parent: Passing the pid of the process %d", pid);
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID,
-					kill_pid_in_childfun, (void *) &pid);
-
-	if (ret == -1) {
-		tst_resm(TFAIL, "clone() Failed, errno = %d : %s\n" ,
-			 ret, strerror(ret));
-		cleanup();
+	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, kill_pid_in_childfun,
+	    (void *) &pid));
+	if (TEST_RETURN == -1) {
+		tst_brkm(TFAIL|TERRNO, cleanup, "clone failed");
+	} else if (wait(&status) == -1) {
+		tst_brkm(TFAIL|TERRNO, cleanup, "wait failed");
 	}
 
-	/* Wait for child to finish */
-	if ((wait(&status)) < 0) {
-		tst_resm(TWARN, "wait() failed, skipping this test case");
-		cleanup();
-	}
-
-	/* cleanup and exit */
 	cleanup();
-
 	tst_exit();
 }

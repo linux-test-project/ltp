@@ -34,7 +34,7 @@ int main()
 	int pid;
 	mqd_t mqd;
 
-	if (tst_kvercmp(2, 6, 30) < 0)	/* only in -mm so far actually */
+	if (tst_kvercmp(2, 6, 30) < 0)
 		return 1;
 
 	mq_unlink("/checkmqnsenabled");

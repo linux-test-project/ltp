@@ -61,24 +61,29 @@ int child_fn(void *);
  */
 int child_fn(void *arg)
 {
+	int children[10], exit_val, i, status;
 	pid_t pid, ppid;
-	int i, children[10], status;
 
 	/* Set process id and parent pid */
 	pid = getpid();
 	ppid = getppid();
 	if (pid != CHILD_PID || ppid != PARENT_PID) {
-		tst_brkm(TBROK | TERRNO, CLEANUP, "cinit: pidns is not created.");
+		printf("cinit: pidns was not created\n");
+		exit(1);
 	}
+
+	exit_val = 0;
 
 	/* Spawn many children */
 	for (i = 0; i < (sizeof(children) / sizeof(children[0])); i++) {
 		switch ((children[i] = fork())) {
 		case -1:
-			tst_brkm(TBROK | TERRNO, CLEANUP, "fork failed");
+			perror("fork failed");
+			exit_val = 1;
 			break;
 		case 0:
 			pause();
+			/* XXX (garrcoop): why exit with an exit code of 2? */
 			exit(2);
 			break;
 		default:
@@ -90,57 +95,66 @@ int child_fn(void *arg)
 	sleep(1);
 
 	if (kill(-1, SIGUSR1) == -1) {
-		tst_resm(TBROK | TERRNO, "cinit: kill(-1, SIGUSR1) failed");
-		CLEANUP();
+		perror("cinit: kill(-1, SIGUSR1) failed");
+		exit_val = 1;
 	}
 
 	for (i = 0; i < (sizeof(children) / sizeof(children[0])); i++) {
 		if (waitpid(children[i], &status, 0) == -1) {
-			tst_resm(TBROK | TERRNO, "cinit: waitpid() failed");
-			CLEANUP();
+			perror("cinit: waitpid failed");
+			kill(children[i], SIGTERM);
+			waitpid(children[i], &status, 0);
+			exit_val = 1;
 		}
-		if (!(WIFSIGNALED(status) && WTERMSIG(status) == SIGUSR1)) {
-			tst_resm(TFAIL, "cinit: found a child alive still "
-					"%d exit: %d, %d, signal %d, %d", i,
-					WIFEXITED(status), WEXITSTATUS(status),
-					WIFSIGNALED(status), WTERMSIG(status));
-			CLEANUP();
+		if (!(WIFSIGNALED(status) || WTERMSIG(status) == SIGUSR1)) {
+			/* 
+			 * XXX (garrcoop): this status reporting is overly
+			 * noisy. Someone obviously needs to read the
+			 * constraints documented in wait(2) a bit more
+			 * closely -- in particular the relationship between
+			 * WIFEXITED and WEXITSTATUS, and WIFSIGNALED and 
+			 * WTERMSIG.
+			 */
+			printf("cinit: found a child alive still "
+			    "%d exit: %d, %d, signal %d, %d", i,
+			    WIFEXITED(status), WEXITSTATUS(status),
+			    WIFSIGNALED(status), WTERMSIG(status));
+			exit_val = 1;
 		}
 	}
-	tst_resm(TPASS, "cinit: all children are terminated.");
+	if (exit_val == 0)
+		printf("cinit: all children have terminated.\n");
 
-	/* cleanup and exit */
-	CLEANUP();
+	exit(exit_val);
 }
-
-/***********************************************************************
-*   M A I N
-***********************************************************************/
 
 int main(int argc, char *argv[])
 {
-	int status, ret;
+	int status;
 	pid_t pid;
 
 	pid = getpid();
 
 	/* Container creation on PID namespace */
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL);
-	if (ret != 0) {
-		tst_resm(TBROK | TERRNO, "parent: clone() failed");
-		CLEANUP();
+	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL));
+	if (TEST_RETURN == -1) {
+		tst_brkm(TBROK|TERRNO, CLEANUP, "clone failed");
 	}
 
 	sleep(1);
-	if (waitpid(-1, &status, __WALL) < 0)
-		tst_resm(TWARN, "parent: waitpid() failed.");
+	if (wait(&status) == -1)
+		tst_resm(TFAIL, "waitpid failed");
 
-	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-		tst_resm(TWARN, "parent: container was terminated by %s",
-				strsignal(WTERMSIG(status)));
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+		tst_resm(TFAIL, "container exited abnormally");
+	else if (WIFSIGNALED(status))
+		tst_resm(TFAIL,
+		    "container was signaled with signal = %d",
+		    WTERMSIG(status));
 
-	/* cleanup and exit */
 	CLEANUP();
+	tst_exit();
+
 }
 
 /*
@@ -151,5 +165,4 @@ void cleanup()
 {
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
-
 }

@@ -62,7 +62,9 @@ int main()
 	pid = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, dummy, NULL);
 
 	/* Check for the clone function return value */
-	if (pid == -1)
+	if (pid == -1) {
+		perror("do_clone_unshare_test");
 		return 3;
+	}
 	return 0;
 }

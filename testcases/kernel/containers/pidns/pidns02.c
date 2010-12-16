@@ -17,8 +17,8 @@
 * File: pidns02.c
 *
 * Description:
-*  The pidns02.c testcase builds into the ltp framework to verify
-*  the basic functionality of PID Namespace.
+*	The pidns02.c testcase builds into the ltp framework to verify
+*	the basic functionality of PID Namespace.
 *
 * Verify that:
 * 1. When parent clone a process with flag CLONE_NEWPID, the session ID of
@@ -40,13 +40,7 @@
 *
 * Usage: <for command-line>
 * pidns02
-*
-* History:
-*
-* FLAG DATE     	NAME           		DESCRIPTION
-* 27/12/07  RISHIKESH K RAJAK <risrajak@in.ibm.com> Created this test
-*
-*******************************************************************************************/
+*/
 
 #define _GNU_SOURCE
 #include <sys/wait.h>
@@ -62,9 +56,9 @@
 #include "libclone.h"
 
 char *TCID = "pid_namespace2";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
-#define PGID  	1
+#define PGID	1
 #define SID	1
 
 /*
@@ -77,60 +71,48 @@ int child_fn1(void *vtest)
 	setsid();
 
 	pgid = getpgid(0);
-	sid  = getsid(0);
+	sid = getsid(0);
 
-	tst_resm(TINFO, "Checking session id & group id inside container\n");
+	printf("Checking session id & group id inside container\n");
 	if (pgid == PGID && sid == SID)
 	{
-                tst_resm(TPASS, "Success: Got Group ID = %d"
-				" & Session ID = %d \n",pgid, sid);
+		printf("Success: Got Group ID = %d & Session ID = %d\n",
+		    pgid, sid);
+		exit(0);
 	}
-	else
-		tst_resm(TFAIL, "Got unexpected result of"
-			"Group ID = %d & Session ID = %d\n", pgid, sid);
-	CLEANUP();
-        return 0;
+	else {
+		printf("Got unexpected result of Group ID = %d & Session ID = "
+		    "%d\n", pgid, sid);
+		exit(1);
+	}
 }
-
-/***********************************************************************
-*   M A I N
-***********************************************************************/
 
 int main(int argc, char *argv[])
 {
-	int ret, status;
+	int status;
 
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL);
-	/* check return code */
-	if (ret == -1) {
-		tst_resm(TFAIL, "clone() Failed, errno = %d :"
-			" %s", ret, strerror(ret));
-		/* Cleanup & continue with next test case */
-		CLEANUP();
+	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
+	if (TEST_RETURN == -1) {
+		tst_brkm(TFAIL|TTERRNO, CLEANUP, "clone failed");
+	} else if ((wait(&status)) == -1) {
+		tst_brkm(TFAIL|TERRNO, CLEANUP, "wait failed");
 	}
 
-	/* Wait for child to finish */
-	if ((wait(&status)) < 0) {
-		tst_resm(TWARN | TERRNO, "wait() failed, skipping this "
-					" test case");
-		/* Cleanup & continue with next test case */
-		CLEANUP();
-	}
-
-	if (WTERMSIG(status)) {
-		tst_resm(TWARN, "child exited with signal %d",
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+		tst_resm(TFAIL|TERRNO, "child exited abnormally");
+	} else if (WIFSIGNALED(status)) {
+		tst_resm(TFAIL|TERRNO, "child exited with signal %d",
 			 WTERMSIG(status));
 	}
 
-        /* CLEANUP and exit */
 	CLEANUP();
 	tst_exit();
 
 }
 
 /*
- * cleanup() - performs all ONE TIME CLEANUP for this test at
- *             completion or premature exit.
+ * CLEANUP() -	performs all ONE TIME CLEANUP for this test at
+ *		completion or premature exit.
  */
 void
 cleanup()

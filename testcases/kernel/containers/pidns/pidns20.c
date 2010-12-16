@@ -61,15 +61,10 @@ int broken = 1; /* broken should be 0 when test completes properly */
 #define CHILD_PID       1
 #define PARENT_PID      0
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
 void cleanup()
 {
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
-
 }
 
 /*
@@ -102,8 +97,8 @@ int child_fn(void *arg)
 	ppid = getppid();
 
 	if (pid != CHILD_PID || ppid != PARENT_PID) {
-		tst_resm(TBROK, "cinit: pidns is not created");
-		cleanup();
+		printf("cinit: pidns was not created properly\n");
+		exit(1);
 	}
 
 	/* Setup pipes to communicate with parent */
@@ -114,24 +109,22 @@ int child_fn(void *arg)
 	sigemptyset(&newset);
 	sigaddset(&newset, SIGUSR1);
 	if (sigprocmask(SIG_BLOCK, &newset, 0) == -1) {
-		tst_resm(TBROK, "cinit: sigprocmask() failed(%s)",\
-				strerror(errno));
-		cleanup();
+		perror("cinit: sigprocmask() failed");
+		exit(1);
 	}
 	tst_resm(TINFO, "cinit: blocked SIGUSR1");
 
 	/* Let parent to queue SIGUSR1 in pending */
 	if (write(cinit_parent[1], "c:go", 5) != 5) {
-		tst_resm(TBROK, "cinit: pipe is broken to write(%s)",\
-				strerror(errno));
-		cleanup();
+		perror("cinit: pipe is broken to write");
+		exit(1);
 	}
 
 	/* Check if parent has queued up SIGUSR1 */
 	read(parent_cinit[0], buf, 5);
 	if (strcmp(buf, "p:go") != 0) {
-		tst_resm(TBROK, "cinit: parent did not respond!");
-		cleanup();
+		printf("cinit: parent did not respond!\n");
+		exit(1);
 	}
 
 	/* Now redefine handler for SIGUSR1 */
@@ -139,9 +132,8 @@ int child_fn(void *arg)
 	sigfillset(&sa.sa_mask);
 	sa.sa_sigaction = child_signal_handler;
 	if (sigaction(SIGUSR1, &sa, NULL) == -1) {
-		tst_resm(TBROK, "cinit: sigaction() failed(%s)",\
-				strerror(errno));
-		cleanup();
+		perror("cinit: sigaction failed");
+		exit(1);
 	}
 
 	/* Unblock traffic on SIGUSR1 queue */
@@ -150,20 +142,15 @@ int child_fn(void *arg)
 
 	/* Check if new handler is called */
 	if (broken == 1) {
-		tst_resm(TBROK, "cinit: test is broken for unknown reason");
-		cleanup();
+		printf("cinit: broken flag didn't change\n");
+		exit(1);
 	}
 
 	/* Cleanup and exit */
 	close(cinit_parent[1]);
 	close(parent_cinit[0]);
-	cleanup();
 	exit(0);
 }
-
-/***********************************************************************
-*   M A I N
-***********************************************************************/
 
 int main(int argc, char *argv[])
 {
@@ -173,15 +160,12 @@ int main(int argc, char *argv[])
 
 	/* Create pipes for intercommunication */
 	if (pipe(parent_cinit) == -1 || pipe(cinit_parent) == -1) {
-		tst_resm(TBROK, "parent: pipe() failed. aborting!");
-		cleanup();
+		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
 	}
 
 	cpid = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
-	if (cpid < 0) {
-		tst_resm(TBROK, "parent: clone() failed(%s)",\
-				strerror(errno));
-		cleanup();
+	if (cpid == -1) {
+		tst_brkm(TBROK|TERRNO, cleanup, "clone failed");
 	}
 
 	/* Setup pipe read and write ends */
@@ -191,43 +175,36 @@ int main(int argc, char *argv[])
 	/* Is container ready */
 	read(cinit_parent[0], buf, 5);
 	if (strcmp(buf, "c:go") != 0) {
-		tst_resm(TBROK, "parent: container did not respond!");
-		cleanup();
+		tst_brkm(TBROK, cleanup, "parent: container did not respond!");
 	}
 
 	/* Enqueue SIGUSR1 in pending signal queue of container */
 	if (kill(cpid, SIGUSR1) == -1) {
-		tst_resm(TBROK, "parent: kill() failed(%s)",\
-				strerror(errno));
-		cleanup();
+		tst_brkm(TBROK|TERRNO, cleanup, "kill() failed");
 	}
 
 	tst_resm(TINFO, "parent: signalled SIGUSR1 to container");
 	if (write(parent_cinit[1], "p:go", 5) != 5) {
-		tst_resm(TBROK, "parent: pipe is broken to write(%s)",\
-				strerror(errno));
-		cleanup();
+		tst_brkm(TBROK|TERRNO, cleanup, "write failed");
 	}
 
 	/* collect exit status of child */
 	if (wait(&status) == -1) {
-		tst_resm(TBROK, "parent: wait() failed(%s)",\
-				strerror(errno));
-		cleanup();
+		tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
 	}
 
 	if (WIFSIGNALED(status)) {
 		if (WTERMSIG(status) == SIGUSR1)
-			tst_resm(TFAIL, "parent: user function is not called "\
-					"inside cinit");
+			tst_resm(TFAIL,
+			    "user function was not called inside cinit");
 		else
-			tst_resm(TBROK, "parent: cinit is terminated by %i",\
-					WTERMSIG(status));
+			tst_resm(TBROK,
+			    "cinit was terminated by %d", WTERMSIG(status));
 	}
 
 	/* Cleanup and exit */
 	close(parent_cinit[1]);
 	close(cinit_parent[0]);
 	cleanup();
-	exit(0);
+	tst_exit();
 }

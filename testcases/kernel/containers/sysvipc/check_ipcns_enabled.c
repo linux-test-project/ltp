@@ -22,7 +22,7 @@
 
 int dummy(void *v)
 {
-        return 0;
+      return 0;
 }
 int main()
 {
@@ -35,5 +35,5 @@ int main()
 
         if (pid == -1)
                 return 3;
-        return 0;
+      return 0;
 }
