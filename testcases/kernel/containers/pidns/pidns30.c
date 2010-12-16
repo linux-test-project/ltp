@@ -184,11 +184,11 @@ static void child_signal_handler(int sig, siginfo_t *si, void *unused)
 	 * Now read the message - Be silent on errors since this is not the
 	 * test purpose.
 	 */
-	rc = mq_getattr((mqd_t)si->si_int, &attr);
-	if (rc == (mqd_t)-1)
+	rc = mq_getattr(si->si_int, &attr);
+	if (rc == -1)
 		return;
 
-	mq_receive((mqd_t)si->si_int, buf, attr.mq_msgsize, NULL);
+	mq_receive(si->si_int, buf, attr.mq_msgsize, NULL);
 }
 
 /*
@@ -216,7 +216,7 @@ int child_fn(void *arg)
 	close(father_to_child[1]);
 
 	mqd = syscall(__NR_mq_open, mqname, O_RDONLY);
-	if (mqd == (mqd_t)-1) {
+	if (mqd == -1) {
 		tst_resm(TBROK, "cinit: mq_open() failed (%s)",
 			strerror(errno));
 		cleanup_mqueue(TBROK, NO_STEP, 0);
@@ -227,7 +227,7 @@ int child_fn(void *arg)
 	notif.sigev_notify = SIGEV_SIGNAL;
 	notif.sigev_signo = SIGUSR1;
 	notif.sigev_value.sival_int = mqd;
-	if (syscall(__NR_mq_notify, mqd, &notif) == (mqd_t)-1) {
+	if (syscall(__NR_mq_notify, mqd, &notif) == -1) {
 		tst_resm(TBROK, "cinit: mq_notify() failed (%s)",
 			strerror(errno));
 		cleanup_mqueue(TBROK, C_STEP_0, mqd);
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
 
 	syscall(__NR_mq_unlink, mqname);
 	mqd = syscall(__NR_mq_open, mqname, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
-	if (mqd == (mqd_t)-1) {
+	if (mqd == -1) {
 		tst_resm(TBROK, "parent: mq_open() failed (%s)",
 			strerror(errno));
 		cleanup_mqueue(TBROK, F_STEP_1, 0);
@@ -317,7 +317,7 @@ int main(int argc, char *argv[])
 	}
 
 	rc = mq_send(mqd, MSG, strlen(MSG), MSG_PRIO);
-	if (rc == (mqd_t)-1) {
+	if (rc == -1) {
 		tst_resm(TBROK, "parent: mq_send() failed (%s)",
 			strerror(errno));
 		cleanup_mqueue(TBROK, F_STEP_2, mqd);
