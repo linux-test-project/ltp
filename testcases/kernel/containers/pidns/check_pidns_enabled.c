@@ -18,7 +18,7 @@
 * File: check_pidns_enabled.c
 *
 * Description:
-*  This testcase builds into the ltp framework to verify that kernel is
+*	This testcase builds into the ltp framework to verify that kernel is
 * PID NS enabled or not.
 *
 * Verify that:
@@ -33,8 +33,8 @@
 *
 * History:
 *
-* FLAG DATE     	NAME           		DESCRIPTION
-* 27/12/07  RISHIKESH K RAJAK <risrajak@in.ibm.com> Created this test
+* FLAG DATE		 	NAME					 		DESCRIPTION
+* 27/12/07	RISHIKESH K RAJAK <risrajak@in.ibm.com> Created this test
 *
 *******************************************************************************************/
 #include <sched.h>
@@ -49,21 +49,20 @@ int TST_TOTAL = 1;
 int dummy(void *v)
 {
 	/* Simply return from the child */
-        return 0;
+	return 0;
 }
 
-/* MAIN */
 int main()
 {
-        int pid;
+	int pid;
 
-        if (tst_kvercmp(2,6,24) < 0)
-                return 1;
+	if (tst_kvercmp(2, 6, 24) < 0)
+		return 1;
 
-        pid = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, dummy, NULL);
+	pid = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, dummy, NULL);
 
 	/* Check for the clone function return value */
-        if (pid == -1)
-                return 3;
-        return 0;
+	if (pid == -1)
+		return 3;
+	return 0;
 }
