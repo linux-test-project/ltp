@@ -59,23 +59,23 @@
 
 void usage(void)
 {
-        rt_help();
-        printf("preempt_timing specific options:\n");
+	rt_help();
+	printf("preempt_timing specific options:\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+		case 'h':
+			usage();
+			exit(0);
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 unsigned long long sample_list[ITERATIONS];
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "This program runs with a scheduling policy of SCHED_FIFO at priority %d\n", param.sched_priority);
 			fprintf(stderr, "You don't have the necessary privileges to create such a real-time process.\n");
 		} else {
-                	fprintf(stderr, "Failed to set scheduler, errno %d\n", errno);
+			fprintf(stderr, "Failed to set scheduler, errno %d\n", errno);
 		}
 		exit(1);
 	}

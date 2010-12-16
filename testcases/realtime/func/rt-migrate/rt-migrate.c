@@ -43,7 +43,7 @@
  * HISTORY
  *      30 July, 2009: Initial version by Steven Rostedt
  *      11 Aug, 2009: Converted the coding style to the one used by the realtime
- *                    testcases by Kiran Prakash
+ *		    testcases by Kiran Prakash
  *
  */
 #ifndef _GNU_SOURCE
@@ -192,7 +192,7 @@ static void usage()
 
 /*
 int rt_init(const char *options, int (*parse_arg)(int option, char *value),
-            int argc, char *argv[]);
+	    int argc, char *argv[]);
  */
 static int parse_args(int c, char *v)
 {

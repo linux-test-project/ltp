@@ -32,12 +32,12 @@
  *       - Create a fixed number of offense threads (lower priority)
  *       - Create a referee thread (highest priority)
  *       - Once everyone is on the field, the offense thread increments the
- *         value of 'the_ball' and yields. The defense thread tries to block
- *         the ball by never letting the offense players get the CPU (it just
+ *	 value of 'the_ball' and yields. The defense thread tries to block
+ *	 the ball by never letting the offense players get the CPU (it just
  * 	   does a sched_yield).
  *       - The refree threads wakes up regularly to check if the game is over :)
  *       - In the end, if the value of 'the_ball' is >0, the test is considered
- *         to have failed.
+ *	 to have failed.
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
@@ -47,11 +47,11 @@
  *
  * HISTORY
  *     2006-03-16 Reduced verbosity, non binary failure reporting, removal of
- *                crazy_fans thread, added game_length argument by Darren Hart.
+ *		crazy_fans thread, added game_length argument by Darren Hart.
  *     2007-08-01 Remove all thread cleanup in favor of simply exiting.Various
- *                bugfixes and cleanups. -- Josh Triplett
+ *		bugfixes and cleanups. -- Josh Triplett
  *     2009-06-23 Simplified atomic startup mechanism, avoiding thundering herd
- *                scheduling at the beginning of the game. -- Darren Hart
+ *		scheduling at the beginning of the game. -- Darren Hart
  *
  *****************************************************************************/
 
@@ -89,22 +89,22 @@ void usage(void)
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
+	int handled = 1;
+	switch (c) {
+		case 'h':
+			usage();
+			exit(0);
 		case 'n':
 			players_per_team = atoi(v);
 			break;
 		case 'l':
 			game_length= atoi(v);
 			break;
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 /* This is the defensive team. They're trying to block the offense */
@@ -149,7 +149,7 @@ int referee(int game_length)
 	}
 	/* Blow the whistle */
 	printf("Game Over!\n");
-        final_ball = the_ball;
+	final_ball = the_ball;
 	printf("Final ball position: %d\n", final_ball);
 	return final_ball != 0;
 }

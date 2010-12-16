@@ -139,7 +139,7 @@ int main(int argc, char **argv)
 		close(fd);
 	}
 	cleanup();
-	  return 0;
+	tst_exit();
 }
 
 #else

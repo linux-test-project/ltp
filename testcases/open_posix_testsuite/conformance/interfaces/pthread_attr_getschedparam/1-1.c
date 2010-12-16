@@ -41,7 +41,7 @@ int verify_param(pthread_attr_t *attr, int priority) {
 		printf(ERROR_PREFIX "got wrong sched param\n");
 		exit(PTS_FAIL);
 	}
-        return 0;
+      return 0;
 }
 
 int main()

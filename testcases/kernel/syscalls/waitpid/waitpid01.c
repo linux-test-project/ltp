@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	  return 0;
+	tst_exit();
 
 }
 

@@ -157,7 +157,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
 			cleanup();
-			  return 0;
+			tst_exit();
 		}
 //block1:
 		tst_resm(TINFO, "Enter block 1");

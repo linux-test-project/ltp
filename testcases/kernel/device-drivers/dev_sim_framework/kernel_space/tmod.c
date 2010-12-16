@@ -69,11 +69,11 @@ static struct file_operations tmod_fops = {
  * operations structure
  */
 static int tmod_open(struct inode *ino, struct file *f) {
-        return 0;
+      return 0;
 }
 
 static int tmod_close(struct inode *ino, struct file *f) {
-        return 0;
+      return 0;
 }
 
 /*
@@ -242,7 +242,7 @@ static int tmod_init_module(void) {
 	/* call any other init functions you might use here */
 
 	printk("tmod: Registration success.\n");
-        return 0;
+      return 0;
 }
 
 /*

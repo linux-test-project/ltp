@@ -96,5 +96,5 @@ int main (int argc, char * argv [])
   }
   free (buffer);
   free (line_buffer);
-  return 0;
+        return 0;
 }

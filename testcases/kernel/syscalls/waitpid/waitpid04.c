@@ -143,7 +143,7 @@ int main(int ac, char **av)
 		condition_number++;
 	}
 	cleanup();
-	  return 0;
+	tst_exit();
 
 }
 

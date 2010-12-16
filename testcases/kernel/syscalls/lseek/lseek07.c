@@ -102,15 +102,8 @@ int main(int ac, char **av)
 	off_t offset;		/* byte position in temporary file */
 
 	/* Parse standard options given to run the test. */
-<<<<<<< HEAD
-	msg = parse_opts(ac, av, NULL, NULL);
-=======
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
->>>>>>> master
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -128,8 +121,8 @@ int main(int ac, char **av)
 		TEST(lseek(fildes, offset, SEEK_SET));
 
 		if (TEST_RETURN == (off_t) - 1) {
-			tst_resm(TFAIL, "lseek on (%s) Failed, errno=%d : %s",
-				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "lseek on (%s) failed",
+			    TEMP_FILE);
 			continue;
 		}
 		/*
@@ -153,9 +146,8 @@ int main(int ac, char **av)
 			 */
 			if (write(fildes, write_buf2, strlen(write_buf2)) !=
 			    strlen(write_buf2)) {
-				tst_brkm(TFAIL, cleanup, "write() failed to "
-					 "write additional data, error = %d",
-					 errno);
+				tst_brkm(TFAIL|TERRNO, cleanup,
+				    "write() failed to write additional data");
 			}
 
 			/*
@@ -209,7 +201,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	  return 0;
+	tst_exit();
 }
 
 /*

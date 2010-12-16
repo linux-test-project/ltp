@@ -85,7 +85,7 @@ int read_eof(char *filename)
 		}
 	}
 	fprintf(stderr, "read_checkzero done\n");
-    return 0;
+  return 0;
 }
 
 int main(int argc, char **argv)
@@ -99,5 +99,5 @@ int main(int argc, char **argv)
 
 	read_eof(filename);
 
-    return 0;
+  return 0;
 }

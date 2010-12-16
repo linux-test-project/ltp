@@ -42,7 +42,7 @@ static int __init dummy_init(void) {
 
         proc_dummy = proc_mkdir("dummy_dep", 0);
         dummy_func_test();
-        return 0;
+      return 0;
 }
 
 static void __exit dummy_exit(void) {

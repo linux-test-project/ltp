@@ -259,5 +259,5 @@ int main(int argc, char **argv)
         close(sc);
         close(sa);
 
-        return 0;
+    return 0;
 }

@@ -622,7 +622,7 @@ struct io_req   *req;
 	    if (sc->m_flags & SY_WRITE)
 		    req->r_data.sswrite.r_pattern = pattern;
 
-	    return 0;
+	  return 0;
     }
 #endif
 
@@ -911,7 +911,7 @@ struct io_req   *req;
 	break;
     }
 
-    return 0;
+  return 0;
 }
 
 /*
@@ -976,7 +976,7 @@ struct file_info    *rec;
 
 	if (r_opt) {
 	    rec->f_riou = Rawmult;
-	    return 0;
+	  return 0;
 	}
 
 #ifdef CRAY
@@ -1037,7 +1037,7 @@ struct file_info    *rec;
 #endif /* CRAY */
     }
 
-    return 0;
+  return 0;
 }
 
 /*
@@ -1866,7 +1866,7 @@ char	*opts;
         }
     }
 
-    return 0;
+  return 0;
 }
 
 int
@@ -1973,7 +1973,7 @@ FILE	*stream;
     fprintf(stream, "\tthe number by blocks, kilobytes, or megabytes.  If no trailing\n");
     fprintf(stream, "\tmultiplier is present, the number is interpreted as bytes\n");
 
-    return 0;
+  return 0;
 }
 
 /*
@@ -1985,5 +1985,5 @@ usage(stream)
 FILE	*stream;
 {
     fprintf(stream, "usage%s:  iogen [-hoq] [-a aio_type,...] [-f flag[,flag...]] [-i iterations] [-p outpipe] [-m offset-mode] [-s syscall[,syscall...]] [-t mintrans] [-T maxtrans] [ -O file-create-flags ] [[len:]file ...]\n", TagName);
-    return 0;
+  return 0;
 }

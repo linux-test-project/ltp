@@ -100,29 +100,14 @@ int main(int ac, char **av)
 
 	/* Disable test if the version of the kernel is less than 2.6.16 */
 	if ((tst_kvercmp(2, 6, 16)) < 0) {
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.16 and higher");
-		exit(0);
+		tst_brkm(TCONF, NULL, "This test can only run on kernels that are 2.6.16 and higher");
 	}
 
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
 	setup();
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		setup_every_copy();
 
@@ -139,32 +124,22 @@ int main(int ac, char **av)
 			/* check return code */
 			if (TEST_ERRNO == expected_errno[i]) {
 
-				/***************************************************************
-				 * only perform functional verification if flag set (-f not given)
-				 ***************************************************************/
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "renameat() returned the expected  errno %d: %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_resm(TPASS|TTERRNO,
+					    "renameat failed as expected");
 				}
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL,
-					 "renameat() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,
+				    "renameat failed unexpectedly");
 			}
 		}
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
 
-	return (0);
+	tst_exit();
 }
 
 void setup_every_copy()
@@ -242,9 +217,6 @@ void setup_every_copy()
 	newfilenames[1] = dtestfile3;
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -253,10 +225,6 @@ void setup()
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
 	/* Remove them */
@@ -274,5 +242,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
 }

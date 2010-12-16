@@ -106,5 +106,5 @@ int main(int argc, char **argv)
         if (write(s, &msg, sizeof(msg)) < 0)
                 perror("write");
 
-        return 0;
+    return 0;
 }

@@ -274,7 +274,7 @@ int main(int argc, char *argv[]) {
 
     ltp_run_ping_tests(hostName);
 
-    return 0;
+        return 0;
 
 }
 
@@ -303,7 +303,7 @@ int ltp_run_traceroute_tests(char * hostName)
 
     ltp_traceroute(&rawTraceAddr, hostName, pid);
 
-    return 0;
+        return 0;
 }
 /**********************************************************************
 * Function: ltp_run_ping_tests - host look up and start ping processes
@@ -335,7 +335,7 @@ int ltp_run_ping_tests(char * hostName)
 
     }
 
-    return 0;
+        return 0;
 }
 
 /******************************************************************************

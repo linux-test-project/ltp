@@ -296,7 +296,7 @@ int make_directory(char * dirname)
   strcat(tdir, "/");
   strcat(tdir, dirname);
 
-  return 0;
+        return 0;
 }
 
 /* assumes we are already chdir'd into a directory that the subtree is rooted
@@ -462,5 +462,5 @@ int main(int argc, char * argv[])
   print_stats();
   if (stats) printf("\nreiser_fract_tree finished\n");
 
-  return 0;
+        return 0;
 }

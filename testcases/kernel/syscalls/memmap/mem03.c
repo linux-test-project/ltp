@@ -140,7 +140,7 @@ int main()
 	/* clean up and exit */
 	cleanup();
 
-	  return 0;
+	tst_exit();
 }
 
 /*

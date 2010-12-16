@@ -85,12 +85,12 @@ static struct pm_dev *ltp_pm_dev = NULL;
 
 static int test_open(struct inode *ino, struct file *f) {
 	printk("device open\n");
-        return 0;
+      return 0;
 }
 
 static int test_close(struct inode *ino, struct file *f) {
 	printk("device closed\n");
-        return 0;
+      return 0;
 }
 
 static int test_ioctl(struct inode *ino, struct file *f, unsigned int cmd, unsigned long l) {
@@ -123,7 +123,7 @@ static void option1(void) {
 
 static int ltp_pm_callback(struct pm_dev *dev, pm_request_t rqst, void *data)
 {
-    return 0;
+  return 0;
 }
 
 static int test_init_module(void) {

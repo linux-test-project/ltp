@@ -76,7 +76,7 @@ long iterations = ITERATIONS;
 
 void usage(void)
 {
-        rt_help();
+	rt_help();
 	printf("testpi-7 specific options:\n");
 	printf("  -i#     #: number of iterations\n");
 	printf("  -f      #: Use flag mutex\n");
@@ -85,25 +85,25 @@ void usage(void)
 
 int parse_args(int c, char *v)
 {
-        int handled = 1;
-        switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-                case 'f':
-                        use_flag_mutex = 0;
-                        break;
-                case 'i':
-                        iterations = atoi(v);
-                        break;
-                case 'x':
-                        med_threads = atoi(v);
-                        break;
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+	case 'f':
+		use_flag_mutex = 0;
+		break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'i':
+		iterations = atoi(v);
+		break;
+	case 'x':
+		med_threads = atoi(v);
+		break;
+	default:
+		handled = 0;
+		break;
+	}
+	return handled;
 }
 
 phase_t _read_flag(const char *s, int l) {

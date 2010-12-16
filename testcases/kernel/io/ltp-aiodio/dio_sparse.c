@@ -124,7 +124,7 @@ int read_sparse(char *filename, int filesize)
 			offset += r;
 		}
 	}
-    return 0;
+  return 0;
 }
 
 volatile int got_signal;

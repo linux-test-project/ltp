@@ -80,7 +80,7 @@ void usage(void)
 {
 	rt_help();
 	printf("sched_latency specific options:\n");
-	printf("  -dLOAD        periodic load in ms (default 1)\n");
+	printf("  -dLOAD	periodic load in ms (default 1)\n");
 	printf("  -lTHRESHOLD   trace latency, with given threshold in us\n");
 	printf("  -tPERIOD      period in ms (default 5)\n");
 	printf("  -iITERATIONS  number of iterations (default %d)\n",
@@ -90,28 +90,28 @@ void usage(void)
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                case 'd':
-                        load_ms = atoi(v);
-                        break;
+	int handled = 1;
+	switch (c) {
+		case 'h':
+			usage();
+			exit(0);
+		case 'd':
+			load_ms = atoi(v);
+			break;
 		case 'i':
 			iterations = atoi(v);
 			break;
-                case 'l':
-                        latency_threshold = strtoull(v, NULL, 0);
-                        break;
-                case 't':
-                        period = strtoull(v, NULL, 0)*NS_PER_MS;
-                        break;
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+		case 'l':
+			latency_threshold = strtoull(v, NULL, 0);
+			break;
+		case 't':
+			period = strtoull(v, NULL, 0)*NS_PER_MS;
+			break;
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 void *periodic_thread(void *arg)
@@ -144,11 +144,11 @@ void *periodic_thread(void *arg)
 		if (next < now) {
 			printf("\nPERIOD MISSED!\n");
 			printf("     scheduled delta: %8llu us\n", sched_delta/1000);
-			printf("        actual delta: %8llu us\n", delta/1000);
-			printf("             latency: %8llu us\n", (delta-sched_delta)/1000);
+			printf("	actual delta: %8llu us\n", delta/1000);
+			printf("	     latency: %8llu us\n", (delta-sched_delta)/1000);
 			printf("---------------------------------------\n");
 			printf("      previous start: %8llu us\n", (prev-iter_start)/1000);
-			printf("                 now: %8llu us\n", (now-iter_start)/1000);
+			printf("		 now: %8llu us\n", (now-iter_start)/1000);
 			printf("     scheduled start: %8llu us\n", (next-iter_start)/1000);
 			printf("next scheduled start is in the past!\n");
 			ret = 1;

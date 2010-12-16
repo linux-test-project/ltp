@@ -203,7 +203,7 @@ main (void)
   /* Wait until producer and consumer finish. */
   pthread_join (th_a, &retval);
   pthread_join (th_b, &retval);
-  return 0;
+        return 0;
 }
 
 #else /* Not __i386__ */

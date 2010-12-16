@@ -270,11 +270,7 @@ get_mbind_policy(char *args, char **nextarg)
 	pol = args;
 	args += strcspn(args, " 	+");
 
-<<<<<<< HEAD
 	for (polp = policies; polp->pol_name != NULL; ++polp) {
-=======
-	for ( polp = policies; polp->pol_name != NULL; ++polp) {
->>>>>>> master
 		size_t plen = args - pol;
 
 		if (strncmp(pol, polp->pol_name, plen))

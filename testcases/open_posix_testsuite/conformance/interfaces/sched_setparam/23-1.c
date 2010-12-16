@@ -47,11 +47,7 @@ int main() {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
-<<<<<<< HEAD
 
-=======
-
->>>>>>> master
 	if (param.sched_priority == old_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

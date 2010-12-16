@@ -75,7 +75,6 @@ main(int argc, char *argv[])
 
 	cleanup();
 
-	tst_exit();
 }
 
 enum ttype { EXISTS, ALIAS, VALUE, DEFINED };

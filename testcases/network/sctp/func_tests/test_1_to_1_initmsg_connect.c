@@ -116,5 +116,5 @@ main (int argc, char **argv)
 	close (sk2);
 	close (sk3);
 
-        return 0;
+    return 0;
 }

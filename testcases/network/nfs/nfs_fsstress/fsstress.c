@@ -1279,7 +1279,7 @@ symlink_path(const char *name1, pathname_t *name)
 
         if (!strcmp(name1, name->path)) {
             printf("yikes! %s %s\n", name1, name->path);
-            return 0;
+        return 0;
         }
 
 	rval = symlink(name1, name->path);

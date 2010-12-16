@@ -84,11 +84,11 @@ static struct file_operations tbase_fops = {
 };
 
 static int tbase_open(struct inode *ino, struct file *f) {
-        return 0;
+      return 0;
 }
 
 static int tbase_close(struct inode *ino, struct file *f) {
-        return 0;
+      return 0;
 }
 
 /* my bus stuff */
@@ -416,7 +416,7 @@ static int test_bus_add() {
         }
         else {
                 printk("tbase: Device added to bus\n");
-                return 0;
+              return 0;
         }
 }
 
@@ -611,7 +611,7 @@ static int test_dev_file() {
         else {
                 printk("tbase: created dev sysfs file\n");
                 device_remove_file(dev, &dev_attr_test_id);
-                return 0;
+              return 0;
         }
 
 }
@@ -656,7 +656,7 @@ static int test_bus_file() {
         else {
                 printk("tbase: created bus sysfs file\n");
                 bus_remove_file(bus, &bus_attr_test_id);
-                return 0;
+              return 0;
         }
 
 }
@@ -677,7 +677,7 @@ static int test_class_file() {
         else {
                 printk("tbase: created class sysfs file\n");
                 class_remove_file(cls, &class_attr_test_id);
-                return 0;
+              return 0;
         }
 
 }
@@ -788,7 +788,7 @@ static int test_sysdev_reg() {
         }
         else {
                 printk("tbase: Registered sysdev \n");
-                return 0;
+              return 0;
         }
 
 }
@@ -822,7 +822,7 @@ static int tbase_init_module(void) {
 	/* call any other init functions you might use here */
 
 	printk("tbase: Registration success.\n");
-        return 0;
+      return 0;
 }
 
 /*

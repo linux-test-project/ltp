@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 	/* perform global cleanup and exit */
 	cleanup();
 
-	  return 0;
+	tst_exit();
 
 }
 

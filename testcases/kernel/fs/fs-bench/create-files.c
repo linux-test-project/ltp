@@ -74,7 +74,7 @@ int main(int ac,char *av[])
 end:
   fprintf(stderr,"\nTotal create files: %d\n",filecount);
   printf("Done\n");
-  return 0;
+        return 0;
 }
 
 int showchar[]={124,47,45,92,124,47,45,92};

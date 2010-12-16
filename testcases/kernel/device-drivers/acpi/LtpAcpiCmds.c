@@ -107,14 +107,14 @@ extern struct acpi_device		*acpi_root;
 static int ltpdev_open(struct block_device *dev, fmode_t mode)
 {
     printk(KERN_ALERT "ltpdev_open \n");
-    return 0;
+  return 0;
 }
 
 static int ltpdev_release(struct gendisk *disk, fmode_t mode)
 {
 
     printk(KERN_ALERT "ltpdev_release \n");
-    return 0;
+  return 0;
 }
 
 static u32 ltp_test_power_button_ev_handler(void *context)
@@ -447,7 +447,7 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
         break;
     }
 
-    return 0;
+  return 0;
 }
 
 static acpi_status ltp_get_dev_callback (acpi_handle obj, u32 depth, void *context, void **ret)
@@ -490,7 +490,7 @@ static u32 acpi_ec_gpe_handler(void *context)
 
 static acpi_status acpi_ec_io_ports (struct acpi_resource	*resource,   void			*context)
 {
-  return 0;
+        return 0;
 }
 
 #if 0
@@ -578,7 +578,7 @@ int init_module(void)
 
     if (!gd_ptr) {
         printk(KERN_ALERT "ERROR getting memory !!!\n");
-        return 0;
+      return 0;
     }
 
     gd_ptr = alloc_disk(1);
@@ -597,7 +597,7 @@ int init_module(void)
 
     add_disk(gd_ptr);
 
-    return 0;
+  return 0;
 }
 
 void cleanup_module(void)

@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
              }
              count=0;
        }
-       return 0;
+     return 0;
 }
 
 void finish(int sig) {

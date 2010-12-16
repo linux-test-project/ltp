@@ -154,5 +154,5 @@ int main(int argc, char **argv)
 
         getchar();
 
-        return 0;
+    return 0;
 }

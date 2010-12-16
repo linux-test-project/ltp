@@ -1083,7 +1083,7 @@ static int sg_sense_print(const char * leadin, int scsi_status,
             (SG_ERR_DRIVER_SENSE == (0xf & driver_status)))
             sg_print_sense(0, sense_buffer, sb_len);
     }
-    return 0;
+  return 0;
 }
 
 #ifdef SG_IO

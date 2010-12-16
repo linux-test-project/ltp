@@ -31,8 +31,8 @@
  *
  * HISTORY
  *      2010-06-29 Thread synchronization changes by using
- *                 conditional variables by Gowrishankar.
- *                 by Gowrishankar <gowrishankar.m@in.ibm.com>
+ *		   conditional variables by Gowrishankar.
+ *		   by Gowrishankar <gowrishankar.m@in.ibm.com>
  *
  *****************************************************************************/
 

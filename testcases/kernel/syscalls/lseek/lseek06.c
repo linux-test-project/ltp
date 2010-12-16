@@ -98,15 +98,8 @@ int main(int ac, char **av)
 	char read_buf[1];	/* data read from temp. file */
 
 	/* Parse standard options given to run the test. */
-<<<<<<< HEAD
-	msg = parse_opts(ac, av, NULL, NULL);
-=======
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
->>>>>>> master
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -168,7 +161,6 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	  return 0;
 }
 
 /*

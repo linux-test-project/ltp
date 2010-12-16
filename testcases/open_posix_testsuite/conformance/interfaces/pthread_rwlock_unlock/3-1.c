@@ -72,7 +72,7 @@ static int set_priority(pthread_t pid, unsigned policy, unsigned prio)
                         policy, prio);
                 exit(PTS_UNRESOLVED);
         }
-        return 0;
+      return 0;
 }
 
 static void* fn_rd(void *arg)

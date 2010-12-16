@@ -56,7 +56,7 @@ int verify_policy(pthread_attr_t *attr, int policytype) {
   		}
 		break;
 	}
-        return 0;
+      return 0;
 }
 
 int main()

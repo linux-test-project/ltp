@@ -260,13 +260,13 @@ void usage(void)
 int parse_args(int c, char *v)
 {
 	int handled;
-        switch (c) {
+	switch (c) {
 		case 'h':
 			usage();
 			exit(0);
-                case 'a':
+		case 'a':
 			broadcast_flag = 1;
-                        break;
+			break;
 		case 'i':
 			iterations = atoi(v);
 			break;
@@ -276,11 +276,11 @@ int parse_args(int c, char *v)
 		case 'r':
 			realtime = 1;
 			break;
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 int

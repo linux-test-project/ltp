@@ -138,7 +138,7 @@ int is_ht_enabled()
             }
         }
     }else
-        return 0;
+      return 0;
 
     fclose(fp);
 
@@ -149,25 +149,25 @@ int is_ht_enabled()
                     for (k = j +1; k < logic_cpu_num; k++) {
                         if (cpu_map[j]==cpu_map[k]) {
                         /* Not proper HT support, with 3 logic processor in 1 cpu package*/
-                            return 0;
+                          return 0;
                         }
                     }
                     if (ht_cpu[j] ==1) {
                         return 1;
                     }else
-                        return 0;
+                      return 0;
                 }
             }
             /* in this case, processor[i] has ht flag, but is not ht enabled*/
             if (j == logic_cpu_num) {
-                return 0;
+              return 0;
             }
         }
     }
     if (i == logic_cpu_num) {
-            return 0;
+          return 0;
     }
-    return 0;
+  return 0;
 }
 
 // return 0 means Pass,

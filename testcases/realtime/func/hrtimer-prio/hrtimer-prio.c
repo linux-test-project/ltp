@@ -68,11 +68,11 @@ void usage(void)
 {
 	rt_help();
 	printf("hrtimer-prio specific options:\n");
-	printf("  -t#           #:busy work time in ms, defaults to %d ms\n", DEF_BUSY_TIME);
-	printf("  -i#           #:number of iterations, defaults to %d\n", DEF_ITERATIONS);
-	printf("  -n#           #:number of busy threads, defaults to NR_CPUS*2\n");
-	printf("  -f#           #:rt fifo priority of busy threads (1,98), defaults to %d\n", DEF_MED_PRIO);
-	printf("  -m#           #:maximum timer latency in microseconds, defaults to %d\n", DEF_CRITERIA);
+	printf("  -t#	   #:busy work time in ms, defaults to %d ms\n", DEF_BUSY_TIME);
+	printf("  -i#	   #:number of iterations, defaults to %d\n", DEF_ITERATIONS);
+	printf("  -n#	   #:number of busy threads, defaults to NR_CPUS*2\n");
+	printf("  -f#	   #:rt fifo priority of busy threads (1,98), defaults to %d\n", DEF_MED_PRIO);
+	printf("  -m#	   #:maximum timer latency in microseconds, defaults to %d\n", DEF_CRITERIA);
 }
 
 int parse_args(int c, char *v)

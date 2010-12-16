@@ -586,5 +586,5 @@ main(int  argc,		/* number of input parameters.			      */
         }
     }
 	fprintf(stdout, "TEST PASSED\n");
-    return 0;
+  return 0;
 }

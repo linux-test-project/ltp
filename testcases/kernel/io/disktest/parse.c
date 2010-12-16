@@ -730,11 +730,7 @@ int make_assumptions(child_args_t *args)
 		/* use stat to get file properties, and use to set -I */
 		rv = stat(args->device, &stat_buf);
 		if (0 == rv) {
-<<<<<<< HEAD
 			if (IS_FILE(stat_buf.st_mode)) {
-=======
-			if (IS_FILE(stat_buf.st_mode) ) {
->>>>>>> master
 				strncat(args->argstr, "(-I f) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 				args->flags |= CLD_FLG_FILE;
 			} else if (IS_BLK(stat_buf.st_mode)) {

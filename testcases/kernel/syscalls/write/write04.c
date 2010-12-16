@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 		unlink(fifo);
 	}
 	cleanup();
-	  return 0;
+	tst_exit();
 }
 
 void alarm_handler()

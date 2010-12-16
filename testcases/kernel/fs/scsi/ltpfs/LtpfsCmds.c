@@ -68,14 +68,14 @@ void path_release(struct nameidata *nd);
 static int ltpdev_open (struct inode *pinode, struct file *pfile)
 {
     printk(KERN_ALERT "ltpdev_open \n");
-    return 0;
+  return 0;
 }
 
 static int ltpdev_release (struct inode *pinode, struct file *pfile)
 {
 
     printk(KERN_ALERT "ltpdev_release \n");
-    return 0;
+  return 0;
 }
 
 static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int cmd, unsigned long arg )
@@ -165,12 +165,12 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
     break;
     }
 
-    return 0;
+  return 0;
 }
 
 static int ltp_pm_callback(struct pm_dev *dev, pm_request_t rqst, void *data)
 {
-    return 0;
+  return 0;
 }
 
 int init_module(void)
@@ -194,7 +194,7 @@ int init_module(void)
 
     if (!gd_ptr) {
         printk(KERN_ALERT "ERROR getting memory !!!\n");
-        return 0;
+      return 0;
     }
 
     gd_ptr = alloc_disk(1);
@@ -212,7 +212,7 @@ int init_module(void)
 
     add_disk(gd_ptr);
 
-    return 0;
+  return 0;
 }
 
 void cleanup_module(void)
@@ -239,7 +239,7 @@ static int do_buffer_c_tests()
 
     printk(KERN_ALERT "buffer.c coverage tests complete...\n");
 
-    return 0;
+  return 0;
 }
 /**
  * lookup_bdev  - lookup a struct block_device by name

@@ -149,7 +149,7 @@ rm_shared_mem(key_t  shm_id,	/* id of shared memory segment to be removed  */
             return -1;
         }
     }
-    return 0;
+  return 0;
 }
 
 /******************************************************************************/

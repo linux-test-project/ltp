@@ -189,11 +189,7 @@ void * sync_rec(void * arg)
 	/* wait until termination */
 	do {
 		sched_yield();
-<<<<<<< HEAD
 	} while (*(int *) arg);
-=======
-	} while (*( int * ) arg);
->>>>>>> master
 
 	return NULL;
 }

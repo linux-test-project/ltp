@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 		close(fild);
 	}
 	cleanup();
-	  return 0;
+	tst_exit();
 }
 
 /*

@@ -1572,7 +1572,7 @@ set_sig()
             }
         } /* endfor */
 
-        return 0;
+      return 0;
 }
 
 /***********************************************************************
@@ -1679,7 +1679,7 @@ handle_error()
 	exit(1);
     }
 
-    return 0;
+  return 0;
 }
 
 /***********************************************************************
@@ -2222,14 +2222,14 @@ int just_trunc;		/* lseek has already been done for you */
 	    if (Debug > 3)
 		printf("%s: %d DEBUG4 %s/%d: Not shrinking file - not time, iter=%d, cnt=%d\n",
 		    Progname, Pid, __FILE__, __LINE__, trunc_inter, shrink_cnt);
-	    return 0;	/* not this time */
+	  return 0;	/* not this time */
 	}
 
 	if (Mode & MODE_FIFO) {
 	    if (Debug > 5)
 		printf("%s: %d DEBUG5 %s/%d: Not attempting to shrink a FIFO\n",
 		    Progname, Pid, __FILE__, __LINE__);
-	    return 0;	/* can not truncate fifo */
+	  return 0;	/* can not truncate fifo */
 	}
 
 	lkfile(fd, LOCK_EX, LKLVL0);
@@ -2354,7 +2354,7 @@ int mode;       /* write mode */
         if (Debug > 3)
 	    printf("%s: %d DEBUG4 %s/%d: No write validation,  Grow_incr = %d, offset = %ld\n",
 	        Progname, Pid, __FILE__, __LINE__, Grow_incr, Woffset);
-        return 0;	/* no check */
+      return 0;	/* no check */
     }
 
     /*
@@ -2376,7 +2376,7 @@ int mode;       /* write mode */
 	    printf("%s%s: %d DEBUG2 %s/%d: %d File size (%d) smaller than where last wrote (%ld)- no write validation\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, fsize, Woffset);
         lkfile(fd, LOCK_UN, LKLVL0);
-        return 0;	/* no validation, but not an error */
+      return 0;	/* no validation, but not an error */
 
     } else if (fsize < (Woffset + Grow_incr)) {
 	/*
@@ -2507,7 +2507,7 @@ int mode;       /* write mode */
         printf("%s: %d DEBUG7 %s/%d: No corruption detected on write validation , offset = %ld, size = %d\n",
             Progname, Pid, __FILE__, __LINE__, Woffset, Grow_incr);
 
-    return 0;	/* all is well */
+  return 0;	/* all is well */
 }
 
 /***********************************************************************
@@ -2566,7 +2566,7 @@ int no_file_check;	/* if set, do not do file content check */
                 Progname, Pid, __FILE__, __LINE__);
 
 	    lkfile(fd, LOCK_UN, LKLVL0);
-	    return 0;
+	  return 0;
 	}
 
 	if (Debug > 2)
@@ -2804,7 +2804,7 @@ lkfile(int fd, int operation, int lklevel)
 	}
    }
 
-   return 0;
+ return 0;
 }
 
 #ifndef linux

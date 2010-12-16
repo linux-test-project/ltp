@@ -237,7 +237,7 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
         my_yield();
     }
     /* Success! */
-    return 0;
+  return 0;
 }
 
 /******************************************************************************/

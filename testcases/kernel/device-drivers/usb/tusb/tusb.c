@@ -111,7 +111,7 @@ static void tusb_disconnect(struct usb_interface *intf) {
 
 static int tusb_probe(struct usb_interface *intf,  const struct usb_device_id *id) {
         printk("tusb: Entered probe function\n");
-        return 0;
+      return 0;
 
 }
 
@@ -146,22 +146,22 @@ static int test_alloc_dev(struct usb_device *dev) {
 
 static int test_dealloc_dev(struct usb_device *dev) {
         printk("Entered test_dealloc_dev\n");
-        return 0;
+      return 0;
 }
 
 static int test_get_current_frame_number(struct usb_device *dev) {
         printk("Entered test_get_current_frame_number\n");
-        return 0;
+      return 0;
 }
 
 static int test_submit_urb(struct urb *purb) {
         printk("Entered test_submit_urb\n");
-        return 0;
+      return 0;
 }
 
 static int test_unlink_urb(struct urb *purb) {
         printk("Entered test_unlink_urb\n");
-        return 0;
+      return 0;
 }
 
 static struct usb_operations test_device_operations = {

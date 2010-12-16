@@ -91,11 +91,7 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
 	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "dd", &pp[0], &pp[1]);

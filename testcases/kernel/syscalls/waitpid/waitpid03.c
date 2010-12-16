@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 		condition_number++;
 	}
 	cleanup();
-	  return 0;
+	tst_exit();
 
 }
 

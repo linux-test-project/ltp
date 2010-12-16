@@ -81,7 +81,7 @@ int read_eof(char *filename)
 			}
 		}
 	}
-    return 0;
+  return 0;
 }
 
 #define NUM_AIO 16
@@ -141,11 +141,7 @@ void aiodio_append(char *filename)
                 if (n > 0) {
 		  iocbp = (struct iocb *)event.obj;
 
-<<<<<<< HEAD
 		if (n > 0) {
-=======
-		if ( n > 0) {
->>>>>>> master
 		io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, AIO_SIZE, offset);
 		offset += AIO_SIZE;
 		if ((w = io_submit(myctx, 1, &iocbp)) < 0) {
@@ -189,5 +185,5 @@ int main(int argc, char **argv)
 		kill(pid[i], SIGTERM);
 	}
 
-    return 0;
+  return 0;
 }

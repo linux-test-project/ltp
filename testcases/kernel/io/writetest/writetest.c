@@ -59,11 +59,7 @@ int TST_TOTAL = 2;
 void buf_init(void )
 {
     static int seed = 0;
-<<<<<<< HEAD
     if (seed == 0)
-=======
-    if ( seed == 0 )
->>>>>>> master
         seed = DefaultSeed;
     srand(seed);
 }
@@ -275,5 +271,5 @@ int main(int argc, char *argv[])
     }
 
     cleanup();
-    return 0;
+  return 0;
 }

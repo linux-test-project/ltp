@@ -201,7 +201,7 @@ int test_stack(pthread_attr_t * ta, size_t newsize)
 		if (WIFEXITED(status)) /* The process exited */
 		{
 			if (WEXITSTATUS(status) == 0)
-			{  return 0;  } /* We were able to fill the stack */
+			{return 0;  } /* We were able to fill the stack */
 			if (WEXITSTATUS(status) == PTS_UNRESOLVED)
 			{
 				output("The child process returned unresolved status\n");

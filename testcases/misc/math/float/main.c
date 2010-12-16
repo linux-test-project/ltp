@@ -285,11 +285,7 @@ finished:
 
 		/* test the result in TH_DATA : communication buffer */
 		pcom = * tabcour++;
-<<<<<<< HEAD
 		if (pcom->th_result !=0) {
-=======
-		if (pcom->th_result !=0 ) {
->>>>>>> master
 	           error++;
                    tst_resm(TFAIL, "thread %d (%s) terminated unsuccessfully %d errors/%d loops", th_num,pcom->th_func.fident,pcom->th_nerror,pcom->th_nloop);
                    tst_resm(TFAIL, "%s", pcom->detail_data);

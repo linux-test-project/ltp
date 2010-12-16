@@ -161,5 +161,5 @@ int main(int argc, char **argv)
         printf("Filtertest done.\n");
 
         close(s);
-        return 0;
+    return 0;
 }

@@ -86,11 +86,7 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
-<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
 	 }
 
 	if (Nflag) {
@@ -205,7 +201,7 @@ int main(int ac, char **av)
 	fclose(rea);
 	cleanup();
 
-	  return 0;
+	tst_exit();
 }
 
 void help()

@@ -366,7 +366,7 @@ static int check_finished_io(struct io_unit *io) {
 	}
 
     }
-    return 0;
+  return 0;
 }
 
 /* worker func to check the busy bits and get an io unit ready for use */
@@ -377,7 +377,7 @@ static int grab_iou(struct io_unit *io, struct io_oper *oper) {
     io->busy = IO_PENDING;
     io->res = 0;
     io->io_oper = oper;
-    return 0;
+  return 0;
 }
 
 char *stage_name(int rw) {
@@ -526,7 +526,7 @@ static int io_oper_wait(struct thread_info *t, struct io_oper *oper) {
     struct io_unit *event_io;
 
     if (oper == NULL) {
-        return 0;
+      return 0;
     }
 
     if (oper->num_pending == 0)
@@ -554,7 +554,7 @@ done:
         fprintf(stderr, "%u errors on oper, last %u\n",
 	        oper->num_err, oper->last_err);
     }
-    return 0;
+  return 0;
 }
 
 off_t random_byte_offset(struct io_oper *oper) {
@@ -704,11 +704,7 @@ int build_oper(struct thread_info *t, struct io_oper *oper, int num_ios,
     if ((oper->started_ios + num_ios) > oper->total_ios)
         num_ios = oper->total_ios - oper->started_ios;
 
-<<<<<<< HEAD
     for (i = 0 ; i < num_ios ; i++) {
-=======
-    for ( i = 0 ; i < num_ios ; i++) {
->>>>>>> master
 	io = build_iocb(t, oper);
 	if (!io) {
 	    return -1;
@@ -775,7 +771,7 @@ resubmit:
     }
     update_iou_counters(my_iocbs, ret, &stop_time);
     t->num_global_pending += ret;
-    return 0;
+  return 0;
 }
 
 /*
@@ -785,7 +781,7 @@ resubmit:
 static int restart_oper(struct io_oper *oper) {
     int new_rw  = 0;
     if (oper->last_err)
-        return 0;
+      return 0;
 
     /* this switch falls through */
     switch(oper->rw) {
@@ -815,7 +811,7 @@ static int restart_oper(struct io_oper *oper) {
 	oper->rw = new_rw;
 	return 1;
     }
-    return 0;
+  return 0;
 }
 
 static int oper_runnable(struct io_oper *oper) {
@@ -837,7 +833,7 @@ static int oper_runnable(struct io_oper *oper) {
 	exit(1);
     }
     if (S_ISREG(buf.st_mode) && buf.st_size < oper->start)
-        return 0;
+      return 0;
     return 1;
 }
 
@@ -898,7 +894,7 @@ static int run_active_list(struct thread_info *t,
 	    }
 	}
     }
-    return 0;
+  return 0;
 }
 
 void drop_shm() {
@@ -972,7 +968,7 @@ int setup_ious(struct thread_info *t,
 
     t->num_global_ios = num_files * depth;
     t->num_global_events = t->num_global_ios;
-    return 0;
+  return 0;
 
 free_buffers:
     if (t->ios)
@@ -1047,7 +1043,7 @@ int setup_shared_mem(int num_threads, int num_files, int depth,
     unaligned_buffer = p;
     p = (char*)((intptr_t) (p + page_size_mask) & ~page_size_mask);
     aligned_buffer = p;
-    return 0;
+  return 0;
 
 free_buffers:
     drop_shm();
@@ -1229,7 +1225,7 @@ int run_workers(struct thread_info *t, int num_threads)
 	    exit(1);
 	}
     }
-    return 0;
+  return 0;
 }
 
 off_t parse_size(char *size_arg, off_t mult) {

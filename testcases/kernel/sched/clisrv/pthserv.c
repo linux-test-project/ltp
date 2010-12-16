@@ -68,7 +68,7 @@ int sockfd;
       if (n == 0)
       {
          dprt2(("%s: str_echo(): connection terminated\n", __FILE__));
-         return 0; /* connection terminated */
+       return 0; /* connection terminated */
       }
       else if (n < 0)
       {

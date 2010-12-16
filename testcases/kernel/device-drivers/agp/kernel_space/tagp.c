@@ -98,11 +98,11 @@ static struct file_operations tagp_fops = {
  * operations structure
  */
 static int tagp_open(struct inode *ino, struct file *f) {
-        return 0;
+      return 0;
 }
 
 static int tagp_close(struct inode *ino, struct file *f) {
-        return 0;
+      return 0;
 }
 
 /*
@@ -651,7 +651,7 @@ static int __init tagp_init_module(void) {
 	printk("tagp: PCI module init success.\n");
 	printk("tagp: Registration success.\n");
 
-        return 0;
+      return 0;
 }
 
 /*

@@ -286,11 +286,7 @@ void scenar_init()
 #endif
 
 		/* Stack related attributes */
-<<<<<<< HEAD
-		if ((tss > 0) && (tsa > 0))     /* This routine is dependent on the Thread Stack Address Attribute and Thread Stack Size Attribute options */
-=======
 		if (tss > 0 && tsa > 0)     /* This routine is dependent on the Thread Stack Address Attribute and Thread Stack Size Attribute options */
->>>>>>> master
 		{
 
 			if (scenarii[i].altstack != 0)

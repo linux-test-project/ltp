@@ -188,7 +188,7 @@ int initTest() {
         terminer(1);
     }
     P("fd=%d\n", dp.fd);
-    return 0;
+        return 0;
 }
 
 struct donneesFils *initClientFork(int i)
@@ -234,7 +234,7 @@ int initialise(int clnt) {
     load();
     initTest();
 
-    return 0;
+        return 0;
 }
 
 void cleanClient(struct donneesFils *df) {
@@ -263,7 +263,7 @@ int loadProcess() {
             exit(0);
         }
     }
-    return 0;
+        return 0;
 }
 
 void lockWholeFile(struct flock *request) {
@@ -309,7 +309,7 @@ int serverSendLocal() {
 
     for (i=0; i<dp.nclnt; i++)
         write(dp.lclnt[i][1], message,M_SIZE );
-    return 0;
+        return 0;
 
 }
 
@@ -324,36 +324,36 @@ int serverReceiveNet() {
             serverReceiveClient(c);
         }
     }
-    return 0;
+        return 0;
 }
 
 int serverReceiveLocal() {
     int i;
     for (i=0; i<dp.nclnt; i++)
         read(maitreLecteur, message,M_SIZE );
-    return 0;
+        return 0;
 }
 
 int clientReceiveLocal() {
     read(esclaveLecteur,message,M_SIZE);
-    return 0;
+        return 0;
 }
 
 int clientSend() {
     write(esclaveEcrivain, message, M_SIZE);
-    return 0;
+        return 0;
 }
 
 int serverSend() {
     serverSendNet();
     serverSendLocal();
-    return 0;
+        return 0;
 }
 
 int serverReceive() {
     serverReceiveNet();
     serverReceiveLocal();
-    return 0;
+        return 0;
 }
 
 /* binary structure <-> ASCII functions used to ensure data will be correctly used over
@@ -362,7 +362,7 @@ int serverReceive() {
 int serialiseTLock(struct s_test *tLock) {
     memset(message,0,M_SIZE);
     sprintf(message,"T:%d:%d:%d::",tLock->test, tLock->type,tLock->resAtt );
-    return 0;
+        return 0;
 }
 
 void unSerialiseTLock(struct s_test *tLock) {
@@ -425,25 +425,25 @@ int getLockSection(struct flock *request) {
     memset(message, 0, M_SIZE);
     clientReceiveLocal();
     unSerialiseFLock(request);
-    return 0;
+        return 0;
 }
 
 int sendLockTest(struct s_test *tLock) {
     serialiseTLock(tLock);
     serverSend();
-    return 0;
+        return 0;
 }
 
 int getLockTest(struct s_test *tLock) {
     clientReceiveLocal();
     unSerialiseTLock(tLock);
-    return 0;
+        return 0;
 }
 
 int sendResult(int resultat) {
     serialiseResult(resultat);
     clientSend();
-    return 0;
+        return 0;
 }
 
 int getResults(int ntest) {
@@ -467,7 +467,7 @@ int getResults(int ntest) {
         compteur(resultat,ntest);
     }
 
-    return 0;
+        return 0;
 }
 
 /* Usefull debug macro */
@@ -990,7 +990,7 @@ int usage() {
         printf("\n");
         printf("Send bugs to vincent.roqueta@ext.bull.net\n");
         exit(0);
-        return 0;
+    return 0;
 }
 
 int main(int argc,char ** argv) {
@@ -1070,5 +1070,5 @@ int main(int argc,char ** argv) {
     }
     clean();
 
-    return 0;
+        return 0;
 }

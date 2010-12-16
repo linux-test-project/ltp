@@ -24,28 +24,28 @@
  *
  *    The main thread:
  *     - Creates a minimum of (N-1) busy threads at priority starting at
- *                     SCHED_FIFO + 80
+ *		     SCHED_FIFO + 80
  *     - Creates 26 FIFO (T1, T2,...,T26) threads with priorities 10, 11,...,36.
  *     - Each of these worker threads executes the following piece of code:
- *                   pthread_mutex_lock(Mi);
- *                   pthread_cond_wait(CVi);
- *                   pthread_mutex_unlock(Mi);
+ *		   pthread_mutex_lock(Mi);
+ *		   pthread_cond_wait(CVi);
+ *		   pthread_mutex_unlock(Mi);
  *
  *       where Mi is the ith pthread_mutex_t and CVi is the ith conditional
  *       variable.So, at the end of this loop, 26 threads are all waiting on
  *       seperate condvars and mutexes.
  *     - Wakes up thread at priority 10 (T1) by executing:
- *           pthread_mutex_lock(M1);
- *           pthread_cond_signal(CV1);
- *           pthread_mutex_unlock(M1);
+ *	   pthread_mutex_lock(M1);
+ *	   pthread_cond_signal(CV1);
+ *	   pthread_mutex_unlock(M1);
  *
  *     - Waits for all the worker threads to finish execution.
- *         T1 then wakes up T2 by signalling on the condvar CV2 and sets a flag
- *         called T1_after_wait to indicate that it is after the wait. It then
- *         checks if T2_after_wait has been set or not. If not, the test fails,
- *         else the process continues with other threads. The thread T1 expects
- *         T2_after_wait to be set as, the moment T1 signals on CV2, T2 is
- *         supposed to be scheduled (in accordance with priority preemption).
+ *	 T1 then wakes up T2 by signalling on the condvar CV2 and sets a flag
+ *	 called T1_after_wait to indicate that it is after the wait. It then
+ *	 checks if T2_after_wait has been set or not. If not, the test fails,
+ *	 else the process continues with other threads. The thread T1 expects
+ *	 T2_after_wait to be set as, the moment T1 signals on CV2, T2 is
+ *	 supposed to be scheduled (in accordance with priority preemption).
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
@@ -55,7 +55,7 @@
  *
  * HISTORY
  *      2006-Jun-01: Initial version by Dinakar Guniguntala
- *                    Changes from John Stultz and Vivek Pallantla
+ *		    Changes from John Stultz and Vivek Pallantla
  *
  *****************************************************************************/
 
@@ -91,29 +91,29 @@ void usage(void)
 {
 	rt_help();
 	printf("prio-preempt specific options:\n");
-	printf("  -i            #: enable interrupter threads\n");
-	printf("  -n#           #: number of busy threads\n");
+	printf("  -i	    #: enable interrupter threads\n");
+	printf("  -n#	   #: number of busy threads\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                case 'i':
-                        int_threads = 1;
-                        break;
-                case 'n':
-                        rt_threads = atoi(v);
-                        break;
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+		case 'h':
+			usage();
+			exit(0);
+		case 'i':
+			int_threads = 1;
+			break;
+		case 'n':
+			rt_threads = atoi(v);
+			break;
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 void *int_thread(void* arg)
@@ -197,7 +197,7 @@ void *worker_thread(void* arg)
 	rc = pthread_mutex_lock(&mutex[tid+1]);
 	rc = pthread_cond_signal(&cond[tid+1]);
 	debug(DBG_INFO, "%llu: Thread %d(%d): Sent signal (%d) to (%d)\n", rt_gettime(), tid, mypri,
-                        rc, tid+1);
+			rc, tid+1);
 
    	pstart = pend = rt_gettime();
 	rc = pthread_mutex_unlock(&mutex[tid+1]);
@@ -243,7 +243,7 @@ void *master_thread(void* arg)
 	/* start the (N-1) busy threads */
 	pri_boost = 80;
 	for (i = rt_threads; i > 1; i--) {
-                create_fifo_thread(busy_thread, (void*)(intptr_t)i,
+		create_fifo_thread(busy_thread, (void*)(intptr_t)i,
 			sched_get_priority_min(SCHED_FIFO) + pri_boost);
 	}
 
@@ -257,7 +257,7 @@ void *master_thread(void* arg)
 	for (i = 0, pri_boost = 10; i < NUM_WORKERS ; i++, pri_boost+=2) {
 		pthread_mutex_init(&mutex[i], NULL);
 		pthread_cond_init(&cond[i], NULL);
-                create_fifo_thread(worker_thread, (void*)(intptr_t)i,
+		create_fifo_thread(worker_thread, (void*)(intptr_t)i,
 				sched_get_priority_min(SCHED_FIFO) + pri_boost);
 	}
 
@@ -297,7 +297,7 @@ int main(int argc, char* argv[])
 	if (rt_threads == -1 || rt_threads > numcpus) {
 	    rt_threads = numcpus;
 	    printf("Maximum busy thread count(%d), "
-	           "should not exceed number of cpus(%d)\n", rt_threads, numcpus);
+		   "should not exceed number of cpus(%d)\n", rt_threads, numcpus);
 	    printf("Using %d\n", numcpus);
 	}
 
@@ -306,17 +306,17 @@ int main(int argc, char* argv[])
 	printf("Priority Preemption\n");
 	printf("-------------------\n\n");
 	printf("Busy Threads: %d\n", rt_threads);
-        printf("Interrupter Threads: %s\n", int_threads ? "Enabled" : "Disabled");
+	printf("Interrupter Threads: %s\n", int_threads ? "Enabled" : "Disabled");
 	printf("Worker Threads: %d\n\n", NUM_WORKERS);
 
 	pri_boost = 81;
-        create_fifo_thread(master_thread, (void*)0,
+	create_fifo_thread(master_thread, (void*)0,
 		 sched_get_priority_min(SCHED_FIFO) + pri_boost);
 
-        /* wait for threads to complete */
-        join_threads();
+	/* wait for threads to complete */
+	join_threads();
 
-        printf("\nCriteria: All threads appropriately preempted within %d loop(s)\n", (int)pass_criteria);
-        printf("Result: %s\n", ret ? "FAIL" : "PASS");
+	printf("\nCriteria: All threads appropriately preempted within %d loop(s)\n", (int)pass_criteria);
+	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 	return ret;
 }

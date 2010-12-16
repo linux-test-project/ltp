@@ -17,5 +17,5 @@ int dummyfcn (void)
   flags = t.sa_flags;
   t.sa_sigaction = signal_action;
 
-  return 0;
+        return 0;
 }

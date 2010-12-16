@@ -67,11 +67,7 @@ int main(int argc, char **argv)
 
 		if (tmp == -1 || errno != 0) {
 			if (errno == EPERM) {
-<<<<<<< HEAD
 				printf("  The process do not have permission to change its own scheduler\n  Try to run this test as root.\n");
-=======
-				printf("  The process does not have permission to change its own scheduler\n  Try to run this test as root.\n");
->>>>>>> master
 			} else {
 				printf("  Error calling sched_setscheduler() for %s policy\n", tst->name);
 			}

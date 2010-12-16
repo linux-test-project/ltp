@@ -72,23 +72,23 @@ pthread_mutex_t mutex;
 
 void usage(void)
 {
-        rt_help();
-        printf("async_handler_tsc specific options:\n");
+	rt_help();
+	printf("async_handler_tsc specific options:\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+		case 'h':
+			usage();
+			exit(0);
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 /* calculate the tsc period */

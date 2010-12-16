@@ -91,11 +91,7 @@ void child_process(int id) {
 	int i;
 	struct sched_param param;
 
-<<<<<<< HEAD
 	if (id == nb_child-1) {
-=======
-	if (id == (nb_child-1)) {
->>>>>>> master
 		param.sched_priority = sched_get_priority_min(SCHED_RR);
 		sched_setparam(getpid(), &param);
 	}

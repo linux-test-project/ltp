@@ -110,7 +110,7 @@ int create_file(char *filename)
   cfilecount++;
   disk_space_pool -= randomsize;
   close(fd);
-  return 0;
+        return 0;
 }
 
 #include <sys/stat.h>
@@ -131,5 +131,5 @@ int delete_file(char *filename)
     return(-1);
   }
   dfilecount++;
-  return 0;
+        return 0;
 }

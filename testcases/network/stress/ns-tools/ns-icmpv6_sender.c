@@ -344,7 +344,7 @@ create_mld_query(struct icmp6_info *info_p, uint16_t mrc, char *saddrs)
     info_p->pkt = pkt;
     info_p->pkt_size = sizeof(struct ip6_hdr) + ip6_psize;
 
-    return 0;
+        return 0;
 }
 
 /*

@@ -109,7 +109,7 @@ tdrmopen() {
     }
     else {
         printf("Device opened successfully \n");
-        return 0;
+      return 0;
     }
 
 }

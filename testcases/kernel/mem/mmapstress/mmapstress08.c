@@ -120,7 +120,7 @@ int anyfail()
 {
   tst_resm(TFAIL, "Test failed\n");
   tst_exit();
-  return 0;
+        return 0;
 }
 
 #else /* defined(__i386__) || defined(__x86_64__) */

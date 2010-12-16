@@ -73,7 +73,7 @@ int main(int argc, char **argv)
         printf("ERROR: Create/open block device failed\n");
     }
 
-    return 0;
+  return 0;
 }
 
 int LTP_acpi_open_block_device()

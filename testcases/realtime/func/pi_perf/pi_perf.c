@@ -37,7 +37,7 @@
  * HISTORY
  *     2007-Nov-20:    Initial version by Sripathi Kodi <sripathik@in.ibm.com>
  *     2009-Jul-03:    Pass criteria corrected by Sripathi Kodi
- *                                                      <sripathik@in.ibm.com>
+ *						      <sripathik@in.ibm.com>
  *
  *****************************************************************************/
 
@@ -93,21 +93,21 @@ int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		case 'i':
-			iterations = atoi(v);
-			break;
-		case 'n':
-			num_busy = atoi(v);
-			break;
-		case 'w':
-			low_work_time = atoi(v);
-			break;
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'i':
+		iterations = atoi(v);
+		break;
+	case 'n':
+		num_busy = atoi(v);
+		break;
+	case 'w':
+		low_work_time = atoi(v);
+		break;
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }

@@ -62,7 +62,7 @@ int semup(int semid) {
     errors++;
     return 1;
   }
-  return 0;
+        return 0;
 }
 
 int semdown(int semid) {
@@ -75,7 +75,7 @@ int semdown(int semid) {
     errors++;
     return 1;
   }
-  return 0;
+        return 0;
 }
 
 void delayloop() {

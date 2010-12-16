@@ -75,8 +75,8 @@ void usage(void)
 {
 	rt_help();
 	printf("matrix_mult specific options:\n");
-	printf("  -l#           #: number of multiplications per iteration (load)\n");
-	printf("  -i#           #: number of iterations\n");
+	printf("  -l#	   #: number of multiplications per iteration (load)\n");
+	printf("  -i#	   #: number of iterations\n");
 }
 
 int parse_args(int c, char *v)

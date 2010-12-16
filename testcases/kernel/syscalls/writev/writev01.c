@@ -443,7 +443,7 @@ int main(int argc, char **argv)
 	close(fd[0]);
 	close(fd[1]);
 	cleanup();
-	  return 0;
+	tst_exit();
 }
 
 /*

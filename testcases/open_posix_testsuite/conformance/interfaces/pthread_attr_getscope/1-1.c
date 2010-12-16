@@ -51,7 +51,7 @@ int verify_scope(pthread_attr_t *attr, int scopetype) {
   		}
 		break;
 	}
-        return 0;
+      return 0;
 }
 
 int main()

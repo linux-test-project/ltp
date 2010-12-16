@@ -66,27 +66,27 @@ static int ret = 0;
 
 void usage(void)
 {
-        rt_help();
-        printf("async_handler specific options:\n");
-        printf("  -iITERATIONS  number of iterations to calculate the average over\n");
+	rt_help();
+	printf("async_handler specific options:\n");
+	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
+	int handled = 1;
+	switch (c) {
 		case 'h':
 			usage();
 			exit(0);
-                case 'i':
-                        iterations = atoi(v);
-                        break;
+		case 'i':
+			iterations = atoi(v);
+			break;
 		default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 void *handler_thread(void *arg)

@@ -56,23 +56,23 @@ static pthread_mutex_t *mutexes[NUM_MUTEXES];
 
 void usage(void)
 {
-        rt_help();
-        printf("sbrk_mutex specific options:\n");
+	rt_help();
+	printf("sbrk_mutex specific options:\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+		case 'h':
+			usage();
+			exit(0);
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 void *worker_thread(void *arg)
@@ -106,17 +106,17 @@ int main(int argc, char* argv[])
 
 	rt_init("h",parse_args,argc,argv);
 
-        if (pthread_mutexattr_init(&mutexattr) != 0) {
-                printf("Failed to init mutexattr\n");
-        }
-        if (pthread_mutexattr_setrobust_np(&mutexattr, PTHREAD_MUTEX_ROBUST_NP) != 0) {
-                printf("Can't set mutexattr robust\n");
-        }
-        if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0) {
-                printf("Can't get mutexattr robust\n");
-        } else {
-                printf("robust in mutexattr is %d\n", robust);
-        }
+	if (pthread_mutexattr_init(&mutexattr) != 0) {
+		printf("Failed to init mutexattr\n");
+	}
+	if (pthread_mutexattr_setrobust_np(&mutexattr, PTHREAD_MUTEX_ROBUST_NP) != 0) {
+		printf("Can't set mutexattr robust\n");
+	}
+	if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0) {
+		printf("Can't get mutexattr robust\n");
+	} else {
+		printf("robust in mutexattr is %d\n", robust);
+	}
 
 	/* malloc and initialize the mutexes */
 	printf("allocating and initializing %d mutexes\n", NUM_MUTEXES);
@@ -150,7 +150,6 @@ int main(int argc, char* argv[])
 
 #else
 int main(void) {
-	printf("Your system doesn't support the pthread robust mutexattr APIs\n");
-	return 1;
+	tst_brkm(TCONF, NULL, "Your system doesn't support the pthread robust mutexattr APIs\n");
 }
 #endif

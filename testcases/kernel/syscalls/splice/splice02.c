@@ -130,11 +130,7 @@ int main(int ac, char **av) {
             tst_exit();
 	}
 	fd=open(av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-<<<<<<< HEAD
 	if (fd < 0) {
-=======
-	if (fd < 0 ) {
->>>>>>> master
 		tst_resm(TFAIL, "open(%s) failed - errno = %d : %s", av[1], errno, strerror(errno));
 	   cleanup();
 	   tst_exit();

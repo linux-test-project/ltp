@@ -110,7 +110,7 @@ int tagpopen() {
     }
     else {
         printf("Device opened successfully \n");
-        return 0;
+      return 0;
     }
 
 }
@@ -288,5 +288,5 @@ int main() {
                 exit(1);
         }
 
-        return 0;
+      return 0;
 }

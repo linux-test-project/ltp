@@ -11,5 +11,5 @@ int main(void)
     {
 	memset(p, 0, 128);
     }
-    return 0;
+  return 0;
 }

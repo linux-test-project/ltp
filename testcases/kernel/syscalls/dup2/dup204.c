@@ -67,11 +67,7 @@ int main(int ac, char **av)
 	struct stat oldbuf, newbuf;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
 	}
 
 	setup();
@@ -118,7 +114,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	  return 0;
+	tst_exit();
 }
 
 /*

@@ -49,23 +49,23 @@ double endtime;
 
 void usage(void)
 {
-        rt_help();
-        printf("testpi-1 specific options:\n");
+	rt_help();
+	printf("testpi-1 specific options:\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+		case 'h':
+			usage();
+			exit(0);
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 /*

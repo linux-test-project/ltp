@@ -32,8 +32,8 @@
  *
  * HISTORY
  *      2010-04-22 Code cleanup and thread synchronization changes by using
- *                 conditional variables,
- *                 by Gowrishankar(gowrishankar.m@in.ibm.com).
+ *		 conditional variables,
+ *		 by Gowrishankar(gowrishankar.m@in.ibm.com).
  *
  *****************************************************************************/
 

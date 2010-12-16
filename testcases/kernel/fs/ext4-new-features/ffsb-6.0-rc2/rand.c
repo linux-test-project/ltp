@@ -144,7 +144,7 @@ uint32_t getrandom(randdata_t *state, uint32_t mod)
     int i;
 
     if ((mod == 0) || (mod == 1))
-	    return 0;
+	  return 0;
 
     if (!(mod >> 8))
 	    num_bytes = 1;

@@ -202,7 +202,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-	  return 0;
+	tst_exit();
 
 }
 

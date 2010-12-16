@@ -83,7 +83,7 @@ main ()
 {
   tst_resm(TCONF, "f00f bug test only for i386");
   tst_exit();
-  return 0;
+        return 0;
 }
 
 #endif /* __i386__ */

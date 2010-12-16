@@ -143,7 +143,7 @@ mm_core_test01()
             }
             tst_resm(TINFO, "Deleting shared memory segment.\n");
             mm_core_delete(alloc_mem_ptr);
-            return 0;
+          return 0;
         }
     }
 }
@@ -363,7 +363,7 @@ mm_core_test02()
     }
     tst_resm(TINFO, "test02: Deleting shared memory core area\n");
     mm_core_delete(alloc_mem_ptr);
-    return 0;
+  return 0;
 }
 
 /******************************************************************************/

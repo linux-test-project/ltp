@@ -466,7 +466,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
     free(dirname);
     free(filename);
     free(subdir);
-    return 0;
+        return 0;
 }
 
 /******************************************************************************/

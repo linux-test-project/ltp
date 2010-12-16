@@ -17,21 +17,21 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *       libstats.c
+ *	   libstats.c
  *
  * DESCRIPTION
- *      Some basic statistical analysis convenience tools.
+ *	  Some basic statistical analysis convenience tools.
  *
  *
  * USAGE:
- *      To be included in test cases
+ *	  To be included in test cases
  *
  * AUTHOR
- *        Darren Hart <dvhltc@us.ibm.com>
+ *		Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
- *      2006-Oct-17: Initial version by Darren Hart
- *      2009-Jul-22: Addition of stats_container_append function by Kiran Prakash
+ *	  2006-Oct-17: Initial version by Darren Hart
+ *	  2009-Jul-22: Addition of stats_container_append function by Kiran Prakash
  *
  * TODO: the save routine for gnuplot plotting should be more modular...
  *
@@ -104,9 +104,9 @@ int stats_container_free(stats_container_t *data)
 
 int stats_sort(stats_container_t *data, enum stats_sort_method method)
 {
-	// method not implemented, always ascending on y atm
+	/* method not implemented, always ascending on y atm */
 	qsort(data->records, data->index + 1, sizeof(stats_record_t),
-	      stats_record_compare);
+		  stats_record_compare);
 	return 0;
 }
 
@@ -201,12 +201,11 @@ int stats_quantiles_init(stats_quantiles_t *quantiles, int nines)
 		return -1;
 	}
 	quantiles->nines = nines;
-	// allocate space for quantiles, starting with 0.99 (two nines)
-	quantiles->quantiles = malloc(sizeof(long) * (nines-1));
+	/* allocate space for quantiles, starting with 0.99 (two nines) */
+	quantiles->quantiles = calloc(sizeof(long), (nines-1));
 	if (!quantiles->quantiles) {
 		return -1;
 	}
-        memset(quantiles->quantiles, 0, (nines-1) * sizeof(long));
 	return 0;
 }
 
@@ -223,9 +222,8 @@ int stats_quantiles_calc(stats_container_t *data, stats_quantiles_t *quantiles)
 	int index;
 
 	// check for sufficient data size of accurate calculation
-	if (data->index < 0 || (data->index + 1) \
-	    < (long)exp10(quantiles->nines)) {
-		//printf("ERROR: insufficient data size for %d nines\n", data->size);
+	if (data->index < 0 ||
+	    (data->index + 1) < (long)exp10(quantiles->nines)) {
 		return -1;
 	}
 
@@ -271,24 +269,18 @@ int stats_hist(stats_container_t *hist, stats_container_t *data)
 		if (y > max) max = y;
 		if (y < min) min = y;
 	}
-	//printf("min = %d\n", min);
-	//printf("max = %d\n", max);
 
 	/* define the bucket ranges */
 	width = MAX((max-min)/hist->size, 1);
-	//printf("width = %d\n", width);
 	hist->records[0].x = min;
-	//printf("hist[0].x = %d\n", min);
 	for (i = 1; i < (hist->size); i++) {
 		hist->records[i].x = min + i*width;
-		//printf("hist[%d].x = %d\n", i, hist->records[i].x);
 	}
 
 	/* fill in the counts */
 	for (i = 0; i <= data->index; i++) {
 		y = data->records[i].y;
 		b = MIN((y-min)/width, hist->size-1);
-		//printf("%d will go in bucket %d\n", y, b);
 		hist->records[b].y++;
 	}
 
@@ -310,65 +302,59 @@ void stats_hist_print(stats_container_t *hist)
 
 int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel, stats_container_t *data, char *mode)
 {
-    int i;
-    int minx = 0, maxx = 0, miny = 0, maxy = 0;
-    FILE *dat_fd;
-    FILE *plt_fd;
-    char *datfile;
-    char *pltfile;
-    stats_record_t *rec;
+	int i;
+	int minx = 0, maxx = 0, miny = 0, maxy = 0;
+	FILE *dat_fd;
+	FILE *plt_fd;
+	char *datfile;
+	char *pltfile;
+	stats_record_t *rec;
 
-    if (!save_stats)
-	    return 0;
+	if (!save_stats)
+	  return 0;
 
-    /* generate the filenames */
-    if (asprintf(&datfile, "%s.dat", filename) == -1) {
+	/* generate the filenames */
+	if (asprintf(&datfile, "%s.dat", filename) == -1) {
 		fprintf(stderr, "Failed to allocate string for data filename\n");
 		return -1;
 	}
-    if (asprintf(&pltfile, "%s.plt", filename) == -1) {
+	if (asprintf(&pltfile, "%s.plt", filename) == -1) {
 		fprintf(stderr, "Failed to allocate string for plot filename\n");
 		return -1;
 	}
 
-    /* generate the data file */
-    if (!(dat_fd = fopen(datfile, "w"))) {
-        perror("Failed to open dat file");
-        return -1;
-    } else {
-        minx = maxx = data->records[0].x;
+	/* generate the data file */
+	if ((dat_fd = fopen(datfile, "w")) == NULL) {
+		perror("Failed to open dat file");
+		return -1;
+	} else {
+		minx = maxx = data->records[0].x;
 	miny = maxy = data->records[0].y;
 	for (i = 0; i <= data->index; i++) {
-            rec = &data->records[i];
-            minx = MIN(minx, rec->x);
-            maxx = MAX(maxx, rec->x);
-            miny = MIN(miny, rec->y);
-            maxy = MAX(maxy, rec->y);
-            fprintf(dat_fd, "%ld %ld\n", rec->x, rec->y);
-        }
-        fclose(dat_fd);
-    }
+			rec = &data->records[i];
+			minx = MIN(minx, rec->x);
+			maxx = MAX(maxx, rec->x);
+			miny = MIN(miny, rec->y);
+			maxy = MAX(maxy, rec->y);
+			fprintf(dat_fd, "%ld %ld\n", rec->x, rec->y);
+		}
+		fclose(dat_fd);
+	}
 
-    /* generate the plt file */
-    if (!(plt_fd = fopen(pltfile, "w"))) {
-        perror("Failed to open plt file");
-        return -1;
-    } else {
-        fprintf(plt_fd, "set terminal png\n");
-        fprintf(plt_fd, "set output \"%s.png\"\n", pltfile);
-        fprintf(plt_fd, "set title \"%s\"\n", title);
-        fprintf(plt_fd, "set xlabel \"%s\"\n", xlabel);
-        fprintf(plt_fd, "set ylabel \"%s\"\n", ylabel);
+	/* generate the plt file */
+	if (!(plt_fd = fopen(pltfile, "w"))) {
+		perror("Failed to open plt file");
+		return -1;
+	} else {
+		fprintf(plt_fd, "set terminal png\n");
+		fprintf(plt_fd, "set output \"%s.png\"\n", pltfile);
+		fprintf(plt_fd, "set title \"%s\"\n", title);
+		fprintf(plt_fd, "set xlabel \"%s\"\n", xlabel);
+		fprintf(plt_fd, "set ylabel \"%s\"\n", ylabel);
+		fprintf(plt_fd, "plot [0:%d] [0:%d] \"%s\" with %s\n",
+				maxx+1, maxy+1, datfile, mode);
+		fclose(plt_fd);
+	}
 
-        // exact range mode
-        //fprintf(plt_fd, "plot [%d:%d] [%d:%d] \"%s\" with %s\n",
-        //        minx, maxx, miny, maxy, datfile, mode);
-
-        // expanded range mode - slightly more intuitive I think...
-        fprintf(plt_fd, "plot [0:%d] [0:%d] \"%s\" with %s\n",
-                maxx+1, maxy+1, datfile, mode);
-        fclose(plt_fd);
-    }
-
-    return 0;
+	return 0;
 }

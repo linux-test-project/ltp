@@ -81,11 +81,7 @@ void sighdl(int sig)
 }
 
 /* Thread function */
-<<<<<<< HEAD
 void* threaded(void *arg)
-=======
-void* threaded(void * arg)
->>>>>>> master
 {
 	int ret = 0;
 

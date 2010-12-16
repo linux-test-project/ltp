@@ -37,7 +37,7 @@ int serverSendClient(int n) {
 
 int clientReceiveNet() {
     readFromServer(message);
-    return 0;
+        return 0;
 }
 
 int setupConnectionServeur() {
@@ -77,7 +77,7 @@ int setupConnectionServeur() {
         }
 
     }
-    return 0;
+        return 0;
 }
 
 int writeToClient(int c, char *message) {
@@ -88,7 +88,7 @@ int serverCloseConnection() {
     int c;
     for (c=0;c<maxClients;c++)
         close(fdClient[c]);
-    return 0;
+        return 0;
 
 }
 
@@ -96,7 +96,7 @@ int writeToAllClients(char *foo) {
     int c;
     for (c=0;c<maxClients;c++)
         writeToClient(c, foo);
-    return 0;
+        return 0;
 }
 
 int setupClients(int type, char *fname, int nThread) {
@@ -121,7 +121,7 @@ int setupClients(int type, char *fname, int nThread) {
     char message[512];
     sprintf(message,"%d:%s:%d::", type,fname,nThread);
     writeToAllClients(message);
-    return 0;
+        return 0;
 }
 
 int configureServeur(int  max) {
@@ -130,7 +130,7 @@ int configureServeur(int  max) {
 
     setupConnectionServeur();
 
-    return 0;
+        return 0;
 }
 
 int setupConnectionClient() {
@@ -156,7 +156,7 @@ int setupConnectionClient() {
         perror("connect");
         return 1;
     }
-   return 0;
+ return 0;
 }
 
 int readFromServer(char *message) {
@@ -191,11 +191,11 @@ int getConfiguration(int *type, char *fname, int *nThread) {
     p=strtok(NULL,":");
     *nThread=atoi(p);
 
-    return 0;
+        return 0;
 }
 
 int configureClient(char *s) {
     serveur=s;
     setupConnectionClient();
-    return 0;
+        return 0;
 }

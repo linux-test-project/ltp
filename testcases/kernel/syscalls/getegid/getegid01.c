@@ -134,27 +134,14 @@ int main(int ac, char **av)
 
 	;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
@@ -177,9 +164,6 @@ int main(int ac, char **av)
 			continue;	/* next loop for MTKERNEL */
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			/* No Verification test, yet... */
 			tst_resm(TPASS,
@@ -188,16 +172,10 @@ int main(int ac, char **av)
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -206,10 +184,6 @@ void setup()
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
 	/*

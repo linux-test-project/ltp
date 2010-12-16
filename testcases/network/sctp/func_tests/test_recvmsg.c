@@ -156,5 +156,5 @@ main(int argc, char *argv[])
 	close(clt_sk);
 
         /* Indicate successful completion.  */
-        return 0;
+    return 0;
 }

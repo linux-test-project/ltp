@@ -149,7 +149,7 @@ set_handler(int sig, int sig_to_mask, int mask_flags)
 
                 TEST(syscall(__NR_rt_sigaction,sig, &sa , &oldaction,INVAL_SIGSETSIZE));
                 if (TEST_RETURN == 0) {
-                        return 0;
+                      return 0;
                 } else {
                         return TEST_RETURN;
                 }
@@ -162,11 +162,7 @@ int main(int ac, char **av) {
 
         /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-<<<<<<< HEAD
              tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
              tst_exit();
            }
 

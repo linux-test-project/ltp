@@ -238,11 +238,7 @@ int main(int ac, char **av)
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-<<<<<<< HEAD
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
 	 }
 #ifdef UCLINUX
 	argv0 = av[0];

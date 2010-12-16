@@ -116,15 +116,9 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
-<<<<<<< HEAD
 
         TEST_CLEANUP;
         tst_rmdir();
-=======
-
-	TEST_CLEANUP;
-	tst_rmdir();
->>>>>>> master
 }
 
 /* Local  Functions */
@@ -154,16 +148,6 @@ void setup() {
 
 int main(int ac, char **av) {
 	long data;
-<<<<<<< HEAD
-        char *msg;              /* message returned from parse_opts */
-
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-        setup();
-
-=======
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
 
@@ -173,25 +157,15 @@ int main(int ac, char **av) {
 
 	setup();
 
->>>>>>> master
 	Tst_count = 1;
 	for (testno = 0; testno < TST_TOTAL; ++testno) {
 		TEST(syscall(__NR_bdflush, 0, data));
 		if (TEST_RETURN < 0) {
-<<<<<<< HEAD
-			tst_brkm(TFAIL|TTERRNO, cleanup, "bdflush() failed");
-		} else {
-			tst_resm(TPASS, "test PASSED; %ld was returned",
-			    TEST_RETURN);
-                }
-        }
-=======
 			tst_brkm(TFAIL|TTERRNO, cleanup, "bdflush failed");
 		} else {
 			tst_resm(TPASS, "bdflush() = %ld", TEST_RETURN);
 		}
 	}
->>>>>>> master
 	cleanup();
 	tst_exit();
 }

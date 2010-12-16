@@ -187,7 +187,7 @@ void *worker_thread(void * arg)
 	}
     }
 
-    return 0;
+  return 0;
 }
 
 void *fork_thread (void *arg)
@@ -384,5 +384,5 @@ int main(int argc, char *argv[])
 	}
     }
 
-    return 0;
+  return 0;
 }

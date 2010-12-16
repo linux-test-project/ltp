@@ -291,7 +291,7 @@ int anyfail()
   tst_resm(TFAIL, "Test failed\n");
   tst_rmdir();
   tst_exit();
-  return 0;
+        return 0;
 }
 
 /*****	**	**	*****/

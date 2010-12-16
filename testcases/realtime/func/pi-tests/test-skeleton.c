@@ -45,23 +45,23 @@
 
 void usage(void)
 {
-        rt_help();
-        printf("testpi-5 and 6 specific options:\n");
+	rt_help();
+	printf("testpi-5 and 6 specific options:\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
+	}
+	return handled;
 }
 
 #define TEST_FUNCTION do_test(argc, argv)
@@ -69,19 +69,19 @@ int parse_args(int c, char *v)
 
 static pid_t pid;
 
-static void timeout_handler (int sig)
+static void
+timeout_handler(int sig)
 {
 	int i, killed, status;
+	struct timespec ts = { .tv_sec = 0, .tv_nsec = 100000000 };
 
 	printf("Inside the timeout handler, killing the TC threads \n");
-	kill( pid, SIGKILL );
-	for (i=0; i<5; i++) {
+	kill(pid, SIGKILL);
+	for (i = 0; i < 5; i++) {
 		killed = waitpid(pid, &status, WNOHANG|WUNTRACED);
 		if (0 != killed)
 			break;
-
-		struct timespec ts = { .tv_sec = 0, .tv_nsec = 100000000 };
-      		nanosleep (&ts, NULL);
+      		nanosleep(&ts, NULL);
 	}
 
 	if (0 != killed && pid != killed) {
@@ -92,27 +92,27 @@ static void timeout_handler (int sig)
 	exit(1);
 }
 
-int  main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	pid_t termpid;
  	int status;
 	setup();
 
-	rt_init("h",parse_args,argc,argv);
+	rt_init("h", parse_args, argc, argv);
 
 	pid = fork();
 	if (0 == pid) {
-						//This is the child
-		exit (TEST_FUNCTION);
+		exit(TEST_FUNCTION);
 	}
 	else if (pid < 0) {
 		printf("\n Cannot fork test program \n");
 		exit(1);
 	}
 
-	signal( SIGALRM, timeout_handler);
+	signal(SIGALRM, timeout_handler);
 	alarm(TIMEOUT);
-	termpid = TEMP_FAILURE_RETRY (waitpid (pid, &status, 0));
+	termpid = TEMP_FAILURE_RETRY(waitpid(pid, &status, 0));
 	if (-1 == termpid) {
 		printf("\n Waiting for test program failed, Exiting \n");
 		exit(1);

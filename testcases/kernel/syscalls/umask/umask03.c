@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 				 "previous value for all masks");
 	}
 	cleanup();
-	  return 0;
+	tst_exit();
 
 }
 

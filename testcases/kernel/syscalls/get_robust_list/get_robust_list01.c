@@ -51,11 +51,10 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
 char *TCID = "get_robust_list01";	/* test program identifier.              */
 int TST_TOTAL = 5;		/* total number of tests in this file.   */
-
-#ifdef __NR_get_robust_list
 
 struct robust_list {
 	struct robust_list *next;
@@ -82,15 +81,8 @@ int main(int argc, char **argv)
 	size_t len_ptr;		/* size of structure struct robust_list_head */
 	int retval;
 
-<<<<<<< HEAD
-	msg = parse_opts(argc, argv, NULL, NULL);
-=======
-	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
->>>>>>> master
-	if (msg != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -242,7 +234,6 @@ int main(int argc, char **argv)
 
 	cleanup();
 
-	exit(EXIT_SUCCESS);
 }
 
 void setup(void)
@@ -255,15 +246,4 @@ void setup(void)
 void cleanup(void)
 {
 	TEST_CLEANUP;
-
 }
-
-#else
-
-int main()
-{
-	tst_resm(TCONF, "get_robust_list: system call not available");
-	tst_exit();
-}
-
-#endif

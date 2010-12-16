@@ -158,11 +158,7 @@ int main(int ac, char **av)
 	struct passwd *ltpuser;
 
 	/* Parse standard options given to run the test. */
-<<<<<<< HEAD
 	msg = parse_opts(ac, av, NULL, NULL);
-=======
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
->>>>>>> master
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

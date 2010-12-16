@@ -283,7 +283,7 @@ eth_pton(int af, const char *str, struct sockaddr_ll *ll)
     for (idx = 0; idx < ETH_ALEN; idx++)
 	addr_p[idx] = val[idx];
 
-    return 0;
+        return 0;
 }
 
 /*
@@ -350,7 +350,7 @@ strtotimespec(const char *str, struct timespec *ts_p)
     ts_p->tv_sec  = sec;
     ts_p->tv_nsec = nsec;
 
-    return 0;
+        return 0;
 }
 
 /*

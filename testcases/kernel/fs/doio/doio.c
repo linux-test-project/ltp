@@ -4174,7 +4174,7 @@ int	oflags;
 		free(cache);
 		cache = NULL;
 		cache_size = 0;
-                return 0;
+              return 0;
 	}
 
 	free_slot = NULL;

@@ -49,7 +49,7 @@ int verify_inheritsched(pthread_attr_t *attr, int schedtype) {
   		}
 		break;
 	}
-        return 0;
+      return 0;
 }
 
 int main()

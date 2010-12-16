@@ -235,7 +235,6 @@ static int do_test(struct test_case *tc)
 	 * Execute system call
 	 */
 	memset(tv, 0, 2 * sizeof(struct timeval));
-<<<<<<< HEAD
 	tv[0].tv_sec = tc->a_sec;
 	tv[1].tv_sec = tc->m_sec;
 	TEST(len = strlen(fpath));
@@ -336,7 +335,6 @@ EXIT2:
 
 int main(int ac, char **av) {
 	int result = RESULT_OK;
-<<<<<<< HEAD
 	int i;
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */

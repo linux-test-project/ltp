@@ -116,16 +116,8 @@ int main(int ac, char **av)
 	int ngroups_max = sysconf(_SC_NGROUPS_MAX);	/* max no. of groups in the current system */
 
 	/* Parse standard options given to run the test. */
-<<<<<<< HEAD
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
-	}
 
 	groups_list = malloc(ngroups_max * sizeof(GID_T));
 	if (groups_list == NULL) {

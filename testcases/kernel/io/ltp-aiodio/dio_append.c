@@ -89,7 +89,7 @@ int read_eof(char *filename)
 			}
 		}
 	}
-    return 0;
+  return 0;
 }
 
 void dio_append(char *filename)
@@ -154,5 +154,5 @@ int main(int argc, char **argv)
 	for (i = 0; i < num_children; i++) {
 		kill(pid[i], SIGTERM);
 	}
-    return 0;
+  return 0;
 }

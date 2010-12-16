@@ -74,16 +74,10 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-<<<<<<< HEAD
-	if ((msg = parse_opts(ac, av, NULL, NULL))
+	if ((msg = parse_opts(ac, av, NULL, NULL) != NULL)
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-	    != NULL) {
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
-	 }
+	}
 
 	setup();		/* global setup */
 
@@ -120,7 +114,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	  return 0;
+	tst_exit();
 
 }
 

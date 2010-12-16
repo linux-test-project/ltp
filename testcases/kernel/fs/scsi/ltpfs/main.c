@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 
     printf("Test Program complete..\n");
 
-    return 0;
+  return 0;
 }
 int do_fs_thump_tests(char * path)
 {
@@ -183,7 +183,7 @@ int do_tree_cleanup(char *path, int flag)
       ftw(path, (void *)cleanup_dirs, MAXNUM);
   }
 
-  return 0;
+        return 0;
 }
 int cleanup_files(char * file, struct stat * statBuff, int flag)
 {
@@ -205,7 +205,7 @@ int cleanup_dirs(char * file, struct stat * statBuff, int flag)
     //printf("%s:Cleaning up directory %s \n", __FUNCTION__, file);
 
     if (strcmp(rootPath, file) == 0) {
-        return 0;
+      return 0;
     }
 
     if (flag == FTW_F) {
@@ -300,7 +300,7 @@ int makedir(char *dir1)
     perror(dir1);
     return(errno);
   }
-  return 0;
+        return 0;
 }
 
 int changedir(char *dir) {
@@ -309,7 +309,7 @@ int changedir(char *dir) {
     return (errno);
   }
 
-  return 0;
+        return 0;
 }
 
 int create_file(char *filename)
@@ -338,7 +338,7 @@ int create_file(char *filename)
 
   cFileCount++;
   close(fileHandle);
-  return 0;
+        return 0;
 }
 
 int delete_file(char *filename)
@@ -363,7 +363,7 @@ int delete_file(char *filename)
     }
 
     dFileCount++;
-    return 0;
+  return 0;
 }
 
 int LTP_fs_open_block_device()
@@ -501,7 +501,7 @@ int do_random_access_test(int maxNum)
     }
     close(nullFileHandle);
     printf("Success:\t%d\nFail:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
-    return 0;
+  return 0;
 }
 
 int open_read_close(char *fname)
@@ -551,7 +551,7 @@ int open_read_close(char *fname)
 
     close(fileHandle2);
     close(fileHandle);
-    return 0;
+  return 0;
 }
 
 int create_or_delete(char *fname)
@@ -576,7 +576,7 @@ int create_or_delete(char *fname)
         return(MAXERROR);
     }
 
-    return 0;
+  return 0;
 }
 
 int do_random_create_delete(int maxNum)
