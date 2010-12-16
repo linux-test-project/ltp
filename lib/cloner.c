@@ -79,11 +79,11 @@ int
 ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
 		size_t stack_size)
 {
+	void *stack;
 	int ret;
-	void *stack = malloc(stack_size);
 	int saved_errno;
 
-	if (!stack)
+	if ((stack = malloc(stack_size)) == NULL)
 		return -1;
 
 	ret = ltp_clone(clone_flags, fn, arg, stack_size, stack);
