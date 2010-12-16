@@ -67,33 +67,31 @@ do_setup()
 
 do_test()
 {
-echo "  ASSERTION 1  "
+	echo "  ASSERTION 1  "
 
-$LDD $TCtmp/a.out | grep -E "lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
-if [ $? -eq 0 ]
-then
-	echo "ASSERTION #1 PASS"
-else
-	echo "ASSERTION #1 FAIL"
+	$LDD $TCtmp/a.out | grep -E "lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
+	if [ $? -eq 0 ]; then
+		echo "ASSERTION #1 PASS"
+	else
+		echo "ASSERTION #1 FAIL"
+		do_cleanup
+		return 1
+	fi
+
+	echo " ASSERTION 2  "
+
+	$LDD -v $TCtmp/a.out | grep -E "GLIBC|lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
+	if [ $? -eq 0 ]; then
+		echo "ASSERTION #2 PASS"
+	else
+		echo "ASSERTION #2 FAIL"
+		do_cleanup
+		return 1
+	fi
+
+	echo "TEST PASSES"
 	do_cleanup
-	return 1
-fi
-
-echo " ASSERTION 2  "
-
-$LDD -v $TCtmp/a.out | grep -E "GLIBC|lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
-if [ $? -eq 0 ]
-then
-	echo "ASSERTION #2 PASS"
-else
-	echo "ASSERTION #2 FAIL"
-	do_cleanup
-	return 1
-fi
-
-echo "TEST PASSES"
-do_cleanup
-return 0
+	return 0
 
 }
 do_setup
