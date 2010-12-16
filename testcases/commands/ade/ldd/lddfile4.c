@@ -1,4 +1,4 @@
 #include <stdio.h>
-void file4()	{
-printf("Control in function  file41234\n");
+void file4() {
+	printf("Control in function %s\n", __func__);
 }
