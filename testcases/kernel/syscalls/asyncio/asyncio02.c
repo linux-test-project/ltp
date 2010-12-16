@@ -154,16 +154,8 @@ int main(int ac, char **av)
 	Num_flags = sizeof(Flags) / sizeof(int);
 	TST_TOTAL = 3 * Num_flags;
 
-<<<<<<< HEAD
-    /***************************************************************
-     * parse standard options, and exit if there is an error
-     ***************************************************************/
-=======
->>>>>>> master
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	setup();
 

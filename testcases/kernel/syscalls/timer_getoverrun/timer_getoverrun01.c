@@ -157,11 +157,7 @@ int main(int ac, char **av) {
 
 		ENTER(0);
                 TEST( syscall(__NR_timer_getoverrun, -1 ));
-<<<<<<< HEAD
                 if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
-=======
-                if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL ) {
->>>>>>> master
                         tst_resm(TPASS, "Block %d: test %d PASSED", block, Tst_count );
                 } else {
                         tst_resm(TFAIL, "Block %d: test %d FAILED... errno = %d : %s", block, Tst_count,TEST_ERRNO, strerror(TEST_ERRNO) );

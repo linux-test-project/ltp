@@ -26,27 +26,19 @@ int main()
 	int sig;
 
 	/* Empty set of blocked signals */
-<<<<<<< HEAD
-	if ((sigemptyset(&newmask) == -1) ||
-	    (sigemptyset(&pendingset) == -1))
-=======
-	if (sigemptyset(&newmask) == -1 || sigemptyset(&pendingset) == -1)
->>>>>>> master
-	{
+	if (sigemptyset(&newmask) == -1 || sigemptyset(&pendingset) == -1) {
 		printf("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Add SIGALRM to the set of blocked signals */
-	if (sigaddset(&newmask, SIGALRM) == -1)
-	{
+	if (sigaddset(&newmask, SIGALRM) == -1) {
 		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Block SIGALRM */
-	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1)
-	{
+	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1) {
 		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -59,8 +51,7 @@ int main()
 	}
 
 	/* Call sigwait and test if it passed/failed*/
-	if (sigwait(&newmask, &sig) != 0)
-	{
+	if (sigwait(&newmask, &sig) != 0) {
 		printf("Error in sigwait()\n");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
@@ -68,13 +59,10 @@ int main()
 
 	/* If we get here, then the process was suspended until
 	 * SIGALRM was raised.  */
-	if (sig == SIGALRM)
-	{
+	if (sig == SIGALRM) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	}
-	else
-	{
+	} else {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

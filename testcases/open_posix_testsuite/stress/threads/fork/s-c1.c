@@ -192,35 +192,22 @@ int main (int argc, char *argv[])
 
 		if (pr[nprocesses] == -1)
 		{
-			if ((errno == EAGAIN) || (errno == ENOMEM)) {
+			if (errno == EAGAIN || errno == ENOMEM)
 				break;
-			} else {
-				output("Fork returned the unexpected error %d\n", errno);
-				/* Post the semaphore so running processes will terminate */
 
-				do {
-					ret = sem_post(sem_ending);
-				} while (( ret != 0 ) && ( errno == EINTR ));
+			FAILED("Failed to fork and received an unexpected error");
+			/* Post the semaphore so running processes will terminate */
 
-				if (ret != 0)
-					output( "Failed to post the semaphore on termination: error %d\n", errno );
-=======
-				while ((ret != 0) && (errno == EINTR));
+			do {
+				ret = sem_post(sem_ending);
+			} while (ret != 0 && errno == EINTR);
 
-				if (ret != 0)
-					output("Failed to post the semaphore on termination: error %d\n", errno);
->>>>>>> origin
+			if (ret != 0)
+				output("Failed to post the semaphore on termination: error %d\n", errno);
 
-				FAILED("Failed to fork and received an unexpected error");
-			}
 		}
 
-<<<<<<< HEAD
 		if (pr[nprocesses] == 0) {
-=======
-		if (pr[nprocesses] == 0)
-		{
->>>>>>> master
 			/* Child */
 			/* Post the synchro semaphore*/
 

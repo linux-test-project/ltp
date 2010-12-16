@@ -31,28 +31,16 @@ int main(int argc, char **argv)
 	/* Create a child process which exit immediately */
 	child_pid = fork();
 	if (child_pid == -1) {
-<<<<<<< HEAD
-	  perror("An error occurs when calling fork()");
-	  return PTS_UNRESOLVED;
-	} else if (child_pid == 0) {
-	  exit(0);
-=======
-		perror("An error occurs when calling fork()");
+		perror("fork failed");
 		return PTS_UNRESOLVED;
 	} else if (child_pid == 0) {
 		exit(0);
->>>>>>> master
 	}
 
 	/* Wait for the child process to exit */
 	if (wait(&stat_loc) == -1) {
-<<<<<<< HEAD
-	  perror("An error occurs when calling wait()");
-	  return PTS_UNRESOLVED;
-=======
-		perror("An error occurs when calling wait()");
+		perror("wait failed");
 		return PTS_UNRESOLVED;
->>>>>>> master
 	}
 
 	/* Assume the pid is not yet reatributed to an other process */

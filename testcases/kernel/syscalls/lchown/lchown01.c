@@ -114,15 +114,9 @@ int main(int argc, char *argv[])
 	char *msg;
 	int i;
 
-<<<<<<< HEAD
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
-=======
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
->>>>>>> master
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

@@ -396,40 +396,9 @@ int main(int ac, char **av) {
 
 	progname = basename(av[0]);
 
-<<<<<<< HEAD
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
-
-        setup();
-
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while (TEST_RETURN != -1) {
-		                switch (c) {
-                		case 'd':
-		                        opt_debug = 1;
-                		        break;
-		                default:
-                		        usage(progname);
-
-                		}
-		        }
-
-		if (ac != optind) {
-        	        tst_resm(TINFO,"Options are not match.");
-                	usage(progname);
-
-	        }
->>>>>>> master
 
 	setup();
 

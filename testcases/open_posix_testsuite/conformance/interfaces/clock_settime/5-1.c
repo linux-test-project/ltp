@@ -66,12 +66,7 @@ int main(int argc, char *argv[])
 	act.sa_handler=handler;
 	act.sa_flags=0;
 
-<<<<<<< HEAD
-	if ((sigemptyset(&set) != 0) ||
-	    (sigemptyset(&act.sa_mask) != 0)) {
-=======
 	if (sigemptyset(&set) != 0 || sigemptyset(&act.sa_mask) != 0) {
->>>>>>> master
 		perror("sigemptyset() was not successful\n");
 		return PTS_UNRESOLVED;
 	}

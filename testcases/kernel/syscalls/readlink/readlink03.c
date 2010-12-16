@@ -149,17 +149,8 @@ int main(int ac, char **av)
 	int i;			/* counter to test different test conditions */
 	size_t buf_size;	/* size of buffer for readlink */
 
-	/* Parse standard options given to run the test. */
-<<<<<<< HEAD
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
-	}
 
 	/*
 	 * Invoke setup function to call individual test setup functions

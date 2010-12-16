@@ -1195,11 +1195,7 @@ help_me(char *args)
 		cmdlen = 0;
 	}
 
-<<<<<<< HEAD
 	for (cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
-=======
-	for ( cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
->>>>>>> master
 		if (cmd == NULL ||
 				!strncmp(cmd, cmdp->cmd_name, cmdlen)) {
 			printf("%s\n", cmdp->cmd_help);
@@ -1242,11 +1238,7 @@ parse_command(char *cmdline)
 
 	cmd = strtok_r(cmdline, whitespace, &args);
 
-<<<<<<< HEAD
 	for (cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
-=======
-	for ( cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
->>>>>>> master
 		size_t clen = strlen(cmd);
 		int ret;
 

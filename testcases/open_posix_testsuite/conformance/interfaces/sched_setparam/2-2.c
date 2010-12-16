@@ -190,11 +190,7 @@ int main() {
 	while (scanf("*%i*",&child_count) == 0)
 		sched_yield();
 
-<<<<<<< HEAD
-	for (i=0; i<nb_child-1; i++) {
-=======
 	for (i = 0; i < (nb_child-1); i++) {
->>>>>>> master
 		if (kill(child_pid[i], SIGKILL) != 0) {
 			perror("An error occurs when calling kill()");
 			return PTS_UNRESOLVED;

@@ -166,13 +166,8 @@ char *av[];
 	dir[0] = '\0';
 	sprintf(pname,"%s.%d",PPATH,getpid());
 
-<<<<<<< HEAD
-	if ((toutput=getenv("TOUTPUT")) != NULL) {
-	    if (strcmp( toutput, "NOPASS") == 0) {
-=======
-	if ( (toutput=getenv("TOUTPUT")) != NULL ) {
-	    if ( strcmp( toutput, "NOPASS") == 0 ) {
->>>>>>> master
+	if ((toutput = getenv("TOUTPUT")) != NULL) {
+	    if (strcmp(toutput, "NOPASS") == 0) {
 		quiet=1;
 	    }
 	}
@@ -286,11 +281,7 @@ char *av[];
 			break;
 
     		case 'I':
-<<<<<<< HEAD
      			if ((iotype=lio_parse_io_arg1(optarg)) == -1) {
-=======
-     			if ((iotype=lio_parse_io_arg1(optarg)) == -1 ) {
->>>>>>> master
          		    fprintf(stderr,
              			"%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
              			TCID);
@@ -461,11 +452,7 @@ char *av[];
 		tst_brkm(TBROK, NULL, "Couldn't initialize semaphore value: %s", strerror(errno));
 
 	if (background) {
-<<<<<<< HEAD
 	    if ((n=fork()) == -1) {
-=======
-	    if ((n=fork() ) == -1) {
->>>>>>> master
 		tst_resm (TFAIL, "fork() failed: %s", strerror(errno));
 		exit(1);
 	    }
@@ -701,15 +688,11 @@ printf("child after fork pid = %d\n", getpid());
       tst_resm(TWARN, "%d empty reads", empty_read);
 output:
 		if (error)
-			tst_resm (TFAIL, "1 FAIL %d data errors on pipe, read size = %d, %s %s",
-			          error,size,pipe_type,blk_type);
+			tst_resm(TFAIL, "1 FAIL %d data errors on pipe, read size = %d, %s %s",
+			         error,size,pipe_type,blk_type);
 		else
-<<<<<<< HEAD
 			if (!quiet)
-=======
-			if ( !quiet )
->>>>>>> master
-				tst_resm (TPASS, "1 PASS %d pipe reads complete, read size = %d, %s %s",
+				tst_resm(TPASS, "1 PASS %d pipe reads complete, read size = %d, %s %s",
 				          count+1,size,pipe_type,blk_type);
 
 		semctl(sem_id, 0, IPC_RMID);

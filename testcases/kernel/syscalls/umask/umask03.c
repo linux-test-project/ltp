@@ -75,16 +75,8 @@ int main(int argc, char **argv)
 	unsigned low9mode;
 
 	/* parse standard options */
-<<<<<<< HEAD
-	if ((msg = parse_opts(argc, argv, NULL, NULL))
-	    != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-=======
-	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL))
-	    != NULL) {
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
-	 }
 
 	setup();		/* global setup */
 

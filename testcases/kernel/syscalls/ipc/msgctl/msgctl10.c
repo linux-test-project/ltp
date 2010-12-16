@@ -451,11 +451,7 @@ void setup()
 		cleanup();
 
 	MSGMNI = nr_msgqs - get_used_msgqueues();
-<<<<<<< HEAD
 	if (MSGMNI > MAXNPROCS)
-=======
-	if ( MSGMNI > MAXNPROCS )
->>>>>>> master
 		MSGMNI = MAXNPROCS;
 	if (MSGMNI <= 0) {
 		tst_resm(TBROK,

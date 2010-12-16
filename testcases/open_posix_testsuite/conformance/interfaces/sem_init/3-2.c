@@ -157,12 +157,7 @@ int main(int argc, char * argv[])
 	/* Wait the sempahore */
 	do {
 		ret = sem_wait(sem);
-<<<<<<< HEAD
-	} while ((ret != 0) && (errno == EINTR));
-=======
-	}
-	while (ret != 0 && errno == EINTR);
->>>>>>> master
+	} while (ret != 0 && errno == EINTR);
 
 	if (ret != 0)
 	{

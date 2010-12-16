@@ -152,15 +152,8 @@ int main(int argc, char *argv[])
 	gid_t group_id;
 	int i;
 
-<<<<<<< HEAD
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
-=======
-	/* Parse standard options given to run the test. */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
->>>>>>> master
 
 	setup();
 	/* set the expected errnos... */

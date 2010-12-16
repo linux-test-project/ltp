@@ -52,12 +52,7 @@ int main(int argc, char *argv[])
 			slepts = slepts-1;
 		}
 
-<<<<<<< HEAD
-		if ((slepts >= 1) ||
-		    (sleptns > sleepnsec[i])) {
-=======
 		if (slepts >= 1 || sleptns > sleepnsec[i]) {
->>>>>>> master
 			printf("PASS slept %ds %dns >= %d\n",
 				slepts, sleptns, sleepnsec[i]);
 		} else {
