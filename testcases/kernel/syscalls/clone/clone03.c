@@ -116,7 +116,7 @@ int main(int ac, char **av)
 
 		/* Open a pipe */
 		if ((pipe(pfd)) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
 		}
 
 		/*
@@ -127,8 +127,7 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "clone() failed");
-			cleanup();
+			tst_brkm(TFAIL|TTERRNO, cleanup, "clone() failed");
 		}
 
 		/* close write end from parent */
@@ -158,8 +157,9 @@ int main(int ac, char **av)
 	}
 
 	free(child_stack);
-	/* cleanup and exit */
+
 	cleanup();
+	tst_exit();
 
 }
 
@@ -199,7 +199,7 @@ int child_fn(void)
 
 	/* Close read end from child */
 	if ((close(pfd[0])) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "close(pfd[0]) failed");
+		perror("close(pfd[0]) failed");
 	}
 
 	/* Construct pid string */
@@ -207,12 +207,12 @@ int child_fn(void)
 
 	/* Write pid string to pipe */
 	if ((write(pfd[1], pid, sizeof(pid))) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "write to pipe failed");
+		perror("write to pipe failed");
 	}
 
 	/* Close write end of pipe from child */
 	if ((close(pfd[1])) == -1) {
-		tst_resm(TWARN|TERRNO, "close(pfd[1]) failed");
+		perror("close(pfd[1]) failed");
 	}
 	exit(1);
 }

@@ -105,24 +105,22 @@ int main(int ac, char **av)
 	char buff[MAX_LINE_LENGTH];
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
 	/* Allocate stack for child */
-	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
+	if ((child_stack = malloc(CHILD_STACK_SIZE)) == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
-	}
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
 		/* Open a pipe */
-		if ((pipe(pfd)) == -1) {
+		if ((pipe(pfd)) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
-		}
 
 		/*
 		 * Call clone(2)
@@ -131,10 +129,8 @@ int main(int ac, char **av)
 				child_stack));
 
 		/* check return code */
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "clone() failed");
-			cleanup();
-		}
+		if (TEST_RETURN == -1)
+			tst_brkm(TFAIL|TTERRNO, cleanup, "clone failed");
 
 		/* close write end from parent */
 		if ((close(pfd[1])) == -1) {
@@ -162,9 +158,8 @@ int main(int ac, char **av)
 
 	free(child_stack);
 
-	/* cleanup and exit */
 	cleanup();
-
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */

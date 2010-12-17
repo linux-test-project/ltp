@@ -91,52 +91,41 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int main(int ac, char **av)
 {
-
-	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	void *child_stack;	/* stack for child */
 	int status, child_pid;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* Allocate stack for child */
-	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
+	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
-	}
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	Tst_count = 0;
 
-		Tst_count = 0;
-
-		/*
-		 * Call clone(2)
-		 */
-		TEST(ltp_clone(SIGCHLD, do_child, NULL, CHILD_STACK_SIZE,
-				child_stack));
+	/*
+	 * Call clone(2)
+	 */
+	TEST(ltp_clone(SIGCHLD, do_child, NULL, CHILD_STACK_SIZE, child_stack));
 
 again:
-		if ((child_pid = wait(&status)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "wait() failed");
+	child_pid = wait(&status);
 
-		/* check return code */
-		if (TEST_RETURN == child_pid) {
-			tst_resm(TPASS, "clone() returned %ld", TEST_RETURN);
-		} else if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "clone() returned %ld for child %d", TEST_RETURN, child_pid);
-		} else
-			goto again;
-
-	}
+	/* check return code */
+	if (TEST_RETURN == child_pid)
+		tst_resm(TPASS, "clone returned %ld", TEST_RETURN);
+	else if (TEST_RETURN == -1)
+		tst_resm(TFAIL|TTERRNO, "clone failed for pid = %d", child_pid);
+	else
+		goto again;
 
 	free(child_stack);
 
-	/* cleanup and exit */
 	cleanup();
 
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
