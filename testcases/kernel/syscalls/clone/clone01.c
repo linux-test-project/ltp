@@ -87,7 +87,6 @@ static int do_child();
 
 char *TCID = "clone01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int main(int ac, char **av)
 {
@@ -100,14 +99,11 @@ int main(int ac, char **av)
 
 	setup();
 
-	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL)
+	if ((child_stack = malloc(CHILD_STACK_SIZE)) == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 
 	Tst_count = 0;
 
-	/*
-	 * Call clone(2)
-	 */
 	TEST(ltp_clone(SIGCHLD, do_child, NULL, CHILD_STACK_SIZE, child_stack));
 
 again:
