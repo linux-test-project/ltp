@@ -52,9 +52,11 @@
 
 char *TCID="asapi_05";		/* Test program identifier.    */
 
-void setup(void), cleanup(void);
+void setup(void);
+void cleanup(void);
 
-void icmp6_et(void), icmp6_ft(void);
+void icmp6_et(void);
+void icmp6_ft(void);
 
 int
 main(int argc, char *argv[])
@@ -63,10 +65,8 @@ main(int argc, char *argv[])
 	char	*msg;
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -179,6 +179,7 @@ void
 setup(void)
 {
 	TEST_PAUSE;	/* if -P option specified */
+	tst_require_root(NULL);
 }
 
 void
@@ -228,9 +229,8 @@ ic6_send1(char *tname, unsigned char type)
 	int			s;
 
 	s = socket(AF_INET6, SOCK_RAW, IPPROTO_ICMPV6);
-	if (s < 0) {
-		tst_resm(TBROK, "%s: send socket: %s\n", tname,
-			strerror(errno));
+	if (s == -1) {
+		tst_resm(TBROK, "%s: socket failed", tname);
 		return 1;
 	}
 	memset(&ic6, 0, sizeof(ic6));
@@ -241,8 +241,8 @@ ic6_send1(char *tname, unsigned char type)
 	sin6.sin6_family = AF_INET6;
 	sin6.sin6_addr = in6addr_loopback;
 	if (sendto(s, &ic6, sizeof(ic6), 0, (struct sockaddr *)&sin6,
-			sizeof(sin6)) < 0) {
-		tst_resm(TBROK, "%s: sendto: %s\n", tname, strerror(errno));
+			sizeof(sin6)) == -1) {
+		tst_resm(TBROK|TERRNO, "%s: sendto failed", tname);
 		return 1;
 	}
 	return 0;
@@ -282,14 +282,13 @@ ic6_recv1(char *tname, int sall, int sf)
 		if (nfds < 0) {
 			if (errno == EINTR)
 				continue;
-			tst_resm(TBROK, "%s: select: %s\n", tname,
-				strerror(errno));
+			tst_resm(TBROK|TERRNO, "%s: select failed", tname);
 		}
 		if (FD_ISSET(sall, &readfds)) {
 			cc = recv(sall, rbuf, sizeof(rbuf), 0);
 			if (cc < 0) {
-				tst_resm(TBROK, "%s: recv all: %s\n", tname,
-					strerror(errno));
+				tst_resm(TBROK|TERRNO,
+				    "%s: recv(sall, ..) failed", tname);
 				return -1;
 			}
 			/* if packet check succeeds... */
@@ -299,8 +298,8 @@ ic6_recv1(char *tname, int sall, int sf)
 		if (FD_ISSET(sf, &readfds)) {
 			cc = recv(sf, rbuf, sizeof(rbuf), 0);
 			if (cc < 0) {
-				tst_resm(TBROK, "%s: recv sf: %s\n", tname,
-					strerror(errno));
+				tst_resm(TBROK|TERRNO,
+				    "%s: recv(sf, ..) failed", tname);
 				return -1;
 			}
 			/* if packet check succeeds... */
@@ -310,7 +309,7 @@ ic6_recv1(char *tname, int sall, int sf)
 		memcpy(&readfds, &readfds_saved, sizeof(readfds));
 	}
 	if (!gotall) {
-		tst_resm(TBROK, "%s: recv all timed out\n", tname);
+		tst_resm(TBROK, "%s: recv all timed out", tname);
 		return -1;
 	}
 	if (gotone)
@@ -328,30 +327,27 @@ icmp6_ft(void)
 
 	sall = socket(PF_INET6, SOCK_RAW, IPPROTO_ICMPV6);
 	if (sall < 0) {
-		int saved_errno = errno;
-
-		if (errno == EPERM && getuid())
-			tst_resm(TBROK, "icmp6_ft: ICMP6 tests require root");
-		else
-			tst_resm(TBROK, "icmp6_ft socket: can't create sall "
-				"socket: %s", strerror(saved_errno));
+		tst_resm(TBROK|TERRNO,
+			"icmp6_ft socket: can't create sall socket");
 		return;
 	}
 	ICMP6_FILTER_SETPASSALL(&i6f);
 	if (setsockopt(sall, IPPROTO_ICMPV6, ICMP6_FILTER, &i6f,
 			sizeof(i6f)) < 0) {
-		tst_resm(TBROK, "setsockopt pass all ICMP6_FILTER: %s\n",
-			strerror(errno));
+		tst_resm(TBROK|TERRNO, "setsockopt pass all ICMP6_FILTER failed");
 	}
 
 	sf = socket(PF_INET6, SOCK_RAW, IPPROTO_ICMPV6);
 	if (sf < 0) {
-		tst_resm(TBROK, "icmp6_ft socket: can't create test socket: %s",
-			strerror(errno));
+		tst_resm(TBROK|TERRNO, "icmp6_ft socket: can't create test socket");
 		return;
 	}
-	for (i=0; i<FTCOUNT; ++i) {
-		int	rv;
+
+	int rv;
+
+	for (i = 0; i < FTCOUNT; ++i) {
+
+		rv = -1;
 
 		switch (ftab[i].ft_test) {
 		case T_SETPASS:
@@ -379,7 +375,7 @@ icmp6_ft(void)
 			rv = ICMP6_FILTER_WILLPASS(ftab[i].ft_sndtype, &i6f);
 			break;
 		default:
-			tst_resm(TBROK, "%s: unknown test type %d\n",
+			tst_resm(TBROK, "%s: unknown test type %d",
 				ftab[i].ft_tname, ftab[i].ft_test);
 			continue;
 		}
@@ -393,12 +389,13 @@ icmp6_ft(void)
 			if (ic6_send1(ftab[i].ft_tname, ftab[i].ft_sndtype))
 				continue;
 			rv = ic6_recv1(ftab[i].ft_tname, sall, sf);
-		}
+		} else
+			rv = -1;
 
 		if (rv < 0)
 			continue;
 		if (rv != ftab[i].ft_expected)
-			tst_resm(TFAIL, "%s: rv %d != expected %d\n",
+			tst_resm(TFAIL, "%s: rv %d != expected %d",
 				ftab[i].ft_tname, rv, ftab[i].ft_expected);
 		else
 			tst_resm(TPASS, ftab[i].ft_tname);
