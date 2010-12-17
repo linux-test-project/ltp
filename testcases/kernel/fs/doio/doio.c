@@ -1435,7 +1435,7 @@ struct io_req	*req;
 	static int		pid = -1;
 	int	    	    	fd, nbytes, oflags, signo;
 	int	    	    	logged_write, rval, got_lock;
-	long    	    	offset, woffset;
+	off_t    	    	offset, woffset;
 	char    	    	*addr, pattern, *file, *msg;
 	struct wlog_rec		wrec;
 #ifdef CRAY
@@ -1445,6 +1445,8 @@ struct io_req	*req;
 #ifdef sgi
 	struct fd_cache		*fdc;
 #endif
+
+	woffset = 0;
 
 	/*
 	 * Misc variable setup
@@ -2962,7 +2964,8 @@ do_rw(req)
 	static int		pid = -1;
 	int	    		fd, offset, nbytes, nstrides, nents, oflags;
 	int			rval, mem_needed, i;
-	int	    		logged_write, got_lock, woffset, pattern;
+	int	    		logged_write, got_lock, pattern;
+	off_t			woffset;
 	int			min_byte, max_byte;
 	char    		*addr, *file, *msg;
 	struct status		*s;
@@ -2975,6 +2978,8 @@ do_rw(req)
 #ifdef sgi
 	struct fd_cache		*fdc;
 #endif
+
+	woffset = 0;
 
 	/*
 	 * Initialize common fields - assumes r_oflags, r_file, r_offset, and
