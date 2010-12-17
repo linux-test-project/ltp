@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 		TEST(IN6_IS_ADDR_V4MAPPED(in6.s6_addr));
 		if (TEST_RETURN == maptab[i].ismap)
 		tst_resm(TEST_RETURN == maptab[i].ismap ? TPASS : TFAIL,
-			"IN6_IS_ADDR_V4MAPPED(\"%s\") %d",
+			"IN6_IS_ADDR_V4MAPPED(\"%s\") %ld",
 			maptab[i].addr, TEST_RETURN);
 	}
 
