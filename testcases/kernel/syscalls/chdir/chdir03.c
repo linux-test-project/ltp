@@ -62,7 +62,6 @@
 
 char *TCID = "chdir03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void setup(void);
 void cleanup(void);
@@ -80,115 +79,108 @@ extern struct passwd *my_getpwnam(char *);
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	pid_t pid, pid1;
 	int status;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
-	/* set up the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "first fork failed");
 		}
 
-		if (pid == 0) {	/* first child */
-			/* set the child's ID to ltpuser1 */
+		if (pid == 0) {
 			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) != 0) {
-				tst_resm(TINFO, "setreuid failed in child #1");
+				perror("setreuid failed in child #1");
 				exit(1);
 			}
 			if (mkdir(good_dir, 00700) != 0) {
-				tst_resm(TINFO, "mkdir failed in child #1");
+				perror("mkdir failed in child #1");
 				exit(1);
 			}
 			exit(0);
 		}
 		wait(&status);
 
-		if ((pid1 = FORK_OR_VFORK()) < 0) {
+		if ((pid1 = FORK_OR_VFORK()) < 0)
 			tst_brkm(TBROK, cleanup, "second fork failed");
-		}
 
 		if (pid1 == 0) {	/* second child */
+
+			int rval;
+
 			/*
 			 * set the child's ID to ltpuser2 using seteuid()
 			 * so that the ID can be changed back after the
 			 * TEST call is made.
 			 */
 			if (seteuid(ltpuser2->pw_uid) != 0) {
-				tst_resm(TINFO, "setreuid failed in child #2");
+				perror("setreuid failed in child #2");
 				exit(1);
 			}
 
 			TEST(chdir(good_dir));
 
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
+				printf("call succeeded unexpectedly\n");
+				rval = 1;
 			} else if (TEST_ERRNO != EACCES) {
-				tst_resm(TFAIL|TTERRNO, "expected EACCES");
+				printf("didn't get EACCES as expected; got ");
+				rval = 1;
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TPASS|TTERRNO, "expected failure");
+				printf("got EACCES as expected\n");
+				rval = 0;
+			}
+			/* Only really required with vfork. */
+			if (seteuid(0) != 0) {
+				perror("seteuid(0) failed");
+				rval = 1;
 			}
 
-			/* reset the process ID to the saved ID (root) */
-			if (setuid(0) == -1) {
-				tst_resm(TINFO|TERRNO, "setuid(0) failed");
-			}
+			exit(rval);
 
-		} else {	/* parent */
-			wait(&status);
-
-			/* let the child carry on */
-			exit(0);
+		} else {
+			if (wait(&status) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+				tst_brkm(TBROK, cleanup,
+				    "child exited abnormally");
 		}
-
-		/* clean up things in case we are looping */
 		if (rmdir(good_dir) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup, "rmdir(%s) failed", good_dir);
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "rmdir(%s) failed", good_dir);
 		}
 	}
+
 	cleanup();
+	tst_exit();
 
- }
+}
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 	char *cur_dir = NULL;
 
-	/* make sure the process ID is root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root.");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
-	/* get the currect directory name */
-	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't get current directory name");
-	}
+	if ((cur_dir = getcwd(cur_dir, 0)) == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "getcwd failed");
 
 	sprintf(good_dir, "%s/%d", cur_dir, getpid());
 
@@ -196,21 +188,10 @@ void setup()
 	ltpuser2 = my_getpwnam(user2name);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/*
-	 * Delete the test directory created in setup().
-	 */
 	tst_rmdir();
 
 }
