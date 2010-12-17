@@ -67,7 +67,7 @@ DEBUG_CXXFLAGS		?= $(DEBUG_CFLAGS)
 OPT_CFLAGS		?= -O2 -fno-strict-aliasing -pipe
 OPT_CXXFLAGS		?= $(OPT_CFLAGS)
 
-WCFLAGS			?= -Wall
+WCFLAGS			?= -Wall -Werror
 WCXXFLAGS		?= $(WCFLAGS)
 
 LDFLAGS			+= $(WLDFLAGS)
