@@ -131,74 +131,48 @@ int fd;
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
+	int lc;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
+		if ((fd = open(fname, O_RDWR|O_CREAT, 0700)) == -1) {
+			tst_brkm(TBROK|TTERRNO, cleanup,
+			    "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 		}
-		/*
-		 * Call close(2)
-		 */
 		TEST(close(fd));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "close(%s) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "close(%s) failed", fname);
 		} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS, "close(%s) returned %ld", fname,
-					 TEST_RETURN);
+				    TEST_RETURN);
 			}
 		}
 
 		if (unlink(fname) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "unlink(%s) Failed, errno=%d : %s", fname,
-				 errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "unlink(%s) failed", fname);
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -211,16 +185,8 @@ void setup()
 	sprintf(fname, "tfile_%d", getpid());
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();

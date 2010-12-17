@@ -107,7 +107,9 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
- }
+	tst_exit();
+
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test

@@ -79,47 +79,39 @@ struct test_case_t {
 	char *type;
 } TC[] = {
 	/* file descriptor for a regular file */
-	{
-	&newfd, "file"},
-	    /* file descriptor for a pipe */
-	{
-	&pipefildes[0], "pipe"}
+	{ &newfd, "file"},
+	/* file descriptor for a pipe */
+	{ &pipefildes[0], "pipe"}
 };
 
 int main(int ac, char **av)
 {
 
 	int i;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	setup();		/* global setup */
+	setup();
 
-	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* set up the file and pipe for the test */
-		if ((fild = creat(fname, 0777)) == -1) {
-			tst_brkm(TBROK, cleanup, "can't open file %s", fname);
-		}
+		if ((fild = creat(fname, 0777)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "can't open file %s",
+			    fname);
 
-		if ((newfd = dup(fild)) == -1) {
-			tst_brkm(TBROK, cleanup, "can't dup the file des");
-		}
+		if ((newfd = dup(fild)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "can't dup the file des");
 
 		if (pipe(pipefildes) == -1) {
-			tst_brkm(TBROK, cleanup, "can't open pipe");
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "can't open pipe");
 		}
-
-		/* loop through the test cases */
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
@@ -131,7 +123,6 @@ int main(int ac, char **av)
 			}
 
 			if (STD_FUNCTIONAL_TEST) {
-				/* attempt to close the fd again */
 				if (close(*TC[i].fd) == -1) {
 					tst_resm(TPASS, "%s appears closed",
 						 TC[i].type);
@@ -150,9 +141,6 @@ int main(int ac, char **av)
 	tst_exit();
  }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
 void setup(void)
 {
 	int mypid;
@@ -166,19 +154,11 @@ void setup(void)
 	tst_tmpdir();
 
 	mypid = getpid();
-	sprintf(fname, "fname.%d\n", mypid);
+	sprintf(fname, "fname.%d", mypid);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
 void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified.
-	 * print errno log if that option was specified
-	 */
 	close(fild);
 
 	TEST_CLEANUP;
