@@ -67,10 +67,6 @@
 # define O_CLOEXEC 02000000
 #endif
 
-/* Extern Global Variables */
-extern int Tst_count;
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
-
 /* Global Variables */
 char *TCID = "dup3_01";		/* test program identifier.              */
 int TST_TOTAL = 1;		/* total number of tests in this file.   */
@@ -93,9 +89,8 @@ int TST_TOTAL = 1;		/* total number of tests in this file.   */
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup()
+void cleanup()
 {
-
 	TEST_CLEANUP;
 	tst_rmdir();
 }
@@ -130,10 +125,9 @@ int main(int argc, char *argv[])
 {
 	int fd, coe;
 
-	if ((tst_kvercmp(2, 6, 27)) < 0) {
+	if ((tst_kvercmp(2, 6, 27)) < 0)
 		tst_brkm(TCONF, cleanup,
 			 "This test can only run on kernels that are 2.6.27 and higher");
-	}
 	setup();
 
 	fd = syscall(__NR_dup3, 1, 4, 0);
