@@ -70,6 +70,8 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
+
 /**************************************************************************/
 /*                                                                        */
 /*   Some archs do not have the manpage documented sys/capability.h file, */
@@ -81,14 +83,11 @@
 /*   version, then you may want to try switching to it. -Robbie W.        */
 /**************************************************************************/
 
-extern int capget(cap_user_header_t, cap_user_data_t);
-extern int capset(cap_user_header_t, const cap_user_data_t);
 static void setup();
 static void cleanup();
 
 char *TCID = "capset01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = { EFAULT, EINVAL, EPERM, 0 };
 
 static struct __user_cap_header_struct header;	/* cap_user_header_t is a pointer
@@ -100,8 +99,8 @@ static struct __user_cap_data_struct data;	/* cap_user_data_t is a pointer to
 int main(int ac, char **av)
 {
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -113,7 +112,7 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		TEST(capset(&header, &data));
+		TEST(syscall(__NR_capset, &header, &data));
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS, "capset() returned %ld", TEST_RETURN);
@@ -124,43 +123,29 @@ int main(int ac, char **av)
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
 
+	tst_exit();
 }
 
-/* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-        /* Set up the expected error numbers for -e option */
         TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
-	/*
-	 * Save current capability data.
-	 * header.version must be _LINUX_CAPABILITY_VERSION
-	 */
 	header.version = _LINUX_CAPABILITY_VERSION;
 	header.pid = 0;
-	if ((capget(&header, &data)) == -1) {
-		tst_brkm(TBROK|TTERRNO, NULL, "capget() failed");
+	if (syscall(__NR_capget, &header, &data) == -1) {
+		tst_brkm(TBROK|TERRNO, NULL, "capget() failed");
 	}
 
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }
