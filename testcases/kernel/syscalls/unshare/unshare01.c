@@ -170,7 +170,7 @@ int main(int ac, char **av) {
 			if (TEST_RETURN == -1) {
 				tst_brkm(TFAIL|TTERRNO, cleanup, "fork failed");
 			} else if (TEST_RETURN == 0) {
-				TEST(unshare(CLONE_FS));
+				TEST(unshare(CLONE_FILES));
 				if (TEST_RETURN == 0) {
 					printf("unshare with CLONE_FILES call "
 					    "succeeded\n");
@@ -264,6 +264,7 @@ int main(int ac, char **av) {
 						rval = 2;
 					}
 				}
+				exit(rval);
 			} else {
 				if (wait(&rval) == -1) {
 					tst_brkm(TBROK|TERRNO, cleanup,
