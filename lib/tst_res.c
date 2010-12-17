@@ -604,25 +604,24 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	 */
 	if (ttype_result != TFAIL && ttype_result != TBROK &&
 	    ttype_result != TCONF && ttype_result != TRETR) {
-		sprintf(Warn_mesg, "tst_brk(): Invalid Type: %d. Using TBROK",
-			ttype_result);
+		sprintf(Warn_mesg, "%s: Invalid Type: %d. Using TBROK",
+			__func__, ttype_result);
 		tst_print(TCID, 0, TWARN, Warn_mesg);
-		ttype = TBROK;
+		/* Keep TERRNO, TTERRNO, etc. */
+		ttype = (ttype & ~ttype_result) | TBROK;
 	}
 
 	/* Print the first result, if necessary. */
 	if (Tst_count < TST_TOTAL)
 		tst_res(ttype, fname, "%s", tmesg);
 
-	if (ttype == TCONF) {
+	if (ttype_result == TCONF)
 		tst_res(ttype, NULL,
 			"Remaining cases not appropriate for configuration");
-	} else {
-		if (ttype == TRETR)
-			tst_res(ttype, NULL, "Remaining cases retired");
-		else
-			tst_res(TBROK, NULL, "Remaining cases broken");
-	}
+	else if (ttype_result == TRETR)
+		tst_res(ttype, NULL, "Remaining cases retired");
+	else if (ttype_result == TBROK)
+		tst_res(TBROK, NULL, "Remaining cases broken");
 	Expand_varargs = TRUE;
 
 	/*
