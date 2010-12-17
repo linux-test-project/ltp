@@ -94,14 +94,10 @@
 #include "usctest.h"
 #include "config.h"
 
-/* Extern Global Variables */
-extern int Tst_count;
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
-
 /* Global Variables */
 char *TCID = "unshare01";  /* Test program identifier.*/
 int  testno;
-int  TST_TOTAL =1;		   /* total number of tests in this file.   */
+int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 
 #ifdef HAVE_UNSHARE
 
