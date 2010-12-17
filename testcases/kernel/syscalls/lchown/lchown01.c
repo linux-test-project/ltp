@@ -217,9 +217,6 @@ void setup(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
 	}
 
-	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(2) %s", TESTFILE);
-
 	if (symlink(TESTFILE, SFILE) < 0) {
 		tst_brkm(TBROK|TERRNO, cleanup, "symlink(2) %s to %s failed",
 		         TESTFILE, SFILE);
