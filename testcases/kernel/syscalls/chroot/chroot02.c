@@ -57,10 +57,8 @@
 char *TCID = "chroot02";
 int TST_TOTAL = 1;
 int fileHandle = 0;
-extern int Tst_count;
-extern char *TESTDIR;
 
-char tmpbuf[50];
+#define TMP_FILENAME	"chroot02_testfile"
 struct stat buf;
 
 void setup(void);
@@ -70,12 +68,11 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int pid, e_code, status, retval = 0;
+	int pid, status, retval;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -88,64 +85,52 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Could not fork");
 		}
 
-		if (pid == 0) {	/* child */
+		if (pid == 0) {
+			retval = 0;
 
-			TEST(chroot(TESTDIR));
-
-			if (TEST_RETURN == -1) {
+			if (chroot(get_tst_tmpdir()) == -1) {
+				perror("chroot failed");
 				retval = 1;
-				tst_resm(TFAIL, "chroot(2) failed errno = %d",
-					 TEST_ERRNO);
-				continue;
+			} else {
+				if (STD_FUNCTIONAL_TEST) {
+					if (stat("/" TMP_FILENAME, &buf) == -1) {
+						retval = 1;
+						perror("stat failed");
+					}
+				}
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
-				if (stat("/chroot02_testfile", &buf) == -1) {
-					retval = 1;
-					tst_resm(TFAIL, "stat(2) failed errno "
-						 "= %d", errno);
-				} else {
-					tst_resm(TPASS, "We appear to be in "
-						 "the right place");
-				}
-			} else {
-				tst_resm(TPASS, "call succeeded");
-			}
 			exit(retval);
 		}
 
 		/* parent */
 		wait(&status);
 		/* make sure the child returned a good exit status */
-		e_code = status >> 8;
-		if (e_code != 0) {
-			tst_resm(TFAIL, "Failures reported above");
-		}
+		if (WIFSIGNALED(status) ||
+		    (WIFEXITED(status) && WEXITSTATUS(status) != 0))
+			tst_resm(TFAIL, "chroot functionality incorrect");
+		else
+			tst_resm(TPASS, "chroot functionality correct");
 	}
-	cleanup();
 
- }
+	cleanup();
+	tst_exit();
+
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
 void setup()
 {
-	/* make sure the process ID is root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, cleanup, "Test must be run as root.");
-	}
-	/*
-	 * Now ensure that the testfile exists
-	 */
+	tst_require_root(NULL);
+
 	tst_tmpdir();
-	sprintf(tmpbuf, "%s%s", TESTDIR, "/chroot02_testfile");
-	if ((fileHandle = creat(tmpbuf, 0777)) == -1)
-		tst_brkm(TBROK, cleanup, "failed to create tmporary file %s",
-			 tmpbuf);
-	if (stat(tmpbuf, &buf) != 0) {
-		tst_brkm(TBROK, cleanup, "%s does not exist", tmpbuf);
-	}
+	if ((fileHandle = creat(TMP_FILENAME, 0777)) == -1)
+		tst_brkm(TBROK, cleanup, "failed to create temporary file "
+		    TMP_FILENAME);
+	if (stat(TMP_FILENAME, &buf) != 0)
+		tst_brkm(TBROK, cleanup, TMP_FILENAME " does not exist");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

@@ -55,7 +55,8 @@ char *TCID = "chroot04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-char test_dir[100];
+#define TEST_TMPDIR	"chroot04_tmpdir"
+
 int exp_enos[] = { EACCES, 0 };
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -68,10 +69,8 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -84,30 +83,27 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		TEST(chroot(test_dir));
+		TEST(chroot(TEST_TMPDIR));
 
-		if (TEST_RETURN != -1) {
+		if (TEST_RETURN != -1)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
-		} else if (TEST_ERRNO != EACCES) {
-			tst_resm(TFAIL, "expected EACCES - got %d", TEST_ERRNO);
-		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TPASS, "expected failure - errno = %d"
-				 " : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-		}
+		else if (TEST_ERRNO == EACCES)
+			tst_resm(TPASS, "got EACCESS as expected");
+		else
+			tst_resm(TFAIL|TTERRNO, "did not get EACCES as expected");
 
 	}
 	cleanup();
 
- }
+	tst_exit();
+
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
 void setup()
 {
-	char *cur_dir = NULL;
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
@@ -115,32 +111,16 @@ void setup()
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
-	/* get the currect directory name */
-	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
-	}
-
-	sprintf(test_dir, "%s.%d", cur_dir, getpid());
-
 	/*
 	 * create a temporary directory
 	 */
-	if (mkdir(test_dir, 0222) != 0) {
-		tst_resm(TFAIL, "mkdir() failed to create"
-			 " a testing directory");
-		exit(1);
-
+	if (mkdir(TEST_TMPDIR, 0222) != 0) {
+		tst_resm(TBROK, "mkdir(%s) failed", TEST_TMPDIR);
 	}
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
+		tst_brkm(TBROK, cleanup, "seteuid to nobody failed");
 	}
 
 }
@@ -153,13 +133,10 @@ void cleanup()
 {
 	/* reset the process ID to the saved ID (root) */
 	if (setuid(0) == -1) {
-		tst_resm(TINFO, "setuid(0) failed");
+		tst_brkm(TBROK|TERRNO, NULL, "setuid(0) failed");
 	}
-	if (rmdir(test_dir) != 0) {
-		tst_resm(TFAIL, "rmdir() failed to removed"
-			 " a testing directory");
-		exit(1);
-
+	if (rmdir(TEST_TMPDIR) != 0) {
+		tst_brkm(TFAIL|TERRNO, NULL, "rmdir(%s) failed", TEST_TMPDIR);
 	}
 	/*
 	 * print timing stats if that option was specified.

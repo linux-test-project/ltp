@@ -147,22 +147,20 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - "
-					 "errno = %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TPASS|TTERRNO, "failed as expected");
 			} else {
-				tst_resm(TFAIL, "unexpected error - %d : %s - "
-					 "expected %d", TEST_ERRNO,
-					 strerror(TEST_ERRNO), TC[i].error);
+				tst_resm(TFAIL|TTERRNO,
+				    "didn't fail as expected (expected errno "
+				    "= %d : %s)",
+				    TC[i].error, strerror(TC[i].error));
 			}
 		}
 	}
 	cleanup();
 
- }
+	tst_exit();
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
