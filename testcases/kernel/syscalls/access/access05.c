@@ -96,18 +96,16 @@
 #define TEST_FILE3	"test_file3"
 #define TEST_FILE4	"test_file4"
 
-#define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 
-int no_setup();
-int setup1();			/* setup() to test access() for EACCES */
-int setup2();			/* setup() to test access() for EACCES */
-int setup3();			/* setup() to test access() for EACCES */
-int setup4();			/* setup() to test access() for EINVAL */
-int longpath_setup();		/* setup function to test access() for ENAMETOOLONG */
+void setup1();			/* setup() to test access() for EACCES */
+void setup2();			/* setup() to test access() for EACCES */
+void setup3();			/* setup() to test access() for EACCES */
+void setup4();			/* setup() to test access() for EINVAL */
+void longpath_setup();		/* setup function to test access() for ENAMETOOLONG */
 
 #if !defined(UCLINUX)
-char *get_high_address();	/* function from ltp-lib        */
-char High_address_node[64];
+char high_address_node[64];
 #endif
 
 char Longpathname[PATH_MAX + 2];
@@ -115,32 +113,23 @@ char Longpathname[PATH_MAX + 2];
 struct test_case_t {		/* test case structure */
 	char *pathname;
 	int a_mode;
-	char *desc;
 	int exp_errno;
-	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	TEST_FILE1, R_OK, "Read Access denied on file", EACCES, setup1}, {
-	TEST_FILE2, W_OK, "Write Access denied on file", EACCES, setup2}, {
-	TEST_FILE3, X_OK, "Execute Access denied on file", EACCES, setup3},
-	{
-	TEST_FILE4, INV_OK, "Access mode invalid", EINVAL, setup4},
+	void (*setupfunc)(void);
+} test_cases[] = {
+	{ TEST_FILE1, R_OK, EACCES, setup1 },
+	{ TEST_FILE2, W_OK, EACCES, setup2 },
+	{ TEST_FILE3, X_OK, EACCES, setup3 },
+	{ TEST_FILE4, INV_OK, EINVAL, setup4 },
 #if !defined(UCLINUX)
-	{
-	(char *)-1, R_OK, "Negative address", EFAULT, no_setup}, {
-	High_address_node, R_OK, "Address beyond address space", EFAULT,
-		    no_setup},
+	{ (char *)-1, R_OK, EFAULT, NULL },
+	{ high_address_node, R_OK, EFAULT, NULL },
 #endif
-	{
-	"", W_OK, "Pathname is empty", ENOENT, no_setup}, {
-	Longpathname, R_OK, "Pathname too long", ENAMETOOLONG, longpath_setup},
-	{
-	NULL, 0, NULL, 0, no_setup}
+	{ "", W_OK, ENOENT, NULL },
+	{ Longpathname, R_OK, ENAMETOOLONG, longpath_setup },
 };
 
 char *TCID = "access05";	/* Test program identifier.    */
-int TST_TOTAL = 8;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
+int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 int exp_enos[] = { EACCES, EFAULT, EINVAL, ENOENT, ENAMETOOLONG, 0 };
 
 char nobody_uid[] = "nobody";
@@ -156,32 +145,27 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char *file_name;	/* name of the testfile */
-	char *test_desc;	/* test specific message */
 	int access_mode;	/* specified access mode for testfile */
-	int ind;
+	int i;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			file_name = Test_cases[ind].pathname;
-			access_mode = Test_cases[ind].a_mode;
-			test_desc = Test_cases[ind].desc;
+		for (i = 0; i < TST_TOTAL; i++) {
+			file_name = test_cases[i].pathname;
+			access_mode = test_cases[i].a_mode;
 
 #if !defined(UCLINUX)
-			if (file_name == High_address_node) {
+			if (file_name == high_address_node)
 				file_name = get_high_address();
-			}
 #endif
 
 			/*
@@ -192,102 +176,75 @@ int main(int ac, char **av)
 			TEST(access(file_name, access_mode));
 
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "access() returned %ld, "
-					 "expected -1, errno:%d", TEST_RETURN,
-					 Test_cases[ind].exp_errno);
+				tst_resm(TFAIL,
+				    "access(%s, %#o) succeeded unexpectedly",
+				    file_name, access_mode);
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			/*
-			 * Call a function to verify whether
-			 * the specified file has specified
-			 * access mode.
-			 */
-			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-				tst_resm(TPASS|TTERRNO, "access() fails, %s",
-					 test_desc);
-			} else {
-				tst_resm(TFAIL|TTERRNO, "access() fails %s (expected errno %d)",
-					 test_desc, Test_cases[ind].exp_errno);
-			}
+			if (TEST_ERRNO == test_cases[i].exp_errno)
+				tst_resm(TPASS|TTERRNO,
+				    "access failed as expected");
+			else
+				tst_resm(TFAIL|TTERRNO,
+				    "access failed unexpectedly; expected: "
+				    "%d - %s",
+				    test_cases[i].exp_errno,
+				    strerror(test_cases[i].exp_errno));
 		}
 	}
 
 	cleanup();
 
- }
+	tst_exit();
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- *  Create a temporary directory and change directory to it.
- *  Call individual test specific setup functions.
- */
+}
+
 void setup()
 {
-	int ind;
+	int i;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
+
 	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
+		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
 
 	TEST_PAUSE;
 
-	tst_tmpdir();
-
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
-	}
-	Test_cases[5].pathname = bad_addr;
+			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, NULL, "mmap failed");
+	test_cases[5].pathname = bad_addr;
 #endif
 
-	/* call individual setup functions */
-	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-		Test_cases[ind].setupfunc();
-	}
+	tst_tmpdir();
+
+	for (i = 0; i < TST_TOTAL; i++)
+		if (test_cases[i].setupfunc != NULL)
+			test_cases[i].setupfunc();
 }
 
-/*
- * no_setup() - some test conditions do not need any setup.
- *		Hence, this function simply returns 0.
- */
-int no_setup()
-{
-	return 0;
-}
-
-int setup_file(const char *file, mode_t perms)
+void setup_file(const char *file, mode_t perms)
 {
 	int fd;		/* file handle for testfile */
 
-	/* Creat a test file under above directory created */
-	fd = open(file, O_RDWR | O_CREAT, FILE_MODE);
-	if (fd == -1)
+	if ((fd = open(file, O_RDWR | O_CREAT, FILE_MODE)) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 file, FILE_MODE);
 
-	/* Close the testfile created above */
-	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", file);
-
-	/* Change mode permissions on testfile */
-	if (chmod(file, perms) < 0)
+	if (fchmod(fd, perms) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, %#o) failed",
 			 file, perms);
-
-	return 0;
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", file);
 }
 
 /*
@@ -299,9 +256,9 @@ int setup_file(const char *file, mode_t perms)
  *   Deny read access permissions on testfile.
  *   This function returns 0.
  */
-int setup1()
+void setup1()
 {
-	return setup_file(TEST_FILE1, 0333);
+	setup_file(TEST_FILE1, 0333);
 }
 
 /*
@@ -312,9 +269,9 @@ int setup1()
  *   Deny write access permissions on testfile.
  *   This function returns 0.
  */
-int setup2()
+void setup2()
 {
-	return setup_file(TEST_FILE2, 0555);
+	setup_file(TEST_FILE2, 0555);
 }
 
 /*
@@ -325,9 +282,9 @@ int setup2()
  *   Deny search access permissions on testfile.
  *   This function returns 0.
  */
-int setup3()
+void setup3()
 {
-	return setup_file(TEST_FILE3, 0666);
+	setup_file(TEST_FILE3, 0666);
 }
 
 /*
@@ -338,24 +295,21 @@ int setup3()
  *   Creat/open a testfile and close it.
  *   This function returns 0.
  */
-int setup4()
+void setup4()
 {
-	return setup_file(TEST_FILE4, FILE_MODE);
+	setup_file(TEST_FILE4, FILE_MODE);
 }
 
 /*
  * longpath_setup() - setup to create a node with a name length exceeding
  *		      the MAX. length of PATH_MAX.
  */
-int longpath_setup()
+void longpath_setup()
 {
-	int ind;
+	int i;
 
-	for (ind = 0; ind <= (PATH_MAX + 1); ind++) {
-		Longpathname[ind] = 'a';
-	}
-
-	return 0;
+	for (i = 0; i <= (PATH_MAX + 1); i++)
+		Longpathname[i] = 'a';
 }
 
 /*

@@ -69,14 +69,14 @@
  *
  */
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 #include <signal.h>
-#include <sys/stat.h>
 #include <pwd.h>
 
 #include "test.h"
@@ -92,7 +92,6 @@
 
 char *TCID = "access02";	/* Test program identifier.    */
 int TST_TOTAL = 4;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fd1, fd2, fd4;		/* file descriptor for testfile(s) */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -104,33 +103,30 @@ int setup4();			/* setup() to test access() on symlink file */
 
 struct test_case_t {		/* test case structure */
 	char *pathname;
-	int a_mode;
-	char *desc;
+	mode_t a_mode;
 	int (*setupfunc) ();
-} Test_cases[] = {
-	{ TEST_FILE1, R_OK, "Read Access (R_OK)", setup1 },
-	{ TEST_FILE2, W_OK, "Write Access (W_OK)", setup2 },
-	{ TEST_FILE3, X_OK, "Execute Access (X_OK)", setup3 },
-	{ SYM_FILE, W_OK, "Symlink file", setup4 },
-	{ NULL, 0, NULL, 0 }
+} test_cases[] = {
+	/* Read access */
+	{ TEST_FILE1, R_OK, setup1 },
+	/* Write access */
+	{ TEST_FILE2, W_OK, setup2 },
+	/* Execute access */
+	{ TEST_FILE3, X_OK, setup3 },
+	/* Symlink */
+	{ SYM_FILE, W_OK, setup4 },
 };
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-int Access_verify(int, int);	/*
-				 * Function to verify the actual accessibility
-				 * of test file(s).
-				 */
+void setup();
+void cleanup();
+int access_verify(int);
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	int ind;
+	int lc;
+	int i;
 	char *msg;		/* message returned from parse_opts */
-	int fflag;		/* functionality flag variable */
-	int access_mode;	/* specified access mode for testfile */
+	mode_t access_mode;	/* specified access mode for testfile */
 	char *file_name;	/* name of the testfile */
-	char *test_desc;	/* test specific message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -141,10 +137,9 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		for (ind = 0; ind < TST_TOTAL; ind++) {
-			file_name = Test_cases[ind].pathname;
-			access_mode = Test_cases[ind].a_mode;
-			test_desc = Test_cases[ind].desc;
+		for (i = 0; i < TST_TOTAL; i++) {
+			file_name = test_cases[i].pathname;
+			access_mode = test_cases[i].a_mode;
 
 			/*
 			 * Call access(2) to check the test file
@@ -159,27 +154,10 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
-			 */
 			if (STD_FUNCTIONAL_TEST) {
-				/* Set the functionality flag */
-				fflag = 1;
-
-				/*
-				 * Call a function to verify whether
-				 * the specified file has specified
-				 * access mode.
-				 */
-				fflag = Access_verify(ind, fflag);
-				if (fflag) {
-					tst_resm(TPASS, "access(%s): %s test",
-						 file_name, test_desc);
-				}
-			} else {
+				access_verify(i);
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
 		}
 	}
 
@@ -188,34 +166,26 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- *  Create a temporary directory and change directory to it.
- *  Call individual test specific setup functions.
- */
 void setup()
 {
-	int ind;
+	int i;
+
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
+		tst_brkm(TINFO|TERRNO, NULL, "setuid failed");
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	/* call individual setup functions */
-	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-		Test_cases[ind].setupfunc();
-	}
+	for (i = 0; i < TST_TOTAL; i++)
+		test_cases[i].setupfunc();
 }
 
 /*
@@ -327,58 +297,51 @@ int setup4()
 	/* Creat a symbolic link for temporary file */
 	if (symlink(TEMP_FILE, SYM_FILE) < 0) {
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "symlink(%s, %s) failed",
-			 TEMP_FILE, SYM_FILE);
+			 "symlink(%s, %s) failed", TEMP_FILE, SYM_FILE);
 	}
 
 	return 0;
 }
 
 /*
- * Access_verify(ind, fflag) -
+ * access_verify(i) -
  *
- *	This function verify the Accessibility of the
+ *	This function verify the accessibility of the
  *	the testfile with the one verified by access().
- *	This function sets the fflag variable value to 0 if
- *	any verification is false.
- *	Otherwise, returns the already set fflag value.
  */
-int Access_verify(int ind, int fflag)
+int access_verify(int i)
 {
 	char write_buf[] = "abc";
 	char read_buf[BUFSIZ];
+	int rval;
 
-	switch (ind) {
+	rval = 0;
+
+	switch (i) {
 	case 0:		/*
 			 * The specified file has read access.
 			 * Attempt to read some data from the testfile
 			 * and if successful, access() behaviour is
 			 * correct.
 			 */
-		if (read(fd1, &read_buf, sizeof(read_buf)) < 0) {
+		if ((rval = read(fd1, &read_buf, sizeof(read_buf))) == -1)
 			tst_resm(TFAIL|TERRNO, "read(%s) failed", TEST_FILE1);
-			fflag = 0;
-		}
 		break;
 	case 1:		/*
 			 * The specified file has write access.
 			 * Attempt to write some data to the testfile
 			 * and if successful, access() behaviour is correct.
 			 */
-		if (write(fd2, write_buf, strlen(write_buf)) < 0) {
+		if ((rval = write(fd2, write_buf, strlen(write_buf))) == -1)
 			tst_resm(TFAIL|TERRNO, "write(%s) failed", TEST_FILE2);
-			fflag = 0;
-		}
 		break;
 	case 2:		/*
 			 * The specified file has execute access.
 			 * Attempt to execute the specified executable
 			 * file, if successful, access() behaviour is correct.
 			 */
-		if (system("./" TEST_FILE3) != 0) {
+		if ((rval = system("./" TEST_FILE3)) != 0)
 			tst_resm(TFAIL, "Fail to execute the %s", TEST_FILE3);
-			fflag = 0;
-		}
 		break;
 	case 3:		/*
 			 * The file pointed to by symbolic link has
@@ -387,16 +350,14 @@ int Access_verify(int ind, int fflag)
 			 * pointed to by symlink. if successful, access() bahaviour
 			 * is correct.
 			 */
-		if (write(fd4, write_buf, strlen(write_buf)) < 0) {
+		if ((rval = write(fd4, write_buf, strlen(write_buf))) == -1)
 			tst_resm(TFAIL|TERRNO, "write(%s) failed", TEMP_FILE);
-			fflag = 0;
-		}
 		break;
 	default:
 		break;
 	}
 
-	return (fflag);
+	return rval;
 }
 
 /*

@@ -111,11 +111,12 @@ static void cleanup(void);
 
 char *TCID = "access03";	/* Test program identifier.	*/
 int TST_TOTAL = 8;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
 
-char *bad_addr = 0;
+/* XXX (garrcoop): uh, this isn't a bad address yo. */
+void *low_addr;
+void *high_addr;
 
 #if !defined(UCLINUX)
 
@@ -132,292 +133,43 @@ int main(int ac, char **av)
 	/* set the expected errnos. */
 	TEST_EXP_ENOS(exp_enos);
 
+#define TEST_ACCESS(addr, mode) \
+	if (access(low_addr, mode) == -1) { \
+		if (errno == EFAULT) { \
+			tst_resm(TPASS, \
+			    "access(%p, %s) failed as expected with EFAULT", \
+			    addr, #mode); \
+		} else { \
+			tst_resm(TFAIL|TERRNO, \
+			    "access(%p, %s) failed unexpectedly; " \
+			    "expected (EFAULT)", addr, #mode); \
+		} \
+	} else { \
+		tst_resm(TFAIL, \
+		    "access(%p, %s) succeeded unexpectedly", addr, #mode); \
+	}
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * TEST CASE:
-		 *  R_OK on low pointer (-1) for path
-		 */
+		TEST_ACCESS(low_addr, R_OK);
+		TEST_ACCESS(low_addr, W_OK);
+		TEST_ACCESS(low_addr, X_OK);
+		TEST_ACCESS(low_addr, F_OK);
 
-		/* Call access(2) */
-		TEST(access(bad_addr, R_OK));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access((char *)-1,R_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "access((char *)-1,R_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
-			} else {
-				tst_resm(TFAIL,
-					 "access((char *)-1,R_OK) succeeded unexpectedly.");
-
-			}
-		}
-
-		/*
-		 * TEST CASE:
-		 *  W_OK on low pointer (-1) for path
-		 */
-
-		/* Call access(2) */
-		TEST(access(bad_addr, W_OK));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access((char *)-1,W_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "access((char *)-1,W_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
-			} else {
-				tst_resm(TFAIL,
-					 "access((char *)-1,W_OK) succeeded unexpectedly.");
-
-			}
-		}
-
-		/*
-		 * TEST CASE:
-		 *  X_OK on low pointer (-1) for path
-		 */
-
-		/* Call access(2) */
-		TEST(access(bad_addr, X_OK));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access((char*)-1,X_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "access((char*)-1,X_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
-			} else {
-				tst_resm(TFAIL,
-					 "access((char*)-1,X_OK) succeeded unexpectedly.");
-
-			}
-		}
-
-		/*
-		 * TEST CASE:
-		 *  F_OK on low pointer (-1) for path
-		 */
-
-		/* Call access(2) */
-		TEST(access(bad_addr, F_OK));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access((char*)-1,F_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "access((char*)-1,F_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
-			} else {
-				tst_resm(TFAIL,
-					 "access((char*)-1,F_OK) succeeded unexpectedly.");
-
-			}
-		}
-
-		/*
-		 * TEST CASE:
-		 *  R_OK on high pointer (sbrk(0)+1) for path
-		 */
-
-		/* Call access(2) */
-		TEST(access(get_high_address(), R_OK));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access((char*)sbrk(0)+1,R_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "access((char*)sbrk(0)+1,R_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
-			} else {
-				tst_resm(TFAIL,
-					 "access((char*)sbrk(0)+1,R_OK) succeeded unexpectedly.");
-
-			}
-		}
-
-		/*
-		 * TEST CASE:
-		 *  W_OK on high pointer (sbrk(0)+1) for path
-		 */
-
-		/* Call access(2) */
-		TEST(access(get_high_address(), W_OK));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access((char*)sbrk(0)+1,W_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "access((char*)sbrk(0)+1,W_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
-			} else {
-				tst_resm(TFAIL,
-					 "access((char*)sbrk(0)+1,W_OK) succeeded unexpectedly.");
-
-			}
-		}
-
-		/*
-		 * TEST CASE:
-		 *  X_OK on high pointer (sbrk(0)+1) for path
-		 */
-
-		/* Call access(2) */
-		TEST(access(get_high_address(), X_OK));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "access(high_address,X_OK) failed as expected with errno %d (EFAULT) : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "access(high_address,X_OK) failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
-			} else {
-				tst_resm(TFAIL,
-				    "access(high_address, X_OK) succeeded "
-				    "unexpectedly.");
-			}
-		}
-
-		/*
-		 * TEST CASE:
-		 *  F_OK on high pointer (sbrk(0)+1) for path
-		 */
-
-		TEST(access(get_high_address(), F_OK));
-
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS|TTERRNO,
-					    "access((char*)sbrk(0)+1,F_OK) "
-					    "failed as expected with EFAULT");
-				} else {
-					tst_resm(TFAIL|TTERRNO,
-					    "access((char*)sbrk(0)+1,F_OK) "
-					    " did not fail with EFAULT");
-				}
-			} else {
-				tst_resm(TFAIL,
-					 "access((char*)sbrk(0)+1,F_OK) "
-					 "succeeded unexpectedly.");
-			}
-		}
+		TEST_ACCESS(high_addr, R_OK);
+		TEST_ACCESS(high_addr, W_OK);
+		TEST_ACCESS(high_addr, X_OK);
+		TEST_ACCESS(high_addr, F_OK);
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
-}
-
-#else
-
-int main()
-{
-	tst_resm(TCONF, "test is not available on uClinux");
 	tst_exit();
+
 }
 
-#endif /* if !defined(UCLINUX) */
-
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -425,15 +177,16 @@ void setup()
 
 	TEST_PAUSE;
 
-	/* make and change to a temporary directory */
-	tst_tmpdir();
+	low_addr = mmap(0, 1, PROT_NONE,
+	    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+	if (low_addr == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, NULL, "mmap failed");
+	high_addr = get_high_address();
+	if (high_addr == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "get_high_address failed");
+	high_addr++;
 
-	bad_addr =
-		mmap(0, 1, PROT_NONE,
-		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
+	tst_tmpdir();
 }
 
 /***************************************************************
@@ -442,13 +195,16 @@ void setup()
  ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* remove the temporary directory and exit with
-	   return code appropriate for results */
 	tst_rmdir();
 }
+
+#else
+
+int main()
+{
+	tst_brkm(TCONF, NULL, "test not available on UCLINUX");
+}
+
+#endif /* if !defined(UCLINUX) */
