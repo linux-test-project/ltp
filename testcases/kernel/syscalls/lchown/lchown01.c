@@ -209,17 +209,15 @@ void setup(void)
 	TEST_PAUSE;
 	tst_tmpdir();
 
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup, "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE, FILE_MODE);
+	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+		tst_brkm(TBROK, cleanup, "open failed");
 	}
 	if (close(fd) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
+		tst_brkm(TBROK|TERRNO, cleanup, "close failed");
 	}
 
 	if (symlink(TESTFILE, SFILE) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "symlink(2) %s to %s failed",
-		         TESTFILE, SFILE);
+		tst_brkm(TBROK|TERRNO, cleanup, "symlink failed");
 	}
 }
 
