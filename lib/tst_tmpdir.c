@@ -288,7 +288,7 @@ void tst_rmdir(void)
 		return;
 	}
 
-	if ((parent_dir = malloc(PATH_MAX))) {
+	if ((parent_dir = malloc(PATH_MAX)) == NULL) {
 		/* Make sure that we exit quickly and noisily. */
 		tst_brkm(TBROK|TERRNO, NULL,
 		    "%s: malloc(%d) failed", __func__, PATH_MAX);
