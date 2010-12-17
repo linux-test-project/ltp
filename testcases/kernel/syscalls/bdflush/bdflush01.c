@@ -83,88 +83,45 @@
 #include <sys/stat.h>
 #include <sys/kdaemon.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-extern int Tst_count;
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
-
-/* Global Variables */
-char *TCID = "bdflush01";  /* Test program identifier.*/
+char *TCID = "bdflush01";
 int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+int  TST_TOTAL = 1;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*									    */
-/* Function:    cleanup						       */
-/*									    */
-/* Description: Performs all one time clean up for this test on successful    */
-/*	      completion,  premature exit or  failure. Closes all temporary */
-/*	      files, removes all temporary directories exits the test with  */
-/*	      appropriate return code by calling tst_exit() function.       */
-/*									    */
-/* Input:       None.							 */
-/*									    */
-/* Output:      None.							 */
-/*									    */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*	      On success - Exits calling tst_exit(). With '0' return code.  */
-/*									    */
-/******************************************************************************/
-extern void cleanup() {
-
+void cleanup() {
         TEST_CLEANUP;
         tst_rmdir();
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*									    */
-/* Function:    setup							 */
-/*									    */
-/* Description: Performs all one time setup for this test. This function is   */
-/*	      typically used to capture signals, create temporary dirs      */
-/*	      and temporary files that may be used in the course of this    */
-/*	      test.							 */
-/*									    */
-/* Input:       None.							 */
-/*									    */
-/* Output:      None.							 */
-/*									    */
-/* Return:      On failure - Exits by calling cleanup().		      */
-/*	      On success - returns 0.				       */
-/*									    */
-/******************************************************************************/
 void setup() {
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
 int main(int ac, char **av) {
 	long data;
-	int lc;		 /* loop counter */
-	char *msg;	      /* message returned from parse_opts */
+	char *msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
+	/* 
+	 * TODO (garrcoop): add more functional testcases; there are a ton
+	 * missing.
+	 */
+	data = 0;
 	Tst_count = 1;
 	for (testno = 0; testno < TST_TOTAL; ++testno) {
-		TEST(syscall(__NR_bdflush, 0, data));
-		if (TEST_RETURN < 0) {
+		TEST(syscall(__NR_bdflush, 3, data));
+		if (TEST_RETURN == -1)
 			tst_brkm(TFAIL|TTERRNO, cleanup, "bdflush failed");
-		} else {
+		else
 			tst_resm(TPASS, "bdflush() = %ld", TEST_RETURN);
-		}
 	}
 	cleanup();
 	tst_exit();
