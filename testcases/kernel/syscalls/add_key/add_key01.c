@@ -47,14 +47,9 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-extern int Tst_count;
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
-
 /* Global Variables */
-char *TCID = "add_key01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+char *TCID = "add_key01";	/* Test program identifier.*/
+int  TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -106,35 +101,20 @@ void setup() {
 }
 
 int main(int ac, char **av) {
-	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-
-		Tst_count = 0;
-
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-
-			/* Call add_key. */
-			TEST(syscall(__NR_add_key, "keyring", "wjkey",
-					NULL, 0,
-					KEY_SPEC_THREAD_KEYRING));
-			if (TEST_RETURN != -1) {
-				tst_brkm(TPASS, cleanup,
-				    "add_key call succeeded");
-			} else {
-				tst_resm(TFAIL|TTERRNO, "%s failed", TCID);
-			}
-
-		}
-
-	}
+	/* Call add_key. */
+	TEST(syscall(__NR_add_key, "keyring", "wjkey", NULL, 0, KEY_SPEC_THREAD_KEYRING));
+	if (TEST_RETURN == -1)
+		tst_resm(TFAIL|TTERRNO, "add_key call failed");
+	else
+		tst_resm(TPASS, "add_key call succeeded");
 
 	cleanup();
 	tst_exit();
