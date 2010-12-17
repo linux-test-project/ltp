@@ -80,62 +80,58 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup */
+	setup();
 
-	/* set up expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		if ((ret = chdir(testdir)) != 0) {
 			tst_brkm(TBROK|TERRNO, cleanup, "chdir(%s) failed", testdir);
-		 }
+		}
 		if ((fd = creat(filname, 0000)) == -1) {
 			tst_brkm(TBROK|TERRNO, cleanup, "creat(%s) failed", filname);
-		 }
+		}
+		if (close(fd) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "close failed");
 		if ((ddir = opendir(".")) == NULL) {
 			tst_brkm(TBROK|TERRNO, cleanup, "opendir(.) failed");
-		 }
+		}
 
 		filenames[0] = ".";
 		filenames[1] = "..";
 		filenames[2] = filname;
-		checknames(filenames, 3, ddir);
+		checknames(filenames, sizeof(filenames) / sizeof(filenames[0]),
+		    ddir);
+		closedir(ddir);
 
 		TEST(chdir(filname));
 
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded on expected fail");
-		} else if (TEST_ERRNO != ENOTDIR) {
-			tst_resm(TFAIL|TTERRNO, "received unexpected errno (wanted ENOTDIR)");
-		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TPASS|TTERRNO, "received expected error");
-		}
+		if (TEST_RETURN != -1)
+			tst_resm(TFAIL, "call succeeded unexpectedly");
+		else if (TEST_ERRNO != ENOTDIR)
+			tst_resm(TFAIL|TTERRNO,
+			    "failed unexpectedly; wanted ENOTDIR");
+		else
+			tst_resm(TPASS,
+			    "failed as expected with ENOTDIR");
 
-		/* reset things in case we are looping */
+		if (unlink(filname) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "Couldn't remove file");
 
-		/* remove created file */
-		if (unlink(filname) == -1) {
-			tst_brkm(TBROK, cleanup, "Couldn't remove file");
-		}
-
-		/* cd back to starting directory */
 		chdir("..");
 
 	}
-	close(fd);
 	cleanup();
 
- }
+	tst_exit();
+
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test
@@ -176,10 +172,7 @@ void cleanup(void)
 
 }
 
-void checknames(pfilnames, fnamecount, ddir)
-char **pfilnames;
-int fnamecount;
-DIR *ddir;
+void checknames(char **pfilnames, int fnamecount, DIR *ddir)
 {
 	struct dirent *dir;
 	int i, found;
