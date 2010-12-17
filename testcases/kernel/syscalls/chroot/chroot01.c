@@ -63,81 +63,63 @@ struct passwd *ltpuser;
 void setup(void);
 void cleanup(void);
 
-int main(int ac, char **av)
+int
+main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
-	/* set up expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		TEST(chroot(path));
 
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded on expected fail");
-		} else if (errno != EPERM) {
-			tst_resm(TFAIL, "Received unexpected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
+		if (TEST_RETURN != -1)
+			tst_resm(TFAIL, "call succeeded unexpectedly");
+		else if (errno != EPERM)
+			tst_resm(TFAIL|TTERRNO, "chroot failed unexpectedly");
+		else
 			tst_resm(TPASS, "chroot set errno to EPERM.");
-		}
 	}
 	cleanup();
 
- }
+	tst_exit();
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+}
+
+void
+setup(void)
 {
+	tst_require_root(NULL);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
-	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
+	tst_tmpdir();
+
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "getpwnam(\"nobody\") failed");
+
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "seteuid to nobody failed");
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
-	/* make a temporary directory and cd to it */
-	tst_tmpdir();
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup()
+void
+cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* delete the test directory created in setup() */
-	tst_rmdir();
+	if (seteuid(0) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "setuid(0) failed");
 
+	tst_rmdir();
 }
