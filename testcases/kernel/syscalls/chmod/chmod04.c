@@ -91,7 +91,6 @@
 
 char *TCID = "chmod04";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -105,12 +104,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	mode_t dir_mode;	/* mode permissions set on testdirectory */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -156,14 +151,13 @@ int main(int ac, char **av)
 					 "Expected 0%03o",
 					 TESTDIR, dir_mode, PERMS);
 			}
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
-
- }
+	tst_exit();
+}
 
 /*
  * void
@@ -176,10 +170,7 @@ void setup()
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1)
 		tst_resm(TINFO|TERRNO, "setuid(%u) failed", ltpuser->pw_uid);

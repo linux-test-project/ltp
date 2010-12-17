@@ -96,14 +96,13 @@
 #include "test.h"
 #include "usctest.h"
 
-#define MODE_RWX	S_IRWXU | S_IRWXG | S_IRWXO
-#define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define MODE_RWX	(S_IRWXU|S_IRWXG|S_IRWXO)
+#define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define DIR_TEMP	"testdir_1"
 #define TEST_FILE1	"tfile_1"
 #define TEST_FILE2	"testdir_1/tfile_2"
 #define TEST_FILE3	"t_file/tfile_3"
 
-int no_setup();		/* dummy setup function */
 int setup1();		/* setup function to test chmod for EPERM */
 int setup2();		/* setup function to test chmod for EACCES */
 int setup3();		/* setup function to test chmod for ENOTDIR */
@@ -115,30 +114,30 @@ char High_address_node[64];
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
-	char *desc;
-	int mode;
+	mode_t mode;
 	int exp_errno;
 	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	TEST_FILE1, "Process is not owner/root", FILE_MODE, EPERM, setup1},
-	{
-	TEST_FILE2, "No Search permissions to process", FILE_MODE,
-		    EACCES, setup2}, {
-	High_address_node, "Address beyond address space", FILE_MODE,
-		    EFAULT, no_setup}, {
-	(char *)-1, "Negative address", FILE_MODE, EFAULT, no_setup}, {
-	Longpathname, "Pathname too long", FILE_MODE, ENAMETOOLONG,
-		    longpath_setup}, {
-	"", "Pathname is empty", FILE_MODE, ENOENT, no_setup}, {
-	TEST_FILE3, "Path contains regular file", FILE_MODE, ENOTDIR, setup3},
-	{
-	NULL, NULL, 0, 0, no_setup}
+} test_cases[] = {
+	/* Process not owner/root */
+	{ TEST_FILE1, FILE_MODE, EPERM, setup1},
+	/* No search permissions to process */
+	{ TEST_FILE2, FILE_MODE, EACCES, setup2},
+	/* Address beyond address space */
+	{ High_address_node, FILE_MODE, EFAULT, NULL },
+	/* Negative address #1 */
+	{ (char *)-1, FILE_MODE, EFAULT, NULL },
+	/* Negative address #2 */
+	{ (char *)-2, FILE_MODE, EFAULT, NULL },
+	/* Pathname too long. */
+	{ Longpathname, FILE_MODE, ENAMETOOLONG, longpath_setup},
+	/* Pathname empty. */
+	{ "", FILE_MODE, ENOENT, NULL },
+	/* Pathname contains a regular file. */
+	{ TEST_FILE3, FILE_MODE, ENOTDIR, setup3 },
 };
 
-char *TCID = "chmod06";		/* Test program identifier.    */
-int TST_TOTAL = 7;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
+char *TCID = "chmod06";
+int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 int exp_enos[] = { EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0 };
 
 char *bad_addr = 0;
@@ -148,137 +147,101 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	char *file_name;	/* ptr. for file name whose mode is modified */
-	char *test_desc;	/* test specific error message */
-	int ind;		/* counter to test different test conditions */
-	int mode;		/* creation mode for the node created */
+	int lc;
+	char *msg;
+	char *file_name;
+	int i;
+	mode_t mode;
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-	/*
-	 * Invoke setup function to call individual test setup functions
-	 * to simulate test conditions.
-	 */
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			file_name = Test_cases[ind].pathname;
-			mode = Test_cases[ind].mode;
-			test_desc = Test_cases[ind].desc;
+		for (i = 0; i < TST_TOTAL; i++) {
 
-			if (file_name == High_address_node) {
-				file_name = (char *)get_high_address();
-			}
-			if (ind < 2) {
-				/* Switch to nobody user for correct error code collection */
+			file_name = test_cases[i].pathname;
+			mode = test_cases[i].mode;
+
+			if (file_name == High_address_node)
+				file_name = get_high_address();
+			if (i < 2) {
 				ltpuser = getpwnam(nobody_uid);
+				if (ltpuser == NULL)
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "getpwnam failed");
 				if (seteuid(ltpuser->pw_uid) == -1)
-					tst_resm(TINFO|TERRNO, "seteuid(%u) failed", ltpuser->pw_uid);
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "seteuid failed");
 			}
-			if (ind >= 2) {
+			if (i >= 2)
 				seteuid(0);
-			}
 
-			/*
-			 * Call chmod(2) to test different test conditions.
-			 * verify that it fails with -1 return value and
-			 * sets appropriate errno.
-			 */
 			TEST(chmod(file_name, mode));
 
-			/* Check return code from chmod(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "chmod() returned %ld, "
-					 "expected -1, errno:%d", TEST_RETURN,
-					 Test_cases[ind].exp_errno);
+				tst_resm(TFAIL, "chmod succeeded unexpectedly");
 				continue;
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-				tst_resm(TPASS|TTERRNO, "chmod() fails, %s",
-					 test_desc);
-			} else {
-				tst_resm(TFAIL|TTERRNO, "chmod() fails, %s, expected errno:%d",
-					 test_desc, Test_cases[ind].exp_errno);
-			}
+			if (TEST_ERRNO == test_cases[i].exp_errno)
+				tst_resm(TPASS|TTERRNO,
+				    "chmod failed as expected");
+			else
+				tst_resm(TFAIL|TTERRNO,
+				    "chmod failed unexpectedly; "
+				    "expected %d - %s",
+				    test_cases[i].exp_errno,
+				    strerror(test_cases[i].exp_errno));
 		}
 
 	}
 
-	/*
-	 * Invoke cleanup() to delete the test directory/file(s) created
-	 * in the setup().
-	 */
 	cleanup();
+	tst_exit();
 
- }
+}
 
 /*
  * void
  * setup(void) - performs all ONE TIME setup for this test.
  * 	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
- *	Invoke individual test setup functions according to the order
+ *	Invoke iividual test setup functions according to the order
  *	set in struct. definition.
  */
 void setup()
 {
-	int ind;
+	int i;
 
-	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	test_home = get_current_dir_name();
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
-	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
-	Test_cases[3].pathname = bad_addr;
+			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+	test_cases[3].pathname = bad_addr;
 
-	/* call individual setup functions */
-	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-		Test_cases[ind].setupfunc();
-	}
-}
-
-/*
- * int
- * no_setup() - Some test conditions for mknod(2) do not any setup.
- *              Hence, this function just returns 0.
- *  This function simply returns 0.
- */
-int no_setup()
-{
-	return 0;
+	for (i = 0; i < TST_TOTAL; i++)
+		if (test_cases[i].setupfunc != NULL)
+			test_cases[i].setupfunc();
 }
 
 /*
@@ -335,17 +298,12 @@ int setup2()
 	fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666);
 	if (fd == -1)
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed",
-			 TEST_FILE2);
+		    "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE2);
 
-	/* Close the testfile created above */
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "close(%s) failed",
-			 TEST_FILE2);
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TEST_FILE2);
 
-	/* Modify mode permissions on test directory */
-	if (chmod(DIR_TEMP, FILE_MODE) < 0)
+	if (chmod(DIR_TEMP, FILE_MODE) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s) failed", DIR_TEMP);
 
 	return 0;
@@ -364,8 +322,8 @@ int setup3()
 {
 	int fd;
 
-	/* Creat a test file under temporary directory and close it */
-	fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX);
+	/* Create a test file under temporary directory and close it */
+	fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX);
 	if (fd == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "open(t_file) failed");
 
@@ -375,44 +333,21 @@ int setup3()
 	return 0;
 }
 
-/*
- * int
- * longpath_setup() - setup to create a node with a name length exceeding
- *                    the MAX. length of PATH_MAX.
- *   This function returns 0.
- */
 int longpath_setup()
 {
-	int ind;		/* counter variable */
+	int i;
 
-	for (ind = 0; ind <= (PATH_MAX + 1); ind++) {
-		Longpathname[ind] = 'a';
-	}
+	for (i = 0; i <= (PATH_MAX + 1); i++)
+		Longpathname[i] = 'a';
 	return 0;
 }
 
-/*
- * void
- * cleanup() - Performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	Print test timing stats and errno log if test executed with options.
- *	Remove temporary directory and sub-directories/files under it
- *	created during setup().
- *	Exit the test program with normal exit code.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Restore mode permissions on test directory created in setup2() */
-	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
+	if (chmod(DIR_TEMP, MODE_RWX) == -1)
 		tst_resm(TBROK|TERRNO, "chmod(%s) failed", DIR_TEMP);
-	}
 
 	tst_rmdir();
-
 }

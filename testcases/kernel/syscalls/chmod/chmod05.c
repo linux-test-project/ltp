@@ -124,12 +124,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	mode_t dir_mode;	/* mode permissions set on test directory */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -137,10 +133,6 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/*
-		 * Call chmod(2) with mode argument to
-		 * set setgid bit on TESTDIR.
-		 */
 		TEST(chmod(TESTDIR, PERMS));
 
 		if (TEST_RETURN == -1) {
@@ -148,7 +140,6 @@ int main(int ac, char **av)
 				 TESTDIR, PERMS);
 			continue;
 		}
-//wjh should this even be an option? Run but don't test anything?
 		/*
 		 * Perform functional verification if test
 		 * executed without (-f) option.
@@ -159,9 +150,9 @@ int main(int ac, char **av)
 			 * stat(2).
 			 */
 			if (stat(TESTDIR, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "stat() of %s failed, errno:%d",
-					 TESTDIR, TEST_ERRNO);
+				tst_brkm(TFAIL|TERRNO, cleanup,
+				    "stat(%s) failed",
+				    TESTDIR);
 			}
 			dir_mode = stat_buf.st_mode;
 #if DEBUG
@@ -170,23 +161,23 @@ int main(int ac, char **av)
 			printf("PERMS = 0%03o\n", PERMS);
 			printf("dir_mode = 0%03o\n", dir_mode);
 #endif
-			if ((PERMS & ~S_ISGID) != dir_mode) {
+			if ((PERMS & ~S_ISGID) != dir_mode)
 				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
 					 "Expected 0%03o", TESTDIR, dir_mode,
 					 PERMS & ~S_ISGID);
-			} else {
+			else
 				tst_resm(TPASS,
 					 "Functionality of chmod(%s, %#o) successful",
 					 TESTDIR, PERMS);
-			}
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
 
- }
+	tst_exit();
+
+}
 
 /*
  * void
@@ -213,52 +204,43 @@ void setup()
 	tst_tmpdir();
 
 	nobody_u = getpwnam("nobody");
-	if (!nobody_u)
-		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't find uid of nobody");
+	if (nobody_u == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "getpwnam(\"nobody\") failed");
 
 	bin_group = getgrnam("bin");
-	if (!bin_group)
-		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't find gid of bin");
+	if (bin_group == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "getgrnam(\"bin\") failed");
 
 	/*
 	 * Create a test directory under temporary directory with specified
-	 * mode permissions and change the gid of test directory to that of
-	 //wjh Improper comment! Ownership it changed to "nobody"
-	 * guest user2.
+	 * mode permissions and change the gid of test directory to nobody's
+	 * gid.
 	 */
 	if (mkdir(TESTDIR, MODE_RWX) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", TESTDIR);
 
 	if (setgroups(1, &nobody_u->pw_gid) == -1)
-		tst_brkm(TBROK, cleanup, "Couldn't change supplementary group Id: %s",
-				strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "setgroups to nobody's gid failed");
 
 	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "chown() of testdir failed");
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "chowning testdir to nobody:bin failed");
 
 	/* change to nobody:nobody */
-	if (setegid(nobody_u->pw_gid) == -1 ||
-		 seteuid(nobody_u->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to nobody:nobody");
+	if (setegid(nobody_u->pw_gid) == -1 || seteuid(nobody_u->pw_uid) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "Couldn't switch to nobody:nobody");
 }
 
-/*
- * void
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- *  Remove the test directory and temporary directory created in
- *  in the setup().
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	setegid(0);
-	seteuid(0);
+	if (setegid(0) == -1)
+		tst_resm(TWARN|TERRNO, "setegid(0) failed");
+	if (seteuid(0) == -1)
+		tst_resm(TWARN|TERRNO, "seteuid(0) failed");
 
 	tst_rmdir();
-
 }

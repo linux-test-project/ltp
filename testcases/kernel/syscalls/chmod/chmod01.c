@@ -81,31 +81,27 @@
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TESTFILE	"testfile"
 
-char *TCID = "chmod01";		/* Test program identifier.    */
-int TST_TOTAL = 8;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
+char *TCID = "chmod01";
+int TST_TOTAL = 8;
 
-int Modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };
+int modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };
 
-void setup();			/* setup function for the test */
-void cleanup();			/* cleanup function for the test */
+void setup();
+void cleanup();
 
 int main(int ac, char **av)
 {
-	struct stat stat_buf;	/* stat(2) struct contents */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	int ind;		/* counter variable for chmod(2) tests */
-	int mode;		/* file mode permission */
+	struct stat stat_buf;
+	int lc;		     
+	char *msg;
+	int i;
+	int mode;	     
 
-	TST_TOTAL = sizeof(Modes) / sizeof(int);
+	TST_TOTAL = sizeof(modes) / sizeof(int);
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -113,66 +109,42 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		for (ind = 0; ind < TST_TOTAL; ind++) {
-			mode = Modes[ind];
+		for (i = 0; i < TST_TOTAL; i++) {
+			mode = modes[i];
 
-			/*
-			 * Call chmod(2) with different mode permission
-			 * bits to set it for "testfile".
-			 */
 			TEST(chmod(TESTFILE, mode));
 
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL|TTERRNO,
-					 "chmod(%s, %#o) failed", TESTFILE, mode);
+				    "chmod(%s, %#o) failed", TESTFILE, mode);
 				continue;
 			}
-			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
-			 */
 			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the testfile information using
-				 * stat(2).
-				 */
-				if (stat(TESTFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "stat(2) of "
-						 "%s failed, errno:%d",
-						 TESTFILE, TEST_ERRNO);
-				}
+				if (stat(TESTFILE, &stat_buf) < 0)
+					tst_brkm(TFAIL|TERRNO, cleanup,
+					    "stat(%s) failed", TESTFILE);
 				stat_buf.st_mode &= ~S_IFREG;
 
-				/*
-				 * Check for expected mode permissions
-				 * on testfile.
-				 */
-				if (stat_buf.st_mode == mode) {
+				if (stat_buf.st_mode == mode)
 					tst_resm(TPASS, "Functionality of "
 						 "chmod(%s, %#o) successful",
 						 TESTFILE, mode);
-				} else {
+				else
 					tst_resm(TFAIL, "%s: Incorrect "
 						 "modes 0%03o, Expected 0%03o",
 						 TESTFILE, stat_buf.st_mode,
 						 mode);
-				}
-			} else {
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
 		}
 	}
 
 	cleanup();
 
- }
+	tst_exit();
 
-/*
- * void
- * setup() - performs all ONE TIME setup for this test.
- *  Create a temporary directory and change directory to it.
- *  Create a test file under temporary directory and close it
- */
+}
+
 void setup()
 {
 	int fd;
@@ -183,32 +155,19 @@ void setup()
 
 	tst_tmpdir();
 
-	/* Creat a test file under temporary directory and close it */
-	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE);
 	if (fd == -1)
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE, FILE_MODE);
+		    "open(%s, O_RDWR|O_CREAT, %o) failed",
+		    TESTFILE, FILE_MODE);
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "close(%s) failed",
-			 TESTFILE);
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
 
 }
 
-/*
- * void
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- *  Remove the test directory and testfile created in the setup.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }

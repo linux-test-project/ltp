@@ -25,14 +25,15 @@
  *		This function exit with 0 or 1 depending upon the
  *		success/failure of chown(2) system call.
  */
+
+#include <sys/types.h>
+#include <errno.h>
+#include <grp.h>
+#include <pwd.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <errno.h>
+#include <unistd.h>
 
 int main(int argc, char **argv)
 {
@@ -45,7 +46,8 @@ int main(int argc, char **argv)
 
 	if (argc != 3) {
 		fprintf(stderr,
-			"This is a helper binary meant for internal LTP usage only\n");
+		    "This is a helper binary meant for internal LTP usage "
+		    "only\n");
 		exit(1);
 	}
 
