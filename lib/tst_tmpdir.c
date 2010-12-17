@@ -107,8 +107,10 @@ static char *TESTDIR = NULL;	/* the directory created */
 char *
 get_tst_tmpdir(void)
 {
-	if (TESTDIR == NULL)
+	if (TESTDIR == NULL) {
+		errno = EINVAL;
 		return NULL;
+	}
 	return strdup(TESTDIR);
 }
 
