@@ -87,6 +87,11 @@ static int check_mode(int, int, ...);
  */
 %}
 
+%option noc++
+%option noinput
+%option nolex-compat
+%option nounput
+
 UI      [0-9]+
 A       [a-zA-Z]+
 W	[a-zA-Z0-9_-]+
