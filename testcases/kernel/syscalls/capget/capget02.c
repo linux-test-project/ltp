@@ -75,6 +75,7 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
 /**************************************************************************/
 /*                                                                        */
@@ -89,7 +90,6 @@
 
 #define INVALID_PID 999999
 
-extern int capget(cap_user_header_t, cap_user_data_t);
 static void setup();
 static void cleanup();
 static void test_setup(int);
@@ -109,14 +109,12 @@ struct test_case_t {
 } test_cases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
-	{
-	(cap_user_header_t) - 1, &data, EFAULT, "EFAULT"}, {
-	&header, (cap_user_data_t) - 1, EFAULT, "EFAULT"},
+	{ (cap_user_header_t) - 1, &data, EFAULT, "EFAULT"},
+	{ &header, (cap_user_data_t) - 1, EFAULT, "EFAULT"},
 #endif
-	{
-	&header, &data, EINVAL, "EINVAL"}, {
-	&header, &data, EINVAL, "EINVAL"}, {
-	&header, &data, ESRCH, "ESRCH"}
+	{ &header, &data, EINVAL, "EINVAL"},
+	{ &header, &data, EINVAL, "EINVAL"},
+	{ &header, &data, ESRCH, "ESRCH"}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
@@ -139,22 +137,21 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 			test_setup(i);
-			TEST(capget(test_cases[i].headerp,
+			TEST(syscall(__NR_capget, test_cases[i].headerp,
 				    test_cases[i].datap));
 
-			if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-						    test_cases[i].exp_errno)) {
-				tst_resm(TPASS, "capget() returned -1,"
-					 " errno: %s", test_cases[i].errdesc);
+			if (TEST_RETURN == -1 &&
+			    TEST_ERRNO == test_cases[i].exp_errno) {
+				tst_resm(TPASS|TTERRNO,
+				    "capget failed as expected");
 			} else {
-				tst_resm(TFAIL|TTERRNO, "Test Failed, capget() returned %ld",
-					 TEST_RETURN);
+				tst_resm(TFAIL|TTERRNO,
+				    "capget failed unexpectedly (%ld)",
+				    TEST_RETURN);
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
@@ -167,7 +164,6 @@ void setup()
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
@@ -180,10 +176,6 @@ void setup()
  */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }

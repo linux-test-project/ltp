@@ -66,24 +66,15 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
-/**************************************************************************/
-/*                                                                        */
-/*   Some archs do not have the manpage documented sys/capability.h file, */
-/*   and require the use of the line below                                */
+#include "linux_syscall_numbers.h"
 
 #include <linux/capability.h>
 
-/*   If you are having issues with including this file and have the sys/  */
-/*   version, then you may want to try switching to it. -Robbie W.        */
-/**************************************************************************/
-
-extern int capget(cap_user_header_t, cap_user_data_t);
 static void setup();
 static void cleanup();
 
 char *TCID = "capget01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct __user_cap_header_struct header;	/* cap_user_header_t is a pointer
 						   to __user_cap_header_struct */
@@ -94,22 +85,22 @@ static struct __user_cap_data_struct data;	/* cap_user_data_t is a pointer to
 int main(int ac, char **av)
 {
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
+	/* header.version must be _LINUX_CAPABILITY_VERSION */
+	header.version = _LINUX_CAPABILITY_VERSION;
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/* header.version must be _LINUX_CAPABILITY_VERSION */
-		header.version = _LINUX_CAPABILITY_VERSION;
-		TEST(capget(&header, &data));
+		TEST(syscall(__NR_capget, &header, &data));
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS, "capget() returned %ld", TEST_RETURN);
@@ -119,12 +110,11 @@ int main(int ac, char **av)
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
 
+	tst_exit();
 }
 
-/* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
@@ -134,16 +124,7 @@ void setup()
 
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
