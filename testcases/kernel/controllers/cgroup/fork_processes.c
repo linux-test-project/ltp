@@ -20,22 +20,22 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <unistd.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 int main(void)
 {
 	int i;
-	int pid;
+	pid_t pid;
 
 	while (1) {
 		for (i = 0; i < 200; i++) {
 			pid = fork();
 			if (pid == 0) {
-				tst_exit();
-			} else if (pid < 0) {
+				exit(0);
+			} else if (pid == -1) {
 				continue;
 			}
 		}
@@ -45,5 +45,5 @@ int main(void)
 				break;
 	}
 
-	tst_exit();
+	return 0;
 }
