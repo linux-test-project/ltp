@@ -77,22 +77,20 @@
 /*
  * Define some useful macros.
  */
-#define PREFIX_SIZE	  4
-#define STRING_SIZE	  256
-#define DIR_MODE	0777  /* mode of tmp dir that will be created */
+#define DIR_MODE	(S_IRWXU|S_IRWXG|S_IRWXO)
 
 #ifndef PATH_MAX
 #ifdef MAXPATHLEN
-#define PATH_MAX MAXPATHLEN
+#define PATH_MAX	MAXPATHLEN
 #else
-#define PATH_MAX 1024
+#define PATH_MAX	1024
 #endif
 #endif
 
 /*
  * Define function prototypes.
  */
-static void tmpdir_cleanup();
+static void tmpdir_cleanup(void);
 
 /*
  * Define global variables.
@@ -133,7 +131,7 @@ void tst_tmpdir(void)
 	char *env_tmpdir;	/* temporary storage for TMPDIR env var */
 	/* This is an AWFUL hack to figure out if mkdtemp() is available */
 #if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2,2)
-#define HAVE_MKDTEMP 1
+#define HAVE_MKDTEMP
 #endif
 
 	/*
@@ -168,7 +166,6 @@ void tst_tmpdir(void)
 			snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", TEMPDIR, TCID);
 		}
 
-
 #ifdef HAVE_MKDTEMP
 		/* Make the temporary directory in one shot using mkdtemp. */
 		if (mkdtemp(template) == NULL)
@@ -198,26 +195,25 @@ void tst_tmpdir(void)
 				"%s: strdup(%s) failed", __func__, template);
 		}
 		if (mkdir(TESTDIR, DIR_MODE)) {
-			/* If we start failing with EEXIST, wrap this section in
+			/*
+			 * If we start failing with EEXIST, wrap this section in
 			 * a loop so we can try again.
+			 *
+			 * XXX (garrcoop): why? Hacking around broken
+			 * filesystems should not be done.
 			 */
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: mkdir(%s, %#o) failed",
-				__func__, TESTDIR, DIR_MODE);
+			    "%s: mkdir(%s, %#o) failed",
+			    __func__, TESTDIR, DIR_MODE);
 		}
 #endif
 
-		/*
-		 * Change the group on this temporary directory to be that of the
-		 * gid of the person running the tests and permissions to 777.
-		 */
 		if (chown(TESTDIR, -1, getgid()) == -1)
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"chown(%s, -1, %d) failed", TESTDIR, getgid());
-		if (chmod(TESTDIR,S_IRWXU | S_IRWXG | S_IRWXO) == -1) {
+			    "chown(%s, -1, %d) failed", TESTDIR, getgid());
+		if (chmod(TESTDIR, DIR_MODE) == -1)
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"chmod(%s,777) failed", TESTDIR);
-		}
+				"chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
  	}
 
 #if UNIT_TEST
@@ -352,17 +348,17 @@ void tst_rmdir(void)
 
 
 /*
- * tmpdir_cleanup() - This function is used when tst_tmpdir()
- *			 encounters an error, and must cleanup and exit.
- *			 It prints a warning message via tst_resm(), and
- *			 then calls tst_exit().
+ * tmpdir_cleanup(void) - This function is used when tst_tmpdir()
+ *			  encounters an error, and must cleanup and exit.
+ *			  It prints a warning message via tst_resm(), and
+ *			  then calls tst_exit().
  */
 static void
-tmpdir_cleanup()
+tmpdir_cleanup(void)
 {
 	tst_brkm(TWARN, NULL,
 	    "%s: no user cleanup function called before exiting", __func__);
-}  /* tmpdir_cleanup() */
+}
 
 
 #ifdef UNIT_TEST
