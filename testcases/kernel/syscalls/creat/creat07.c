@@ -30,14 +30,13 @@
  *		and test for ETXTBSY
  *
  * USAGE:  <for command-line>
- *  creat07 -F test1 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  creat07 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
  *             -I x : Execute test for x seconds.
  *             -P x : Pause for x seconds between iterations.
  *             -t   : Turn on syscall timing.
- *	       -F <test file> : Specify the test executable to launch
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -56,45 +55,28 @@
 #include "test.h"
 #include "usctest.h"
 
+#define fname "test1"
+
 char *TCID = "creat07";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
-void setup(void);
+void setup(char *);
 void cleanup(void);
-void help(void);
 
 int exp_enos[] = { ETXTBSY, 0 };
-
-int Fflag = 0;
-char *fname;
-
-/* for test specific parse_opts options - in this case "-F" */
-option_t options[] = {
-	{"F:", &Fflag, &fname},
-	{NULL, NULL, NULL}
-};
 
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int retval = 0, status, e_code;
+	int retval = 0, status;
 	pid_t pid, pid2;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	if (!Fflag) {
-		tst_resm(TWARN, "You must specifiy the test executable 'test1' "
-			 "with the -F option");
-		tst_resm(TWARN, "Run '%s -h' for option information.", TCID);
-		tst_exit();
-	}
-
-	setup();
+	setup(av[0]);
 
 	TEST_EXP_ENOS(exp_enos);
 
@@ -103,144 +85,84 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/*
-		 * test whether creat(2) is setting ETXTBSY if an attempt is
-		 * made to creat() an executable which is running.
-		 */
+		if ((pid = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "fork #1 failed");
 
-		if ((pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-		}
-
-		if (pid == 0) {	/* first child */
-			/* start up the test1 executable */
-			(void)execve(fname, NULL, NULL);
-			tst_resm(TFAIL, "execve() failed");
+		if (pid == 0) {
+			char *av[1];
+			av[0] = basename(fname);
+			(void)execve(fname, av, NULL);
+			perror("execve failed");
 			exit(1);
 		}
 
-		if ((pid2 = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork() #2 failed");
-		}
+		if ((pid2 = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK, cleanup, "fork #2 failed");
 
-		if (pid2 == 0) {	/* second child */
-			sleep(10);	/* let first child start */
+		if (pid2 == 0) {
+			sleep(10);
 
 			TEST(creat(fname, O_WRONLY));
 
 			if (TEST_RETURN != -1) {
 				retval = 1;
-				tst_resm(TFAIL, "creat(2) succeeded on "
-					 "expected fail");
-				continue;
-			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO != ETXTBSY) {
+				printf("creat didn't fail as expected\n");
+			} else if (TEST_ERRNO == ETXTBSY)
+				printf("received ETXTBSY\n");
+			else {
 				retval = 1;
-				tst_resm(TFAIL|TTERRNO, "expected ETXTBSY");
-			} else {
-				tst_resm(TPASS, "received ETXTBSY");
+				perror("creat failed unexpectedly");
 			}
 
 			/* kill off the dummy test program */
 			if (kill(pid, SIGKILL) == -1) {
 				retval = 1;
-				tst_brkm(TBROK, cleanup, "kill failed");
+				perror("kill failed");
 			}
 			exit(retval);
-		} else {
-			/* wait for the child to finish */
-			wait(&status);
-			/* make sure the child returned a good exit status */
-			e_code = status >> 8;
-			if (e_code != 0) {
-				tst_resm(TFAIL, "Failures reported above");
-			}
 		}
+		wait(&status);
+		if (WIFEXITED(status) || WEXITSTATUS(status) == 0)
+			tst_resm(TPASS, "creat functionality correct");
+		else
+			tst_resm(TFAIL, "creat functionality incorrect");
 	}
 	cleanup();
 
 	tst_exit();
- }
-
-/*
- * help() - Prints out the help message for the -F option defined
- *          by this test.
- */
-void help()
-{
-	printf("  -F <test file> : in this case the file is 'test1'\n");
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+void setup(char *app)
 {
-	char *cmd, *dirc, *basec, *bname, *dname, *path, *pwd = NULL;
-	int res;
+	char *cmd, *pwd = NULL;
+	char test_app[MAXPATHLEN];
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Get file name of the passed test file and the absolute path to it.
-	 * We will need these informations to copy the test file in the temp
-	 * directory.
-	 */
-	dirc = strdup(fname);
-	basec = strdup(fname);
-	dname = dirname(dirc);
-	bname = basename(basec);
+	if ((pwd = getcwd(NULL, 0)) == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
 
-	if (dname[0] == '/')
-		path = dname;
-	else {
-		if ((pwd = getcwd(NULL, 0)) == NULL) {
-			tst_brkm(TBROK, NULL,
-				 "Could not get current directory");
-		}
-		path = malloc(strlen(pwd) + strlen(dname) + 2);
-		if (path == NULL) {
-			tst_brkm(TBROK, NULL, "Cannot alloc path string");
-		}
-		sprintf(path, "%s/%s", pwd, dname);
-	}
+	snprintf(test_app, sizeof(test_app), "%s/%s/" fname, pwd, dirname(app));
 
-	/* make a temp dir and cd to it */
+	cmd = malloc(strlen(test_app) + strlen("cp -p \"") + strlen("\" .") +
+	    1);
+
+	if (cmd == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
+
 	tst_tmpdir();
 
-	/* Copy the given test file to the private temp directory.
-	 */
-	cmd = malloc(strlen(path) + strlen(bname) + 15);
-	if (cmd == NULL) {
-		tst_brkm(TBROK, NULL, "Cannot alloc command string");
-	}
-
-	sprintf(cmd, "cp -p %s/%s .", path, bname);
-	res = system(cmd);
+	sprintf(cmd, "cp -p \"%s\" .", test_app);
+	if (system(cmd) != 0)
+		tst_brkm(TBROK, NULL, "Cannot copy file %s", test_app);
 	free(cmd);
-	if (res == -1) {
-		tst_brkm(TBROK, NULL, "Cannot copy file %s", fname);
-	}
-
-	fname = bname;
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }

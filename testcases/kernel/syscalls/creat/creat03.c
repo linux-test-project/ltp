@@ -65,19 +65,16 @@ int main(int ac, char **av)
 {
 	struct stat statbuf;
 	unsigned short filmode;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		TEST(creat(pfilname, FMODE));
@@ -85,7 +82,7 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "Cannot creat %s", pfilname);
 			continue;
-		 }
+		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			if (fstat(TEST_RETURN, &statbuf) == -1) {
@@ -105,12 +102,13 @@ int main(int ac, char **av)
 		close(TEST_RETURN);
 		/* clean up things in case we are looping */
 		if (unlink(pfilname) == -1) {
-			tst_brkm(TBROK, cleanup, "couldn't remove file");
+			tst_brkm(TBROK|TERRNO, cleanup, "couldn't remove file");
 		}
 	}
 	cleanup();
+	tst_exit();
 
- }
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test

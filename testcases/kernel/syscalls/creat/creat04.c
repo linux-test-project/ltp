@@ -79,12 +79,8 @@ struct passwd *ltpuser1;
 struct test_case_t {
 	char *fname;
 } TC[] = {
-	/* comment */
-	{
-	fname},
-	    /* comment */
-	{
-	fname1}
+	{ fname},
+	{ fname1}
 };
 
 int main(int ac, char **av)
@@ -94,12 +90,11 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	pid_t pid, pid1;
-	int i, e_code, status, fd;
+	int i, status, fd;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -111,17 +106,16 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork() #1 failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() #1 failed");
 		}
 
 		if (pid == 0) {	/* first child */
 			if (mkdir(good_dir, DMODE) != 0) {
-				tst_resm(TINFO, "mkdir() failed");
+				perror("mkdir() failed");
 				exit(1);
 			}
-			if ((fd = open(fname1, O_RDWR | O_CREAT, 0444))
-			    == -1) {
-				tst_resm(TINFO, "open() failed");
+			if ((fd = open(fname1, O_RDWR | O_CREAT, 0444)) == -1) {
+				perror("open failed");
 				exit(1);
 			}
 			exit(0);
@@ -129,23 +123,25 @@ int main(int ac, char **av)
 		wait(&status);
 
 		/* make sure the child returned a good exit status */
-		e_code = status >> 8;
-		if (e_code != 0) {
+		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
 			tst_brkm(TBROK, cleanup, "child #1 failed");
 		}
 
 		if ((pid1 = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork() #2 failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() #2 failed");
 		}
 
 		if (pid1 == 0) {	/* second child */
 
 			ltpuser1 = my_getpwnam(user1name);
 
+			if (ltpuser1 == NULL) {
+				perror("getpwnam");
+				exit(1);
+			}
 			if (seteuid(ltpuser1->pw_uid) == -1) {
-				tst_resm(TINFO|TERRNO, "setreuid(%d) failed",
-					 ltpuser1->pw_uid);
-				continue;
+				perror("seteuid");
+				exit(1);
 			}
 
 			/* loop through the test cases */
@@ -167,11 +163,10 @@ int main(int ac, char **av)
 					tst_resm(TFAIL|TTERRNO, "Expected EACCES");
 				} else {
 					tst_resm(TPASS, "call failed with "
-						 "expected EACCES error");
+						 "EACCES as expected");
 				}
 			}
 
-			/* reset our ID back to the saved ID - root */
 			seteuid(0);
 
 			/* clean up things in case we are looping */
@@ -184,9 +179,8 @@ int main(int ac, char **av)
 			/* wait for the child to finish */
 			wait(&status);
 			/* make sure the child returned a good exit status */
-			e_code = status >> 8;
-			if (e_code != 0) {
-				tst_resm(TFAIL, "Failures reported above");
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+				tst_resm(TFAIL, "see failures reported above");
 			}
 		}
 	}
@@ -200,10 +194,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* The test must be run as root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

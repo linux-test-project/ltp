@@ -47,12 +47,15 @@
  * 	None
  */
 
-#include <stdio.h>
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <pwd.h>
 #include <fcntl.h>
+#include <pwd.h>
+#include <stdio.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -150,7 +153,7 @@ void functest2()
 
 	if (stat(filename, &buf) < 0) {
 		tst_brkm(TBROK, cleanup, "failed to stat test file");
-	 }
+	}
 	if (buf.st_size != 0) {
 		tst_resm(TFAIL, "creat() FAILED to truncate "
 			 "file to zero bytes");
@@ -189,20 +192,11 @@ void setup()
  */
 void cleanup()
 {
-	int i;
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	for (i = 0; i < TST_TOTAL; i++) {
-		close(fd[i]);
-	}
+	fcloseall();
 
 	unlink(filename);
 
-	/* delete the test directory created in setup() */
 	tst_rmdir();
-
 }

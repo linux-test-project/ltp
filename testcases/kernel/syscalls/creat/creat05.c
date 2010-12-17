@@ -110,7 +110,8 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
- }
+	tst_exit();
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -155,8 +156,8 @@ void setup()
 				 "#%d", ifile + 1);
 			if (errno != EMFILE) {
 				remove_files(ifile);
-				tst_brkm(TBROK, cleanup, "Expected "
-					 "EMFILE got %d", errno);
+				tst_brkm(TBROK|TERRNO, cleanup,
+				    "Failed unexpectedly (expected EMFILE)");
 			}
 			break;
 		}

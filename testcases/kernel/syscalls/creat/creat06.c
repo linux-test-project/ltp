@@ -102,25 +102,19 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* The file name is an existing directory */
-	{
-	good_dir, MODE1, EISDIR},
-	    /* The file name is too long - ENAMETOOLONG */
-	{
-	long_name, MODE1, ENAMETOOLONG},
-	    /* Attept to create a file in a directory that doesn't exist - ENOENT */
-	{
-	no_dir, MODE1, ENOENT},
-	    /* a compent of the file's path is not a directory - ENOTDIR */
-	{
-	not_dir, MODE1, ENOTDIR},
+	{ good_dir, MODE1, EISDIR },
+	/* The file name is too long - ENAMETOOLONG */
+	{ long_name, MODE1, ENAMETOOLONG },
+	/* Attempt to create a file in a directory that doesn't exist - ENOENT */
+	{ no_dir, MODE1, ENOENT },
+	/* a compent of the file's path is not a directory - ENOTDIR */
+	{ not_dir, MODE1, ENOTDIR },
 #if !defined(UCLINUX)
-	    /* The file address is bad - EFAULT */
-	{
-	(char *)-1, MODE1, EFAULT},
+	/* The file address is bad - EFAULT */
+	{ (char *)-1, MODE1, EFAULT },
 #endif
-	    /* The directory lacks execute permission - EACCES */
-	{
-	test6_file, MODE1, EACCES}
+	/* The directory lacks execute permission - EACCES */
+	{ test6_file, MODE1, EACCES }
 };
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
@@ -134,9 +128,8 @@ int main(int ac, char **av)
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -161,7 +154,7 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS|TTERRNO, "expected failure");
+				tst_resm(TPASS|TTERRNO, "got expected failure");
 			} else {
 				tst_resm(TFAIL|TTERRNO, "wanted errno %d", TC[i].error);
 			}
@@ -170,8 +163,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	tst_exit();
-	tst_exit();
- }
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -180,29 +172,27 @@ void setup()
 {
 	char *cur_dir = NULL;
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
+
 	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "getpwnam failed");
 	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "seteuid(%d) failed", ltpuser->pw_uid);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
 	/* get the current directory for the first test */
 	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-		tst_brkm(TBROK, cleanup, "getcwd failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "getcwd failed");
 	}
 
-	if (strncpy(good_dir, cur_dir, NSIZE) == NULL) {
-		tst_brkm(TBROK, cleanup, "couldn't copy currect directory");
-	}
+	strncpy(good_dir, cur_dir, NSIZE);
 
 	/* create a file that will be used in test #3 */
 	if ((fileHandle = creat("file1", MODE1)) == -1) {
@@ -212,7 +202,7 @@ void setup()
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
 	}
 	TC[4].fname = bad_addr;
 #endif
