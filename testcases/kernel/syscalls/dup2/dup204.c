@@ -40,14 +40,17 @@
  *	NONE
  */
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <string.h>
 #include <signal.h>
-#include <test.h>
-#include <usctest.h>
+#include <string.h>
+#include "test.h"
+#include "usctest.h"
 
 void setup();
 void cleanup();
@@ -66,9 +69,8 @@ int main(int ac, char **av)
 	int i, fd;
 	struct stat oldbuf, newbuf;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -117,9 +119,6 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 	/* Initialize Fd in case we get a quick signal */
@@ -131,34 +130,15 @@ void setup()
 
 	tst_tmpdir();
 
-	if (pipe(Fd) == -1) {
-		tst_brkm(TBROK, cleanup, "pipe(&Fd) Failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
+	if (pipe(Fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	int i;
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* close the open file we've been dup'ing */
-	for (i = 0; i < 2; i++) {
-		if (close(Fd[i]) == -1) {
-			tst_resm(TWARN, "close(%d) Failed, errno = %d "
-				 ": %s", Fd[i], errno, strerror(errno));
-		}
-	}
+	fcloseall();
 
 	tst_rmdir();
-
 }

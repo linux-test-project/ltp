@@ -47,13 +47,13 @@
  *	None
  */
 
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <test.h>
-#include <usctest.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include "test.h"
+#include "usctest.h"
 
 char *TCID = "dup202";
 int TST_TOTAL = 3;
@@ -74,15 +74,11 @@ struct test_case_t {
 	mode_t mode;
 } TC[] = {
 	/* The first test creat(es) a file with mode 0444 */
-	{
-	&duprdo, S_IRUSR | S_IRGRP | S_IROTH},
-	    /* The second test creat(es) a file with mode 0222 */
-	{
-	&dupwro, S_IWUSR | S_IWGRP | S_IWOTH},
-	    /* The third test creat(es) a file with mode 0666 */
-	{
-	&duprdwr,
-		    S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP | S_IWOTH}
+	{ &duprdo, (S_IRUSR | S_IRGRP | S_IROTH) },
+	/* The second test creat(es) a file with mode 0222 */
+	{ &dupwro, (S_IWUSR | S_IWGRP | S_IWOTH) },
+	/* The third test creat(es) a file with mode 0666 */
+	{ &duprdwr, (S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH) }
 };
 
 int main(int ac, char **av)
@@ -93,9 +89,8 @@ int main(int ac, char **av)
 	struct stat oldbuf, newbuf;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -106,52 +101,45 @@ int main(int ac, char **av)
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			if ((ofd = creat(testfile, TC[i].mode)) == -1) {
-				tst_brkm(TBROK, cleanup, "creat() failed");
-			}
+			if ((ofd = creat(testfile, TC[i].mode)) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "creat failed");
 
 			TEST(dup2(ofd, *TC[i].nfd));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, "call failed unexpectedly");
+				tst_resm(TFAIL|TERRNO,
+				    "call failed unexpectedly");
 				continue;
 			}
 
 			if (STD_FUNCTIONAL_TEST) {
 
 				/* stat the original file */
-				if (fstat(ofd, &oldbuf) == -1) {
-					tst_brkm(TBROK, cleanup, "fstat() #1"
-						 "failed");
-				}
+				if (fstat(ofd, &oldbuf) == -1)
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "fstat #1 failed");
 
 				/* stat the duped file */
-				if (fstat(*TC[i].nfd, &newbuf) == -1) {
-					tst_brkm(TBROK, cleanup, "fstat() #2"
-						 "failed");
-				}
+				if (fstat(*TC[i].nfd, &newbuf) == -1)
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "fstat #2 failed");
 
-				if (oldbuf.st_mode != newbuf.st_mode) {
+				if (oldbuf.st_mode != newbuf.st_mode)
 					tst_resm(TFAIL, "original and dup "
 						 "modes do not match");
-				} else {
-					tst_resm(TPASS, "fstat() shows new and "
+				else
+					tst_resm(TPASS, "fstat shows new and "
 						 "old modes are the same");
-				}
-			} else {
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
 
 			/* remove the file so that we can use it again */
-			if (-1 == close(*TC[i].nfd)) {
-				printf("close failed\n");
-			}
-			if (-1 == close(ofd)) {
-				printf("close failed\n");
-			}
-			if (-1 == unlink(testfile)) {
-				printf("unlink failed\n");
-			}
+			if (close(*TC[i].nfd) == -1)
+				perror("close failed");
+			if (close(ofd) == -1)
+				perror("close failed");
+			if (unlink(testfile) == -1)
+				perror("unlink failed");
 		}
 	}
 	cleanup();
@@ -169,13 +157,10 @@ void setup()
 
 	TEST_PAUSE;
 
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
-	/* set umask */
-	(void)umask(0000);
+	(void)umask(0);
 
-	/* create a test file name */
 	sprintf(testfile, "dup202.%d", getpid());
 }
 
@@ -185,13 +170,7 @@ void setup()
  */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* delete the test directory created in setup() */
 	tst_rmdir();
-
 }

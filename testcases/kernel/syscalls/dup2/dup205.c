@@ -29,28 +29,27 @@
 >BUGS:  <
 ======================================================================*/
 
-#include <stdio.h>
-#include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
 char *TCID = "dup205";
 int TST_TOTAL = 1;
-extern int Tst_count;
 int local_flag;
 
 #define PASSED 1
 #define FAILED 0
 
-/*--------------------------------------------------------------------*/
-int main(ac, av)
-int ac;
-char *av[];
+static void setup(void);
+static void cleanup(void);
+
+int main(int ac, char *av[])
 {
 	int *fildes;
 	int ifile;
@@ -64,43 +63,39 @@ char *av[];
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	 }
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-/*--------------------------------------------------------------------*/
 	local_flag = PASSED;
+
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		min = getdtablesize();	/* get number of files allowed open */
 
-		fildes = (int *)malloc((min + 10) * sizeof(int));
-		if (fildes == (int *)0) {
-			tst_resm(TBROK, "malloc error");
-			tst_exit();
-		}
+		fildes = malloc((min + 10) * sizeof(int));
+		if (fildes == NULL)
+			tst_brkm(TBROK|TERRNO, cleanup, "malloc error");
 
 		sprintf(pfilname, "./dup205.%d\n", getpid());
 		unlink(pfilname);
 		serrno = 0;
-		if ((fildes[0] = creat(pfilname, 0666)) == -1) {
-			tst_resm(TBROK, "Cannot open first file");
-			tst_exit();
-		} else {
+		if ((fildes[0] = creat(pfilname, 0666)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "creat failed");
+		else {
 			fildes[fildes[0]] = fildes[0];
 			for (ifile = fildes[0] + 1; ifile < min + 10; ifile++) {
-				if ((fildes[ifile] =
-				     dup2(fildes[ifile - 1], ifile)) == -1) {
+				if ((fildes[ifile] = dup2(fildes[ifile - 1],
+				    ifile)) == -1) {
 					serrno = errno;
 					break;
 				} else {
 					if (fildes[ifile] != ifile) {
-						tst_resm(TFAIL,
-							 "got wrong descriptor number back: %d != %d",
-							 fildes[ifile], ifile);
-						tst_exit();
+						tst_brkm(TFAIL, cleanup,
+						    "got wrong descriptor "
+						    "number back (%d != %d)",
+						    fildes[ifile], ifile);
 					}
 				}
 			}	/* end for */
@@ -111,13 +106,12 @@ char *av[];
 				tst_resm(TFAIL, "Too many files duped");
 				local_flag = FAILED;
 			}
-			if ((serrno != EBADF) && (serrno != EMFILE)
-			    && (serrno != EINVAL)) {
+			if (serrno != EBADF && serrno != EMFILE &&
+			    serrno != EINVAL) {
 				tst_resm(TFAIL, "bad errno on dup2 failure");
 				local_flag = FAILED;
 			}
 		}
-/*--------------------------------------------------------------------*/
 		unlink(pfilname);
 		if (ifile > 0)
 			close(fildes[ifile - 1]);
@@ -127,7 +121,19 @@ char *av[];
 			tst_resm(TFAIL, "Test failed.");
 		}
 
-	}			/* end for */
+	}
+	cleanup();
 	tst_exit();
-	tst_exit();
+}
+
+static void
+setup(void)
+{
+	tst_tmpdir();
+}
+
+static void
+cleanup(void)
+{
+	tst_rmdir();
 }
