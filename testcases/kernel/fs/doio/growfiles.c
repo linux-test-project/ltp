@@ -386,7 +386,7 @@ long total_grow_value;		/* used in pre-allocations */
 int backgrnd = 1;		/* return control to user */
 struct stat statbuf;
 int time_iterval = -1;
-time_t start_time;
+time_t start_time = 0;
 char reason[128];		/* reason for loop termination */
 int num_procs=1;
 int forker_mode=0;
@@ -1622,8 +1622,6 @@ notify_others()
 {
     static int send_signals = 0;
     int ind;
-    extern int Forker_pids[];
-    extern int Forker_npids;
 
     if (Sync_with_others && send_signals == 0) {
 
