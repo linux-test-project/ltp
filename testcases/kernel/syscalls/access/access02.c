@@ -87,7 +87,7 @@
 #define TEST_FILE1	"test_file1"
 #define TEST_FILE2	"test_file2"
 #define TEST_FILE3	"test_file3"
-#define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define EXE_MODE	0777
 
 char *TCID = "access02";	/* Test program identifier.    */
@@ -108,12 +108,11 @@ struct test_case_t {		/* test case structure */
 	char *desc;
 	int (*setupfunc) ();
 } Test_cases[] = {
-	{
-	TEST_FILE1, R_OK, "Read Access (R_OK)", setup1}, {
-	TEST_FILE2, W_OK, "Write Access (W_OK)", setup2}, {
-	TEST_FILE3, X_OK, "Execute Access (X_OK)", setup3}, {
-	SYM_FILE, W_OK, "Symlink file", setup4}, {
-	NULL, 0, NULL, 0}
+	{ TEST_FILE1, R_OK, "Read Access (R_OK)", setup1 },
+	{ TEST_FILE2, W_OK, "Write Access (W_OK)", setup2 },
+	{ TEST_FILE3, X_OK, "Execute Access (X_OK)", setup3 },
+	{ SYM_FILE, W_OK, "Symlink file", setup4 },
+	{ NULL, 0, NULL, 0 }
 };
 
 void setup();			/* Main setup function of test */
@@ -133,12 +132,8 @@ int main(int ac, char **av)
 	char *file_name;	/* name of the testfile */
 	char *test_desc;	/* test specific message */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -190,7 +185,8 @@ int main(int ac, char **av)
 
 	cleanup();
 
- }
+	tst_exit();
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.

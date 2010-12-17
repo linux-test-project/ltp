@@ -120,7 +120,6 @@ void cleanup();
 
 char *TCID = "alarm01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int main(int ac, char **av)
 {
@@ -142,9 +141,9 @@ int main(int ac, char **av)
 		TEST(alarm(1));
 
 		/* check return code */
-		if (TEST_RETURN == -1) {
+		if (TEST_RETURN == -1)
 			tst_resm(TFAIL|TTERRNO, "alarm(1) failed");
-		} else {
+		else {
 
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
@@ -157,6 +156,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
+	tst_exit();
 }
 
 void setup()
