@@ -33,9 +33,10 @@ include $(top_srcdir)/include/mk/env_pre.mk
 #
 # NOTE (garrcoop): this criterium should be in-sync with include/mk/env_pre.mk
 # (minus help as that's only invoked in the top-level Makefile).
-ifeq ($(filter autotools %clean,$(MAKECMDGOALS)),)
+ifeq ($(filter autotools %clean .gitignore gitignore.%,$(MAKECMDGOALS)),)
 include $(abs_srcdir)/config.mk
 endif
+include $(top_srcdir)/include/mk/gitignore.mk
 
 LIBDIR			:= lib
 FILTER_OUT_DIRS		:= $(LIBDIR) m4

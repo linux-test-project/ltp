@@ -1,7 +1,8 @@
 #
 #    Top-level Makefile for LTP. See INSTALL for more info.
 #
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2009-2010, Cisco Systems Inc.
+#    Copyright (C) 2010-2011, Linux Test Project.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ top_srcdir		?= $(CURDIR)
 
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/automake.mk
+include $(top_srcdir)/include/mk/gitignore.mk
 
 .SUFFIXES:
 .SUFFIXES: .am .default .h .in .m4 .mk
