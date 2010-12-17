@@ -146,9 +146,8 @@ struct test_case_t {
 	int flags;
 	int (*parent_fn) ();
 } test_cases[] = {
-	{
-	FLAG_ALL, parent_test1}, {
-	FLAG_NONE, parent_test2}
+	{ FLAG_ALL, parent_test1 },
+	{ FLAG_NONE, parent_test2 }
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
@@ -162,16 +161,14 @@ int main(int ac, char **av)
 	int status, i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
 	/* Allocate stack for child */
-	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
+	if ((child_stack = malloc(CHILD_STACK_SIZE)) == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
-	}
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -179,8 +176,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 
-			/*Do test specific setup */
-			if (!(test_setup())) {
+			if (test_setup() != 0) {
 				tst_resm(TWARN, "test_setup() failed,"
 					 "skipping this test case");
 				continue;
@@ -199,9 +195,9 @@ int main(int ac, char **av)
 			}
 
 			/* Wait for child to finish */
-			if ((wait(&status)) < 0) {
-				tst_resm(TWARN|TERRNO, "wait() failed, skipping this"
-					 " test case");
+			if ((wait(&status)) == -1) {
+				tst_resm(TWARN|TERRNO,
+				    "wait failed; skipping testcase");
 				/* Cleanup & continue with next test case */
 				test_cleanup();
 				continue;
@@ -213,12 +209,12 @@ int main(int ac, char **av)
 			}
 
 			/*
-			 * Check the return value from child function  and
+			 * Check the return value from child function and
 			 * parent function. If both functions returned
 			 * successfully, test passed, else failed
 			 */
-			if ((WIFEXITED(status)) && (WEXITSTATUS(status)) &&
-			    (test_cases[i].parent_fn())) {
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 0 &&
+			    test_cases[i].parent_fn()) {
 				tst_resm(TPASS, "Test Passed");
 			} else {
 				tst_resm(TFAIL, "Test Failed");
@@ -231,9 +227,7 @@ int main(int ac, char **av)
 
 	free(child_stack);
 
-	/* cleanup and exit */
 	cleanup();
-
 	tst_exit();
 
 }
@@ -250,9 +244,8 @@ void setup()
 	tst_tmpdir();
 
 	/* Get unique file name for each child process */
-	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0) {
+	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "sprintf() failed");
-	}
 
 }
 
@@ -262,20 +255,13 @@ void setup()
  */
 void cleanup()
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Remove temperory file */
-	if ((unlink(file_name)) == -1) {
-		tst_resm(TWARN, "Couldn't delete file, %s", file_name);
+	/* Remove temporary file */
+	if (unlink(file_name) == -1) {
+		tst_resm(TWARN|TERRNO, "unlink(%s) failed", file_name);
 	}
-	chdir("/tmp");
-	remove(cwd_parent);
-
+	tst_rmdir();
 }
 
 /*
@@ -287,9 +273,9 @@ int test_setup()
 	struct sigaction def_act;
 
 	/* Save current working directory of parent */
-	if ((getcwd(cwd_parent, sizeof(cwd_parent))) == NULL) {
+	if (getcwd(cwd_parent, sizeof(cwd_parent)) == NULL) {
 		tst_resm(TWARN|TERRNO, "getcwd() failed in test_setup()");
-		return 0;
+		return -1;
 	}
 
 	/*
@@ -302,9 +288,9 @@ int test_setup()
 	 * Open file from parent, which will be closed by
 	 * child in test_FILES(), used for testing CLONE_FILES flag
 	 */
-	if ((fd_parent = open(file_name, O_CREAT | O_RDWR, 0777)) == -1) {	//mode must be specified when O_CREATE is in the flag
+	if ((fd_parent = open(file_name, O_CREAT|O_RDWR, 0777)) == -1) {
 		tst_resm(TWARN|TERRNO, "open() failed in test_setup()");
-		return 0;
+		return -1;
 	}
 
 	/*
@@ -317,13 +303,12 @@ int test_setup()
 	def_act.sa_handler = sig_default_handler;
 	def_act.sa_flags = SA_RESTART;
 
-	if ((sigaction(SIGUSR2, &def_act, NULL)) == -1) {
+	if (sigaction(SIGUSR2, &def_act, NULL) == -1) {
 		tst_resm(TWARN|TERRNO, "sigaction() failed in test_setup()");
-		return 0;
+		return -1;
 	}
 
-	/* test_setup() returns success */
-	return 1;
+	return 0;
 }
 
 /*
@@ -333,8 +318,12 @@ void test_cleanup()
 {
 
 	/* Restore parent's working directory */
-	if ((chdir(cwd_parent)) == -1) {
-		/* we have to exit here */
+	if (chdir(cwd_parent) == -1) {
+		/* 
+		 * we have to exit here
+		 *
+		 * XXX (garrcoop): why???
+		 */
 		tst_brkm(TBROK|TERRNO, cleanup, "chdir() failed in test_cleanup()");
 	}
 
@@ -351,10 +340,10 @@ int child_fn()
 
 	/*child_pid = getpid(); changed to above to work on POSIX threads -- NPTL */
 
-	if (test_VM() && test_FILES() && test_FS() && test_SIG()) {
-		exit(1);
-	}
-	exit(0);
+	if (test_VM() == 0 && test_FILES() == 0 && test_FS() == 0 &&
+	    test_SIG() == 0)
+		exit(0);
+	exit(1);
 }
 
 /*
@@ -372,10 +361,9 @@ int parent_test1()
 	 */
 
 	if (modified_VM() && modified_FILES() && modified_FS() &&
-	    modified_SIG()) {
-		return 1;
-	}
-	return 0;
+	    modified_SIG())
+		return 0;
+	return -1;
 }
 
 /*
@@ -394,7 +382,7 @@ int parent_test2()
 	    modified_SIG()) {
 		return 0;
 	}
-	return 1;
+	return -1;
 }
 
 /*
@@ -407,7 +395,7 @@ int parent_test2()
 int test_VM()
 {
 	parent_variable = CHILD_VALUE;
-	return 1;
+	return 0;
 }
 
 /*
@@ -418,11 +406,11 @@ int test_VM()
  */
 int test_FILES()
 {
-	if ((close(fd_parent)) == -1) {
-		tst_resm(TWARN|TERRNO, "close() failed in test_FILES()");
-		return 0;
+	if (close(fd_parent) == -1) {
+		tst_resm(TWARN|TERRNO, "close failed in test_FILES");
+		return -1;
 	}
-	return 1;
+	return 0;
 }
 
 /*
@@ -432,11 +420,20 @@ int test_FILES()
  */
 int test_FS()
 {
-	if ((chdir("/tmp")) == -1) {
-		tst_resm(TWARN|TERRNO, "chdir() failed in test_FS()");
-		return 0;
-	}
-	return 1;
+	char *test_tmpdir;
+	int rval;
+
+	test_tmpdir = get_tst_tmpdir();
+	if (test_tmpdir == NULL) {
+		tst_resm(TWARN|TERRNO, "get_tst_tmpdir failed");
+		rval = -1;
+	} else if (chdir(test_tmpdir) == -1) {
+		tst_resm(TWARN|TERRNO, "chdir failed in test_FS");
+		rval = -1;
+	} else
+		rval = 0;
+	free(test_tmpdir);
+	return rval;
 }
 
 /*
@@ -453,17 +450,17 @@ int test_SIG()
 	new_act.sa_flags = SA_RESTART;
 
 	/* Set signal handler to sig_child_defined_handler */
-	if ((sigaction(SIGUSR2, &new_act, NULL)) == -1) {
-		tst_resm(TWARN|TERRNO, "signal() failed in test_SIG()");
-		return 0;
+	if (sigaction(SIGUSR2, &new_act, NULL) == -1) {
+		tst_resm(TWARN|TERRNO, "signal failed in test_SIG");
+		return -1;
 	}
 
 	/* Send SIGUSR2 signal to parent */
-	if ((kill(getppid(), SIGUSR2)) == -1) {
-		tst_resm(TWARN|TERRNO, "kill() failed in test_SIG()");
-		return 0;
+	if (kill(getppid(), SIGUSR2) == -1) {
+		tst_resm(TWARN|TERRNO, "kill failed in test_SIG");
+		return -1;
 	}
-	return 1;
+	return 0;
 }
 
 /*
