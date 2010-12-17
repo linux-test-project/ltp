@@ -48,9 +48,6 @@
  *	int background(prefix);
  *	char *prefix;
  *
- *	extern int Forker_pids[];
- *	extern int Forker_npids;
- *
  *    AUTHOR            : Richard Logan
  *
  *    CO-PILOT(s)       : Dean Roehrich

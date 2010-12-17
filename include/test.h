@@ -183,8 +183,12 @@
 #endif
 
 /*
- * Functions from lib/tst_res.c
+ * lib/forker.c
  */
+extern int Forker_pids[];
+extern int Forker_npids;
+
+/* lib/tst_res.c */
 const char *strttype(int ttype);
 void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	__attribute__ ((format (printf, 3, 4)));
@@ -201,50 +205,34 @@ void tst_flush(void);
 
 extern int Tst_count;
 
-/*
- * Function from lib/tst_sig.c
- */
+/* lib/tst_sig.c */
 void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
 
-/*
- * Functions from lib/tst_tmpdir.c
- */
+/* lib/tst_tmpdir.c */
 void tst_tmpdir(void);
 void tst_rmdir(void);
 char *get_tst_tmpdir(void);
 
-/*
- * Function from lib/get_high_address.c
- */
+/* lib/get_high_address.c */
 char *get_high_address(void);
 
-/*
- * Functions from lib/tst_kvercmp.c
- */
+/* lib/tst_kvercmp.c */
 void tst_getkver(int *k1, int *k2, int *k3);
 int tst_kvercmp(int r1, int r2, int r3);
 
-/*
- * Function from lib/tst_is_cwd.c
- */
+/* lib/tst_is_cwd.c */
 int tst_is_cwd_nfs(void);
 int tst_is_cwd_tmpfs(void);
 int tst_is_cwd_ramfs(void);
 
-/*
- * Function from lib/tst_cwd_has_free.c
- */
+/* lib/tst_cwd_has_free.c */
 int tst_cwd_has_free(int required_kib);
 
-/*
- * Functions from lib/self_exec.c
- */
+/* lib/self_exec.c */
 void maybe_run_child(void (*child)(), char *fmt, ...);
 int self_exec(char *argv0, char *fmt, ...);
 
-/*
- * Functions from lib/cloner.c
- */
+/* Functions from lib/cloner.c */
 int ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
 		size_t stack_size, void *stack);
 int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
@@ -253,15 +241,11 @@ int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg);
 #define clone(...) use_the_ltp_clone_functions,do_not_use_clone
 
-/*
- * Functions from lib/mount_utils.c
- */
+/* Functions from lib/mount_utils.c */
 char *get_block_device(const char *path);
 char *get_mountpoint(const char *path);
 
-/*
- * Function from lib/get_path.c
- */
+/* Function from lib/get_path.c */
 int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
