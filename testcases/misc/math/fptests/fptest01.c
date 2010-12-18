@@ -116,7 +116,7 @@ char *argv[];
 
 	term();
 	tst_resm(TPASS,"PASS");
-	tst_exit();
+	return 0;
 
 	/**NOT REACHED**/
 	return(0);
@@ -178,7 +178,7 @@ term()
 		tst_resm(TINFO,"t_total = %.15f\n", t_total);
 		tst_resm(TINFO,"expected  %.15f\n", MAGIC1);
 		tst_resm(TINFO,"diff = %.15f\n", v);
-			tst_exit();
+			return 0;
 	}
 
 	v = avgspd - MAGIC2;
@@ -191,7 +191,7 @@ term()
 		tst_resm(TINFO,"avgspd  = %.15f\n", avgspd);
 		tst_resm(TINFO,"expected  %.15f\n", MAGIC2);
 		tst_resm(TINFO,"diff = %.15f\n", v);
-		tst_exit();
+		return 0;
 	}
 	return(0);
 }
@@ -219,7 +219,7 @@ double t;
 		return(0);
 	else{
 		tst_resm(TBROK,"No room for event");
-			tst_exit();
+			return 0;
                  }
 	return(0);
 }
@@ -338,7 +338,7 @@ struct event *ev;
 			break;
 		default:
 			tst_resm(TBROK,"Illegal event");
-					tst_exit();
+					return 0;
 			break;
 		}
 	return(0);

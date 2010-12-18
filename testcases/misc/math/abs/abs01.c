@@ -110,7 +110,7 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 /* Clean up any files created by test before call to anyfail.	*/
 
-	tst_exit();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
+	return 0;	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
 	return(0);
 }
 /*--------------------------------------------------------------*/

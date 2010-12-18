@@ -42,7 +42,7 @@ myexit (int x)
     tst_resm (TFAIL, "Test failed");
   else
     tst_resm (TPASS, "Test passed");
-  tst_exit();
+  return 0;
 }
 
 TH_DATA *pcom;
@@ -121,12 +121,12 @@ int main(int argc, char *argv[])
 	ltproot = getenv("LTPROOT");
 	if (!ltproot || !strlen(ltproot)) {
                 tst_resm (TFAIL, "Not set the $LTPROOT, Please set it firstly.");
-                tst_exit();
+                return 0;
         }
 	bin_path = malloc (strlen(ltproot) + 16);
 	if (!bin_path) {
                 tst_resm (TFAIL, "malloc error.");
-                tst_exit();
+                return 0;
 	}
 	sprintf (bin_path, "%s/testcases/bin", ltproot);
 
@@ -204,14 +204,14 @@ int main(int argc, char *argv[])
                                   * num_threads * sizeof (pthread_t)));
 	if (!threads) {
                 tst_resm (TFAIL, "malloc error.");
-                tst_exit();
+                return 0;
 	}
 
 	tabcom  = (TH_DATA **) malloc ( (size_t)(sizeof (TH_DATA *)
                                        * nb_func*num_threads));
 	if (!tabcom) {
                 tst_resm (TFAIL, "malloc error.");
-                tst_exit();
+                return 0;
 	}
 	tabcour = tabcom;
 
@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
 		pcom =  calloc ((size_t)1, (size_t)sizeof(TH_DATA));
 		if (!pcom) {
                 	tst_resm (TFAIL, "calloc error.");
-	                tst_exit();
+	                return 0;
 		}
 		*tabcour = (TH_DATA *) pcom;
 		tabcour++;
@@ -304,7 +304,7 @@ finished:
 	tst_rmdir();
 	if (error) exit (1);
 	else exit(0);
-	tst_exit();
+	return 0;
 }
 
 /*---------------------------------------------------------------------+

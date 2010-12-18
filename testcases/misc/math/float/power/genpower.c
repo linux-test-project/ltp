@@ -100,5 +100,5 @@ int main(int argc, char *argv[])
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	tst_exit();
+	return 0;
 }
