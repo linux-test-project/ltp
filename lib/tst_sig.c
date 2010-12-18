@@ -222,8 +222,8 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 
 		default:
 			if (tst_setup_signal(sig, handler) == SIG_ERR)
-				tst_resm(TWARN | TERRNO,
-					"signal() failed for signal %d", sig);
+				tst_resm(TWARN|TERRNO,
+				    "signal failed for signal %d", sig);
 			break;
 		}
 #ifdef __sgi
@@ -245,13 +245,8 @@ static void def_handler(int sig)
 	/*
 	 * Break remaining test cases, do any cleanup, then exit
 	 */
-	tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
-
-	/* now cleanup and exit */
-	if (T_cleanup)
-		(*T_cleanup) ();
-
-	tst_exit();
+	tst_brkm(TBROK, T_cleanup,
+	    "unexpected signal %d received (pid = %d).", sig, getpid());
 }
 
 /*
