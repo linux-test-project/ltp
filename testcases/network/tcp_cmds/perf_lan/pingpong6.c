@@ -189,7 +189,7 @@ char *argv[];
 				nreceived++;
 		}
 	}
-	tst_exit();
+	return 0;
 }
 
 echopkt(datalen,npackets)

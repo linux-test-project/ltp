@@ -26,6 +26,9 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -D_GNU_SOURCE -I$(abs_srcdir)/../include
 
+# XXX (garrcoop): alias casting problems.
+CPPFLAGS		+= -Wno-error
+
 INSTALL_TARGETS		:= perf_lan
 
 # NOTE (garrcoop): Once everything compiles with the same sources using
