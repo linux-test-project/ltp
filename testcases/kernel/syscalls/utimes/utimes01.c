@@ -62,9 +62,6 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
-
 /* Global Variables */
 char *TCID = "utimes01";  /* Test program identifier.*/
 int  testno;
@@ -114,7 +111,7 @@ extern void cleanup() {
 /*									    */
 /******************************************************************************/
 void setup() {
-	tst_require_root(tst_exit);
+	tst_require_root(NULL);
 
 	/* Capture signals if any */
 	/* Create temporary directories */
@@ -215,7 +212,8 @@ static int do_test(struct test_case *tc)
 	struct stat st;
 	uid_t old_uid;
 
-	TEST(rc = setup_file(TESTDIR, "test.file", fpath));
+	/* XXX (garrcoop): memory leak with get_tst_tmpdir. */
+	TEST(rc = setup_file(get_tst_tmpdir(), "test.file", fpath));
 	if (rc < 0)
 		return 1;
 	/* The test just needs the file, so no need to keep it open. */
@@ -260,7 +258,6 @@ static int do_test(struct test_case *tc)
 		else
 			TEST(sys_ret = utimes(fpath, NULL));
 	}
-=======
         tv[0].tv_sec = tc->a_sec;
         tv[1].tv_sec = tc->m_sec;
         TEST(len = strlen(fpath));
@@ -287,7 +284,6 @@ static int do_test(struct test_case *tc)
                 else
                         TEST(sys_ret = utimes(fpath, NULL));
         }
->>>>>>> master
 	sys_errno = errno;
 	if (tc->ttype == FILE_NOT_EXIST)
 		fpath[len - 1] = c;
@@ -344,6 +340,8 @@ int main(int ac, char **av) {
 
 	setup();
 
+	TEST IS BROKEN -- FIX ME.
+
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
@@ -359,76 +357,8 @@ int main(int ac, char **av) {
 					i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
-=======
-        int c;
-        int i;
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
 
-	struct option long_options[] = {
-                { "debug", no_argument, 0, 'd' },
-                { "help",  no_argument, 0, 'h' },
-                { NULL, 0, NULL, 0 }
-        };
-
-	progname = strchr(av[0], '/');
-        progname = progname ? progname + 1 : av[0];
-
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
-
-        setup();
-
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while (TEST_RETURN != -1) {
-		                switch (c) {
-                		case 'd':
-		                        opt_debug = 1;
-                		        break;
-		                default:
-                		        usage(progname);
-
-                		}
-		        }
-
-		if (ac != optind) {
-        	        tst_resm(TINFO,"Options are not match.");
-                	usage(progname);
-
-	        }
-
-		/*
-		* Execute test
-         	*/
-	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
-        	        int ret;
-	                tst_resm(TINFO,"(case%02d) START", i);
-	                ret = do_test(&tcase[i]);
-	                tst_resm(TINFO,"(case%02d) END => %s", i, (ret == 0) ? "OK" : "NG");
-	                result |= ret;
         	}
->>>>>>> master
-
-			/*
-			 * Check results
-		 	 */
-			switch(result) {
-			case RESULT_OK:
-				tst_resm(TPASS, "utimes call succeeded ");
-				break;
-
-			default:
-		 	   	tst_brkm(TFAIL|TERRNO, cleanup, "utimes failed");
-				break;
-			}
-
-		}
 	}
 	cleanup();
 	tst_exit();
