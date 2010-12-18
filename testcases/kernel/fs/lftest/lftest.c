@@ -90,5 +90,5 @@ int main(int argc, char *argv[])
 	       "Total time for test to run: %d minute(s) and %d seconds\n",
 	       writecnt, seekcnt, diff / 60, diff % 60);
 
-	tst_exit();
+	return 0;
 }

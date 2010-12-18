@@ -69,5 +69,5 @@ int main(int argc, char *argv[])
 		perror("mount");
 		return 1;
 	}
-	tst_exit();
+	return 0;
 }

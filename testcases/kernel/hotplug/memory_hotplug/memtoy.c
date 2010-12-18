@@ -501,12 +501,12 @@ main(int argc, char *argv[])
 
 	process_commands();
 
-	tst_exit();
+	return 0;
 
 }
 #else	/* ! (HAVE_NUMA_H && HAVE_NUMAIF_H) */
 int main(void) {
 	printf("System doesn't have required numa support.\n");
-	tst_exit();
+	return 0;
 }
 #endif	/* HAVE_NUMA_H && HAVE_NUMAIF_H */
