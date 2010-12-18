@@ -20,14 +20,14 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <errno.h>
-#include <err.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <err.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
 
 #define UNUSED __attribute__ ((unused))
 
@@ -68,10 +68,11 @@ int main(void)
 		if (pid == -1)
 			err(1, "fork()");
 		else if (pid == 0) {
-			tst_exit();
+			return 0;
 		} else {
 			wait(&status);
 		}
 	} while (test_switch);
-	tst_exit();
+
+	return 0;
 }

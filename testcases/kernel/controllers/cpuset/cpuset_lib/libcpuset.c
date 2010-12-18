@@ -3080,6 +3080,7 @@ static int sched_setaffinity(pid_t pid, unsigned len, unsigned long *mask)
 	return syscall(__NR_sched_setaffinity, pid, len, mask);
 }
 
+#if HAVE_DECL_MEMPOLICY
 static int get_mempolicy(int *policy, unsigned long *nmask,
 			unsigned long maxnode, void *addr, int flags)
 {
@@ -3090,6 +3091,7 @@ static int set_mempolicy(int mode, unsigned long *nmask, unsigned long maxnode)
 {
 	return syscall(__NR_set_mempolicy, mode, nmask, maxnode);
 }
+#endif
 
 struct cpuset_placement {
 	struct bitmask *cpus;

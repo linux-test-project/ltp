@@ -23,18 +23,8 @@ int convert;
 
 static void usage(char *prog_name, int status)
 {
-	FILE *output = NULL;
-
-	if (prog_name == NULL)
-		prog_name = "cpu-usage";
-
-	if (status)
-		output = stderr;
-	else
-		output = stdout;
-
-	fprintf(output, USAGE, prog_name);
-	exit(status);
+	fprintf(stderr, USAGE, prog_name);
+	exit(1);
 }
 
 static void checkopt(int argc, char **argv)
@@ -42,18 +32,18 @@ static void checkopt(int argc, char **argv)
 	char c = '\0';
 	int optc = 0;
 
-	while ((c = getopt(argc, argv, "ash")) != -1) {
+	while ((c = getopt(argc, argv, "ahs")) != -1) {
 		switch (c) {
 		case 'a':
 			add_or_subtract = 0;
 			optc++;
 			break;
+		case 'h':   /* help */
+			usage(argv[0], 0);
+			break;
 		case 's':
 			add_or_subtract = 1;
 			optc++;
-			break;
-		case 'h':   /* help */
-			usage(argv[0], 0);
 			break;
 		default:
 			usage(argv[0], 1);
@@ -97,7 +87,7 @@ int main(int argc, char **argv)
 	if (convert) {
 		bitmask_displaylist(buff, MAX_STRING_SIZE, mask1);
 		printf("%s\n", buff);
-		tst_exit();
+		exit(0);
 	}
 
 	if (bitmask_parselist(argv[argc - 1], mask2) != 0)
@@ -111,5 +101,5 @@ int main(int argc, char **argv)
 	bitmask_displaylist(buff, MAX_STRING_SIZE, mask3);
 	printf("%s\n", buff);
 
-	tst_exit();
+	return 0;
 }

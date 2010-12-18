@@ -20,19 +20,20 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <signal.h>
-#include <err.h>
-#include <limits.h>
-#include <getopt.h>
-#include <string.h>
-#include <fcntl.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/shm.h>
+#include <sys/stat.h>
+#include <err.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <getopt.h>
+#include <limits.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 int fd;
 
@@ -78,19 +79,15 @@ void process_options(int argc, char *argv[])
 	int c;
 	char *end;
 
-	while (1) {
-		c = getopt_long(argc, argv, "s:k:", long_opts, NULL);
-		if (c == -1)
-			break;
-
+	while ((c = getopt_long(argc, argv, "k:s:", long_opts, NULL)) != -1) {
 		switch (c) {
+		case 'k':
+			key_id = atoi(optarg);
+			break;
 		case 's':
 			memsize = strtoul(optarg, &end, 10);
 			if (*end != '\0')
 				errx(1, "wrong -s argument!");
-			break;
-		case 'k':
-			key_id = atoi(optarg);
 			break;
 		case MMAP_ANON:
 			opt_mmap_anon = 1;
@@ -111,7 +108,7 @@ void process_options(int argc, char *argv[])
 			opt_hugepage = 1;
 			break;
 		default:
-			errx(1, "unknown option!\n");
+			errx(1, "unknown option: %c", c);
 			break;
 		}
 	}
@@ -135,7 +132,7 @@ void mmap_anon()
 
 	if (!flag_allocated) {
 		p = mmap(NULL, memsize, PROT_WRITE | PROT_READ,
-			 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+			 MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
 		if (p == MAP_FAILED)
 			err(1, "mmap(anonymous) failed");
 		touch_memory(p, memsize);
@@ -228,28 +225,28 @@ void shm()
 
 		key = ftok("/dev/null", key_id);
 		if (key == -1)
-			err(1, "ftok() failed\n");
+			err(1, "ftok() failed");
 
 		shmid = shmget(key, memsize, flag);
 		if (shmid == -1)
-			err(1, "shmget() failed\n");
+			err(1, "shmget() failed");
 		shmctl(shmid, IPC_RMID, NULL);
 
 		shmid = shmget(key, memsize, flag);
 		if (shmid == -1)
-			err(1, "shmget() failed\n");
+			err(1, "shmget() failed");
 
 		p = shmat(shmid, NULL, 0);
 		if (p == (void *)-1) {
 			shmctl(shmid, IPC_RMID, NULL);
-			err(1, "shmat() failed\n");
+			err(1, "shmat() failed");
 		}
 		touch_memory(p, memsize);
 	} else {
 		if (shmdt(p) == -1)
-			err(1, "shmdt() failed\n");
+			err(1, "shmdt() failed");
 		if (shmctl(shmid, IPC_RMID, NULL) == -1)
-			err(1, "shmctl() failed\n");
+			err(1, "shmctl() failed");
 	}
 }
 
@@ -295,17 +292,19 @@ int main(int argc, char *argv[])
 	struct sigaction sigint_action;
 	struct sigaction sigusr_action;
 
-	fd = open("/dev/zero", O_RDWR);
-	if (fd < 0)
+	if ((fd = open("/dev/zero", O_RDWR)) == -1)
 		err(1, "open /dev/zero failed");
 
-	memset(&sigint_action, 0, sizeof(sigint_action));
+	/* TODO: writer error handling here. */
+	sigemptyset(&sigint_action.sa_mask);
 	sigint_action.sa_handler = &sigint_handler;
 	sigaction(SIGINT, &sigint_action, NULL);
 
-	memset(&sigusr_action, 0, sizeof(sigusr_action));
+	sigemptyset(&sigint_action.sa_mask);
 	sigusr_action.sa_handler = &sigusr_handler;
 	sigaction(SIGUSR1, &sigusr_action, NULL);
+
+	sigemptyset(&sigusr_action.sa_mask);
 
 	process_options(argc, argv);
 
@@ -314,5 +313,5 @@ int main(int argc, char *argv[])
 
 	close(fd);
 
-	tst_exit();
+	return 0;
 }

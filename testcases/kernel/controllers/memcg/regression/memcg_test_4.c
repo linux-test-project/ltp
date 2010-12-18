@@ -20,30 +20,28 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
 #include <sys/mman.h>
+#include <err.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <unistd.h>
 
 #define MEM_SIZE	(1024 * 1024 * 100)
 
 void sigusr_handler(int __attribute__((unused)) signo)
 {
 	char *p;
-	int i;
-	int pagesize = getpagesize();
 
-	p = mmap(NULL, MEM_SIZE, PROT_READ | PROT_WRITE,
-		 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	p = mmap(NULL, MEM_SIZE, PROT_READ|PROT_WRITE,
+	    MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
 	if (p == MAP_FAILED) {
-		fprintf(stderr, "failed to allocate memory!\n");
-		exit(1);
+		err(1, "failed to allocate memory!");
 	}
 
-	for (i = 0; i < MEM_SIZE; i += pagesize)
-		p[i] = 'z';
+	memset(p, 'z', MEM_SIZE);
 }
 
 int main(void)
@@ -57,5 +55,5 @@ int main(void)
 	while (1)
 		sleep(1);
 
-	tst_exit();
+	return 0;
 }

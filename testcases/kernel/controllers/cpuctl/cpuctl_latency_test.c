@@ -41,12 +41,13 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <unistd.h>
-#include <math.h>
+#include <errno.h>
+#include <err.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../libcontrollers/libcontrollers.h"
 
@@ -64,25 +65,25 @@ int main(int argc, char *argv[])
 	char mytaskfile[FILENAME_MAX];
 	int test_num;
 
-	/* Signal handler for tasks for exiting gracefully */
 	struct sigaction newaction, oldaction;
+
+	/* TODO (garrcoop): add error handling. */
 	sigemptyset(&newaction.sa_mask);
 	sigaddset(&newaction.sa_mask, SIGUSR1);
 	newaction.sa_handler = &sighandler;
 	sigaction(SIGUSR1, &newaction, &oldaction);
 
-	if ((argc < 2) || (argc > 3)) {
-		printf("TBROK\t Invalid #args received from script"
-			" The test will run without any cpu load \n");
-		exit(1);
+	if (argc < 2 || argc > 3) {
+		errx(EINVAL, "TBROK\t Invalid #args received from script"
+			" The test will run without any cpu load");
 	}
 
 	/* Migrate the task to its group if applicable */
 	test_num = atoi(argv[1]);
 	if (test_num < 0) {
-		printf("Invalid test number received from script."
-						" Skipping load creation ");
-		exit(1);
+		errx(EINVAL,
+		    "Invalid test number received from script. "
+		    "Skipping load creation");
 	}
 
 	if (test_num == 2) {
@@ -92,14 +93,7 @@ int main(int argc, char *argv[])
 		write_to_file(mytaskfile, "a", getpid());
 	}
 
-	/*
-	 * Need to run some cpu intensive task. Not sure if it is the best
-	 * workload I can run?
-	 */
-	double f = 27409.345;	/*just a float number for sqrt*/
+	while (1) ;
 
-	while (1)
-		f = sqrt(f * f);
-
-	tst_exit();
+	return 0;
 }

@@ -32,41 +32,36 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
 #include <err.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <libgen.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 int main(int argc, char **argv)
 {
 	int fd = 1;
-	int ret = 0;
 
 	if (argc != 2 && argc != 3) {
-		fprintf(stderr, "USAGE: %s STRING [ostream]\n", argv[0]);
-		return 1;
+		fprintf(stderr, "usage: %s STRING [ostream]\n",
+		    basename(argv[0]));
+		exit(1);
 	}
 
-	if (argc == 3) {
-		fd = open(argv[2], O_RDWR | O_SYNC);
-		if (fd == -1)
+	if (argc == 3)
+		if ((fd = open(argv[2], O_RDWR|O_SYNC)) == -1)
 			err(errno, "%s", argv[2]);
-	}
 
-	ret = write(fd, argv[1], strlen(argv[1]));
-	if (ret  == -1)
+	if (write(fd, argv[1], strlen(argv[1])) == -1)
 		err(errno, "write error");
 
-	if (fd != 1) {
-		ret = close(fd);
-		if (ret == -1)
+	if (fd != 1)
+		if (close(fd) == -1)
 			err(errno, "close error");
-	}
-
-	tst_exit();
+	return 0;
 }

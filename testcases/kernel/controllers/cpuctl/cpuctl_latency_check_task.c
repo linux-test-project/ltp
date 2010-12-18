@@ -64,16 +64,10 @@
 #define info	printf("The results FAIL is just intuitive and not exact" \
 		" failure. Please look at cpuctl_testplan.txt in the test directory.\n");
 
-extern int Tst_count;
 char *TCID = "cpuctl_latency_tests";
 int TST_COUNT = 1;
 int TST_TOTAL = 1;
 pid_t script_pid;
-
-extern void cleanup()
-{
-	exit(0);
-}
 
 int main(int argc, char *argv[])
 {
@@ -89,7 +83,7 @@ int main(int argc, char *argv[])
 	if ((argc < 4) || (argc > 5)) {
 		printf("Invalid #args received from script. Exiting test..\n");
 		exit(1);
-		}
+	}
 
 	test_num = atoi(argv[1]);
 	script_pid = (pid_t) atoi(argv[2]);
@@ -97,7 +91,7 @@ int main(int argc, char *argv[])
 	if ((test_num < 0) || (script_pid < 0) || (ALLOWED < 0)) {
 		printf("Invalid args received from script. Exiting test..\n");
 		exit(1);
-		}
+	}
 
 	if (test_num == 2) {
 		strncpy(mytaskfile, argv[4], FILENAME_MAX);
@@ -151,8 +145,5 @@ int main(int argc, char *argv[])
 		printf("Max latency observed = %u microsec in Iteration %d\n",
 							 delta_max, iteration);
 	}
-	/* Done with testing, signal the script */
-	cleanup();
-
-	tst_exit();
+	return fail;
 }

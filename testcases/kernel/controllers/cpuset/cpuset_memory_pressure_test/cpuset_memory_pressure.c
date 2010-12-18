@@ -20,12 +20,14 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <libgen.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <sys/mman.h>
+#include <err.h>
+#include <errno.h>
+#include <libgen.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 int unit = 1024 * 1024;
 
@@ -36,13 +38,12 @@ main(int argc, char *argv[])
 {
 	long int use;
 	if (argc != 2) {
-		fprintf(stderr, "usage: %s mmap-size-in-kB\n", basename(argv[0]));
+		fprintf(stderr, "usage: %s mmap-size-in-kB", basename(argv[0]));
 		exit(1);
 	}
 	if ((use = strtol(argv[1], NULL, 10)) < 0) {
-		fprintf(stderr, "Invalid mmap size specified (must be a long "
-				"int greater than 1)\n");
-		exit(1);
+		errx(EINVAL, "Invalid mmap size specified (must be a long "
+			     "int greater than 1)");
 	}
 
 	long int pagesize = getpagesize();
@@ -51,7 +52,7 @@ main(int argc, char *argv[])
 
 	while (pagesize * mmap_block > 2 * unit) {
 		unsigned long *addr = mmap(NULL, pagesize * mmap_block,
-			PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+			PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 		if (addr == MAP_FAILED) {
 			mmap_block = mmap_block / 2;
 			continue;
@@ -61,5 +62,5 @@ main(int argc, char *argv[])
 		if (total_block * pagesize >= use * unit)
 			break;
 	}
-	tst_exit();
+	return 0;
 }

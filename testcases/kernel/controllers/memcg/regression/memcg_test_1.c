@@ -27,9 +27,11 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 
-#define MAP_FLAGS	(MAP_PRIVATE | MAP_ANONYMOUS | MAP_LOCKED)
+#define MAP_FLAGS		(MAP_PRIVATE|MAP_ANONYMOUS|MAP_LOCKED)
 
-#define LOOP		40
+#define LOOP			40
+
+#define FORKED_PROC_COUNT	10
 
 int main(void)
 {
@@ -44,7 +46,7 @@ int main(void)
 		return 1;
 
 	for (loop = 0; loop < LOOP; loop++) {
-		for (i = 0; i < 10; i++) {
+		for (i = 0; i < FORKED_PROC_COUNT; i++) {
 			pid = fork();
 			if (pid == 0) {
 				char *p;
@@ -53,18 +55,22 @@ int main(void)
 				write(fd, buf, 10);
 				fsync(fd);
 
-				p = mmap(NULL, size, PROT_READ | PROT_WRITE,
+				p = mmap(NULL, size, PROT_READ|PROT_WRITE,
 					 MAP_FLAGS, 0, 0);
 
-				tst_exit();
+				if (p == MAP_FAILED) {
+					perror("mmap failed");
+					exit(1);
+				} else
+					exit(0);
 			}
 		}
 
-		for (i = 0; i < 10; i++)
+		for (i = 0; i < FORKED_PROC_COUNT; i++)
 			wait(NULL);
 	}
 
 	close(fd);
 
-	tst_exit();
+	return 0;
 }
