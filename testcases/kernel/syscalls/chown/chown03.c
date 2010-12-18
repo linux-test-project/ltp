@@ -83,13 +83,12 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	(S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
-#define NEW_PERMS	(S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID)
+#define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
+#define NEW_PERMS	(S_IFREG|S_IRWXU|S_IRWXG|S_ISUID|S_ISGID)
 #define TESTFILE	"testfile"
 
 char *TCID = "chown03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -104,12 +103,8 @@ int main(int ac, char **av)
 	uid_t user_id;		/* Owner id of the test file. */
 	gid_t group_id;		/* Group id of the test file. */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -117,66 +112,43 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/* Get the euid/egid of the process */
 		user_id = geteuid();
 		group_id = getegid();
-
-		/*
-		 * Call chown(2) with different user id and
-		 * group id (numeric values) to set it on testfile.
-		 */
 
 		TEST(chown(TESTFILE, -1, group_id));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "chown() on %s Fails, errno=%d",
-				 TESTFILE, TEST_ERRNO);
+			tst_resm(TFAIL|TTERRNO, "chown(%s, ..) failed",
+			    TESTFILE);
 			continue;
 		}
 
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
 		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the testfile information using stat(2).
-			 */
-			if (stat(TESTFILE, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup, "stat(2) of %s failed,"
-					 " errno:%d", TESTFILE, TEST_ERRNO);
-			}
+			if (stat(TESTFILE, &stat_buf) == -1)
+				tst_brkm(TFAIL|TERRNO, cleanup, "stat failed");
 
-			/*
-			 * Check for expected Ownership ids set on testfile.
-			 */
-			if ((stat_buf.st_uid != user_id) ||
-			    (stat_buf.st_gid != group_id)) {
+			if (stat_buf.st_uid != user_id ||
+			    stat_buf.st_gid != group_id)
 				tst_resm(TFAIL, "%s: Incorrect ownership"
-					 "set to %d %d, Expected %d %d",
-					 TESTFILE, stat_buf.st_uid,
-					 stat_buf.st_gid, user_id, group_id);
-			}
+				    "set to %d %d, Expected %d %d",
+				    TESTFILE, stat_buf.st_uid,
+				    stat_buf.st_gid, user_id, group_id);
 
-			/*
-			 * Verify that setuid/setgid bits set on the
-			 * testfile in setup() are cleared by chown()
-			 */
-			if (stat_buf.st_mode != (NEW_PERMS & ~(S_ISUID | S_ISGID))) {
-				tst_resm(TFAIL, "%s: Incorrect mode permissions"
-					 " %#o, Expected %#o", TESTFILE,
-					 stat_buf.st_mode,
-					 NEW_PERMS & ~(S_ISUID | S_ISGID));
-			} else {
-				tst_resm(TPASS, "chown() on %s succeeds, "
-					 "clears setuid/gid bits", TESTFILE);
-			}
-		} else {
+			if (stat_buf.st_mode !=
+			    (NEW_PERMS & ~(S_ISUID | S_ISGID)))
+				tst_resm(TFAIL, "%s: incorrect mode permissions"
+				    " %#o, Expected %#o", TESTFILE,
+				    stat_buf.st_mode,
+				    NEW_PERMS & ~(S_ISUID | S_ISGID));
+			else
+				tst_resm(TPASS, "chown(%s, ..) was successful",
+				    TESTFILE);
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
+	tst_exit();
 
 }
 
@@ -193,60 +165,51 @@ void setup()
 
 	TEST_PAUSE;
 
-	tst_tmpdir();
+	tst_require_root(NULL);
+
+	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam(\"nobody\") failed");
+	if (setegid(ltpuser->pw_gid) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "setegid(%d) failed",
+		    ltpuser->pw_gid);
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "seteuid(%d) failed",
+		    ltpuser->pw_uid);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, cleanup, "Must be super/root for this test!");
-		tst_exit();
-	}
-
-	ltpuser = getpwnam(nobody_uid);
-	if (setegid(ltpuser->pw_gid) == -1)
-		tst_resm(TINFO|TERRNO, "setegid(%d) failed", ltpuser->pw_gid);
-	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
+	tst_tmpdir();
 
 	/* Create a test file under temporary directory */
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1)
+	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE, FILE_MODE);
+		    "open(%s, O_RDWR|O_CREAT, %o) failed", TESTFILE, FILE_MODE);
 
 	if (seteuid(0) == -1)
-		 tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to user root");
+		 tst_brkm(TBROK|TERRNO, cleanup, "seteuid(0) failed");
 
 	if (fchown(fd, -1, 0) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchown(%s) failed", TESTFILE);
+		tst_brkm(TBROK|TERRNO, cleanup, "fchown failed");
 
 	if (fchmod(fd, NEW_PERMS) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchmod(%s) failed", TESTFILE);
+		tst_brkm(TBROK|TERRNO, cleanup, "fchmod failed");
 
 	if (seteuid(ltpuser->pw_uid) == -1)
-		 tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to user nobody");
+		 tst_brkm(TBROK|TERRNO, cleanup, "seteuid to nobody failed");
 
-	/* Close the test file created above */
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
+		tst_brkm(TBROK|TERRNO, cleanup, "closing %s failed", TESTFILE);
 }
 
-/*
- * void
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- *  Remove the test directory and testfile created in the setup.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	setegid(0);
-	seteuid(0);
+	if (setegid(0) == -1)
+		tst_resm(TWARN|TERRNO, "setegid(0) failed");
+	if (seteuid(0) == -1)
+		tst_resm(TWARN|TERRNO, "seteuid(0) failed");
 
 	tst_rmdir();
 
