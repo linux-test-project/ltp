@@ -108,14 +108,6 @@
 #define TOUT_NOPASS_S   "NOPASS"	/* No pass test cases are reported */
 #define TOUT_DISCARD_S  "DISCARD"	/* No output is reported */
 
-#define TST_NOBUF	"TST_NOBUF"	/* The name of the environment variable */
-					/* that can be set to control whether or not */
-					/* tst_res will buffer output into 4096 byte */
-					/* blocks of output */
-					/* If not set, buffer is done.  If set, no */
-					/* internal buffering will be done in tst_res */
-					/* t_result does not have internal buffering */
-
 /*
  * The following defines are used to control tst_tmpdir, tst_wildcard and t_mkchdir
  */

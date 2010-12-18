@@ -173,8 +173,6 @@ static char *Last_mesg;       /* previous test result message */
  */
 int Tst_count = 0;      /* current count of test cases executed; NOTE: */
                         /* Tst_count may be externed by other programs */
-int Tst_nobuf = 1;      /* this is a no-op; buffering is never done, but */
-                        /* this will stay for compatibility reasons */
 
 /*
  * These globals must be defined in the test.
