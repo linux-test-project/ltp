@@ -91,7 +91,7 @@ static void thread(int id)
 	ret = posix_memalign(&buf, PAGE_SIZE, chunk_size);
 	if (ret < 0) {
 		fprintf(stderr,
-			"ERROR: task %d couldn't allocate %lu bytes (%s)\n",
+			"ERROR: task %d couldn't allocate %zu bytes (%s)\n",
 			id, chunk_size, strerror(errno));
 		exit(1);
 	}
@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
 	/* handle kill from shell */
 	signal(SIGTERM, signal_handler);
 
-	fprintf(stdout, "chunk_size %luKiB, data_size %luKiB\n",
+	fprintf(stdout, "chunk_size %zuKiB, data_size %zuKiB\n",
 		kb(chunk_size), kb(data_size));
 	fflush(stdout);
 
