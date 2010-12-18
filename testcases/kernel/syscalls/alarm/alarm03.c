@@ -164,11 +164,10 @@ int main(int ac, char **av)
 					 "alarm(100), fork, alarm(0) parent's alarm returned %ld",
 					 TEST_RETURN);
 			}
-			/* wait for the child to finish */
-			wait(&status);
-			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-				tst_resm(TFAIL, "Failures reported above");
-			}
+			if (wait(&status) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+				tst_resm(TFAIL, "see failures reported above");
 
 		}
 
@@ -176,6 +175,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
+	tst_exit();
 }
 
 void setup()

@@ -74,14 +74,13 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "alarm06";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
-int alarms_received = 0;		/* flag to indicate SIGALRM received or not */
+char *TCID = "alarm06";
+int TST_TOTAL = 1;
+int alarms_received = 0;
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-void sigproc(int sig);		/* signal handler to catch SIGALRM */
+void setup();		
+void cleanup();
+void sigproc(int sig);
 
 int main(int ac, char **av)
 {
@@ -93,7 +92,6 @@ int main(int ac, char **av)
 	int sleep_time1 = 5;	/* waiting time for the 1st signal */
 	int sleep_time2 = 10;	/* waiting time for the 2nd signal */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -110,13 +108,8 @@ int main(int ac, char **av)
 		TEST(alarm(time_sec1));
 		ret_val1 = TEST_RETURN;
 
-		/* Wait for signal SIGALARM */
 		sleep(sleep_time1);
 
-		/*
-		 * Call Second alarm() with zero time parameter
-		 * which should cancel our existing alarm.
-		 */
 		TEST(alarm(time_sec2));
 		ret_val2 = TEST_RETURN;
 
@@ -132,27 +125,22 @@ int main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			if ((alarms_received == 0) &&
-			    (ret_val2 == (time_sec1 - sleep_time1))) {
+			    (ret_val2 == (time_sec1 - sleep_time1)))
 				tst_resm(TPASS, "Functionality of alarm(%u) "
 					 "successful", time_sec2);
-			} else {
+			else
 				tst_resm(TFAIL, "alarm(%u) fails, returned %d, "
 					 "alarms_received:%d",
 					 time_sec2, ret_val2, alarms_received);
-			}
-		} else {
+		} else
 			tst_resm(TPASS, "last call returned %d", ret_val2);
-		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *  Setup signal handler to catch SIGALRM.
- */
 void setup()
 {
 
@@ -161,32 +149,16 @@ void setup()
 	TEST_PAUSE;
 
 	/* Set the signal catching function */
-	if (signal(SIGALRM, sigproc) == SIG_ERR) {
-		tst_brkm(TFAIL, cleanup,
-			 "signal() fails to catch SIGALARM, errno=%d", errno);
-	}
+	if (signal(SIGALRM, sigproc) == SIG_ERR)
+		tst_brkm(TFAIL|TERRNO, cleanup, "signal(SIGALRM, ..) failed");
 }
 
-/*
- * sigproc(int) - This function defines the action that has to be taken
- *	          when the SIGALRM signal is caught.
- *   It also sets the variable which is used to check whether the
- *   alarm system call was successful.
- */
 void sigproc(int sig)
 {
 	alarms_received++;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }

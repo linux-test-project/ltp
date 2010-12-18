@@ -96,7 +96,6 @@ int main(int ac, char **av)
 	int sleep_time1 = 3;	/* waiting time for the signal */
 	int sleep_time2 = 6;	/* waiting time for the signal */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -106,9 +105,11 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/* Reset alarms_received for every iteration, since it has
+		/* 
+		 * Reset alarms_received for every iteration, since it has
 		 * old values from previous iterations (if any) and not
-		 * a value of zero */
+		 * a value of zero
+		 */
 		alarms_received = 0;
 
 		/*
@@ -149,26 +150,25 @@ int main(int ac, char **av)
 				TEST(alarm(0));
 				ret_val3 = TEST_RETURN;
 
-				if (ret_val3 != 0) {
+				if (ret_val3 != 0)
 					tst_resm(TFAIL, "System did not "
 						 "clean up delivered " "alarm");
-				} else {
+				else {
 					tst_resm(TPASS, "Functionality of "
 						 "alarm(%u) successful",
 						 time_sec2);
 				}
-			} else {
+			} else
 				tst_resm(TFAIL, "alarm(%u) fails, returned %d, "
 					 "alarms_received:%d",
 					 time_sec2, ret_val2, alarms_received);
-			}
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
 /*

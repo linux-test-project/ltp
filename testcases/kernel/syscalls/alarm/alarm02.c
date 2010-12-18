@@ -91,7 +91,7 @@
 #include <sys/signal.h>
 #include <limits.h>
 #include "test.h"
-#include "usctest.h"		/* required for usctest   */
+#include "usctest.h"
 
 void setup();
 void cleanup();
@@ -99,13 +99,8 @@ void alarm_received();
 
 char *TCID = "alarm02";		/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_ * routines */
 
 int received_alarm = 0;		/* Indicates a SIGALRM was received */
-
-/************************************************************
- * Main program
- ***********************************************************/
 
 int main(int ac, char **av)
 {
@@ -131,27 +126,28 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			/* capture an SIGALRM signal */
 			received_alarm = 0;
 			signal(SIGALRM, alarm_received);
 
 			TEST(alarm(sec[i]));
-			/* reset the alarm */
 			alarm(0);
-			if (TEST_RETURN != 0) {
+			if (TEST_RETURN != 0)
 				tst_resm(TFAIL,
-					 "alarm(%lu) returned %ld, when %u was expected for value %s",
-					 sec[i], TEST_RETURN, exp[i], buf[i]);
-
-			} else if (STD_FUNCTIONAL_TEST) {
+				    "alarm(%lu) returned %ld, when %u was "
+				    "expected for value %s",
+				    sec[i], TEST_RETURN, exp[i], buf[i]);
+			else if (STD_FUNCTIONAL_TEST) {
 				if (received_alarm == 1) {
 					tst_resm(TFAIL,
-						 "alarm(%lu) returned %ldu but an alarm signal was received for value %s",
-						 sec[i], TEST_RETURN, buf[i]);
+					    "alarm(%lu) returned %ldu but an "
+					    "alarm signal was received for "
+					    "value %s",
+					    sec[i], TEST_RETURN, buf[i]);
 				} else {
 					tst_resm(TPASS,
-						 "alarm(%lu) returned %ld as expected for value %s",
-						 sec[i], TEST_RETURN, buf[i]);
+					    "alarm(%lu) returned %ld as "
+					    "expected for value %s",
+					    sec[i], TEST_RETURN, buf[i]);
 				}
 
 			}
@@ -165,6 +161,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
+	tst_exit();
 
 }
 
@@ -179,10 +176,6 @@ void setup()
 
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }
 

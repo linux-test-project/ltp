@@ -73,25 +73,23 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "alarm07";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
-int alarms_received = 0;		/* flag to indicate SIGALRM received or not */
+char *TCID = "alarm07";
+int TST_TOTAL = 1;
+int alarms_received = 0;
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-void sigproc(int sig);		/* signal catching function */
+void setup();
+void cleanup();
+void sigproc(int sig);
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	int sleep_time = 5;	/* waiting time for the SIGALRM signal */
+	int lc;
+	char *msg;
+	int sleep_time = 5;
 	int status;
-	int time_sec = 3;	/* time for which alarm is set */
-	pid_t cpid;		/* child process id */
+	int time_sec = 3;
+	pid_t cpid;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -113,24 +111,19 @@ int main(int ac, char **av)
 			tst_resm(TFAIL|TERRNO, "fork() failed");
 		}
 
-		/* Wait for signal SIGALRM to be generated */
 		sleep(sleep_time);
 
 		if (STD_FUNCTIONAL_TEST) {
-			if (cpid == 0) {	/* Child process */
-				/*
-				 * For child process if alarms_received is 0
-				 * means alarm request is cleared.
-				 */
-				if (alarms_received == 0) {
+			if (cpid == 0) {
+				if (alarms_received == 0)
 					exit(0);
-				} else {
+				else {
 					printf("alarm request not cleared in "
 					    "child; alarms received:%d\n",
 					    alarms_received);
 					exit(1);
 				}
-			} else {	/* Parent process */
+			} else {
 				/* Wait for child to complete execution */
 				if (wait(&status) == -1)
 					tst_brkm(TBROK|TERRNO, cleanup,
@@ -140,13 +133,13 @@ int main(int ac, char **av)
 					tst_brkm(TBROK|TERRNO, cleanup,
 					    "child exited abnormally");
 			}
-		} else {
+		} else
 			tst_resm(TPASS, "call returned %ld", TEST_RETURN);
-		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
 /*
