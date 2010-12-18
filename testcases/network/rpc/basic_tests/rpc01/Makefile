@@ -24,6 +24,9 @@ top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+# XXX (garrcoop): rpc.c has a ridiculous warning to code ratio.
+CPPFLAGS		+= -Wno-error
+
 INSTALL_TARGETS		:= rpc01
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
