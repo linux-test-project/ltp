@@ -20,13 +20,13 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <string.h>
+#include <sys/mman.h>
 #include <err.h>
 #include <math.h>
-#include <sys/mman.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 int flag_exit;
 int flag_ready;
@@ -48,19 +48,21 @@ void touch_memory()
 void sigusr_handler(int __attribute__((unused)) signo)
 {
 	int i;
-	int pagesize = getpagesize();
+	int pagesize;
+
+	pagesize = getpagesize();
 
 	nr_page = ceil((double)memsize / pagesize);
 
 	pages = calloc(nr_page, sizeof(char *));
 	if (pages == NULL)
-		errx(1, "calloc() failed");
+		errx(1, "calloc failed");
 
 	for (i = 0; i < nr_page; i++) {
 		pages[i] = mmap(NULL, pagesize, PROT_WRITE | PROT_READ,
 				MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		if (pages[i] == MAP_FAILED)
-			err(1, "map() failed\n");
+			err(1, "map failed\n");
 	}
 
 	flag_ready = 1;
@@ -78,7 +80,7 @@ int main(int argc, char *argv[])
 	struct sigaction sigusr_action;
 
 	if (argc != 3)
-		errx(1, "Wrong argument num");
+		errx(1, "wrong argument num");
 
 	memsize = strtoul(argv[1], &end, 10);
 	if (*end != '\0')
@@ -89,6 +91,7 @@ int main(int argc, char *argv[])
 	if (interval <= 0)
 		interval = 1;
 
+	/* TODO (garrcoop): add error handling. */
 	memset(&sigint_action, 0, sizeof(sigint_action));
 	sigint_action.sa_handler = &sigint_handler;
 	sigaction(SIGINT, &sigint_action, NULL);
@@ -102,7 +105,7 @@ int main(int argc, char *argv[])
 
 		if (flag_ready)
 			touch_memory();
-	};
+	}
 
-	tst_exit();
+	return 0;
 }
