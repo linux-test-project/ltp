@@ -80,33 +80,31 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define NEW_PERMS1	S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID
-#define NEW_PERMS2	S_IFREG | S_IRWXU | S_ISGID
-#define EXP_PERMS	S_IFREG | S_IRWXU | S_IRWXG
+#define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
+#define NEW_PERMS1	(S_IFREG|S_IRWXU|S_IRWXG|S_ISUID|S_ISGID)
+#define NEW_PERMS2	(S_IFREG|S_IRWXU|S_ISGID)
+#define EXP_PERMS	(S_IFREG|S_IRWXU|S_IRWXG)
 #define TESTFILE1	"testfile1"
 #define TESTFILE2	"testfile2"
 
 char *TCID = "chown02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int no_setup();
 int setup1();			/* Test specific setup functions */
 int setup2();
 
 struct test_case_t {
 	char *pathname;
-	char *desc;
 	uid_t user_id;
 	gid_t group_id;
 	int test_flag;
 	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	TESTFILE1, "Setuid/Setgid bits cleared", 700, 701, 1, setup1}, {
-	TESTFILE2, "Setgid bit not cleared", 700, 701, 2, setup2}, {
-NULL, NULL, 0, 0, 0, no_setup},};
+} test_cases[] = {
+	/* setuid/setgid bits cleared */
+	{ TESTFILE1, 700, 701, 1, setup1 },
+	/* setgid bit not cleared */
+	{ TESTFILE2, 700, 701, 2, setup2 },
+};
+int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -116,19 +114,15 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int ind;		/* counter variable for chmod(2) tests */
+	int i;		/* counter variable for chmod(2) tests */
 	uid_t user_id;		/* user id of the user set for testfile */
 	gid_t group_id;		/* group id of the user set for testfile */
 	int test_flag;		/* test condition specific flag variable */
 	char *file_name;	/* ptr. for test file name */
-	char *test_desc;	/* test specific message */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -136,13 +130,12 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
-			file_name = Test_cases[ind].pathname;
-			test_desc = Test_cases[ind].desc;
-			user_id = Test_cases[ind].user_id;
-			group_id = Test_cases[ind].group_id;
-			test_flag = Test_cases[ind].test_flag;
+			file_name = test_cases[i].pathname;
+			user_id = test_cases[i].user_id;
+			group_id = test_cases[i].group_id;
+			test_flag = test_cases[i].test_flag;
 
 			/*
 			 * Call chown(2) with different user id and
@@ -151,9 +144,8 @@ int main(int ac, char **av)
 			TEST(chown(file_name, user_id, group_id));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL,
-					 "chown() Fails on %s, errno=%d",
-					 file_name, TEST_ERRNO);
+				tst_resm(TFAIL|TTERRNO,
+				    "chown(%s, ..) failed", file_name);
 				continue;
 			}
 
@@ -175,9 +167,9 @@ int main(int ac, char **av)
 				 * Check for expected Ownership ids
 				 * set on testfile.
 				 */
-				if ((stat_buf.st_uid != user_id) ||
-				    (stat_buf.st_gid != group_id)) {
-					tst_brkm(TFAIL, cleanup, "%s: Incorrect"
+				if (stat_buf.st_uid != user_id ||
+				    stat_buf.st_gid != group_id) {
+					tst_brkm(TFAIL, cleanup, "%s: incorrect"
 						 " ownership set, Expected %d "
 						 "%d", file_name,
 						 user_id, group_id);
@@ -188,33 +180,31 @@ int main(int ac, char **av)
 				 * testfile(s) in setup()s are cleared by
 				 * chown().
 				 */
-				if ((test_flag == 1) &&
-				    ((stat_buf.st_mode &
-				      (S_ISUID | S_ISGID)))) {
-					tst_resm(TFAIL, "%s: Incorrect mode "
+				if (test_flag == 1 &&
+				    (stat_buf.st_mode & (S_ISUID|S_ISGID)) != 0)
+					tst_resm(TFAIL, "%s: incorrect mode "
 						 "permissions %#o, Expected "
 						 "%#o", file_name, NEW_PERMS1,
 						 EXP_PERMS);
-				} else if ((test_flag == 2) &&
-					   (!(stat_buf.st_mode & S_ISGID))) {
+				else if (test_flag == 2 &&
+					   (stat_buf.st_mode & S_ISGID) == 0)
 					tst_resm(TFAIL, "%s: Incorrect mode "
 						 "permissions %#o, Expected "
 						 "%#o", file_name,
 						 stat_buf.st_mode, NEW_PERMS2);
-				} else {
+				else
 					tst_resm(TPASS,
-						 "chown() on %s succeeds : %s",
-						 file_name, test_desc);
-				}
-			} else {
+					    "chown(%s, ..) succeeded",
+					    file_name);
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
 		}
 	}
 
 	cleanup();
+	tst_exit();
 
- }
+}
 
 /*
  * void
@@ -224,24 +214,19 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int ind;
+	int i;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	/* call individual setup functions */
-	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-		Test_cases[ind].setupfunc();
-	}
+	/* call iividual setup functions */
+	for (i = 0; i < TST_TOTAL; i++)
+		test_cases[i].setupfunc();
 }
 
 /*
@@ -255,23 +240,17 @@ int setup1()
 	int fd;			/* File descriptor for testfile1 */
 
 	/* Creat a testfile and close it */
-	if ((fd = open(TESTFILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE1, FILE_MODE);
-	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "close(%s) failed",
-			 TESTFILE1);
-	}
+		    "open(%s, O_RDWR|O_CREAT, %o) failed",
+		    TESTFILE1, FILE_MODE);
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE1);
 
 	/* Set setuid/setgid bits on the test file created */
-	if (chmod(TESTFILE1, NEW_PERMS1) != 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "chmod(%s) failed",
-			 TESTFILE1);
-	}
+	if (chmod(TESTFILE1, NEW_PERMS1) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, ..) failed",
+		    TESTFILE1);
 	return 0;
 }
 
@@ -288,32 +267,14 @@ int setup2()
 	/* Creat a testfile and close it */
 	if ((fd = open(TESTFILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE2, FILE_MODE);
+		    "open(%s, O_RDWR|O_CREAT, %o) failed",
+		    TESTFILE2, FILE_MODE);
 	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "close(%s) failed",
-			 TESTFILE2);
-	}
-
 	/* Set setgid bit on the test file created */
-	if (chmod(TESTFILE2, NEW_PERMS2) != 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "chmod(%s) failed",
-			 TESTFILE2);
-	}
-	return 0;
-}
-
-/*
- * int
- * no_setup() - Some test conditions for mknod(2) do not any setup.
- * 		Hence, this function just returns 0.
- *  This function simply returns 0.
- */
-int no_setup()
-{
+	if (fchmod(fd, NEW_PERMS2) != 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "fchmod failed");
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE2);
 	return 0;
 }
 
