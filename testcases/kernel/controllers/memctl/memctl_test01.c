@@ -50,7 +50,6 @@
 #include "libcontrollers.h"
 #include "test.h"
 
-extern int Tst_count;
 char *TCID = "memory_controller_test01-03";
 int TST_TOTAL = 3;
 
@@ -60,7 +59,7 @@ record_t **array_of_chunks;
 record_t tmp;
 int num_of_chunks, chunk_size, test_num, limit;
 
-extern void cleanup();
+void cleanup();
 void signal_handler_sigusr1 (int signal);
 void signal_handler_sigusr2 (int signal);
 int allocate_memory(void);
@@ -69,43 +68,43 @@ int main(int argc, char *argv[])
 {
 	int ret;
 	char mygroup[FILENAME_MAX], mytaskfile[FILENAME_MAX];
-	char *mygroup_p, *script_pid_p, *test_num_p, *chunk_size_p, *num_chunks_p;
+	char *mygroup_p, *script_pid_p, *test_num_p, *chunk_size_p;
+	char *num_chunks_p;
 	struct sigaction newaction1, newaction2, oldaction1, oldaction2;
 
-	/* Signal handling for SIGUSR1 recieved from script */
-	sigemptyset (&newaction1.sa_mask);
-	newaction1.sa_handler = signal_handler_sigusr1;
-	newaction1.sa_flags=0;
-	sigaction (SIGUSR1, &newaction1, &oldaction1);
-
-	/* Signal handling for SIGUSR2 recieved from script */
-	sigemptyset (&newaction2.sa_mask);
-	newaction2.sa_handler = signal_handler_sigusr2;
-	newaction2.sa_flags=0;
-	sigaction (SIGUSR2, &newaction2, &oldaction2);
-
-	/*
-	 *Capture variables from the script environment
-	 */
-	test_num_p      = getenv("TEST_NUM");
-	mygroup_p       = getenv("MYGROUP");
-	script_pid_p    = getenv("SCRIPT_PID");
-	chunk_size_p	= getenv("CHUNK_SIZE");
+	/* Capture variables from the script environment */
+	test_num_p = getenv("TEST_NUM");
+	mygroup_p = getenv("MYGROUP");
+	script_pid_p = getenv("SCRIPT_PID");
+	chunk_size_p = getenv("CHUNK_SIZE");
 	num_chunks_p	= getenv("NUM_CHUNKS");
 
-	if ((test_num_p != NULL) && (mygroup_p != NULL) && (script_pid_p != NULL) && \
-		(chunk_size_p != NULL) && (num_chunks_p != NULL))
-	{
+	if (test_num_p != NULL && mygroup_p != NULL && script_pid_p != NULL &&
+	    chunk_size_p != NULL && num_chunks_p != NULL) {
 		scriptpid       = atoi(script_pid_p);
 		test_num        = atoi(test_num_p);
 		chunk_size	= atoi(chunk_size_p);
 		num_of_chunks	= atoi(num_chunks_p);
 		sprintf(mygroup,"%s", mygroup_p);
+	} else {
+		tst_brkm(TBROK, cleanup,
+		    "invalid parameters recieved from script\n");
 	}
-	else
-	{
-		tst_brkm (TBROK, cleanup, "Invalid parameters recieved from script\n");
-	}
+
+	/* XXX (garrcoop): this section really needs error handling. */
+
+	/* Signal handling for SIGUSR1 recieved from script */
+	sigemptyset(&newaction1.sa_mask);
+	newaction1.sa_handler = signal_handler_sigusr1;
+	newaction1.sa_flags=0;
+	sigaction(SIGUSR1, &newaction1, &oldaction1);
+
+	/* Signal handling for SIGUSR2 recieved from script */
+	sigemptyset(&newaction2.sa_mask);
+	newaction2.sa_handler = signal_handler_sigusr2;
+	newaction2.sa_flags = 0;
+	sigaction(SIGUSR2, &newaction2, &oldaction2);
+
 
 	sprintf(mytaskfile, "%s", mygroup);
 	strcat (mytaskfile,"/tasks");
@@ -114,6 +113,9 @@ int main(int argc, char *argv[])
 
 	ret = allocate_memory();	/*should i check ret?*/
 
+	cleanup();
+
+	tst_exit();
 }
 
 /*
@@ -122,8 +124,8 @@ int main(int argc, char *argv[])
  */
 void cleanup()
 {
-	kill (scriptpid, SIGUSR1);/* Inform the shell to do cleanup*/
-	tst_exit ();              /* Report exit status*/
+	if (kill(scriptpid, SIGUSR1) == -1)
+		tst_resm(TWARN|TERRNO, "kill failed");
 }
 
 /*
