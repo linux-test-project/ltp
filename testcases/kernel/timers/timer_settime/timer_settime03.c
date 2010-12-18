@@ -78,7 +78,6 @@ void setup_test(int option);
 
 char *TCID = "timer_settime03"; 	/* Test program identifier.    */
 int TST_TOTAL;				/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct itimerspec new_set, old_set, *old_temp, *new_temp;
 static kernel_timer_t timer, tim;

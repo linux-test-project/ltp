@@ -55,7 +55,6 @@ void on_mem_fault(int sig);		/*Prototype for signal handler*/
 
 char *TCID="mem02";			/* Test program identifier. */
 int TST_TOTAL=1;			/* Total number of test cases. */
-extern int Tst_count;			/* Test Case counter for tst_* routines */
 
 static void
 usage(char *progname)

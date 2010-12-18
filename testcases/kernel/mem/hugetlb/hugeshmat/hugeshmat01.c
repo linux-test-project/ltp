@@ -61,7 +61,6 @@
 
 char *TCID = "hugeshmat01";
 int TST_TOTAL = 3;
-extern int Tst_count;
 unsigned long huge_pages_shm_to_be_allocated;
 
 #define CASE0		10		/* values to write into the shared */

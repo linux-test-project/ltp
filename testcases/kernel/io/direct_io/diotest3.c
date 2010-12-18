@@ -359,7 +359,8 @@ static void setup(void)
 
 	/* Test for filesystem support of O_DIRECT */
 	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0)
-		tst_brkm(TCONF, cleanup, "open(%s, O_DIRECT, ..) failed");
+		tst_brkm(TCONF, cleanup, "open(%s, O_DIRECT, ..) failed",
+		    filename);
 	close(fd1);
 }
 

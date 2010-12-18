@@ -58,7 +58,6 @@
 
 char *TCID = "hugeshmctl02";
 int TST_TOTAL = 4;
-extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 unsigned long huge_pages_shm_to_be_allocated;

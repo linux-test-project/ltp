@@ -63,7 +63,6 @@
 
 char *TCID = "hugeshmdt01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 unsigned long huge_pages_shm_to_be_allocated;
 
 void sighandler(int);

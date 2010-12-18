@@ -96,7 +96,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;
 
 #define NULLMODNAME ""
 #define BASEMODNAME "dummy"

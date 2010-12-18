@@ -41,7 +41,6 @@ int local_flag = PASSED;
 char *TCID = "mmapstress08";
 FILE *temp;
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #if defined(__i386__) || defined(__x86_64__)
 int anyfail();

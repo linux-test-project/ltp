@@ -48,7 +48,6 @@
 
 char *TCID = "shmt08";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
 key_t key;

@@ -53,7 +53,6 @@
 
 char *TCID;             /* testcase identifier                                */
 int TST_TOTAL = 1;      /* Total number of testcases.                         */
-extern int Tst_count;   /* Testcase couter for tst_*** routines.              */
 
 /******************************************************************************/
 /*                                                                            */

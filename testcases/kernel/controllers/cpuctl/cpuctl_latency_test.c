@@ -51,7 +51,6 @@
 
 #include "../libcontrollers/libcontrollers.h"
 
-extern int Tst_count;
 char *TCID = "cpu_controller_latency_tests";
 int TST_TOTAL = 2;
 

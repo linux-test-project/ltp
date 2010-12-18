@@ -31,7 +31,6 @@
 /* LTP status reporting */
 char *TCID;	 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 /* To avoid extensive modifications to the code, use this bodge */
 #define exit(x) myexit(x)

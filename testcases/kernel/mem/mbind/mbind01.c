@@ -33,7 +33,6 @@
 
 char *TCID = "mbind01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS

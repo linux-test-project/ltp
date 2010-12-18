@@ -101,7 +101,6 @@
 #define DUMMY_MOD	"dummy_query_mod"
 #define SMALLBUFSIZE	1
 
-extern int Tst_count;
 
 struct test_case_t {			/* test case structure */
 	char 	*modname;

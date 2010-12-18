@@ -80,7 +80,6 @@ char* TEMPFILE="mmapfile";
 
 char *TCID="hugemmap04";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 long *addr;			/* addr of memory mapped region */
 long long mapsize;		/* size of mapped region */
 int fildes;			/* file descriptor for tempfile */

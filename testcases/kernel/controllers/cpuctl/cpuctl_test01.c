@@ -69,7 +69,6 @@
 #define NUM_SETS	4	/* How many share values (with same ratio)*/
 #define MULTIPLIER   	10      /* decides the rate at which share value gets multiplied*/
 #define GRANULARITY    5       /* % value by which shares of a group changes */
-extern int Tst_count;
 char *TCID = "cpu_controller_test01";
 int TST_TOTAL = 1;
 pid_t scriptpid;

@@ -76,7 +76,6 @@ void setup(void);
 
 char *TCID = "clock_gettime02";	/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int
 main(int ac, char **av)

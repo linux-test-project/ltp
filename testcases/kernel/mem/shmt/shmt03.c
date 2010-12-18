@@ -47,7 +47,6 @@
 
 char *TCID = "shmt03";		/* Test program identifier.    */
 int TST_TOTAL = 4;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
 #define		K_1 		1024

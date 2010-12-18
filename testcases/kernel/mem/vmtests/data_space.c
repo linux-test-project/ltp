@@ -55,7 +55,6 @@ int block_number;
 
 char *TCID="data_space";              /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
 #define MAXCHILD	100	/* max number of children to allow */

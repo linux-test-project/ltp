@@ -99,12 +99,8 @@ int main(int ac, char *av[])
 	int lc;
 	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -119,16 +115,13 @@ int main(int ac, char *av[])
 	}
 
 	cleanup();
+	tst_exit();
 
 }
 
 static void setup(void)
 {
 
-	/*
-	 * Make a directory to do this in; ignore error if already exists.
-	 * Save starting directory.
-	 */
 	tst_tmpdir();
 	getcwd(homedir, sizeof(homedir));
 	parent_pid = getpid();
@@ -138,9 +131,8 @@ static void setup(void)
 
 	mkdir(fuss, 0755);
 
-	if (chdir(fuss) < 0) {
-		tst_brkm(TBROK|TERRNO, NULL,"Can't chdir(%s)", fuss);
-	}
+	if (chdir(fuss) < 0)
+		tst_brkm(TBROK|TERRNO, NULL, "chdir failed");
 
 	/*
 	 * Default values for run conditions.
@@ -263,6 +255,7 @@ enum	m_type type = m_fsync;
 #define	CHUNK(i)	((i) * csize)
 #define	NEXTMISC	((rand() % misc_intvl) + 5)
 
+/* XXX (garrcoop): should not be using libltp as it runs forked. */
 static void dotest(int testers, int me, int fd)
 {
 	char *bits, *hold_bits, *buf, *val_buf, *zero_buf;
@@ -459,8 +452,7 @@ static void domisc(int me, int fd, char *bits)
 	switch (type) {
 	case m_fsync:
 		if (fsync(fd) < 0) {
-			tst_resm(TFAIL, "Test[%d]: fsync error %d.", me, errno);
-			tst_exit();
+			tst_brkm(TFAIL|TERRNO, NULL, "Test[%d]: fsync failed.", me);
 		}
 		break;
 	case m_trunc:
@@ -469,16 +461,14 @@ static void domisc(int me, int fd, char *bits)
 		last_trunc = file_max;
 		if (tr_flag) {
 			if (ftruncate(fd, file_max) < 0) {
-				tst_resm(TFAIL, "Test[%d]: ftruncate error %d @ 0x%x.",
-						me, errno, file_max);
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO, NULL, "Test[%d]: ftruncate failed @ 0x%x.",
+						me, file_max);
 			}
 			tr_flag = 0;
 		} else {
 			if (truncate(test_name, file_max) < 0) {
-				tst_resm(TFAIL, "Test[%d]: truncate error %d @ 0x%x.",
-						me, errno, file_max);
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO, NULL, "Test[%d]: truncate failed @ 0x%x.",
+						me, file_max);
 			}
 			tr_flag = 1;
 		}
@@ -492,13 +482,11 @@ static void domisc(int me, int fd, char *bits)
 		break;
 	case m_fstat:
 		if (fstat(fd, &sb) < 0) {
-			tst_resm(TFAIL, "Test[%d]: fstat() error %d.", me, errno);
-			tst_exit();
+			tst_resm(TFAIL|TERRNO, NULL, "Test[%d]: fstat failed", me);
 		}
 		if (sb.st_size != file_max) {
-			tst_resm(TFAIL, "\tTest[%d]: fstat() mismatch; st_size=%"PRIx64",file_max=%x.",
+			tst_brkm(TFAIL, NULL, "\tTest[%d]: fstat() mismatch; st_size=%"PRIx64",file_max=%x.",
 				me, (int64_t)sb.st_size, file_max);
-			tst_exit();
 		}
 		break;
 	}
@@ -532,10 +520,7 @@ static void term(int sig LTP_ATTRIBUTE_UNUSED)
 	close(fd);
 
 	if (unlink(test_name))
-		tst_resm(TBROK, "Unlink of '%s' failed, errno = %d.",
-		  test_name, errno);
-	else
-		tst_resm(TINFO, "Unlink of '%s' successful.", test_name);
+		tst_resm(TBROK|TERRNO, "unlink failed");
 
 	tst_exit();
 }

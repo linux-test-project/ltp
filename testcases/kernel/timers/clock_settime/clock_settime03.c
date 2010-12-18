@@ -84,7 +84,6 @@ static int setup_test(int option);
 
 char *TCID = "clock_settime03"; /* Test program identifier.	*/
 int TST_TOTAL;			/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = { EINVAL, EFAULT, EPERM, 0 };
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

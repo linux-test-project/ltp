@@ -59,7 +59,6 @@ int testno;
 
 void setup(void), cleanup(void);
 
-extern int Tst_count;
 
 int TST_TOTAL = 1;
 

@@ -86,7 +86,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;
 
 #define DUMMY_MOD		 "dummy_del_mod"
 #define DUMMY_MOD_DEP		 "dummy_del_mod_dep"

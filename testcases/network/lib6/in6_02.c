@@ -70,7 +70,6 @@ struct {
 #define I2N_RNDCOUNT	10	/* random ints */
 #define I2N_LOWCOUNT	10	/* sequential from 0 */
 
-extern int Tst_count;
 
 int TST_TOTAL = N2I_COUNT;
 

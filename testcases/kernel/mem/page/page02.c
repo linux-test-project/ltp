@@ -60,7 +60,6 @@ int block_number;
 
 char *TCID="page02";            /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
 int bd_arg(char*);

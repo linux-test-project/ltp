@@ -70,7 +70,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define MODSIZE 10000		/* Arbitrarily selected MODSIZE */
 #define BASEMODNAME "dummy"

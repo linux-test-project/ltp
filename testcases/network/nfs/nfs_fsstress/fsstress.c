@@ -466,7 +466,7 @@ int main(int argc, char **argv)
 				if (fork() == 0) {
 					procid = i;
 					doproc();
-					tst_exit();
+					return 0;
 				}
 			}
 			while (wait(&stat) > 0)
@@ -492,7 +492,7 @@ int main(int argc, char **argv)
 	}
         loopcntr++;
 	}
-	tst_exit();
+	return 0;
 }
 
 void

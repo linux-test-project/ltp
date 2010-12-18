@@ -80,7 +80,6 @@ void setup(void);
 
 char *TCID = "clock_gettime03"; /* Test program identifier.    */
 int TST_TOTAL;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = {EINVAL, EFAULT, 0};
 
 int testcase[6] = {

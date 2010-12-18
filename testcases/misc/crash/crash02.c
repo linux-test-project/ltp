@@ -67,7 +67,6 @@ TODO:
 
 char *TCID="crash02";
 int TST_TOTAL=1;
-extern int Tst_count;
 
 static int x_opt = 0;
 static int v_opt = 0;

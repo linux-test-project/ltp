@@ -62,7 +62,6 @@
 
 char *TCID = "hugeshmget01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int shm_id_1 = -1;
 

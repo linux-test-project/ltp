@@ -75,7 +75,6 @@
 
 char *TCID = "ksm01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 static int opt_num, opt_size;
 static char *opt_numstr, *opt_sizestr;
 /* memory pointer to identify per process, MB, and byte like

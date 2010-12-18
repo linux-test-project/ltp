@@ -72,7 +72,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;			/* TC counter for tst_* routines */
 
 static void setup(void);
 static void cleanup(void);

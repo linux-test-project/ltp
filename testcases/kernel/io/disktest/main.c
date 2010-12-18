@@ -504,5 +504,5 @@ int main(int argc, char **argv)
     WSACleanup();
 #endif
 
-	tst_exit();
+	return 0;
 }

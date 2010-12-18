@@ -78,7 +78,6 @@ void setup_test(int option);
 
 char *TCID = "timer_create02";	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static struct sigevent evp, *evp_ptr;
 
 int

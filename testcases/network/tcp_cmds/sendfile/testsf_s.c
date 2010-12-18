@@ -20,7 +20,6 @@
 #include "netdefs.h"
 
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #if INET6
 char *TCID = "sendfile6_server";

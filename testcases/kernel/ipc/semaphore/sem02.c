@@ -64,7 +64,6 @@ void cleanup(void);
 
 char *TCID = "sem02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 struct sembuf Psembuf = {0, -1, SEM_UNDO};
 struct sembuf Vsembuf = {0, 1, SEM_UNDO};

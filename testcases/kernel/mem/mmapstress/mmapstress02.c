@@ -60,7 +60,6 @@ int local_flag = PASSED;
 char *TCID = "mmapstress02"; //uiomove_phys_fail
 FILE *temp;
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int anyfail();
 void ok_exit();

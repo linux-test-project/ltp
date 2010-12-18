@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	}
 	fp_data = fopen(argv[1], "r");
 	if (!fp_data) {
-		perror("fopen:");
+		perror("fopen");
 		printf("Error opening datafile \n");
 		return 1;
 	}
@@ -71,26 +71,26 @@ int main(int argc, char *argv[])
 		}
 		fp_frag2 = fopen(frag_file2, "a+");
 		if (!fp_frag2) {
+			perror("fwrite");
 			printf("Error opening fragfile \n");
-			perror("fwrite:");
 			return -1;
 		}
 		bytes_read = fread(buff, 1, 1024, fp_data);
 		if (bytes_read < 0) {
+			perror("fread");
 			printf("Error reading data file\n");
-			perror("fread:");
 			return -1;
 		}
 		bytes_written = fwrite(buff, 1, bytes_read, fp_frag1);
 		if (bytes_read != bytes_written) {
+			perror("fwrite");
 			printf("Error in writing data\n");
-			perror("fwrite:");
 			return -1;
 		}
 		bytes_written = fwrite(buff, 1, bytes_read, fp_frag2);
 		if (bytes_read != bytes_written) {
+			perror("fwrite");
 			printf("Error in writing data\n");
-			perror("fwrite:");
 			return -1;
 		}
 		fd1 = fileno(fp_frag1);
@@ -105,5 +105,5 @@ int main(int argc, char *argv[])
 			break;
 	} while (1);
 	fclose(fp_data);
-	tst_exit();
+	return 0;
 }

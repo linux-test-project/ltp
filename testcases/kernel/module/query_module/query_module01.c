@@ -109,7 +109,6 @@
 /* Name of exported function in DUMMY_MOD */
 #define EXP_FUNC_NAME	"dummy_func_test"
 
-extern int Tst_count;
 
 struct test_case_t {			/* test case structure */
 	char 	*modname;

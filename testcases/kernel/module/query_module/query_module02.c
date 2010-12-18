@@ -94,7 +94,6 @@
 #define EXP_RET_VAL	-1
 #define QM_INVALID	(QM_INFO + 100)
 
-extern int Tst_count;
 
 struct test_case_t {			/* test case structure */
 	char 	*modname;

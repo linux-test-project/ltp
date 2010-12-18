@@ -292,6 +292,7 @@ main(int argc, char *argv[])
 
 	cleanup();
 
+	tst_exit();
 }
 
 static void setup(void)

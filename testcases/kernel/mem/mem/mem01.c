@@ -132,7 +132,6 @@ size_t get_memsize();
 
 char *TCID="mem01";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static int m_opt = 0;	/* memsize */
 static char *m_copt;

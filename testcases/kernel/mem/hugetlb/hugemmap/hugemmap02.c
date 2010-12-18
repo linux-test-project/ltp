@@ -73,7 +73,6 @@ char TEMPFILE[MAXPATHLEN];
 
 char *TCID = "hugemmap02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 unsigned long *addr;		/* addr of memory mapped region */
 unsigned long *addr2;		/* addr of memory mapped region */
 unsigned long *addrlist[5];	/* list of addresses of memory mapped region */

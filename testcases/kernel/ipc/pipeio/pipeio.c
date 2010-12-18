@@ -55,7 +55,6 @@
 
 char *TCID="pipeio"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 

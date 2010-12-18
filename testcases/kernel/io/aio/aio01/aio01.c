@@ -74,7 +74,6 @@ static void cleanup(void);
 
 #define mapsize (1 << 14)
 
-extern int Tst_count;
 int fd;
 char *maddr;
 

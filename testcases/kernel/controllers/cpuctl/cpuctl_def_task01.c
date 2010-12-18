@@ -71,7 +71,6 @@
 #define NUM_SETS	4	/* How many share values (with same ratio)*/
 #define MULTIPLIER   	10      /* Rate at which share value gets multiplied*/
 
-extern int Tst_count;
 char *TCID = "cpu_controller_tests";
 int TST_TOTAL = 1;
 pid_t scriptpid;

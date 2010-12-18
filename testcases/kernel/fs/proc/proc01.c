@@ -51,7 +51,6 @@
 
 char *TCID = "proc01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 static int	 opt_verbose = 0;
 static int	 opt_procpath = 0;

@@ -1383,5 +1383,5 @@ main(int argc, char **argv)
 	free(good_buf);
 	free(temp_buf);
 
-	tst_exit();
+	return 0;
 }

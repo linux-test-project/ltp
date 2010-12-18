@@ -97,7 +97,6 @@
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
-extern int Tst_count;
 
 #define MODSIZE 10000			/* Arbitrarily selected MODSIZE */
 #define NULLMODNAME ""

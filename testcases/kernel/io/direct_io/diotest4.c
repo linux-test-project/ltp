@@ -544,13 +544,13 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
 	if ((buf1 = (char *) (((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1))) == NULL) {
-                tst_brkm(TBROK, cleanup,"sbrk: %s", strerror(errno));
+                tst_brkm(TBROK|TERRNO, cleanup, "sbrk failed");
         }
         if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-		tst_brkm(TBROK, cleanup, "can't open %s: %s",
-			filename, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "open(%s, O_DIRECT|O_RDWR) failed", filename);
         }
-	ret =runtest_f(fd, buf1, offset, count, EFAULT, 16, " nonexistant space");
+	ret = runtest_f(fd, buf1, offset, count, EFAULT, 16, " nonexistant space");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
@@ -565,8 +565,8 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
         if ((fd = open(filename,O_DIRECT|O_RDWR|O_SYNC)) < 0) {
-		tst_brkm(TBROK, cleanup, "can't open %s: %s",
-			filename, strerror(errno));
+		tst_brkm(TBROK, cleanup,
+		    "open(%s, O_DIRECT|O_RDWR|O_SYNC failed)", filename);
         }
 	ret = runtest_s(fd, buf2, offset, count, 17, "opened with O_SYNC");
 	if (ret != 0) {
@@ -580,15 +580,15 @@ main(int argc, char *argv[])
 	close(fd);
 
 	unlink(filename);
-	if (failed) {
+	if (failed)
 		tst_resm(TINFO, "%d/%d test blocks failed",
 			fail_count, total);
-	} else {
+	else
 		tst_resm(TINFO, "%d testblocks completed",
 		 		 total);
-	}
 	cleanup();
 
+	tst_exit();
 }
 
 static void setup(void)
@@ -625,8 +625,6 @@ static void cleanup(void)
 
 int
 main() {
-
-		 tst_resm(TCONF,"O_DIRECT is not defined.");
-		 return 0;
+	tst_brkm(TCONF, NULL, "O_DIRECT is not defined.");
 }
 #endif /* O_DIRECT */

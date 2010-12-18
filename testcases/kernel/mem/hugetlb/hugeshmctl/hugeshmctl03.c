@@ -65,7 +65,6 @@
 
 char *TCID = "hugeshmctl03";
 int TST_TOTAL = 3;
-extern int Tst_count;
 unsigned long huge_pages_shm_to_be_allocated;
 
 int exp_enos[] = {EACCES, EPERM, 0};	/* 0 terminated list of */
