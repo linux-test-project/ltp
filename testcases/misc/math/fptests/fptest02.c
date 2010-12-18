@@ -117,11 +117,7 @@ char *argv[];
 
 	term();
 	tst_resm(TPASS,"PASS");
-	return 0;
-
-	/**NOT REACHED**/
-                 return(0);
-
+	tst_exit();
 }
 
 /*
@@ -173,7 +169,7 @@ term()
 		tst_resm(TINFO,"avgspd = %.15f\n", avgspd);
 		tst_resm(TINFO,"expected %.15f\n", MAGIC);
 		tst_resm(TINFO,"diff = %.15f\n", v);
-		return 0;
+		tst_exit();
 	}
 	return(0);
 }
@@ -199,10 +195,8 @@ double t;
 		}
 	if (ok)
 		return(0);
-	else{
-                                 tst_resm(TBROK,"No room for event");
-                                 return 0;
-                 }
+	else
+		tst_brkm(TBROK, NULL, "No room for event");
 
 	return(0);
 }
@@ -320,8 +314,7 @@ struct event *ev;
 			addevent(TRYCRIT,proc,sgtime);
 			break;
 		default:
-					tst_resm(TBROK,"Illegal event");
-					return 0;
+			tst_brkm(TBROK, NULL, "Illegal event");
 			break;
 		}
 	return(0);

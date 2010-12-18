@@ -96,9 +96,7 @@ int gcount;		/* # calls to gauss */
 struct event *nextevent();
 
 int
-main(argc,argv)
-int argc;
-char *argv[];
+main(int argc, char **argv)
 {
 	struct event *ev;
 
@@ -116,10 +114,7 @@ char *argv[];
 
 	term();
 	tst_resm(TPASS,"PASS");
-	return 0;
-
-	/**NOT REACHED**/
-	return(0);
+	tst_exit();
 }
 
 /*
@@ -144,11 +139,11 @@ init()
 
 	for (p=1; p<=nproc; p++) {
 		eventtab[p].type = NULLEVENT;
-		}
+	}
 
 	for (p=1; p<=nproc; p++) {
 		addevent(ENTERWORK,p,global_time);
-		}
+	}
 
 	return(0);
 }
@@ -178,7 +173,7 @@ term()
 		tst_resm(TINFO,"t_total = %.15f\n", t_total);
 		tst_resm(TINFO,"expected  %.15f\n", MAGIC1);
 		tst_resm(TINFO,"diff = %.15f\n", v);
-			return 0;
+		tst_exit();
 	}
 
 	v = avgspd - MAGIC2;
@@ -191,7 +186,7 @@ term()
 		tst_resm(TINFO,"avgspd  = %.15f\n", avgspd);
 		tst_resm(TINFO,"expected  %.15f\n", MAGIC2);
 		tst_resm(TINFO,"diff = %.15f\n", v);
-		return 0;
+		tst_exit();
 	}
 	return(0);
 }
@@ -199,9 +194,7 @@ term()
 	add an event to the event queue
 */
 int
-addevent(type,proc,t)
-int type, proc;
-double t;
+addevent(int type,int proc, double t)
 {
 	int i;
 	int ok=FALSE;
@@ -213,14 +206,12 @@ double t;
 			eventtab[i].time=t;
 			ok=TRUE;
 			break;
-			}
 		}
+	}
 	if (ok)
 		return(0);
-	else{
-		tst_resm(TBROK,"No room for event");
-			return 0;
-                 }
+	else
+		tst_brkm(TBROK, NULL, "No room for event");
 	return(0);
 }
 /*
@@ -233,11 +224,12 @@ struct event *nextevent()
 	int i;
 
 	for (i=1; i<=nproc; i++) {
-          if ((eventtab[i].type!=NULLEVENT) && (eventtab[i].time<mintime)) {
-		imin=i;
-		mintime=eventtab[i].time;
+		if (eventtab[i].type != NULLEVENT &&
+		    eventtab[i].time<mintime) {
+			imin=i;
+			mintime=eventtab[i].time;
 		}
-	  }
+	}
 
 	if (imin) {
 		rtrevent.type = eventtab[imin].type;
@@ -245,8 +237,7 @@ struct event *nextevent()
 		rtrevent.time = eventtab[imin].time;
 		eventtab[imin].type=NULLEVENT;
 		return(&rtrevent);
-		}
-	else
+	} else
 		return((struct event *)NULL);
 }
 /*
@@ -297,50 +288,49 @@ struct event *ev;
 	proc = ev->proc;
 
 	switch (ev->type) {
-		case TRYCRIT :
-			if (critfree==TRUE)
-				addevent(ENTERCRIT,proc,global_time);
-			else
-				addwaiting(proc);
-			break;
-		case ENTERCRIT :
-			critfree = FALSE;
-			nxttime=global_time+dtcrit();
-			addevent(LEAVECRIT,proc,nxttime);
-			break;
-		case LEAVECRIT :
-			critfree = TRUE;
-			addevent(ATBARRIER,proc,global_time);
-			if ((p=getwaiting())!=0) {
-				nxttime=global_time;
-				addevent(ENTERCRIT,p,nxttime);
-				}
-			break;
-		case ATBARRIER :
-			barcnt++;
-			if (barcnt==nproc) {
-				nxttime=global_time;
-				for (i=1; i<=nproc; i++) {
-					nxttime+=dtspinoff();
-					addevent(ENTERWORK,i,nxttime);
-					}
-				barcnt=0;
-				ncycle++;
-				}
-			break;
-		case ENTERWORK :
-			nxttime=global_time+dtwork();
-			if (ncycle<ncycmax)
-				addevent(LEAVEWORK,proc,nxttime);
-			break;
-		case LEAVEWORK :
-			addevent(TRYCRIT,proc,global_time);
-			break;
-		default:
-			tst_resm(TBROK,"Illegal event");
-					return 0;
-			break;
+	case TRYCRIT:
+		if (critfree==TRUE)
+			addevent(ENTERCRIT,proc,global_time);
+		else
+			addwaiting(proc);
+		break;
+	case ENTERCRIT:
+		critfree = FALSE;
+		nxttime=global_time+dtcrit();
+		addevent(LEAVECRIT,proc,nxttime);
+		break;
+	case LEAVECRIT:
+		critfree = TRUE;
+		addevent(ATBARRIER,proc,global_time);
+		if ((p=getwaiting())!=0) {
+			nxttime=global_time;
+			addevent(ENTERCRIT,p,nxttime);
 		}
+		break;
+	case ATBARRIER:
+		barcnt++;
+		if (barcnt==nproc) {
+			nxttime=global_time;
+			for (i=1; i<=nproc; i++) {
+				nxttime+=dtspinoff();
+				addevent(ENTERWORK,i,nxttime);
+			}
+			barcnt=0;
+			ncycle++;
+		}
+		break;
+	case ENTERWORK:
+		nxttime=global_time+dtwork();
+		if (ncycle<ncycmax)
+			addevent(LEAVEWORK,proc,nxttime);
+		break;
+	case LEAVEWORK:
+		addevent(TRYCRIT,proc,global_time);
+		break;
+	default:
+		tst_brkm(TBROK, NULL, "Illegal event");
+		break;
+	}
 	return(0);
 }
 
@@ -350,15 +340,13 @@ static double stdev;
 static double u1,u2;
 static double twopi;
 
-void gaussinit(m,s)
-double m,s;
+void gaussinit(double m, double s)
 {
 	mean=m;
 	stdev=s;
 	twopi=2.*acos((double)-1.0);
 	u1 = twopi / 400.0;
 	u2 = twopi / 500.0;
-	return;
 }
 
 double gauss()
@@ -378,10 +366,9 @@ double gauss()
 		alternator = -1;
 		x1 = sqrt(-2.0*log(u1))*cos(twopi*u2);
 		return(mean + stdev*x1);
-		}
-	else {
+	} else {
 		alternator = 1;
 		x2 = sqrt(-2.0*log(u1))*sin(twopi*u2);
 		return(mean + stdev*x2);
-		}
+	}
 }
