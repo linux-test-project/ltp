@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
 fail:
 	umount(DEV_MQUEUE2);
 	rmdir(DEV_MQUEUE2);
-	tst_exit();
 
 	tst_exit();
 }
