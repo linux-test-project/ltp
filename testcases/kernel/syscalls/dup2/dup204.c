@@ -65,7 +65,7 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int i, fd;
+	int i;
 	struct stat oldbuf, newbuf;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
