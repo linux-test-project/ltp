@@ -80,7 +80,6 @@
 
 char *TCID = "sethostname03";
 int TST_TOTAL = 1;
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static char ltpthost[] = "ltphost";
 static char hname[MAX_LENGTH];

@@ -211,7 +211,6 @@ struct ipc_t {
 
 char *TCID = "signal01";
 int TST_TOTAL = 5;
-extern int Tst_count;		/* count of test items completed */
 
 int Pid;			/* Return value from fork.                       */
 static int fd1[2];		/* ipc fd, shared between do_test and do_child */

@@ -57,7 +57,6 @@
 #include "usctest.h"
 
 char *TCID = "getcwd01";
-extern int Tst_count;
 char buf[100];
 
 void cleanup(void);

@@ -49,7 +49,6 @@
 #define cleanup tst_exit
 
 char *TCID = "timerfd01";	/* Test program identifier */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 /*
  * This were good at the time of 2.6.23-rc7 ...

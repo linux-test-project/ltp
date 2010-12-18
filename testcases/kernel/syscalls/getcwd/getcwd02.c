@@ -67,7 +67,6 @@ char *pwd = "/bin/pwd";
 int flag;
 char *TCID = "getcwd02";
 int TST_TOTAL = 7;
-extern int Tst_count;
 
 void cleanup(void);
 void setup(void);

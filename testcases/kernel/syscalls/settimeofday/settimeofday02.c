@@ -75,7 +75,6 @@ time_t save_tv_sec, save_tv_usec;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-extern int Tst_count;
 
 void setup(void);
 void cleanup(void);

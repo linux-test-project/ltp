@@ -71,7 +71,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;
 
 static void cleanup(void);
 static void setup(void);

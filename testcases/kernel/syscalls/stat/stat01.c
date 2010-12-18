@@ -86,7 +86,6 @@
 
 char *TCID = "stat01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { 0 };
 uid_t user_id;			/* Owner id of the test file */
 gid_t group_id;			/* Group id of the test file */

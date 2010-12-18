@@ -71,7 +71,6 @@ void do_child(void);
 
 char *TCID = "msgrcv01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int msg_q_1;
 MSGBUF snd_buf, rcv_buf, cmp_buf;

@@ -60,7 +60,6 @@
 
 char *TCID = "creat04";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 void setup(void);
 void cleanup(void);

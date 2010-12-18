@@ -65,9 +65,8 @@ void setup(void);
 
 char *TCID = "fchdir02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
-int exp_enos[] = { 9, 0 };	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EBADF, 0 };
 
 int main(int ac, char **av)
 {
@@ -75,48 +74,31 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();		/* global setup */
 
-	/* The following loop checks looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-
-		/*
-		 * Look for a failure by using an invalid number for fd
-		 */
 
 		TEST(fchdir(bad_fd));
 
-		if (TEST_RETURN != -1) {
-			tst_brkm(TFAIL, cleanup, "call succeeded with bad "
-				 "file descriptor");
-		}
+		if (TEST_RETURN != -1)
+			tst_brkm(TFAIL, cleanup, "call succeeded unexpectedly");
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		switch (TEST_ERRNO) {
-		case EBADF:
-			tst_resm(TPASS, "failed with EBADF");
-			break;
-		default:
+		if (TEST_ERRNO == EBADF)
+			tst_resm(TPASS, "failed as expected with EBADF");
+		else
 			tst_brkm(TFAIL|TTERRNO, cleanup,
-			    "call failed with an unexpected error");
-		}
+			    "call failed unexpectedly");
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
 void setup(void)
 {
 
@@ -124,25 +106,14 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	/* create a test directory and cd into it */
 	tst_tmpdir();
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
 void cleanup(void)
 {
-	/* remove the test directory */
 	tst_rmdir();
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }

@@ -122,7 +122,6 @@ static void cleanup();
 
 TCID_DEFINE(setgid01);		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0, 0 };
 GID_T gid;

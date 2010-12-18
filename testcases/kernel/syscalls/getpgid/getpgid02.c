@@ -58,7 +58,6 @@ void cleanup(void);
 
 char *TCID = "getpgid02";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 int pgid_0, pgid_1;
 #define BADPID -99

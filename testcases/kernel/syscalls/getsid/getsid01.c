@@ -68,7 +68,6 @@ void setup(void);
 
 char *TCID = "getsid01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 pid_t p_sid;
 

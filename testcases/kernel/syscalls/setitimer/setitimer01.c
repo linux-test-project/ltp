@@ -62,7 +62,6 @@ void setup(void);
 
 char *TCID = "setitimer01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define SEC0	0
 #define SEC1	20

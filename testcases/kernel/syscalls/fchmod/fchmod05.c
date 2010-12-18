@@ -96,7 +96,6 @@
 int fd;				/* file descriptor for test directory */
 char *TCID = "fchmod05";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 void setup();			/* Main setup function for test */
 void cleanup();			/* Main cleanup function for test */

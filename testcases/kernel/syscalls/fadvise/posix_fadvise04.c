@@ -54,7 +54,6 @@ void setup();
 void cleanup();
 
 TCID_DEFINE(posix_fadvise04);	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define GIVEN_IN_SETUP 42	/* No mean. Just used as padding.
 				   This is overwritten by setup(). */

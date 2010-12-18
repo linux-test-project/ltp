@@ -59,7 +59,6 @@
 
 char *TCID = "msgget03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int maxmsgs = 0;
 

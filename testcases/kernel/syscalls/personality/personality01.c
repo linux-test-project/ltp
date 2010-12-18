@@ -68,7 +68,6 @@ void setup(void);
 
 char *TCID = "personality01";
 int TST_TOTAL = 13;
-extern int Tst_count;
 
 int pers[] = { PER_LINUX, PER_LINUX_32BIT, PER_SVR4, PER_SVR3, PER_SCOSVR3,
 	PER_WYSEV386, PER_ISCR4, PER_BSD, PER_XENIX, PER_LINUX32,

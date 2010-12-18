@@ -81,7 +81,6 @@
 
 char *TCID = "munmap01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *addr;			/* addr of memory mapped region */
 int fildes;			/* file descriptor for tempfile */

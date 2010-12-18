@@ -79,7 +79,6 @@
 
 char *TCID = "pwrite03";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
 int fd1;			/* file descriptor of temporary file */

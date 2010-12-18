@@ -88,7 +88,6 @@ void sig_handler(int sig);	/* signal catching function */
 
 char *TCID = "sigprocmask01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { 0 };
 int sig_catch = 0;		/* variable to blocked/unblocked signals */
 

@@ -65,7 +65,6 @@ void do_child_2();
 
 char *TCID = "msgctl07";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 /* Used by main() and do_child_1(): */
 static int msqid;

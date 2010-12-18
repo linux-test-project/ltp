@@ -58,7 +58,6 @@
 char *TCID = "setreuid06";
 int TST_TOTAL = 1;
 int exp_enos[] = { EPERM, 0 };
-extern int Tst_count;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

@@ -66,7 +66,6 @@ void cleanup(void);
 
 char *TCID = "move_pages08";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int main(int argc, char **argv)
 {

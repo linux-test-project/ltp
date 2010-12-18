@@ -86,7 +86,6 @@
 #define LARGE_LENGTH MAX_LENGTH + 1
 #define MAX_LENGTH _UTSNAME_LENGTH - 1
 
-extern int Tst_count;
 
 static void cleanup(void);
 static void setup(void);

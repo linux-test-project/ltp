@@ -88,7 +88,6 @@ static int setup_test();
 
 char *TCID = "reboot02";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static int exp_enos[] = { EINVAL, EPERM, 0 };

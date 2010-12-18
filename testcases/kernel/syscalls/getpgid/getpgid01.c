@@ -56,7 +56,6 @@ void cleanup(void);
 
 char *TCID = "getpgid01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int main(int ac, char **av)
 {

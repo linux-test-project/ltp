@@ -100,7 +100,6 @@ void cleanup();
 
 char *TCID = "link07";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { EACCES, 0 };
 char *file1, *file2;		/* oldpath and newpath */

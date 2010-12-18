@@ -88,7 +88,6 @@
 
 char *TCID = "utime04";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { 0 };
 struct utimbuf times;		/* struct. buffer for utime() */
 

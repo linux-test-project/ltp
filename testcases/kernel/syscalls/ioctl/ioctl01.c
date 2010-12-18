@@ -59,7 +59,6 @@
 
 char *TCID = "ioctl01";
 int TST_TOTAL = 5;
-extern int Tst_count;
 
 #define	INVAL_IOCTL	9999999
 

@@ -58,7 +58,6 @@
 #include "ipcshm.h"
 
 char *TCID = "shmat01";
-extern int Tst_count;
 
 void check_functionality(int);
 

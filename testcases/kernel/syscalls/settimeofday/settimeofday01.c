@@ -71,7 +71,6 @@ int TST_TOTAL = 1;
 time_t save_tv_sec, save_tv_usec;
 struct timeval tp, tp1, tp2;
 int exp_enos[] = { EFAULT, 0 };
-extern int Tst_count;
 
 void setup(void);
 void cleanup(void);

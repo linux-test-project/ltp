@@ -75,7 +75,6 @@ void cleanup();
 
 char *TCID = "mlockall01";	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
-extern int Tst_count;		/* Testcase counter for tst_* routine */
 
 int exp_enos[] = { 0 };
 

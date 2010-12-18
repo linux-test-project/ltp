@@ -43,7 +43,6 @@
 
 char *TCID = "fcntl13";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int fail;
 void setup(void);

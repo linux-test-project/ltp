@@ -124,7 +124,6 @@ void cleanup();
 
 char *TCID = "mknod01";		/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char Path[1024];		/* path to create */
 int i;

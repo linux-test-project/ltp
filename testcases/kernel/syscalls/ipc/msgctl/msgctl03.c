@@ -62,7 +62,6 @@
 
 char *TCID = "msgctl03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int msg_q_1 = -1;		/* to hold the message queue id */
 

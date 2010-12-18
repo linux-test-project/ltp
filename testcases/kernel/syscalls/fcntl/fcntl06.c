@@ -59,7 +59,6 @@
 
 char *TCID = "fcntl06";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void setup();
 void cleanup();

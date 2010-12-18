@@ -86,7 +86,6 @@ char user1name[] = "nobody";
 
 char *TCID = "rmdir03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char tstdir1[255];
 char tstdir2[255];

@@ -84,7 +84,6 @@ static void setup(void);
 static void cleanup(void);
 
 char *TCID = "prctl01";		/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int option[2] = { PR_GET_PDEATHSIG, PR_SET_PDEATHSIG };
 int TST_TOTAL = 2;

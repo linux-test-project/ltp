@@ -89,7 +89,6 @@ static int do_child();
 
 char *TCID = "clone07";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 void sigsegv_handler(int);
 void sigusr2_handler(int);

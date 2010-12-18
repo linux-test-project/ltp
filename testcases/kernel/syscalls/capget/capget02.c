@@ -95,7 +95,6 @@ static void cleanup();
 static void test_setup(int);
 
 char *TCID = "capget02";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = { EFAULT, EINVAL, ESRCH, 0 };
 
 static struct __user_cap_header_struct header;

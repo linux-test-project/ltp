@@ -65,7 +65,6 @@ int TST_TOTAL = 1;
 volatile int intintr;
 int fail;
 
-extern int Tst_count;
 
 #define	MAXKIDS	8
 

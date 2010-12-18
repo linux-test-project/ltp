@@ -84,7 +84,6 @@
 
 char *TCID = "getpriority02";	/* Test program identifier.    */
 int TST_TOTAL = 4;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EINVAL, ESRCH, 0 };
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */

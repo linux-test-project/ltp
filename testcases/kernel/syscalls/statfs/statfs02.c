@@ -63,7 +63,6 @@
 
 char *TCID = "statfs02";
 int fileHandle = 0;
-extern int Tst_count;
 
 int exp_enos[] = {
 	ENOTDIR, ENOENT, ENAMETOOLONG,

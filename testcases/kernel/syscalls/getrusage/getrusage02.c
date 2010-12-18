@@ -82,7 +82,6 @@ static void cleanup();
 static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 char *TCID = "getrusage02";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct rusage usage;
 

@@ -70,7 +70,6 @@ int exp_enos[] = { 9, 14, 32, 0 };
 
 char *TCID = "write05";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
-extern int Tst_count;
 char filename[100];
 int fd;
 

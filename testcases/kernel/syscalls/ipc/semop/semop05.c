@@ -70,7 +70,6 @@ void sighandler(int);
 
 char *TCID = "semop05";
 int TST_TOTAL = 4;
-extern int Tst_count;
 
 int exp_enos[] = { EINTR, EIDRM, 0 };	/* 0 terminated list of expected errnos */
 

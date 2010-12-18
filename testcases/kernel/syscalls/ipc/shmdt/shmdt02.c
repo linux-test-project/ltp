@@ -53,7 +53,6 @@
 
 char *TCID = "shmdt02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of expected errnos */
 

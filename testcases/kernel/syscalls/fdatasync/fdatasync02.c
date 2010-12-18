@@ -78,7 +78,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;
 
 #define EXP_RET_VAL	-1
 #define SPL_FILE	"/dev/null"

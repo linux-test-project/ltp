@@ -57,7 +57,6 @@ void setup(void);
 
 char *TCID = "exit02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define READ  0
 #define WRITE 1

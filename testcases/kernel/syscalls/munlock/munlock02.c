@@ -80,7 +80,6 @@ void cleanup();
 
 char *TCID = "munlock02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 int exp_enos[] = { ENOMEM, 0 };
 

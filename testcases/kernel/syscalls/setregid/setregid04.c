@@ -69,7 +69,6 @@
 #include <usctest.h>
 #include <errno.h>
 
-extern int Tst_count;
 
 char *TCID = "setregid04";
 gid_t users_gr_gid, root_gr_gid, daemon_gr_gid, bin_gr_gid;

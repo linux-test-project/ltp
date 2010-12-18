@@ -94,7 +94,6 @@ int *flag;
 
 int exp_enos[] = { EPERM, 0 };
 
-extern int Tst_count;
 extern int getipckey();
 
 #define TEST_SIG SIGKILL

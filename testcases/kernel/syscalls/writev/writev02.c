@@ -86,7 +86,6 @@ char *buf_list[NBUFS];
 
 char *TCID = "writev02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void sighandler(int);
 long l_seek(int, long, int);

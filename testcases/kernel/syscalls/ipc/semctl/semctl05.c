@@ -54,7 +54,6 @@
 
 char *TCID = "semctl05";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 #ifdef _XLC_COMPILER
 #define SEMUN_CAST

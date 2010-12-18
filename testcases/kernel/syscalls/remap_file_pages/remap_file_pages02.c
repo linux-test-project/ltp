@@ -99,7 +99,6 @@ static void cleanup();
 
 char *TCID = "remap_file_pages02";	/* Test program identifier.    */
 int TST_TOTAL = 4;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = { EINVAL, 0 };
 
 static char *cache_contents;

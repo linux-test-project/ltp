@@ -140,7 +140,6 @@ static char cwd_parent[FILENAME_MAX];
 static int parent_got_signal, child_pid;
 
 char *TCID = "clone02";		/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct test_case_t {
 	int flags;

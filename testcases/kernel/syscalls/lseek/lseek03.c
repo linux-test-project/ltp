@@ -124,7 +124,6 @@ void rec_sigsys(int);
 
 char *TCID = "lseek03";		/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fname[255];
 int fd;

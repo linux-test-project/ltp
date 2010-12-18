@@ -66,7 +66,6 @@
 
 char *TCID = "mmap10";
 int TST_TOTAL = 1;
-extern int Tst_count;
 static int fd, opt_anon, opt_ksm;
 
 void setup(void);

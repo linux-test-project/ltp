@@ -66,7 +66,6 @@ void functest2(void);
 
 char *TCID = "creat01";
 int TST_TOTAL = 2;
-extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 

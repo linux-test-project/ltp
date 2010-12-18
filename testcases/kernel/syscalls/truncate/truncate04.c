@@ -89,7 +89,6 @@ struct passwd *ltpuser;
 
 TCID_DEFINE(truncate04);	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char test_desc[] = "File is a directory";
 int exp_enos[] = { EISDIR, 0 };

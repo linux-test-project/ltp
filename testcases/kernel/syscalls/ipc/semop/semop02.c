@@ -60,7 +60,6 @@
 
 char *TCID = "semop02";
 int TST_TOTAL = 5;
-extern int Tst_count;
 
 int exp_enos[] = { E2BIG, EACCES, EFAULT, EINVAL, 0 };
 

@@ -45,7 +45,6 @@
 
 char *TCID = "shmctl04";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 struct shm_info shm_info;
 int max_ids;

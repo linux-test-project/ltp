@@ -58,7 +58,6 @@
 
 char *TCID = "setfsuid04";
 int TST_TOTAL = 1;
-extern int Tst_count;
 char nobody_uid[] = "nobody";
 char testfile[256] = "";
 struct passwd *ltpuser;

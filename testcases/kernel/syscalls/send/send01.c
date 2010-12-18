@@ -113,7 +113,6 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. *
 
 int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EMSGSIZE, EPIPE, EINVAL, 0 };
 
-extern int Tst_count;
 
 #ifdef UCLINUX
 static char *argv0;

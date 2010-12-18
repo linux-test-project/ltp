@@ -76,7 +76,6 @@ char *buf_list[NBUFS];
 
 char *TCID = "readv01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int init_buffs(char **);
 int fill_mem(char *, int, int);

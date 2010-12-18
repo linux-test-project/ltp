@@ -127,7 +127,6 @@ void setup();
 void cleanup();
 
 char *TCID = "stat06";		/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0, 0 };
 

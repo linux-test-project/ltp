@@ -54,7 +54,6 @@ char string[40] = "";
 
 char *TCID = "fcntl18";
 int TST_TOTAL = 1;
-extern int Tst_count;
 struct passwd *pass;
 
 void setup(void);

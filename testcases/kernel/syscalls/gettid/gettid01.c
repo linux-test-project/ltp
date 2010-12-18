@@ -38,7 +38,6 @@ void setup();
 void cleanup();
 
 char *TCID = "gettid01";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int TST_TOTAL = 1;
 

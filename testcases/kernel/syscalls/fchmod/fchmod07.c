@@ -82,7 +82,6 @@
 int fd;				/* file descriptor for testfile */
 char *TCID = "fchmod07";	/* Test program identifier.    */
 int TST_TOTAL = 8;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int Modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };
 

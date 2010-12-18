@@ -74,7 +74,6 @@ static void cleanup();
 
 char *TCID = "sched_rr_get_interval01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct timespec tp;
 

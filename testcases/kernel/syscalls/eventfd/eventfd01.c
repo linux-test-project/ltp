@@ -70,7 +70,6 @@ static void setup(void);
 
 TCID_DEFINE(eventfd01);
 int TST_TOTAL = 15;
-extern int Tst_count;
 
 static int myeventfd(unsigned int initval, int flags)
 {

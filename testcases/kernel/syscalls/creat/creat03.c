@@ -53,7 +53,6 @@
 
 char *TCID = "creat03";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
-extern int Tst_count;		/* Test case counter */
 
 char pfilname[40] = "";
 #define FMODE	0444

@@ -218,7 +218,6 @@ int exp_enos[] =
     { EBADF, ENOTSOCK, EFAULT, EISCONN, ENOTCONN, EINVAL, EMSGSIZE, EPIPE,
 ENOBUFS, 0 };
 
-extern int Tst_count;
 
 #ifdef UCLINUX
 static char *argv0;

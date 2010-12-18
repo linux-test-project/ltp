@@ -52,7 +52,6 @@
 
 char *TCID = "fork07";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void help(void);
 void setup(void);
@@ -92,7 +91,7 @@ int main(int ac, char **av)
 		if (sscanf(Nforkarg, "%i", &Nforks) != 1)
 			tst_brkm(TBROK, cleanup,
 				 "--N option arg is not a number");
-	else
+	} else
 		Nforks = 100;
 
 	setup();
@@ -151,34 +150,31 @@ int main(int ac, char **av)
 
 		c_pass = c_fail = 0;
 		while (wait(&status) > 0) {
-			if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 				c_pass++;
-			} else {
+			else
 				c_fail++;
-			}
 			--forks;
 		}
 		if (forks == 0) {
 			tst_resm(TINFO, "Collected all %d children", Nforks);
-			if (c_fail > 0) {
+			if (c_fail > 0)
 				tst_resm(TFAIL,
 					 "%d/%d children didn't read correctly from an inheritted fd",
 					 c_fail, Nforks);
-			} else {
+			else
 				tst_resm(TPASS,
 					 "%d/%d children read correctly from an inheritted fd",
 					 c_pass, Nforks);
-			}
-		} else if (forks > 0) {
+		} else if (forks > 0)
 			tst_brkm(TBROK, cleanup,
 				 "There should be %d more children to collect!",
 				 forks);
-		} else {	/* forks < 0 */
+		else
 
 			tst_brkm(TBROK, cleanup,
 				 "Collected %d more children then I should have!",
 				 abs(forks));
-		}
 	}
 	fclose(writ);
 	fclose(rea);
@@ -190,6 +186,7 @@ int main(int ac, char **av)
 void help()
 {
 	printf("  -N n    Create n children each iteration\n");
+	printf("  -v      Verbose mode\n");
 }
 
 /*

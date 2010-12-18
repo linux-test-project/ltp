@@ -71,7 +71,6 @@
 #include <sys/wait.h>
 
 char *TCID = "setresuid03";
-extern int Tst_count;
 
 uid_t neg_one = -1;
 uid_t inval_user = (USHRT_MAX - 2);

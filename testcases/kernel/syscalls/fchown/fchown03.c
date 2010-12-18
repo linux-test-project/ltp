@@ -91,7 +91,6 @@
 int fildes;			/* File descriptor for test file */
 char *TCID = "fchown03";	/* Test program identifier. */
 int TST_TOTAL = 1;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 

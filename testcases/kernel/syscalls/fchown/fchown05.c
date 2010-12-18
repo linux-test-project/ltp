@@ -84,7 +84,6 @@
 int fildes;			/* File descriptor for the test file */
 char *TCID = "fchown05";	/* Test program identifier.    */
 int TST_TOTAL = 5;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct test_case_t {		/* Struct. for for test case looping */
 	char *desc;

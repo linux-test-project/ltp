@@ -86,7 +86,6 @@
 #define EXP_ERRNO	EPERM
 #define TEST_DESC	"unprivileged user"
 
-extern int Tst_count;
 
 struct test_case_t {		/* test case structure */
 	uid_t *rgid;		/* real GID */

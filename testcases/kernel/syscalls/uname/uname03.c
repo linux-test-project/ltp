@@ -63,7 +63,6 @@ void setup(void);
 
 char *TCID = "uname03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define LINUX	"Linux"
 

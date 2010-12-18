@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 
 		TEST(flock(-1, LOCK_SH));
 
-		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF) {
+		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF)
 			tst_resm(TPASS,
 				 "flock failed as expected with EBADF");
 		else if (TEST_RETURN == 0)

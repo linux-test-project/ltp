@@ -60,7 +60,6 @@ void cleanup();
 
 char *TCID = "setpgid02";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 pid_t pgid, pid;
 pid_t bad_pid = -1;

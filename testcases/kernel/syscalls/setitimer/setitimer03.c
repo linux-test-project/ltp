@@ -63,7 +63,6 @@ void setup(void);
 
 char *TCID = "setitimer03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int exp_enos[] = { EINVAL, 0 };
 

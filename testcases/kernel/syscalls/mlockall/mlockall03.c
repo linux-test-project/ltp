@@ -91,7 +91,6 @@ void cleanup();
 
 char *TCID = "mlockall03";	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #if !defined(UCLINUX)
 

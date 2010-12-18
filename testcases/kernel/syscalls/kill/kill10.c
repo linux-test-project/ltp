@@ -190,7 +190,6 @@ inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa);
 
 char *TCID = "kill10";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0, 0 };
 

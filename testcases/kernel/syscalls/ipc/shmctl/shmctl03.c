@@ -62,7 +62,6 @@
 #include <sys/wait.h>
 
 char *TCID = "shmctl03";
-extern int Tst_count;
 
 int exp_enos[] = { EACCES, EPERM, 0 };	/* 0 terminated list of */
 

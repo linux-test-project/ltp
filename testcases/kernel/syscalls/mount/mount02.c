@@ -101,7 +101,6 @@ static int setup_test(int, int);
 static int cleanup_test(int);
 
 char *TCID = "mount02";		/* Test program identifier.    */
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20

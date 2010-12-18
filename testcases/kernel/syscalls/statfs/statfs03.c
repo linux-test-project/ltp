@@ -60,7 +60,6 @@
 char *TCID = "statfs03";
 int TST_TOTAL = 1;
 int fileHandle = 0;
-extern int Tst_count;
 
 int exp_enos[] = { EACCES, 0 };
 char nobody_uid[] = "nobody";

@@ -84,7 +84,6 @@ char *TCID = "socketcall01";	/* Test program identifier.    */
 void setup();
 void cleanup();
 
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 struct test_case_t {
 	int call;

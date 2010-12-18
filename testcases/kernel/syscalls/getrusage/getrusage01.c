@@ -74,7 +74,6 @@ static void setup();
 static void cleanup();
 
 char *TCID = "getrusage01";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int who[2] = { RUSAGE_SELF, RUSAGE_CHILDREN };
 int TST_TOTAL = 2;
 

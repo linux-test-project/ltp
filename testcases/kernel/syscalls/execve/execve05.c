@@ -53,7 +53,6 @@ void cleanup(void);
 
 char *TCID = "execve05";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int iterations;
 char *fname1;

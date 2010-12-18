@@ -112,7 +112,6 @@ long get_shmmax(void);
 
 char *TCID = "madvise03";	/* Test program modifier */
 int TST_TOTAL = 3;		/* Total no of test cases */
-extern int Tst_count;		/* Test case counter for tst_* routines */
 
 int i = 0;			/* Loop Counters */
 static int shmid1;

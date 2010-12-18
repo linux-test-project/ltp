@@ -82,17 +82,13 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define PERMS		01777	/*
-				 * Mode permissions of test file with sticky
-				 * bit set.
-				 */
+#define FILE_MODE       (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
+#define PERMS		01777
 #define TESTFILE	"testfile"
 
 int fd;				/* file descriptor for test file */
 char *TCID = "fchmod03";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -107,12 +103,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	mode_t file_mode;	/* mode permissions set on testfile */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -120,15 +112,10 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/*
-		 * Call fchmod(2) with specified mode permissions
-		 * (to set sticky bit) on testfile.
-		 */
 		TEST(fchmod(fd, PERMS));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "fchmod(%d, %#o) Failed, errno=%d : %s",
-				 fd, PERMS, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "fchmod failed");
 			continue;
 		}
 		/*
@@ -140,51 +127,38 @@ int main(int ac, char **av)
 			 * Get the file information using
 			 * fstat(2).
 			 */
-			if (fstat(fd, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "fstat(2) of %s failed, errno:%d",
-					 TESTFILE, TEST_ERRNO);
-			}
+			if (fstat(fd, &stat_buf) == -1)
+				tst_brkm(TFAIL|TERRNO, cleanup, "fstat failed");
 			file_mode = stat_buf.st_mode;
 
 			/* Verify STICKY BIT set on testfile */
-			if ((file_mode & PERMS) != PERMS) {
+			if ((file_mode & PERMS) != PERMS)
 				tst_resm(TFAIL, "%s: Incorrect modes 0%3o, "
 					 "Expected 0777", TESTFILE, file_mode);
-			} else {
+			else
 				tst_resm(TPASS, "Functionality of fchmod(%d, "
 					 "%#o) successful", fd, PERMS);
-			}
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
-/*
- * void
- * setup() - performs all ONE TIME setup for this test.
- *  Create a temporary directory and cd to it.
- *  Create a testfile under test directory.
- */
 void setup()
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
+
 	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "seteuid failed");
 
 	TEST_PAUSE;
 
@@ -195,32 +169,16 @@ void setup()
 	 * mode permissios and set the ownership of the test file to the
 	 * uid/gid of guest user.
 	 */
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 }
 
-/*
- * void
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- *  Close the testfile created in the setup.
- *  Delete the testfile and temporary directory created in setup().
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Close the testfile created/opened in the setup */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, NULL, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TWARN|TERRNO, "close failed");
 
 	tst_rmdir();
 

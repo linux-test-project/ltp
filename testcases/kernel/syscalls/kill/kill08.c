@@ -70,7 +70,6 @@ void do_child(void);
 char *TCID = "kill08";
 int TST_TOTAL = 1;
 
-extern int Tst_count;
 
 #define TEST_SIG SIGKILL
 

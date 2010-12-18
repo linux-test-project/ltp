@@ -65,7 +65,6 @@
 
 char *TCID = "shmdt01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void sighandler(int);
 struct shmid_ds buf;

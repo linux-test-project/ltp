@@ -69,7 +69,6 @@ void cleanup();
 
 char *TCID = "mmap09";
 int TST_TOTAL = 3;
-extern int Tst_count;
 int fd;
 char *maddr;
 

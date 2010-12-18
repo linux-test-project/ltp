@@ -72,7 +72,6 @@
 #include <usctest.h>
 #include <errno.h>
 
-extern int Tst_count;
 
 char *TCID = "setregid02";
 gid_t users_gr_gid, root_gr_gid, bin_gr_gid;

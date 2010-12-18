@@ -25,7 +25,6 @@
 #include "usctest.h"
 
 char *TCID = "io_destroy01";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int TST_TOTAL = 1;
 

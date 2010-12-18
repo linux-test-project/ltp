@@ -109,7 +109,6 @@ void check_and_print(char *advice);
 
 char *TCID = "madvise01";	/* Test program modifier */
 int TST_TOTAL = 5;		/* Total no of test cases */
-extern int Tst_count;		/* Test case counter for tst_* routines */
 
 int i = 0;			/* Loop Counters */
 

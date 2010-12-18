@@ -121,7 +121,6 @@ extern int sighold(int __sig);
 
 char *TCID = "sighold02";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char signals_received[MAXMESG];
 int pid;			/* process id of child */

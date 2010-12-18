@@ -89,7 +89,6 @@ static struct sched_param param = { 0 };
 static struct sched_param param1 = { 1 };
 
 char *TCID = "sched_setparam04";
-extern int Tst_count;
 
 static int exp_enos[] = { EINVAL, ESRCH, 0 };	/* 0 terminated list of *
 						 * expected errnos */

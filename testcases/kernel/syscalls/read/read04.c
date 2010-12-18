@@ -58,7 +58,6 @@ void setup(void);
 
 char *TCID = "read04";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define TST_SIZE	27	/* could also do strlen(palfa) */
 char fname[255];

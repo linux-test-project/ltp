@@ -56,7 +56,6 @@ void setup(void);
 void cleanup(void);
 
 char *TCID = "fstatfs02";
-extern int Tst_count;
 
 int exp_enos[] = { EBADF, EFAULT, 0 };
 

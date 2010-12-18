@@ -177,7 +177,6 @@ char *TCID = "linkat01";
 /* Total number of test cases. */
 int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);
 /* Test Case counter for tst_* routines */
-extern int Tst_count;
 
 #define SUCCEED_OR_DIE(syscall, message, ...)		\
 	(errno = 0,					\

@@ -52,7 +52,6 @@
 
 char *TCID = "waitpid11";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 volatile int intintr;
 void setup(void);

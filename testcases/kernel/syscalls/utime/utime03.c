@@ -98,7 +98,6 @@
 
 char *TCID = "utime03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 time_t curr_time;		/* current time in seconds */
 time_t tloc;			/* argument var. for time() */
 int exp_enos[] = { 0 };

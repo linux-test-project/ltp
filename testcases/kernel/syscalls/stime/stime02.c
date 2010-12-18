@@ -80,7 +80,6 @@
 
 char *TCID = "stime02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EPERM, 0 };
 time_t curr_time;		/* system's current time in seconds */
 time_t new_time;		/* system's new time */

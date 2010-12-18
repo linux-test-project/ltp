@@ -49,7 +49,6 @@
 
 char *TCID = "pipe03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int exp_enos[] = { EBADF, 0 };
 

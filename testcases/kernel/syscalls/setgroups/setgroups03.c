@@ -84,7 +84,6 @@ struct passwd *ltpuser;
 
 TCID_DEFINE(setgroups03);	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { EINVAL, EPERM, 0 };
 

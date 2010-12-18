@@ -86,7 +86,6 @@
 
 char *TCID = "lchown01";
 int TST_TOTAL = 5;
-extern int Tst_count;
 
 struct test_case_t {
 	char *desc;

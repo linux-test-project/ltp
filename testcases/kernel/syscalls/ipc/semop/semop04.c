@@ -54,7 +54,6 @@
 
 char *TCID = "semop04";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 int exp_enos[] = { EAGAIN, 0 };	/* 0 terminated list of expected errnos */
 

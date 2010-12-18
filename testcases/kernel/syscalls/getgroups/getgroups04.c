@@ -78,7 +78,6 @@
 
 char *TCID = "getgroups04";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EINVAL, 0 };
 
 gid_t groups_list[NGROUPS];	/* buffer to hold user group list */

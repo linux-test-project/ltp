@@ -92,7 +92,6 @@
 
 char *TCID = "lseek10";		/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { ESPIPE, EINVAL, EBADF, 0 };
 
 int no_setup();

@@ -85,7 +85,6 @@
 
 char *TCID = "stime01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 struct timeval real_time_tv, pres_time_tv;
 time_t new_time;		/* system's new time */
 int exp_enos[] = { 0 };

@@ -70,7 +70,6 @@ int do_lock(int, short, short, int, int);
 
 char *TCID = "fcntl11";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int fail;
 

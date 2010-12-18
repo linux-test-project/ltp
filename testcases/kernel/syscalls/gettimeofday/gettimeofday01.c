@@ -57,7 +57,6 @@ char *TCID = "gettimeofday01";
 #if !defined UCLINUX
 
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int exp_enos[] = { EFAULT, 0 };
 

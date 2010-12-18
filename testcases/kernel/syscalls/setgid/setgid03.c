@@ -49,7 +49,6 @@
 
 TCID_DEFINE(setgid03);
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 char ltpuser1[] = "nobody";
 char root[] = "root";

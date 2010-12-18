@@ -63,7 +63,6 @@ int anyfail();
 int blenter();
 int blexit();
 int instress();
-extern int Tst_count;
 
 void setup();
 /*****	**	**	*****/

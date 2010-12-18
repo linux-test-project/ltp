@@ -78,7 +78,6 @@ extern void do_file_setup(char *);
 
 char *TCID = "rename03";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fname[255], mname[255];
 char fdir[255], mdir[255];

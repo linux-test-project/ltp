@@ -79,7 +79,6 @@ int shmid1;
 extern key_t semkey;
 int *flag;
 
-extern int Tst_count;
 extern int getipckey();
 extern void rm_shm(int);
 

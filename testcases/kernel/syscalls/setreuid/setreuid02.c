@@ -69,7 +69,6 @@
 #include <usctest.h>
 #include <errno.h>
 
-extern int Tst_count;
 
 char *TCID = "setreuid02";
 uid_t nobody_pw_uid, root_pw_uid, daemon_pw_uid, bin_pw_uid;

@@ -79,7 +79,6 @@ static void setup();
 static void cleanup();
 
 char *TCID = "sysfs06";		/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int option[3] = { 2, 4, 2 };	/* valid and invalid option */
 static int fsindex[3] = { 10000, 0, 1 };	/*invalid and valid fsindex */
 static int exp_enos[] = { EINVAL, EFAULT, 0 };

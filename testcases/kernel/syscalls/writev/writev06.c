@@ -73,7 +73,6 @@ int fd[2], in_sighandler;
 
 char *TCID = "writev06";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void sighandler(int);
 void setup(void);

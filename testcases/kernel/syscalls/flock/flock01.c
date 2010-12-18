@@ -80,7 +80,6 @@ int exp_enos[] = { EWOULDBLOCK, EAGAIN, EINVAL, 0 };
 
 char *TCID = "flock01";		/* Test program identifier */
 int TST_TOTAL = 3;		/* Total number of test cases */
-extern int Tst_count;
 char filename[100];
 int fd;
 

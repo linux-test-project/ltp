@@ -82,7 +82,6 @@ static void cleanup();
 
 char *TCID = "sched_getparam02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct sched_param param;
 

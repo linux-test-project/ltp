@@ -94,7 +94,6 @@ void do_file_setup(char *);
 #define PERMS		0777
 
 char *TCID = "rmdir02";		/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { ENOTEMPTY, EBUSY, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0 };
 

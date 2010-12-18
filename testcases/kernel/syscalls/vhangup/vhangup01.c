@@ -61,7 +61,6 @@ int exp_enos[] = { EPERM, 0 };
 int fail;
 char user1name[] = "nobody";
 extern struct passwd *my_getpwnam(char *);
-extern int Tst_count;
 
 int main(int argc, char **argv)
 {

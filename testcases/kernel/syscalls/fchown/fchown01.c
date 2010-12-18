@@ -140,23 +140,21 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/* Call fchown(2) just once */
 		TEST(fchown(fd, geteuid(), getegid()));
 
-		/* check return code */
-		if (TEST_RETURN == -1) {
+		if (TEST_RETURN == -1)
 			tst_resm(TFAIL|TTERRNO, "fchown failed");
-		} else {
-			if (STD_FUNCTIONAL_TEST) {
+		else
+			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS,
-					 "fchown(fd, geteuid(), getegid()) returned %ld",
-					 TEST_RETURN);
-			}
-		}
+				    "fchown(fd, geteuid(), getegid()) "
+				    "returned %ld",
+				    TEST_RETURN);
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
 void setup()
@@ -167,13 +165,11 @@ void setup()
 
 	TEST_PAUSE;
 
-	/* make a tempdir and change to it */
 	tst_tmpdir();
 
-	/* open a file for read/write */
 	sprintf(fname, "./tmpfile.%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK|TERRNO, "open failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 }
 
 void cleanup()
@@ -183,5 +179,4 @@ void cleanup()
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }

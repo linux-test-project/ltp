@@ -80,7 +80,6 @@
 
 char *TCID = "pread02";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
 char *read_buf[NBUFS];		/* buffer to hold data read from file */

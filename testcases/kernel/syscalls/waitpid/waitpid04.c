@@ -56,7 +56,6 @@ int exp_enos[] = { 10, 22, 0 };
 
 char *TCID = "waitpid04";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define INVAL_FLAG	-1
 

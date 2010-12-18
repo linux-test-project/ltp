@@ -71,7 +71,6 @@
 #include <usctest.h>
 #include <sys/wait.h>
 
-extern int Tst_count;
 
 char *TCID = "setregid03";
 int fail = -1;

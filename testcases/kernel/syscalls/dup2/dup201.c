@@ -71,7 +71,6 @@ void cleanup(void);
 
 char *TCID = "dup201";		/* Test program identifier.    */
 int TST_TOTAL = 4;		/* Total number of test cases. */
-extern int Tst_count;		/* Test counter for tst_* routines */
 
 int maxfd;
 int goodfd = 5;

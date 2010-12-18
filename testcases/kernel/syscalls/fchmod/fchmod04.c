@@ -92,7 +92,6 @@
 int fd;				/* file descriptor for test directory */
 char *TCID = "fchmod04";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

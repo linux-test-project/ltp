@@ -79,7 +79,6 @@ void cleanup(void);
 
 char *TCID = "move_pages05";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 /*
  * child() - touches pages, and waits for signal from parent.

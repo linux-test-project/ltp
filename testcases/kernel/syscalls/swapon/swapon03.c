@@ -84,7 +84,6 @@ int create_swapfile(char *swapfile, int bs, int count);
 
 char *TCID = "swapon03";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static int exp_enos[] = { EPERM, 0 };
 static int swapfiles;		/* Number of swapfiles turned on */

@@ -84,7 +84,6 @@ static void setup(void);
 static struct sched_param param;
 
 char *TCID = "sched_getparam03";
-extern int Tst_count;
 
 static int exp_enos[] = { EINVAL, ESRCH, 0 };	/* 0 terminated list of *
 						 * expected errnos */

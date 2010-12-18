@@ -159,7 +159,6 @@ int choose_sig(int sig);
 #define HANDLE_ERR 32
 
 int TST_TOTAL = 1;		/* number of test items */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *TCID = "sigrelse01";	/* test case identifier */
 static char mesg[MAXMESG];	/* message buffer for tst_res */

@@ -77,7 +77,6 @@ static void cleanup();
 
 char *TCID = "setdomainname01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static char *test_domain_name = "test_dom";
 static char old_domain_name[MAX_NAME_LEN];

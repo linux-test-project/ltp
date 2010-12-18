@@ -76,7 +76,6 @@ static void cleanup();
 
 char *TCID = "ustat01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 dev_t dev_num;
 struct ustat *ubuf;

@@ -74,7 +74,6 @@ void cleanup(void);
 
 char *TCID = "flock06";		/* Test program identifier */
 int TST_TOTAL = 3;		/* Total number of test cases */
-extern int Tst_count;
 char filename[100];
 
 int main(int argc, char **argv)

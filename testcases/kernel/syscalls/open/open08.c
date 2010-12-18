@@ -61,7 +61,6 @@ void setup(void);
 void cleanup(void);
 
 char *TCID = "open08";
-extern int Tst_count;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

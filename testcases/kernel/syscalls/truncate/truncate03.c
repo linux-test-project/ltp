@@ -107,7 +107,6 @@ int setup2();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
 
 TCID_DEFINE(truncate03);	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EACCES, ENOTDIR, EFAULT, ENAMETOOLONG, ENOENT, 0 };
 
 char *bad_addr = 0;

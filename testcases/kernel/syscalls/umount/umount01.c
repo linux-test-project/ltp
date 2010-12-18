@@ -81,7 +81,6 @@ static void cleanup(void);
 
 char *TCID = "umount01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #define DEFAULT_FSTYPE	"ext2"
 #define DIR_MODE	S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH

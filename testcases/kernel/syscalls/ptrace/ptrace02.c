@@ -106,7 +106,6 @@ static void parent_handler();
 static int got_signal = 0;
 
 char *TCID = "ptrace02";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int i;			/* loop test case counter, shared with do_child */
 
 int TST_TOTAL = 2;

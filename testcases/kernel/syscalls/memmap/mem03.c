@@ -63,7 +63,6 @@ static void cleanup();
 
 char *TCID = "mem03";		/* Test program identifier. */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int f1 = -1, f2 = -1;
 char *mm1 = NULL, *mm2 = NULL;

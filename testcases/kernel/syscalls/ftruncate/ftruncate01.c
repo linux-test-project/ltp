@@ -85,7 +85,6 @@
 
 TCID_DEFINE(ftruncate01);	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fildes;			/* file descriptor for test file */
 
 void setup();			/* setup function for the test */

@@ -84,7 +84,6 @@
 
 char *TCID = "lseek08";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fildes;			/* file handle for temp file */
 size_t file_size;		/* size of the temporary file */
 

@@ -86,7 +86,6 @@ void cleanup();
 void setup1(void);
 
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 int i, s;
 unsigned long args[3];
 struct sockaddr_in si;

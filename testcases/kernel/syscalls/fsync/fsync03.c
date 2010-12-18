@@ -72,7 +72,6 @@ struct test_case_t {
 
 char *TCID = "fsync03";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 int main(int ac, char **av)
 {

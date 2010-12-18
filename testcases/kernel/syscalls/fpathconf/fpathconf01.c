@@ -121,7 +121,6 @@ void setup();
 void cleanup();
 
 char *TCID = "fpathconf01";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define FILENAME	"fpafile01"
 

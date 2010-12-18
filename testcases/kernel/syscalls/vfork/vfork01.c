@@ -86,7 +86,6 @@
 
 char *TCID = "vfork01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { 0 };
 
 /* Variables to hold parent/child eff/real/saved uid/gid values */

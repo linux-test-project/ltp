@@ -84,7 +84,6 @@ static void setup(void);
 static void cleanup(void);
 
 char *TCID = "mount04";		/* Test program identifier.    */
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20

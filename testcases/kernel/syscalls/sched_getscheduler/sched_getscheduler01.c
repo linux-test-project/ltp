@@ -53,7 +53,6 @@
 
 char *TCID = "sched_getscheduler01";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 void setup(void);
 void cleanup(void);

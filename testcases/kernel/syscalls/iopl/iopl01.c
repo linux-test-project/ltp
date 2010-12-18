@@ -78,7 +78,6 @@ static void setup();
 static void cleanup();
 
 int TST_TOTAL = 4;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int level;			/* I/O privilege level of the process */
 

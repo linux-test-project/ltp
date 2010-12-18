@@ -76,7 +76,6 @@
 
 #define RLIMIT_TOO_HIGH 1000
 
-extern int Tst_count;
 
 char *TCID = "getrlimit02";
 

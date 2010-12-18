@@ -58,7 +58,6 @@
 
 char *TCID = "fcntl17";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define STRINGSIZE	27
 #define STRING		"abcdefghijklmnopqrstuvwxyz\n"

@@ -89,7 +89,6 @@ static void setup(void);
 
 char *TCID = "setdomainname02";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 static int exp_enos[] = { EINVAL, EFAULT, 0 };	/* 0 terminated list of *
 						 * expected errnos */

@@ -54,7 +54,6 @@ void cleanup();
 
 char *TCID = "pselect01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define FILENAME "pselect01_test"
 #define LOOP_COUNT 4

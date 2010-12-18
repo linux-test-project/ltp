@@ -56,7 +56,6 @@
 
 char *TCID = "open04";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int fd, ifile, mypid, first;
 int nfile;

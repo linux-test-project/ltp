@@ -61,7 +61,6 @@
 
 TCID_DEFINE(sendfile03);
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 int in_fd, out_fd;
 char in_file[100], out_file[100];

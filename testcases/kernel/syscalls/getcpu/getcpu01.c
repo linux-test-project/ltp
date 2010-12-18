@@ -90,7 +90,6 @@ unsigned int max_cpuid(size_t, cpu_set_t *);
 
 char *TCID = "getcpu01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int main(int ac, char **av)
 {

@@ -545,7 +545,6 @@ extern void catch_alarm();
 
 char *TCID = "fcntl14";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
-extern int Tst_count;		/* Test case counter */
 
 #ifdef UCLINUX
 static char *argv0;		/* Set by main(), passed to self_exec() */

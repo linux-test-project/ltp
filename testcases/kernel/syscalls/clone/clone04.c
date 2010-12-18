@@ -83,7 +83,6 @@ static void setup(void);
 static int child_fn();
 
 char *TCID = "clone04";
-extern int Tst_count;
 void *child_stack;
 
 static int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of *

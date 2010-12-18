@@ -54,7 +54,6 @@
 
 char *TCID = "semget06";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 #define LARGENUM	1024 * 32
 #define SMALLNUM	-1

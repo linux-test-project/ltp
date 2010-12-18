@@ -52,7 +52,6 @@
 
 char *TCID = "chroot01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 int fail;
 
 char path[] = "/tmp";

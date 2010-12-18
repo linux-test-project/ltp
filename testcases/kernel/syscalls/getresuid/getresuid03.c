@@ -83,7 +83,6 @@ extern int setresuid(uid_t, uid_t, uid_t);
 
 char *TCID = "getresuid03";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 uid_t pr_uid, pe_uid, ps_uid;	/* calling process real/effective/saved uid */
 
 void setup();			/* Main setup function of test */

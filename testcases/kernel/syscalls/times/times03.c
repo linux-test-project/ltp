@@ -57,7 +57,6 @@
 
 char *TCID = "times03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 int exp_enos[] = { 0 };
 volatile int timeout;		/* Did we timeout in alarm() ? */
 

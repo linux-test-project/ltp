@@ -63,7 +63,6 @@
 
 char *TCID = "msgctl04";
 int TST_TOTAL = 6;
-extern int Tst_count;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

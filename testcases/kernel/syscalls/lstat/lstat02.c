@@ -131,7 +131,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 char *TCID = "lstat02";		/* Test program identifier.    */
 int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);	/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0 };
 
 char nobody_uid[] = "nobody";

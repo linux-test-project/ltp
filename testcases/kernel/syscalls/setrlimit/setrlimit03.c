@@ -50,7 +50,6 @@
 
 char *TCID = "setrlimit03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #if !defined(NR_OPEN)
 //Taken from definition in /usr/include/linux/fs.h

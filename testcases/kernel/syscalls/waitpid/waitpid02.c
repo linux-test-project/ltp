@@ -63,7 +63,6 @@ void cleanup(void);
 
 char *TCID = "waitpid02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int main(int argc, char **argv)
 {

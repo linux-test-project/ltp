@@ -65,7 +65,6 @@ void cleanup();
 
 char *TCID = "inotify01";	/* Test program identifier.    */
 int TST_TOTAL = 7;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define BUF_SIZE 256
 char fname[BUF_SIZE];

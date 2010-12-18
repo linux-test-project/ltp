@@ -85,7 +85,6 @@ extern struct passwd *my_getpwnam(char *);
 
 char *TCID = "mkdir02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char tstdir1[100];
 char tstdir2[100];

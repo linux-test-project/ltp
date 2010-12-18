@@ -49,7 +49,6 @@
 
 TCID_DEFINE(modify_ldt02);
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #if defined(__i386__) && defined(HAVE_MODIFY_LDT)
 

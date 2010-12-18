@@ -81,7 +81,6 @@ static void setup();
 static void cleanup();
 
 char *TCID = "sched_rr_get_interval03";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 struct timespec tp;
 static int exp_enos[] = { EINVAL, ESRCH, EFAULT, 0 };
 

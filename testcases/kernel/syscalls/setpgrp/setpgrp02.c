@@ -51,7 +51,6 @@
 
 char *TCID = "setpgrp02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void setup(void);
 void cleanup(void);

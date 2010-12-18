@@ -68,7 +68,6 @@
 
 char *TCID = "waitpid10";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int alrmintr;
 volatile int intintr;

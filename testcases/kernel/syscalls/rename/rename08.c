@@ -78,7 +78,6 @@ void cleanup();
 extern void do_file_setup(char *);
 
 char *TCID = "rename08";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
 

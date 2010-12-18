@@ -102,7 +102,6 @@ static int setup_uid(void);
 
 char *TCID = "mount03";		/* Test program identifier.    */
 int TST_TOTAL = 6;		/* Total number of test cases. */
-extern int Tst_count;		/* TestCase counter for tst_* routine */
 extern char **environ;		/* pointer to this processes env */
 
 #define DEFAULT_FSTYPE	"ext2"

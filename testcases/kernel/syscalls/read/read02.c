@@ -70,7 +70,6 @@ void cleanup(void);
 void setup(void);
 
 char *TCID = "read02";
-extern int Tst_count;
 
 char file[BUFSIZ];
 char fname[100] = "/tmp/tstfile";

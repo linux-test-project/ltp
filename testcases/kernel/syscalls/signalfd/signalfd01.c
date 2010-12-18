@@ -49,7 +49,6 @@
 
 TCID_DEFINE(signalfd01);
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #ifndef HAVE_SIGNALFD
 #define  USE_STUB

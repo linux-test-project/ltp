@@ -128,7 +128,6 @@ int TST_TOTAL = 2;		/* Total number of test cases. */
 #else
 int TST_TOTAL = 1;		/* Total number of test cases. */
 #endif
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define BASENAME	"lkfile"
 

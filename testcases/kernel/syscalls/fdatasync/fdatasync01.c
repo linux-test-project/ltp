@@ -72,7 +72,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static int fd;
 static char filename[30];

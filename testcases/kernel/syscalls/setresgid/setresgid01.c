@@ -79,7 +79,6 @@
 
 #define EXP_RET_VAL	0
 
-extern int Tst_count;
 
 struct test_case_t {		/* test case structure */
 	uid_t *rgid;		/* real GID */

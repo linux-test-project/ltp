@@ -117,7 +117,6 @@ void create_pipe();
 void get_blocksize(int fd);
 
 /* Extern Global Variables */
-extern int Tst_count;
 /* Global Variables */
 char *TCID = "fallocate02";	/* test program identifier */
 char fnamew[255];		/* Files used for testing */

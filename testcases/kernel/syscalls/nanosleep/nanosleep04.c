@@ -72,7 +72,6 @@
 
 char *TCID = "nanosleep04";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct timespec timereq;	/* time struct. buffer for nanosleep() */
 

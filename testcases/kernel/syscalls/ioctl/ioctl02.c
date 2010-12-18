@@ -73,7 +73,6 @@
 
 char *TCID = "ioctl02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 struct termio termio, save_io;
 

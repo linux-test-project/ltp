@@ -57,7 +57,6 @@
 
 char *TCID = "open10";
 int TST_TOTAL = 1;
-extern int Tst_count;
 int local_flag;
 
 #define PASSED 1

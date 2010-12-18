@@ -111,7 +111,6 @@ void populate_file();
 void file_seek(off_t);
 
 /* Extern Global Variables */
-extern int Tst_count;
 
 /* Global Variables */
 char *TCID = "fallocate03";	/* test program identifier */

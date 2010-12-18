@@ -60,7 +60,6 @@
 
 char *TCID = "semget05";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 /*
  * The MAXIDS value is somewhat arbitrary and may need to be increased

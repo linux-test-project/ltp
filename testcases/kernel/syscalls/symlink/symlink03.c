@@ -102,7 +102,6 @@
 
 char *TCID = "symlink03";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { ENOTDIR, ENOENT, ENAMETOOLONG, EFAULT, EEXIST, EACCES, 0 };
 
 char *bad_addr = 0;

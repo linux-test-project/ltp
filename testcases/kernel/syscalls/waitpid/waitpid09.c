@@ -71,7 +71,6 @@ volatile int intintr;
 /* 0 terminated list of expected errnos */
 int exp_enos[] = { 10, 0 };
 
-extern int Tst_count;
 
 void setup(void);
 void cleanup(void);

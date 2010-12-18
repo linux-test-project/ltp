@@ -94,7 +94,6 @@ struct passwd *user1;		/* struct. to hold getpwnam(3) o/p contents */
 char *TCID = "mknod04";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 char node_name[PATH_MAX];	/* buffer to hold node name created */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 gid_t group1_gid, group2_gid, mygid;	/* user and process group id's */
 uid_t save_myuid, user1_uid;	/* user and process user id's */

@@ -97,7 +97,6 @@
 
 char *TCID = "readlink03";	/* Test program identifier.    */
 int TST_TOTAL = 5;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EACCES, EINVAL, ENAMETOOLONG, ENOENT, 0 };
 
 char nobody_uid[] = "nobody";

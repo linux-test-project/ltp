@@ -398,7 +398,6 @@ const char* TCID="sigtimedwait01";
 const char* TCID="sigwait01";
 #endif
 
-extern int Tst_count;
 
 int TST_TOTAL = sizeof(tests)/sizeof(*tests);
 

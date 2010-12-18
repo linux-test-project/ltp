@@ -58,7 +58,6 @@
 
 char *TCID = "shmget02";
 int TST_TOTAL = 4;
-extern int Tst_count;
 
 int exp_enos[] = { ENOENT, EEXIST, EINVAL, 0 };	/* 0 terminated list of */
 

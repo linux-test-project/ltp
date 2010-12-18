@@ -109,9 +109,13 @@
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include <signal.h>
 #include "test.h"
@@ -122,127 +126,74 @@ void cleanup();
 
 char *TCID = "dup04";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0, 0 };
 
-int Fd[2];
+int fd[2];
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * Call dup(2) for read side
-		 */
-		TEST(dup(Fd[0]));
+		TEST(dup(fd[0]));
 
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "dup(%d) read side of syspipe Failed, errno=%d : %s",
-				 Fd[0], TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
+		if (TEST_RETURN == -1)
+			tst_resm(TFAIL|TERRNO,
+			    "dup of read side of pipe failed");
+		else {
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS,
 					 "dup(%d) read side of syspipe returned %ld",
-					 Fd[0], TEST_RETURN);
+					 fd[0], TEST_RETURN);
 
 			} else
 				Tst_count++;
 
-			/* close the new file so loops do not open too many files */
-			if (close(TEST_RETURN) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "close(%ld) Failed, errno=%d : %s",
-					 TEST_RETURN, errno, strerror(errno));
-			}
+			if (close(TEST_RETURN) == -1)
+				tst_brkm(TBROK, cleanup, "close failed");
 		}
 
-		/*
-		 * Call dup(2) for write side
-		 */
-		TEST(dup(Fd[1]));
+		TEST(dup(fd[1]));
 
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "dup(%d) write side of syspipe Failed, errno=%d : %s",
-				 Fd[1], TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
+		if (TEST_RETURN == -1)
+			tst_resm(TFAIL|TTERRNO,
+			    "dup of write side of pipe failed");
+		else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS,
 					 "dup(%d) write side of syspipe returned %ld",
-					 Fd[1], TEST_RETURN);
+					 fd[1], TEST_RETURN);
 
 			} else
 				Tst_count++;
 
-			/* close the new file so loops do not open too many files */
-			if (close(TEST_RETURN) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "close(%ld) Failed, errno=%d : %s",
-					 TEST_RETURN, errno, strerror(errno));
-			}
+			if (close(TEST_RETURN) == -1)
+				tst_brkm(TBROK|TTERRNO, cleanup,
+				    "close failed");
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
-	/*
-	 * Initialize Fd in case we get a quick signal
-	 */
-	Fd[0] = -1;
+	fd[0] = -1;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -250,37 +201,15 @@ void setup()
 
 	tst_tmpdir();
 
-	if (pipe(Fd) == -1) {
-		tst_brkm(TBROK, cleanup, "pipe(&Fd) Failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
+	if (pipe(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	int ind;
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* close the open file we've been dup'ing */
-	if (Fd[0] != -1) {
-		for (ind = 0; ind < 2; ind++) {
-			if (close(Fd[ind]) == -1) {
-				tst_resm(TWARN,
-					 "close(%d) Failed, errno=%d : %s",
-					 Fd[ind], errno, strerror(errno));
-			}
-			Fd[ind] = -1;
-		}
-	}
+	fcloseall();
 
 	tst_rmdir();
-
 }

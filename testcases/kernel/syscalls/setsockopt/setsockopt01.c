@@ -130,7 +130,6 @@ struct test_case_t {		/* test case structure */
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-extern int Tst_count;
 
 int main(int argc, char *argv[])
 {

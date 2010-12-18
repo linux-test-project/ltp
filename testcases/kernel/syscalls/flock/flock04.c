@@ -81,68 +81,57 @@
 void setup(void);
 void cleanup(void);
 
-/* 0 terminated list of expected errnos */
 int exp_enos[] = { EWOULDBLOCK, EAGAIN, 0 };
 
 char *TCID = "flock04";		/* Test program identifier */
 int TST_TOTAL = 2;		/* Total number of test cases */
-extern int Tst_count;
 char filename[100];
 int fd, fd1, status;
 
 int main(int argc, char **argv)
 {
 	int lc, retval;
-	/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 
-	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/* global setup */
 	setup();
-
-	/* The following loop checks looping state if -i option given */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* Testing Shared lock on Share Locked file */
 		TEST(flock(fd, LOCK_SH));
 		if (TEST_RETURN == 0) {
 
 			pid = FORK_OR_VFORK();
+			if (pid == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 			if (pid == 0) {
 				fd1 = open(filename, O_RDONLY);
 				retval = flock(fd1, LOCK_SH | LOCK_NB);
-				if (retval == -1) {
+				if (retval == -1)
 					tst_resm(TFAIL,
 						 "flock() FAILED to acquire shared lock on existing "
 						 "Share Locked file");
-				} else {
+				else
 					tst_resm(TPASS,
 						 "flock() PASSED in acquiring shared lock on "
 						 "Share Locked file");
-				}
 				exit(0);
-			} else {
-				/* parent waiting */
-				wait(&status);
-			}
-
-			/* Testing Exclusive lock on a Share Locked file */
+			} else
+				if (wait(&status) == -1)
+					tst_brkm(TBROK|TERRNO, "wait failed");
 
 			pid = FORK_OR_VFORK();
+			if (pid == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 
 			if (pid == 0) {
 				fd1 = open(filename, O_RDWR);
-				retval = flock(fd1, LOCK_EX | LOCK_NB);
+				retval = flock(fd1, LOCK_EX|LOCK_NB);
 				if (retval == -1) {
 					tst_resm(TPASS,
 						 "flock() failed to acquire exclusive lock on existing "
@@ -153,76 +142,44 @@ int main(int argc, char **argv)
 						 "Share Locked file");
 				}
 				exit(0);
-			} else {
-				/* parent waiting */
-				wait(&status);
-			}
+			} else
+				if (wait(&status) == -1)
+					tst_brkm(TBROK|TERRNO, "wait failed");
 			TEST(flock(fd, LOCK_UN));
-		} else {
-			tst_resm(TFAIL,
-				 "flock() failed to acquire shared lock");
-		}
+		} else
+			tst_resm(TFAIL|TERRNO, "flock failed");
 
 		close(fd);
 		close(fd1);
 	}
 
 	cleanup();
+	tst_exit();
+}
 
- }
-
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
 void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -i option.
-	 * You want to make sure you do this before you create your temporary
-	 * directory.
-	 */
 	TEST_PAUSE;
 
-	/* Create a unique temporary directory and chdir() to it. */
 	tst_tmpdir();
 
 	sprintf(filename, "flock04.%d", getpid());
 
-	/* creating temporary file */
 	fd = creat(filename, 0666);
-	if (fd == -1) {
-		tst_resm(TFAIL, "creating a new file failed");
-
-		TEST_CLEANUP;
-
-		/* Removing temp dir */
-		tst_rmdir();
-
-	}
+	if (fd == -1)
+		tst_brkm(TFAIL, cleanup, "creating a new file failed");
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- * 	completion or premature exit
- */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	unlink(filename);
 
 	tst_rmdir();
-
- }
+}

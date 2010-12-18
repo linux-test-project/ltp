@@ -64,7 +64,6 @@ void setup(void);
 
 char *TCID = "signal02";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 typedef void (*sighandler_t) (int);
 

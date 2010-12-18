@@ -67,7 +67,6 @@ void setup(void);
 
 char *TCID = "wait402";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int exp_enos[] = { 10, 0 };
 

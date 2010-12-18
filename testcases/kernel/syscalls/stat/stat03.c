@@ -128,7 +128,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 char *TCID = "stat03";		/* Test program identifier.    */
 int TST_TOTAL = (sizeof(Test_cases) / sizeof(*Test_cases));
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EACCES,
 #if !defined(UCLINUX)
 	EFAULT, ENAMETOOLONG,

@@ -67,7 +67,6 @@ void setup_every_copy();
 
 char *TCID = "fchmodat01";	/* Test program identifier.    */
 int TST_TOTAL = TEST_CASES;	/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 char pathname[256] = "";
 char testfile[256] = "";
 char testfile2[256] = "";

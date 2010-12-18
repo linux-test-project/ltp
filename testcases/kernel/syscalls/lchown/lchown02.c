@@ -107,7 +107,6 @@
 
 char *TCID = "lchown02";
 int TST_TOTAL = 7;
-extern int Tst_count;
 
 static void setup_eperm(int pos);
 static void setup_eacces(int pos);

@@ -79,7 +79,6 @@
 
 TCID_DEFINE(setgroups02);	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 GID_T groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 
 struct passwd *user_info;	/* struct. to hold test user info */

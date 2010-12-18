@@ -67,7 +67,6 @@ int TST_TOTAL = 1;
 char buf[BSIZE];
 
 /*****	LTP Port	*****/
-extern int Tst_count;
 
 int anyfail();
 int blenter();

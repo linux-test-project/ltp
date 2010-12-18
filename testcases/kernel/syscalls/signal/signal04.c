@@ -68,7 +68,6 @@ void setup(void);
 void sighandler(int);
 
 char *TCID = "signal04";
-extern int Tst_count;
 
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT,
 	SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,

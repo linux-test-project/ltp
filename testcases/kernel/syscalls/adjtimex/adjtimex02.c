@@ -106,7 +106,6 @@ static void cleanup();
 static void cleanup6();
 
 char *TCID = "adjtimex02";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static int hz;			/* HZ from sysconf */
 

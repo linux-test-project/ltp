@@ -123,7 +123,6 @@ void cleanup();
 
 char *TCID = "setreuid01";	/* Test program identifier.    */
 int TST_TOTAL = 5;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0, 0 };	/* Zero terminated list of expected errnos */
 

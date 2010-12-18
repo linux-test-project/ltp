@@ -91,7 +91,6 @@
 
 char *TCID = "llseek02";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int no_setup();
 int setup1();			/* setup function to test llseek() for EINVAL */

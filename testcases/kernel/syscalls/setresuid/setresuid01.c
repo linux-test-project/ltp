@@ -70,7 +70,6 @@
 #include <usctest.h>
 #include <errno.h>
 
-extern int Tst_count;
 char *TCID = "setresuid01";
 
 uid_t nobody_pw_uid, root_pw_uid, bin_pw_uid;

@@ -77,7 +77,6 @@ void cleanup(void);
 
 char *TCID = "move_pages03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 /*
  * child() - touches shared pages, and waits for signal from parent.

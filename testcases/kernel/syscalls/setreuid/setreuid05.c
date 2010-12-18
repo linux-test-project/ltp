@@ -70,7 +70,6 @@
 #include <sys/wait.h>
 
 char *TCID = "setreuid05";
-extern int Tst_count;
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;

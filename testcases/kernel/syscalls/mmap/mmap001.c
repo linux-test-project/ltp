@@ -33,7 +33,6 @@
 
 char *TCID = "mmap001";
 int TST_TOTAL = 5;
-extern int Tst_count;
 static char *filename = NULL;
 static int m_opt = 0;
 static char *m_copt;

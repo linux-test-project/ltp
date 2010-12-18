@@ -54,7 +54,6 @@ char user1name[] = "nobody";
 
 char *TCID = "open05";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 extern struct passwd *my_getpwnam(char *);
 char fname[20];

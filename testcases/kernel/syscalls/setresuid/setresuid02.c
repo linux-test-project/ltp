@@ -67,7 +67,6 @@
 #include <sys/wait.h>
 
 char *TCID = "setresuid02";
-extern int Tst_count;
 
 uid_t neg_one = -1;
 

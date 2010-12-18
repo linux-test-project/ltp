@@ -43,7 +43,6 @@
 
 char *TCID = "mlock03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 static void setup(void);
 static void cleanup(void) LTP_ATTRIBUTE_NORETURN;

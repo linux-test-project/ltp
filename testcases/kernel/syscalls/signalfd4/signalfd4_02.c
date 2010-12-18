@@ -66,7 +66,6 @@
 #define SFD_NONBLOCK O_NONBLOCK
 
 /* Extern Global Variables */
-extern int Tst_count;
 extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */

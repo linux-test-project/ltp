@@ -62,7 +62,6 @@ void setup(void);
 
 char *TCID = "msgrcv04";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 int exp_enos[] = { E2BIG, ENOMSG, 0 };
 

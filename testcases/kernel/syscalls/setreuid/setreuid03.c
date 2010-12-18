@@ -70,7 +70,6 @@
 #define FAILED  1
 
 char *TCID = "setreuid03";
-extern int Tst_count;
 
 int fail = -1;
 int pass = 0;

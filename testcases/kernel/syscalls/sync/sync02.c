@@ -83,7 +83,6 @@
 
 char *TCID = "sync02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 char write_buffer[BUFSIZ];	/* buffer used to write data to file */
 int fildes;			/* file descriptor for temporary file */
 

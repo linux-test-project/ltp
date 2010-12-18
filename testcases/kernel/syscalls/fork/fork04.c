@@ -120,7 +120,6 @@
 #include "usctest.h"
 
 char *TCID = "fork04";		/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define	KIDEXIT	42		/* Known value for child exit status */
 #define MAX_LINE_LENGTH 256

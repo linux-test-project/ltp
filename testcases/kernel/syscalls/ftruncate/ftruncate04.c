@@ -76,7 +76,6 @@ char progname[] = "ftruncate04()";
 
 TCID_DEFINE(ftruncate04);
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int sync_pipes[2];
 int len = 8 * 1024;

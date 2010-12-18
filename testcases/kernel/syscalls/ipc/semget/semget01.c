@@ -60,7 +60,6 @@
 
 char *TCID = "semget01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int sem_id_1 = -1;
 

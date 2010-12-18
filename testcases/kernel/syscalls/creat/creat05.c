@@ -57,7 +57,6 @@
 
 char *TCID = "creat05";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define MODE	0666
 

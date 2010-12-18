@@ -91,7 +91,6 @@ char *TCID = "fchown02";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test conditions */
 int Fd1;			/* File descriptor for testfile1 */
 int Fd2;			/* File descriptor for testfile2 */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int no_setup();
 int setup1();			/* Test specific setup functions */

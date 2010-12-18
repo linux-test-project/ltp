@@ -68,7 +68,6 @@ void setup(void);
 
 char *TCID = "close01";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 char fname[40] = "";
 

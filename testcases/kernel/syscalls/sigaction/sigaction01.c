@@ -76,7 +76,6 @@ void cleanup();
 
 char *TCID = "sigaction01";
 int TST_TOTAL = 4;
-extern int Tst_count;
 
 volatile sig_atomic_t testcase_no;
 volatile sig_atomic_t pass;

@@ -77,7 +77,6 @@ static void setup3(void);
 
 char *TCID = "mincore01";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 static char file_name[] = "fooXXXXXX";
 static char *global_pointer = NULL;

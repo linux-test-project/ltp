@@ -68,7 +68,6 @@
 
 char *TCID = "fcntl15";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 static int parent, child1, child2, status;
 static volatile sig_atomic_t parent_flag, child_flag, alarm_flag;

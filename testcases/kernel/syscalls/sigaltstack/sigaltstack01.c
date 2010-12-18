@@ -80,7 +80,6 @@
 
 char *TCID = "sigaltstack01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { 0 };
 void *addr, *main_stk;		/* address of main stack for signal */
 int got_signal = 0;

@@ -68,7 +68,6 @@
 #include <fcntl.h>
 
 char *TCID = "chroot03";
-extern int Tst_count;
 
 int fd = 0;
 char fname[255];

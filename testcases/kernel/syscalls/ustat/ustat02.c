@@ -79,7 +79,6 @@ static void setup();
 static void cleanup();
 
 char *TCID = "ustat02";		/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static int exp_enos[] = { EINVAL, EFAULT, 0 };
 

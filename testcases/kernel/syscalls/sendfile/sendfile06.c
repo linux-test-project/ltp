@@ -61,7 +61,6 @@
 #endif /* Not def: OFF_T */
 
 TCID_DEFINE(sendfile06);
-extern int Tst_count;
 
 char in_file[100];
 char out_file[100];

@@ -62,7 +62,6 @@ void cleanup();
 
 char *TCID = "write04";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 /* 0 terminated list of expected errnos */
 int exp_enos[] = { 11, 0 };

@@ -87,7 +87,6 @@ void setup(void);
 
 char *TCID = "getsid02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 int pid_max = 32768;		/* Default value for PID_MAX  */
 
 int exp_enos[] = { ESRCH, 0 };	/* 0 terminated list of expected errnos */

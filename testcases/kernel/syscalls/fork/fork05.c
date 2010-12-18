@@ -116,7 +116,6 @@
 #include "usctest.h"
 
 char *TCID = "fork05";
-extern int Tst_count;
 
 /* list of environment variables to test */
 char *environ_list[] = { "TERM", "NoTSetzWq", "TESTPROG" };

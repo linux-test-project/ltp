@@ -118,7 +118,6 @@ struct test_struct {
 
 char *TCID = "symlinkat01";	/* Test program identifier.    */
 int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);	/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define SUCCEED_OR_DIE(syscall, message, ...)														\
 	(errno = 0,																														\

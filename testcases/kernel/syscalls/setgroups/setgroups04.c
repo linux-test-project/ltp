@@ -74,7 +74,6 @@
 
 TCID_DEFINE(setgroups04);	/* Test program identifier.    */
 int TST_TOTAL = 1;
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 GID_T groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 int exp_enos[] = { EFAULT, 0 };

@@ -74,7 +74,6 @@
 
 #define MAX_LENGTH __NEW_UTS_LEN
 
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static void setup();
 static void cleanup();

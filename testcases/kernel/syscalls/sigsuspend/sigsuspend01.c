@@ -82,7 +82,6 @@
 
 char *TCID = "sigsuspend01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EINTR, 0 };
 
 struct sigaction sa_new;	/* struct to hold signal info */

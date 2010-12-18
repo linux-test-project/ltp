@@ -64,7 +64,6 @@
 
 char *TCID = "msgget02";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 struct test_case_t {
 	int error;

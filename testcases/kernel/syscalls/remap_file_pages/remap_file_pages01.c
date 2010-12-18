@@ -105,7 +105,6 @@ static void test_nonlinear(int fd);
 
 char *TCID = "remap_file_pages01";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static char *cache_contents;
 int fd1, fd2;			/* File descriptors used at the test */

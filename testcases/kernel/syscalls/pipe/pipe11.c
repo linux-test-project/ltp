@@ -56,7 +56,6 @@
 
 char *TCID = "pipe11";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 void do_child(void);
 void do_child_uclinux(void);

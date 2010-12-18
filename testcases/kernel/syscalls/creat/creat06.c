@@ -78,7 +78,6 @@ char user1name[] = "nobody";
 
 char *TCID = "creat06";
 int fileHandle = 0;
-extern int Tst_count;
 
 int exp_enos[] = { EISDIR, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, EACCES, 0 };
 

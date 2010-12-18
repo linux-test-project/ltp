@@ -74,7 +74,6 @@
 
 #define UNEXP_RET_VAL	-1
 
-extern int Tst_count;
 
 struct test_case_t {		/* test case structure */
 	int type;		/* 1st arg. */

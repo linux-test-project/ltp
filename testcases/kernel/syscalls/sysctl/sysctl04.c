@@ -55,7 +55,6 @@
 
 char *TCID = "sysctl04";
 int TST_TOTAL = 2;
-extern int Tst_count;
 
 int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
 	   void *newval, size_t newlen)

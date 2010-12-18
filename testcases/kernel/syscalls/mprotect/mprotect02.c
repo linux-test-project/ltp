@@ -72,7 +72,6 @@ int TST_TOTAL = 1;
 int status;
 char file1[BUFSIZ];
 
-extern int Tst_count;
 
 #ifndef UCLINUX
 

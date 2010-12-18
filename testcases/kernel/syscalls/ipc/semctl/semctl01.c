@@ -67,7 +67,6 @@
 
 char *TCID = "semctl01";
 int TST_TOTAL = 10;
-extern int Tst_count;
 
 int sem_id_1 = -1;		/* a semaphore set with read and alter permissions */
 

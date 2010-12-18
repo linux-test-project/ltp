@@ -48,7 +48,6 @@
 #include "usctest.h"
 
 char *TCID = "setrlimit02";
-extern int Tst_count;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

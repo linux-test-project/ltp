@@ -77,7 +77,6 @@ void do_child_uclinux(void);
 
 char *TCID = "msgrcv06";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int exp_enos[] = { EIDRM, 0 };	/* 0 terminated list of expected errnos */
 

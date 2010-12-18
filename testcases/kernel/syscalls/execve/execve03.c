@@ -77,7 +77,6 @@
 
 char *TCID = "execve03";
 int fileHandle = 0;
-extern int Tst_count;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

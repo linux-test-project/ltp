@@ -105,7 +105,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 char *TCID = "mknod07";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = { EPERM, EACCES, 0 };
 
 char nobody_uid[] = "nobody";

@@ -62,7 +62,6 @@ void cleanup(void);
 
 char *TCID = "setfsuid03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 

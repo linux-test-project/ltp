@@ -120,7 +120,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 char *TCID = "mknod06";		/* Test program identifier.    */
 int TST_TOTAL = (sizeof(Test_cases) / sizeof(*Test_cases));
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 #if !defined(UCLINUX)
 extern char *get_high_address();
 int exp_enos[] = { EEXIST, EFAULT, ENOENT, ENAMETOOLONG, ENOTDIR, 0 };

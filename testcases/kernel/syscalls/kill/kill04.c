@@ -69,7 +69,6 @@ void do_child(void);
 char *TCID = "kill04";
 int TST_TOTAL = 1;
 
-extern int Tst_count;
 
 int exp_enos[] = { ESRCH, 0 };
 

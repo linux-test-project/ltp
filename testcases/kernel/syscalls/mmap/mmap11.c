@@ -57,7 +57,6 @@
 
 char *TCID = "mmap11";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define MAL_SIZE (100*1024)
 

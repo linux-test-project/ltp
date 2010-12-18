@@ -76,7 +76,6 @@ void setup(void);
 
 char *TCID = "personality02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define	PER_BAD	0x00dd		/* A non-existent personality type */
 

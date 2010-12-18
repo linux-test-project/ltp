@@ -101,7 +101,6 @@ static void cleanup(void);
 static int exp_enos[] = { EPERM, ESRCH, 0 };
 
 char *TCID = "ptrace03";	/* Test program identifier.    */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct test_case_t {
 	enum __ptrace_request request;

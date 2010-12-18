@@ -64,7 +64,6 @@ void inthandlr();
 void do_exit();
 int flag = 0;
 
-extern int Tst_count;
 
 #define	FAILED	1
 #define	MAXKIDS	8

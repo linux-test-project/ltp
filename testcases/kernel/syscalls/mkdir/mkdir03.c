@@ -86,7 +86,6 @@ void setup5();
 
 char *TCID = "mkdir03";		/* Test program identifier.    */
 int fileHandle, fileHandle2 = 0;
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char tstdir3[NAMELEN];
 char tstdir4[NAMELEN];

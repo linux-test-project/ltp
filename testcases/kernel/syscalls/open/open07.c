@@ -77,7 +77,6 @@ void setupfunc_test5();
 
 char *TCID = "open07";
 int TST_TOTAL = 5;
-extern int Tst_count;
 int fd1, fd2;
 
 int exp_enos[] = { ELOOP, 0 };

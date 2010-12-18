@@ -62,7 +62,6 @@
 #define INVALID_PID	999999
 
 char *TCID = "sched_setscheduler01";
-extern int Tst_count;
 
 struct sched_param param;
 struct sched_param param1 = { 1 };

@@ -77,7 +77,6 @@
 
 char *TCID = "nice03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define	NICEINC		2
 int Org_nice;			/* original priority of the test process */

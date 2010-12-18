@@ -93,7 +93,6 @@ static int setup1(void);
 static void cleanup1();
 static void cleanup();
 
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = { EINVAL, EPERM, 0 };
 
 static char nobody_uid[] = "nobody";

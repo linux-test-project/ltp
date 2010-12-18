@@ -66,7 +66,6 @@
 #include "libtestsuite.h"
 
 char *TCID = "shmctl01";
-extern int Tst_count;
 
 int shm_id_1 = -1;
 struct shmid_ds buf;

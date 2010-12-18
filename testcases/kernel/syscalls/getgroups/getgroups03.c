@@ -84,7 +84,6 @@
 char *TCID = "getgroups03";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test conditions */
 int ngroups;			/* No. of groups */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 gid_t groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 gid_t groups[NGROUPS];		/* Array to hold gids read fr. /etc/group */
 int fflag;			/* functionality flag variable */

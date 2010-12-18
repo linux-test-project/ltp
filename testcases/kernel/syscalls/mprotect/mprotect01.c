@@ -74,7 +74,6 @@ void setup3(void);
 
 char *TCID = "mprotect01";
 int TST_TOTAL = 3;
-extern int Tst_count;
 
 void *addr1, *addr2, *addr3;
 int fd;

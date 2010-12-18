@@ -67,7 +67,6 @@ void setup(void);
 
 char *TCID = "msgsnd01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 int msg_q_1;
 MSGBUF msg_buf, rd_buf;
