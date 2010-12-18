@@ -30,6 +30,8 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <assert.h>
 #include <stdio.h>

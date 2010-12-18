@@ -33,6 +33,8 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <assert.h>
 #include <stdio.h>
@@ -136,9 +138,8 @@ int main(int argc, char *argv[])
 	} else
 		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2)");
 
-	if (pipe(p1) == -1 || pipe(p2) == -1) {
-		tst_resm(TBROK|TERRNO, NULL, "pipe failed");
-	}
+	if (pipe(p1) == -1 || pipe(p2) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "pipe failed");
 
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
