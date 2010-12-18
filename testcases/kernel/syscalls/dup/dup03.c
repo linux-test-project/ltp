@@ -123,7 +123,7 @@ void cleanup();
 char *TCID = "dup03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
-char Fname[255];
+char filename[255];
 int *fd = NULL;
 int nfds = 0;
 
@@ -182,6 +182,8 @@ void setup()
 		    "sysconf(_SC_OPEN_MAX) failed");
 
 	fd = malloc(maxfds * sizeof(int));
+	if (fd == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
 	fd[0] = -1;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -190,50 +192,33 @@ void setup()
 
 	tst_tmpdir();
 
-	/*
-	 * open the file as many times as it takes to use up all fds
-	 */
-	sprintf(Fname, "dupfile");
-	for (nfds = 1; nfds <= maxfds; nfds++) {
-		if ((fd[nfds - 1] = open(Fname, O_RDWR | O_CREAT, 0700)) == -1) {
-
-			nfds--;	/* on a open failure, decrement the counter */
-			if (errno == EMFILE) {
+	sprintf(filename, "dupfile");
+	for (nfds = 1; nfds <= maxfds; nfds++)
+		if ((fd[nfds-1] = open(filename, O_RDWR|O_CREAT, 0700)) == -1) {
+			if (errno == EMFILE)
 				break;
-			} else {	/* open failed for some other reason */
-				tst_brkm(TBROK, cleanup,
-					 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-					 Fname, errno, strerror(errno));
-			}
+			else
+				tst_brkm(TBROK|TBROK, cleanup, "open failed");
+			nfds--;
 		}
-	}
 
-	/*
-	 * make sure at least one was open and that all fds were opened.
-	 */
-	if (nfds == 0) {
-		tst_brkm(TBROK, cleanup, "Unable to open at least one file");
-	}
-	if (nfds > maxfds) {
+	if (nfds == 0)
+		tst_brkm(TBROK, cleanup, "unable to open at least one file");
+	if (nfds > maxfds)
 		tst_brkm(TBROK, cleanup,
-			 "Unable to open enough files to use all file descriptors, tried %ld",
-			 maxfds);
-	}
+		    "unable to open enough files to use all file descriptors, "
+		    "tried %ld",
+		    maxfds);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+	int i;
+
 	TEST_CLEANUP;
 
-	fcloseall();
+	for (i = 3; i <= nfds; i++)
+		close(fd[i]);
 
 	tst_rmdir();
 }

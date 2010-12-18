@@ -209,7 +209,8 @@ void cleanup()
 {
 	TEST_CLEANUP;
 
-	fcloseall();
+	for (i = 0; i <= 6; i++)
+		close(i);
 
 	tst_rmdir();
 }

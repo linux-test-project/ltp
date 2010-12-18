@@ -46,7 +46,6 @@ int local_flag;
 #define PASSED 1
 #define FAILED 0
 
-/*--------------------------------------------------------------------*/
 int cnt_free_fds(int maxfd)
 {
 	int freefds = 0;
@@ -58,9 +57,7 @@ int cnt_free_fds(int maxfd)
 	return (freefds);
 }
 
-int main(ac, av)
-int ac;
-char *av[];
+int main(int ac, char **av)
 {
 	int *fildes, j;
 	int ifile;
@@ -70,15 +67,11 @@ char *av[];
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	 }
+	ifile = -1;
 
-	/* pick up the nofiles */
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
 	min = getdtablesize();
 	freefds = cnt_free_fds(min);
 	fildes = (int *)malloc((min + 5) * sizeof(int));
@@ -86,7 +79,6 @@ char *av[];
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/*  Initialize fildes[_NFILE+5]  - mailbug # 40805 */
 		for (j = 0; j < min + 5; j++)
 			fildes[j] = 0;
 
@@ -102,7 +94,7 @@ char *av[];
 					break;
 				}
 
-			}	/* end for */
+			}
 			if (ifile < freefds) {
 				tst_resm(TFAIL, "Not enough files duped");
 				local_flag = FAILED;
@@ -111,20 +103,17 @@ char *av[];
 				local_flag = FAILED;
 			}
 		}
-/*-----	---------------------------------------------------------------*/
 		unlink(pfilname);
 
 		if (ifile > 0)
 			close(fildes[ifile - 1]);
 
-		if (local_flag == PASSED) {
+		if (local_flag == PASSED)
 			tst_resm(TPASS, "Test passed.");
-		} else {
+		else
 			tst_resm(TFAIL, "Test failed.");
-		}
 
-	}			/* end for */
-	tst_exit();
+	}
 	tst_exit();
 
 }

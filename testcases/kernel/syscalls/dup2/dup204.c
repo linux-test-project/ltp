@@ -58,8 +58,8 @@ void cleanup();
 char *TCID = "dup204";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
 
-int Fd[2];
-int NFd[2];
+int fd[2];
+int nfd[2];
 
 int main(int ac, char **av)
 {
@@ -79,38 +79,32 @@ int main(int ac, char **av)
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(dup2(Fd[i], NFd[i]));
+			TEST(dup2(fd[i], nfd[i]));
 
-			if ((fd = TEST_RETURN) == -1) {
+			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL, "call failed unexpectedly");
 				continue;
 			}
 
 			if (STD_FUNCTIONAL_TEST) {
-				if (fstat(Fd[i], &oldbuf) == -1) {
+				if (fstat(fd[i], &oldbuf) == -1)
 					tst_brkm(TBROK, cleanup, "fstat() #1 "
 						 "failed");
-				}
-				if (fstat(NFd[i], &newbuf) == -1) {
+				if (fstat(nfd[i], &newbuf) == -1)
 					tst_brkm(TBROK, cleanup, "fstat() #2 "
 						 "failed");
-				}
 
-				if (oldbuf.st_ino != newbuf.st_ino) {
+				if (oldbuf.st_ino != newbuf.st_ino)
 					tst_resm(TFAIL, "original and duped "
 						 "inodes do not match");
-				} else {
+				else
 					tst_resm(TPASS, "original and duped "
 						 "inodes are the same");
-				}
-			} else {
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
 
-			/* close the duped file */
-			if (close(fd) == -1) {
-				tst_brkm(TBROK, cleanup, "close failed");
-			}
+			if (close(TEST_RETURN) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "close failed");
 		}
 	}
 	cleanup();
@@ -120,8 +114,7 @@ int main(int ac, char **av)
 
 void setup()
 {
-	/* Initialize Fd in case we get a quick signal */
-	Fd[0] = -1;
+	fd[0] = -1;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -129,15 +122,20 @@ void setup()
 
 	tst_tmpdir();
 
-	if (pipe(Fd) == -1)
+	if (pipe(fd) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
 }
 
 void cleanup()
 {
+	int i;
+	
 	TEST_CLEANUP;
 
-	fcloseall();
+	for (i = 0; i < sizeof(fd); i++) {
+		close(fd[i]);
+		close(nfd[i]);
+	}
 
 	tst_rmdir();
 }

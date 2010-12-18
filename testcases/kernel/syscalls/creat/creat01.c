@@ -70,7 +70,7 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 char filename[40];
-int fd[2];
+int fd;
 
 #define MODE1 0644
 #define MODE2 0444
@@ -78,101 +78,78 @@ int fd[2];
 struct test_case_t {
 	char *fname;
 	int mode;
-	void (*functest) ();
+	void (*functest)();
 } TC[] = {
-	/* creat() the file and write to it */
-	{
-	filename, MODE1, functest1},
-	    /* creat() the same file and check that it is now 0 length */
-	{
-	filename, MODE2, functest2}
+	{ filename, MODE1, functest1},
+	{ filename, MODE2, functest2}
 };
 
 int main(int ac, char **av)
 {
 	int i;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* set "tstdir", and "testfile" variables */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* loop through the test cases */
-
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(fd[i] = creat(filename, TC[i].mode));
+			TEST(fd = creat(filename, TC[i].mode));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, "Could not creat file %s",
-					 filename);
+				tst_resm(TFAIL|TTERRNO, "creat failed");
 				continue;
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
-				(*TC[i].functest) ();
-			} else {
+			if (STD_FUNCTIONAL_TEST)
+				(*TC[i].functest)();
+			else
 				tst_resm(TPASS, "call succeeded");
-			}
+			close(fd);
 		}
 	}
 	cleanup();
 
 	tst_exit();
- }
-
-/*
- * functest1() - check the functionality of the first test by making sure
- *		 that a write to the file succeeds
- */
-void functest1()
-{
-	if (write(TEST_RETURN, "A", 1) != 1) {
-		tst_resm(TFAIL, "write was unsuccessful");
-	} else {
-		tst_resm(TPASS, "file was created and written to successfully");
-	}
 }
 
-/*
- * functest2() - check the functionality of the second test by making sure
- *		 that the file is now 0 length
- */
+void functest1()
+{
+	if (write(TEST_RETURN, "A", 1) != 1)
+		tst_resm(TFAIL, "write was unsuccessful");
+	else
+		tst_resm(TPASS, "file was created and written to successfully");
+}
+
 void functest2()
 {
 	struct stat buf;
 
-	if (stat(filename, &buf) < 0) {
-		tst_brkm(TBROK, cleanup, "failed to stat test file");
-	}
-	if (buf.st_size != 0) {
-		tst_resm(TFAIL, "creat() FAILED to truncate "
-			 "file to zero bytes");
-	} else {
-		tst_resm(TPASS, "creat() truncated existing file to 0 bytes");
-	}
+	if (stat(filename, &buf) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "stat failed");
+	if (buf.st_size == 0)
+		tst_resm(TPASS, "creat truncated existing file to 0 bytes");
+	else
+		tst_resm(TFAIL, "creat FAILED to truncate file to 0 bytes");
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
 void setup()
 {
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	fd = -1;
+
+	tst_require_root(NULL);
+
 	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
+		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -185,15 +162,12 @@ void setup()
 	sprintf(filename, "creat01.%d", getpid());
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
 	TEST_CLEANUP;
 
-	fcloseall();
+	if (fd != -1)
+		close(fd);
 
 	unlink(filename);
 
