@@ -78,26 +78,22 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define TESTFILE	"testfile"
 
-char *TCID = "chown05";		/* Test program identifier.    */
-int TST_TOTAL = 5;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
+char *TCID = "chown05";
 
 struct test_case_t {
-	char *desc;
 	uid_t user_id;
 	gid_t group_id;
-} Test_cases[] = {
-	{
-	"Change Owner/Group ids", 700, 701}, {
-	"Change Owner id only", 702, -1}, {
-	"Change Owner id only", 703, 701}, {
-	"Change Group id only", -1, 704}, {
-	"Change Group id only", 703, 705}, {
-	NULL, 0, 0}
+} test_cases[] = {
+	{ 700, 701 },
+	{ 702, -1 },
+	{ 703, 701 },
+	{ -1, 704 },
+	{ 703, 705 },
 };
+int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -107,17 +103,12 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int ind;		/* counter variable for chmod(2) tests */
+	int i;		/* counter variable for chmod(2) tests */
 	uid_t user_id;		/* user id of the user set for testfile */
 	gid_t group_id;		/* group id of the user set for testfile */
-	char *test_desc;	/* test specific message */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -125,115 +116,64 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			test_desc = Test_cases[ind].desc;
-			user_id = Test_cases[ind].user_id;
-			group_id = Test_cases[ind].group_id;
+		for (i = 0; i < TST_TOTAL; i++) {
+			user_id = test_cases[i].user_id;
+			group_id = test_cases[i].group_id;
 
-			/*
-			 * Call chwon(2) with different user id and
-			 * group id (numeric values) to set it on
-			 * testfile.
-			 */
 			TEST(chown(TESTFILE, user_id, group_id));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL,
-					 "chown() Fails to %s, errno=%d",
-					 test_desc, TEST_ERRNO);
+				tst_resm(TFAIL|TTERRNO, "chown failed");
 				continue;
 			}
-			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
-			 */
 			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the testfile information using
-				 * stat(2).
-				 */
-				if (stat(TESTFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "stat(2) of "
-						 "%s failed, errno:%d",
-						 TESTFILE, TEST_ERRNO);
-				}
-				if (user_id == -1) {
-					user_id = Test_cases[ind - 1].user_id;
-				}
-				if (group_id == -1) {
-					group_id = Test_cases[ind - 1].group_id;
-				}
+				if (stat(TESTFILE, &stat_buf) == -1)
+					tst_brkm(TFAIL, cleanup, "stat failed");
+				if (user_id == -1)
+					user_id = test_cases[i - 1].user_id;
+				if (group_id == -1)
+					group_id = test_cases[i - 1].group_id;
 
-				/*
-				 * Check for expected Ownership ids
-				 * set on testfile.
-				 */
-				if ((stat_buf.st_uid != user_id) ||
-				    (stat_buf.st_gid != group_id)) {
-					tst_resm(TFAIL, "%s: Incorrect "
+				if (stat_buf.st_uid != user_id ||
+				    stat_buf.st_gid != group_id)
+					tst_resm(TFAIL, "%s: incorrect "
 						 "ownership set, Expected %d "
 						 "%d", TESTFILE, user_id,
 						 group_id);
-				} else {
-					tst_resm(TPASS,
-						 "chown() succeeds to %s of %s",
-						 test_desc, TESTFILE);
-				}
-			} else {
+				else
+					tst_resm(TPASS, "chown succeeded");
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
 		}
 	}
 
 	cleanup();
 
- }
+	tst_exit();
+}
 
-/*
- * void
- * setup() - performs all ONE TIME setup for this test.
- *  Create a temporary directory and change directory to it.
- *  Create a test file under temporary directory and close it
- */
 void setup()
 {
 	int fd;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE, FILE_MODE);
+	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "opening %s failed", TESTFILE);
 	if (close(fd) == -1)
-		tst_brkm(TBROK, cleanup, "close(%s) failed", TESTFILE);
+		tst_brkm(TBROK, cleanup, "closing %s failed", TESTFILE);
 
 }
 
-/*
- * void
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- *  Remove the test directory and testfile created in the setup.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }
