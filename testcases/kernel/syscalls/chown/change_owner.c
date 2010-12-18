@@ -52,18 +52,13 @@ int main(int argc, char **argv)
 	test_name = argv[1];
 	path_name = argv[2];
 
-	/*
-	 * Get the user id and group id of "ltpuser2" user from password
-	 * and group files.
-	 */
 	if ((ltpuser = getpwnam("nobody")) == NULL) {
-		perror("change_owner: nobody not found in /etc/passwd");
+		perror("getpwnam(\"nobody\") failed");
 		exit(1);
 	}
 	if ((ltpgroup = getgrnam("nobody")) == NULL) {
 		if ((ltpgroup = getgrnam("nogroup")) == NULL) {
-			perror
-			    ("change_owner: nobody/nogroup's group not found in /etc/group");
+			perror("getgrnam(\"nobody\") failed");
 			exit(1);
 		}
 	}
@@ -72,10 +67,10 @@ int main(int argc, char **argv)
 	group_gid = 0;
 
 	/* Check for test specific name and set uid/gid accordingly */
-	if (!(strcmp(test_name, "fchown03"))) {
+	if (strcmp(test_name, "fchown03") == 0) {
 		user_uid = -1;
 		group_gid = ltpgroup->gr_gid;
-	} else if (!(strcmp(test_name, "fchown04"))) {
+	} else if (strcmp(test_name, "fchown04") == 0) {
 		user_uid = ltpuser->pw_uid;
 		group_gid = ltpgroup->gr_gid;
 	}
@@ -84,9 +79,9 @@ int main(int argc, char **argv)
 	 * Change the ownership of test directory/file specified by
 	 * pathname to that of user_uid and group_gid.
 	 */
-	if (chown(path_name, user_uid, group_gid) < 0) {
-		fprintf(stderr, "change_owner: chown() of %s failed, error "
-			"%d\n", path_name, errno);
+	if (chown(path_name, user_uid, group_gid) == -1) {
+		fprintf(stderr, "chown(%s, ..) failed: %s",
+		    path_name, strerror(errno));
 		exit(1);
 	}
 
