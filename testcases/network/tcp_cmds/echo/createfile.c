@@ -8,15 +8,15 @@
 @! # SPEC. EXEC. REQS:  This  program is used by ctatcdt3.c and ctatcet3.c
 */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
 
 	int		fd;
@@ -25,12 +25,14 @@ main (int argc, char *argv[])
 	int		n, remain;
 	static	char	buf[BUFSIZ];
 
-	for (fsize = 0; fsize < BUFSIZ;) {
-		buf[fsize++] = 'U';
-		buf[fsize++] = '\n';
+	for (fsize = 0; fsize < BUFSIZ; fsize++) {
+		if ((fsize % 2) == 0)
+			buf[fsize++] = 'U';
+		else
+			buf[fsize++] = '\n';
 	}
 
-	fsize = strtol(argv[1], (char **) NULL, 10);
+	fsize = strtol(argv[1], NULL, 10);
 
 	if ((fd = creat(argv[2], 0644)) == -1)
 		perror("createfile");
@@ -47,6 +49,5 @@ main (int argc, char *argv[])
 		perror("createfile");
 	close(fd);
 
-	tst_exit();
-
+	return 0;
 }

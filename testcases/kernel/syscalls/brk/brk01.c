@@ -118,14 +118,9 @@ void cleanup();
 
 char *TCID = "brk01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 long Max_brk_byte_size;
 long Beg_brk_val;
-
-/***********************************************************************
- * MAIN
- ***********************************************************************/
 
 #if !defined(UCLINUX)
 
@@ -138,17 +133,9 @@ int main(int ac, char **av)
 	long cur_brk_val;	/* current size returned by sbrk */
 	long aft_brk_val;	/* current size returned by sbrk */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
 	/*
@@ -160,9 +147,6 @@ int main(int ac, char **av)
 	if ((incr * 2) < 4096)	/* make sure that process will grow */
 		incr += 4096 / 2;
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
@@ -212,9 +196,6 @@ int main(int ac, char **av)
 
 		} else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 
 				aft_brk_val = (long)sbrk(0);
@@ -234,16 +215,11 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 	unsigned long max_size;
@@ -312,26 +288,17 @@ void setup()
 
 }
 
+void cleanup()
+{
+	TEST_CLEANUP;
+
+}
+
 #else
 
 int main()
 {
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }
 
 #endif /* if !defined(UCLINUX) */
-
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
-{
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
-
-}

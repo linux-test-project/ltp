@@ -204,7 +204,6 @@ void cleanup();
 char *TCID = "kill02";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-extern int Tst_nobuf;		/* var. used to turn off tst_res buffering */
 
 int exp_enos[] = { 0 };		/* Array of expected errnos */
 
@@ -222,7 +221,6 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	Tst_nobuf = 1;
 
     /***************************************************************
      * parse standard options, and exit if there is an error

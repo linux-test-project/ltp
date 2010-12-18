@@ -121,15 +121,11 @@ void cleanup();
 
 char *TCID = "dup02";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0, 0 };
 
 int Fds[] = { -1, 1500 };
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
@@ -137,78 +133,46 @@ int main(int ac, char **av)
 	int nfds = sizeof(Fds) / sizeof(int);
 	int ind;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
 		for (ind = 0; ind < nfds; ind++) {
 
-			/*
-			 * Call dup(2)
-			 */
 			TEST(dup(Fds[ind]));
 
-			/* check return code */
 			if (TEST_RETURN == -1) {
 				if (STD_FUNCTIONAL_TEST) {
-					if (TEST_ERRNO == EBADF) {
+					if (TEST_ERRNO == EBADF)
 						tst_resm(TPASS,
-							 "dup(%d) Failed, errno=%d : %s",
-							 Fds[ind], TEST_ERRNO,
-							 strerror(TEST_ERRNO));
-					} else {
-						tst_resm(TFAIL,
-							 "dup(%d) Failed, errno=%d %s, expected %d (EBADF)",
-							 Fds[ind], TEST_ERRNO,
-							 strerror(TEST_ERRNO),
-							 EBADF);
-					}
+						    "dup failed as expected "
+						    "with EBADF");
+					else
+						tst_resm(TFAIL|TTERRNO,
+						    "dup failed unexpectedly");
 				}
 			} else {
-				tst_resm(TFAIL,
-					 "dup(%d) returned %ld, expected -1, errno:%d (EBADF)",
-					 Fds[ind], TEST_RETURN, EBADF);
+				tst_resm(TFAIL, "dup succeeded unexpectedly");
 
-				/* close the new file so loops do not open too many files */
-				if (close(TEST_RETURN) == -1) {
-					tst_brkm(TBROK, cleanup,
-						 "close(%ld) Failed, errno=%d : %s",
-						 TEST_RETURN, errno,
-						 strerror(errno));
-				}
+				if (close(TEST_RETURN) == -1)
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "close failed");
 			}
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -220,18 +184,9 @@ void setup()
 
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }

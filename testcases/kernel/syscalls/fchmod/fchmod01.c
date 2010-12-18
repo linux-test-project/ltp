@@ -106,11 +106,11 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/fcntl.h>
+#include <sys/stat.h>
 #include <errno.h>
-#include <string.h>
 #include <signal.h>
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -119,7 +119,6 @@ void cleanup();
 
 char *TCID = "fchmod01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0, 0 };
 
@@ -132,43 +131,24 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * Call fchmod(2)
-		 */
 		TEST(fchmod(fd, 0700));
 
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "fchmod(%s, 0700) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
+		if (TEST_RETURN == -1)
+			tst_resm(TFAIL|TTERRNO,
+				 "fchmod(%s, 0700) failed", fname);
+		else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS, "fchmod(%s, 0700) returned %ld",
@@ -178,16 +158,11 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -198,15 +173,10 @@ void setup()
 	tst_tmpdir();
 
 	sprintf(fname, "tfile_%d", getpid());
-	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
-	} else if (write(fd, &buf, strlen(buf)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "write(%s, &buf, strlen(buf)) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
-	}
+	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+	else if (write(fd, &buf, strlen(buf)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "write failed");
 }
 
 /***************************************************************
@@ -215,17 +185,10 @@ void setup()
  ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* close the open file wev'e been chmoding */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TWARN|TERRNO, cleanup, "close failed");
 
 	tst_rmdir();
 

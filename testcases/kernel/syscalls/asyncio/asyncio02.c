@@ -122,7 +122,6 @@ int testrun(int flag, int bytes, int ti);
 char *TCID = "asyncio02";	/* Test program identifier.    */
 int TST_TOTAL = 6;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-extern int Tst_nobuf;		/* variable used to turn off tst_res buffering */
 
 int exp_enos[] = { 0 };		/* Array of expected errnos */
 char *filename;			/* name of the temporary file */
@@ -150,7 +149,6 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int flag_cnt;
 
-	Tst_nobuf = 1;
 	Num_flags = sizeof(Flags) / sizeof(int);
 	TST_TOTAL = 3 * Num_flags;
 

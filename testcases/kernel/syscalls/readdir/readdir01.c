@@ -133,7 +133,6 @@ void cleanup();
 char *TCID = "readdir01";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-extern int Tst_nobuf;
 
 int exp_enos[] = { 0, 0 };
 
@@ -172,7 +171,6 @@ int main(int ac, char **av)
 	DIR *test_dir;
 	struct dirent *dptr;
 
-	Tst_nobuf = 1;
 
     /***************************************************************
      * parse standard options

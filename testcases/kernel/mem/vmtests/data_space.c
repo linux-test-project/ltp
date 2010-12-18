@@ -164,14 +164,12 @@ int runtest()
 	for (i = 0; i < nchild; i++)
 	{
 		chld_flag = 0;
-		if ((child = fork()) == 0) 		/* child */
-		{
-			dotest(nchild, i);		/* do it! */
-			exit(0);			/* when done, exit */
-		}
-		if (child < 0)
-		{
-			tst_resm(TBROK|TERRNO, cleanup, "fork failed");
+		switch (child = fork()) {
+		case -1:
+			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+		case 0:
+			dotest(nchild, i);
+			exit(0);
 		}
 		allchild[i]=child;
 		while (!chld_flag)
@@ -206,9 +204,13 @@ int runtest()
 		local_flag = FAILED;
 	}
 
-        (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
-                : tst_resm(TPASS, "Test passed");
+	if (local_flag == FAILED)
+		tst_resm(TFAIL, "Test failed");
+	else
+		tst_resm(TPASS, "Test passed");
 	sync();				/* safeness */
+
+	return 0;
 }
 
 /*

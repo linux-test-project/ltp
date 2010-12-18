@@ -191,7 +191,6 @@ inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa);
 char *TCID = "kill10";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-extern int Tst_nobuf;
 
 int exp_enos[] = { 0, 0 };
 
@@ -223,7 +222,6 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int cnt;
 
-	Tst_nobuf = 1;
 
 	if ((msg = parse_opts(ac, av, options, &help))) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

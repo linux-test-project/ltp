@@ -120,42 +120,27 @@
 void setup();
 void cleanup();
 
-char *TCID = "dup01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
+char *TCID = "dup01";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 
-char Fname[255];
-int Fd;
+char filename[255];
+int fd;
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
@@ -163,50 +148,38 @@ int main(int ac, char **av)
 		/*
 		 * Call dup(2)
 		 */
-		TEST(dup(Fd));
+		TEST(dup(fd));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "dup(%s) Failed, errno=%d : %s", Fname,
+			tst_resm(TFAIL, "dup(%s) Failed, errno=%d : %s", filename,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "dup(%s) returned %ld", Fname,
-					 TEST_RETURN);
+				tst_resm(TPASS, "dup(%s) returned %ld",
+				    filename, TEST_RETURN);
 			}
 
 			/* close the new file so loops do not open too many files */
 			if (close(TEST_RETURN) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "close(%s) Failed, errno=%d : %s",
-					 Fname, errno, strerror(errno));
+				tst_brkm(TBROK|TERRNO, cleanup,
+				    "closing %s failed", filename);
 			}
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
-	/*
-	 * Initialize Fd in case we get a quick signal
-	 */
-	Fd = -1;
+	fd = -1;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -214,34 +187,18 @@ void setup()
 
 	tst_tmpdir();
 
-	sprintf(Fname, "dupfile");
-	if ((Fd = open(Fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 Fname, errno, strerror(errno));
-	}
+	sprintf(filename, "dupfile");
+	if ((fd = open(filename, O_RDWR | O_CREAT, 0700)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* close the open file we've been dup'ing */
-	if (Fd != -1) {
-		if (close(Fd) == -1) {
-			tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-				 Fname, errno, strerror(errno));
-		}
-		Fd = -1;
-	}
+	if (fd != -1)
+		if (close(fd) == -1)
+			tst_resm(TWARN|TERRNO, "closing %s failed", filename);
 
 	tst_rmdir();
 

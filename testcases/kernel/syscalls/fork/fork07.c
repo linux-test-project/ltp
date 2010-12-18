@@ -82,41 +82,28 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+	rea = NULL;
+	writ = NULL;
+
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
 	if (Nflag) {
-		if (sscanf(Nforkarg, "%i", &Nforks) != 1) {
+		if (sscanf(Nforkarg, "%i", &Nforks) != 1)
 			tst_brkm(TBROK, cleanup,
 				 "--N option arg is not a number");
-			tst_exit();
-		}
-	} else {
+	else
 		Nforks = 100;
-	}
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
 
 		if ((writ = fopen(fnamebuf, "w")) == NULL)
-			tst_resm(TFAIL, "failed to fopen file for write");
+			tst_resm(TFAIL|TERRNO, "fopen(.. \"w\") failed");
 		if ((rea = fopen(fnamebuf, "r")) == NULL)
-			tst_resm(TFAIL, "failed to fopen file for read");
+			tst_resm(TFAIL|TERRNO, "fopen(.. \"r\") failed");
 
 		fprintf(writ, "abcdefghijklmnopqrstuv");
 		fflush(writ);
@@ -154,12 +141,8 @@ int main(int ac, char **av)
 					}
 					exit(1);
 				}
-			} else if (pid1 == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "Failed to fork child %d, %s (%d)",
-					 forks + 1, strerror(errno), errno);
-				tst_exit();
-			}
+			} else if (pid1 == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 		}
 		tst_resm(TINFO, "Forked all %d children, now collecting",
 			 Nforks);

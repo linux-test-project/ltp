@@ -72,88 +72,70 @@
  *
  ****************************************************************/
 
+#include <sys/types.h>
+#include <sys/file.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <stdio.h>
-#include <sys/wait.h>
-#include <sys/file.h>
 #include "test.h"
 #include "usctest.h"
 
 void setup(void);
 void cleanup(void);
 
-/* 0 terminated list of expected errnos */
 int exp_enos[] = { EBADF, EINVAL, 0 };
 
 char *TCID = "flock02";		/* Test program identifier */
 int TST_TOTAL = 3;		/* Total number of test cases */
-extern int Tst_count;
 char filename[100];
 int fd;
 
 int main(int argc, char **argv)
 {
 	int lc;
-	/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/* global setup */
 	setup();
-
-	/* The following loop checks looping state if -i option given */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* Testing system call with negative file descriptor */
 		TEST(flock(-1, LOCK_SH));
 
-		if ((TEST_RETURN == -1) && (TEST_ERRNO == EBADF)) {
+		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF) {
 			tst_resm(TPASS,
-				 "flock() shows expected failure,error number=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
-			tst_resm(TFAIL,
-				 "flock() unexpectedly succeds, returned error number=%d",
-				 TEST_ERRNO);
-		}
+				 "flock failed as expected with EBADF");
+		else if (TEST_RETURN == 0)
+			tst_resm(TFAIL, "flock succeeded unexpectedly");
+		else
+			tst_resm(TFAIL|TTERRNO, "flock failed unexpectedly");
 
 		/* Test system call with invalid argument */
 		TEST(flock(fd, LOCK_NB));
 
-		if ((TEST_RETURN == -1) && (TEST_ERRNO == EINVAL)) {
+		if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL)
 			tst_resm(TPASS,
-				 "flock() shows expected failure,error number=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-
-		} else {
-			tst_resm(TFAIL,
-				 "flock() unexpectedly succeds, returned error number=%d",
-				 TEST_ERRNO);
-		}
+				 "flock failed as expected with EINVAL");
+		else if (TEST_RETURN == 0)
+			tst_resm(TFAIL, "flock succeeded unexpectedly");
+		else
+			tst_resm(TFAIL|TTERRNO, "flock failed unexpectedly");
 
 		/* Test system call with invalid combination of arguments */
-		TEST(flock(fd, LOCK_SH | LOCK_EX));
+		TEST(flock(fd, LOCK_SH|LOCK_EX));
 
-		if ((TEST_RETURN == -1) && (TEST_ERRNO == EINVAL)) {
+		if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL) {
 			tst_resm(TPASS,
-				 "flock() shows expected failure with invalid combination of arguments, "
-				 "error number=%d : %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+				 "flock failed as expected with EINVAL");
 			continue;	/*next loop for MTKERNEL  */
-		} else {
-			tst_resm(TFAIL,
-				 "flock() unexpectedly succeds, returned error number=%d",
-				 TEST_ERRNO);
-		}
+		} else if (TEST_RETURN == 0)
+			tst_resm(TFAIL, "flock succeeded unexpectedly");
+		else
+			tst_resm(TFAIL|TTERRNO, "flock failed unexpectedly");
 
 	}
 
@@ -161,60 +143,33 @@ int main(int argc, char **argv)
 
 	cleanup();
 
+	tst_exit();
+
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
 void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -i option.
-	 * You want to make sure you do this before you create your temporary
-	 * directory.
-	 */
 	TEST_PAUSE;
 
-	/* Create a unique temporary directory and chdir() to it. */
 	tst_tmpdir();
 
 	sprintf(filename, "flock02.%d", getpid());
 
-	/* creating temporary file */
 	fd = creat(filename, 0666);
-	if (fd < 0) {
-		tst_resm(TFAIL, "creating a new file failed");
-
-		TEST_CLEANUP;
-
-		/* Removing temp dir */
-		tst_rmdir();
-
-		tst_exit();
-	}
+	if (fd < 0)
+		tst_brkm(TFAIL|TERRNO, cleanup, "creat failed");
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- * 	completion or premature exit
- */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	unlink(filename);
 	tst_rmdir();
 
- }
+}

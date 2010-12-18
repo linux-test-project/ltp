@@ -89,7 +89,9 @@ prg_usage()
  * runtest: write the data to the file. Read the data from the file and compare.
  *	For each iteration, write data starting at offse+iter*bufsize
  *	location in the file and read from there.
-*/
+ *
+ * XXX (garrcoop): shouldn't use libltp APIs because it runs forked.
+ */
 int
 runtest(int fd_r, int fd_w, int childnum, int action)
 {
@@ -102,11 +104,11 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 	/* Allocate for buffers */
 	seekoff = offset+bufsize * childnum;
 	if ((buf1 = valloc(bufsize)) == 0) {
-		tst_resm(TFAIL, "valloc() buf1 failed: %s", strerror(errno));
+		tst_resm(TFAIL|TERRNO, "valloc for buf1 failed");
 		return(-1);
 	}
 	if ((buf2 = valloc(bufsize)) == 0) {
-		tst_resm(TFAIL, "valloc() buf2 failed: %s", strerror(errno));
+		tst_resm(TFAIL|TERRNO, "valloc for buf2 failed");
 		return(-1);
 	}
 
@@ -114,38 +116,36 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 	for (i = 0; i < iter; i++) {
 		fillbuf(buf1, bufsize, childnum+i);
 		if (lseek(fd_w, seekoff, SEEK_SET) < 0) {
-			tst_resm(TFAIL, "lseek before write failed: %s",
-				strerror(errno));
+			tst_resm(TFAIL|TERRNO, "lseek (fd_w, ..) failed");
 			return(-1);
 		}
 		if (write(fd_w, buf1, bufsize) < bufsize) {
-			tst_resm(TFAIL, "write failed: %s", strerror(errno));
+			tst_resm(TFAIL|TERRNO, "write failed");
 			return(-1);
 		}
 		if (action == READ_DIRECT) {
 			/* Make sure data is on to disk before read */
 			if (fsync(fd_w) < 0) {
-				tst_resm(TFAIL, "fsync failed: %s",
-					strerror(errno));
+				tst_resm(TFAIL|TERRNO, "fsync failed");
 				return(-1);
 			}
 		}
 		if (lseek(fd_r, seekoff, SEEK_SET) < 0) {
-			tst_resm(TFAIL, "lseek before read failed: %s",
-				strerror(errno));
+			tst_resm(TFAIL|TERRNO, "lseek(fd_r, ..) failed");
 			return(-1);
 		}
 		if (read(fd_r, buf2, bufsize) < bufsize) {
-			tst_resm(TFAIL, "read failed: %s", strerror(errno));
+			tst_resm(TFAIL|TERRNO, "read failed");
 			return(-1);
 		}
 		if (bufcmp(buf1, buf2, bufsize) != 0) {
-			tst_resm(TFAIL, "comparsion failed. Child=%d offset=%d",
-				childnum, (int)seekoff);
+			tst_resm(TFAIL,
+			    "comparsion failed; child=%d offset=%d",
+			    childnum, (int)seekoff);
 			return(-1);
 		}
 	}
-	return 0;
+	tst_exit();
 }
 
 /*
@@ -157,21 +157,21 @@ child_function(int childnum, int action)
 	int	fd_w, fd_r;
 
 	switch(action) {
-	 case READ_DIRECT:
+	case READ_DIRECT:
 		if ((fd_w = open(filename, O_WRONLY|O_CREAT, 0666)) < 0) {
-			tst_resm(TFAIL, "fd_w open failed for %s: %s",
-				filename, strerror(errno));
+			tst_resm(TFAIL|TERRNO,
+			    "open(%s, O_WRONLY|O_CREAT, ..) failed", filename);
 			return(-1);
 		}
 		if ((fd_r = open(filename, O_DIRECT|O_RDONLY, 0666)) < 0) {
-			tst_resm(TFAIL, "fd_r open failed for %s: %s",
-				filename, strerror(errno));
+			tst_resm(TFAIL|TERRNO,
+			    "open(%s, O_DIRECT|O_RDONLY, ..) failed", filename);
 			close(fd_w);
 			return(-1);
 		}
 		if (runtest(fd_r, fd_w, childnum, action) == -1) {
 			tst_resm(TFAIL, "Read Direct-child %d failed",
-				childnum);
+			    childnum);
 			close(fd_w);
 			close(fd_r);
 			return(-1);
@@ -217,7 +217,7 @@ child_function(int childnum, int action)
 			return(-1);
 		}
 		break;
-	  default:
+	default:
 		fprintf(stderr,"Invalid Action Value\n");
 		return(-1);
 	}
@@ -283,16 +283,16 @@ main(int argc, char *argv[])
 	if (forkchldrn(&pidlst, numchild, READ_DIRECT, child_function) < 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Read with Direct IO, Write without");
+		tst_resm(TFAIL, "Read with Direct IO, Write without");
 	}
 	else {
 		if (waitchldrn(&pidlst, numchild) < 0) {
 			failed = TRUE;
 			fail_count++;
-			tst_resm (TFAIL, "Read with Direct IO, Write without");
+			tst_resm(TFAIL, "Read with Direct IO, Write without");
 		}
 		else
-		  tst_resm (TPASS, "Read with Direct IO, Write without");
+			tst_resm(TPASS, "Read with Direct IO, Write without");
 
 	}
 	unlink(filename);
@@ -303,16 +303,16 @@ main(int argc, char *argv[])
 	if (forkchldrn(&pidlst, numchild, WRITE_DIRECT, child_function) < 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Write with Direct IO, Read without");
+		tst_resm(TFAIL, "Write with Direct IO, Read without");
 	}
 	else {
 		if (waitchldrn(&pidlst, numchild) < 0) {
 			failed = TRUE;
 			fail_count++;
-			tst_resm (TFAIL, "Write with Direct IO, Read without");
+			tst_resm(TFAIL, "Write with Direct IO, Read without");
 		}
 		else
-		  tst_resm (TPASS, "Write with Direct IO, Read without");
+			tst_resm(TPASS, "Write with Direct IO, Read without");
 	}
 	unlink(filename);
 	free(pidlst);
@@ -328,23 +328,23 @@ main(int argc, char *argv[])
 		if (waitchldrn(&pidlst, numchild) < 0) {
 			failed = TRUE;
 			fail_count++;
-			tst_resm (TFAIL, "Read, Write with Direct IO");
-		}
-		else
-		  tst_resm (TPASS, "Read, Write with Direct IO");
+			tst_resm(TFAIL, "Read, Write with Direct IO");
+		} else
+			tst_resm(TPASS, "Read, Write with Direct IO");
 	}
 	unlink(filename);
 	free(pidlst);
 	total++;
 
-	if (failed) {
+	if (failed)
 		tst_resm(TINFO, "%d/%d testblocks failed",
 			fail_count, total);
-	}
 	else
 		tst_resm(TINFO, "%d testblocks %d iterations with %d children completed",
 						 total, iter, numchild);
 	cleanup();
+
+	tst_exit();
 
 }
 
@@ -352,15 +352,14 @@ static void setup(void)
 {
 	tst_tmpdir();
 
-	if ((fd1 = open(filename, O_CREAT|O_EXCL, 0600)) < 0) {
-		tst_brkm(TBROK, cleanup, "Couldn't create test file %s: %s", filename, strerror(errno));
-	}
+	if ((fd1 = open(filename, O_CREAT|O_EXCL, 0600)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "open(%s, O_CREAT|O_EXCL, ..) failed", filename);
 	close(fd1);
 
 	/* Test for filesystem support of O_DIRECT */
-	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0) {
-		tst_brkm(TCONF, cleanup, "O_DIRECT is not supported by this filesystem. %s", strerror(errno));
-	}
+	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0)
+		tst_brkm(TCONF, cleanup, "open(%s, O_DIRECT, ..) failed");
 	close(fd1);
 }
 
@@ -375,9 +374,8 @@ static void cleanup(void)
 #else /* O_DIRECT */
 
 int
-main() {
-
-		 tst_resm(TCONF,"O_DIRECT is not defined.");
-		 return 0;
+main()
+{
+	tst_brkm(TCONF, NULL, "O_DIRECT is not defined.");
 }
 #endif /* O_DIRECT */

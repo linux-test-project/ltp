@@ -125,66 +125,42 @@ void cleanup();
 
 char *TCID = "execve01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
-extern int Tst_nobuf;		/* used to turn off buffering in tst_ routines */
 
 int exp_enos[] = { 0, 0 };	/* Zero terminated list of expected errnos */
 
-int pid;			/* process id from fork */
+pid_t pid;			/* process id from fork */
 int status;			/* status returned from waitpid */
 char *args[2] = { "/usr/bin/test", 0 };	/* argument list for execve call */
-extern char **environ;		/* pointer to this processes env, to pass along */
 
-int main(int ac, char **av)
+int main(int ac, char **av, char **environ)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	Tst_nobuf = 1;		/* turn off buffering in tst_ routines */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * TEST CASE:
-		 *   fork, then call execve from child
-		 */
 		switch (pid = FORK_OR_VFORK()) {
 		case 0:	/* CHILD - Call execve(2) */
 			execve("/usr/bin/test", args, environ);
 			/* should not get here!! if we do, the parent will fail the Test Case */
 			exit(errno);
 		case -1:	/* ERROR!!! exit now!! */
-			tst_brkm(TBROK, cleanup,
-				 "Unable to fork a child process to exec over!  Errno:%d,:%s",
-				 errno, strerror(errno));
+			tst_brkm(TBROK, cleanup, "fork failed");
 			break;
 		default:
 			waitpid(pid, &status, 0);
 			if (WIFEXITED(status)) {
-		/***************************************************************
-		 * only perform functional verification if flag set (-f not given)
-		 ***************************************************************/
 				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
 					tst_resm(TPASS,
 						 "execve - properly exec's a simple program..");
 				}
@@ -199,25 +175,16 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/*
-	 * Send out info message that timing and errnolog info is not
-	 * available because of the use of a child process for each exec
-	 */
 	if (STD_TIMING_ON)
 		tst_resm(TINFO,
 			 "There are NO timing statistics produced by this test.\n\
@@ -226,22 +193,12 @@ The TEST macro is NOT used.");
 
 	TEST_PAUSE;
 
-	/* make a temp dir and cd to it */
 	tst_tmpdir();
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }
