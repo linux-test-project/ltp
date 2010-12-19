@@ -61,51 +61,13 @@ char *TCID = "tkill01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 2;		   /* total number of tests in this file.   */
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*									    */
-/* Function:    cleanup						       */
-/*									    */
-/* Description: Performs all one time clean up for this test on successful    */
-/*	      completion,  premature exit or  failure. Closes all temporary */
-/*	      files, removes all temporary directories exits the test with  */
-/*	      appropriate return code by calling tst_exit() function.       */
-/*									    */
-/* Input:       None.							 */
-/*									    */
-/* Output:      None.							 */
-/*									    */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*	      On success - Exits calling tst_exit(). With '0' return code.  */
-/*									    */
-/******************************************************************************/
-extern void cleanup() {
+void cleanup() {
 
 	TEST_CLEANUP;
 	tst_rmdir();
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*									    */
-/* Function:    setup							 */
-/*									    */
-/* Description: Performs all one time setup for this test. This function is   */
-/*	      typically used to capture signals, create temporary dirs      */
-/*	      and temporary files that may be used in the course of this    */
-/*	      test.							 */
-/*									    */
-/* Input:       None.							 */
-/*									    */
-/* Output:      None.							 */
-/*									    */
-/* Return:      On failure - Exits by calling cleanup().		      */
-/*	      On success - returns 0.				       */
-/*									    */
-/******************************************************************************/
 void setup() {
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
@@ -122,7 +84,6 @@ int main(int ac, char **av) {
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -131,7 +92,9 @@ int main(int ac, char **av) {
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(signal(SIGUSR1, &sig_action));
+			if (signal(SIGUSR1, &sig_action) == SIG_ERR)
+				tst_brkm(TBROK|TERRNO, cleanup,
+				    "signal(SIGUSR1, ..) failed");
 			TEST(tid = syscall( __NR_gettid));
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL|TTERRNO, "tkill failed");

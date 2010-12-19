@@ -117,7 +117,6 @@ struct test_case_t {
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
 int main(int ac, char **av) {
-	int lc;		/* loop counter */
 	int i;
 
 	setup();
@@ -128,7 +127,7 @@ int main(int ac, char **av) {
 
 		if (TEST_RETURN == -1) {
 		    	if (TEST_ERRNO == test_cases[i].exp_errno) {
-				tst_resm(TINFO|TTERRNO,
+				tst_resm(TPASS|TTERRNO,
 				    "tkill(%d, SIGUSR1) failed as expected",
 				    test_cases[i].tid);
 			} else {
