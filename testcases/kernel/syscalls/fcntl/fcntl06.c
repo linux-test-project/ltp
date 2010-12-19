@@ -77,24 +77,25 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
-	/* //block1:    *//* Error: when no lock is set */
-	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 
 #ifdef LINUX_FILE_REGION_LOCK
-	if (fcntl(fd, F_RGETLK, &tl) < 0) {
-		if (errno == EINVAL) {
-			tst_resm(TINFO, "fcntl remote locking feature not "
-				 "implemented in the kernel: exitting");
-			cleanup();
-		 } else {
-			tst_resm(TPASS, "fcntl on file failed: Test " "PASSED");
+	if (fcntl(fd, F_RGETLK, &tl) == -1) {
+		if (errno == EINVAL)
+			tst_brkm(TCONF, cleanup,
+			    "fcntl remote locking feature not implemented in "
+			    "the kernel");
+		else {
+			/* 
+			 * FIXME (garrcoop): having it always pass on
+			 * non-EINVAL is a bad test.
+			 */
+			tst_resm(TPASS, "fcntl on file failed");
 		}
 	}
 
@@ -102,35 +103,21 @@ int main(int ac, char **av)
 	 * Add a write lock to the middle of the file and unlock a section
 	 * just before the lock
 	 */
-	if (do_lock(F_RSETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {
+	if (do_lock(F_RSETLK, F_WRLCK, 0, 10, 5) == -1)
 		tst_resm(TFAIL, "F_RSETLK WRLCK failed");
-		fail = 1;
-	}
 
-	if (do_lock(F_RSETLK, (short)F_UNLCK, (short)0, 5, 5) < 0) {
-		tst_resm(TFAIL, "F_RSETLK UNLOCK failed");
-		fail = 1;
-	}
+	if (do_lock(F_RSETLK, F_UNLCK, 0, 5, 5) == -1)
+		tst_resm(TFAIL|TERRNO, "F_RSETLK UNLOCK failed");
 
 	unlock_file();
+#else
+	tst_resm(TCONF, "system doesn't have LINUX_LOCK_FILE_REGION support");
 #endif
 
-	if (fail) {
-		tst_resm(TFAIL, "Block 1 FAILED");
-	} else {
-		tst_resm(TPASS, "Block 1 PASSED");
-	}
-	close(fd);
-
-	tst_resm(TINFO, "Exit block 1");
 	cleanup();
-
+	tst_exit();
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
 void setup()
 {
 	char *buf = STRING;
@@ -146,14 +133,11 @@ void setup()
 
 	snprintf(template, PATH_MAX, "fcntl06XXXXXX");
 
-	if ((fd = mkstemp(template)) < 0) {
-		tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
-	}
+	if ((fd = mkstemp(template)) == -1)
+		tst_resm(TBROK|TERRNO, "mkstemp failed");
 
-	if (write(fd, buf, STRINGSIZE) < 0) {
-		tst_resm(TFAIL, "Couldn't write to temp file! errno = %d",
-			 errno);
-	}
+	if (write(fd, buf, STRINGSIZE) == -1)
+		tst_resm(TBROK|TERRNO, "write failed");
 }
 
 int do_lock(int cmd, short type, short whence, int start, int len)
@@ -169,23 +153,18 @@ int do_lock(int cmd, short type, short whence, int start, int len)
 
 void unlock_file()
 {
-	if (do_lock(F_RSETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
-		perror("");
-		tst_resm(TINFO, "fcntl on file failed: Test PASSED");
+	if (do_lock(F_RSETLK, (short)F_UNLCK, (short)0, 0, 0) == -1) {
+		/* Same as FIXME comment above. */
+		tst_resm(TPASS|TERRNO, "fcntl on file failed");
 	}
 }
 
-/*
- * cleanup()
- *	performs all the ONE TIME cleanup for this test at completion or
- * or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing status if that option was specified.
-	 * print errno log if that option was specified
-	 */
+
+	if (close(fd) == -1)
+		tst_resm(TWARN|TERRNO, "close failed");
+
 	TEST_CLEANUP;
 
 	tst_rmdir();
