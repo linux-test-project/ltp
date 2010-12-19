@@ -39,7 +39,9 @@
  * RESTRICTIONS
  * 	None
  */
-#include <wait.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <err.h>
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
@@ -52,59 +54,44 @@ void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int pid, ppid;
 
 	int lc;			/* loop counter */
+	int status;
+	pid_t pid, ppid;
 	char *msg;		/* message returned from parse_opts */
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
 
 		ppid = getpid();
 		pid = FORK_OR_VFORK();
-		if (pid < 0) {
-			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
+		if (pid == -1)
+			tst_brkm(TBROK, cleanup, "fork failed");
 
-		if (pid == 0) {	/* child */
+		if (pid == 0) {
 			TEST(getppid());
 
-			if (TEST_RETURN < 0) {
-				tst_resm(TFAIL, "something is really broken");
-				continue;
-			}
-
 			if (STD_FUNCTIONAL_TEST) {
-				if (TEST_RETURN != ppid) {
-					tst_resm(TFAIL, "getppid() failed");
-				} else {
-					tst_resm(TPASS, "return value = "
-						 "parent's pid value");
-				}
-			} else {
+				if (TEST_RETURN != ppid)
+					errx(1, "getppid failed (%ld != %d)",
+					    TEST_RETURN, ppid);
+				else
+					printf("return value and parent's pid "
+					    "value match\n");
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
-
-		} else {
-			wait(NULL);
-
-			/* let the child carry on */
 			exit(0);
+		} else {
+			if (wait(&status) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+				tst_resm(TFAIL,
+				    "getppid functionality incorrect");
 		}
 	}
 	cleanup();
@@ -112,9 +99,6 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 
@@ -123,16 +107,8 @@ void setup()
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }
