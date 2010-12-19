@@ -145,7 +145,7 @@ void setup(void)
 
 	maxmsgs = get_max_msgqueues();
 	if (maxmsgs < 0)
-		tst_brkm(TBROK, cleanup, "");
+		tst_brkm(TBROK, cleanup, "get_max_msgqueues failed");
 
 	msg_q_arr = (int *)calloc(maxmsgs, sizeof(int));
 	if (msg_q_arr == NULL) {
