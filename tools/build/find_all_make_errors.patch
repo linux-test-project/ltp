@@ -1,0 +1,24 @@
+diff --git a/include/mk/generic_trunk_target.inc b/include/mk/generic_trunk_target.inc
+index 7ffb9e9..c81b9b4 100644
+--- a/include/mk/generic_trunk_target.inc
++++ b/include/mk/generic_trunk_target.inc
+@@ -75,7 +75,8 @@ trunk-install: $(INSTALL_FILES)
+ all: trunk-all
+ 
+ clean:: trunk-clean
+-	set -e; for dir in $(SUBDIRS); do \
++	#@set -e; for dir in $(SUBDIRS); do
++	for dir in $(SUBDIRS); do \
+ 	    $(MAKE) -C "$$dir" -f "$(abs_srcdir)/$$dir/Makefile" $@; \
+ 	done
+ ifneq ($(abs_builddir),$(abs_srcdir))
+@@ -90,7 +91,8 @@ ifeq ($(strip $(SUBDIRS)),)
+ 	$(error SUBDIRS empty -- did you want generic_leaf_target instead?)
+ else
+ $(RECURSIVE_TARGETS): %: | $(SUBDIRS)
+-	@set -e; for dir in $(SUBDIRS); do \
++	#@set -e; for dir in $(SUBDIRS); do
++	@for dir in $(SUBDIRS); do \
+ 	    $(MAKE) -C $$dir -f "$(abs_srcdir)/$$dir/Makefile" $@; \
+ 	done
+ endif
