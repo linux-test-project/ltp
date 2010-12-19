@@ -331,7 +331,7 @@ int main(int argc, char **argv)
 		sleep(10);
 	}
 
-	tst_exit();
+	return 0;
 }
 
 #endif /* CN_IDX_PROC */
