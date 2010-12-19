@@ -114,7 +114,7 @@ int main(int ac, char *av[])
 	}
 
 	cleanup();
-
+	tst_exit();
 }
 
 static void init(void)

@@ -481,13 +481,14 @@ static void domisc(int me, int fd, char *bits)
 		sync();
 		break;
 	case m_fstat:
-		if (fstat(fd, &sb) < 0) {
-			tst_resm(TFAIL|TERRNO, NULL, "Test[%d]: fstat failed", me);
-		}
-		if (sb.st_size != file_max) {
-			tst_brkm(TFAIL, NULL, "\tTest[%d]: fstat() mismatch; st_size=%"PRIx64",file_max=%x.",
-				me, (int64_t)sb.st_size, file_max);
-		}
+		if (fstat(fd, &sb) < 0)
+			tst_brkm(TFAIL|TERRNO, NULL,
+			    "\tTest[%d]: fstat failed", me);
+		if (sb.st_size != file_max)
+			tst_brkm(TFAIL, NULL,
+			    "\tTest[%d]: fstat() mismatch; st_size=%lu, "
+			    "file_max=%x.",
+			    me, sb.st_size, file_max);
 		break;
 	}
 
@@ -519,7 +520,7 @@ static void term(int sig LTP_ATTRIBUTE_UNUSED)
 
 	close(fd);
 
-	if (unlink(test_name))
+	if (unlink(test_name) == -1)
 		tst_resm(TBROK|TERRNO, "unlink failed");
 
 	tst_exit();

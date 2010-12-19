@@ -232,6 +232,7 @@ int main(void)
 
 	cleanup();
 
+	tst_exit();
 }
 
 #define	warn(val,m1,m2)	if ((val) < 0) dowarn(me,m1,m2)
