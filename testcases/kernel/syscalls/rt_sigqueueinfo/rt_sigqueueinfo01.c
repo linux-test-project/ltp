@@ -38,8 +38,10 @@
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
+#include <sys/wait.h>
 #include <stdio.h>
 #include <signal.h>
+#include <err.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -51,32 +53,11 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-extern char *TESTDIR; /* temporary dir created by tst_tmpdir() */
-
 /* Global Variables */
 char *TCID = "rt_sigqueueinfo01"; /* Test program identifier.*/
 int testno;
 int TST_TOTAL = 2; /* total number of tests in this file.   */
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
 extern void cleanup() {
 
 	TEST_CLEANUP;
@@ -84,67 +65,38 @@ extern void cleanup() {
 
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
 void setup() {
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
 int main(int ac, char **av) {
-	int pid, retval;
+	int status;
+	pid_t pid;
 	pid = getpid();
 	siginfo_t uinfo;
-	int lc; /* loop counter */
-	char *msg; /* message returned from parse_opts */
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	Tst_count = 0;
+	for (testno = 0; testno < TST_TOTAL; ++testno) {
+		TEST(pid = fork());
+		setup();
+		if (TEST_RETURN < 0)
+			tst_brkm(TFAIL|TTERRNO, cleanup, "fork failed");
+		else if (TEST_RETURN == 0) {
+			uinfo.si_errno = 0;
+			uinfo.si_code = SI_QUEUE;
+			TEST(syscall(__NR_rt_sigqueueinfo, getpid(), 17,
+			    &uinfo));
+			if (TEST_RETURN != 0)
+				err(1, "rt_sigqueueinfo");
+			exit(0);
+		} else
+			wait(&status);
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+				tst_resm(TPASS, "Test Succeeded");
+			else
+				tst_resm(TFAIL, "Test Failed");
+		cleanup();
 	}
-
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(pid = fork());
-			setup();
-			if (TEST_RETURN < 0) {
-				tst_resm(TFAIL, "fork() Failed, errno=%d : %s", TEST_ERRNO,
-						strerror(TEST_ERRNO));
-				cleanup();
-			} else if (TEST_RETURN == 0) {
-				uinfo.si_errno = 0;
-				uinfo.si_code = SI_QUEUE;
-				TEST(retval = syscall(__NR_rt_sigqueueinfo, getpid(), 17,
-						&uinfo));
-				if (TEST_RETURN == 0) {
-					tst_resm(TPASS, "Test Succeeded");
-				} else {
-					tst_resm(TFAIL, "Test Failed, errno=%d : %s", TEST_ERRNO,
-							strerror(TEST_ERRNO));
-				}
-				cleanup();
-			}
-			tst_exit();
-		}
-		Tst_count++;
-	}
+	tst_exit();
 }
