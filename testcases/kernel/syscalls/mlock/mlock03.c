@@ -33,9 +33,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+#include <sys/mman.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -45,20 +45,22 @@ char *TCID = "mlock03";
 int TST_TOTAL = 1;
 
 static void setup(void);
-static void cleanup(void) LTP_ATTRIBUTE_NORETURN;
+static void cleanup(void);
 
 int main(int argc, char *argv[])
 {
 	int lc;
 	char *msg;
-	long from, to, first = -1, last = -1;
+	long from, to;
+	long first = -1, last = -1;
 	char b[KB];
 	FILE *fp;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
 	setup();
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		fp = fopen("/proc/self/maps", "r");
 		if (fp == NULL)
@@ -70,31 +72,29 @@ int main(int argc, char *argv[])
 			sscanf(b, "%lx-%lx", &from, &to);
 
 			/* Record the initial stack size. */
-			if ((lc == 0) && (strstr(b, "[stack]") != NULL))
+			if (lc == 0 && strstr(b, "[stack]") != NULL)
 				first = (to - from)/KB;
 
 			switch (lc & 1) {
 			case 0:
-				if (mlock((const void*)from, (to - from)) == -1)
-					tst_resm(TINFO|TERRNO, "mlock");
+				if (mlock((const void*)from, to-from) == -1)
+					tst_resm(TINFO|TERRNO, "mlock failed");
 				break;
 			case 1:
-				if (munlock((const void*)from,
-						(to - from)) == -1)
+				if (munlock((void*)from, to - from) == -1)
 					tst_resm(TINFO|TERRNO,
-						"munlock");
+					    "munlock failed");
 				break;
 			default:
 				break;
 			}
 			tst_resm(TINFO, "%s from %lx to %0lx",
-				(lc&1) ? "munlock" : "mlock  ", from, to);
+				(lc&1) ? "munlock" : "mlock", from, to);
 
 			/* Record the final stack size. */
 			if (strstr(b, "[stack]") != NULL)
-				last = (to - from)/KB;
+				last = (to - from) / KB;
 		}
-		printf("\n");
 		fclose(fp);
 	}
 	tst_resm(TINFO, "starting stack size is %ld", first);
@@ -103,7 +103,9 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "stack size is decreased.");
 	else
 		tst_resm(TPASS, "stack size is not decreased.");
+
 	cleanup();
+	tst_exit();
 }
 
 void setup(void)
@@ -115,5 +117,4 @@ void setup(void)
 void cleanup(void)
 {
 	TEST_CLEANUP;
-
 }
