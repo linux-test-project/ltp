@@ -178,7 +178,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (close(fd) == -1)
-		tst_brkm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN|TERRNO, "close failed");
 
 	tst_rmdir();
 

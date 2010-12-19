@@ -69,9 +69,11 @@
  */
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -82,35 +84,29 @@
 #include <unistd.h>
 #include <grp.h>
 #include <pwd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include "test.h"
 #include "usctest.h"
 
-#define MODE_RWX	S_IRWXU | S_IRWXG | S_IRWXO
-#define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define MODE_RWX	(S_IRWXU|S_IRWXG|S_IRWXO)
+#define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define TEST_FILE1	"tfile_1"
 #define TEST_FILE2	"tfile_2"
 
-int no_setup();
-int setup1();			/* setup function to test chmod for EPERM */
-int setup2();			/* setup function to test chmod for EBADF */
+void setup1();			/* setup function to test chmod for EPERM */
+void setup2();			/* setup function to test chmod for EBADF */
 
 int fd1;			/* File descriptor for testfile1 */
 int fd2;			/* File descriptor for testfile2 */
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int fd;
-	char *desc;
 	int mode;
 	int exp_errno;
-	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	1, "Process is not owner/root", FILE_MODE, EPERM, setup1}, {
-	2, "File descriptor is not valid", FILE_MODE, EBADF, setup2}, {
-	0, 0, 0, 0, no_setup}
+	void (*setupfunc)();
+} test_cases[] = {
+	{ 1, FILE_MODE, EPERM, setup1 },
+	{ 2, FILE_MODE, EBADF, setup2 },
 };
 
 char *TCID = "fchmod06";	/* Test program identifier.    */
@@ -128,212 +124,109 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	char *test_desc;	/* test specific error message */
 	int fd;			/* test file descriptor */
-	int ind;		/* counter to test different test conditions */
+	int i;		/* counter to test different test conditions */
 	int mode;		/* creation mode for the node created */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-	/*
-	 * Invoke setup function to call individual test setup functions
-	 * to simulate test conditions.
-	 */
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			fd = Test_cases[ind].fd;
-			mode = Test_cases[ind].mode;
-			test_desc = Test_cases[ind].desc;
+		for (i = 0; i < TST_TOTAL; i++) {
+			fd = test_cases[i].fd;
+			mode = test_cases[i].mode;
 
-			if (fd == 1) {
+			if (fd == 1)
 				fd = fd1;
-			} else {
+			else
 				fd = fd2;
-			}
-
-			/*
-			 * Call fchmod(2) to test different test conditions.
-			 * verify that it fails with -1 return value and
-			 * sets appropriate errno.
-			 */
 
 			TEST(fchmod(fd, mode));
 
-			/* Check return code from fchmod(2) */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-					tst_resm(TPASS,
-						 "fchmod() fails, %s, errno:%d",
-						 test_desc, TEST_ERRNO);
-				} else {
-					tst_resm(TFAIL, "fchmod() fails, %s, "
-						 "errno:%d, expected errno:%d",
-						 test_desc, TEST_ERRNO,
-						 Test_cases[ind].exp_errno);
-				}
-			} else {
-				tst_resm(TFAIL, "fchmod() returned %ld, expected"
-					 " -1, errno:%d", TEST_RETURN,
-					 Test_cases[ind].exp_errno);
-			}
+				if (TEST_ERRNO == test_cases[i].exp_errno)
+					tst_resm(TPASS|TTERRNO,
+					    "fchmod failed as expected");
+				else
+					tst_resm(TFAIL|TTERRNO,
+					    "fchmod failed unexpectedly");
+			} else
+				tst_resm(TFAIL,
+				    "fchmod succeeded unexpectedly");
 		}
 
 	}
 
-	/*
-	 * Invoke cleanup() to delete the test directory/file(s) created
-	 * in the setup().
-	 */
 	cleanup();
-
+	tst_exit();
 }
 
-/*
- * void
- * setup(void) - performs all ONE TIME setup for this test.
- * 	Exit the test program on receipt of unexpected signals.
- *	Create a temporary directory and change directory to it.
- *	Invoke individual test setup functions according to the order
- *	set in struct. definition.
- */
 void setup()
 {
-	int ind;
+	int i;
 
-	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_resm(TBROK|TERRNO, "seteuid failed");
 
 	test_home = get_current_dir_name();
 
 	TEST_PAUSE;
 
-	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-	/* call individual setup functions */
-	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-		Test_cases[ind].setupfunc();
-	}
+	for (i = 0; i < TST_TOTAL; i++)
+		test_cases[i].setupfunc();
 }
 
-/*
- * int
- * setup1() - setup function for a test condition for which fchmod(2)
- *	      returns -1 and sets errno to EPERM.
- *
- *  Create a test file under temporary directory.
- *  Get the current working directory of the process and invoke setuid
- *  to root program to change the ownership of testfile to that of
- *  "ltpuser" user.
- *
- */
-int setup1()
+void setup1()
 {
 	uid_t old_uid;
 
-	/* Create a testfile under temporary directory */
-	if ((fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	if ((fd1 = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open(%s, ..) failed",
+		    TEST_FILE1);
 
 	old_uid = geteuid();
-	seteuid(0);
+	if (seteuid(0) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "seteuid(0) failed");
 
-	if (fchown(fd1, 0, 0) < 0)
-		tst_brkm(TBROK, cleanup, "Fail to modify %s ownership(s): %s",
-				TEST_FILE1, strerror(errno));
+	if (fchown(fd1, 0, 0) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "fchown of %s failed",
+		    TEST_FILE1);
 
-	seteuid(old_uid);
+	if (seteuid(old_uid) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "seteuid(%d) failed", old_uid);
 
-	return 0;
 }
 
-/*
- * int
- * setup2() - setup function for a test condition for which fchmod(2)
- *	      returns -1 and sets errno to EBADF.
- *  Create a testfile under temporary directory and close it such that
- *  fchmod(2) attempts to modify the file which is already closed.
- */
-int setup2()
+void setup2()
 {
-	/* Create a testfile under temporary directory */
-	if ((fd2 = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
-	/* Close the testfile created above */
-	if (close(fd2) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
-	return 0;
+	if ((fd2 = open(TEST_FILE2, O_RDWR|O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open(%s, ..) failed",
+		    TEST_FILE2);
+	if (close(fd2) == -1)
+		tst_brkm(TBROK, cleanup, "closing %s failed", TEST_FILE2);
 }
 
-/*
- * int
- * no_setup() - Some test conditions for mknod(2) do not any setup.
- *              Hence, this function just returns 0.
- *  This function simply returns 0.
- */
-int no_setup()
-{
-	return 0;
-}
-
-/*
- * void
- * cleanup() - Performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	Print test timing stats and errno log if test executed with options.
- *	Close the testfile if still opened.
- *	Remove temporary directory and sub-directories/files under it
- *	created during setup().
- *	Exit the test program with normal exit code.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	if (close(fd1) == -1) {
-		tst_brkm(TBROK, NULL,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	if (close(fd1) == -1)
+		tst_resm(TWARN|TERRNO, "closing %s failed", TEST_FILE1);
 
 	tst_rmdir();
-
 }

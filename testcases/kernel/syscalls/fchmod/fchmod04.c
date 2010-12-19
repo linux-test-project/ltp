@@ -106,12 +106,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	mode_t dir_mode;	/* mode permissions set on testdirectory */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -126,8 +122,7 @@ int main(int ac, char **av)
 		TEST(fchmod(fd, PERMS));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "fchmod(%d, %#o) Failed, errno=%d : %s",
-				 fd, PERMS, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "fchmod failed");
 			continue;
 		}
 		/*
@@ -135,33 +130,24 @@ int main(int ac, char **av)
 		 * executed without (-f) option.
 		 */
 		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the file information using
-			 * fstat(2).
-			 */
-			if (fstat(fd, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup, "fstat(2) of %s "
-					 "failed, errno=%d",
-					 TESTDIR, TEST_ERRNO);
-			}
+			if (fstat(fd, &stat_buf) == -1)
+				tst_brkm(TFAIL|TERRNO, cleanup, "fstat failed");
 			dir_mode = stat_buf.st_mode;
 
-			/* Verify STICKY BIT SET on directory */
-			if ((dir_mode & PERMS) == PERMS) {
+			if ((dir_mode & PERMS) == PERMS)
 				tst_resm(TPASS, "Functionality of fchmod(%d, "
 					 "%#o) successful", fd, PERMS);
-			} else {
+			else
 				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
 					 "Expected 0%03o",
 					 TESTDIR, dir_mode, PERMS);
-			}
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
 /*
