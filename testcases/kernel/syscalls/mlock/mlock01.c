@@ -66,48 +66,39 @@ void *addr1;
 struct test_case_t {
 	void **addr;
 	int len;
-	void (*setupfunc) ();
+	void (*setupfunc)();
 } TC[] = {
 	/* mlock should return ENOMEM when some or all of the address
 	 * range pointed to by addr and len are not valid mapped pages
 	 * in the address space of the process
 	 */
-	{
-	&addr1, 1, setup1}, {
-	&addr1, 1024, setup1}, {
-	&addr1, 1024 * 1024, setup1}, {
-	&addr1, 1024 * 1024 * 10, setup1}
+	{ &addr1, 1, setup1},
+	{ &addr1, 1024, setup1},
+	{ &addr1, 1024 * 1024, setup1},
+	{ &addr1, 1024 * 1024 * 10, setup1}
 };
 
 #if !defined(UCLINUX)
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state
-     ***************************************************************/
-	/* TEST_LOOPING() is a macro that will make sure the test continues
-	 * looping according to the standard command line args.
+	/* 
+	 * FIXME (garrcoop): this should really test out whether or not the
+	 * process's mappable address space is indeed accessible by the
+	 * current user, instead of needing to be run by root all the time. 
 	 */
+	tst_require_root(NULL);
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
@@ -119,24 +110,16 @@ int main(int ac, char **av)
 
 			TEST(mlock(*(TC[i].addr), TC[i].len));
 
-			/* check return code */
-			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "mlock(%p, %d) Failed with "
-					 "return=%ld, errno=%d : %s",
-					 TC[i].addr, TC[i].len,
-					 TEST_RETURN, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TPASS, "test %d passed length = %d",
-					 i, TC[i].len);
-			}
+			/* I'm confused -- given the description above this
+			 * should fail as designed, but this application 
+			 * */
+			if (TEST_RETURN == -1)
+				tst_resm(TFAIL|TTERRNO, "mlock failed");
+			else
+				tst_resm(TPASS, "mlock passed");
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
 	tst_exit();
@@ -146,15 +129,11 @@ int main(int ac, char **av)
 
 int main()
 {
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }
 
 #endif /* if !defined(UCLINUX) */
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 	TEST_PAUSE;
@@ -162,15 +141,11 @@ void setup()
 
 void setup1(int len)
 {
-	addr1 = (char *)malloc(len);
+	addr1 = malloc(len);
 	if (addr1 == NULL)
 		tst_brkm(TFAIL, cleanup, "malloc failed");
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
 	TEST_CLEANUP;
