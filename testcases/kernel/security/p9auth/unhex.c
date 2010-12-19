@@ -43,5 +43,5 @@ int main(int argc, char *argv[])
 		out[i] = v;
 	}
 	write(STDOUT_FILENO, out, 20);
-	tst_exit();
+	return 0;
 }
