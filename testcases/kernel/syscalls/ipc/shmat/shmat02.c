@@ -106,51 +106,40 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int i;
-	struct test_case_t tc;
+	struct test_case_t *tc;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	tc = NULL;
+
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup */
+	if ((tc = malloc(sizeof(struct test_case_t))) == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "malloc failed");
 
-	/* The following loop checks looping state if -i option given */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* setup test case paremeters */
-		setup_tc(lc, &tc);
-
-		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
-			/*
-			 * make the call using the TEST() macro - attempt
-			 * various invalid shared memory attaches
-			 */
+
+			setup_tc(i, tc);
+
 			errno = 0;
-			addr = shmat(*(tc.shmid), base_addr + tc.offset, 0);
-			TEST_ERRNO = errno;
+			addr = shmat(*(tc->shmid), base_addr + tc->offset, 0);
 
 			if (addr != (void *)-1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO == tc.error) {
-				tst_resm(TPASS, "expected failure - errno = "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "call failed with an "
-					 "unexpected error - %d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-
-			}
+			if (errno == tc->error)
+				tst_resm(TPASS|TERRNO,
+				    "shmat failed as expected"); 
+			else
+				tst_resm(TFAIL,
+				    "shmat failed unexpectedly; expected: "
+				    "%d - %s", tc->error, strerror(tc->error));
 		}
 	}
 
@@ -159,69 +148,50 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
 void setup(void)
 {
 	key_t shmkey2;
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
 	tst_tmpdir();
 
-	/* get an IPC resource key */
 	shmkey = getipckey();
 
-	/* create a shared memory resource with read and write permissions */
-	/* also post increment the shmkey for the next shmget call */
-	if ((shm_id_2 = shmget(shmkey, INT_SIZE, SHM_RW | IPC_CREAT |
-			       IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
-			 "resource #1 in setup()");
-	}
+	if ((shm_id_2 = shmget(shmkey, INT_SIZE, SHM_RW|IPC_CREAT|IPC_EXCL)) ==
+	    -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "shmget #1 failed");
 
 	/* Get an new IPC resource key. */
 	shmkey2 = getipckey();
 
 	/* create a shared memory resource without read and write permissions */
-	if ((shm_id_3 = shmget(shmkey2, INT_SIZE, IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
-			 "resource #2 in setup()");
-	}
+	if ((shm_id_3 = shmget(shmkey2, INT_SIZE, IPC_CREAT|IPC_EXCL)) ==
+	    -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "shmget #2 failed");
 
 	/* Probe an available linear address for attachment */
-	if ((base_addr = shmat(shm_id_2, NULL, 0)) == (void *)-1) {
-		tst_brkm(TBROK, cleanup, "Couldn't attach shared memory");
-	}
+	if ((base_addr = shmat(shm_id_2, NULL, 0)) == (void *)-1)
+		tst_brkm(TBROK|TERRNO, cleanup, "shmat #1 failed");
 
-	if (shmdt((const void *)base_addr) == -1) {
-		tst_brkm(TBROK, cleanup, "Couldn't detach shared memory");
-	}
+	if (shmdt((const void *)base_addr) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "shmat #2 failed");
 
-	/* some architectures (e.g. parisc) are strange, so better always align to
-	 * next SHMLBA address. */
+	/* 
+	 * some architectures (e.g. parisc) are strange, so better always align
+	 * to next SHMLBA address
+	 */
 	base_addr =
 	    (void *)(((unsigned long)(base_addr) & ~(SHMLBA - 1)) + SHMLBA);
 }
