@@ -100,13 +100,13 @@ int set_handler(int sig, int sig_to_mask, int flag)
 		err = sigaction(sig, (void *)-1, NULL);
 	} else if (flag == 2) {
 		err = sigaction(sig, NULL, (void *)-1);
-	}
+	} else
+		err = -1;
 
-	if (err == 0) {
+	if (err == 0)
 		return 0;
-	} else {
+	else
 		return errno;
-	}
 }
 
 int main(int ac, char **av)
