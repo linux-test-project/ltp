@@ -96,7 +96,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-
+	tst_exit();
 }
 
 /*
@@ -114,9 +114,8 @@ void setup()
 
 	sprintf(fname, "%s.%d", fname, getpid());
 
-	if (mknod(fname, S_IFIFO | 0644, (dev_t) NULL) == -1) {
+	if (mknod(fname, S_IFIFO|0644, 0) == -1)
 		tst_brkm(TBROK, cleanup, "mknod FAILED");
-	 }
 }
 
 /*

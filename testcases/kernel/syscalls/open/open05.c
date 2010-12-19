@@ -134,7 +134,7 @@ int main(int ac, char **av)
 
 		}
 	}
-
+	tst_exit();
 }
 
 /*
