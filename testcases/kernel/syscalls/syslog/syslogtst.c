@@ -20,13 +20,14 @@
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 /* 11/22/2002	Port to Linux	dbarrera@us.ibm.com */
 
+#include <sys/types.h>
+#include <assert.h>
+#include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <syslog.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 /*
@@ -45,6 +46,8 @@ int main(int argc, char *argv[])
 	int status, flag3, fd, ch, ch1;
 	int exit_flag = 0;	/* used for syslog test case 6. */
 	time_t t;
+
+	ch1 = -1;
 
 	signal(SIGINT, sig_handler);
 	signal(SIGTERM, sig_handler);
@@ -86,6 +89,8 @@ int main(int argc, char *argv[])
 		if (argc > 2)
 			ch1 = atoi(argv[2]);
 	}
+
+	assert (ch1 != -1);
 
 	/*
 	 * Send syslog messages according to the case number, which
