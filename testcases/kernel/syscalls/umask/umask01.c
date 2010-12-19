@@ -130,59 +130,34 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * Call umask(2)
-		 */
 		TEST(umask(022));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "umask(022) Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS, "umask(022) returned %ld",
 					 TEST_RETURN);
 			}
 		}
 	}
-
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 	void trapper();
@@ -193,16 +168,7 @@ void setup()
 
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
