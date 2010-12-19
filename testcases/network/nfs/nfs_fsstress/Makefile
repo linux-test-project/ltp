@@ -27,6 +27,10 @@ include $(top_srcdir)/include/mk/env_pre.mk
 CPPFLAGS		+= -D_LARGEFILE64_SOURCE -D_GNU_SOURCE -DNO_XFS \
 			   -I$(abs_srcdir)
 
+# XXX (garrcoop): this copy of fsstress has issues with -Wuninitialized that
+# aren't as easy to resolve as I would like.
+CPPFLAGS		+= -Wno-error
+
 INSTALL_TARGETS		:= nfs_fsstress.sh 
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
