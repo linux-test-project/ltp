@@ -354,5 +354,5 @@ int main(int argc, char *argv[])
 	domain_policy_test(before);
 	exception_policy_test(before);
 	BUG("Policy read/write test: Success\n");
-	tst_exit();
+	return 0;
 }
