@@ -68,6 +68,7 @@
  *
  ****************************************************************/
 
+#include <err.h>
 #include <errno.h>
 #include <sched.h>
 #include <sys/wait.h>
@@ -121,8 +122,8 @@ int main(int ac, char **av)
 			TEST(sched_setparam(getppid(), &param));
 
 			if (TEST_RETURN == -1) {
-				perror("sched_setparam returned %ld", TEST_RETURN);
-				exit(0);
+				err(0, "sched_setparam returned %ld",
+				    TEST_RETURN);
 			}
 			exit(1);
 
@@ -146,9 +147,8 @@ int main(int ac, char **av)
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
-
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */

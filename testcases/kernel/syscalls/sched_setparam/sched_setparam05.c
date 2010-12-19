@@ -159,19 +159,15 @@ int main(int ac, char **av)
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
-
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
