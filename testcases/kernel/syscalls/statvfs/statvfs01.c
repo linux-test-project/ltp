@@ -71,16 +71,13 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/* Call statvfs(2) */
 		TEST(statvfs(TEST_PATH, &buf));
 
-		/* check return code */
-		if (TEST_RETURN == -1) {
+		if (TEST_RETURN == -1)
 			tst_resm(TFAIL|TERRNO, "statvfs(%s, ...) failed",
 			    TEST_PATH);
-		} else {
-			tst_resm(TPASS, "statvfs(%s, ...) passed");
-		}
+		else
+			tst_resm(TPASS, "statvfs(%s, ...) passed", TEST_PATH);
 
 	}
 
