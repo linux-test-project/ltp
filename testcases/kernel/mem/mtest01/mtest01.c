@@ -73,6 +73,8 @@ int main(int argc, char* argv[]) {
   sigemptyset(&act.sa_mask);
   sigaction(SIGRTMIN,  &act, 0);
 
+  pre_mem = post_mem = 0;
+
   for (i=0;i<1000;i++)
    pid_list[i]=(pid_t)0;
 
@@ -154,10 +156,11 @@ int main(int argc, char* argv[]) {
     pid_cntr++;
     pid_list[i]=pid;
 
-#if defined (_s390_) /* s390's 31bit addressing requires smaller chunks */
 #define FIVE_HUNDRED_KB	(500*1024*1024)
 #define ONE_MEGABYTE	(1024*1024*1024)
 #define THREE_MEGABYTES	(3*ONE_MEGABYTE)
+
+#if defined (_s390_) /* s390's 31bit addressing requires smaller chunks */
   while (pid != 0 && maxbytes > FIVE_HUNDRED_KB)
   {
     i++;
