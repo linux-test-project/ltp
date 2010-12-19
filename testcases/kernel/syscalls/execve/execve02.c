@@ -184,7 +184,7 @@ void setup(char *argv0)
 
 	tst_tmpdir();
 
-	FIXME: (find reference to other code that does similar to solve this problem and squish it into libltp or something.
+	//FIXME (garrcoop): (find reference to other code that does similar to solve this problem and squish it into libltp or something.
 
 	cmd = malloc(strlen(path) + strlen(bname) + 15);
 	if (cmd == NULL)
