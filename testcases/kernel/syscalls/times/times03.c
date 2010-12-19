@@ -72,15 +72,11 @@ int main(int argc, char **argv)
 
 	struct tms buf1, buf2;
 	time_t start_time, end_time;
-	int pid2, status, fail = 0;
+	int pid2, status;
 	struct sigaction sa;
 
-	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -94,10 +90,8 @@ int main(int argc, char **argv)
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
 
-	if (sigaction(SIGALRM, &sa, NULL) < 0) {
-		tst_brkm(TBROK, cleanup, "Sigaction failed !\n");
-
-	}
+	if (sigaction(SIGALRM, &sa, NULL) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "Sigaction failed !\n");
 
 	timeout = 0;
 	alarm(3);
@@ -112,49 +106,36 @@ int main(int argc, char **argv)
 	 */
 	start_time = time(NULL);
 	for (;;) {
-		if (times(&buf1) == -1) {
-			TEST_ERROR_LOG(errno);
-			tst_resm(TFAIL, "Call to times(2) "
-				 "failed, errno = %d", errno);
-		}
+		if (times(&buf1) == -1)
+			tst_resm(TFAIL|TERRNO, "times failed");
 		end_time = time(NULL);
 		if ((end_time - start_time) > 5) {
 			break;
 		}
 	}
-	if (times(&buf1) == -1) {
-		TEST_ERROR_LOG(errno);
-		tst_resm(TFAIL, "Call to times(2) failed, "
-			 "errno = %d", errno);
-	} else {
+	if (times(&buf1) == -1)
+		tst_resm(TFAIL|TERRNO, "times failed");
+	else {
 		/*
 		 * Perform functional verification if test
 		 * executed without (-f) option.
 		 */
 		if (STD_FUNCTIONAL_TEST) {
-			if (buf1.tms_utime == 0) {
-				tst_resm(TFAIL, "Error: times() report "
+			if (buf1.tms_utime == 0)
+				tst_resm(TFAIL, "times report "
 					 "0 user time");
-				fail = 1;
-			}
-			if (buf1.tms_stime == 0) {
-				tst_resm(TFAIL, "Error: times() report "
+			if (buf1.tms_stime == 0)
+				tst_resm(TFAIL, "times report "
 					 "0 system time");
-				fail = 1;
-			}
-			if (buf1.tms_cutime != 0) {
-				tst_resm(TFAIL, "Error: times() report "
+			if (buf1.tms_cutime != 0)
+				tst_resm(TFAIL, "times report "
 					 "%ld child user time",
 					 buf1.tms_cutime);
-				fail = 1;
-			}
-			if (buf1.tms_cstime != 0) {
+			if (buf1.tms_cstime != 0)
 				tst_resm(TFAIL,
-					 "Error: times() report "
+					 "times report "
 					 "%ld child system time",
 					 buf1.tms_cstime);
-				fail = 1;
-			}
 
 			pid2 = FORK_OR_VFORK();
 			if (pid2 < 0) {
@@ -200,40 +181,26 @@ int main(int argc, char **argv)
 			}
 			if (times(&buf2) == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "Call to times failed "
-					 "errno = %d", errno);
-				fail = 1;
+				tst_resm(TFAIL|TTERRNO, "times failed");
 			}
-			if (buf1.tms_utime > buf2.tms_utime) {
+			if (buf1.tms_utime > buf2.tms_utime)
 				tst_resm(TFAIL, "Error: parents's "
 					 "user time(%ld) before child "
 					 "> parent's user time (%ld) "
 					 "after child",
-					 (intmax_t)buf1.tms_utime, (intmax_t)buf2.tms_utime);
-				fail = 1;
-			}
-			if (buf2.tms_cutime == 0) {
-				tst_resm(TFAIL, "Error: times() "
+					 buf1.tms_utime, buf2.tms_utime);
+			if (buf2.tms_cutime == 0)
+				tst_resm(TFAIL, "times "
 					 "report %ld child user "
 					 "time should be > than "
-					 "zero", (intmax_t)buf2.tms_cutime);
-				fail = 1;
-			}
-			if (buf2.tms_cstime == 0) {
-				tst_resm(TFAIL, "Error: times() "
+					 "zero", buf2.tms_cutime);
+			if (buf2.tms_cstime == 0)
+				tst_resm(TFAIL, "times "
 					 "report %ld child system time "
 					 "should be > than zero",
-					 (intmax_t)buf2.tms_cstime);
-				fail = 1;
-			}
-			if (fail == 0) {
-				tst_resm(TPASS, "%s: Functionality "
-					 "test passed", TCID);
-			}
-
-		} else {
-			tst_resm(TPASS, "%s call succeeded", TCID);
-		}
+					 buf2.tms_cstime);
+		} else
+			tst_resm(TPASS, "utimes call succeeded");
 	}
 	cleanup();
 	tst_exit();
