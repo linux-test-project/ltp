@@ -58,55 +58,46 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned by parse_opts */
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		TEST(GETEUID());
 
-		if (TEST_RETURN < 0) {
+		if (TEST_RETURN == -1)
 			tst_brkm(TBROK|TTERRNO, cleanup, "geteuid* failed");
-		}
 
 		if (STD_FUNCTIONAL_TEST) {
 
 			pwent = getpwuid(TEST_RETURN);
-			if (pwent == NULL) {
-				tst_resm(TFAIL, "geteuid() returned unexpected "
-					 "value %ld", TEST_RETURN);
-			} else if (!UID_SIZE_CHECK(pwent->pw_uid)) {
-				tst_brkm(TBROK,
-					 cleanup,
-					 "uid(%ld) is too large for testing geteuid16",
-					 TEST_RETURN);
-			} else {
-				if (pwent->pw_uid != TEST_RETURN) {
-					tst_resm(TFAIL, "getpwuid() value, %d, "
-						 "does not match geteuid() "
+			if (pwent == NULL)
+				tst_resm(TFAIL|TERRNO, "getpwuid failed");
+			else if (!UID_SIZE_CHECK(pwent->pw_uid))
+				tst_brkm(TBROK, cleanup,
+				    "uid = %ld is too large for testing "
+				    "via geteuid16", TEST_RETURN);
+			else {
+				if (pwent->pw_uid != TEST_RETURN)
+					tst_resm(TFAIL, "getpwuid value, %d, "
+						 "does not match geteuid "
 						 "value, %ld", pwent->pw_uid,
 						 TEST_RETURN);
-				} else {
-					tst_resm(TPASS, "values from geteuid()"
-						 " and getpwuid() match");
-				}
+				else
+					tst_resm(TPASS, "values from geteuid "
+						 "and getpwuid match");
 			}
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 	cleanup();
+	tst_exit();
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 
@@ -115,15 +106,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }
