@@ -88,71 +88,27 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
 
-	/* Parse standard options given to run the test. */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	setup();
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	Tst_count = 0;
 
-		Tst_count = 0;
+	TEST(msync(addr, page_sz, MS_INVALIDATE));
 
-		setup();
+	if (TEST_RETURN == -1)
+		tst_resm(TFAIL|TTERRNO, "msync failed");
+	else if (memcmp(addr+100, write_buf, strlen(write_buf)) != 0)
+		tst_resm(TFAIL,
+			 "memory region contains invalid data");
+	else
+		tst_resm(TPASS,
+			 "Functionality of msync successful");
 
-		/*
-		 * Call msync to synchronize the mapped region
-		 * with the specified file.
-		 */
-		TEST(msync(addr, page_sz, MS_INVALIDATE));
+	cleanup();
 
-		/* Check for the return value of msync() */
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "msync() failed to synchronize mapped "
-				 "file %s, TEST_ERRNO=%d : %s",
-				 TEMPFILE, TEST_ERRNO, strerror(TEST_ERRNO));
-			continue;
-		}
-
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Compare the mapped memory region at
-			 * specified offset (100) with the string
-			 * data written to the file.
-			 */
-			if (memcmp(addr + 100, write_buf,
-				   strlen(write_buf)) != 0) {
-				tst_resm(TFAIL,
-					 "memory region contains invalid data");
-			} else {
-				tst_resm(TPASS,
-					 "Functionality of msync() successful");
-			}
-		} else {
-			tst_resm(TPASS, "call succeeded");
-		}
-
-		cleanup();
-
-	}
-
+	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- * Get system page size,
- * Creat a temporary directory and a file under it used for mapping.
- * Write 1 page size char data into file.
- * Map the file to the specified page size region.
- * Seek the file ptr to the specified offset pos (100) from beginning.
- * Write known data at the specified offset position.
- */
 void setup()
 {
 	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
@@ -162,88 +118,47 @@ void setup()
 
 	TEST_PAUSE;
 
+	if ((page_sz = getpagesize()) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "getpagesize failed");
+
 	tst_tmpdir();
 
-	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "getpagesize() fails to get system page size");
-		tst_exit();
-	}
-
-	/* Creat a temporary file used for mapping */
-	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
-		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
-	}
+	if ((fildes = open(TEMPFILE, O_RDWR|O_CREAT, 0666)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 
 	/* Write one page size of char data into temporary file */
 	while (c_total < page_sz) {
-		if ((nwrite = write(fildes, tst_buf, sizeof(tst_buf))) <= 0) {
-			tst_brkm(TBROK, cleanup, "write() on %s Failed, errno "
-				 "= %d : %s", TEMPFILE, errno, strerror(errno));
-			tst_exit();
-		} else {
+		if ((nwrite = write(fildes, tst_buf, sizeof(tst_buf))) <= 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+		else
 			c_total += nwrite;
-		}
 	}
 
-	/*
-	 * Call mmap to map virtual memory (mul. of page size bytes) from the
-	 * beginning of temporary file (offset is 0) into memory.
-	 */
 	addr = mmap(0, page_sz, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
 		    fildes, 0);
 
-	/* Check for the return value of mmap() */
-	if (addr == (char *)MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap() Failed on %s, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
-	}
+	if (addr == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
 
 	/* Again, Seek to the specified byte offset (100) position */
-	if (lseek(fildes, (off_t) 100, SEEK_SET) != (off_t) 100) {
-		tst_brkm(TBROK, cleanup, "lseek() fails to seek to specified "
-			 "offset pos., error=%d", errno);
-		tst_exit();
-	}
+	if (lseek(fildes, 100, SEEK_SET) != 100)
+		tst_brkm(TBROK|TERRNO, cleanup, "lseek failed");
 
 	/* Write the string in write_buf at the 100 byte offset */
-	if (write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf)) {
-		tst_brkm(TBROK, cleanup, "write() fails to write specified "
-			 "string, error=%d", errno);
-		tst_exit();
-	}
+	if (write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf))
+		tst_brkm(TBROK|TERRNO, cleanup, "write failed");
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	       Unmap the mapped memory area done in the test.
- *	       Close the temporary file.
- *	       Remove the temporary directory created.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Unmap the mapped memory */
-	if (munmap(addr, page_sz) != 0) {
-		tst_brkm(TBROK, NULL, "munmap() fails to unmap the memory, "
-			 "errno=%d", errno);
-	}
+	if (munmap(addr, page_sz) == -1)
+		tst_resm(TBROK|TERRNO, "munmap failed");
 
 	/* Close the temporary file */
-	if (close(fildes) < 0) {
-		tst_brkm(TBROK, NULL, "close() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
+	if (close(fildes) == -1)
+		tst_resm(TWARN|TERRNO, "close failed");
 
 	tst_rmdir();
 }

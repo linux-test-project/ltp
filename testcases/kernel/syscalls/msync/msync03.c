@@ -73,7 +73,7 @@
 char *TCID = "msync03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
-char *addr;			/* addr of memory mapped region */
+void *addr;			/* addr of memory mapped region */
 size_t page_sz;			/* system page size */
 
 int exp_enos[] = { EINVAL, 0 };
@@ -86,7 +86,6 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -98,76 +97,42 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/*
-		 * Call msync to synchronize the memory region which
-		 * points to outside the user address space.
-		 */
 		TEST(msync(addr, page_sz, MS_ASYNC));
 
-		/* Check for the return value of msync() */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "msync() returns unexpected "
 				 "value %ld, expected:-1", TEST_RETURN);
 			continue;
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		/*
-		 * Verify whether expected errno is
-		 * set (EINVAL).
-		 */
-		if (errno == EINVAL) {
-			tst_resm(TPASS, "msync() fails, Invalid address, "
-				 "errno : %d", TEST_ERRNO);
-		} else {
-			tst_resm(TFAIL, "msync() fails, unexpected errno : %d, "
-				 "expected: EINVAL", TEST_ERRNO);
-		}
+		if (errno == EINVAL)
+			tst_resm(TPASS, "msync failed with EINVAL as expected");
+		else
+			tst_resm(TFAIL|TERRNO, "msync failed unexpectedly");
 	}
 
 	cleanup();
-
+	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- *	     Get system page size,
- *	     Get an address outside the process address space.
- */
 void setup()
 {
-	struct rlimit brkval;	/* variable to hold max. break val */
+	struct rlimit brkval;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "getpagesize() failed to get system page size");
-	}
+	if ((page_sz = getpagesize()) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "getpagesize failed");
 
-	/* call getrlimit function to get the maximum possible break value */
 	getrlimit(RLIMIT_DATA, &brkval);
 
-	/* Set the virtual memory address to maximum break value */
-	addr = (char *)brkval.rlim_max;
+	addr = (void*) brkval.rlim_max;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	       Exit the test with appropriate exit code.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }

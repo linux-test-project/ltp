@@ -89,141 +89,70 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-
-	/* Parse standard options given to run the test. */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
 	TEST_EXP_ENOS(exp_enos);
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	Tst_count = 0;
 
-		Tst_count = 0;
+	setup();
 
-		setup();
+	TEST(msync(addr, page_sz, INV_SYNC));
 
-		/*
-		 * Call msync to synchronize the mapped region
-		 * with the specified file using invalid flag.
-		 * INV_SYNC.
-		 */
-		TEST(msync(addr, page_sz, INV_SYNC));
+	if (TEST_RETURN != -1)
+		tst_resm(TFAIL, "msync succeeded unexpectedly");
+	else if (TEST_ERRNO == EINVAL)
+		tst_resm(TPASS, "msync failed with EINVAL as expected");
+	else
+		tst_resm(TFAIL|TTERRNO, "msync failed unexpectedly");
 
-		/* Check for the return value of msync() */
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "msync() returns unexpected value %ld, "
-				 "expected:-1", TEST_RETURN);
-			continue;
-		}
+	cleanup();
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		/*
-		 * Verify whether expected errno is
-		 * set (EINVAL).
-		 */
-		if (TEST_ERRNO == EINVAL) {
-			tst_resm(TPASS, "mapped region is private and cannot "
-				 "sync, errno:%d", TEST_ERRNO);
-		} else {
-			tst_resm(TFAIL, "msync() failed, unexpected errno:%d, "
-				 "expected: EINVAL", TEST_ERRNO);
-		}
-
-		cleanup();
-
-	}
-
+	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- * Get system page size,
- * Creat a temporary directory and a file under it used for mapping.
- * Write 1 page size char data into file.
- * Map the file to the specified page size region.
- */
 void setup()
 {
 	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
 	char tst_buf[BUF_SIZE];	/* buffer to hold data to be written */
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
+
+	if ((page_sz = getpagesize()) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "getpagesize failed");
 
 	tst_tmpdir();
 
-	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "getpagesize() fails to get system page size");
-		tst_exit();
-	}
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Creat a temporary file used for mapping */
-	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
-		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
-	}
+	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 
 	/* Write one page size of char data into temporary file */
 	while (c_total < page_sz) {
-		if ((nwrite = write(fildes, tst_buf, sizeof(tst_buf))) <= 0) {
-			tst_brkm(TBROK, cleanup,
-				 "write() on %s Failed, errno=%d : %s",
-				 TEMPFILE, errno, strerror(errno));
-			tst_exit();
-		} else {
+		if ((nwrite = write(fildes, tst_buf, sizeof(tst_buf))) <= 0)
+			tst_brkm(TBROK, cleanup, "write failed");
+		else
 			c_total += nwrite;
-		}
 	}
 
-	/*
-	 * Call mmap to map virtual memory (mul. of page size bytes) from the
-	 * beginning of temporary file (offset is 0) into memory.
-	 */
-	addr = mmap(0, page_sz, PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE,
+	addr = mmap(0, page_sz, PROT_READ|PROT_WRITE, MAP_FILE|MAP_PRIVATE,
 		    fildes, 0);
 
 	/* Check for the return value of mmap() */
-	if (addr == (char *)MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap() Failed on %s, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
-	}
+	if (addr == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	       Unmap the mapped memory area done in the test.
- *	       Close the temporary file.
- *	       Remove the temporary directory created.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Unmap the mapped memory */
-	if (munmap(addr, page_sz) != 0) {
-		tst_brkm(TBROK, NULL, "munmap() fails to unmap the memory, "
-			 "errno=%d", errno);
-	}
+	if (munmap(addr, page_sz) == -1)
+		tst_brkm(TBROK, NULL, "munmap failed");
 
 	/* Close the temporary file */
-	if (close(fildes) < 0) {
-		tst_brkm(TBROK, NULL, "close() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
+	if (close(fildes) == -1)
+		tst_brkm(TBROK, NULL, "close failed");
 
 	tst_rmdir();
 }
