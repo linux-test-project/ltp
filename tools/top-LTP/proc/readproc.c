@@ -36,7 +36,7 @@
 PROCTAB* openproc(int flags, ...) {
     va_list ap;
     PROCTAB* PT = xmalloc(sizeof(PROCTAB));
-    
+
     if (flags & PROC_PID)
       PT->procfs = NULL;
     else if (!(PT->procfs = opendir("/proc")))
@@ -291,7 +291,7 @@ static char** file2strvec(const char* directory, const char* what) {
     q = ret = (char**) (endbuf+align);		/* ==> free(*ret) to dealloc */
     *q++ = p = rbuf;				/* point ptrs to the strings */
     endbuf--;					/* do not traverse final NUL */
-    while (++p < endbuf) 
+    while (++p < endbuf)
     	if (!*p)				/* NUL char implies that */
 	    *q++ = p+1;				/* next string -> next char */
 
@@ -457,7 +457,7 @@ next_proc:				/* get next PID for consideration */
 	p->environ = file2strvec(path, "environ");
     else
         p->environ = NULL;
-    
+
     return p;
 }
 #undef flags
@@ -558,7 +558,7 @@ next_proc:				/* get next PID for consideration */
 	p->environ = file2strvec(path, "environ");
     else
         p->environ = NULL;
-    
+
     return p;
 }
 #undef flags

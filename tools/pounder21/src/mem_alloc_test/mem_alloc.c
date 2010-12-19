@@ -7,14 +7,14 @@
  *		       possible, aiming for final free{swap+ram} < COMMITED_AS.
  *		       EXEPTION: If overcommit_momory is set, the program will only
  *			         consume as much as momory as oom-killer allows, and
- *				 will exit when then limit reached even the 
+ *				 will exit when then limit reached even the
  *				 free{swap+ram} not < COMMITTED_AS KB.
  *	@author	     : Sarunya Jimenez (sjimene@us.ibm.com)
  * ********************************************************************************** */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -24,7 +24,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -53,7 +53,7 @@ static sigset_t newmask, oldmask, zeromask;
 //////////////////////////////// GLOBAL DEFINES ////////////////////////////////////////
 #define KB_VALUE        1024		// value in bytes -> 1024 bytes
 #define COMMITTED_AS  102400            // value in KB    -> 102400 KB -> 100MB
-#define MALLOC_SIZE   0x10000		// = 64KB... for each sbrk(MALLOC_SIZE) in 
+#define MALLOC_SIZE   0x10000		// = 64KB... for each sbrk(MALLOC_SIZE) in
 					// malloc_data()
 					// MUST ALWAYS BE POSSITIVE VALUE
 #define PAGE_SIZE     0x400		// = 1024 KB
@@ -63,7 +63,7 @@ static sigset_t newmask, oldmask, zeromask;
 
 
 //////////////////////////////// GLOBAL VARIABLES ////////////////////////////////////////
-long sbrk_num;		// global sbrk_num to keep track of # of times sbrk() get called 
+long sbrk_num;		// global sbrk_num to keep track of # of times sbrk() get called
 char * start_addr;	// heap @before a process allocate memory - get updated in eat_mem()
 char * end_addr;	// heap @after a process allocate memory  - get updated in alloc_data()
 			// and dealloc_data()
@@ -77,7 +77,7 @@ char * end_addr;	// heap @after a process allocate memory  - get updated in allo
  *	Print linux error message, will exit the current process.
  * ======================================================================================== */
 void
-unix_error(char * msg) 
+unix_error(char * msg)
 {
 	printf("LINUX ERROR: %s: %s\n", msg, strerror(errno));
 	exit(0);
@@ -112,7 +112,7 @@ sig_usr(int signo)			// signal hanlder for SIGUSR1 and SIGUSR2
  *	SET UP signal handler before TELL_PARENT(), WAIT_PARENT(), TELL_CHILD(), WAIT_CHILD().
  *	- This function must be called before fork() and TELL/WAIT_PARENT/CHILD() functions.
  * ======================================================================================== */
-void 
+void
 TELL_WAIT(void)
 {
 	if (signal(SIGUSR1, sig_usr) == SIG_ERR)
@@ -147,7 +147,7 @@ TELL_PARENT(pid_t pid)
  *	- This function must be called after TELL_WAIT() setup the SIGUSR1 & SIGUSR2 propery.
  *	- INPUT: child process ID; can be obtained through pid = fork() where pid > 0.
  * ======================================================================================== */
-void 
+void
 TELL_CHILD(pid_t pid)
 {
 	kill(pid, SIGUSR1);		// send signal SIGUSR1 to pid process
@@ -158,7 +158,7 @@ TELL_CHILD(pid_t pid)
  *	WAIT for parent: used in child process.
  *	- This function must be called after TELL_WAIT() setup the SIGUSR1 & SIGUSR2 propery.
  * ======================================================================================== */
-void 
+void
 WAIT_PARENT(void)
 {
 	while (sigflag == 0)
@@ -196,8 +196,8 @@ WAIT_CHILD(void)
  *	SET sbrk_num @start of each process to count # of sbrk() calls within that process.
  *	- INPUT: input number for globak sbrk_num to be set to.
  * ===================================================================================== */
-void 
-set_sbrk_num(int in) 
+void
+set_sbrk_num(int in)
 {
 	sbrk_num = in;
 }
@@ -206,8 +206,8 @@ set_sbrk_num(int in)
 /* ========================================================================================
  *	PRINT system information; e.g. free {ram, swap}, total {ram, swap}.
  * ======================================================================================== */
-void 
-print_sysinfo(void) 
+void
+print_sysinfo(void)
 {
 	struct sysinfo si;
 	sysinfo(&si);
@@ -224,13 +224,13 @@ print_sysinfo(void)
  *	CALCULATE freeswap space.
  *	- OUTPUT: Return size of free swap space in KB.
  * ======================================================================================== */
-long unsigned 
+long unsigned
 freeswap(void)
 {
 	struct sysinfo si;
 	sysinfo(&si);
 
-	return ((si.freeswap / KB_VALUE) * si.mem_unit);	
+	return ((si.freeswap / KB_VALUE) * si.mem_unit);
 }
 
 
@@ -238,7 +238,7 @@ freeswap(void)
  *	CALCULATE freeram space.
  *	- OUTPUT: Return size of free ram space in KB.
  * ======================================================================================== */
-long unsigned 
+long unsigned
 freeram(void)
 {
 	struct sysinfo si;
@@ -251,10 +251,10 @@ freeram(void)
 /* ========================================================================================
  *	ALLOCATE data using sbrk(incr).
  *  	- Global sbrk_num will be updated for each time calling sbrk() to increase heap size.
- *	- OUTPUT: Return 1 if success, 
+ *	- OUTPUT: Return 1 if success,
  *			 0 if failed, and will decrement the heap space for future library calls
  * ======================================================================================== */
-int 
+int
 malloc_data(void)
 {
 	int return_value = 0;			// default return = true;
@@ -270,9 +270,9 @@ malloc_data(void)
 		end_addr = src + (-(2*incr));	// update end of heap
 	} else {							// sucess case
 		// must write to data, write once for each 1KB
-		for (i = 0x0; i < incr ; i += PAGE_SIZE)		
+		for (i = 0x0; i < incr ; i += PAGE_SIZE)
 			src[i] = '*';
-		++sbrk_num;			// update global sbrk() call counter when success 
+		++sbrk_num;			// update global sbrk() call counter when success
 		return_value = 1;		// update return value to true
 		end_addr = src + incr;		// update end of heap
 	}
@@ -287,7 +287,7 @@ malloc_data(void)
  *	- OUTPUT: Return 1 if success,
  *			 0 if failed.
  * ======================================================================================== */
-int 
+int
 dealloc_data(void)
 {
 	int return_value = 0;			// default return = true
@@ -300,14 +300,14 @@ dealloc_data(void)
 		src = sbrk(-incr);
 
 		// error handling: Fatal Fail
-		if (((void *) src == (void *) -1) && (errno == ENOMEM)) 
+		if (((void *) src == (void *) -1) && (errno == ENOMEM))
 			goto OUT;		// error
 
 		--sbrk_num;			// update # of sbrk() call
 		end_addr = src + (-incr);	// update end of heap
 	}
 	return_value = 1;			// update return value to true
-	
+
 OUT:
 	return return_value;
 }
@@ -316,8 +316,8 @@ OUT:
 
 /* ========================================================================================
  *	Write to the memory because of Copy-On-Write behavior from LINUX kernel.
- *	IDEA: Because fork() is implemented through Copy-On-Write. This technique 
- *	      delay/prevent the copy of data, child & parent share memory, and their 
+ *	IDEA: Because fork() is implemented through Copy-On-Write. This technique
+ *	      delay/prevent the copy of data, child & parent share memory, and their
  *	      duplication of the address of child & parent are shared read-only. For parent
  *	      & child to have its very own separate space, both must write to their own data.
  *	      So this function will deal with the write for the child process created
@@ -325,7 +325,7 @@ OUT:
  *	OUTPUT: Return 1 if success,
  *		       0 if failed.
  * ======================================================================================== */
-int 
+int
 handle_COW(void)
 {
 	int return_value = 0;			// default return = true
@@ -348,20 +348,20 @@ handle_COW(void)
 	// Writing to heap
 	if (start_addr < end_addr) {		// Heap grows up to higher address
 		for (i = start_addr; i < end_addr; i += PAGE_SIZE) {
-			if ((freeswap() + freeram()) < COMMITTED_AS) 
+			if ((freeswap() + freeram()) < COMMITTED_AS)
 				goto OUT;
 			*i = 'u';
 		}
 		return_value = 1;
 	} else if (start_addr > end_addr) {	// Heap grows down to lower address
 		for (i = end_addr; i > start_addr; i -= PAGE_SIZE) {
-			if ((freeswap() + freeram()) < COMMITTED_AS) 
+			if ((freeswap() + freeram()) < COMMITTED_AS)
 				goto OUT;
-			*i = 'd';	
+			*i = 'd';
 		}
-		return_value = 1;		
+		return_value = 1;
 	} else ;					// Heap doesn't grows
-	
+
 OUT:
 	return return_value;
 }
@@ -373,7 +373,7 @@ OUT:
  *	- If a process can eat all of the free resouces
  *	  specified, that process will exit the program.
  * ======================================================================================== */
-void 
+void
 eat_mem(void)
 {
 	// saving the current heap pointer befoer start to allocate more memory
@@ -383,12 +383,12 @@ eat_mem(void)
 
 	// eating memory
 	while ((freeswap() + freeram()) > COMMITTED_AS) {
-		if (!malloc_data()) 
+		if (!malloc_data())
 			return;
 	}
 
 	print_sysinfo();
-	exit(0);				
+	exit(0);
 }
 
 
@@ -396,7 +396,7 @@ eat_mem(void)
  *	EAT lots and lots of memory...If a process can eat all of the free resouces
  *	specified, that process will exit the program
  * ======================================================================================== */
-void 
+void
 eat_mem_no_exit(void)
 {
 	// saving the current heap pointer befoer start to allocate more memory
@@ -406,9 +406,9 @@ eat_mem_no_exit(void)
 
 	// eating memory
 	while ((freeswap() + freeram()) > COMMITTED_AS) {
-		if (!malloc_data()) 
+		if (!malloc_data())
 			break;
-	}		
+	}
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -416,22 +416,22 @@ eat_mem_no_exit(void)
 
 
 ///////////////////////////////// MAIN PROGRAM ////////////////////////////////////////////////////
-int 
+int
 main(int argc, char ** argv)
 {
 	pid_t pid;						// used for fork()
 	print_sysinfo();					// sytem resouces before start allocation
 	set_sbrk_num(0);				        // at start of process, ensure sbrk_num is set
-	eat_mem();						
+	eat_mem();
 
-	// @beyound this point -> 1 process can't consume all memory so it must fork a child to consume more 
+	// @beyound this point -> 1 process can't consume all memory so it must fork a child to consume more
 	// memory
-START:								
+START:
 	pid = fork();
 	pid = pid < 0 ? -1 : pid;
-	
+
 	switch(pid) {
-		case -1: if (!dealloc_data())			
+		case -1: if (!dealloc_data())
 				unix_error("SBRK(-incr) FROM DEALLOC_DATA() FAILED. FATAL!!!");
 		         goto LAST_CONDITION;
 
@@ -452,10 +452,10 @@ LAST_CONDITION:
 	pid = pid < 0 ? -1 : pid;
 
 	switch(pid) {
-		case -1: unix_error("FORK FAILED."); 
+		case -1: unix_error("FORK FAILED.");
 
 		case 0 : eat_mem_no_exit();
-			 WAIT_PARENT();			 
+			 WAIT_PARENT();
 			 print_sysinfo();		// FINAL RESULT, LAST RESOUCES
 			 TELL_PARENT(getppid());
 			 exit(0);

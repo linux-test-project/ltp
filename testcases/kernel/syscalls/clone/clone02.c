@@ -318,7 +318,7 @@ void test_cleanup()
 
 	/* Restore parent's working directory */
 	if (chdir(cwd_parent) == -1) {
-		/* 
+		/*
 		 * we have to exit here
 		 *
 		 * XXX (garrcoop): why???

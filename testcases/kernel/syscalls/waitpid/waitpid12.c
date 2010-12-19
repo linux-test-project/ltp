@@ -309,6 +309,7 @@ int main(int argc, char **argv)
 			exit(0);
 		}
 	}
+	tst_exit();
 
 }
 

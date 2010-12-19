@@ -65,11 +65,11 @@ static int (*test_end_func)( SYM, SYM, SYM ) = scanner_test_end;
  * the depths of the current symbol table implimentation (there are the
  * cursors there that I could use) so that a different (faster!) symbol
  * table can be used in the future.
- * 
+ *
  * I could get a key (tag), get it's sub-keys (TCIDs), then get the key
  * again to reset to the top level, _then_ get the next key.  That would
  * be very inefficient.
- * 
+ *
  * The solution I chose is to extract all tags into a list (char array),
  * then go thru that list with the cursor free for other levels to use.
  *
@@ -77,7 +77,7 @@ static int (*test_end_func)( SYM, SYM, SYM ) = scanner_test_end;
  *  (2) search for the first tag that has a "stime" record, and use that as
  *      the date (MMDDYY) that the tests were run.
  *  (3) print the report header
- *  (4) go thru all tags and report each as described at the beginning of 
+ *  (4) go thru all tags and report each as described at the beginning of
  *      this file
  */
 static int
@@ -177,7 +177,7 @@ scanner_reporter(tags)
  * (3) insert it into the global data under this tag, replacing any existing
  *      data.
  *
- * a "feature" of the key implimentation: I can insert a key tree 
+ * a "feature" of the key implimentation: I can insert a key tree
  * under another key tree with almost zero brainwork because a SYM
  * is what the DATA area points to.
  */
@@ -253,7 +253,7 @@ iscanner_test_end(alltags, ctag, keys)
     /* insert keys into tag */
     sym_put(ctag, "_keys", (void *)keys, 0);
 
-     
+
     return tag_report(alltags, ctag, keys);
 }
 

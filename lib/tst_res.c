@@ -420,14 +420,14 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 	 * avoid unintended side effects from failures with fprintf when
 	 * calling write(2), et all.
 	 */
-	int err = errno; 
+	int err = errno;
 	const char *type;
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD
 	/* Don't execute these APIs unless you have the same pid as main! */
 	if (spawned_program_pid != 0) {
-		/* 
+		/*
 		 * Die quickly and noisily so people get the cluebat that the
 		 * test needs to be fixed. These APIs should _not_ be called
 		 * from forked processes because of the fact that it can confuse

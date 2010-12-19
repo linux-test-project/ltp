@@ -102,6 +102,7 @@ int main(int ac, char **av)
 		test4();
 	}
 	cleanup();
+	tst_exit();
 
 }
 

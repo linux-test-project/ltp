@@ -98,7 +98,7 @@ static void tmpdir_cleanup(void);
 extern char *TCID;		/* defined/initialized in main() */
 static char *TESTDIR = NULL;	/* the directory created */
 
-/* 
+/*
  * Return a copy of the test temp directory as seen by LTP. This is for
  * path-oriented tests like chroot, etc, that may munge the path a bit.
  *
@@ -303,7 +303,7 @@ void tst_rmdir(void)
 		return;
 	}
 
-	/* 
+	/*
 	 * XXX: this just reeks of bad programming; all shell characters should
 	 * be escaped in invocations of rm(1)/rmdir(1).
 	 */

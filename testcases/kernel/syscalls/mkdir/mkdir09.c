@@ -178,6 +178,7 @@ char *argv[];
 
 	runtest();
 	cleanup();
+	tst_exit();
 
 }
 

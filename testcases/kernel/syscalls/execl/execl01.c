@@ -155,7 +155,7 @@ int main(int ac, char **av)
 		switch (pid = FORK_OR_VFORK()) {
 		case 0:	/* CHILD - Call execl(2) */
 			execl("test", "test", NULL);
-			/* 
+			/*
 			 * should not get here!! if we do, the parent will fail
 			 * the Test Case
 			 */

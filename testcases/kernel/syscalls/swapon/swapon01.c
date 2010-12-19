@@ -126,6 +126,7 @@ int main(int ac, char **av)
 	}			/*End for TEST_LOOPING */
 
 	cleanup();
+	tst_exit();
 
 }
 

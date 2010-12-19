@@ -206,4 +206,3 @@ char **errormsg;
 
 }	/* end of record_lock */
 
-

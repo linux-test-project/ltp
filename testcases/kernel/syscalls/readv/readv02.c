@@ -180,6 +180,7 @@ int main(int ac, char **av)
 	close(fd[0]);
 	close(fd[1]);
 	cleanup();
+	tst_exit();
 
 }
 

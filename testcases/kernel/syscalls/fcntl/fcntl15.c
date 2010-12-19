@@ -372,6 +372,7 @@ void setup()
 int run_test(int file_flag, int file_mode, int dup_flag)
 {
 	int fd_A, fd_B;
+	fd_B = -1;
 	sigset_t newmask, zeromask, oldmask;
 
 	/* setup to catch SIGUSR1 signal from child process */

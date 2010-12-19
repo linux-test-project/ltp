@@ -519,6 +519,7 @@ int main(int argc, char *argv[])
 	 * End appropriately
 	 */
 	cleanup();
+	tst_exit();
 
 }
 

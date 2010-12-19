@@ -144,6 +144,7 @@ int main(int ac, char **av)
 
 	/* clean up and exit */
 	cleanup();
+	tst_exit();
 
 }
 

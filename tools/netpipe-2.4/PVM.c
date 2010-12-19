@@ -24,7 +24,7 @@ Setup(ArgStruct *p)
 #ifdef DEBUG
     printf("My task id is %d \n",p->prot.mytid);
 #endif
-}   
+}
 
 /**********************************************************************/
 /* Establish a link with the other processor                          */
@@ -86,7 +86,7 @@ Establish(ArgStruct *p)
 #ifdef DEBUG
 	printf("This is the receiver \n");
 #endif
-                
+
 	/* Receive any message from any task */
 	buffer_id = pvm_recv(-1, -1);
 

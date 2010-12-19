@@ -112,7 +112,7 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
+	tst_exit();
 }
 
 /*
@@ -139,9 +139,8 @@ void setup()
 		tst_resm(TFAIL, "creat(2) FAILED to creat temp file");
 	} else {
 		sprintf(path, "%s/%s", fname, fname);
-		if ((fileHandle = creat(path, 0444)) == -1) {
-			tst_brkm(TFAIL|TERRNO, "creat (2) FAILED to creat temp file");
-		}
+		if ((fileHandle = creat(path, 0444)) == -1)
+			tst_brkm(TFAIL|TERRNO, cleanup, "creat failed");
 	}
 
 	ltpuser = getpwnam(nobody_uid);

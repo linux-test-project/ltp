@@ -110,6 +110,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	cleanup();
+	tst_exit();
 
 }
 

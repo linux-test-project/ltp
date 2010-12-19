@@ -21,7 +21,7 @@
  */
 
  /*
-  * Looks for binary prog_name in $PATH. 
+  * Looks for binary prog_name in $PATH.
   *
   * If such file exists and if you are able at least to read it, zero is
   * returned and absolute path to the file is filled into buf. In case buf is

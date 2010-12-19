@@ -248,7 +248,7 @@ open_again:
       continue;
     }
     if (done>0 && done<(ssize_t)room-total-1) {
-      total += done; 
+      total += done;
       continue;   /* OK, we read some. Go do more. */
     }
     fprintf(stderr,"%ld can't happen\n", (long)done);

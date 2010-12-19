@@ -131,7 +131,7 @@ void *master_thread(void* arg)
 	pthread_cond_broadcast(&CS);
 
 	/* if we should timedwait on MS, then we don't need to unlock it here */
-	pthread_mutex_unlock(&MS); 
+	pthread_mutex_unlock(&MS);
 
 	printf("Master waiting 10 seconds\n");
 	clock_gettime(CLOCK_REALTIME, &ts_abs_timeout);
@@ -142,7 +142,7 @@ void *master_thread(void* arg)
 	 * XXX (garrcoop): then that's a documentation or implementation bug.
 	 * Duh... FIX IT!
 	 */
-	pthread_cond_timedwait(&CM, &MM, &ts_abs_timeout); 
+	pthread_cond_timedwait(&CM, &MM, &ts_abs_timeout);
 // 13
 	pthread_mutex_unlock(&MM);
 // 14
@@ -150,12 +150,12 @@ void *master_thread(void* arg)
 	pthread_mutex_lock(&MS);
 	pthread_cond_broadcast(&CS);
 // 15
-	/* 
+	/*
 	 * docs say MM, but that doesn't make sense..
 	 *
 	 * XXX (garrcoop): comments above apply here too
 	 */
-	pthread_mutex_unlock(&MS); 
+	pthread_mutex_unlock(&MS);
 // 16
 	pthread_mutex_lock(&MT);
 	clock_gettime(CLOCK_REALTIME, &ts_abs_timeout);

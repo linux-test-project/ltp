@@ -1,8 +1,8 @@
 /* Debugging routines for the control program. */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -12,7 +12,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -37,19 +37,19 @@ int pounder_fprintf(FILE *stream, const char *format, ...) {
 	int ret;
 	va_list args;
 	FILE *logfile;
-	
+
 	snprintf(buf, BUF_LEN, "%s/POUNDERLOG", getenv("POUNDER_LOGDIR"));
 	logfile = fopen(buf, "a");
 	if (logfile == NULL) {
 		perror(buf);
 	}
-	
+
 	gettimeofday(&tv, NULL);
 	time = localtime(&tv.tv_sec);
 	strftime(buf, BUF_LEN, "[%Y-%m-%d %H:%M:%S]", time);
 
 	fprintf(stream, "%s (%d) ", buf, getpid());
-	
+
 	va_start(args, format);
 	ret = vfprintf(stream, format, args);
 	va_end(args);

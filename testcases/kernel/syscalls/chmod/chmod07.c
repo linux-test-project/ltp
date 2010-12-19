@@ -133,7 +133,7 @@ int main(int ac, char **av)
 			 * Get the testfile information using
 			 * stat(2).
 			 */
-			if (stat(TESTFILE, &stat_buf) == -1) 
+			if (stat(TESTFILE, &stat_buf) == -1)
 				tst_brkm(TFAIL|TTERRNO, cleanup, "stat failed");
 
 			/* Check for expected mode permissions */

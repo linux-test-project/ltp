@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 	pid_t pid, pgid;
 	int count = MAX_DEPTH;
 
-	/* 
+	/*
 	 * XXX (garrcoop): why in the hell is this fork-wait written this way?
 	 * This doesn't add up with the pattern used for the rest of the tests,
 	 * so I'm pretty damn sure this test is written incorrectly.

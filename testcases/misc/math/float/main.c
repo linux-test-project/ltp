@@ -417,7 +417,7 @@ static void error(const char *msg, int line)
  | Function:  Creates system error message and calls error ()		|
  |									|
  +----------------------------------------------------------------------*/
-/* 
+/*
  * XXX (garrcoop): the way that this is being called is just plain wrong.
  * pthread(5) returns 0 or errnos, not necessarily sets errno to a sensible
  * value.

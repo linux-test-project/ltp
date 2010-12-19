@@ -166,6 +166,7 @@ int main(int argc, char **argv)
 	close(fd);
 	close(fd1);
 	cleanup();
+	tst_exit();
 
  }
 

@@ -123,6 +123,7 @@ int main(int ac, char **av)
 	}
 	close(fd);
 	cleanup();
+	tst_exit();
 
 }
 

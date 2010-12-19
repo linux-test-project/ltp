@@ -129,4 +129,3 @@ int main()
 	tst_resm(TCONF, NULL, "test is not available on uClinux");
 }
 #endif /* if !defined(UCLINUX) */
-

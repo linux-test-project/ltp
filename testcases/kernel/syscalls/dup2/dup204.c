@@ -129,7 +129,7 @@ void setup()
 void cleanup()
 {
 	int i;
-	
+
 	TEST_CLEANUP;
 
 	for (i = 0; i < sizeof(fd); i++) {

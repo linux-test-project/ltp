@@ -92,10 +92,10 @@ void cleanup();
 int main(int ac, char **av)
 {
 	struct stat stat_buf;
-	int lc;		     
+	int lc;
 	char *msg;
 	int i;
-	int mode;	     
+	int mode;
 
 	TST_TOTAL = sizeof(modes) / sizeof(int);
 

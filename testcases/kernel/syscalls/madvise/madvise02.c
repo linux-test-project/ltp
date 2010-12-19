@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK|TERRNO, cleanup, "munmap [low] failed");
 		/* Create one memory segment using malloc */
 		ptr_memory_allocated = (char *)malloc(5 * pagesize);
-		/* 
+		/*
 		 * Take temporary pointer for later use, freeing up the
 		 * original one.
 		 */

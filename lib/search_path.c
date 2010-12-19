@@ -275,4 +275,3 @@ printf("search_path: found res_path = %s\n", res_path);
         strcpy(res_path, "Unable to find file");
     return 1;	/* not found */
 }
-

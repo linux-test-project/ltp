@@ -215,4 +215,3 @@ char *errmsg;
 }
 
 #endif
-

@@ -190,7 +190,7 @@ int main(int ac, char **av)
 				    "hostid is %s", hostid);
 			} else {
 
-				/* 
+				/*
 				 * Some distros add an "0x" to the front of the
 				 * `hostid` output. We compare the first 2
 				 * characters of the `hostid` output with "0x",
@@ -203,7 +203,7 @@ int main(int ac, char **av)
 				else
 					strncpy(name2, name, HOSTIDLEN);
 
-				/* 
+				/*
 				 * This code handles situations where ffffffff
 				 * is appended. Fixed to not clobber the first
 				 * check with the 2nd check MR

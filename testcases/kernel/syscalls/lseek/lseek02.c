@@ -195,6 +195,7 @@ int main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
 	cleanup();
+	tst_exit();
 
 }
 

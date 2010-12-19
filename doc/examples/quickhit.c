@@ -36,82 +36,82 @@
  */
 /* $Id: quickhit.c,v 1.2 2000/10/10 21:57:51 nstraz Exp $ */
 /**********************************************************
- * 
+ *
  *	OS Test - Silicon Graphics, Inc.
- * 
+ *
  *	TEST IDENTIFIER	: link03
- * 
+ *
  *	EXECUTED BY	: anyone
- * 
+ *
  *	TEST TITLE	: multi links tests
- * 
+ *
  *	PARENT DOCUMENT	: usctpl01
- * 
+ *
  *	TEST CASE TOTAL	: 2
- * 
+ *
  *	WALL CLOCK TIME	: 1
- * 
+ *
  *	CPU TYPES		: ALL
- * 
+ *
  *	AUTHOR		: Richard Logan
- * 
+ *
  *	CO-PILOT		: William Roske
- * 
+ *
  *	DATE STARTED	: 03/31/94
- * 
+ *
  *	INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *	TEST CASES
- * 
+ *
  * 	1.) link(2) returns...(See Description)
- *	
+ *
  *	INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *	-N #links : Use #links links every iteration
- * 
+ *
  *	OUTPUT SPECIFICATIONS
- * 	
+ *
  *	DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *	SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *	RESOURCES
  * 	None
- * 
+ *
  *	ENVIRONMENTAL NEEDS
  *	  No run-time environmental needs.
- * 
+ *
  *	SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *	INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *	DETAILED DESCRIPTION
  *	This is a Phase I test for the link(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	link(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
@@ -152,7 +152,7 @@ int Nlinks=0;
  * the string that should be added to optstring in getopt(3), an integer that
  * will be used as a flag if the option is given, and a pointer to a string that
  * should receive the optarg parameter from getopt(3).  Here we add a -N
- * option.  Long options are not supported at this time. 
+ * option.  Long options are not supported at this time.
  */
 char *Nlinkarg;
 int Nflag = 0;
@@ -210,10 +210,10 @@ main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	/***************************************************************
-	 * check looping state 
+	 * check looping state
 	 ***************************************************************/
 	/* TEST_LOOPING() is a macro that will make sure the test continues
-	 * looping according to the standard command line args. 
+	 * looping according to the standard command line args.
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
 
@@ -227,7 +227,7 @@ main(int ac, char **av)
 		nlinks = (lc%90)+10;
 
 	for (cnt=1; cnt < nlinks; cnt++) {
-	
+
 		sprintf(lname, "%s%d", Basename, cnt);
 		/*
 		 *  Call link(2)
@@ -236,7 +236,7 @@ main(int ac, char **av)
 		 * return code to TEST_RETURN and the errno to TEST_ERRNO
 		 */
 		TEST(link(Fname, lname));
-	
+
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			/* To gather stats on errnos returned, log the errno */
@@ -250,9 +250,9 @@ main(int ac, char **av)
 			 */
 			tst_brkm(TFAIL|TTERRNO, cleanup, "link(%s, %s) failed",
 			    Fname, lname);
-		} 
+		}
 	}
-		
+
 	/***************************************************************
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
@@ -330,13 +330,13 @@ help(void)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
 	int fd;
 
 	/* You will want to enable some signal handling so you can capture
-	 * unexpected signals like SIGSEGV. 
+	 * unexpected signals like SIGSEGV.
 	 */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -369,7 +369,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-static void 
+static void
 cleanup(void)
 {
 	/*
@@ -379,7 +379,7 @@ cleanup(void)
 	TEST_CLEANUP;
 
 	/* If you use a temporary directory, you need to be sure you remove it.
-	 * Use tst_rmdir() to do it automatically.  
+	 * Use tst_rmdir() to do it automatically.
 	 */
 	tst_rmdir();
 }

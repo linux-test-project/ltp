@@ -118,6 +118,7 @@ int main(int ac, char **av)
 
 	/*Clean up and exit */
 	cleanup();
+	tst_exit();
 
 }				/*End of main */
 

@@ -173,7 +173,7 @@ void setup()
 	long maxfds;
 
 	maxfds = sysconf(_SC_OPEN_MAX);
-	/* 
+	/*
 	 * Read the errors section if you're so inclined to determine
 	 * why == -1 matters for errno.
 	 */

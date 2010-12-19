@@ -32,7 +32,7 @@ int Setup(ArgStruct *p)
         fflush(stdout);
     }
     p->prot.nbor = !p->prot.iproc;
-	
+
     if (nproc != 2)
     {
 	printf("Need two processes\n");
@@ -43,7 +43,7 @@ int Setup(ArgStruct *p)
 	p->tr = 1;
     else
 	p->tr = 0;
-	
+
 #ifdef BSEND
     messbuff = (char *)malloc(MAXBUFSIZE * sizeof(char));
     if (messbuff == NULL)
@@ -54,7 +54,7 @@ int Setup(ArgStruct *p)
     MPI_Buffer_attach(messbuff, MAXBUFSIZE);
 #endif
 
-}   
+}
 
 void Sync(ArgStruct *p)
 {
@@ -101,7 +101,7 @@ void RecvData(ArgStruct *p)
 	}
 	else
 	{
-		MPI_Recv(p->buff, p->bufflen, MPI_BYTE, 
+		MPI_Recv(p->buff, p->bufflen, MPI_BYTE,
 				p->prot.nbor, 1, MPI_COMM_WORLD, &status);
 	}
 }
@@ -149,4 +149,3 @@ int  CleanUp(ArgStruct *p)
 {
 	MPI_Finalize();
 }
-

@@ -1,11 +1,11 @@
-/* 
+/*
  * The main pounder process controller and scheduler program.
  * Author: Darrick Wong <djwong@us.ibm.com>
  */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -15,7 +15,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
 		if (is_executable(argv[1])) {
 			c = rindex(argv[1], '/');
 			c++;
-			
+
 			// Start the test
 			pid = spawn_test(argv[1]);
 			if (pid < 0) {
@@ -213,7 +213,7 @@ static inline int is_executable(const char *fname) {
 	if (stat(fname, &tmp) < 0) {
 		return -1;
 	}
-	
+
 	if (geteuid() == 0) {
 		return 1;
 	} else if (geteuid() == tmp.st_uid) {
@@ -235,7 +235,7 @@ static inline int is_directory(const char *fname) {
 	if (stat(fname, &tmp) < 0) {
 		return 0;
 	}
-	
+
 	return S_ISDIR(tmp.st_mode);
 }
 
@@ -322,7 +322,7 @@ static int wait_for_pids(void) {
 
 				// one less pid to wait for
 				i++;
-		
+
 				// stop observing
 				remove_from_proclist(&wait_ons, curr);
 				free(curr->name);
@@ -471,7 +471,7 @@ static pid_t spawn_test(char *fname) {
 			exit(-1);
 		}
 		close(fd);
-	
+
 		// generate log name-- '/' -> '-'.
 		snprintf(buf2, TEST_PATH_LEN, "%s|%s",
 			getenv("POUNDER_LOGDIR"), fname);
@@ -521,20 +521,20 @@ static pid_t spawn_test(char *fname) {
 			perror("getcwd");
 			exit(-1);
 		}
-		
+
 		// then splice cwd + fname
 		snprintf(buf2, TEST_PATH_LEN, "%s/%s", buf, fname);
-		
+
 		// find the location of the last slash
 		last_slash = rindex(buf2, '/');
 
-		if (last_slash != NULL) {			
+		if (last_slash != NULL) {
 			// copy the filename part into a new buffer
 			snprintf(buf, TEST_PATH_LEN, "./%s", last_slash + 1);
-		
+
 			// truncate at the last slash
 			*last_slash = 0;
-			
+
 			// and chdir
 			if (chdir(buf2) != 0) {
 				perror(buf2);
@@ -621,7 +621,7 @@ static int process_dir(const char *fname) {
 			children_ok &= wait_for_pids();
 			curr_level_num = test_level_num;
 		}
-		
+
 		snprintf(buf, TEST_PATH_LEN, "%s/%s", fname,
 			namelist[i]->d_name);
 		if (is_directory(buf)) {

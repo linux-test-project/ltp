@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
                 end=MAXINT,     /* Ending value for signature curve          */
                 streamopt=0,    /* Streaming mode flag                       */
                 printopt=0;     /* Debug print statements flag               */
-   
+
     ArgStruct   args;           /* Argumentsfor all the calls                */
 
     double      t, t0, t1, t2,  /* Time variables                            */
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
             case 't': trans = 1;
                       break;
-            
+
             case 'r': trans = 0;
                       break;
 
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
             case 'P': printopt = 1;
                       break;
-            
+
             case 'A': bufalign = atoi(optarg);
                       break;
 
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
 
             case 'p': port = atoi(optarg);
                       break;
-            
+
             case 'h': if (trans == 1)
                       {
                           args.host = (char *)malloc(strlen(optarg)+1);
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 	    case 'a': asyncReceive = 1;
 		      break;
 
-            default:  PrintUsage(); 
+            default:  PrintUsage();
                       exit(-12);
         }
     }
@@ -309,8 +309,8 @@ int main(int argc, char *argv[])
     }
 
     /* Main loop of benchmark */
-    for (nq = n = 0, len = start, errFlag = 0; 
-         n < NSAMP - 3 && tlast < STOPTM && len <= end && !errFlag; 
+    for (nq = n = 0, len = start, errFlag = 0;
+         n < NSAMP - 3 && tlast < STOPTM && len <= end && !errFlag;
          len = len + inc, nq++ )
     {
         if (nq > 2 && !detailflag)
@@ -322,10 +322,10 @@ int main(int argc, char *argv[])
 	    */
             inc = ((nq % 2))? inc + inc: inc;
 	  }
-        
+
         /* This is a perturbation loop to test nearby values */
         for (pert = (!detailflag && inc > PERT+1)? -PERT: 0;
-             pert <= PERT; 
+             pert <= PERT;
              n++, pert += (!detailflag && inc > PERT+1)? PERT: PERT+1)
         {
 
@@ -363,11 +363,11 @@ int main(int argc, char *argv[])
             memtmp = args.buff;
             memtmp1 = args.buff1;
             if (bufalign != 0)
-                args.buff +=(bufalign - 
+                args.buff +=(bufalign -
                         ((intptr_t)args.buff % bufalign) + bufoffset) % bufalign;
 
             if (bufalign != 0)
-                args.buff1 +=(bufalign - 
+                args.buff1 +=(bufalign -
                         ((intptr_t)args.buff1 % bufalign) + bufoffset) % bufalign;
 
 
@@ -502,7 +502,7 @@ int main(int argc, char *argv[])
             bwdata[n].bits = args.bufflen * CHARSIZE;
             bwdata[n].bps = bwdata[n].bits / (bwdata[n].t * 1024 * 1024);
             bwdata[n].repeat = nrepeat;
-            
+
             if (args.tr)
 	    {
 		fprintf(out, "%.7f %.7f %d %d %.7f", bwdata[n].t, bwdata[n].bps,
@@ -536,11 +536,10 @@ int main(int argc, char *argv[])
         } /* End of perturbation loop */
 
     } /* End of main loop  */
-        
+
     if (args.tr)
        fclose(out);
-         
+
     CleanUp(&args);
     return(0);
 }
-

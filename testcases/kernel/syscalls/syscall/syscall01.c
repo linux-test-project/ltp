@@ -154,6 +154,7 @@ int main(int argc, char *argv[])
      * cleanup and exit
      ***************************************************************/
 	cleanup();
+	tst_exit();
 
 	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 

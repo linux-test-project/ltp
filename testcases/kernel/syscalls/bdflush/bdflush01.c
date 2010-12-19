@@ -110,7 +110,7 @@ int main(int ac, char **av) {
 
 	setup();
 
-	/* 
+	/*
 	 * TODO (garrcoop): add more functional testcases; there are a ton
 	 * missing.
 	 */

@@ -114,6 +114,7 @@ int main(int argc, char **argv)
 #endif
 
 	cleanup();
+	tst_exit();
 
 }
 

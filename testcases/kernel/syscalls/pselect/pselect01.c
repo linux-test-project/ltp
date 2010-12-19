@@ -156,6 +156,8 @@ int main()
 		}
 	}
 	cleanup();
+	tst_exit();
+	tst_exit();
 
 }
 

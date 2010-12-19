@@ -38,7 +38,7 @@
  * and saves the information into an in-memory hierarchical keyword table.
  *
  * The reporting segment of the program reads that keyword table to produce
- * it's reports.  
+ * it's reports.
  *
  * Synopsis:
  * 	ltp-scanner [ -e ] [ -D area:level ] [ -h ]
@@ -70,9 +70,9 @@
  *	multiple TCIDs.  It must be the sum of all TCIDs' testcases.
  *
  * System Configuration:
- * ARCHITECTURE         IOS_MODEL_E CRAY_YMP YMP7XX 
- * CONFIG               JOBCNTL AVL BMD EMA HPM SECURE TFM_UDB_6 SDS SSD 
- * RELEASE              82 
+ * ARCHITECTURE         IOS_MODEL_E CRAY_YMP YMP7XX
+ * CONFIG               JOBCNTL AVL BMD EMA HPM SECURE TFM_UDB_6 SDS SSD
+ * RELEASE              82
  * UNAME                sn1703c cool 8.2.0ae d82.25
  * date                 03/24/94
  *

@@ -3,9 +3,9 @@
  * Author: Darrick Wong <djwong@us.ibm.com>
  */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -15,7 +15,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -91,7 +91,7 @@ static Window *get_client_list(Display *disp, unsigned long *size,
 	unsigned long *items);
 static long get_randnum(long min, long max);
 static int send_client_msg(Display *disp, Window win, char *msg,
-	unsigned long data0, unsigned long data1, 
+	unsigned long data0, unsigned long data1,
 	unsigned long data2, unsigned long data3,
 	unsigned long data4);
 static int activate_window (Display *disp, Window *win);
@@ -144,17 +144,17 @@ static char *get_property (Display *disp, Window win, Atom xa_prop_type,
 	unsigned long tmp_size;
 	unsigned char *ret_prop;
 	char *ret;
-    
+
 	xa_prop_name = XInternAtom(disp, prop_name, False);
-    
+
 	if (XGetWindowProperty(disp, win, xa_prop_name, 0, MAX_PROPERTY_VALUE_LEN / 4, False,
-		xa_prop_type, &xa_ret_type, &ret_format,     
+		xa_prop_type, &xa_ret_type, &ret_format,
 		&ret_nitems, &ret_bytes_after, &ret_prop) != Success)
 	{
 		fprintf(stderr, "Cannot get %s property.\n", prop_name);
 		return NULL;
 	}
-  
+
 	if (xa_ret_type != xa_prop_type) {
 		fprintf(stderr, "Invalid type of %s property.\n", prop_name);
 		XFree(ret_prop);
@@ -186,7 +186,7 @@ static char *get_property (Display *disp, Window win, Atom xa_prop_type,
 	if (items) {
 		*items = ret_nitems;
 	}
-    
+
 	XFree(ret_prop);
 	return ret;
 }
@@ -216,7 +216,7 @@ static int wm_supports(Display *disp, const char *prop) {
 			return 1;
 		}
 	}
-    
+
 	free(list);
 	return 0;
 }
@@ -248,7 +248,7 @@ static void slide_window(Display *disp, Window *win, unsigned long desk_w, unsig
 		return;
 	}
 
-	if (XTranslateCoordinates(disp, *win, moo.root, 
+	if (XTranslateCoordinates(disp, *win, moo.root,
 		-moo.border_width, -moo.border_width, &moo.x, &moo.y, &junk) != 1)
 	{
 		fprintf(stderr, "Cannot translate coordinates of window 0x%lx.\n", *win);
@@ -266,7 +266,7 @@ static void slide_window(Display *disp, Window *win, unsigned long desk_w, unsig
 	h = clamp_value(h, 0, desk_h);
 
 	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")) {
-		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW", 
+		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW",
 			0, x, y, w, h);
 	} else {
 		XMoveResizeWindow(disp, *win, x, y, w, h);
@@ -280,9 +280,9 @@ static void move_window(Display *disp, Window *win, unsigned long desk_w, unsign
 	y = get_randnum(0, desk_h);
 	w = get_randnum(150, desk_w);
 	h = get_randnum(150, desk_h);
-	
+
 	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")) {
-		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW", 
+		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW",
 			0, x, y, w, h);
 	} else {
 		XMoveResizeWindow(disp, *win, x, y, w, h);
@@ -360,7 +360,7 @@ static void go_bonkers(Display *disp, unsigned long iterations, unsigned long sl
 }
 
 static int send_client_msg(Display *disp, Window win, char *msg,
-	unsigned long data0, unsigned long data1, 
+	unsigned long data0, unsigned long data1,
 	unsigned long data2, unsigned long data3,
 	unsigned long data4)
 {
@@ -378,7 +378,7 @@ static int send_client_msg(Display *disp, Window win, char *msg,
 	event.xclient.data.l[2] = data2;
 	event.xclient.data.l[3] = data3;
 	event.xclient.data.l[4] = data4;
-    
+
 	if (XSendEvent(disp, DefaultRootWindow(disp), False, mask, &event)) {
 		return 1;
 	} else {
@@ -389,8 +389,8 @@ static int send_client_msg(Display *disp, Window win, char *msg,
 
 static int activate_window (Display *disp, Window *win) {
 	int ret;
-	
-	ret = send_client_msg(disp, *win, "_NET_ACTIVE_WINDOW", 
+
+	ret = send_client_msg(disp, *win, "_NET_ACTIVE_WINDOW",
 		0, 0, 0, 0, 0);
 	XMapRaised(disp, *win);
 
@@ -400,10 +400,10 @@ static int activate_window (Display *disp, Window *win) {
 static Window *get_client_list(Display *disp, unsigned long *size, unsigned long *items) {
 	void *res;
 
-	if ((res = (Window *)get_property(disp, DefaultRootWindow(disp), 
+	if ((res = (Window *)get_property(disp, DefaultRootWindow(disp),
 		XA_WINDOW, "_NET_CLIENT_LIST", size, items)) == NULL)
 	{
-		if ((res = (Window *)get_property(disp, DefaultRootWindow(disp), 
+		if ((res = (Window *)get_property(disp, DefaultRootWindow(disp),
 			XA_CARDINAL, "_WIN_CLIENT_LIST", size, items)) == NULL)
 		{
 			fprintf(stderr, "Cannot get client list properties. \n"
@@ -438,7 +438,7 @@ static Window *get_interesting_windows(Display *disp, unsigned long *num_windows
 			desktop = (long *)get_property(disp, client_list[i],
 				XA_CARDINAL, "_WIN_WORKSPACE", NULL, NULL);
 		}
-		
+
 		/* Ignore windows on unknown desktops */
 		if (desktop && *desktop >= 0 && *desktop < DESKTOP_MAX) {
 			num_needed++;

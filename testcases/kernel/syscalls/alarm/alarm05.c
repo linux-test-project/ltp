@@ -104,7 +104,7 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/* 
+		/*
 		 * Reset alarms_received for every iteration, since it has
 		 * old values from previous iterations (if any) and not
 		 * a value of zero

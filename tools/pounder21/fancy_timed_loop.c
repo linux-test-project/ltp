@@ -1,8 +1,8 @@
 /* Repeatedly run a program with a given uid, gid and termination signal. */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -12,7 +12,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 	struct sigaction zig;
 	uid_t uid;
 	gid_t gid;
-	
+
 	if (argc < 5) {
 		printf("Usage: %s time_in_sec uid gid signal command [args]\n", argv[0]);
 		exit(1);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 				perror("setreuid");
 				exit(-1);
 			}
-	
+
 			// run the program
 			if (argc > 3) {
 				stat = execvp(argv[5], &argv[5]);
@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
 
 			exit(-1);
 		}
-		
+
 		/* save the pgrp of the spawned process */
 		test_pgrp = pid;
 

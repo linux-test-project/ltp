@@ -44,7 +44,7 @@
  *
  *    AUTHOR            : Richard Logan
  *
- *    CO-PILOT(s)       : 
+ *    CO-PILOT(s)       :
  *
  *    DATE STARTED      : 05/94
  *
@@ -59,11 +59,11 @@
  *		-l option.  Using this option, will give you the best
  *		randomization, but it requires processing
  *		the file an additional time.
- *		       
+ *
  *       -l numlines : This option specifies to randomize file in
  *		numlines chucks.  The default size is 4096.
  *
- *       -S seed     : sets randomization seed to seed. 
+ *       -S seed     : sets randomization seed to seed.
  *		The default is time(0).  If seed is zero, time(0) is used.
  *
  *	 file   A readable, seekable filename.  The cmd allows the user
@@ -88,7 +88,7 @@
  *      ----------------------------------------------------------------
  *	rrl 	    Creatation of program
  *	rrl  06/02  Fixed bug and some cleanup. Changed default chunk
- *	            and line size to 4096 characters. 
+ *	            and line size to 4096 characters.
  *
  *    BUGS/LIMITATIONS
  *	This program can not deal with non-seekable file like
@@ -189,7 +189,7 @@ char **argv;
     if (seed == -1) {
 	seed = time(0);
     }
-    
+
     if (strcmp(argv[argc-1],"-") == 0) {
 	infile = stdin;
 	fprintf(stderr, "%s: Can not support stdin processing.\n",
@@ -388,7 +388,7 @@ int size;
      * an randomly choosen index was not found, find
      * first open index and use it.
      */
-    for (ind=0; ind < size && offsets[ind].used != 0; ind++) 
+    for (ind=0; ind < size && offsets[ind].used != 0; ind++)
       ; /* do nothing */
 
     if (ind >= size) {
@@ -516,9 +516,9 @@ long seed;
 			 * copy buffer characters into line for printing
 			 */
 			lptr = line;
-			while (*ptr != '\n') 
+			while (*ptr != '\n')
 			    *lptr++ = *ptr++;
-				
+
 			printf("%s\n", line);
 		    }
 		}
@@ -547,4 +547,3 @@ long seed;
     return 0;
 
 }
-

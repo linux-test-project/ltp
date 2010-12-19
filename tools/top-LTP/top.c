@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * For their contributions to this program, the author wishes to thank:
  *    Albert D. Cahalan, <albert@users.sf.net>
  *    Craig Small, <csmall@small.dropbear.id.au>
@@ -164,7 +164,7 @@ static int       Frame_srtflg,          // the subject window's sort direction
                  Frame_cmdlin;          // the subject window's cmdlin flag
         /* ////////////////////////////////////////////////////////////// */
 
-
+
 /*######  Sort callbacks  ################################################*/
 
         /*
@@ -444,7 +444,7 @@ static void suspend (int dont_care_sig)
       tcsetattr(STDIN_FILENO, TCSAFLUSH, &Rawtty);
 }
 
-
+
 /*######  Misc Color/Display support  ####################################*/
 
         /*
@@ -640,7 +640,7 @@ static void show_special (int interact, const char *glob)
    if (*glob) PUTT("%.*s", Screen_cols, glob);
 }
 
-
+
 /*######  Small Utility routines  ########################################*/
 
         /*
@@ -1066,7 +1066,7 @@ static proc_t **procs_refresh (proc_t **table, int flags)
 #undef ENTsz
 }
 
-
+
 /*######  Field Table/RCfile compatability support  ######################*/
 
         /* These are the Fieldstab.lflg values used here and in reframewins.
@@ -1770,7 +1770,7 @@ static void parse_args (char **args)
                else std_err("-f requires argument");
 	       if ((datafile = fopen(cp,"r")) == NULL)
 	          std_err(fmtmk("bad file arg; failed to fopen '%s' for reading",cp));
-	       retcode = fscanf(datafile, " MaxTasks:%d RunningTasks:%d SleepingTasks:%d StoppedTasks:%d ZombieTasks:%d", 
+	       retcode = fscanf(datafile, " MaxTasks:%d RunningTasks:%d SleepingTasks:%d StoppedTasks:%d ZombieTasks:%d",
 		                &Task1, &Task2, &Task3, &Task4, &Task5);
 	       while ( retcode == 5 )
                {
@@ -1781,29 +1781,29 @@ static void parse_args (char **args)
 	          AvgSleepingTasks+=Task3;
                   AvgStoppedTasks+=Task4;
                   AvgZombieTasks+=Task5;
-		  fscanf(datafile, " Cpu(s): User:%f\tSystem:%f\tNice:%f\t\tIdle:%f\tIO-wait:%f", 
-		                &CPU1, &CPU2, &CPU3, &CPU4, &CPU5); 
+		  fscanf(datafile, " Cpu(s): User:%f\tSystem:%f\tNice:%f\t\tIdle:%f\tIO-wait:%f",
+		                &CPU1, &CPU2, &CPU3, &CPU4, &CPU5);
 		  AvgCPUuser+=CPU1;
 		  AvgCPUsys+=CPU2;
 		  AvgCPUnice+=CPU3;
 		  AvgCPUidle+=CPU4;
                   AvgCPUiowait+=CPU5;
 		  fscanf(datafile, " TotalMem:%dk\tUsedMem:%dk\tFreeMem:%dk\t\tBuffers:%dk",
-			 &Mem1, &Mem2, &Mem3, &Mem4); 
+			 &Mem1, &Mem2, &Mem3, &Mem4);
                   fgets(buff, BUFF_SIZE, datafile);
 		  AvgMem1=Mem1/1024; //this data should not change
 		  AvgMem2+=Mem2/1024;
 		  AvgMem3+=Mem3/1024;
 		  AvgMem4+=Mem4/1024;
 		  fscanf(datafile, " TotalSwap:%dk\tUsedSwap:%dk\tFreeSwap:%dk\tCached:%dk",
-			 &Mem1, &Mem2, &Mem3, &Mem4); 
+			 &Mem1, &Mem2, &Mem3, &Mem4);
                   fgets(buff, BUFF_SIZE, datafile);
 		  AvgSwap1=Mem1/1024; //this data should not change
 		  AvgSwap2+=Mem2/1024;
 		  AvgSwap3+=Mem3/1024;
 		  AvgSwap4+=Mem4/1024;
                   fgets(buff, BUFF_SIZE, datafile);
-	          retcode = fscanf(datafile, " MaxTasks:%d RunningTasks:%d SleepingTasks:%d StoppedTasks:%d ZombieTasks:%d", 
+	          retcode = fscanf(datafile, " MaxTasks:%d RunningTasks:%d SleepingTasks:%d StoppedTasks:%d ZombieTasks:%d",
 		                   &Task1, &Task2, &Task3, &Task4, &Task5);
   	       }
 	       fclose(datafile);
@@ -1840,7 +1840,7 @@ static void parse_args (char **args)
    		        AvgSwap1,AvgSwap2,AvgSwap3,AvgSwap4);
 	       printf("\n UsedMem Percentage:%.2Lf\%\tUsedSwap Percentage:%.2Lf\%\n\n",UsedMemPercentage,UsedSwapPercentage);
 	       printf("A total of [%d] entries processed from %s.\n\n",loopcntr,cp);
-               exit(0);               
+               exit(0);
 	       break;
             case 'h': case 'H':
             case 'v': case 'V':
@@ -1866,7 +1866,7 @@ static void parse_args (char **args)
 	          std_err(fmtmk("bad file arg; failed to fopen '%s' for write",cp));
 	       else
 		  o_flag = 1;
-		  cp = cp + strlen(cp); 
+		  cp = cp + strlen(cp);
 	       break;
             case 'p':
                do {
@@ -1978,7 +1978,7 @@ static void whack_terminal (void)
    }
 }
 
-
+
 /*######  Field Selection/Ordering routines  #############################*/
 
 
@@ -2120,7 +2120,7 @@ static void fields_toggle (void)
    putp(Cap_curs_norm);
 }
 
-
+
 /*######  Windows/Field Groups support  #################################*/
 
         /*
@@ -2471,7 +2471,7 @@ static void windows_stage2 (void)
    wins_resize(0);
 }
 
-
+
 /*######  Main Screen routines  ##########################################*/
 
         /*
@@ -2885,7 +2885,7 @@ static void summaryhlp (CPU_t *cpu, const char *pfx)
       , (float)i_frme * scale
       , (float)w_frme * scale));
    if (o_flag)
-      fprintf(outfile, " %s User:%.2f\tSystem:%.2f\tNice:%.2f\t\tIdle:%.2f\tIO-wait:%.2f\n"  
+      fprintf(outfile, " %s User:%.2f\tSystem:%.2f\tNice:%.2f\t\tIdle:%.2f\tIO-wait:%.2f\n"
               , pfx
               , (float)u_frme * scale
       	      , (float)s_frme * scale
@@ -2947,7 +2947,7 @@ static proc_t **summary_show (void)
          , Frame_maxtask, Frame_running, Frame_sleepin
          , Frame_stopped, Frame_zombied));
       if (o_flag)
-         fprintf(outfile, " MaxTasks:%d\t\tRunningTasks:%d\tSleepingTasks:%d\tStoppedTasks:%d\tZombieTasks:%d\n\n" 
+         fprintf(outfile, " MaxTasks:%d\t\tRunningTasks:%d\tSleepingTasks:%d\tStoppedTasks:%d\tZombieTasks:%d\n\n"
                  , Frame_maxtask, Frame_running, Frame_sleepin
                  , Frame_stopped, Frame_zombied);
       Msg_row += 1;
@@ -2977,7 +2977,7 @@ static proc_t **summary_show (void)
       show_special(0, fmtmk(MEMORY_line1
          , kb_main_total, kb_main_used, kb_main_free, kb_main_buffers));
       if (o_flag)
-         fprintf(outfile, " TotalMem:%dk\tUsedMem:%dk\tFreeMem:%dk\t\tBuffers:%dk\n" 
+         fprintf(outfile, " TotalMem:%dk\tUsedMem:%dk\tFreeMem:%dk\t\tBuffers:%dk\n"
                  , kb_main_total, kb_main_used, kb_main_free, kb_main_buffers);
       show_special(0, fmtmk(MEMORY_line2
          , kb_swap_total, kb_swap_used, kb_swap_free, kb_main_cached));

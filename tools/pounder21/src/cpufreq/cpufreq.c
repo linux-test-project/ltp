@@ -4,9 +4,9 @@
  * powernowd/cpuspeed/powersaved programs.
  */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -16,7 +16,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
 	for (x = rounds; x > 0; x--) {
 		y = get_randnum(num_freqs);
 		y = set_cpuspeed(ctrl, frequencies[y]);
-		if (y != 1) {			 
+		if (y != 1) {
 			ret = 4; goto out;
 		}
 	}

@@ -256,9 +256,10 @@ int main(int argc, char **argv)
 		if (WEXITSTATUS(status) != 0) {
 			tst_brkm(TBROK, cleanup, "child returned bad "
 				 "status");
-		 }
+		}
 	}
 
+	tst_exit();
 }
 
 /*

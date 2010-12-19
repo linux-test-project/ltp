@@ -75,4 +75,3 @@ int hugepages_size() {
         return -1;
  #endif
 }
-

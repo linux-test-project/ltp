@@ -177,25 +177,25 @@ SYM sym_open(int flags, int mode, int openinfo)
  *  element two of a three or more element key), return ENOTDIR.
  *
  *  "data" is not duplicated and must not point to a static area that could
- *  go away before the element is deleted (such as a local string in a 
+ *  go away before the element is deleted (such as a local string in a
  *  function)
  *
  *  "key" is duplicated as needed, and is not modified.
  *
  * Code:
  * chop up key on commas
- * 
+ *
  * search until a key element isn't found in the key tree, the key list is
  * exhausted, or a key's data element is not a sub-tree
- * 
+ *
  * if the key list is exhausted, return a "duplicate entry" error
- * 
+ *
  * if the last found key's data element is not a sub-tree, return
  * something like "ENOTDIR".
- * 
- * add new keys for sub-trees until key list is exhausted; 
+ *
+ * add new keys for sub-trees until key list is exhausted;
  * last node gets 'data'.
- * 
+ *
  */
 int
 sym_put(SYM sym, char *key, void *data, int flags)
@@ -311,7 +311,7 @@ void * sym_get(SYM sym, char *key)
 	free(nkey);
 	return(NULL);
     }
-}    
+}
 
 /*
  *  Step thru a symbol table list
@@ -325,11 +325,11 @@ int
     SYM csym;
 
     switch(flags) {
-	/* 
+	/*
 	 * A number of ways to do this:
 	 * specificly: sym_seq( .., "key,key") sets to Nth element of the 2nd
 	 *  level symbol table
-	 * sym_seq(.., "key,key,") sets to the first element of the 3rd 
+	 * sym_seq(.., "key,key,") sets to the first element of the 3rd
 	 *  level symbol table
 	 *
 	 * sym_seq(.., "key,key") where both must be complete keys, sets
@@ -434,7 +434,7 @@ sym_dump_s(SYM sym, int depth)
 	    sym_dump_s((SYM)se->data, depth+1);
 	} else {
 	    printf("(%p) = %s (%p)\n", se->key, (char *)se->data, se->data);
-	}	    
+	}
     }
     return 0;
 }

@@ -215,6 +215,7 @@ int main(int ac, char *av[])
 		unlink(fname);
 	}			/* end for */
 	cleanup();
+	tst_exit();
 
 }
 

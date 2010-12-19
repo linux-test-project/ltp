@@ -224,6 +224,7 @@ But SIGSYS signal was NOT received.", fname, whence, TEST_ERRNO, strerror
      * cleanup and exit
      ***************************************************************/
 	cleanup();
+	tst_exit();
 
 }
 

@@ -212,11 +212,11 @@ cuts_report(tags, keys, at, tag )
  * the depths of the current symbol table implimentation (there are the
  * cursors there that I could use) so that a different (faster!) symbol
  * table can be used in the future.
- * 
+ *
  * I could get a key (tag), get it's sub-keys (TCIDs), then get the key
  * again to reset to the top level, _then_ get the next key.  That would
  * be very inefficient.
- * 
+ *
  * The solution I chose is to extract all tags into a list (char array),
  * then go thru that list with the cursor free for other levels to use.
  *
@@ -224,66 +224,66 @@ cuts_report(tags, keys, at, tag )
  *  (2) search for the first tag that has a "stime" record, and use that as
  *      the date (MMDDYY) that the tests were run.
  *  (3) print the report header
- *  (4) go thru all tags and report each as described at the beginning of 
+ *  (4) go thru all tags and report each as described at the beginning of
  *      this file
  */
 int
 tag_report(alltags, ctag, keys)
     SYM alltags, ctag, keys;
 {
-    
+
     extern int extended;
-    
+
     char key_get[KEYSIZE];
     char *info;
-    
+
     /* retrieved _keys values: initation status, start time, duration,
      * termination type, termination id, start line, end line.		*/
     char *tag, *contact, *is, *mystime, *duration, *tt, *ti, *sl, *el;
-    
+
     /* Check all driver-level status first */
     strcpy(key_get, "tag");
     if ((tag = (char *)sym_get(keys, key_get)) == NULL) {
 	return -1;
     }
-    
+
     /* Check all driver-level status first */
     strcpy(key_get, "initiation_status");
     if ((is = (char *)sym_get(keys, key_get)) == NULL) {
 	test_result(tag, NULL, NULL, "no init status", keys);
 	return -1;
     }
-    
+
     if (strcmp(is, "ok")) {
 	test_result(tag, NULL, NULL, is, keys);
     } else {
-	
+
 	strcpy(key_get, "corefile");
 	if ((info = (char *)sym_get(keys, key_get)) != NULL)
 	    if (strcmp(info, "no") != 0) {
 		test_result(tag, NULL, NULL, "coredump", keys);
 	    }
-	
+
 	strcpy(key_get, "termination_type");
 	if ((tt = (char *)sym_get(keys, key_get))==NULL) {
 	    test_result(tag, NULL, NULL, "no Term Type", keys);
 	    return -1;
 	}
-	
+
 	if (strcmp(tt, "exited")) {
 	    test_result(tag, NULL, NULL, tt, keys);
 	}
-	
+
 	strcpy(key_get, "analysis");
 	if ((info = (char *)sym_get(keys, key_get)) == NULL) {
 	    test_result(tag, NULL, NULL, "no Analysis Type", keys);
 	    return -1;
 	}
-	
+
 	/* Getting here indicates that there were no fatal driver-level
 	 * errors.  Do the kind of reporting requested by the test.
 	 */
-	
+
 	if (strncmp(info, "none", 4) == 0) {
             /*
              * If analysis is 'none', alway report the test as
@@ -313,7 +313,7 @@ tag_report(alltags, ctag, keys)
 	    cuts_report(ctag, keys, info, tag);
 	}
     }
-    
+
     /*
      * Extended Format:
      *  - tcid+tc = "!"
@@ -327,7 +327,7 @@ tag_report(alltags, ctag, keys)
      *	Start Line (of test results in output file)
      *	End Line
      */
-    
+
     if (extended) {
 
 	strcpy(key_get, "termination_id");

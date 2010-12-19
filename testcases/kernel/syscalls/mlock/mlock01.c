@@ -92,10 +92,10 @@ int main(int ac, char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* 
+	/*
 	 * FIXME (garrcoop): this should really test out whether or not the
 	 * process's mappable address space is indeed accessible by the
-	 * current user, instead of needing to be run by root all the time. 
+	 * current user, instead of needing to be run by root all the time.
 	 */
 	tst_require_root(NULL);
 
@@ -111,7 +111,7 @@ int main(int ac, char **av)
 			TEST(mlock(*(TC[i].addr), TC[i].len));
 
 			/* I'm confused -- given the description above this
-			 * should fail as designed, but this application 
+			 * should fail as designed, but this application
 			 * */
 			if (TEST_RETURN == -1)
 				tst_resm(TFAIL|TTERRNO, "mlock failed");

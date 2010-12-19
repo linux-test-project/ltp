@@ -137,6 +137,7 @@ int main(int ac, char **av)
 	 * in the setup().
 	 */
 	cleanup();
+	tst_exit();
 
 }
 

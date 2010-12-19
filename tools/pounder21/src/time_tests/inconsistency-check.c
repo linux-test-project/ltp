@@ -3,9 +3,9 @@
  *		(C) Copyright IBM 2003, 2004, 2005
  */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -15,7 +15,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
 	unsigned long seconds = -1;
 	long now, then;
 	int clock_type = CLOCK_MONOTONIC;
-	
+
 	if (argc > 1)
-		seconds = atol(argv[1]);	
+		seconds = atol(argv[1]);
 
 	/* make sure CLOCK_MONOTONIC is supported */
 	if (clock_gettime(clock_type, &list[0])) {
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
 	clock_gettime(clock_type, &list[0]);
 	now = then = list[0].tv_sec;
-	
+
 	/* timestamp start of test */
 	system("date");
 	while (seconds == -1 || now - then < seconds) {
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 		/* Fill list */
 		for (i=0; i < CALLS_PER_LOOP; i++)
 			clock_gettime(clock_type, &list[i]);
-		
+
 		/* Check for inconsistencies */
 		for (i=0; i < CALLS_PER_LOOP-1; i++)
 			if (!in_order(list[i],list[i+1]))
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 			printf("Delta: %llu ns\n", delta);
 			fflush(0);
 			/* timestamp inconsistency*/
-			system("date");	
+			system("date");
 			return -1;
 		}
 		now = list[0].tv_sec;

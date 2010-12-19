@@ -91,7 +91,7 @@ int main(int ac, char **av)
 			    "fcntl remote locking feature not implemented in "
 			    "the kernel");
 		else {
-			/* 
+			/*
 			 * FIXME (garrcoop): having it always pass on
 			 * non-EINVAL is a bad test.
 			 */

@@ -164,6 +164,7 @@ int main(int ac, char **av)
 	tst_resm(TINFO, "Exit block 3");
 
 	cleanup();
+	tst_exit();
 
 }
 

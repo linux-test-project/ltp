@@ -21,28 +21,28 @@
 /*
  * File:        ltpapicmd.c
  *
- * Description: This program impliments a command line version of some of the 
- *              LTP harness API's. This will enable tests written in shell and 
- *              other scripts to report problems and log results in the LTP 
+ * Description: This program impliments a command line version of some of the
+ *              LTP harness API's. This will enable tests written in shell and
+ *              other scripts to report problems and log results in the LTP
  *              harness format. The intent is to have a common format in which
  *              the C tests and tests written in scripts report results in
  *              a common format.
  *
  *              The following LTP API's are available currently in command line
  *              form:
- *              tst_brk   - Print result message and break remaining test cases 
+ *              tst_brk   - Print result message and break remaining test cases
  *              tst_brkm  - Print result message, including file contents, and
- *                          break remaining test cases 
+ *                          break remaining test cases
  *              tst_res   - Print result message, including file contents
- *              tst_resm  - Print result message 
+ *              tst_resm  - Print result message
  *              tst_flush - Print any messages pending because of CONDENSE mode,
- *                          and flush output stream 
- *              tst_exit  - Exit test with a meaningful exit value 
+ *                          and flush output stream
+ *              tst_exit  - Exit test with a meaningful exit value
  *
  *              These are the minimum set of functions or commands required to
  *              report results.
  *
- * Exit:        All commands exit with 
+ * Exit:        All commands exit with
  *               0   - on success
  *              -1  - on failure
  *
@@ -56,15 +56,15 @@
  * History
  * Dec 10 2002 - Created - Manoj Iyer manjo@mail.utexas.edu
  * Dec 12 2002 - Modified - Code that checked if the environment variables
- *               TCID and TST_TOTAL were set did not print usage message. 
+ *               TCID and TST_TOTAL were set did not print usage message.
  *               Modified code to print usage message in each case.
  * Dec 16 2002 - Modified - Code to get the test number, gets environment
  *               variable TST_COUNT and initializes Tst_count.
  * Dec 16 2002 - Documentation and comment changes.
  * Feb 11 2003 - Tst_count was set to -1 during init or setup in the script.
- *               this was causing tst_resm to issue a warning message. 
+ *               this was causing tst_resm to issue a warning message.
  *               This bug is now fixed.
- * 
+ *
  */
 
 
@@ -96,11 +96,11 @@ cleanup()
  *              the string that is entered by the user to an integer value that
  *              is understood by the API's.
  *
- * Return:      test type TPASS, TFAIL, TBROK, TCONF, TRETR, TWARN, or TINFO 
+ * Return:      test type TPASS, TFAIL, TBROK, TCONF, TRETR, TWARN, or TINFO
  *              on success
  *              -1 on failure
  */
-int 
+int
 ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
 {
     if (strcmp(tstype, "TBROK") == 0)
@@ -137,8 +137,8 @@ ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
  *              the result. Other arguments are a file, the contents of which
  *              are printed after the type of test result and associated message
  *              is printed, also a cleanup function that will be executed.
- *              Currently this function name is ignored but MUST be provided 
- *              for compatability reasons. 
+ *              Currently this function name is ignored but MUST be provided
+ *              for compatability reasons.
  *
  *              The different commands are actually a hard link to this program
  *              the program invokes the appropriate function based on the
@@ -147,9 +147,9 @@ ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
  *              Set the values for TCID to the name of the test case.
  *              set the value for TST_TOTAL for total number of tests this is
  *              required in case one test breaks and all following tests also
- *              should be reported as broken. 
+ *              should be reported as broken.
  *              Set Tst_count before every individual test.
- *              
+ *
  * Exit:        0 on success
  *              -1 on failure
  */
@@ -168,8 +168,8 @@ int main( int argc,
 
     strcpy(cmd_name, (char *)basename(argv++[0]));
 
-    if (((TCID = getenv("TCID")) == NULL) || 
-            ((tst_total = getenv("TST_TOTAL")) == NULL) || 
+    if (((TCID = getenv("TCID")) == NULL) ||
+            ((tst_total = getenv("TST_TOTAL")) == NULL) ||
             ((tst_count = getenv("TST_COUNT")) == NULL))
     {
         if (strcmp(cmd_name, "tst_kvercmp") != 0)
@@ -183,7 +183,7 @@ int main( int argc,
     else
     {
         TST_TOTAL = atoi(tst_total);
-        if ((Tst_count = atoi(tst_count)) > 0) 
+        if ((Tst_count = atoi(tst_count)) > 0)
 			Tst_count--;
 
         if (strcmp(TCID, " ") == 0)

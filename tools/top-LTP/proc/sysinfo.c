@@ -193,7 +193,7 @@ static void init_libproc(void) {
   smp_num_cpus = sysconf(_SC_NPROCESSORS_CONF); // or _SC_NPROCESSORS_ONLN
   if (smp_num_cpus<1) smp_num_cpus=1; /* SPARC glibc is buggy */
 
-  if (linux_version_code > LINUX_VERSION(2, 4, 0)) { 
+  if (linux_version_code > LINUX_VERSION(2, 4, 0)) {
     Hertz = find_elf_note(AT_CLKTCK);
     if (Hertz!=42) return;
     fprintf(stderr, "2.4 kernel w/o ELF notes? -- report to albert@users.sf.net\n");
@@ -220,7 +220,7 @@ void five_cpu_numbers(double *restrict uret, double *restrict nret, double *rest
 
     tmp_w = 0.0;
     new_w = 0;
- 
+
     FILE_TO_BUF(STAT_FILE,stat_fd);
     sscanf(buf, "cpu %Lu %Lu %Lu %Lu %Lu", &new_u, &new_n, &new_s, &new_i, &new_w);
     ticks_past = (new_u+new_n+new_s+new_i+new_w)-(old_u+old_n+old_s+old_i+old_w);
@@ -255,7 +255,7 @@ void five_cpu_numbers(double *restrict uret, double *restrict nret, double *rest
 void loadavg(double *restrict av1, double *restrict av5, double *restrict av15) {
     double avg_1=0, avg_5=0, avg_15=0;
     char *restrict savelocale;
-    
+
     FILE_TO_BUF(LOADAVG_FILE,loadavg_fd);
     savelocale = setlocale(LC_NUMERIC, NULL);
     setlocale(LC_NUMERIC, "C");

@@ -107,12 +107,12 @@ int child_fn(void *arg)
 			exit_val = 1;
 		}
 		if (!(WIFSIGNALED(status) || WTERMSIG(status) == SIGUSR1)) {
-			/* 
+			/*
 			 * XXX (garrcoop): this status reporting is overly
 			 * noisy. Someone obviously needs to read the
 			 * constraints documented in wait(2) a bit more
 			 * closely -- in particular the relationship between
-			 * WIFEXITED and WEXITSTATUS, and WIFSIGNALED and 
+			 * WIFEXITED and WEXITSTATUS, and WIFSIGNALED and
 			 * WTERMSIG.
 			 */
 			printf("cinit: found a child alive still "

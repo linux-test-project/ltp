@@ -78,7 +78,7 @@ char *TCID = "alarm06";
 int TST_TOTAL = 1;
 int alarms_received = 0;
 
-void setup();		
+void setup();
 void cleanup();
 void sigproc(int sig);
 

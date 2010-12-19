@@ -420,6 +420,7 @@ int main(int argc, char **argv)
      * cleanup and exit
      ***************************************************************/
 	cleanup();
+	tst_exit();
 
 }
 

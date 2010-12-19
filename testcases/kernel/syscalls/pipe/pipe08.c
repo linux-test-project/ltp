@@ -108,6 +108,7 @@ int main(int ac, char **av)
 		written = write(pipefd[1], wrbuf, length);
 	}
 	cleanup();
+	tst_exit();
 
 }
 

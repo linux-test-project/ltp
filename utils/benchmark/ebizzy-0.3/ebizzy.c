@@ -315,7 +315,7 @@ allocate(void)
 	if (use_holes)
 		for (i = 0; i < chunks; i++)
 			free_mem(hole_mem[i], page_size);
-		
+
 	if (verbose)
 		printf("Allocated memory\n");
 }
@@ -404,7 +404,7 @@ search_mem(void)
 		if (touch_pages) {
 			touch_mem((char *) copy, copy_size);
 		} else {
-		
+
 			if (no_lib_memcpy)
 				my_memcpy(copy, src, copy_size);
 			else
@@ -419,7 +419,7 @@ search_mem(void)
 			else
 				found = bsearch(&key, copy, copy_size / record_size,
 					record_size, compare);
-	
+
 				/* Below check is mainly for memory corruption or other bug */
 			if (found == NULL) {
 				fprintf(stderr, "Couldn't find key %zd\n", key);

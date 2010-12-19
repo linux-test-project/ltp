@@ -135,7 +135,7 @@ int main(int ac, char **av)
 
 			if (errno == tc->error)
 				tst_resm(TPASS|TERRNO,
-				    "shmat failed as expected"); 
+				    "shmat failed as expected");
 			else
 				tst_resm(TFAIL,
 				    "shmat failed unexpectedly; expected: "
@@ -188,7 +188,7 @@ void setup(void)
 	if (shmdt((const void *)base_addr) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "shmat #2 failed");
 
-	/* 
+	/*
 	 * some architectures (e.g. parisc) are strange, so better always align
 	 * to next SHMLBA address
 	 */

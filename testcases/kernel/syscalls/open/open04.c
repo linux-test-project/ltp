@@ -103,6 +103,7 @@ int main(int ac, char **av)
 	close(first);
 	close(fd);
 	cleanup();
+	tst_exit();
 
 }
 

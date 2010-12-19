@@ -63,7 +63,7 @@ set_debug(char *optarg)
 	db_area=atoi(d_area);
 
 	if (db_area > MAXDEBUG) {
-	    printf("Error - Debug area %s > maximum of %d\n", d_area, 
+	    printf("Error - Debug area %s > maximum of %d\n", d_area,
 		   MAXDEBUG);
 	    exit(-1);
 	}
@@ -74,7 +74,7 @@ set_debug(char *optarg)
 	    Debug[db_area] = db_level;
 	    if ((d_area = strchr(d_area, ',')) != NULL)
 		d_area++;
-	} 
+	}
 	if ((d_area = strchr(d_level, ',')) == NULL)
 	    break;
     }

@@ -1,12 +1,12 @@
 
 /*
- * Cheesy program to create a "graph" of nodes, spawn threads and 
+ * Cheesy program to create a "graph" of nodes, spawn threads and
  * walk the graph.
  */
 
-/* 
+/*
  * Copyright (C) 2003-2006 IBM
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -16,7 +16,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -48,7 +48,7 @@ static struct timeval last;
 volatile unsigned long speed = 0;
 static unsigned long report_interval = 30;
 
-/* 
+/*
  * A quick note: each graph "node" consists of some pointer off to another
  * part of the graph array.
  */
@@ -111,7 +111,7 @@ static void alarm_func(int signum) {
 	time = (now.tv_usec + (now.tv_sec * 1000000))
 		- (last.tv_usec + (last.tv_sec * 1000000));
 	time /= 1000000;
-	
+
 	printf("%d: %.0f nodes/sec.\n", getpid(), speed / time);
 	fflush(stdout);
 	speed = 0;
@@ -122,7 +122,7 @@ static void alarm_func(int signum) {
 
 static void walk_graph(void *graph) {
 	void **curr = graph;
-	
+
 	while (1) {
 		curr = *curr;
 		speed++;
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
 	/* Talk about what we're going to do. */
 	printf("Going to use %lluKB (%llu nodes).\n", ram_size / 1024,
 		num_nodes);
-	
+
 	/* Make a shared anonymous map of the RAM */
 	shm = mmap(NULL, ram_size, PROT_READ | PROT_WRITE,
 		MAP_SHARED | MAP_ANONYMOUS, 0, 0);
@@ -295,6 +295,6 @@ start_thread:
 		}
 		goto start_thread;
 	}
-	
+
 	return 0;
 }

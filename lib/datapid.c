@@ -371,4 +371,3 @@ fwrite("\n", 1, 1, stdout);
 }
 
 #endif
-
