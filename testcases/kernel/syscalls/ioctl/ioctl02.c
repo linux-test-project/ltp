@@ -118,12 +118,9 @@ int main(int ac, char **av)
 	maybe_run_child(&do_child_uclinux, "dS", &parentpid, &childtty);
 #endif
 
-	if (!Devflag) {
-		tst_resm(TWARN, "You must specify a tty device with "
+	if (!Devflag)
+		tst_brkm(TBROK, NULL, "You must specify a tty device with "
 			 "the -D option.");
-		tst_resm(TWARN, "Run '%s -h' for option information.", TCID);
-		cleanup();
-	}
 
 	tst_require_root(NULL);
 

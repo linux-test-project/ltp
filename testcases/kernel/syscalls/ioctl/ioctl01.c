@@ -112,21 +112,14 @@ int main(int ac, char **av)
 	int i;
 	char *msg;		/* message returned from parse_opts */
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	if (!Devflag) {
-		tst_resm(TWARN, "You must specify a tty device with "
+	if (!Devflag)
+		tst_brkm(TBROK, NULL, "You must specify a tty device with "
 			 "the -D option.");
-		tst_resm(TWARN, "Run '%s -h' for option information.", TCID);
-		cleanup();
-	}
 
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	setup();
 
