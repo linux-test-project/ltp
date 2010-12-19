@@ -241,7 +241,7 @@ int test_rwflag(int i, int cnt)
 				return 0;
 			} else {
 				tst_resm(TWARN|TERRNO,
-				    "open(%s) didn't fail with EROFS", file);
+				    "open didn't fail with EROFS");
 				return 1;
 			}
 		}
@@ -258,7 +258,7 @@ int test_rwflag(int i, int cnt)
 					return 0;
 				} else {
 					tst_resm(TWARN|TERRNO,
-					    "open(%s) didn't fail with EACCES");
+					    "open didn't fail with EACCES");
 					return 1;
 				}
 			}
