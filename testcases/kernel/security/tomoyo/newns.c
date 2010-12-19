@@ -42,5 +42,5 @@ int main(int argc, char *argv[])
 	const pid_t pid = ltp_clone_quick(CLONE_NEWNS, child, (void *) argv);
 	while (waitpid(pid, NULL, __WALL) == EOF && errno == EINTR)
 		c++; /* Dummy. */
-	tst_exit();
+	return 0;
 }

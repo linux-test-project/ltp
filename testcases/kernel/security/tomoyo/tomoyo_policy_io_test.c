@@ -191,5 +191,5 @@ int main(int argc, char *argv[])
 {
 	tomoyo_test_init();
 	stage_policy_io_test();
-	tst_exit();
+	return 0;
 }

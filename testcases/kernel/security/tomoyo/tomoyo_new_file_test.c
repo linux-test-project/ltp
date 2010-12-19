@@ -627,5 +627,5 @@ int main(int argc, char *argv[])
 	stage_file_test();
 	fprintf(domain_fp, "use_profile 0\n");
 	clear_status();
-	tst_exit();
+	return 0;
 }

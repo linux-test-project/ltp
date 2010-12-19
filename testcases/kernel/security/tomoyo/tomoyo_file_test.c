@@ -302,5 +302,5 @@ int main(int argc, char *argv[])
 	creanup_files();
 
 	clear_status();
-	tst_exit();
+	return 0;
 }

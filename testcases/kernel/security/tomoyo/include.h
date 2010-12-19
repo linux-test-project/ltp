@@ -240,7 +240,7 @@ static void BUG(const char *fmt, ...)
 		sleep(100);
 }
 
-static int write_domain_policy(const char *policy, int is_delete)
+int write_domain_policy(const char *policy, int is_delete)
 {
 	FILE *fp = fopen(proc_policy_domain_policy, "r");
 	char buffer[8192];
@@ -279,7 +279,7 @@ static int write_domain_policy(const char *policy, int is_delete)
 
 }
 
-static int write_exception_policy(const char *policy, int is_delete)
+int write_exception_policy(const char *policy, int is_delete)
 {
 	FILE *fp = fopen(proc_policy_exception_policy, "r");
 	char buffer[8192];
@@ -312,7 +312,7 @@ static int write_exception_policy(const char *policy, int is_delete)
 
 }
 
-static int set_profile(const int mode, const char *name)
+int set_profile(const int mode, const char *name)
 {
 	static const char *modes[4] = { "disabled", "learning", "permissive",
 					"enforcing" };
