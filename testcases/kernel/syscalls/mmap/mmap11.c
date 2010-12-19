@@ -63,7 +63,7 @@ int TST_TOTAL = 1;
 static void *wait_thread(void *args);
 static void *wait_thread2(void *args);
 static void setup(void);
-static void cleanup(void) LTP_ATTRIBUTE_NORETURN;
+static void cleanup(void);
 static void check(void);
 
 int main(int argc, char *argv[])
@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 	setup();
 	check();
 	cleanup();
+	tst_exit();
 }
 
 void setup(void)

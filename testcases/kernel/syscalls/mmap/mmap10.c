@@ -69,7 +69,7 @@ int TST_TOTAL = 1;
 static int fd, opt_anon, opt_ksm;
 
 void setup(void);
-void cleanup(void) LTP_ATTRIBUTE_NORETURN;
+void cleanup(void);
 void mmapzero(void);
 void help(void);
 
@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
 		mmapzero();
 	}
 	cleanup();
+	tst_exit();
 }
 
 void mmapzero(void)
