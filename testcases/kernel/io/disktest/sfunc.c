@@ -179,7 +179,8 @@ int pMsg(lvl_t level, const child_args_t *args, char *Msg,...)
 	pstruct_time = localtime(&my_time);
 	if (pstruct_time != NULL)
 		memcpy(&struct_time, pstruct_time, sizeof(struct tm));
-
+	else
+		memset(&struct_time, 0, sizeof(struct tm));
 #ifndef WINDOWS
 	UNLOCK(mTime);
 #endif

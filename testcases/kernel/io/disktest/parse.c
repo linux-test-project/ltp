@@ -908,7 +908,7 @@ int check_conclusions(child_args_t *args)
 		pMsg(WARN, args, VSIZETS, args->vsiz, args->htrsiz);
 		return(-1);
 	}
-	if ((!args->flags & CLD_FLG_TMD) && (args->seeks <= 0)) {
+	if ((args->flags & CLD_FLG_TMD) == 0 && (args->seeks <= 0)) {
 		pMsg(WARN,args, TSEEK, args->seeks);
 		return(-1);
 	}
