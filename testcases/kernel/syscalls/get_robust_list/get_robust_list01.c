@@ -42,12 +42,13 @@
  *
  */
 
+#include <sys/types.h>
+#include <sys/syscall.h>
+
+#include <errno.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
-
-#include <sys/syscall.h>
-#include <sys/types.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -102,23 +103,17 @@ int main(int argc, char **argv)
 				      (struct robust_list_head *)&head,
 				      (size_t *) NULL));
 
-		if (TEST_RETURN) {
+		if (TEST_RETURN == -1) {
 			if (TEST_ERRNO == EFAULT)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
+				    "get_robust_list failed as expected with "
+				    "EFAULT");
 			else
-				tst_resm(TFAIL,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
-		} else {
+				tst_resm(TFAIL|TTERRNO,
+				    "get_robust_list failed unexpectedly");
+		} else
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %ld (expected %d), "
-				 "errno = %d (expected %d)", TEST_RETURN, -1,
-				 TEST_ERRNO, EFAULT);
-		}
+			    "get_robust_list succeeded unexpectedly");
 
 		TEST(retval = syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head **)NULL,
@@ -127,116 +122,79 @@ int main(int argc, char **argv)
 		if (TEST_RETURN) {
 			if (TEST_ERRNO == EFAULT)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
+				    "get_robust_list failed as expected with "
+				    "EFAULT");
 			else
-				tst_resm(TFAIL,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
-		} else {
+				tst_resm(TFAIL|TTERRNO,
+				    "get_robust_list failed unexpectedly");
+		} else
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %ld (expected %d), "
-				 "errno = %d (expected %d)", TEST_RETURN, -1,
-				 TEST_ERRNO, EFAULT);
-		}
+			    "get_robust_list succeeded unexpectedly");
 
 		/*
-		 * The get_robust_list function fails with ESRCH if it can't find the
-		 * task specified by the pid argument. The value 65535 is used as the
-		 * pid argument.
+		 * The get_robust_list function fails with ESRCH if it can't
+		 * find the task specified by the pid argument.
 		 */
 
-		TEST(retval = syscall(__NR_get_robust_list, 65535,
+		TEST(retval = syscall(__NR_get_robust_list, UINT16_MAX,
 				      (struct robust_list_head *)&head,
 				      &len_ptr));
 
-		if (TEST_RETURN) {
+		if (TEST_RETURN == -1) {
 			if (TEST_ERRNO == ESRCH)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, ESRCH);
+				    "get_robust_list failed as expected with "
+				    "ESRCH");
 			else
-				tst_resm(TFAIL,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, ESRCH);
-		} else {
+				tst_resm(TFAIL|TTERRNO,
+				    "get_robust_list failed unexpectedly");
+		} else
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %ld (expected %d), "
-				 "errno = %d (expected %d)", TEST_RETURN, -1,
-				 TEST_ERRNO, ESRCH);
-		}
+			    "get_robust_list succeeded unexpectedly");
 
-		/*
-		 * The get_robust_list function fails with EPERM if it has no
-		 * permission to access the task specified by the pid argument.
-		 * The current user id of the process is changed to 1 (bin), and the
-		 * value of 1 (init) is used as the pid argument.
-		 */
-
-		/*
-		 * Temporarily drop root privleges.
-		 */
-		seteuid(1);
+		if (seteuid(1) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "seteuid(1) failed");
 
 		TEST(retval = syscall(__NR_get_robust_list, 1,
 				      (struct robust_list_head *)&head,
 				      &len_ptr));
 
-		if (TEST_RETURN) {
+		if (TEST_RETURN == -1) {
 			if (TEST_ERRNO == EPERM)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, EPERM);
+				    "get_robust_list failed as expected with "
+				    "EPERM");
 			else
-				tst_resm(TFAIL,
-					 "get_robust_list: retval = %ld (expected %d), "
-					 "errno = %d (expected %d)",
-					 TEST_RETURN, -1, TEST_ERRNO, EPERM);
-		} else {
+				tst_resm(TFAIL|TERRNO,
+				    "get_robust_list failed unexpectedly");
+		} else
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %ld (expected %d), "
-				 "errno = %d (expected %d)", TEST_RETURN, -1,
-				 TEST_ERRNO, EPERM);
-		}
+			    "get_robust_list succeeded unexpectedly");
 
-		/*
-		 * Regain root privileges.
-		 */
-		seteuid(0);
-
-		/*
-		 * This call to get_robust_list function should be sucessful.
-		 */
+		if (seteuid(0) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "seteuid(0) failed");
 
 		TEST(retval = syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head **)&head,
 				      &len_ptr));
 
-		if (TEST_RETURN == 0) {
-			tst_resm(TPASS,
-				 "get_robust_list: retval = %ld (expected %d), "
-				 "errno = %d (expected %d)", TEST_RETURN, 0,
-				 TEST_ERRNO, 0);
-		} else {
-			tst_resm(TFAIL,
-				 "get_robust_list: retval = %ld (expected %d), "
-				 "errno = %d (expected %d)", TEST_RETURN, 0,
-				 TEST_ERRNO, 0);
-		}
+		if (TEST_RETURN == 0)
+			tst_resm(TPASS, "get_robust_list succeeded");
+		else
+			tst_resm(TFAIL|TTERRNO,
+				 "get_robust_list failed unexpectedly");
 
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
 void setup(void)
 {
+	tst_require_root(NULL);
+
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
