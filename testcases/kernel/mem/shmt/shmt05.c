@@ -66,6 +66,9 @@ int main(void)
 	key[0] = (key_t) lrand48();
 	key[1] = (key_t) lrand48();
 
+	cp = NULL;
+	cp1 = NULL;
+
 /*--------------------------------------------------------*/
 
 	if ((shmid = shmget(key[0], SIZE, IPC_CREAT | 0666)) < 0) {
