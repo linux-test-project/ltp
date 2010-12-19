@@ -64,7 +64,7 @@ static void report_success_cond(const char *func, const char* file, int line,
 #define REPORT_SUCCESS(exp_return, exp_errno)					\
 	REPORT_SUCCESS_COND(exp_return, exp_errno, 1, "");
 
-static void cleanup(void) LTP_ATTRIBUTE_NORETURN;
+static void cleanup(void);
 
 static void empty_handler(int sig)
 {
@@ -89,6 +89,7 @@ static void cleanup(void)
 typedef int (*swi_func)(const sigset_t* set, siginfo_t* info, struct timespec* timeout);
 typedef void (*test_func)(swi_func, int);
 
+#ifdef TEST_SIGWAIT
 static int my_sigwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
 {
 	int ret;
@@ -99,22 +100,29 @@ static int my_sigwait(const sigset_t* set, siginfo_t* info, struct timespec* tim
 	errno = err;
 	return -1;
 }
+#endif
 
+#ifdef TEST_SIGWAITINFO
 static int my_sigwaitinfo(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
 {
 	return sigwaitinfo(set, info);
 }
+#endif
 
+#ifdef TEST_SIGTIMEDWAIT
 static int my_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
 {
 	return sigtimedwait(set, info, timeout);
 }
+#endif
 
+#ifdef TEST_RT_SIGTIMEDWAIT
 static int my_rt_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
 {
 	/* The last argument is (number_of_signals)/(bits_per_byte), which are 64 and 8, resp. */
 	return syscall(__NR_rt_sigtimedwait, set, info, timeout, 8);
 }
+#endif
 
 void test_empty_set(swi_func sigwaitinfo, int signo)
 {
@@ -337,54 +345,54 @@ struct test_desc {
 	test_func tf;
 	swi_func swi;
 	int signo;
-} tests[]={
-#if defined TEST_RT_SIGTIMEDWAIT
-	test_empty_set, my_rt_sigtimedwait, SIGUSR1,
-	test_unmasked_matching, my_rt_sigtimedwait, SIGUSR1,
-	test_masked_matching, my_rt_sigtimedwait, SIGUSR1,
-	test_unmasked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1,
-	test_masked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1,
-	test_bad_address, my_rt_sigtimedwait, SIGUSR1,
-	test_bad_address2, my_rt_sigtimedwait, SIGUSR1,
-	test_bad_address3, my_rt_sigtimedwait, SIGUSR1,
-	test_timeout, my_rt_sigtimedwait, 0,
+} tests[] = {
+#ifdef TEST_RT_SIGTIMEDWAIT
+	{ test_empty_set, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_unmasked_matching, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_masked_matching, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_unmasked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_masked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_bad_address, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_bad_address2, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_bad_address3, my_rt_sigtimedwait, SIGUSR1 },
+	{ test_timeout, my_rt_sigtimedwait, 0 },
 
 	/* Special cases */
 	/* 1: sigwaitinfo does respond to ignored signal */
-	test_masked_matching, my_rt_sigtimedwait, SIGUSR2,
+	{ test_masked_matching, my_rt_sigtimedwait, SIGUSR2 },
 
 	/* 2: An ignored signal doesn't cause sigwaitinfo to return EINTR */
-	test_timeout, my_rt_sigtimedwait, SIGUSR2,
+	{ test_timeout, my_rt_sigtimedwait, SIGUSR2 },
 
 	/* 3: The handler is not called when the signal is waited for by sigwaitinfo */
-	test_masked_matching, my_rt_sigtimedwait, SIGTERM,
+	{ test_masked_matching, my_rt_sigtimedwait, SIGTERM },
 
 	/* 4: Simultaneous realtime signals are delivered in the order of increasing signal number */
-	test_masked_matching_rt, my_rt_sigtimedwait, -1,
+	{ test_masked_matching_rt, my_rt_sigtimedwait, -1 },
 #endif
 #if defined TEST_SIGWAIT
-	test_unmasked_matching_noinfo, my_sigwait, SIGUSR1,
-	test_masked_matching_noinfo, my_sigwait, SIGUSR1,
+	{ test_unmasked_matching_noinfo, my_sigwait, SIGUSR1 },
+	{ test_masked_matching_noinfo, my_sigwait, SIGUSR1 },
 #endif
 #if defined TEST_SIGWAITINFO
-	test_empty_set, my_sigwaitinfo, SIGUSR1,
-	test_unmasked_matching, my_sigwaitinfo, SIGUSR1,
-	test_masked_matching, my_sigwaitinfo, SIGUSR1,
-	test_unmasked_matching_noinfo, my_sigwaitinfo, SIGUSR1,
-	test_masked_matching_noinfo, my_sigwaitinfo, SIGUSR1,
-	test_bad_address, my_sigwaitinfo, SIGUSR1,
-	test_bad_address2, my_sigwaitinfo, SIGUSR1,
+	{ test_empty_set, my_sigwaitinfo, SIGUSR1 },
+	{ test_unmasked_matching, my_sigwaitinfo, SIGUSR1 },
+	{ test_masked_matching, my_sigwaitinfo, SIGUSR1 },
+	{ test_unmasked_matching_noinfo, my_sigwaitinfo, SIGUSR1 },
+	{ test_masked_matching_noinfo, my_sigwaitinfo, SIGUSR1 },
+	{ test_bad_address, my_sigwaitinfo, SIGUSR1 },
+	{ test_bad_address2, my_sigwaitinfo, SIGUSR1 },
 #endif
 #if defined TEST_SIGTIMEDWAIT
-	test_empty_set, my_sigtimedwait, SIGUSR1,
-	test_unmasked_matching, my_sigtimedwait, SIGUSR1,
-	test_masked_matching, my_sigtimedwait, SIGUSR1,
-	test_unmasked_matching_noinfo, my_sigtimedwait, SIGUSR1,
-	test_masked_matching_noinfo, my_sigtimedwait, SIGUSR1,
-	test_bad_address, my_sigtimedwait, SIGUSR1,
-	test_bad_address2, my_sigtimedwait, SIGUSR1,
-	test_bad_address3, my_sigtimedwait, SIGUSR1,
-	test_timeout, my_sigtimedwait, 0,
+	{ test_empty_set, my_sigtimedwait, SIGUSR1 },
+	{ test_unmasked_matching, my_sigtimedwait, SIGUSR1 },
+	{ test_masked_matching, my_sigtimedwait, SIGUSR1 },
+	{ test_unmasked_matching_noinfo, my_sigtimedwait, SIGUSR1 },
+	{ test_masked_matching_noinfo, my_sigtimedwait, SIGUSR1 },
+	{ test_bad_address, my_sigtimedwait, SIGUSR1 },
+	{ test_bad_address2, my_sigtimedwait, SIGUSR1 },
+	{ test_bad_address3, my_sigtimedwait, SIGUSR1 },
+	{ test_timeout, my_sigtimedwait, 0 },
 #endif
 };
 
@@ -408,11 +416,8 @@ int main(int argc, char** argv)
 	char* msg;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-			NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -421,10 +426,12 @@ int main(int argc, char** argv)
 
 		for (i=0; i<sizeof(tests)/sizeof(*tests); i++) {
 			alarm(10); /* arrange a 10 second timeout */
+			tst_resm(TINFO, "%p, %d", tests[i].swi, tests[i].signo);
 			tests[i].tf(tests[i].swi, tests[i].signo);
 		}
 		alarm(0);
 	}
 
 	cleanup();
+	tst_exit();
 }
