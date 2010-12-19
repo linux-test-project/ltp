@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	 */
 
 	if (buf.msg_qnum != 0) {
-		tst_resm(TFAIL, "error: unexpected nbr of messages %d",
+		tst_resm(TFAIL, "error: unexpected nbr of messages %ld",
 			 buf.msg_qnum);
 		tst_exit();
 	}

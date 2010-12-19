@@ -107,13 +107,13 @@ int main(int ac, char **av)
 
 				if (qs_buf.msg_qbytes == new_bytes) {
 					tst_resm(TPASS, "qs_buf.msg_qbytes is"
-						 " the new value - %d",
+						 " the new value - %ld",
 						 qs_buf.msg_qbytes);
 				} else {
 					tst_resm(TFAIL, "qs_buf.msg_qbytes "
 						 "value is not expected");
-					tst_resm(TINFO, "expected - %d, "
-						 "received - %d", new_bytes,
+					tst_resm(TINFO, "expected - %ld, "
+						 "received - %ld", new_bytes,
 						 qs_buf.msg_qbytes);
 				}
 			} else {
