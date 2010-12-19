@@ -123,7 +123,8 @@ int main(int argc, char **argv)
 				exit(0);
 			} else
 				if (wait(&status) == -1)
-					tst_brkm(TBROK|TERRNO, "wait failed");
+					tst_brkm(TBROK|TERRNO, cleanup,
+					    "wait failed");
 
 			pid = FORK_OR_VFORK();
 			if (pid == -1)
@@ -144,7 +145,7 @@ int main(int argc, char **argv)
 				exit(0);
 			} else
 				if (wait(&status) == -1)
-					tst_brkm(TBROK|TERRNO, "wait failed");
+					tst_resm(TBROK|TERRNO, "wait failed");
 			TEST(flock(fd, LOCK_UN));
 		} else
 			tst_resm(TFAIL|TERRNO, "flock failed");
