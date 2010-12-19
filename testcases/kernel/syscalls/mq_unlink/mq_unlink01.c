@@ -266,6 +266,7 @@ EXIT:
 	if (fd2 >= 0)
 		close(fd2);
 	mq_unlink(QUEUE_NAME);
+	return 0;
 }
 
 /*
@@ -273,7 +274,6 @@ EXIT:
  */
 
 int main(int ac, char **av) {
-	int result = RESULT_OK;
 	int i;
 	int lc;
 	char *msg;
