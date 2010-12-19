@@ -334,21 +334,15 @@ int main(int ac, char **av) {
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	TEST IS BROKEN -- FIX ME.
-
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			/*
-			 * Execute test
-	 		 */
 			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
 				int ret;
 				tst_resm(TINFO, "(case%02d) START", i);
