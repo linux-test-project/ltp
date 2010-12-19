@@ -43,6 +43,8 @@
 #include <test.h>
 #include "config.h"
 
+extern int crtchild(char *);
+
 char *TCID = "netns_ipv6";
 int TST_TOTAL = 1;
 

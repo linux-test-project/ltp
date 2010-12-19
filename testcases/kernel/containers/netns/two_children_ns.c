@@ -45,6 +45,8 @@
 #include "libclone.h"
 #include "config.h"
 
+extern int crtchild(char *);
+
 char *TCID = "netns_2children";
 int TST_TOTAL = 1;
 
