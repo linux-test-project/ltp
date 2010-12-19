@@ -23,6 +23,11 @@ export TCID=mount1234
 export TST_TOTAL=2
 export TST_COUNT=0
 
+# 1. variables cannot be set from external processes, so tst_exit will always
+# pass
+# 2. I have no idea why this script is passing in /dev/tty* to the mount tests.
+tst_resm TBROK "THIS TEST IS BROKEN"
+
 for tttype in `ls /dev/tty*`
 do
 device_no="${tttype}:8"
