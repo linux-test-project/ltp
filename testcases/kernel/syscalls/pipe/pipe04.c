@@ -80,7 +80,7 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t c1pid, c2pid;
-	int wtchild, wtstatus;
+	int wtstatus;
 	int bytesread;
 	int acnt = 0, bcnt = 0;
 
@@ -187,7 +187,8 @@ int main(int ac, char **av)
 					 "writing to a pipe");
 		}
 		if (waitpid(c2pid, &wtstatus, 0) != -1) {
-			if (!WIFSIGNALED(wtstatus) || WTERMSIG != SIGKILL)
+			if (!WIFSIGNALED(wtstatus) ||
+			    WTERMSIG(wtstatus) != SIGKILL)
 				tst_resm(TFAIL|TERRNO, "unexpected wait status "
 				    "%d", wtstatus);
 			else

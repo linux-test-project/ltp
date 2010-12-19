@@ -106,8 +106,7 @@ int main(int ac, char **av)
 				 "write end of pipe");
 		else
 			tst_resm(TFAIL|TTERRNO, "success when reading from "
-				 "write end of pipe ret=%ld, "
-				 "errno=%d", TEST_RETURN);
+				 "write end of pipe ret=%ld", TEST_RETURN);
 	}
 	cleanup();
 

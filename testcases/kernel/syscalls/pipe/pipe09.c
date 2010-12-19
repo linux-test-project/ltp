@@ -131,7 +131,7 @@ int main(int ac, char **av)
 
 		if (waitpid(fork_1, &wtstatus, 0) == -1)
 			tst_brkm(TBROK, cleanup, "waitpid failed");
-		if (WIFEXITED(wstatus) && WEXITSTATUS(wtstatus) != 0) {
+		if (WIFEXITED(wtstatus) && WEXITSTATUS(wtstatus) != 0) {
 			tst_brkm(TBROK, cleanup, "child exited abnormally");
 		}
 
