@@ -100,8 +100,13 @@
 #include "test.h"
 #include "usctest.h"
 
+#ifdef MADV_REMOVE
+
 /* Uncomment the following line in DEBUG mode */
 //#define MM_DEBUG 1
+
+char *TCID = "madvise03";	/* Test program modifier */
+int TST_TOTAL = 3;		/* Total no of test cases */
 
 #define BUFFER_SIZE  256
 
@@ -109,9 +114,6 @@ void setup(void);
 void cleanup(void);
 void check_and_print(char *advice);
 long get_shmmax(void);
-
-char *TCID = "madvise03";	/* Test program modifier */
-int TST_TOTAL = 3;		/* Total no of test cases */
 
 int i = 0;			/* Loop Counters */
 static int shmid1;
@@ -129,84 +131,48 @@ int main(int argc, char *argv[])
 	char *progname = NULL;
 	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";	/* 32-byte string */
 
-	/* Disable test if the version of the kernel is less than 2.6.16 */
-	if ((tst_kvercmp(2, 6, 16)) < 0) {
-#define MADV_REMOVE     9	/* kernel version < 2.6.16 don't have these */
-#define MADV_DONTFORK   10	/* definitions. So explicitly declared them */
-#define MADV_DOFORK     11
-		tst_resm(TCONF, "This test can only run on kernels that are ");
-		tst_resm(TCONF, "2.6.16 and higher");
-
-	}
-
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-	/**************************************************
-	 *	Perform global setup for test
-	 **************************************************/
 	setup();
 
-	/* Creating file in tmp directory for testing */
 	progname = *argv;
 	sprintf(filename, "%s-out.%d", progname, getpid());
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* Create a temporary file for testing */
-		if ((fd = open(filename, O_RDWR | O_CREAT, 0664)) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Could not open file \"%s\" with O_RDWR",
-				 filename);
-		}
+		if ((fd = open(filename, O_RDWR | O_CREAT, 0664)) < 0)
+			tst_brkm(TBROK, cleanup, "open failed");
 #ifdef MM_DEBUG
 		tst_resm(TINFO, "filename = %s opened successfully", filename);
 #endif
 
 		/* Writing 40 KB of random data into this file
 		   [32 * 1280 = 40960] */
-		for (i = 0; i < 1280; i++) {
-			if (write(fd, str_for_file, strlen(str_for_file)) < 0) {
-				tst_brkm(TBROK, cleanup,
-					 "Could not write data to file \"%s\"",
-					 filename);
-			}
-		}
+		for (i = 0; i < 1280; i++)
+			if (write(fd, str_for_file, strlen(str_for_file)) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "write failed");
 
-		/* Get file status for its size */
-		if (fstat(fd, &stat) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Could not stat file \"%s\"", filename);
-		}
+		if (fstat(fd, &stat) == -1)
+			tst_brkm(TBROK, cleanup, "fstat failed");
 
-		/* Map the input file into memory */
-		if ((file =
-		     (char *)mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd,
-				  0)) == (char *)-1) {
-			tst_brkm(TBROK, cleanup, "Could not mmap file \"%s\"",
-				 filename);
-		}
+		if ((file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd,
+		    0)) == MAP_FAILED)
+			tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
 
 		/* Allocate shared memory segment */
 		shm_size = get_shmmax();
-		if ((shmid1 =
-		     shmget(IPC_PRIVATE,
-			    1024 * 1024 * 1024 >
-			    shm_size ? shm_size : 1024 * 1024 * 1024,
-			    IPC_CREAT | IPC_EXCL | 0701)) == -1) {
-			tst_brkm(TBROK, cleanup, "shmget error");
-		}
+
+#define min(a, b) ((a) < (b) ? (a) : (b))
+		if ((shmid1 = shmget(IPC_PRIVATE, min(1024*1024*1024, shm_size),
+		    IPC_CREAT|IPC_EXCL|0701)) == -1)
+			tst_brkm(TBROK, cleanup, "shmget failed");
 
 		/* Attach shared memory segment to 0x22000000 address */
-		if ((addr1 =
-		     shmat(shmid1, (void *)0x22000000, 0)) == (void *)-1) {
+		if ((addr1 = shmat(shmid1, (void *)0x22000000, 0)) ==
+		    (void *) -1)
 			tst_brkm(TBROK, cleanup, "shmat error");
-		}
 
 		/*(1) Test case for MADV_REMOVE */
 		TEST(madvise((void *)0x22000000, 4096, MADV_REMOVE));
@@ -221,20 +187,16 @@ int main(int argc, char *argv[])
 		check_and_print("MADV_DOFORK");
 
 		/* Finally Unmapping the whole file */
-		if (munmap(file, stat.st_size) < 0) {
-			tst_brkm(TBROK, cleanup, "Could not unmap memory");
-		}
+		if (munmap(file, stat.st_size) < 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "munmap failed");
 
 		close(fd);
 	}
 
 	cleanup();
-
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup(void)
 {
 
@@ -242,25 +204,16 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	/* Create temp directory and change to that */
 	tst_tmpdir();
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup(void)
 {
-	/* Free the shm resource. */
 	if (shmid1 != -1)
 		if (shmctl(shmid1, IPC_RMID, 0) < 0)
-			perror("shmctl failed");
+			tst_resm(TBROK|TERRNO,
+			    "shmctl(.., IPC_RMID, ..) failed");
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
@@ -313,3 +266,12 @@ long get_shmmax(void)
 	fclose(f);
 	return (maxsize);
 }
+#else
+int
+main(void)
+{
+	/* "Requires 2.6.16+" were the original comments */
+	tst_brkm(TCONF, NULL,
+	    "this system doesn't have required madvise support");
+}
+#endif

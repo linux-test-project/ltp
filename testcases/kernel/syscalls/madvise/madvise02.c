@@ -141,31 +141,19 @@ int main(int argc, char *argv[])
 	char *progname = NULL;
 	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";	/* 32-byte string */
 
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-	/**************************************************
-	 *	Perform global setup for test
-	 **************************************************/
 	setup();
 
-	/* Creating file in tmp directory for testing */
 	progname = *argv;
 	sprintf(filename, "%s-out.%d", progname, getpid());
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* Create a temporary file for testing */
-		if ((fd = open(filename, O_RDWR | O_CREAT, 0664)) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Could not open file \"%s\" with O_RDWR",
-				 filename);
-		}
+		if ((fd = open(filename, O_RDWR|O_CREAT, 0664)) == -1)
+			tst_brkm(TBROK, cleanup, "open failed");
 #ifdef MM_DEBUG
 		tst_resm(TINFO, "filename = %s opened successfully", filename);
 #endif
@@ -173,27 +161,16 @@ int main(int argc, char *argv[])
 		pagesize = getpagesize();
 
 		/* Writing 16 pages of random data into this file */
-		for (i = 0; i < (pagesize / 2); i++) {
-			if (write(fd, str_for_file, strlen(str_for_file)) < 0) {
-				tst_brkm(TBROK, cleanup,
-					 "Could not write data to file \"%s\"",
-					 filename);
-			}
-		}
+		for (i = 0; i < (pagesize / 2); i++)
+			if (write(fd, str_for_file, strlen(str_for_file)) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "write failed");
 
-		/* Get file status for its size */
-		if (fstat(fd, &stat) < 0) {
-			tst_brkm(TBROK, cleanup, "Could not stat file \"%s\"",
-				 filename);
-		}
+		if (fstat(fd, &stat) == -1)
+			tst_brkm(TBROK, cleanup, "fstat failed");
 
-		/* Map the input file into memory */
-		if ((file =
-		     (char *)mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd,
-				  0)) == (char *)-1) {
-			tst_brkm(TBROK, cleanup, "Could not mmap file \"%s\"",
-				 filename);
-		}
+		if ((file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd,
+		    0)) == MAP_FAILED)
+			tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
 #ifdef MM_DEBUG
 		tst_resm(TINFO, "The Page size is %d", pagesize);
 #endif
@@ -208,18 +185,14 @@ int main(int argc, char *argv[])
 
 #if !defined(UCLINUX)
 		/* Test Case 3 */
-		if (mlock((void *)file, stat.st_size) < 0) {
-			tst_brkm(TBROK, cleanup, "Error in getting memory "
-				 "lock for the requested page(s)");
-		}
+		if (mlock((void *)file, stat.st_size) < 0)
+			tst_brkm(TBROK, cleanup, "mlock failed");
 
 		TEST(madvise(file, stat.st_size, MADV_DONTNEED));
 		check_and_print(EINVAL);
 
-		if (munmap(file, stat.st_size) < 0) {
-			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
-				 errno, strerror(errno));
-		}
+		if (munmap(file, stat.st_size) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "munmap failed");
 #endif /* if !defined(UCLINUX) */
 
 		/* Test Case 4 */
@@ -229,17 +202,13 @@ int main(int argc, char *argv[])
 		 * Now issue an madvise() on a region covering the region which we unmapped.
 		 */
 
-		if ((low =
-		     (char *)mmap(NULL, stat.st_size / 2, PROT_READ, MAP_SHARED,
-				  fd, 0)) == (char *)-1) {
-			tst_brkm(TBROK, cleanup, "Could not mmap file");
-		}
+		if ((low = mmap(NULL, stat.st_size / 2, PROT_READ, MAP_SHARED,
+		    fd, 0)) == MAP_FAILED)
+			tst_brkm(TBROK, cleanup, "mmap [low] failed");
 
-		if ((high =
-		     (char *)mmap(NULL, stat.st_size / 2, PROT_READ, MAP_SHARED,
-				  fd, stat.st_size / 2)) == (char *)-1) {
-			tst_brkm(TBROK, cleanup, "Could not mmap file");
-		}
+		if ((high = mmap(NULL, stat.st_size / 2, PROT_READ, MAP_SHARED,
+		    fd, stat.st_size / 2)) == MAP_FAILED)
+			tst_brkm(TBROK, cleanup, "mmap [high] failed");
 
 		/* Swap if necessary to make low < high */
 		if (low > high) {
@@ -254,8 +223,7 @@ int main(int argc, char *argv[])
 
 		/* Now we have two maps. Unmap the map @ higher address (now @high) */
 		if (munmap(high, stat.st_size / 2) < 0)
-			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
-				 errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup, "munmap [high] failed");
 
 		TEST(madvise(low, len, MADV_NORMAL));
 		check_and_print(ENOMEM);
@@ -263,11 +231,13 @@ int main(int argc, char *argv[])
 		/* Test Case 5 */
 		/* Unmap the file map from low */
 		if (munmap(low, stat.st_size / 2) < 0)
-			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
-				 errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup, "munmap [low] failed");
 		/* Create one memory segment using malloc */
 		ptr_memory_allocated = (char *)malloc(5 * pagesize);
-		/* Take temporary pointer for later freeing up the original one */
+		/* 
+		 * Take temporary pointer for later use, freeing up the
+		 * original one.
+		 */
 		tmp_memory_allocated = ptr_memory_allocated;
 		tmp_memory_allocated =
 		    (char
@@ -282,12 +252,9 @@ int main(int argc, char *argv[])
 		close(fd);
 	}
 	cleanup();
-
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup(void)
 {
 
@@ -295,45 +262,26 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	/* Create temp directory and change to that */
 	tst_tmpdir();
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
 
 }
 
-/***************************************************************
- * check_and_print(extected_errno) - checks the returned value of call
- * and tests whether the returned errno is the expected errno or not
- * and prints the appropriate messages.
- ***************************************************************/
 void check_and_print(int expected_errno)
 {
 	if (TEST_RETURN == -1) {
-		if (TEST_ERRNO == expected_errno) {
-			tst_resm(TPASS, "expected failure - errno = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
-			tst_resm(TFAIL,
-				 "got errno = %d : %s; expected error = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO),
-				 expected_errno, strerror(expected_errno));
-		}
-	} else {
-		tst_resm(TFAIL, "madvise failed, expected "
-			 "return value = -1, got %ld", TEST_RETURN);
-	}
+		if (TEST_ERRNO == expected_errno)
+			tst_resm(TPASS|TTERRNO, "failed as expected");
+		else
+			tst_resm(TFAIL|TTERRNO,
+			    "failed unexpectedly; expected - %d : %s",
+			    expected_errno, strerror(expected_errno));
+	} else
+		tst_resm(TFAIL, "madvise succeeded unexpectedly");
 }
