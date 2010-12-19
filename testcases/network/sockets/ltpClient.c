@@ -105,6 +105,8 @@ int main(int argc, char *argv[]) {
 
     unsigned char ttl = 1;
 
+    mcastSocketHandle = -1;
+
     /* check command line args */
     if (argc < 4) {
         printf("usage :<server-hostname> <trace-hostName> <data1> ... <dataN> \n");
