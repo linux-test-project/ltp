@@ -304,7 +304,7 @@ int main (int argc, char **argv)
 
 	printf ("\nsuccessful!\n");
 	cleanup(0);
-
+	return 0;
 }
 
 static void cleanup (int rc)

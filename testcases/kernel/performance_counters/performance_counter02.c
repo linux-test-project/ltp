@@ -74,10 +74,6 @@ it print out the values of each counter.
 #define PR_TASK_PERF_COUNTERS_DISABLE           31
 #define PR_TASK_PERF_COUNTERS_ENABLE            32
 
-/* Extern Global Variables */
-extern int  Tst_count;
-extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
-
 /* Global Variables */
 char *TCID     = "performance_counter02"; /* test program identifier.          */
 int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
@@ -240,5 +236,5 @@ main(int ac, char **av)
 	} else {
 		tst_resm(TINFO, "test passed");
 	}
-
+	tst_exit();
 }

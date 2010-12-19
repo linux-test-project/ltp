@@ -101,4 +101,6 @@ main(void) {
 
 	} while (ret == sizeof(unsigned long long));
 
+	tst_exit();
+
 }
