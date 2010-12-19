@@ -274,7 +274,7 @@ int main(int argc, char **argv)
 	close(fd[0]);
 	close(fd[1]);
 	cleanup();
-
+	tst_exit();
 }
 
 #else

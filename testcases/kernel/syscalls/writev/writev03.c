@@ -62,6 +62,8 @@
 #define	MAX_IOVEC	4
 #define	DATA_FILE	"writev_data_file"
 
+#if !defined(UCLINUX)
+
 char buf1[K_1], buf2[K_1], buf3[K_1];
 char *bad_addr = 0;
 
@@ -84,12 +86,9 @@ char *TCID = "writev03";
 int TST_TOTAL = 1;
 
 void sighandler(int);
-long l_seek(int, long, int);
+void l_seek(int, off_t, int);
 void setup(void);
 void cleanup(void);
-int fail;
-
-#if !defined(UCLINUX)
 
 int main(int argc, char **argv)
 {
@@ -98,20 +97,13 @@ int main(int argc, char **argv)
 
 	int nbytes;
 
-	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
-
-	/* set "tstdir", and "testfile" vars */
 	setup();
 
-	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		buf_list[0] = buf1;
@@ -121,46 +113,32 @@ int main(int argc, char **argv)
 
 		fd[1] = -1;	/* Invalid file descriptor */
 
-		if (signal(SIGTERM, sighandler) == SIG_ERR) {
-			perror("signal");
-			tst_resm(TFAIL, "signal() SIGTERM FAILED");
-			cleanup();
-		 }
+		if (signal(SIGTERM, sighandler) == SIG_ERR)
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "signal(SIGTERM, ..) failed");
 
-		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
-			perror("signal");
-			tst_resm(TFAIL, "signal() SIGPIPE FAILED");
-			cleanup();
-		 }
+		if (signal(SIGPIPE, sighandler) == SIG_ERR)
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "signal(SIGPIPE, ..) failed");
 
 		memset(buf_list[0], 0, K_1);
 		memset(buf_list[1], 0, K_1);
 
-		if ((fd[0] = open(f_name, O_WRONLY | O_CREAT, 0666)) < 0) {
-			tst_resm(TFAIL, "open(2) failed: fname = %s, "
-				 "errno = %d", f_name, errno);
-			cleanup();
-		 } else {
-			if ((nbytes = write(fd[0], buf_list[1], K_1)) != K_1) {
-				tst_resm(TFAIL, "write(2) failed: nbytes "
-					 "= %d, errno = %d", nbytes, errno);
-				cleanup();
-			 }
-		}
+		if ((fd[0] = open(f_name, O_WRONLY|O_CREAT, 0666)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "open(.., O_WRONLY|O_CREAT, ..) failed");
+		else
+			if ((nbytes = write(fd[0], buf_list[1], K_1)) != K_1)
+				tst_brkm(TFAIL|TERRNO, cleanup, "write failed");
 
-		if (close(fd[0]) < 0) {
-			tst_resm(TFAIL, "close failed: errno = %d", errno);
-			cleanup();
-		 }
+		if (close(fd[0]) < 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "close failed");
 
-		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0) {
-			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
-				 f_name, errno);
-			cleanup();
-		 }
+		if ((fd[0] = open(f_name, O_RDWR, 0666)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup,
+			    "open(.., O_RDWR, ..) failed");
 //block1:
 		tst_resm(TINFO, "Enter block 1");
-		fail = 0;
 
 		/*
 		 * In this block we are trying to call writev() with
@@ -171,30 +149,19 @@ int main(int argc, char **argv)
 		 * contents of the first valid write() scheduled.
 		 */
 
-		if (writev(fd[0], wr_iovec, 3) < 0) {
-			TEST_ERROR_LOG(errno);
-			if (errno == EFAULT) {
-				tst_resm(TFAIL, "Got error EFAULT");
-				fail = 1;
-			}
+		if (writev(fd[0], wr_iovec, 3) == -1) {
+			if (errno == EFAULT)
+				tst_resm(TFAIL, "Got EFAULT");
 		} else {
 			l_seek(fd[0], 0, 0);
 			read(fd[0], buf_list[0], CHUNK);
-			if (memcmp(buf_list[0], buf_list[1], CHUNK) != 0) {
+			if (memcmp(buf_list[0], buf_list[1], CHUNK) != 0)
 				tst_resm(TFAIL, "writev overwrote the file");
-				fail = 1;
-			}
-		}
-		if (fail) {
-			tst_resm(TINFO, "block 1 FAILED");
-		} else {
-			tst_resm(TINFO, "block 1 PASSED");
 		}
 		tst_resm(TINFO, "Exit block 1");
 
 //block2:
 		tst_resm(TINFO, "Enter block 2");
-		fail = 0;
 
 		/*
 		 * In this block we are trying to over write the contents by
@@ -204,30 +171,19 @@ int main(int argc, char **argv)
 		 * scheduled is done correctly or not.
 		 */
 		l_seek(fd[0], 0, 0);
-		if (writev(fd[0], wr_iovec, 3) < 0) {
-			TEST_ERROR_LOG(errno);
-			if (errno == EFAULT) {
-				tst_resm(TFAIL, "Got error EFAULT");
-				fail = 1;
-			}
+		if (writev(fd[0], wr_iovec, 3) == -1) {
+			if (errno == EFAULT)
+				tst_resm(TFAIL, "Got EFAULT");
 		} else {
 			l_seek(fd[0], 0, 0);
 			read(fd[0], buf_list[0], CHUNK);
-			if (memcmp(buf_list[0], buf_list[1], CHUNK) != 0) {
+			if (memcmp(buf_list[0], buf_list[1], CHUNK) != 0)
 				tst_resm(TFAIL, "writev overwrote the file");
-				fail = 1;
-			}
-		}
-		if (fail) {
-			tst_resm(TINFO, "block 2 FAILED");
-		} else {
-			tst_resm(TINFO, "block 2 PASSED");
 		}
 		tst_resm(TINFO, "Exit block 2");
 
 //block3:
 		tst_resm(TINFO, "Enter block 3");
-		fail = 0;
 
 		/*
 		 * In this block, we are trying to call writev() by going to
@@ -239,43 +195,23 @@ int main(int argc, char **argv)
 		 */
 
 		l_seek(fd[0], 8192, 0);
-		if (writev(fd[0], wr_iovec, 3) < 0) {
+		if (writev(fd[0], wr_iovec, 3) == -1) {
 			TEST_ERROR_LOG(errno);
-			if (errno == EFAULT) {
-				tst_resm(TFAIL, "Got error EFAULT");
-				fail = 1;
-			}
+			if (errno == EFAULT)
+				tst_resm(TFAIL, "Got EFAULT");
 		} else {
 			l_seek(fd[0], 0, 0);
 			read(fd[0], buf_list[0], CHUNK);
 			if (memcmp(buf_list[0], buf_list[1], CHUNK) != 0) {
 				tst_resm(TFAIL, "writev overwrote the file");
-				fail = 1;
 			}
 		}
 
-		if (fail) {
-			tst_resm(TINFO, "block 3 FAILED");
-		} else {
-			tst_resm(TINFO, "block 3 PASSED");
-		}
 		tst_resm(TINFO, "Exit block 3");
 	}
-	close(fd[0]);
-	close(fd[1]);
 	cleanup();
-
-}
-
-#else
-
-int main()
-{
-	tst_resm(TINFO, "test is not available on uClinux");
 	tst_exit();
 }
-
-#endif /* if !defined(UCLINUX) */
 
 /*
  * setup()
@@ -314,24 +250,17 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	if (unlink(f_name) < 0) {
-		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
-			 f_name, errno);
-	}
+	close(fd[0]);
+	close(fd[1]);
+
+	if (unlink(f_name) == -1)
+		tst_resm(TFAIL, "unlink failed");
 	tst_rmdir();
 
 }
 
-/*
- * sighandler()
- *	Signal handler function for SIGTERM and SIGPIPE
- */
 void sighandler(int sig)
 {
 	switch (sig) {
@@ -341,28 +270,23 @@ void sighandler(int sig)
 		++in_sighandler;
 		return;
 	default:
-		tst_resm(TFAIL, "sighandler() received invalid signal "
-			 ": %d", sig);
+		tst_resm(TBROK, "sighandler received invalid signal : %d", sig);
 		break;
 	}
-
-	if ((unlink(f_name) < 0) && (errno != ENOENT)) {
-		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
-			 f_name, errno);
-		cleanup();
-	 }
-	exit(sig);
 }
 
 /*
  * l_seek()
  *	Wrap around for regular lseek function for giving error message
  */
-long l_seek(int fdesc, long offset, int whence)
+void l_seek(int fdesc, off_t offset, int whence)
 {
-	if (lseek(fdesc, offset, whence) < 0) {
-		tst_resm(TFAIL, "lseek Failed : errno = %d", errno);
-		fail = 1;
-	}
-	return 0;
+	if (lseek(fdesc, offset, whence) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "lseek failed");
 }
+#else
+int main()
+{
+	tst_brkm(TCONF, NULL, "test is not available on uClinux");
+}
+#endif /* if !defined(UCLINUX) */

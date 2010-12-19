@@ -153,6 +153,7 @@ int main(int argc, char **argv)
 		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
+	tst_exit();
 
 }
 
