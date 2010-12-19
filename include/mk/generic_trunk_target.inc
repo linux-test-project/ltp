@@ -75,8 +75,7 @@ trunk-install: $(INSTALL_FILES)
 all: trunk-all
 
 clean:: trunk-clean
-	#@set -e; for dir in $(SUBDIRS); do
-	for dir in $(SUBDIRS); do \
+	@set -e; for dir in $(SUBDIRS); do \
 	    $(MAKE) -C "$$dir" -f "$(abs_srcdir)/$$dir/Makefile" $@; \
 	done
 ifneq ($(abs_builddir),$(abs_srcdir))
@@ -91,8 +90,7 @@ ifeq ($(strip $(SUBDIRS)),)
 	$(error SUBDIRS empty -- did you want generic_leaf_target instead?)
 else
 $(RECURSIVE_TARGETS): %: | $(SUBDIRS)
-	#@set -e; for dir in $(SUBDIRS); do
-	@for dir in $(SUBDIRS); do \
+	@set -e; for dir in $(SUBDIRS); do \
 	    $(MAKE) -C $$dir -f "$(abs_srcdir)/$$dir/Makefile" $@; \
 	done
 endif
