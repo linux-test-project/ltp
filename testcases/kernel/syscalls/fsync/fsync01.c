@@ -152,11 +152,10 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL|TTERRNO, "fsync failed");
-		else {
+		else
 			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "fsync returned %ld", fname,
+				tst_resm(TPASS, "fsync returned %ld",
 				    TEST_RETURN);
-		}
 
 	}
 
