@@ -82,7 +82,6 @@ int exp_enos[] = { EINVAL, 0 };
 
 gid_t groups_list[NGROUPS];	/* buffer to hold user group list */
 
-int no_setup();
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
@@ -92,10 +91,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *desc;
 	int exp_errno;
 	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	-1, 1, "Size is < no. suppl. gids", EINVAL, no_setup}, {
-	0, 0, NULL, 0, no_setup}
+} test_cases[] = {
+	{ -1, 1, "Size is < no. suppl. gids", EINVAL },
 };
 
 int main(int ac, char **av)
@@ -103,53 +100,39 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int gidsetsize;		/* total no. of groups */
-	int ind;		/* counter to test different test conditions */
+	int i;		/* counter to test different test conditions */
 	char *test_desc;	/* test specific error message */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			gidsetsize = Test_cases[ind].gsize;
-			test_desc = Test_cases[ind].desc;
+		for (i = 0; i < TST_TOTAL; i++) {
+			gidsetsize = test_cases[i].gsize;
+			test_desc = test_cases[i].desc;
 
-			/*
-			 * Call getgroups() to test different test conditions
-			 * verify that it fails with -1 return value and
-			 * sets appropriate errno.
-			 */
 			TEST(getgroups(gidsetsize, groups_list));
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-					tst_resm(TPASS, "getgroups() fails, %s,"
-						 " errno=%d", test_desc,
-						 TEST_ERRNO);
-				} else {
-					tst_resm(TFAIL, "getgroups() fails, %s,"
-						 " errno=%d, expected errno=%d",
-						 test_desc, TEST_ERRNO,
-						 Test_cases[ind].exp_errno);
-				}
-			} else {
-				tst_resm(TFAIL, "getgroups() returned %ld, "
-					 "expected -1, errno=%d", TEST_RETURN,
-					 Test_cases[ind].exp_errno);
-			}
+				if (TEST_ERRNO == test_cases[i].exp_errno)
+					tst_resm(TPASS|TTERRNO,
+					    "getgroups failed as expected");
+				else
+					tst_resm(TFAIL|TTERRNO,
+					    "getgroups failed unexpectedly; "
+					    "expected: %d - %s",
+					    test_cases[i].exp_errno,
+					    strerror(test_cases[i].exp_errno));
+			} else
+				tst_resm(TFAIL,
+				    "getgroups succeeded unexpectedly");
 		}
 
 	}
@@ -170,16 +153,6 @@ void setup()
 
 	TEST_PAUSE;
 
-}
-
-/*
- * no_setup() - Some test conditions for mknod(2) do not any setup.
- *              Hence, this function just returns 0.
- *  		This function simply returns 0.
- */
-int no_setup()
-{
-	return 0;
 }
 
 /*

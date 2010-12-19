@@ -107,11 +107,10 @@
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
+#include <sys/types.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
-
-#include <sys/types.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -131,48 +130,32 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	;
-
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * TEST CASE:
-		 *  Get effective group id.
-		 */
-		;
-
-		/* Call getegid(2) */
 		TEST(GETEGID());
 
-		/* check return code */
-		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "getegid -  Get effective group id. failed, errno=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+		if (TEST_RETURN == -1) {
+			tst_resm(TFAIL|TTERRNO, "getegid failed");
 			continue;	/* next loop for MTKERNEL */
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
-			/* No Verification test, yet... */
-			tst_resm(TPASS,
-				 "getegid -  Get effective group id. returned %ld",
-				 TEST_RETURN);
+			tst_resm(TPASS, "getegid returned %ld", TEST_RETURN);
 		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
 void setup()
@@ -185,10 +168,6 @@ void setup()
 
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }

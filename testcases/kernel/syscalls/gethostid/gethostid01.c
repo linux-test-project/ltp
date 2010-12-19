@@ -150,43 +150,25 @@ int main(int ac, char **av)
 	char hex_64[8] = "ffffffff";
 	FILE *fp;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/* Call gethostid(2) */
 		TEST(gethostid());
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "gethostid -  Get host name failed, errno=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "gethostid failed");
 			continue;	/* next loop for MTKERNEL */
 		}
 		sprintf(hostid, "%08lx", TEST_RETURN);
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
 			if (system("hostid > hostid.x") == -1)
 				tst_brkm(TFAIL, cleanup,
@@ -197,34 +179,35 @@ int main(int ac, char **av)
 				tst_brkm(TFAIL, cleanup, "fgets failed");
 			fclose(fp);
 
-			/* strip off the \n we got from reading the file */
 			name[strlen(name) - 1] = 0;
 
-			if (strstr(hostid, "000000")) {
+			if (strstr(hostid, "000000"))
 				tst_resm(TCONF, "Host ID has not been set.");
-
-			}
 
 			if (strcmp(name, hostid) == 0) {
 				tst_resm(TPASS,
-					 "Hostid command and gethostid both report hostid "
-					 "is %s", hostid);
+				    "Hostid command and gethostid both report "
+				    "hostid is %s", hostid);
 			} else {
 
-				/* Some distros add an "0x" to the front of the `hostid` output.   */
-				/* We compare the first 2 characters of the `hostid` output with   */
-				/* "0x", if it's equal, remove these first 2 characters & re-test. */
-				/* -RW                                                             */
-
-				if ((name[0] == hex[0]) && (name[1] == hex[1])) {
+				/* 
+				 * Some distros add an "0x" to the front of the
+				 * `hostid` output. We compare the first 2
+				 * characters of the `hostid` output with "0x",
+				 * if it's equal, remove these first 2
+				 * characters & re-test. -RW
+				 */
+				if (name[0] == hex[0] && name[1] == hex[1])
 					for (i = 0; i < 38; i++)
 						name2[i] = name[i + 2];
-				} else {
+				else
 					strncpy(name2, name, HOSTIDLEN);
-				}
 
-				/* This code handles situations where ffffffff is appended */
-				/* Fixed to not clobber the first check with the 2nd check MR */
+				/* 
+				 * This code handles situations where ffffffff
+				 * is appended. Fixed to not clobber the first
+				 * check with the 2nd check MR
+				 */
 
 				if (0 == strncmp(hostid, hex_64, 8))
 					bit_64 |= FIRST_64_CHKBIT;
@@ -232,48 +215,40 @@ int main(int ac, char **av)
 				if (0 == strncmp(name2, hex_64, 8))
 					bit_64 |= SECOND_64_CHKBIT;
 
-				//printf("bit_64=%d\n", bit_64);
-
-				if (bit_64 & FIRST_64_CHKBIT) {
+				if (bit_64 & FIRST_64_CHKBIT)
 					for (j = 0; j < 8; j++)
 						hostid2[j] = hostid[j + 8];
-				} else {
+				else
 					strncpy(hostid2, hostid,
 						strlen(hostid) + 1);
-				}
 
-				if (bit_64 & SECOND_64_CHKBIT) {
+				if (bit_64 & SECOND_64_CHKBIT)
 					for (j = 0; j < 9; j++)
 						name2[j] = name2[j + 8];
-				}
 
 				if ((result = strstr(hostid2, name2)) != NULL) {
 					hostid3 = strdup(name2);
 
 					tst_resm(TPASS,
-						 "Hostid command reports hostid is %s, "
-						 "and gethostid reports %s",
+						 "Hostid command reports "
+						 "hostid is %s, and gethostid "
+						 "reports %s",
 						 name2, hostid3);
-				} else {
+				} else
 					tst_resm(TFAIL,
-						 "Hostid command reports hostid is %s, "
-						 "but gethostid() reports %s",
+						 "Hostid command reports "
+						 "hostid is %s, but gethostid "
+						 "reports %s",
 						 name2, hostid2);
-				}
 			}
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -284,16 +259,8 @@ void setup()
 	tst_tmpdir();
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();

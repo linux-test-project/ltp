@@ -66,52 +66,38 @@ int main(int ac, char **av)
 	register int my_pid, my_ppid;
 	int ex_stat, fail = 0;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if ((pgid_0 = FORK_OR_VFORK()) < 0) {
-			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
-		if (pgid_0 > 0) {	/* parent */
-			/*
-			 * parent process waits for child to exit, and then
-			 * exits itself.
-			 */
-			while ((pgid_0 = wait(&ex_stat)) > 0) ;
+		if ((pgid_0 = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK, cleanup, "fork failed");
+		if (pgid_0 > 0) {
+			while ((pgid_0 = wait(&ex_stat)) != -1) ;
 
-			if (WEXITSTATUS(ex_stat) == 0) {
+			if (WEXITSTATUS(ex_stat) == 0)
 				tst_resm(TINFO, "%s PASSED", TCID);
-			} else {
+			else
 				tst_resm(TINFO, "%s FAILED", TCID);
-			}
 
-			/* let the child carry on */
 			exit(0);
 		}
 
-		/* child */
-//block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
-		if ((pgid_0 = getpgid(0)) < 0) {
-			perror("getpgid");
-			tst_resm(TFAIL, "getpgid(0) failed");
+		if ((pgid_0 = getpgid(0)) == -1) {
+			tst_resm(TFAIL|TERRNO, "getpgid(0) failed");
 			fail = 1;
 		}
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 1: getpgid(0) FAILED");
-		} else {
+		else
 			tst_resm(TPASS, "Test block 1: getpgid(0) PASSED");
-		}
 		tst_resm(TINFO, "Exit block 1");
 
 //block2:
@@ -119,23 +105,20 @@ int main(int ac, char **av)
 		fail = 0;
 
 		my_pid = getpid();
-		if ((pgid_1 = getpgid(my_pid)) < 0) {
-			perror("getpgid");
-			tst_resm(TFAIL, "getpgid(my_pid=%d) failed", my_pid);
+		if ((pgid_1 = getpgid(my_pid)) == -1)
+			tst_resm(TFAIL|TERRNO, "getpgid(%d) failed", my_pid);
 
-		}
 		if (pgid_0 != pgid_1) {
 			tst_resm(TFAIL, "getpgid(my_pid=%d) != getpgid(0) "
 				 "[%d != %d]", my_pid, pgid_1, pgid_0);
 			fail = 1;
 		}
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 2: getpgid(getpid()) "
 				 "FAILED");
-		} else {
-			tst_resm(TPASS, "Test blcok 2: getpgid(getpid()) "
+		else
+			tst_resm(TPASS, "Test block 2: getpgid(getpid()) "
 				 "PASSED");
-		}
 		tst_resm(TINFO, "Exit block 2");
 
 //block3:
@@ -143,14 +126,12 @@ int main(int ac, char **av)
 		fail = 0;
 
 		my_ppid = getppid();
-		if ((pgid_1 = getpgid(my_ppid)) < 0) {
-			perror("getpgid");
-			tst_resm(TFAIL, "getpgid(my_ppid=%d) failed", my_ppid);
+		if ((pgid_1 = getpgid(my_ppid)) == -1)
+			tst_resm(TFAIL|TERRNO, "getpgid(%d) failed", my_ppid);
 
-		}
 		if (pgid_0 != pgid_1) {
-			tst_resm(TFAIL, "getpgid(my_ppid=%d) != getpgid(0) "
-				 "[%d != %d]", my_ppid, pgid_1, pgid_0);
+			tst_resm(TFAIL, "getpgid(%d) != getpgid(0) [%d != %d]",
+			    my_ppid, pgid_1, pgid_0);
 			fail = 1;
 		}
 
@@ -167,22 +148,19 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Enter block 4");
 		fail = 0;
 
-		if ((pgid_1 = getpgid(pgid_0)) < 0) {
-			perror("getpgid");
-			tst_resm(TFAIL, "getpgid(my_pgid=%d) failed", pgid_0);
+		if ((pgid_1 = getpgid(pgid_0)) < 0)
+			tst_resm(TFAIL|TERRNO, "getpgid(%d) failed", pgid_0);
 
-		}
 		if (pgid_0 != pgid_1) {
-			tst_resm(TFAIL, "getpgid(my_pgid=%d) != getpgid(0) "
-				 "[%d != %d]", pgid_0, pgid_1, pgid_0);
+			tst_resm(TFAIL, "getpgid(%d) != getpgid(0) [%d != %d]",
+			    pgid_0, pgid_1, pgid_0);
 			fail = 1;
 		}
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 4: getpgid(1) FAILED");
-		} else {
+		else
 			tst_resm(TPASS, "Test block 4: getpgid(1) PASSED");
-		}
 		tst_resm(TINFO, "Exit block 4");
 
 //block5:
@@ -190,25 +168,21 @@ int main(int ac, char **av)
 		fail = 0;
 
 		if (getpgid(1) < 0) {
-			perror("getpgid");
-			tst_resm(TFAIL, "getpgid(1) failed");
+			tst_resm(TFAIL|TERRNO, "getpgid(1) failed");
 			fail = 1;
 		}
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 5: getpgid(1) FAILED");
-		} else {
+		else
 			tst_resm(TPASS, "Test block 5: getpgid(1) PASSED");
-		}
 		tst_resm(TINFO, "Exit block 5");
 	}
 	cleanup();
+	tst_exit();
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 
@@ -217,16 +191,8 @@ void setup()
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }

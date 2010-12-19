@@ -72,12 +72,10 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/* Call getpagesize(2) */
 		TEST(getpagesize());
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "getpagesize failed"),
+			tst_resm(TFAIL|TTERRNO, "getpagesize failed");
 			continue;	/* next loop for MTKERNEL */
 		}
 
@@ -102,11 +100,9 @@ int main(int ac, char **av)
 
 	cleanup();
 
+	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -115,15 +111,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *              completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }

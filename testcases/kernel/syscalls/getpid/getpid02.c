@@ -88,7 +88,6 @@ int main(int ac, char **av)
 	pid_t pproc_id;		/* parent process id */
 	int status;		/* exit status of child process */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -100,51 +99,38 @@ int main(int ac, char **av)
 
 		TEST(getpid());
 
-		/* Save the process id returned by getpid() */
 		proc_id = TEST_RETURN;
 
 		if (STD_FUNCTIONAL_TEST) {
-			/* Fork a child now */
-			if ((pid = FORK_OR_VFORK()) < 0) {
-				tst_resm(TFAIL, "fork() failed to create child,"
-					 " error=%d", TEST_ERRNO);
-			} else if (pid == 0) {	/* Child process */
-				/* Get the parent process id */
+			if ((pid = FORK_OR_VFORK()) == -1)
+				tst_resm(TFAIL|TERRNO, "fork failed");
+			else if (pid == 0) {
 				pproc_id = getppid();
 
-				/* Verify if the two process IDs match */
-				if (pproc_id != proc_id) {
+				if (pproc_id != proc_id)
 					exit(1);
-				}
 				exit(0);
-			} else {	/* parent process */
-				if (wait(&status) == -1) {
+			} else {
+				if (wait(&status) == -1)
 					tst_brkm(TBROK|TERRNO, cleanup,
 					    "wait failed");
-				}
-				/* Check exit status of child */
-				if (WIFEXITED(status) &&
-				    WEXITSTATUS(status) != 0) {
+				if (!WIFEXITED(status) ||
+				    WEXITSTATUS(status) != 0)
 					tst_resm(TFAIL, "getpid() returned "
 						 "invalid pid %d", proc_id);
-				} else {
-					tst_resm(TPASS, "Functionality of "
-						 "getpid() successful");
-				}
+				else
+					tst_resm(TPASS,
+					    "getpid functionality is correct");
 			}
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- * 	     Setup signal catching function.
- */
 void setup()
 {
 
@@ -153,15 +139,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }

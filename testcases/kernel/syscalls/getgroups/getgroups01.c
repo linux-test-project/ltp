@@ -94,67 +94,42 @@ int TST_TOTAL = 4;		/* Total number of test cases. */
 gid_t gidset[NGROUPS];		/* storage for all group ids */
 gid_t cmpset[NGROUPS];
 
-/***********************************************************************
- * MAIN
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *ptr;		/* message returned from parse_opts */
 
-	int i,			/* counter */
-	 group,			/* return value from Getgid() call */
-	 entries;		/* number of group entries */
+	gid_t group;
 
-	int ret;
-	int ret2;
-	int errors = 0;
+	int i;			/* counter */
+	int entries;		/* number of group entries */
 
-	/* Initialize the group access list */
 	initgroups("root", 0);
-    /***************************************************************
-     * parse standard options, and exit if there is an error
-     ***************************************************************/
-	if ((ptr = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((ptr = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", ptr);
 
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * Check to see if getgroups() fails on erraneous condition.
-		 */
 		TEST(getgroups(-1, gidset));
 
-		if ((ret = TEST_RETURN) != -1) {
-			tst_resm(TFAIL, "getgroups(-1,gidset) returned %d, expected -1 and errno = EINVAL", ret);
-			errors++;
-		} else if (STD_FUNCTIONAL_TEST) {
-			if (errno != EINVAL) {
-				tst_resm(TFAIL, "getgroups(-1,gidset) returned %d, errno = %d, expected errno %d (EINVAL)",
-					ret, errno, EINVAL);
-				errors++;
-			} else {
+		if (TEST_RETURN == 0)
+			tst_resm(TFAIL, "getgroups succeeded unexpectedly");
+		else if (STD_FUNCTIONAL_TEST) {
+			if (errno == EINVAL)
 				tst_resm(TPASS,
-					"getgroups(-1,gidset) returned %d and error = %d (EINVAL) as expected",
-					ret, errno);
-			}
+				    "getgroups failed as expected with EINVAL");
+			else
+				tst_resm(TFAIL|TTERRNO,
+				    "getgroups didn't fail as expected with EINVAL");
 		}
 
 		/*
-		 * Check that if ngrps is zero that the number of groups is return and
-		 * the the gidset array is not modified.
+		 * Check that if ngrps is zero that the number of groups is
+		 * return and the the gidset array is not modified.
 		 * This is a POSIX special case.
 		 */
 
@@ -162,103 +137,77 @@ int main(int ac, char **av)
 		memset(cmpset, 052, NGROUPS);
 
 		TEST(getgroups(0, gidset));
-		if ((ret = TEST_RETURN) < 0) {
-			tst_resm(TFAIL,
-				"getgroups(0,gidset) returned %d with errno = %d, expected num gids with no change to gidset",
-				ret, errno);
-			errors++;
-		} else if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * check that gidset was unchanged
-			 */
-			if (memcmp(cmpset, gidset, NGROUPS) != 0) {
+		if (TEST_RETURN == -1)
+			tst_resm(TFAIL|TTERRNO, "getgroups failed");
+		else if (STD_FUNCTIONAL_TEST) {
+			if (memcmp(cmpset, gidset, NGROUPS) != 0)
 				tst_resm(TFAIL,
-					"getgroups(0,gidset) returned %d, the gidset array was modified",
-					ret);
-				errors++;
-			} else {
+				    "getgroups modified the gidset array");
+			else
 				tst_resm(TPASS,
-					"getgroups(0,gidset) returned %d, the gidset array not was modified",
-					ret);
-			}
+				    "getgroups did not modify the gidset "
+				    "array");
 		}
 
 		/*
-		 * Check to see that is -1 is returned and errno is set to EINVAL when
-		 * ngroups is not big enough to hold all groups.
+		 * Check to see that is -1 is returned and errno is set to
+		 * EINVAL when ngroups is not big enough to hold all groups.
 		 */
 
-		if (ret <= 1) {
+		if (TEST_RETURN <= 1)
 			tst_resm(TCONF,
-				"getgroups(0,gidset) returned %d, Unable to test that\nusing ngrps >=1 but less than number of grps",
-				ret);
-			errors++;
-		} else {
-			TEST(getgroups(ret - 1, gidset));
-			if ((ret2 = TEST_RETURN) == -1) {
+				"getgroups returned %ld; unable to test that using ngrps >=1 but less than number of grps", TEST_RETURN);
+		else {
+			TEST(getgroups(TEST_RETURN - 1, gidset));
+			if (TEST_RETURN == -1) {
 				if (STD_FUNCTIONAL_TEST) {
-					if (errno != EINVAL) {
-						tst_resm(TFAIL,
-							"getgroups(%d, gidset) returned -1, but not errno %d (EINVAL) but %d",
-							ret - 1, EINVAL, errno);
-						errors++;
-					} else {
+					if (errno == EINVAL)
 						tst_resm(TPASS,
-							"getgroups(%d, gidset) returned -1, and errno %d (EINVAL) when %d grps",
-							ret - 1, errno, ret);
-					}
+						    "getgroups failed as "
+						    "expected with EINVAL");
+					else
+						tst_resm(TFAIL|TERRNO,
+						    "getgroups didn't fail "
+						    "with EINVAL");
 				}
-			} else {
+			} else
 				tst_resm(TFAIL,
-					"getgroups(%d, gidset) returned %d, expected -1 and errno EINVAL.",
-					ret - 1, ret2);
-				errors++;
-			}
+				    "getgroups succeeded unexpectedly with %ld",
+				    TEST_RETURN);
 		}
 
-		/*
-		 * Check to see if getgroups() succeeds and contains getgid's gid.
-		 */
 
 		TEST(getgroups(NGROUPS, gidset));
-		if ((entries = TEST_RETURN) == -1) {
-			tst_resm(TFAIL,
-				"getgroups(NGROUPS,gidset) returned -1 and errno = %d",
-				errno);
-			errors++;
-		} else if (STD_FUNCTIONAL_TEST) {
-
-			/*
-			 * Check to see if getgroups() contains getgid().
-			 */
+		if ((entries = TEST_RETURN) == -1)
+			tst_resm(TFAIL|TTERRNO,
+			    "getgroups failed unexpectedly");
+		else if (STD_FUNCTIONAL_TEST) {
 
 			group = getgid();
 
-			for (i = 0; i < entries; i++) {
+			for (i = 0; i < entries; i++)
 				if (gidset[i] == group) {
 					tst_resm(TPASS,
-						"getgroups(NGROUPS,gidset) ret %d contains gid %d (from getgid)",
-						entries, group);
+					    "getgroups(NGROUPS,gidset) "
+					    "returned %d contains gid %d "
+					    "(from getgid)",
+					    entries, group);
 					break;
 				}
-			}
 
-			if (i == entries) {
+			if (i == entries)
 				tst_resm(TFAIL,
-					"getgroups(NGROUPS,gidset) ret %d, does not contain gid %d (from getgid)",
-					entries, group);
-				errors++;
-			}
+				    "getgroups(NGROUPS,gidset) ret %d, does "
+				    "not contain gid %d (from getgid)",
+				    entries, group);
 		}
 
 	}
 	cleanup();
 
-}				/* end main() */
+	tst_exit();
+}
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -268,16 +217,7 @@ void setup()
 
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *              completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

@@ -100,12 +100,8 @@ int main(int ac, char **av)
 	int ret_val;		/* getgroups(2) return value */
 	int gidsetsize = NGROUPS;	/* total groups */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -113,35 +109,19 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/*
-		 * Call getgroups() to get supplimentary group IDs of
-		 * TESTUSER ("root").
-		 */
 		TEST(getgroups(gidsetsize, groups_list));
 
 		if ((ret_val = TEST_RETURN) == -1) {
-			tst_resm(TFAIL|TTERRNO, "getgroups(%d, groups_list) failed", gidsetsize);
+			tst_resm(TFAIL|TTERRNO, "getgroups failed");
 			continue;
 		}
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
 		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Call verify_groups() to verify the groups
-			 * returned by getgroups(2) match with the
-			 * expected groups.
-			 */
 			fflag = verify_groups(ret_val);
-			if (fflag) {
-				tst_resm(TPASS, "Functionality of "
-					 "getgroups(%d, groups_list) "
-					 "successful", gidsetsize);
-			}
-		} else {
+			if (fflag)
+				tst_resm(TPASS,
+				    "getgroups functionality correct");
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
@@ -149,12 +129,10 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *	     Get the supplimentary gid(s) of root from /etc/group.
- */
 void setup()
 {
+
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -171,10 +149,8 @@ void setup()
 	 * testcase will fail. So execute setgroups() before executing
 	 * getgroups()
 	 */
-	if (setgroups(ngroups, groups) == -1) {
-		tst_resm(TFAIL|TERRNO, "setgroups() failed");
-		cleanup();
-	}
+	if (setgroups(ngroups, groups) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "setgroups failed");
 
 }
 
@@ -230,8 +206,7 @@ int readgroups(gid_t groups[NGROUPS])
  *  This function returns flag value which indicates success or failure
  *  of verification.
  */
-int verify_groups(ret_val)
-int ret_val;
+int verify_groups(int ret_val)
 {
 	int i, j;		/* counter variables */
 	gid_t egid;		/* Effective gid of the process */
@@ -252,7 +227,7 @@ int ret_val;
 			if (groups_list[i] != groups[j]) {
 				/* If loop ends and gids are not matching */
 				if (j == ngroups - 1) {
-					tst_resm(TFAIL, "getgroups() returned "
+					tst_resm(TFAIL, "getgroups returned "
 						 "incorrect gid %d",
 						 groups_list[i]);
 					fflag = 0;
@@ -277,7 +252,7 @@ int ret_val;
 				 */
 				if (j == (ret_val - 1)) {
 					if (groups[i] != egid) {
-						tst_resm(TFAIL, "getgroups(2) "
+						tst_resm(TFAIL, "getgroups "
 							 "didn't return %d one "
 							 "of the gids of %s",
 							 groups[i], TESTUSER);
@@ -290,8 +265,6 @@ int ret_val;
 						 */
 						egid_flag = NOT_PRESENT;
 					}
-				} else {	/* if the loop is not over */
-					continue;
 				}
 			} else {	/* if equal, continue the outer loop */
 				break;
@@ -306,29 +279,21 @@ int ret_val;
 	 * Now, if ngroups matches ret_val, as above comparisons of the array
 	 * are successful, this implies that the array contents match.
 	 */
-	if (egid_flag == 0) {	/* If egid is not returned */
+	if (egid_flag == 0) 	/* If egid is not returned */
 		ngroups--;
-	}
 	if (ngroups != ret_val) {
 		tst_resm(TFAIL,
-			 "getgroups(2) returned incorrect no. of gids %d (expect %d)",
+			 "getgroups(2) returned incorrect no. of gids %d "
+			 "(expected %d)",
 			 ret_val, ngroups);
 		fflag = 0;
 	}
 
-	/* Return the status of functionality */
 	return (fflag);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }

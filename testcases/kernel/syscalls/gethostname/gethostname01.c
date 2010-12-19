@@ -108,8 +108,8 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
-#include <string.h>
 #include <signal.h>
+#include <string.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -134,51 +134,29 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * TEST CASE:
-		 *  Get host name
-		 */
-
-		/* Call gethostname(2) */
 		TEST(gethostname(hname, sizeof(hname)));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "gethostname -  Get host name failed, errno=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "gethostname failed");
 			continue;	/* next loop for MTKERNEL */
 		}
 
-		/***************************************************************
-		 * only perform functional verification if flag set (-f not given)
-		 ***************************************************************/
-		if (STD_FUNCTIONAL_TEST) {
-			/* No Verification test, yet... */
-			tst_resm(TPASS,
-				 "gethostname -  Get host name returned %ld",
-				 TEST_RETURN);
-		}
+		if (STD_FUNCTIONAL_TEST)
+			tst_resm(TPASS, "gethostname returned %ld",
+			    TEST_RETURN);
 	}
 
 	cleanup();
+	tst_exit();
 
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -187,15 +165,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }
