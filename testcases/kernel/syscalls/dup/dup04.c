@@ -207,6 +207,8 @@ void setup()
 
 void cleanup()
 {
+	int i;
+
 	TEST_CLEANUP;
 
 	for (i = 0; i <= 6; i++)
