@@ -149,7 +149,7 @@ int main (int argc, char **argv)
 	/* Program completed successfully -- exit */
 	printf ("\nsuccessful!\n");
 
-	tst_exit();
+	return 0;
 }
 
 /*---------------------------------------------------------------------+
