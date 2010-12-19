@@ -53,15 +53,15 @@
 #include "test.h"
 #include "usctest.h"
 
-#include <errno.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <stdio.h>
 #include <sys/types.h>
-#include <unistd.h>
-#include <pwd.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <pwd.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 char *TCID = "fchdir03";
 int TST_TOTAL = 1;
@@ -88,25 +88,20 @@ int main(int ac, char **av)
 	pid_t pid;
 	int status;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* set up the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork failed");
-		}
 
-		if (pid == 0) {	/* child */
+		if (pid == 0) {
 			/*
 			 * set the child's ID to ltpuser1 using seteuid()
 			 * so that the ID can be changed back after the
@@ -133,15 +128,12 @@ int main(int ac, char **av)
 				printf("Expected %d - got %d\n",
 				    EACCES, TEST_ERRNO);
 				exit(1);
-			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				printf("Got EACCES\n");
-			}
+			} else
+				printf("Got EACCES as expected\n");
 
-			/* reset the process ID to the saved ID (root) */
-			if (setuid(0) == -1) {
+			/* reset the UID to root */
+			if (setuid(0) == -1)
 				perror("setuid(0) failed");
-			}
 
 		} else {
 			if (wait(&status) == -1)
@@ -156,59 +148,38 @@ int main(int ac, char **av)
 			}
 		}
 
-		/* clean up things in case we are looping */
-		if (rmdir(good_dir) == -1) {
-			tst_brkm(TBROK, cleanup, "Couldn't remove directory");
-		}
+		if (rmdir(good_dir) == -1)
+			tst_brkm(TBROK, cleanup, "rmdir failed");
 
 	}
 	cleanup();
 
+	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 	char *cur_dir = NULL;
 
-	/* make sure the process ID is root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root.");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
-	/* get the currect directory name */
-	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
-	}
+	if ((cur_dir = getcwd(cur_dir, 0)) == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "getcwd failed");
 
 	sprintf(good_dir, "%s.%d", cur_dir, getpid());
 
 	ltpuser1 = my_getpwnam(user1name);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/*
-	 * Delete the test directory created in setup().
-	 */
 	tst_rmdir();
 }
