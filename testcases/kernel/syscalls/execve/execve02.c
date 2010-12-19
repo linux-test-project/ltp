@@ -170,8 +170,10 @@ void help()
 
 void setup(char *argv0)
 {
-	char *cmd, *path, *pwd;
+	char /* *cmd,*/ *path, *pwd;
+#if 0
 	int res;
+#endif
 
 	path = NULL;
 	pwd = NULL;
@@ -186,6 +188,7 @@ void setup(char *argv0)
 
 	//FIXME (garrcoop): (find reference to other code that does similar to solve this problem and squish it into libltp or something.
 
+#if 0
 	cmd = malloc(strlen(path) + strlen(bname) + 15);
 	if (cmd == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
@@ -197,7 +200,7 @@ void setup(char *argv0)
 	free(cmd);
 
 	fname = bname;
-
+#endif
 	umask(0);
 
 	ltpuser1 = my_getpwnam(user1name);

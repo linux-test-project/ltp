@@ -20,6 +20,9 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
+# FIXME (garrcoop): various warning and brokenness issues.
+CPPFLAGS		+= -Wno-error
+
 CPPFLAGS		+= -I$(abs_srcdir)/../lib
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

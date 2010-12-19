@@ -61,9 +61,7 @@
 # define SOCK_NONBLOCK O_NONBLOCK
 #endif
 
-/* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
-
+int TST_TOTAL = 2;
 /* Global Variables */
 char *TCID = "socketpair02";	/* test program identifier.              */
 

@@ -94,7 +94,7 @@ int main(int ac, char **av)
 	pid_t child_pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
@@ -127,9 +127,9 @@ int main(int ac, char **av)
 			 * scheduling policy, only allowed priority value is 0.
 			 * So we should get 0 for priority value
 			 */
-			if ((TEST_RETURN == 0) && (param.sched_priority == 0)) {
+			if (TEST_RETURN == 0 && param.sched_priority == 0)
 				exit(0);
-			} else {
+			else {
 				tst_resm(TWARN, "sched_getparam()"
 					 "returned %ld, errno = %d : %s;"
 					 " returned process priority value"
@@ -145,11 +145,10 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "wait() failed");
 				continue;
 			}
-			if ((WIFEXITED(status)) && (WEXITSTATUS(status) == 0)) {
+			if ((WIFEXITED(status)) && (WEXITSTATUS(status) == 0))
 				tst_resm(TPASS, "Test Passed");
-			} else {
+			else
 				tst_resm(TFAIL, "Test Failed");
-			}
 		}
 
 	}

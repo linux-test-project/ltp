@@ -439,8 +439,6 @@ char *TCID;
 char *Selectedtests = NULL;	/* Name (tcid) of selected test cases */
 char test_msg[BUFMAX];
 char full_path[PATH_MAX + 1 + 1];	/* Add one for '\0' and another to exceed the PATH_MAX limit, see creat_path_max() */
-extern char *TESTDIR;
-/*extern char *strrchr();*/
 
 struct stat asymlink, statter;
 char Buffer[1024];
@@ -1054,7 +1052,8 @@ struct all_test_cases *tc_ptr;
 				 "Expected ENOENT error for changing to a non-existent",
 				 "directory through a symbolic link file was not received:",
 				 errno, strerror(errno));
-			chdir(TESTDIR);
+			/* FIXME (garrcoop): memory leak */
+			chdir(get_tst_tmpdir());
 		}
 	} else if (cktcsid(tc_ptr->tcid, LINK)) {
 
@@ -1148,7 +1147,8 @@ struct all_test_cases *tc_ptr;
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when chdir(2) a nested symbolic link:",
 				 errno, strerror(errno));
-			chdir(TESTDIR);
+			/* FIXME (garrcoop): memory leak */
+			chdir(get_tst_tmpdir());
 		}
 	} else if (cktcsid(tc_ptr->tcid, LINK)) {
 
@@ -1483,7 +1483,8 @@ struct all_test_cases *tc_ptr;
 			/*
 			 *  Build expected current directory position
 			 */
-			strcpy(expected_location, TESTDIR);
+			/* FIXME (garrcoop): memory leak */
+			strcpy(expected_location, get_tst_tmpdir());
 			strcat(expected_location, "/");
 			strcat(expected_location, tc_ptr->fn_arg[2]);
 
@@ -1502,7 +1503,8 @@ struct all_test_cases *tc_ptr;
 					 "new current working directory location",
 					 cwd, expected_location);
 			}
-			chdir(TESTDIR);
+			/* FIXME (garrcoop): memory leak */
+			chdir(get_tst_tmpdir());
 		}
 		rmdir(tc_ptr->fn_arg[2]);
 	}
