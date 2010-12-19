@@ -218,31 +218,26 @@ int main(int argc, char **argv)
 
 /*--------------------------------------------------------------------*/
 	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
+	if (masterfd < 0)
 		tst_brkm(TBROK|TERRNO, NULL, "open %s", MASTERCLONE);
-	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == NULL) {
+	if (slavename == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "ptsname");
-	}
 
-	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK|TERRNO, NULL, "grantpt");
-	}
+	if (grantpt(masterfd) != 0)
+		tst_brkm(TBROK|TERRNO, NULL, "grantpt");
 
-	if (unlockpt(masterfd) != 0) {
+	if (unlockpt(masterfd) != 0)
 		tst_brkm(TBROK|TERRNO, NULL, "unlockpt");
-	}
 
 	childpid = fork();
-	if (childpid == -1) {
+	if (childpid == -1)
 		tst_brkm(TBROK|TERRNO, NULL, "fork");
-	} else if (childpid == 0) {
+	else if (childpid == 0)
 		exit(child(masterfd));
-	} else {
+	else
 		parent(masterfd, childpid);
-	}
 /*--------------------------------------------------------------------*/
 	cleanup();
 
