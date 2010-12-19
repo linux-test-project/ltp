@@ -596,6 +596,7 @@ void maitre()
     int offset;
     /* A test sentence written in the file */
     char phraseTest[]="Ceci est une phrase test ecrite par le maitre dans le fichier";
+    bl = -1;
     clnt=dp.nclnt;
     maitreLecteur=dp.maitre[0];
     etat=SELECT;
@@ -789,6 +790,8 @@ void * esclave(void *donnees)
     int len;
     enum etat_t etat;
 
+    resultat = -1;
+    ftest = -1;
     len=strlen(phraseTest);
     df=(struct donneesFils *)donnees;
     i=df->dpr->whoami;
@@ -1004,6 +1007,7 @@ int main(int argc,char ** argv) {
     int serveur=1;
     char *host;
 
+    host = NULL;
     clients=0;
 
     for (i=1;i<argc;i++) {
