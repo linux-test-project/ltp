@@ -135,39 +135,23 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int status;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/* make a child process so we can kill it */
-		/* If we cannot fork => we cannot test kill, so break and exit */
-		if ((fork_pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "fork() Failure. errno=%d : %s",
-				 errno, strerror(errno));
-		}
+		if ((fork_pid = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 
 		if (fork_pid == 0) {
-			/* CHILD */
 #ifdef UCLINUX
 			if (self_exec(av[0], "") < 0) {
 				tst_brkm(TBROK, cleanup,
@@ -178,47 +162,25 @@ int main(int ac, char **av)
 #endif
 		}
 
-		/* PARENT */
-		/*
-		 * Call kill(2)
-		 */
 		TEST(kill(fork_pid, SIGKILL));
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "kill(%d, SIGKILL) Failed, errno=%d : %s",
-				 fork_pid, TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
+		if (TEST_RETURN == -1)
+			tst_resm(TFAIL|TTERRNO, "kill(.., SIGKILL) failed");
+		else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS, "kill(%d, SIGKILL) returned %ld",
 					 fork_pid, TEST_RETURN);
 			}
 		}
 
-		/*
-		 * wait for process to cleanup zombies.
-		 *
-		 */
 		waitpid(0, &status, WNOHANG);
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
+	tst_exit();
 }
 
-/***************************************************************
- * do_child()
- ***************************************************************/
 void do_child()
 {
 	/*
@@ -231,31 +193,19 @@ void do_child()
 	exit(1);
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Change SIGCHLD to SIG_IGN to remove possible race condition */
 	(void)signal(SIGCHLD, SIG_IGN);
 
 	TEST_PAUSE;
 
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }
