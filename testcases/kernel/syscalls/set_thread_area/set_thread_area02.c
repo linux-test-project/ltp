@@ -143,7 +143,7 @@ int main(int ac, char **av) {
 			tst_resm(TFAIL|TTERRNO, "set_thread_area didn't fail with EFAULT");
 		}
 	} else {
-		tst_resm(TFAIL, cleanup, "set_thread_area succeeded unexpectedly");
+		tst_resm(TFAIL, "set_thread_area succeeded unexpectedly");
 	}
 	cleanup();
 	tst_exit();
