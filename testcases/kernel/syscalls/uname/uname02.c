@@ -73,17 +73,12 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL) != NULL)
-	    != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
-	/* The following loop checks looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		/*
@@ -93,21 +88,17 @@ int main(int ac, char **av)
 
 		TEST(uname((struct utsname *)-1));
 
-		if (TEST_RETURN == 0) {
+		if (TEST_RETURN == 0)
 			tst_resm(TFAIL, "call succeed when failure expected");
-		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {
 		case EFAULT:
-			tst_resm(TPASS, "expected failure - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TPASS|TTERRNO, "uname failed as expected");
 			break;
 		default:
-			tst_resm(TFAIL, "call failed to produce "
-				 "expected error - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "uname failed unexpectedly");
 		}
 	}
 
@@ -117,40 +108,25 @@ int main(int ac, char **av)
 
 }
 
-#else
-
-int main()
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
-
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
 void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }
+#else
+int main()
+{
+	tst_resm(TCONF, NULL, "test is not available on uClinux");
+}
+#endif /* if !defined(UCLINUX) */
+
