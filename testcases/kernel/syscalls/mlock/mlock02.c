@@ -72,39 +72,23 @@ struct test_case_t {
 	 * range pointed to by addr and len are not valid mapped pages
 	 * in the address space of the process
 	 */
-	{
-	&addr1, 1024, ENOMEM, setup1}
+	{ &addr1, 1024, ENOMEM, setup1 }
 };
 
 #if !defined(UCLINUX)
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state
-     ***************************************************************/
-	/* TEST_LOOPING() is a macro that will make sure the test continues
-	 * looping according to the standard command line args.
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
@@ -116,34 +100,21 @@ int main(int ac, char **av)
 
 			TEST(mlock(*(TC[i].addr), TC[i].len));
 
-			/* check return code */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO != TC[i].error)
-					tst_brkm(TFAIL, cleanup,
-						 "mlock() Failed with wrong "
-						 "errno, expected errno=%d, "
-						 "got errno=%d : %s",
-						 TC[i].error, TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_brkm(TFAIL|TTERRNO, cleanup,
+					    "mlock didn't fail as expected; "
+					    "expected - %d : %s",
+					    TC[i].error, strerror(TC[i].error));
 				else
-					tst_resm(TPASS,
-						 "expected failure - errno "
-						 "= %d : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-			} else {
+					tst_resm(TPASS|TTERRNO,
+					    "mlock failed as expected");
+			} else
 				tst_brkm(TFAIL, cleanup,
-					 "mlock() Failed, expected "
-					 "return value=-1, got %ld",
-					 TEST_RETURN);
-			}
+				    "mlock succeeded unexpectedly");
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
 	tst_exit();
@@ -153,15 +124,11 @@ int main(int ac, char **av)
 
 int main()
 {
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }
 
 #endif /* if !defined(UCLINUX) */
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 	TEST_PAUSE;
@@ -176,10 +143,6 @@ void setup1()
 #endif
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
 	TEST_CLEANUP;
