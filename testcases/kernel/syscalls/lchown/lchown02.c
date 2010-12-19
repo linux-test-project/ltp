@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 	gid_t group_id;
 	int i;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 	}
 
 	cleanup();
-
+	tst_exit();
 }
 
 /*
@@ -211,40 +211,26 @@ void setup(void)
 {
 	int i;
 
-	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	tst_require_root(tst_exit);
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
 	/* change euid and gid to nobody */
 	ltpuser = getpwnam(TEST_USER);
 
-	if (ltpuser == NULL) {
-		tst_brkm(TBROK, cleanup, "test need user %s to run",
-		         TEST_USER);
-	}
+	if (ltpuser == NULL)
+		tst_brkm(TBROK, cleanup, "getpwnam failed");
 
-	if (setgid(ltpuser->pw_uid) == -1) {
-		tst_resm(TBROK | TERRNO,
-		         "setgid(2) failed set the effective gid to %d",
-			 ltpuser->pw_uid);
-	}
-
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TBROK | TERRNO,
-		         "seteuid(2) failed to set the effective uid to %d",
-			 ltpuser->pw_uid);
-	}
+	if (setgid(ltpuser->pw_uid) == -1)
+		tst_resm(TBROK | TERRNO, "setgid failed");
 
 	tst_tmpdir();
 
-	/* call individual setup functions */
-	for (i = 0; test_cases[i].desc != NULL; i++) {
+	for (i = 0; test_cases[i].desc != NULL; i++)
 		if (test_cases[i].setup != NULL)
 			test_cases[i].setup(i);
-	}
 }
 
 /*
@@ -258,34 +244,23 @@ void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
 	int fd;
 
 	/* create a testfile */
-	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(2) %s failed", TEST_FILE1);
-	}
+	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 
-	if (close(fd) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "close(2) %s failed",
-		         TEST_FILE1);
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close failed");
 
 	/* become root once more */
-	if (seteuid(0) == -1) {
-		tst_resm(TBROK | TERRNO,
-		         "seteuid(2) failed to set the effective uid to 0");
-	}
+	if (seteuid(0) == -1)
+		tst_resm(TBROK|TERRNO, "setuid(0) failed");
 
 	/* create symling to testfile */
-	if (symlink(TEST_FILE1, SFILE1) < 0) {
-		tst_brkm(TBROK, cleanup, "symlink(2) %s to %s failed",
-			 TEST_FILE1, SFILE1);
-	}
+	if (symlink(TEST_FILE1, SFILE1) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "symlink failed");
 
 	/* back to the user nobody */
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TBROK | TERRNO,
-		         "seteuid(2) failed to set the effective uid to %d",
-			 ltpuser->pw_uid);
-	}
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_resm(TBROK|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
 }
 
 /*
@@ -302,21 +277,15 @@ void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 	int fd;
 
 	/* create a test directory */
-	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(2) %s failed",
-		         DIR_TEMP);
-	}
+	if (mkdir(DIR_TEMP, MODE_RWX) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir failed");
 
 	/* create a file under test directory */
-	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-		         "open(2) %s failed", TEST_FILE2);
-	}
+	if ((fd = open(TEST_FILE2, O_RDWR|O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 
-	if (close(fd) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "close(2) %s failed", TEST_FILE2);
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close failed");
 
 	/* create a symlink of testfile */
 	if (symlink(TEST_FILE2, SFILE2) < 0) {
@@ -407,7 +376,7 @@ void cleanup(void)
 
 	/* become root again */
 	if (seteuid(0) == -1) {
-		tst_resm(TINFO | TERRNO,
+		tst_resm(TINFO|TERRNO,
 		         "seteuid(2) failed to set the effective uid to 0");
 	}
 
