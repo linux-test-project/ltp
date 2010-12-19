@@ -34,14 +34,15 @@ int TST_TOTAL=1;    		/* Total number of test cases. */
 
 /* To avoid extensive modifications to the code, use this bodge */
 #define exit(x) myexit(x)
+
 void
 myexit (int x)
 {
-	 if (x)
-	   tst_resm (TFAIL, "Test failed");
-	 else
-	   tst_resm (TPASS, "Test passed");
-	 return 0;
+	if (x)
+		tst_resm (TFAIL, "Test failed");
+	else
+		tst_resm (TPASS, "Test passed");
+	exit(0);
 }
 
 TH_DATA *pcom;
@@ -129,7 +130,7 @@ int main(int argc, char *argv[])
 	}
 	bin_path = malloc(strlen(ltproot) + 16);
 	if (bin_path == NULL) {
-		tst_brkm(TBROK|TERRNO, "malloc failed");
+		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
 	}
 	sprintf(bin_path, "%s/testcases/bin", ltproot);
 
@@ -233,8 +234,8 @@ int main(int argc, char *argv[])
 	  for (th_num = 0; th_num < num_threads; th_num++) {
 
 		/* allocate struct of commucation  with the thread */
-		pcom =  calloc (1, sizeof(TH_DATA));
-		if (pcom == -1)
+		pcom = calloc (1, sizeof(TH_DATA));
+		if (pcom == NULL)
 			tst_brkm(TFAIL|TERRNO, cleanup, "calloc failed");
 		*tabcour = (TH_DATA *) pcom;
 		tabcour++;
