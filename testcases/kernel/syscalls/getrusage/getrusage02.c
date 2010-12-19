@@ -90,12 +90,9 @@ struct test_cases_t {
 	struct rusage *usage;
 	int exp_errno;
 } test_cases[] = {
-	{
-	RUSAGE_BOTH, &usage, EINVAL},
+	{ RUSAGE_BOTH, &usage, EINVAL},
 #ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
-	{
-	RUSAGE_SELF, (struct rusage *)-1, EFAULT}
+	{ RUSAGE_SELF, (struct rusage *)-1, EFAULT}
 #endif
 };
 
@@ -104,10 +101,9 @@ int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 int main(int ac, char **av)
 {
 
-	int lc, ind;		/* loop counter */
+	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -117,58 +113,40 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		for (ind = 0; ind < TST_TOTAL; ind++) {
-			/*
-			 * Call getrusage(2)
-			 */
-			TEST(getrusage(test_cases[ind].who,
-				       test_cases[ind].usage));
+		for (i = 0; i < TST_TOTAL; i++) {
+			TEST(getrusage(test_cases[i].who,
+				       test_cases[i].usage));
 
-			if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-						    test_cases[ind].
-						    exp_errno)) {
-				tst_resm(TPASS, "TEST Passed");
-			} else {
-				tst_resm(TFAIL, "test Failed,"
-					 "getrusage() returned %ld"
-					 " errno = %d : %s", TEST_RETURN,
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
-			TEST_ERROR_LOG(TEST_ERRNO);
+			if (TEST_RETURN == -1 &&
+			    TEST_ERRNO == test_cases[i].exp_errno)
+				tst_resm(TPASS|TTERRNO,
+				    "getrusage failed as expected");
+			else
+				tst_resm(TFAIL|TTERRNO,
+				    "getrusage failed unexpectedly");
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
 
 	tst_exit();
 
 }
 
-/* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
 void cleanup()
 {
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 }

@@ -80,11 +80,10 @@ int TST_TOTAL = 2;
 int main(int ac, char **av)
 {
 
-	int lc, ind;		/* loop counter */
+	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	struct rusage usage;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -94,29 +93,21 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		for (ind = 0; ind < TST_TOTAL; ind++) {
-			/*
-			 * Call getrusage(2)
-			 */
-			TEST(getrusage(who[ind], &usage));
+		for (i = 0; i < TST_TOTAL; i++) {
+			TEST(getrusage(who[i], &usage));
 
-			if (TEST_RETURN == 0) {
-				tst_resm(TPASS, "TEST Passed");
-			} else {
-				tst_resm(TFAIL, "test Failed,"
-					 "getrusage() returned %ld"
-					 " errno = %d : %s", TEST_RETURN,
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
+			if (TEST_RETURN == 0)
+				tst_resm(TPASS, "getrusage passed");
+			else
+				tst_resm(TFAIL|TTERRNO, "getrusage failed");
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
+	tst_exit();
 
 }
 
-/* setup() - performs all ONE TIME setup for this test */
 void setup()
 {
 
@@ -126,17 +117,7 @@ void setup()
 
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
 void cleanup()
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
