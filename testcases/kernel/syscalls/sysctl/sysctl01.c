@@ -76,7 +76,7 @@ struct test_case_t {
 	char *desc;
 	int name[2];
 	int size;
-	void *oldval;
+	char *oldval;
 	size_t *oldlen;
 	void *newval;
 	int newlen;
@@ -100,10 +100,11 @@ int main(int ac, char **av)
 	int i;
 	char *comp_string;
 
+	comp_string = NULL;
+
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
