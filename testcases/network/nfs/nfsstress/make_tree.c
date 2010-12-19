@@ -297,7 +297,6 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
     if (!pid)
     {
         char *argv[4];
-        char *envp[1];
 
         argv[0] = "/bin/sh";
         argv[1] = "-c";
