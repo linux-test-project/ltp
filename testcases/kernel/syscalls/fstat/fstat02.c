@@ -101,12 +101,8 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -114,116 +110,75 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		/*
-		 * Call fstat(2) to get the status of
-		 * specified 'file' pointed to by 'fd'
-		 * into stat structure.
-		 */
 		TEST(fstat(fildes, &stat_buf));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL|TTERRNO, "fstat(%s) failed", TESTFILE);
 			continue;
 		}
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
 		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Verify the data returned by fstat(2)
-			 * aganist the expected data.
-			 */
-			if ((stat_buf.st_uid != user_id) ||
-			    (stat_buf.st_gid != group_id) ||
-			    (stat_buf.st_size != FILE_SIZE) ||
-			    ((stat_buf.st_mode & MASK) != FILE_MODE)) {
-				tst_resm(TFAIL, "Functionality of fstat(2) on "
-					 "'%s' Failed", TESTFILE);
-			} else {
-				tst_resm(TPASS, "Functionality of fstat(2) on "
-					 "'%s' Succcessful", TESTFILE);
-			}
-		} else {
+			if (stat_buf.st_uid != user_id ||
+			    stat_buf.st_gid != group_id ||
+			    stat_buf.st_size != FILE_SIZE ||
+			    (stat_buf.st_mode & MASK) != FILE_MODE) {
+				tst_resm(TFAIL,
+				    "functionality of fstat incorrect");
+			} else
+				tst_resm(TPASS,
+				    "functionality of fstat correct");
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
 
+	tst_exit();
 }
 
-/*
- * void
- * setup() -  Performs setup function for the test.
- *  Creat a temporary directory and chdir to it.
- *  Creat a temporary file and write some known data into it.
- *  Get the effective uid/gid of test process.
- */
 void setup()
 {
-	int i;
 	char tst_buff[BUF_SIZE];
 	int wbytes;
 	int write_len = 0;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
+		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	fildes = open(TESTFILE, O_WRONLY | O_CREAT, FILE_MODE);
+	fildes = open(TESTFILE, O_WRONLY|O_CREAT, FILE_MODE);
 	if (fildes == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
-			 TESTFILE, FILE_MODE);
+		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 
 	/* Fill the test buffer with the known data */
-	for (i = 0; i < BUF_SIZE; i++) {
-		tst_buff[i] = 'a';
-	}
+	memset(tst_buff, 'a', BUF_SIZE-1);
 
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {
-		if ((wbytes = write(fildes, tst_buff, sizeof(tst_buff))) <= 0) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-				 "write(%s) failed", TESTFILE);
-		} else {
+		if ((wbytes = write(fildes, tst_buff, sizeof(tst_buff))) <= 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+		else
 			write_len += wbytes;
-		}
 	}
 
-	/* Get the uid/gid of the process */
 	user_id = getuid();
 	group_id = getgid();
 
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- *  Close the test file and remove the test file and temporary directory.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Close the test file */
 	if (close(fildes) == -1)
-		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TESTFILE);
+		tst_resm(TWARN|TERRNO, "close failed");
 
 	tst_rmdir();
 
