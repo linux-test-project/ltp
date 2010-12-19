@@ -85,22 +85,16 @@
 #define SOCKET_MODE	S_IFSOCK| S_IRWXU | S_IRWXG | S_IRWXO
 #define DIR_TEMP	"testdir_1"
 
-int no_setup();
-int setup2();			/* setup function to test mknod for EACCES */
+void setup2();			/* setup function to test mknod for EACCES */
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
-	char *desc;
 	int mode;
 	int exp_errno;
-	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	"tnode_1", "Process is not root/super-user", SOCKET_MODE,
-		    EACCES, no_setup}, {
-	"tnode_2", "No Write permissions to process", NEWMODE, EACCES, setup2},
-	{
-	NULL, NULL, 0, 0, no_setup}
+	void (*setupfunc)(void);
+} test_cases[] = {
+	{ "tnode_1", SOCKET_MODE, EACCES, NULL },
+	{ "tnode_2", NEWMODE, EACCES, setup2 },
 };
 
 char *TCID = "mknod07";		/* Test program identifier.    */
@@ -118,174 +112,91 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char *node_name;	/* ptr. for node name created */
-	char *test_desc;	/* test specific error message */
-	int ind;		/* counter to test different test conditions */
+	int i;		/* counter to test different test conditions */
 	int mode;		/* creation mode for the node created */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-	/*
-	 * Invoke setup function to call individual test setup functions
-	 * for the test which run as root/super-user.
-	 */
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			node_name = Test_cases[ind].pathname;
-			mode = Test_cases[ind].mode;
-			test_desc = Test_cases[ind].desc;
+		for (i = 0; i < TST_TOTAL; i++) {
+			node_name = test_cases[i].pathname;
+			mode = test_cases[i].mode;
 
-			/*
-			 * Call mknod(2) to test different test conditions.
-			 * verify that it fails with -1 return value and
-			 * sets appropriate errno.
-			 */
 			TEST(mknod(node_name, mode, 0));
 
-			/* Check return code from mknod(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "mknod() returned %ld, expected "
-					 "-1, errno:%d", TEST_RETURN,
-					 Test_cases[ind].exp_errno);
+				tst_resm(TFAIL, "mknod succeeded unexpectedly");
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-				tst_resm(TPASS, "mknod() fails, %s, errno:%d",
-					 test_desc, TEST_ERRNO);
-			} else {
-				tst_resm(TFAIL, "mknod() fails, %s, errno:%d, "
-					 "expected errno:%d", test_desc,
-					 TEST_ERRNO, Test_cases[ind].exp_errno);
-			}
+			if (TEST_ERRNO == test_cases[i].exp_errno)
+				tst_resm(TPASS|TTERRNO,
+				    "mknod failed as expected");
+			else
+				tst_resm(TFAIL|TTERRNO,
+				    "mknod failed unexpectedly; expected: "
+				    "%d - %s", test_cases[i].exp_errno,
+				    strerror(test_cases[i].exp_errno));
 		}
 
 	}
 
-	/*
-	 * Invoke cleanup() to delete the test directories created
-	 * in the setup().
-	 */
 	cleanup();
-
+	tst_exit();
 }
 
-/*
- * setup(void) - performs all ONE TIME setup for this test.
- *	Exit the test program on receipt of unexpected signals.
- *	Create a temporary directory used to hold test directories and nodes
- *	created and change the directory to it.
- *	Create a test directory with ownership of test process id and
- *	change the directory to it.
- *	Invoke individual test setup functions according to the order
- *	set in struct. definition.
- */
 void setup()
 {
-	int ind;
+	int i;
 
-	/* Capture unexpected signals */
+	tst_require_root(NULL);
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, NULL, "setuid failed to "
-			 "to set the effective uid to %d: %s",
-			 ltpuser->pw_uid, strerror(errno));
-	}
+	if (ltpuser == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
 
 	TEST_PAUSE;
 
-	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-	/*
-	 * Create a test directory under temporary directory with the
-	 * specified mode permissions, with uid/gid set to that of guest
-	 * user and the test process.
-	 */
-	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-		tst_exit();
-	}
+	if (mkdir(DIR_TEMP, MODE_RWX) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir failed");
 
-	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	}
+	if (chmod(DIR_TEMP, MODE_RWX) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod failed");
 
-	/* Change directory to DIR_TEMP */
-	if (chdir(DIR_TEMP) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Unable to change to %s directory", DIR_TEMP);
-	}
+	if (chdir(DIR_TEMP) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chdir failed");
 
-	/* call individual setup functions */
-	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-		Test_cases[ind].setupfunc();
-	}
+	for (i = 0; i < TST_TOTAL; i++)
+		if (test_cases[i].setupfunc != NULL)
+			test_cases[i].setupfunc();
 }
 
-/*
- * no_setup() - Some test conditions for mknod(2) do not any setup.
- *              Hence, this function just returns 0.
- */
-int no_setup()
+void setup2()
 {
-	return 0;
+	if (chmod(".", NEWMODE) < 0)
+		tst_brkm(TBROK, cleanup, "chmod failed");
 }
 
-/*
- * setup2() - setup function for a test condition for which mknod(2)
- *	      returns -1 and sets errno to EACCES.
- *  This setup changes mode permission bits on test directory such that process
- *  will not have write permission to create node(s) using mknod(2).
- *  The function returns 0.
- */
-int setup2()
-{
-	/* Modify mode permissions on test directory */
-	if (chmod(".", NEWMODE) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	}
-	return 0;
-}
-
-/*
- * cleanup() - Performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	Print test timing stats and errno log if test executed with options.
- *	Remove temporary directory and sub-directories/files under it
- *	created during setup().
- *	Exit the test program with normal exit code.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	if (seteuid(0) == -1)
-		tst_resm(TBROK, "Couldn't get root back: %s", strerror(errno));
+		tst_resm(TBROK, "seteuid(0) failed");
 
 	tst_rmdir();
 
