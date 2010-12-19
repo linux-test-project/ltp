@@ -67,9 +67,6 @@
 
 #define IN_NONBLOCK O_NONBLOCK
 
-/* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
-
 /* Global Variables */
 char *TCID = "inotify_init1_02";	/* test program identifier.              */
 int testno;
@@ -164,7 +161,7 @@ int main(int argc, char *argv[])
 
 			fd = syscall(__NR_inotify_init1, IN_NONBLOCK);
 			if (fd == -1) {
-				tst_resm(TFAIL|TERRNO, cleanup,
+				tst_brkm(TFAIL|TERRNO, cleanup,
 					 "inotify_init1(IN_NONBLOCK) failed");
 			}
 			fl = fcntl(fd, F_GETFL);
