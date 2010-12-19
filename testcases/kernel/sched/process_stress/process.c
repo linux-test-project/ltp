@@ -17,6 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <sys/mman.h>
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
@@ -610,7 +611,7 @@ void setup_msgqueue(void)
 	if (msgid == -1) {
 		perror("msgget msgid failed");
 		fprintf( stderr, " SEVERE : msgget msgid failed: errno %d\n", errno);
-		exit( 1 );
+		exit(1);
 	}
 
 	msgerr = msgget(IPC_PRIVATE,
@@ -618,7 +619,7 @@ void setup_msgqueue(void)
 	if (msgerr == -1) {
 		perror("msgget msgerr failed");
 		fprintf( stderr, " SEVERE : msgget msgerr failed: errno %d\n", errno);
-		exit( 1 );
+		exit(1);
 	}
 }
 
@@ -643,7 +644,7 @@ dprt("nodesum = %d, sem_lock = %d\n", nodesum, sem_lock);
 		perror("semget failed for sem_lock");
 		fprintf( stderr, " SEVERE : semget failed for sem_lock, errno: %d\n", errno);
 		rm_shmseg();
-		exit( 1 );
+		exit(1);
 	}
 
         prtln();
@@ -654,7 +655,7 @@ dprt("nodesum = %d, sem_lock = %d\n", nodesum, sem_lock);
 		perror("semget failed for sem_count");
 		fprintf( stderr, " SEVERE : semget failed for sem_count, errno: %d\n", errno);
 		rm_shmseg();
-		exit( 1 );
+		exit(1);
 	}
         prtln();
 
@@ -666,7 +667,7 @@ dprt("nodesum = %d, sem_lock = %d\n", nodesum, sem_lock);
 			perror("semctl failed for sem_lock failed");
 			fprintf( stderr, " SEVERE : semctl failed for sem_lock, errno: %d\n", errno);
 			rm_shmseg();
-			exit( 1 );
+			exit(1);
 		}
 
 		semarg.val = BVAL; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
@@ -676,7 +677,7 @@ dprt("nodesum = %d, sem_lock = %d\n", nodesum, sem_lock);
 			perror("semctl failed for sem_lock failed");
 			fprintf( stderr, " SEVERE : semctl failed for sem_lock, errno: %d\n", errno);
 			rm_shmseg();
-			exit( 1 );
+			exit(1);
 		}
 	}
 }
@@ -706,14 +707,14 @@ void setup_shm(void)
 	if (shmid < 0) {
 		perror("shmget failed");
 		fprintf( stderr, " SEVERE : shmget failed: errno %d\n", errno);
-		exit( 1 );
+		exit(1);
 	}
 
 	/* allocate shared memory */
 
-	if ((shmad = (Pinfo *)shmat(shmid, (char *)shmad, 0)) == -1) {
+	if ((shmad = (Pinfo *)shmat(shmid, (char *)shmad, 0)) == MAP_FAILED) {
 		printf("SEVERE : shmat failed\n");
-		exit( 1 );
+		exit(1);
 	}
 	else {
 		shmctl(shmid, IPC_RMID, NULL);
@@ -797,7 +798,7 @@ void set_signals(void *sighandler())
 			perror(tmpstr);
 			fprintf( stderr, " SEVERE : Could not set %s signal action, errno=%d.",
 					  siginfo[i].signame, errno );
-			exit( 1 );
+			exit(1);
 		}
 	}
 }
@@ -813,7 +814,7 @@ void set_timer(void)
 	if ((timer = gettimerid( TIMERID_REAL, DELIVERY_SIGNALS )) == -1) {
 		perror( "gettimerid" );
 		fprintf( stderr, " SEVERE : Could not get timer id, errno=%d.",errno );
-		exit( 1 );
+		exit(1);
 	}
 
 	/*
@@ -827,7 +828,7 @@ void set_timer(void)
 		perror( "incinterval" );
 		fprintf( stderr, " SEVERE : Could not set timer interval, errno=%d.", errno );
 		(void)reltimerid( timer );
-		exit( 1 );
+		exit(1);
 	}
 }
 #else
@@ -948,7 +949,7 @@ follows:\n\t\tdepth\tbreadth\ttotal\n", sumit(BVAL,DVAL));
 		fprintf( stderr, "\t-d number\tdepth of process tree ( > 1)\n");
 		fprintf( stderr, "\t-t\t\tset timeout value\n");
 		fprintf( stderr, " SEVERE : Command line parameter error.\n" );
-		exit( 1 );
+		exit(1);
 	}
 }
 
@@ -1078,7 +1079,7 @@ void messenger(void) /* AKA Assassin */
 					prtln();
 					exit(0);
 				}
-				exit( 1 );
+				exit(1);
 
 				break;
 			}
@@ -1122,14 +1123,14 @@ void doit(void)
 		if (procgrp == -1) {
 			perror("setpgid failed");
 			fprintf( stderr, " SEVERE : setpgid failed, errno: %d\n", errno);
-			exit( 1 );
+			exit(1);
 		}
 		sprintf(mtext,"%d", procgrp);
 		rc = send_message(msgerr, 1, mtext);
 		if (rc == -1) {
 			perror("send_message failed");
 			fprintf( stderr, " SEVERE : send_message failed, errno: %d\n", errno);
-			exit( 1 );
+			exit(1);
 		}
 
 		put_proc_info(0); /* store process info for this (root) process */
@@ -1159,7 +1160,7 @@ void doit(void)
 	else {
 		perror("fork failed");
 		fprintf( stderr, " SEVERE : fork failed, exiting with errno %d\n", errno);
-		exit( 1 );
+		exit(1);
 	}
 }
 
@@ -1179,7 +1180,7 @@ int main(int argc, char *argv[])
                 fprintf( stderr, "\t-d number\tdepth of process tree ( > 1)\n");
                 fprintf( stderr, "\t-t\t\tset timeout value\n");
                 fprintf( stderr, " SEVERE : Command line parameter error.\n" );
-                exit( 1 );
+                exit(1);
         }
 
 	parse_args(argc, argv);	/* Get all command line arguments */
@@ -1207,6 +1208,6 @@ dprt("value of nodesum is initiallized to: %d\n", nodesum);
 
 	doit(); 		/* spawn off processes */
 	prtln();
-	tst_exit();
+	return 0;
 
 }
