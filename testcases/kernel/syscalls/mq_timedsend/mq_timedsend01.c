@@ -434,7 +434,6 @@ EXIT:
 
 int main(int ac, char **av) {
 	int result = RESULT_OK;
-	int c;
 	int i;
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
