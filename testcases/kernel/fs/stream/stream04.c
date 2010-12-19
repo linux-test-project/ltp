@@ -59,14 +59,14 @@ int main(int ac, char *av[])
 	char *inbuf;
 	int ret;
 
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int lc;		 /* loop counter */
+	char *msg;	      /* message returned from parse_opts */
 
-         /*
-          * parse standard options
-          */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-                 tst_resm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	 /*
+	  * parse standard options
+	  */
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_tmpdir();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -76,7 +76,7 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block0:
 		if ((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL|TERRNO,"fopen(%s) a+ failed: %s", tempfile1);
+			tst_resm(TFAIL|TERRNO,"fopen(%s) a+ failed", tempfile1);
 			tst_rmdir();
 			tst_exit();
 		}
@@ -122,6 +122,5 @@ int main(int ac, char *av[])
 		unlink(tempfile1);
 	} /* end for */
 	tst_rmdir();
-	tst_exit();
 	tst_exit();
 }
