@@ -84,6 +84,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	0644
@@ -104,12 +105,10 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	loff_t offset;		/* Ret value from llseek */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
+	offset = -1;
 
 	setup();
 
@@ -122,21 +121,13 @@ int main(int ac, char **av)
 		 */
 		TEST(lseek64(fildes, (loff_t) (80 * BUFSIZ), SEEK_SET));
 
-		if (TEST_RETURN == (loff_t) - 1) {
+		if (TEST_RETURN == (loff_t) -1) {
 			tst_resm(TFAIL, "llseek on (%s) Failed, errno=%d : %s",
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
 
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
 		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check if the return value from lseek(2)
-			 * is equal to the specified offset value.
-			 */
 			if (TEST_RETURN != (loff_t) (80 * BUFSIZ)) {
 				tst_resm(TFAIL, "llseek() returned incorrect "
 					 "value %"PRId64", expected %d",
@@ -179,9 +170,8 @@ int main(int ac, char **av)
 
 			tst_resm(TPASS, "Functionality of llseek() on %s "
 				 "successful", TEMP_FILE);
-		} else {
+		} else
 			tst_resm(TPASS, "call succeeded");
-		}
 	}
 
 	cleanup();
@@ -189,13 +179,6 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *           Setup signal handler to ignore SIGXFSZ signal.
- *           Create a temporary directory and change directory to it.
- *           Create a test file under temporary directory.
- *           Set the file size limit using setrlimit.
- */
 void setup()
 {
 	struct sigaction act;	/* struct. to hold signal */
@@ -205,7 +188,6 @@ void setup()
 
 	TEST_PAUSE;
 
-	/* Ignore the signal received aganist file size limit. */
 	act.sa_handler = SIG_IGN;
 	if (sigaction(SIGXFSZ, &act, NULL) == -1) {
 		tst_brkm(TFAIL, NULL, "sigaction() Failed to ignore SIGXFSZ");
@@ -215,18 +197,16 @@ void setup()
 	tst_tmpdir();
 
 	/* Store the original rlimit */
-	if (getrlimit(RLIMIT_FSIZE, &rlp_orig) == -1) {
+	if (getrlimit(RLIMIT_FSIZE, &rlp_orig) == -1)
 		tst_brkm(TBROK, cleanup,
 			 "Cannot get max. file size using getrlimit");
-	}
 
 	/* Set limit low, argument is # bytes */
 	rlp.rlim_cur = rlp.rlim_max = 2 * BUFSIZ;
 
-	if (setrlimit(RLIMIT_FSIZE, &rlp) == -1) {
+	if (setrlimit(RLIMIT_FSIZE, &rlp) == -1)
 		tst_brkm(TBROK, cleanup,
 			 "Cannot set max. file size using setrlimit");
-	}
 
 	/* Creat/open a temporary file under above directory */
 	if ((fildes = open(TEMP_FILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
@@ -235,39 +215,19 @@ void setup()
 			 TEMP_FILE, errno, strerror(errno));
 	}
 
-	/* Write data into temporary file */
-	if (write(fildes, write_buff, BUFSIZ) != BUFSIZ) {
-		tst_brkm(TBROK, cleanup, "write(2) on %s Failed, errno=%d : %s",
-			 TEMP_FILE, errno, strerror(errno));
-	}
+	SAFE_WRITE(cleanup, 1, fildes, write_buff, BUFSIZ);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *             Close the temporary file.
- *             Remove the test directory and testfile created in the setup.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
+	SAFE_CLOSE(NULL, fildes);
 
-	/* Close the temporary file created */
-	if (close(fildes) < 0) {
-		tst_brkm(TFAIL, NULL, "close(%s) Failed, errno=%d : %s:",
-			 TEMP_FILE, errno, strerror(errno));
-	}
+	TEST_CLEANUP;
 
 	tst_rmdir();
 
-	/* Reset the file size limit */
-	if (setrlimit(RLIMIT_FSIZE, &rlp_orig) == -1) {
+	if (setrlimit(RLIMIT_FSIZE, &rlp_orig) == -1)
 		tst_brkm(TBROK, NULL,
 			 "Cannot reset max. file size using setrlimit");
-	}
 
 }
