@@ -65,6 +65,7 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <assert.h>
 #include <errno.h>
 #include <libgen.h>
 #include <stdio.h>
@@ -107,10 +108,9 @@ static char *TESTDIR = NULL;	/* the directory created */
 char *
 get_tst_tmpdir(void)
 {
-	if (TESTDIR == NULL) {
-		errno = EINVAL;
-		return NULL;
-	}
+	/* Smack the user for calling things out of order. */
+	if (TESTDIR == NULL)
+		tst_brkm(TBROK, NULL, "you must call tst_tmpdir() first");
 	return strdup(TESTDIR);
 }
 
