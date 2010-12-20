@@ -133,10 +133,8 @@ int main(int ac, char **av)
 void check_functionality()
 {
 	/* stat the shared memory segment */
-	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-		tst_resm(TINFO, "error = %d : %s", errno, strerror(errno));
-		tst_brkm(TBROK, cleanup, "could not stat in signal handler");
-	}
+	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "could not stat in signal handler");
 
 	if (buf.shm_nattch != 0) {
 		tst_resm(TFAIL, "# of attaches is incorrect");

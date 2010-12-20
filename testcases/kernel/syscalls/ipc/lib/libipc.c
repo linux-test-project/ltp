@@ -202,17 +202,14 @@ int get_used_msgqueues()
 
 	f = popen("ipcs -q", "r");
 	if (!f) {
-		tst_resm(TBROK, "Could not run 'ipcs' to calculate used "
-			 "message queues");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "pipe failed");
 	}
 	/* FIXME: Start at -4 because ipcs prints four lines of header */
 	for (used_queues = -4; fgets(buff, BUFSIZE, f); used_queues++) ;
 	pclose(f);
 	if (used_queues < 0) {
-		tst_resm(TBROK, "Could not read output of 'ipcs' to "
+		tst_brkm(TBROK, NULL, "Could not read output of 'ipcs' to "
 			 "calculate used message queues");
-		tst_exit();
 	}
 	return used_queues;
 }
