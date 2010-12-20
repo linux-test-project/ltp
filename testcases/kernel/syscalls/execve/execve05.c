@@ -63,34 +63,29 @@ char *ev[1];
 
 void usage(void)
 {
-	tst_resm(TBROK, "usage: %s <iters> <fname1> <fname2> <count>", TCID);
-	tst_resm(TINFO, "example: %s 20 test1 test2 4", TCID);
-
+	tst_brkm(TBROK, NULL, "usage: %s <iters> <fname1> <fname2> <count>",
+	    TCID);
 }
 
 int main(int ac, char **av)
 {
 	char iter[20];
-	int pid, child, status, count;
-	int nchild, i, fail = 0;
+	int count, i, nchild, status;
+	pid_t pid;
 
 	int lc;
 	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+
 	setup();
 
-	if (ac != 5) {
-		tst_resm(TINFO, "Wrong number of arguments");
+	if (ac != 5)
 		usage();
-	 }
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		prog = av[0];
@@ -119,7 +114,7 @@ int main(int ac, char **av)
 			av[5] = 0;
 			ev[0] = 0;
 #ifdef DEBUG
-			tst_resm(TINFO, "Doing execve(%s, av, ev)", fname1);
+			tst_resm(TINFO, "doing execve(%s, av, ev)", fname1);
 			tst_resm(TINFO, "av[0,1,2,3,4] = %s, %s, %s, %s, %s",
 				 av[0], av[1], av[2], av[3], av[4]);
 #endif
@@ -132,9 +127,10 @@ int main(int ac, char **av)
 
 		sprintf(iter, "%d", iterations);
 		for (i = 0; i < count; i++) {
+
 			pid = FORK_OR_VFORK();
-			if (pid < 0) {
-				perror("Fork failed");
+			if (pid == -1) {
+				perror("fork failed");
 				exit(1);
 			} else if (pid == 0) {
 				av[0] = fname1;
@@ -145,15 +141,19 @@ int main(int ac, char **av)
 				av[5] = 0;
 				ev[0] = 0;
 				(void)execve(fname1, av, ev);
-				tst_resm(TFAIL, "Execve fail, %s, errno = %d",
-					 fname1, errno);
+				perror("execve failed");
 				exit(2);
 			}
 #ifdef DEBUG
 			tst_resm(TINFO, "Main - started pid %d", pid);
 #endif
+			if (wait(&status) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+				tst_resm(TFAIL, "child exited abnormally");
+
 			pid = FORK_OR_VFORK();
-			if (pid < 0) {
+			if (pid == -1) {
 				perror("Fork failed");
 				exit(1);
 			} else if (pid == 0) {
@@ -165,52 +165,29 @@ int main(int ac, char **av)
 				av[5] = 0;
 				ev[0] = 0;
 				execve(fname2, av, ev);
-				tst_resm(TFAIL, "Execve fail, %s, errno = %d",
-					 fname2, errno);
+				perror("execve failed");
 				exit(2);
 			}
 #ifdef DEBUG
 			tst_resm(TINFO, "Main - started pid %d", pid);
 #endif
+			if (wait(&status) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+				tst_resm(TFAIL, "child exited abnormally");
+
 		}
 
-		/*
-		 * Wait for children to finish
-		 */
-		count = 0;
-		while ((child = wait(&status)) > 0) {
-#ifdef DEBUG
-			tst_resm(TINFO, "Test [%d] exited status = 0x%x",
-				 child, status);
-#endif
-			++count;
-			if (status) {
-				fail = 1;
-			}
-		}
+		if (wait(&status) != -1)
+			tst_brkm(TBROK, cleanup,
+			    "leftover children haven't exited yet");
 
-		/*
-		 * Should have colledcted all children
-		 */
-		if (count != nchild) {
-			tst_resm(TFAIL, "Wrong #children waited on, count = %d",
-				 count);
-			fail = 1;
-		}
-		if (fail) {
-			tst_resm(TINFO, "Test FAILED");
-		} else {
-			tst_resm(TINFO, "Test PASSED");
-		}
 	}
 	cleanup();
 
 	tst_exit();
 }
 
-/*
- * setup - performs all ONE TIME steup for this test
- */
 void setup(void)
 {
 
@@ -221,10 +198,6 @@ void setup(void)
 	umask(0);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion or
- * 	       premature exit
- */
 void cleanup(void)
 {
 	TEST_CLEANUP;
