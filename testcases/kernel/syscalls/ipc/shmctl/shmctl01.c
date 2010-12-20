@@ -488,7 +488,7 @@ void func_rmid()
 void setup(void)
 {
 
-	tst_sig(FORK, DFL_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 

@@ -203,7 +203,7 @@ int main()
  */
 void setup()
 {
-	tst_sig(FORK, DFL_HANDLER, NULL);
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	TEST_PAUSE;
 
