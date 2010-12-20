@@ -24,7 +24,4 @@ top_srcdir              ?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 include $(abs_srcdir)/../Makefile.inc
-
-FILTER_OUT_MAKE_TARGETS:=	hugemmap05
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
