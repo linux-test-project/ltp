@@ -97,7 +97,7 @@ static option_t options[] = {
 	{ NULL, NULL,		NULL}
 };
 static void setup(void);
-static void cleanup(void) LTP_ATTRIBUTE_NORETURN;
+static void cleanup(void);
 static void overcommit(void);
 static void write_bytes(void *addr);
 static void read_bytes(void *addr);

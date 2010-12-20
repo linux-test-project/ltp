@@ -63,6 +63,10 @@ int allchild[MAXCHILD +1];
 #define K_2		2048
 #define K_4		4096
 
+#define bd_arg(str) \
+	tst_brkm(TCONF, NULL, \
+	    "bad argument - %s - could not parse as number.", str)
+
 int	nchild;				/* # kids */
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */
@@ -71,7 +75,6 @@ int	max_size;			/* max file size */
 int	parent_pid;
 
 int     usage(char*);
-int 	bd_arg(char *);
 int 	runtest();
 int	dotest(int,int);
 void    bfill(char*,char,int);
@@ -145,12 +148,6 @@ int main(argc, argv)
 
 	runtest();
 	tst_exit();
-}
-
-int bd_arg(str)
-	char *str;
-{
-	tst_brkm(TCONF, NULL, "Bad argument - %s - could not parse as number.\n", str);
 }
 
 int runtest()

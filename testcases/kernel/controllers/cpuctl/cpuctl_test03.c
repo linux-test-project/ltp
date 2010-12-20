@@ -83,7 +83,10 @@ volatile int timer_expired = 0;
 int main(int argc, char* argv[])
 {
 
-	int test_num, task_num, len, num_cpus;	/* Total time = TIME_INTERVAL *num_cpus in the machine */
+	int test_num;
+	int task_num;
+	int len;
+	int num_cpus;	/* Total time = TIME_INTERVAL *num_cpus in the machine */
 	char mygroup[FILENAME_MAX], mytaskfile[FILENAME_MAX];
 	char mysharesfile[FILENAME_MAX], ch;
 	/* Following variables are to capture parameters from script*/
@@ -99,8 +102,13 @@ int main(int argc, char* argv[])
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
 	unsigned int fmyshares, num_tasks;/* f-> from file. num_tasks is tasks in this group*/
-
 	struct sigaction newaction, oldaction;
+
+	mygroup_num = -1;
+	num_cpus = 0;
+	task_num = 0;
+	test_num = 0;
+
 	/* Signal handling for alarm*/
 	sigemptyset (&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;

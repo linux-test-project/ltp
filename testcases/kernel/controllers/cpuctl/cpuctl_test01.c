@@ -84,14 +84,16 @@ volatile int timer_expired = 0;
 int main(int argc, char* argv[])
 {
 
-	int num_cpus, test_num, len;	/* Total time = TIME_INTERVAL *num_cpus in the machine */
+	int num_cpus;
+	int test_num;
+	int len;	/* Total time = TIME_INTERVAL *num_cpus in the machine */
 	char mygroup[FILENAME_MAX], mytaskfile[FILENAME_MAX];
 	char mysharesfile[FILENAME_MAX], ch;
 	pid_t pid;
-	int my_group_num,	        /* A number attached with a group*/
-		fd,          	        /* A descriptor to open a fifo for synchronized start*/
-		first_counter =0,  	/* To take n number of readings*/
-		second_counter=0;      	/* To track number of times the base value of shares has been changed*/
+	gid_t my_group_num;	        /* A number attached with a group*/
+	int fd;          	        /* A descriptor to open a fifo for synchronized start*/
+	int first_counter =0;  	/* To take n number of readings*/
+	int second_counter=0;      	/* To track number of times the base value of shares has been changed*/
 	double total_cpu_time,  	/* Accumulated cpu time*/
 		delta_cpu_time,  	/* Time the task could run on cpu(s) (in an interval)*/
 		prev_cpu_time=0;
@@ -101,6 +103,10 @@ int main(int argc, char* argv[])
 	unsigned long int myshares = 2, baseshares = 1000;	/* Simply the base value to start with*/
 	unsigned int fmyshares, num_tasks;/* f-> from file. num_tasks is tasks in this group*/
 	struct sigaction newaction, oldaction;
+
+	my_group_num = -1;
+	num_cpus = 0;
+	test_num = 0;
 
 	/* Signal handling for alarm*/
 	sigemptyset (&newaction.sa_mask);

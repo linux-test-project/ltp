@@ -90,9 +90,9 @@ int main(int argc, char *argv[])
 	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p;
 	char *test_num_p, *task_num_p;
 	pid_t pid;
-	int mygroup_num,	        /* A number attached with a group*/
-		fd,          	        /* to open a fifo to synchronize*/
-		counter = 0; 	 	/* To take n number of readings*/
+	gid_t mygroup_num;	        /* A number attached with a group*/
+	int fd;          	        /* to open a fifo to synchronize*/
+	int counter = 0; 	 	/* To take n number of readings*/
 	double total_cpu_time,  	/* Accumulated cpu time*/
 		delta_cpu_time,  	/* Time the task could run on cpu(s)*/
 		prev_cpu_time = 0;
@@ -102,6 +102,12 @@ int main(int argc, char *argv[])
 	time_t current_time, prev_time, delta_time;
 	unsigned int fmyshares, num_tasks;
 	struct sigaction newaction, oldaction;
+
+	mygroup_num = -1;
+	num_cpus = 0;
+	task_num = 0;
+	test_num = 0;
+
 	/* Signal handling for alarm*/
 	sigemptyset(&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
