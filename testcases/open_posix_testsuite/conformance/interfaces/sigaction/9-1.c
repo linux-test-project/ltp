@@ -54,7 +54,7 @@ int main()
 		/* wait forever, or until we are
 		   interrupted by a signal */
 		select(0, NULL, NULL, NULL, NULL);
-		tst_exit();
+		return 0;
 	} else {
 		/* parent */
 		int s;
@@ -96,7 +96,7 @@ int main()
 
 	if (child_stopped == 0) {
 		printf("Test PASSED\n");
-		tst_exit();
+		return 0;
 	}
 
 	printf("Test FAILED\n");

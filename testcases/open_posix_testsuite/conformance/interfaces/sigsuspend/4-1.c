@@ -103,7 +103,7 @@ int main()
 			printf("signal mask was not restored properly after sigsuspend returned\n");
 			return 1;
 		}
-		tst_exit();
+		return 0;
 
 	} else {
 		int s;

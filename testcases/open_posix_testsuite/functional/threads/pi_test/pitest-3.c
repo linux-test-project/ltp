@@ -375,5 +375,5 @@ int main(int argc, char **argv)
 	/* Stop sampler */
 	ts_stop = 1;
 	DPRINTF(stderr,"Main Thread: stop sampler thread\n");
-	tst_exit();
+	return 0;
 }

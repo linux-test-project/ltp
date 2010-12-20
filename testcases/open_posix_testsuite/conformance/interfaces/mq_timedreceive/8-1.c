@@ -113,6 +113,6 @@ int main()
 		sleep(TIMEOUT + 3); /* Parent is probably blocking
 				       send a signal to let it abort */
 		kill(getppid(), SIGABRT);
-		tst_exit();
+		return 0;
 	}
 }

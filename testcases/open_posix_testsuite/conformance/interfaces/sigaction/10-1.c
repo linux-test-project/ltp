@@ -73,7 +73,7 @@ int main(void)
 			tv.tv_usec = 0;
 			select(0, NULL, NULL, NULL, &tv);
 		}
-		tst_exit();
+		return 0;
 	} else {
 		/* parent */
 		int s;
@@ -108,7 +108,7 @@ int main(void)
 
 	if (child_stopped == NUMSTOPS && child_continued == NUMSTOPS) {
 		printf("Test PASSED\n");
-		tst_exit();
+		return 0;
 	}
 
 	printf("Test FAILED\n");

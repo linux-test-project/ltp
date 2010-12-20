@@ -67,7 +67,7 @@ int main()
 
 	if (0 == f) {
 		printf("All signals added\n");
-		tst_exit();
+		return 0;
 	} else {
 		printf("Some signals not added -- see above\n");
 		return -1;

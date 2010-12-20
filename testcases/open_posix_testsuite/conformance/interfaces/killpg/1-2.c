@@ -59,7 +59,7 @@ int main()
 
 		sigpause(SIGABRT);
 
-		tst_exit();
+		return 0;
 	} else {
 		/* parent here */
 		int i;

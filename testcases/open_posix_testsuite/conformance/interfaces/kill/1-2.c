@@ -62,11 +62,11 @@ int main()
 
 		if (0 != sigwait(&set, &sig)) {
 			printf("Sigwait did not return 0. Possible problem with sigwait function\n");
-			tst_exit(); /* FAIL */
+			return 0; /* FAIL */
 		}
 
 		if (sig != SIGTOTEST)
-			tst_exit(); /* FAIL */
+			return 0; /* FAIL */
 
 		return 1;
 	} else {

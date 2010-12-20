@@ -21,5 +21,5 @@ int (*dummy7)(int, struct aiocb *const [],
 
 int main()
 {
-	tst_exit();
+	return 0;
 }

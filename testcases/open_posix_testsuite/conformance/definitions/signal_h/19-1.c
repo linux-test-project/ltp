@@ -16,5 +16,5 @@ int main(void)
 	size = t.ss_size;
 	flags = t.ss_flags;
 
-	tst_exit();
+	return 0;
 }

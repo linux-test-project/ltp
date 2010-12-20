@@ -13,5 +13,5 @@ int main (void)
 {
 	pthread_kill_test dummyvar;
 	dummyvar = pthread_kill;
-	tst_exit();
+	return 0;
 }

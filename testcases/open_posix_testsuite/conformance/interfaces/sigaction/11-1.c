@@ -59,7 +59,7 @@ int main()
 			tv.tv_usec = 0;
 			select(0, NULL, NULL, NULL, &tv);
 		}
-		tst_exit();
+		return 0;
 	} else {
 		/* parent */
 		int s;

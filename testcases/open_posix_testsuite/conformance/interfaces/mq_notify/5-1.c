@@ -89,7 +89,7 @@ int main()
         if (pid == 0) {
                 /* child process */
 		mq_receive(mqdes, r_msg_ptr, MSG_SIZE, NULL);
-		tst_exit();
+		return 0;
 	}
 	else {
 		/* parent process */

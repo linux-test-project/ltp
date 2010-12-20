@@ -99,5 +99,5 @@ int main()
 	}
 
 	printf("Test PASSED: signal was added to the process's signal mask\n");
-	tst_exit();
+	return 0;
 }

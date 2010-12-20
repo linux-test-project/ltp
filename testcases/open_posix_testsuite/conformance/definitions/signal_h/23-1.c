@@ -13,5 +13,5 @@ int main (void)
 {
 	bsd_signal_test dummyvar;
 	dummyvar=bsd_signal;
-	tst_exit();
+	return 0;
 }

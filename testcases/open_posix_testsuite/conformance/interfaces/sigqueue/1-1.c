@@ -52,7 +52,7 @@ int main()
 			sleep(1);
 		}
 		printf("shouldn't be here\n");
-		tst_exit();
+		return 0;
 	} else {
 		/* parent here */
 		int i;

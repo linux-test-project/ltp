@@ -102,7 +102,7 @@ int main()
 			perror(ERROR_PREFIX "mq_send");
 			return PTS_UNRESOLVED;
 		}
-		tst_exit();
+		return 0;
 	}
 	return PTS_UNRESOLVED;
 }

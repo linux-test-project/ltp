@@ -37,7 +37,7 @@ int main()
 
 	if (fork() == 0) {
 		/* child */
-		tst_exit();
+		return 0;
 	} else {
 		/* parent */
 		int s;
