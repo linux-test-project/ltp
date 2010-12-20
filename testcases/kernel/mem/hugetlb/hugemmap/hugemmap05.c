@@ -81,7 +81,6 @@
 #endif
 
 char *TCID = "hugemmap05";
-char *TESTDIR;
 int TST_TOTAL = 1, Tst_count;
 static char nr_hugepages[BUFSIZ], nr_overcommit_hugepages[BUFSIZ];
 static char buf[BUFSIZ], line[BUFSIZ], path[BUFSIZ], pathover[BUFSIZ];
@@ -155,7 +154,8 @@ static void overcommit(void)
 		if (shmid == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "shmget");
 	} else {
-		snprintf(s, BUFSIZ, "%s/hugemmap05/file", TESTDIR);
+		/* XXX (garrcoop): memory leak. */
+		snprintf(s, BUFSIZ, "%s/hugemmap05/file", get_tst_tmpdir());
 		fd = open(s, O_CREAT | O_RDWR, 0755);
 		if (fd == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "open");
@@ -278,8 +278,9 @@ static void cleanup(void)
 		!= strlen(nr_overcommit_hugepages))
 		tst_resm(TWARN|TERRNO, "write");
 	close(fd);
-	
-	snprintf(buf, BUFSIZ, "%s/hugemmap05", TESTDIR);
+
+	/* XXX (garrcoop): memory leak. */
+	snprintf(buf, BUFSIZ, "%s/hugemmap05", get_tst_tmpdir());
 	if (umount(buf) == -1)
 		tst_resm(TWARN|TERRNO, "umount");
 	if (shmid != -1) {
@@ -296,6 +297,7 @@ static void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
+
 	if (shmid != -1) {
 		fp = fopen(_PATH_SHMMAX, "r");
 		if (fp == NULL)
@@ -333,7 +335,7 @@ static void setup(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "write");
 	if (lseek(fd, 0, SEEK_SET) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "lseek");
-	snprintf(buf, BUFSIZ, "%ld", size);
+	snprintf(buf, BUFSIZ, "%zd", size);
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
 		tst_brkm(TBROK|TERRNO, cleanup,
 			"failed to change nr_hugepages.");
@@ -357,13 +359,14 @@ static void setup(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "write");
 	if (lseek(fd, 0, SEEK_SET) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "lseek");
-	snprintf(buf, BUFSIZ, "%ld", size);
+	snprintf(buf, BUFSIZ, "%zd", size);
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
 		tst_brkm(TBROK|TERRNO, cleanup,
 			"failed to change nr_hugepages.");
 	close(fd);
 
-	snprintf(buf, BUFSIZ, "%s/hugemmap05", TESTDIR);
+	/* XXX (garrcoop): memory leak. */
+	snprintf(buf, BUFSIZ, "%s/hugemmap05", get_tst_tmpdir());
 	if (mkdir(buf, 0700) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir");
 	if (mount(NULL, buf, "hugetlbfs", 0, NULL) == -1)
