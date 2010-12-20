@@ -72,7 +72,6 @@ int main(int ac, char **av)
 	int retval = 0, status;
 	pid_t pid, pid2;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -82,7 +81,6 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1)
@@ -114,14 +112,14 @@ int main(int ac, char **av)
 				perror("creat failed unexpectedly");
 			}
 
-			/* kill off the dummy test program */
 			if (kill(pid, SIGKILL) == -1) {
 				retval = 1;
 				perror("kill failed");
 			}
 			exit(retval);
 		}
-		wait(&status);
+		if (wait(&status) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
 		if (WIFEXITED(status) || WEXITSTATUS(status) == 0)
 			tst_resm(TPASS, "creat functionality correct");
 		else
@@ -137,8 +135,6 @@ void setup(char *app)
 	char *cmd, *pwd = NULL;
 	char test_app[MAXPATHLEN];
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	if ((pwd = getcwd(NULL, 0)) == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
 
@@ -146,15 +142,16 @@ void setup(char *app)
 
 	cmd = malloc(strlen(test_app) + strlen("cp -p \"") + strlen("\" .") +
 	    1);
-
 	if (cmd == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
+
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();
 
 	sprintf(cmd, "cp -p \"%s\" .", test_app);
 	if (system(cmd) != 0)
-		tst_brkm(TBROK, NULL, "Cannot copy file %s", test_app);
+		tst_brkm(TBROK, cleanup, "Cannot copy file %s", test_app);
 	free(cmd);
 
 	TEST_PAUSE;
