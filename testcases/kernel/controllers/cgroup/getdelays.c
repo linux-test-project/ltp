@@ -522,7 +522,7 @@ done:
 		close(fd);
 	if (cfd)
 		close(cfd);
-	tst_exit();
+	return 0;
 }
 #else
 int main (void) {
