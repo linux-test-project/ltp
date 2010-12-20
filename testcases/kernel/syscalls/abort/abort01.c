@@ -84,10 +84,15 @@ int main(int argc, char *argv[])
 {
 	register int i;
 	int status, count, child, kidpid;
-	int core, sig, ex;
+	int sig, ex;
 	char *msg;
 
-	core = sig = ex = 0;
+#ifdef WCOREDUMP
+	int core;
+
+	core = 0;
+#endif
+	ex = sig = 0;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -111,14 +116,12 @@ int main(int argc, char *argv[])
 			do_child();
 #endif
 		}
-		if (kidpid < 0) {
+		if (kidpid < 0)
 			if (!instress())
 				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
-		}
 		count = 0;
-		while ((child = wait(&status)) > 0) {
+		while ((child = wait(&status)) > 0)
 			count++;
-		}
 		if (count != 1) {
 			tst_brkm(TBROK, cleanup,
 			    "wrong # children waited on; got %d, expected 1",
@@ -133,20 +136,20 @@ int main(int argc, char *argv[])
 
 		}
 		if (WIFEXITED(status))
-			ex = WIFEXITED(status);
+			ex = WEXITSTATUS(status);
 
-		/**************/
+#ifdef WCOREDUMP
 		if (core == 0) {
 			tst_brkm(TFAIL, cleanup,
 			    "Child did not dump core; exit code = %d, "
 			    "signal = %d", ex, sig);
-		} else {
+		} else if (core != -1)
 			tst_resm(TPASS, "abort dumped core");
-		}
+#endif
 
-		if (sig == SIGIOT) {
+		if (sig == SIGIOT)
 			tst_resm(TPASS, "abort raised SIGIOT");
-		} else {
+		else {
 			tst_brkm(TFAIL, cleanup,
 			    "Child did not raise SIGIOT (%d); exit code = %d, "
 			    "signal = %d", SIGIOT, ex, sig);
@@ -157,8 +160,6 @@ int main(int argc, char *argv[])
 	cleanup();
 	tst_exit();
 }
-
-/*--------------------------------------------------------------*/
 
 void do_child()
 {
