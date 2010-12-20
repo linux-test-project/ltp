@@ -89,10 +89,9 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "d", &msg_q_1);
 #endif
@@ -102,34 +101,29 @@ int main(int ac, char **av)
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
-	/* The following loop checks looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		/*
 		 * fork a child that will attempt to read a non-existent
 		 * message from the queue
 		 */
-		if ((c_pid = FORK_OR_VFORK()) == -1) {
+		if ((c_pid = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "could not fork");
-		}
 
-		if (c_pid == 0) {	/* child */
+		if (c_pid == 0) {
 			/*
 			 * Attempt to read a message without IPC_NOWAIT.
 			 * With no message to read, the child sleeps.
 			 */
 
 #ifdef UCLINUX
-			if (self_exec(av[0], "d", msg_q_1) < 0) {
+			if (self_exec(av[0], "d", msg_q_1) < 0)
 				tst_brkm(TBROK, cleanup, "could not self_exec");
-			}
 #else
 			do_child();
 #endif
-		} else {	/* parent */
+		} else {
 
 			if (sync_pipe_wait(sync_pipes) == -1)
 				tst_brkm(TBROK, cleanup,
@@ -146,9 +140,8 @@ int main(int ac, char **av)
 			sleep(1);
 
 			/* send a signal that must be caught to the child */
-			if (kill(c_pid, SIGHUP) == -1) {
+			if (kill(c_pid, SIGHUP) == -1)
 				tst_brkm(TBROK, cleanup, "kill failed");
-			}
 
 			waitpid(c_pid, NULL, 0);
 		}
@@ -159,9 +152,6 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * do_child()
- */
 void do_child()
 {
 	if (sync_pipe_notify(sync_pipes) == -1)
@@ -172,26 +162,28 @@ void do_child()
 
 	TEST(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, 1, 0));
 
-	if (TEST_RETURN != -1) {
-		tst_resm(TFAIL, "call succeeded when error expected");
-		exit(-1);
-	}
-
-	TEST_ERROR_LOG(TEST_ERRNO);
+	if (TEST_RETURN != -1)
+		tst_brkm(TFAIL, NULL, "call succeeded unexpectedly");
 
 	switch (TEST_ERRNO) {
 	case EINTR:
-		tst_resm(TPASS, "expected failure - errno = %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_resm(TPASS, "got EINTR as expected");
 		break;
 	default:
-		tst_resm(TFAIL,
-			 "call failed with an unexpected error - %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_resm(TFAIL|TTERRNO, "call failed with an unexpected error");
 		break;
 	}
 
 	exit(0);
+}
+
+void
+sighandler(int sig)
+{
+	if (sig == SIGHUP)
+		return;
+	else
+		tst_brkm(TBROK, NULL, "unexpected signal %d received", sig);
 }
 
 #ifdef UCLINUX
@@ -203,7 +195,7 @@ void do_child_uclinux()
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
-	tst_sig(FORK, SIG_IGN, cleanup);
+	tst_sig(FORK, sighandler, cleanup);
 
 	do_child();
 }
@@ -215,7 +207,7 @@ void do_child_uclinux()
 void setup(void)
 {
 
-	tst_sig(FORK, SIG_IGN, cleanup);
+	tst_sig(FORK, sighandler, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
@@ -232,9 +224,8 @@ void setup(void)
 	msgkey = getipckey();
 
 	/* create a message queue with read/write permission */
-	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1) {
+	if ((msg_q_1 = msgget(msgkey, IPC_CREAT|IPC_EXCL|MSG_RW)) == -1)
 		tst_brkm(TBROK, cleanup, "Can't create message queue");
-	}
 }
 
 /*
