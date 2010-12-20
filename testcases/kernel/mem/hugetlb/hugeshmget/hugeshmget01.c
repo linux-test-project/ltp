@@ -72,6 +72,8 @@ int main(int ac, char **av)
 	struct shmid_ds buf;
         unsigned long huge_pages_shm_to_be_allocated;
 
+	huge_pages_shm_to_be_allocated = 0;
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
