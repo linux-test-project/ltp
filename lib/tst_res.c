@@ -610,9 +610,7 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 		ttype = (ttype & ~ttype_result) | TBROK;
 	}
 
-	/* Print the first result, if necessary. */
-	if (Tst_count < TST_TOTAL || tst_brk_entered != 0)
-		tst_res(ttype, fname, "%s", tmesg);
+	tst_res(ttype, fname, "%s", tmesg);
 	if (tst_brk_entered == 0) {
 		if (ttype_result == TCONF)
 			tst_res(ttype, NULL,
