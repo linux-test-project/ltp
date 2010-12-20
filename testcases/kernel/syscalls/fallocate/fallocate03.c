@@ -85,6 +85,7 @@
 /* Standard Include Files */
 #include <stdio.h>
 #include <stdlib.h>
+#include <endian.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>		//Can be done with out
@@ -226,20 +227,12 @@ void populate_file()
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 #if __WORDSIZE == 32
-	struct utsname buf;
-	if (uname(&buf) == 0) {
-		if (!strcmp(buf.machine, "ppc64")
-		    || !strcmp(buf.machine, "ppc")
-		    || !strcmp(buf.machine, "x86_64"))
-			return syscall(__NR_fallocate, fd, mode,
-				       (int)(offset >> 32), (int)offset,
-				       (int)(len >> 32), (int)len);
-	} else {
-		perror("uname:");
-		return -1;
-	}
-#endif
+	return (long) syscall(__NR_fallocate, fd, mode,
+	    __LONG_LONG_PAIR((off_t)(offset >> 32), (off_t)offset),
+	    __LONG_LONG_PAIR((off_t)(len >> 32), (off_t)len));
+#else
 	return syscall(__NR_fallocate, fd, mode, offset, len);
+#endif
 }
 
 /*****************************************************************************
