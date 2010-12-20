@@ -83,7 +83,9 @@ int fileHandle = 0;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-char *bad_addr = 0;
+#ifndef UCLINUX
+void *bad_addr = NULL;
+#endif
 
 void setup(void);
 void cleanup(void);
@@ -162,9 +164,6 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 	char *cwdname = NULL;
@@ -195,17 +194,18 @@ void setup()
 
 	fd = SAFE_CREAT(cleanup, test_name6, 0755);
 	fd = SAFE_CLOSE(cleanup, fd);
-#if !defined(UCLINUX)
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK, cleanup, "mmap failed");
+#ifndef UCLINUX
+	bad_addr = SAFE_MMAP(cleanup, NULL, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	TC[3].tname = bad_addr;
 #endif
 }
 
 void cleanup()
 {
+#ifndef UCLINUX
+	SAFE_MUNMAP(NULL, bad_addr, 1);
+#endif
 	SAFE_CLOSE(NULL, fileHandle);
 
 	TEST_CLEANUP;
