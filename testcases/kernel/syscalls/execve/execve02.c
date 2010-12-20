@@ -89,15 +89,14 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int status, retval = 3;
+	int status, retval = 0;
 	pid_t pid;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	if (!Fflag)
-		tst_brkm(TWARN, NULL, "You must specify a test executable with"
+		tst_brkm(TBROK, NULL, "You must specify a test executable with"
 			 "the -F option.");
 
 	setup(av[0]);
@@ -106,29 +105,25 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		if (chmod(fname, 0700) != 0)
-			tst_resm(TFAIL|TERRNO,
-			    "Failed to change permissions of test file");
+			tst_resm(TFAIL|TERRNO, "chmod failed");
 
 		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 
 		if (pid == 0) {
 			if (seteuid(ltpuser1->pw_uid) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "setuid(%d) failed", ltpuser1->pw_uid);
-			char *argv[0];
+				perror("setuid failed");
+			char *argv[2];
 
 			argv[0] = basename(fname);
-			if (argv[0] == NULL)
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "basename failed");
-			TEST(execve(fname, argv, NULL));
+			argv[1] = 0;
 
-			TEST_ERROR_LOG(TEST_ERRNO);
+			if (argv[0] == NULL)
+				perror("basename failed");
+			TEST(execve(fname, argv, NULL));
 
 			if (TEST_ERRNO != EACCES) {
 				retval = 1;
@@ -136,23 +131,18 @@ int main(int ac, char **av)
 			} else
 				printf("execve failed with EACCES as expected\n");
 
-			/* change back to root */
 			if (seteuid(0) == -1)
 				perror("setuid(0) failed");
 
-			/* reset the file permissions */
 			if (chmod(fname, 0755) == -1)
-				tst_brkm(TBROK, cleanup, "chmod() #2 failed");
+				perror("chmod #2 failed");
 			exit(retval);
-		} else {
-			/* wait for the child to finish */
-			if (wait(&status) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
-			/* make sure the child returned a good exit status */
-			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-				tst_resm(TFAIL, "child exited abnormally");
-
 		}
+		if (wait(&status) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+			tst_resm(TFAIL, "child exited abnormally");
+
 	}
 	cleanup();
 
@@ -170,37 +160,31 @@ void help()
 
 void setup(char *argv0)
 {
-	char /* *cmd,*/ *path, *pwd;
-#if 0
-	int res;
-#endif
-
-	path = NULL;
-	pwd = NULL;
+	char *cmd, *pwd = NULL;
+	char test_app[MAXPATHLEN];
 
 	tst_require_root(NULL);
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	if ((pwd = getcwd(NULL, 0)) == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
 
-	TEST_PAUSE;
+	snprintf(test_app, sizeof(test_app), "%s/%s/%s", pwd, dirname(argv0),
+	    fname);
 
-	tst_tmpdir();
-
-	//FIXME (garrcoop): (find reference to other code that does similar to solve this problem and squish it into libltp or something.
-
-#if 0
-	cmd = malloc(strlen(path) + strlen(bname) + 15);
+	cmd = malloc(strlen(test_app) + strlen("cp -p \"") + strlen("\" .") +
+	    1);
 	if (cmd == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
 
-	sprintf(cmd, "cp -p %s/%s .", path, bname);
-	res = system(cmd);
-	if (res != 0)
-		tst_brkm(TBROK, NULL, "system(%s) failed", cmd);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	tst_tmpdir();
+
+	sprintf(cmd, "cp -p \"%s\" .", test_app);
+	if (system(cmd) != 0)
+		tst_brkm(TBROK, NULL, "Cannot copy file %s", test_app);
 	free(cmd);
 
-	fname = bname;
-#endif
 	umask(0);
 
 	ltpuser1 = my_getpwnam(user1name);
@@ -208,10 +192,6 @@ void setup(char *argv0)
 
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
