@@ -50,16 +50,21 @@
  *	must be run with -F <test file> option
  */
 
-#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <libgen.h>
+#include <stdio.h>
+
 #include "test.h"
 #include "usctest.h"
 #include "libtestsuite.h"
 
+char *test_app;
 char *TCID = "execve04";
 int TST_TOTAL = 1;
 
@@ -84,7 +89,7 @@ int Fflag = 0;
 #endif
 
 option_t options[] = {
-	{"F:", &Fflag, &TCID},
+	{"F:", &Fflag, &test_app},
 	{NULL, NULL, NULL}
 };
 
@@ -99,7 +104,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 #ifdef UCLINUX
-	maybe_run_child(&do_child_1, "nS", 1, &TCID);
+	maybe_run_child(&do_child_1, "nS", 1, &test_app);
 #endif
 
 	if (!Fflag)
@@ -128,9 +133,8 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork #1 failed");
 		else if (pid == 0) {
 #ifdef UCLINUX
-			if (self_exec(av[0], "nS", 1, TCID) < 0) {
+			if (self_exec(av[0], "nS", 1, test_app) < 0)
 				tst_brkm(TBROK, cleanup, "self_exec failed");
-			}
 #else
 			do_child_1();
 #endif
@@ -146,6 +150,9 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork #2 failed");
 
 		if (pid1 == 0) {
+
+			retval = 3;
+
 			argv[0] = 0;
 			env[0] = 0;
 
@@ -153,33 +160,31 @@ int main(int ac, char **av)
 			 * child */
 			sync_pipe_close(end_sync_pipes, PIPE_NAME_END);
 
-			TEST(execve(TCID, argv, env));
+			TEST(execve(test_app, argv, env));
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != ETXTBSY) {
 				retval = 1;
-				tst_resm(TFAIL, "expected ETXTBSY, received "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TPASS, "call generated expected "
-					 "ETXTBSY error");
-			}
+				perror("didn't get ETXTBSY\n");
+			} else
+				printf("execve failed with ETXTBSY as "
+				    "expected\n");
 			exit(retval);
 		}
 		/* wait for the child to finish */
-		waitpid(pid1, &status, 0);
+		if (waitpid(pid1, &status, 0) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "waitpid failed");
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 3)
-			tst_resm(TFAIL, "Failures reported above");
+			tst_resm(TPASS, "execve failed as expected");
 		else
 			tst_resm(TFAIL, "execve succeeded, expected failure");
 
 		/*  terminate first child */
 		sync_pipe_notify(end_sync_pipes);
-		waitpid(pid, NULL, 0);
-		cleanup();
+		(void) waitpid(pid, NULL, 0);
 	}
+	cleanup();
 
 	tst_exit();
 }
@@ -192,14 +197,21 @@ void help()
 void setup(char *argv0)
 {
 	char *cmd, *pwd = NULL;
-	char test_app[MAXPATHLEN];
+	char test_path[MAXPATHLEN];
 
-	if ((pwd = getcwd(NULL, 0)) == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
+	if (test_app[0] == '/')
+		strncpy(test_path, test_app, sizeof(test_path));
+	else {
+		if ((pwd = get_current_dir_name()) == NULL)
+			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
 
-	snprintf(test_app, sizeof(test_app), "%s/%s", pwd, argv0);
+		snprintf(test_path, sizeof(test_path), "%s/%s",
+		    pwd, basename(test_app));
 
-	cmd = malloc(strlen(test_app) + strlen("cp -p \"") + strlen("\" .") +
+		free(pwd);
+	}
+
+	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
 	    1);
 	if (cmd == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
@@ -208,9 +220,9 @@ void setup(char *argv0)
 
 	tst_tmpdir();
 
-	sprintf(cmd, "cp -p \"%s\" .", test_app);
+	sprintf(cmd, "cp -p \"%s\" .", test_path);
 	if (system(cmd) != 0)
-		tst_brkm(TBROK, NULL, "Cannot copy file %s", test_app);
+		tst_brkm(TBROK, NULL, "command failed: %s", cmd);
 	free(cmd);
 }
 
@@ -233,7 +245,8 @@ void do_child_1()
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 #endif
 
-	if ((fildes = open(TCID, O_WRONLY)) == -1) {
+	if ((fildes = open(test_app, O_WRONLY)) == -1) {
+		printf("%s\n", test_app);
 		perror("open failed");
 		exit(1);
 	}

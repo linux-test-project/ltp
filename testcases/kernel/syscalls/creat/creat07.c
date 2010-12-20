@@ -45,17 +45,20 @@
  *	test must be run with the -F option
  */
 
-#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <libgen.h>
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <libgen.h>
+#include <stdio.h>
 #include "test.h"
 #include "usctest.h"
 
-#define fname "test1"
+#define test_app "test1"
 
 char *TCID = "creat07";
 int TST_TOTAL = 1;
@@ -88,8 +91,8 @@ int main(int ac, char **av)
 
 		if (pid == 0) {
 			char *av[1];
-			av[0] = basename(fname);
-			(void)execve(fname, av, NULL);
+			av[0] = basename(test_app);
+			(void)execve(test_app, av, NULL);
 			perror("execve failed");
 			exit(1);
 		}
@@ -100,7 +103,7 @@ int main(int ac, char **av)
 		if (pid2 == 0) {
 			sleep(10);
 
-			TEST(creat(fname, O_WRONLY));
+			TEST(creat(test_app, O_WRONLY));
 
 			if (TEST_RETURN != -1) {
 				retval = 1;
@@ -133,14 +136,21 @@ int main(int ac, char **av)
 void setup(char *app)
 {
 	char *cmd, *pwd = NULL;
-	char test_app[MAXPATHLEN];
+	char test_path[MAXPATHLEN];
 
-	if ((pwd = getcwd(NULL, 0)) == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
+	if (test_app[0] == '/')
+		strncpy(test_path, test_app, sizeof(test_app));
+	else {
+		if ((pwd = get_current_dir_name()) == NULL)
+			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
 
-	snprintf(test_app, sizeof(test_app), "%s/%s/" fname, pwd, dirname(app));
+		snprintf(test_path, sizeof(test_path), "%s/%s",
+		    pwd, basename(test_app));
 
-	cmd = malloc(strlen(test_app) + strlen("cp -p \"") + strlen("\" .") +
+		free(pwd);
+	}
+
+	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
 	    1);
 	if (cmd == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
@@ -149,9 +159,9 @@ void setup(char *app)
 
 	tst_tmpdir();
 
-	sprintf(cmd, "cp -p \"%s\" .", test_app);
+	sprintf(cmd, "cp -p \"%s\" .", test_path);
 	if (system(cmd) != 0)
-		tst_brkm(TBROK, cleanup, "Cannot copy file %s", test_app);
+		tst_brkm(TBROK, cleanup, "Cannot copy file %s", test_path);
 	free(cmd);
 
 	TEST_PAUSE;

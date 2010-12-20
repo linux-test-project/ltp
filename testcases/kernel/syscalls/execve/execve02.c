@@ -51,6 +51,9 @@
  *	Must run test with the -F <test file> option.
  */
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -73,11 +76,11 @@ void help(void);
 int exp_enos[] = { EACCES, 0 };
 
 int Fflag = 0;
-char *fname;
+char *test_app;
 
 /* for test specific parse_opts options - in this case "-F" */
 option_t options[] = {
-	{"F:", &Fflag, &fname},
+	{"F:", &Fflag, &test_app},
 	{NULL, NULL, NULL}
 };
 
@@ -96,7 +99,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	if (!Fflag)
-		tst_brkm(TBROK, NULL, "You must specify a test executable with"
+		tst_brkm(TBROK, NULL, "You must specify a test executable with "
 			 "the -F option.");
 
 	setup(av[0]);
@@ -107,7 +110,7 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		if (chmod(fname, 0700) != 0)
+		if (chmod(test_app, 0700) != 0)
 			tst_resm(TFAIL|TERRNO, "chmod failed");
 
 		if ((pid = FORK_OR_VFORK()) == -1)
@@ -118,12 +121,12 @@ int main(int ac, char **av)
 				perror("setuid failed");
 			char *argv[2];
 
-			argv[0] = basename(fname);
+			argv[0] = basename(test_app);
 			argv[1] = 0;
 
 			if (argv[0] == NULL)
 				perror("basename failed");
-			TEST(execve(fname, argv, NULL));
+			TEST(execve(test_app, argv, NULL));
 
 			if (TEST_ERRNO != EACCES) {
 				retval = 1;
@@ -134,7 +137,7 @@ int main(int ac, char **av)
 			if (seteuid(0) == -1)
 				perror("setuid(0) failed");
 
-			if (chmod(fname, 0755) == -1)
+			if (chmod(test_app, 0755) == -1)
 				perror("chmod #2 failed");
 			exit(retval);
 		}
@@ -161,17 +164,23 @@ void help()
 void setup(char *argv0)
 {
 	char *cmd, *pwd = NULL;
-	char test_app[MAXPATHLEN];
+	char test_path[MAXPATHLEN];
 
 	tst_require_root(NULL);
 
-	if ((pwd = getcwd(NULL, 0)) == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
+	if (test_app[0] == '/')
+		strncpy(test_path, test_app, sizeof(test_path));
+	else {
+		if ((pwd = get_current_dir_name()) == NULL)
+			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
 
-	snprintf(test_app, sizeof(test_app), "%s/%s/%s", pwd, dirname(argv0),
-	    fname);
+		snprintf(test_path, sizeof(test_path), "%s/%s",
+		    pwd, basename(test_app));
 
-	cmd = malloc(strlen(test_app) + strlen("cp -p \"") + strlen("\" .") +
+		free(pwd);
+	}
+
+	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
 	    1);
 	if (cmd == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
@@ -180,9 +189,9 @@ void setup(char *argv0)
 
 	tst_tmpdir();
 
-	sprintf(cmd, "cp -p \"%s\" .", test_app);
+	sprintf(cmd, "cp -p \"%s\" .", test_path);
 	if (system(cmd) != 0)
-		tst_brkm(TBROK, NULL, "Cannot copy file %s", test_app);
+		tst_brkm(TBROK, NULL, "command failed: %s", cmd);
 	free(cmd);
 
 	umask(0);
