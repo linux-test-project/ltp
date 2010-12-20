@@ -123,18 +123,15 @@ pid_t		spawned_program_pid;
  * EXPAND_VAR_ARGS - Expand the variable portion (arg_fmt) of a result
  *                   message into the specified string.
  */
-#define EXPAND_VAR_ARGS(buf, arg_fmt, buf_len) {              \
-	va_list ap;                                           \
-	                                                      \
-	if (arg_fmt != NULL) {                                \
-		if (Expand_varargs) {                         \
-			va_start(ap, arg_fmt);                \
-			vsnprintf(buf, buf_len, arg_fmt, ap); \
-			va_end(ap);                           \
-		} else                                        \
-			strncpy(buf, arg_fmt, buf_len);       \
-	} else                                                \
-		buf[0] = '\0';                                \
+#define EXPAND_VAR_ARGS(buf, arg_fmt, buf_len) {      \
+	va_list ap;                                   \
+	                                              \
+	if (arg_fmt != NULL) {                        \
+		va_start(ap, arg_fmt);                \
+		vsnprintf(buf, buf_len, arg_fmt, ap); \
+		va_end(ap);                           \
+	} else                                        \
+		buf[0] = '\0';                        \
 }
 
 /*
@@ -154,7 +151,6 @@ static int  T_exitval = 0;    /* exit value used by tst_exit() */
 static int  T_mode = VERBOSE; /* flag indicating print mode: VERBOSE, */
                               /* NOPASS, DISCARD */
 
-static int  Expand_varargs = TRUE;  /* if TRUE, expand varargs stuff */
 static char Warn_mesg[MAXMESG];  /* holds warning messages */
 
 /*
@@ -325,7 +321,6 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 		Tst_count++;
 	}
 
-	Expand_varargs = TRUE;
 }
 
 
@@ -585,7 +580,7 @@ int tst_environ(void)
  * Make tst_brk reentrant so that one can call the SAFE_* macros from within
  * user-defined cleanup functions.
  */
-static int tst_brk_entered;
+static int tst_brk_entered = 0;
 
 /*
  * tst_brk() - Fail or break current test case, and break the remaining
@@ -616,9 +611,8 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	}
 
 	/* Print the first result, if necessary. */
-	if (Tst_count < TST_TOTAL)
+	if (Tst_count < TST_TOTAL || tst_brk_entered != 0)
 		tst_res(ttype, fname, "%s", tmesg);
-
 	if (tst_brk_entered == 0) {
 		if (ttype_result == TCONF)
 			tst_res(ttype, NULL,
@@ -628,19 +622,20 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 			tst_res(ttype, NULL, "Remaining cases retired");
 		else if (ttype_result == TBROK)
 			tst_res(TBROK, NULL, "Remaining cases broken");
-		Expand_varargs = TRUE;
 	}
 
 	/*
 	 * If no cleanup function was specified, just return to the caller.
 	 * Otherwise call the specified function.
 	 */
-	if (func != NULL)
+	if (func != NULL) {
+		tst_brk_entered++;
 		(*func)();
-	if (tst_brk_entered == 0) {
-		tst_brk_entered = 1;
-		tst_exit();
+		tst_brk_entered--;
 	}
+	if (tst_brk_entered == 0)
+		tst_exit();
+
 }
 
 /*
