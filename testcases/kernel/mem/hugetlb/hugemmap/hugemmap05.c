@@ -251,7 +251,6 @@ static void cleanup(void)
 {
 	int fd;
 
-	TEST_CLEANUP;
 	if (restore_shmmax) {
 		fd = open(_PATH_SHMMAX, O_WRONLY);
 		if (fd == -1)
@@ -287,6 +286,8 @@ static void cleanup(void)
 		tst_resm(TINFO|TERRNO, "shmdt");
 		shmctl(shmid, IPC_RMID, NULL);
 	}
+	TEST_CLEANUP;
+	tst_rmdir();
 	tst_exit();
 }
 
@@ -297,6 +298,7 @@ static void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
+	tst_tmpdir();
 
 	if (shmid != -1) {
 		fp = fopen(_PATH_SHMMAX, "r");
