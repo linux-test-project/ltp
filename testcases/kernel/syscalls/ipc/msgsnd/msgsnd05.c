@@ -198,6 +198,15 @@ void do_child()
 	exit(0);
 }
 
+void
+sighandler(int sig)
+{
+	if (sig == SIGHUP)
+		return;
+	else
+		tst_brkm(TBROK, NULL, "received unexpected signal %d", sig);
+}
+
 #ifdef UCLINUX
 /*
  * do_child_uclinux() - capture signals, initialize buffer, then run do_child()
@@ -210,7 +219,7 @@ void do_child_uclinux()
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
-	tst_sig(FORK, SIG_IGN, cleanup);
+	tst_sig(FORK, sighandler, cleanup);
 
 	do_child();
 }
@@ -222,7 +231,7 @@ void do_child_uclinux()
 void setup(void)
 {
 	/* capture signals in our own handler */
-	tst_sig(FORK, SIG_IGN, cleanup);
+	tst_sig(FORK, sighandler, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
