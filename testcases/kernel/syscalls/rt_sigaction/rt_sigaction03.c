@@ -54,7 +54,6 @@
 #define INVAL_SIGSETSIZE -1
 
 /* Extern Global Variables */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "rt_sigaction03";  /* Test program identifier.*/

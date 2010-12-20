@@ -68,7 +68,6 @@
 #endif
 
 /* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "pipe2_02";	/* test program identifier.              */

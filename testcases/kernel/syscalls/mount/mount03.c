@@ -481,7 +481,6 @@ void setup()
 	}
 
 	/*
-	 * Get the complete path of TESTDIR created
 	 * under temporary directory
 	 */
 	snprintf(Path_name, PATH_MAX, "%s/%s/", Path_name, mntpoint);

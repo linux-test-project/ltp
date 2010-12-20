@@ -57,7 +57,6 @@ int  TST_TOTAL = 3;		   /* total number of tests in this file.   */
 
 #if defined(HAVE_ASM_LDT_H) && defined(HAVE_STRUCT_USER_DESC)
 /* Extern Global Variables */
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Extern Global Functions */
 /******************************************************************************/

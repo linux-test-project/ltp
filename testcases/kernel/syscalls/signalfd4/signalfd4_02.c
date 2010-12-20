@@ -66,7 +66,6 @@
 #define SFD_NONBLOCK O_NONBLOCK
 
 /* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "signalfd4_02";	/* test program identifier.              */

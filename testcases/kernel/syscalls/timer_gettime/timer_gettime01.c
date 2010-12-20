@@ -54,7 +54,6 @@
 typedef int kernel_timer_t;
 
 /* Extern Global Variables */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "timer_gettime01";  /* Test program identifier.*/

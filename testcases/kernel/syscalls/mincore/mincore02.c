@@ -62,7 +62,6 @@
 /* #define DEBUG_MODE 1 */
 
 /* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID = "mincore02";	/* test program identifier. */
 int TST_TOTAL = 1;		/* total number of tests in this file.   */

@@ -73,7 +73,6 @@
 #define INVAL_STRUCT -1
 
 /* Extern Global Variables */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "rt_sigaction02";  /* Test program identifier.*/

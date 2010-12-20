@@ -69,7 +69,6 @@
 #define TFD_NONBLOCK O_NONBLOCK
 
 /* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "timerfd03";	/* test program identifier.              */

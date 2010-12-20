@@ -50,7 +50,6 @@
 #include "ltp_signal.h"
 
 /* Extern Global Variables */
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "rt_sigsuspend01"; /* Test program identifier.		 */

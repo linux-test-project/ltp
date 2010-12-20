@@ -51,7 +51,6 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "tkill02";  /* Test program identifier.*/

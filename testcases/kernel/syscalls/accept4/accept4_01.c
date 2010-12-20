@@ -56,7 +56,7 @@
 
 #define PORT_NUM 33333
 
-#define die(msg) do { tst_brkm(TBROK, cleanup, msg ": %s", strerror(errno)); } while (0)
+#define die(msg)	tst_brkm(TBROK|TERRNO, cleanup, msg)
 
 /**********************************************************************/
 
@@ -78,9 +78,6 @@
 #if defined(SYS_ACCEPT4)	/* the socketcall() number */
 #define USE_SOCKETCALL 1
 #endif
-
-/* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "accept04_01";	/* test program identifier.          */

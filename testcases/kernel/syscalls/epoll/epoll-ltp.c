@@ -195,7 +195,6 @@ do {					\
 kid_status = kid_status;})
 
 /* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /*
  * Given the number of random size requests to test,

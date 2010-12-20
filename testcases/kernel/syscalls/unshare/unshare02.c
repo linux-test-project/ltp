@@ -59,7 +59,6 @@
 #include "config.h"
 
 /* Extern Global Variables */
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "unshare02";  /* Test program identifier.*/

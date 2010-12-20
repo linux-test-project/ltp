@@ -52,7 +52,6 @@
 #include "config.h"
 
 /* Extern Global Variables */
-extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "get_mempolicy01";  /* Test program identifier.*/
@@ -354,10 +353,6 @@ TEST_END:
 	return result;
 }
 
-/*
- * main()
- */
-
 int main(int argc, char **argv) {
 	int i, ret;
 
@@ -383,10 +378,12 @@ int main(int argc, char **argv) {
 #else
 int main(void) {
 	tst_brkm(TBROK, NULL, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
+	tst_exit();
 }
 #endif
 #else
 int main(void) {
 	tst_brkm(TCONF, NULL, "System doesn't have required numa support");
+	tst_exit();
 }
 #endif

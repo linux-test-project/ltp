@@ -78,7 +78,6 @@
 #endif
 
 /* Extern Global Variables */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "socket02";	/* test program identifier.              */
