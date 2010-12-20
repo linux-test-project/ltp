@@ -582,6 +582,12 @@ int tst_environ(void)
 
 
 /*
+ * Make tst_brk reentrant so that one can call the SAFE_* macros from within
+ * user-defined cleanup functions.
+ */
+static int tst_brk_entered;
+
+/*
  * tst_brk() - Fail or break current test case, and break the remaining
  *             tests cases.
  */
@@ -613,23 +619,28 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	if (Tst_count < TST_TOTAL)
 		tst_res(ttype, fname, "%s", tmesg);
 
-	if (ttype_result == TCONF)
-		tst_res(ttype, NULL,
-			"Remaining cases not appropriate for configuration");
-	else if (ttype_result == TRETR)
-		tst_res(ttype, NULL, "Remaining cases retired");
-	else if (ttype_result == TBROK)
-		tst_res(TBROK, NULL, "Remaining cases broken");
-	Expand_varargs = TRUE;
+	if (tst_brk_entered == 0) {
+		if (ttype_result == TCONF)
+			tst_res(ttype, NULL,
+			    "Remaining cases not appropriate for "
+			    "configuration");
+		else if (ttype_result == TRETR)
+			tst_res(ttype, NULL, "Remaining cases retired");
+		else if (ttype_result == TBROK)
+			tst_res(TBROK, NULL, "Remaining cases broken");
+		Expand_varargs = TRUE;
+	}
 
 	/*
 	 * If no cleanup function was specified, just return to the caller.
 	 * Otherwise call the specified function.
 	 */
-	if (func != NULL) {
+	if (func != NULL)
 		(*func)();
+	if (tst_brk_entered == 0) {
+		tst_brk_entered = 1;
+		tst_exit();
 	}
-	tst_exit();
 }
 
 /*
