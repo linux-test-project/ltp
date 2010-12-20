@@ -25,5 +25,5 @@ int main(void)
 
 	*map = 2;
 
-	tst_exit();
+	return 0;
 }

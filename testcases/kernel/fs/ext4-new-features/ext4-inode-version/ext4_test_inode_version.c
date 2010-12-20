@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 
 	if (strcmp(argv[1], "create") == 0) {
 		printf("%d\n", old_inode_version);
-		tst_exit();
+		return 0;
 	} else if (strcmp(argv[1], "chmod") == 0) {
 		test_chmod();
 	} else if (strcmp(argv[1], "chown") == 0) {
@@ -214,5 +214,5 @@ int main(int argc, char *argv[])
 
 	close(fd);
 
-	tst_exit();
+	return 0;
 }

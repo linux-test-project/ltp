@@ -523,5 +523,5 @@ int main(void)
 		return 1;
 	}
 	printf("SUCCESS\n");
-	tst_exit();
+	return 0;
 }

@@ -844,7 +844,7 @@ int main(int argc, char **argv)
 			break;
 		case 'h':
 			help();
-			tst_exit();
+			return 0;
 		case 'i':
 			child_num = strtol(optarg, NULL, 0);
 			if (child_num > INSTANCE_NUM)
@@ -867,7 +867,7 @@ int main(int argc, char **argv)
 			break;
 		default:
 			help();
-			tst_exit();
+			return 0;
 		}
 	}
 

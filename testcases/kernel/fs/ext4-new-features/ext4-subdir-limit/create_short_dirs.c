@@ -143,15 +143,15 @@ int main(int argc, char *argv[])
 
 	create_1(names);
 	if (names <= MAX_LEN1)
-		tst_exit();
+		return 0;
 
 	names -= MAX_LEN1;
 	create_2(names);
 	if (names <= MAX_LEN2)
-		tst_exit();
+		return 0;
 
 	names -= MAX_LEN2;
 	create_3(names);
 
-	tst_exit();
+	return 0;
 }

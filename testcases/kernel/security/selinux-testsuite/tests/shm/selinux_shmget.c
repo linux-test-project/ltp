@@ -38,5 +38,5 @@ int main(int argc, char **argv)
 	  return 1;
 	printf("shmget succeeded: key = %d, id = %d\n", key, id);
 
-	tst_exit();
+	return 0;
 }

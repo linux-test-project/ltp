@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
 				err("put_semaphore");
 			if (put_semaphore(semid, &sembuffer))
 				err("put_semaphore");
-			tst_exit();
+			return 0;
 		}
 	}
 
@@ -317,5 +317,5 @@ cleanout:
 			exit(2);
 	}
 
-	tst_exit();
+	return 0;
 }

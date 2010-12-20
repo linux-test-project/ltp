@@ -2158,7 +2158,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (success_flag)
-		tst_exit();
+		return 0;
 
 	exit(1);
 

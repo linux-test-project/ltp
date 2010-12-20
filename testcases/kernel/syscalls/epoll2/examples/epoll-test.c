@@ -628,7 +628,7 @@ int main(int argc, char *argv[])
 	} while (numfds);
 
 	eph_cleanup();
-	tst_exit();
+	return 0;
 }
 
 #endif /* #if defined(DPHTTPD) */
@@ -816,7 +816,7 @@ int main(int argc, char *argv[])
 
       main_exit:
 	eph_cleanup();
-	tst_exit();
+	return 0;
 }
 
 #endif /* #if defined(HTTP_BLASTER) */
@@ -994,7 +994,7 @@ int main(int argc, char *argv[])
 		eph_scheduler(0, STD_SCHED_TIMEOUT);
 
 	eph_cleanup();
-	tst_exit();
+	return 0;
 }
 
 #endif /* #if defined(PIPETESTER) */

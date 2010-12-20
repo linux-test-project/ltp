@@ -83,5 +83,5 @@ int main(void)
 		}
 	}
 
-	tst_exit();
+	return 0;
 }

@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 
 	if (fc.time == 0) {
 		printf("Setup complete, exiting\n");
-		tst_exit();
+		return 0;
 	}
 
 	params = ffsb_malloc(sizeof(tg_run_params_t) * fc.num_threadgroups);
@@ -253,5 +253,5 @@ int main(int argc, char *argv[])
 	free(params);
 	destroy_ffsb_config(&fc);
 
-	tst_exit();
+	return 0;
 }

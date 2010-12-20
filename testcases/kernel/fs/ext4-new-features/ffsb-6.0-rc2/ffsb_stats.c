@@ -235,7 +235,7 @@ int main(int arc, char *argv[])
 	printf("cleanup\n");
 	ffsb_statsd_destroy(&fsd);
 	ffsb_statsc_destroy(&fsc);
-	tst_exit();
+	return 0;
 }
 
 #endif /* Testing */

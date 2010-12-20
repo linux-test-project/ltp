@@ -92,5 +92,5 @@ int main(int argc, char **argv)
 	k_tree_gen(atoi(argv[1]), atoi(argv[2]));
 	printf("Generate k tree (depth: %s, width: %s), done\n", argv[1],
 	       argv[2]);
-	tst_exit();
+	return 0;
 }

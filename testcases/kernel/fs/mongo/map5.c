@@ -23,7 +23,7 @@ int main (int argc, char ** argv)
   for (n = 1; n < argc; n++) {
 	  if (argc < 2) {
 		  printf ("Used to see file maps \nUsage: %s filename1 [[..[filename2]...filename(N-1)] filenameN]\n", argv[0]);
-		tst_exit();
+		return 0;
 	  }
 	  fd = open (argv[n], O_RDONLY);
 	  if (fd == -1) {

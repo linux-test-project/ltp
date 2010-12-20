@@ -388,7 +388,7 @@ int main(int argc, char *argv[])
 
 	close(fd);
 
-	tst_exit();
+	return 0;
 }
 
 #else

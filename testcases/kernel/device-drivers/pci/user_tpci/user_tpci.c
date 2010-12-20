@@ -246,5 +246,5 @@ int main() {
                 exit(1);
         }
 
-	tst_exit();
+	return 0;
 }

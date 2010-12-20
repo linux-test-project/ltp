@@ -92,5 +92,5 @@ int main(void)
 		err("PR_MCE_KILL_GET");
 	if (err != PR_MCE_KILL_DEFAULT)
 		fail("ending policy not default");
-	tst_exit();
+	return 0;
 }

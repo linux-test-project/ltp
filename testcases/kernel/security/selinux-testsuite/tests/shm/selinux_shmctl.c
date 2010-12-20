@@ -68,5 +68,5 @@ int main(int argc, char **argv)
 	printf (" %d", error);
 
 	printf("\n");
-	tst_exit();
+	return 0;
 }

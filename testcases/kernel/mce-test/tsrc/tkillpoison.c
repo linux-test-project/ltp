@@ -17,5 +17,5 @@ int main(void)
 	*ptr = 1;
 	printf("waiting\n");
 	sleep(100);
-	tst_exit();
+	return 0;
 }

@@ -159,5 +159,5 @@ int main(void)
 	}
 	printf("SUCCESS\n");
 
-	tst_exit();
+	return 0;
 }

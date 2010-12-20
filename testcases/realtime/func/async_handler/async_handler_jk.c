@@ -159,5 +159,5 @@ int main(int argc, char* argv[])
 	printf("\nCriteria: latencies < %d\n", (int)pass_criteria);
 	printf("Result: %s\n", delta > pass_criteria ? "FAIL" : "PASS");
 
-	tst_exit();
+	return 0;
 }

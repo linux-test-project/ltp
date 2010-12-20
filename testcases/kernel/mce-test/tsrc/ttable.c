@@ -255,5 +255,5 @@ int main(int ac, char **av)
 	basem.cs = 3;
 	table("Without MCA recovery ring 3");
 	printf("</body></html>\n");
-	tst_exit();
+	return 0;
 }

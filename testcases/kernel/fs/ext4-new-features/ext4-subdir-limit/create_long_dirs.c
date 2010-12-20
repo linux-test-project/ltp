@@ -151,5 +151,5 @@ int main(int argc, char *argv[])
 
 	create_dirs(names);
 
-	tst_exit();
+	return 0;
 }
