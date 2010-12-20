@@ -190,8 +190,7 @@ static void overcommit(void)
 			return;
 		if (checkproc(fp, "HugePages_Free", length / 2 ) != 0)
 			return;
-		if (checkproc(fp, "HugePages_Surp", length / 2 - size)
-			!= 0)
+		if (checkproc(fp, "HugePages_Surp", length / 2 - size) != 0)
 			return;
 		if (checkproc(fp, "HugePages_Rsvd", length / 2) != 0)
 			return;
@@ -231,8 +230,7 @@ static void overcommit(void)
 			return;
 		if (checkproc(fp, "HugePages_Free", 0) != 0)
 			return;
-		if (checkproc(fp, "HugePages_Surp", length / 2 - size)
-			!= 0)
+		if (checkproc(fp, "HugePages_Surp", length / 2 - size) != 0)
 			return;
 		if (checkproc(fp, "HugePages_Rsvd", 0) != 0)
 			return;
@@ -325,7 +323,7 @@ static void setup(void)
 	if (fgets(nr_hugepages, BUFSIZ, fp) == NULL)
 		tst_brkm(TBROK|TERRNO, cleanup, "fgets");
 	fclose(fp);
-	/* Remove trialing newline. */
+	/* Remove trailing newline. */
 	nr_hugepages[strlen(nr_hugepages) - 1] = '\0';
 	tst_resm(TINFO, "original nr_hugepages is %s", nr_hugepages);
 
