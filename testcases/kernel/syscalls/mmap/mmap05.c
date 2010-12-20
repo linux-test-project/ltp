@@ -251,10 +251,9 @@ void sig_handler(sig)
 		/* set the global variable and jump back */
 		pass = 1;
 		siglongjmp(env, 1);
-	} else {
+	} else
 		tst_brkm(TBROK, cleanup, "received an unexpected signal: %d",
 			sig);
-	}
 }
 
 /*

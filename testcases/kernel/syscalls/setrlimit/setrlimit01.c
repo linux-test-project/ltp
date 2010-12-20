@@ -288,8 +288,7 @@ void test4()
 	TEST(setrlimit(RLIMIT_CORE, &rlim));
 
 	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL, "setrlimit failed to set "
-			 "RLIMIT_CORE, ernro = %d", errno);
+		tst_resm(TFAIL|TERRNO, "setrlimit failed to set RLIMIT_CORE");
 		return;
 	}
 
@@ -310,11 +309,10 @@ void test4()
 	wait(&status);
 
 	if (access("core", F_OK) == 0) {
-		tst_resm(TFAIL, "core dump was succesful "
-			 "though it was not supposed to");
+		tst_resm(TFAIL, "core dump dumped unexpectedly");
 		return;
 	} else if (errno != ENOENT) {
-		tst_resm(TFAIL, "Expected ENOENT got %d", errno);
+		tst_resm(TFAIL|TERRNO, "access failed unexpectedly");
 		return;
 	}
 
@@ -327,10 +325,8 @@ void test4()
 void sighandler(int sig)
 {
 	if (sig != SIGSEGV && sig != SIGXFSZ) {
-		tst_resm(TWARN, "caught signal %d, not SIGSEGV", sig);
-		exit(1);
+		tst_brkm(TBROK, NULL, "caught unexpected signal: %d", sig);
 	}
-	exit(0);
 }
 
 /*

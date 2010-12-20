@@ -163,9 +163,7 @@ void fork12_sigs(int signum)
 {
 	if (signum == SIGQUIT) {
 		/* Children will continue, parent will ignore */
-	} else {
-		tst_brkm(TBROK, 0, "Unexpected signal %d received.", signum);
-		cleanup();
-		tst_exit();
-	}
+	} else
+		tst_brkm(TBROK, cleanup,
+		    "Unexpected signal %d received.", signum);
 }

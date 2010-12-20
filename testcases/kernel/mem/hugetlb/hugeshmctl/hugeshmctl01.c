@@ -471,9 +471,8 @@ func_rmid()
 void
 sighandler(sig)
 {
-	if (sig != SIGUSR1) {
+	if (sig != SIGUSR1)
 		tst_resm(TINFO, "received unexpected signal %d", sig);
-	}
 }
 
 /*

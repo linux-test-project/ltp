@@ -66,8 +66,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-void sighandler(int);
-
 char *TCID = "semop05";
 int TST_TOTAL = 4;
 
@@ -268,7 +266,7 @@ void do_child_uclinux()
 {
 	int i = i_uclinux;
 
-	tst_sig(FORK, sighandler, cleanup);
+	tst_sig(FORK, SIG_IGN, cleanup);
 
 	/* initialize the s_buf buffer */
 	s_buf.sem_op = TC[i].op;
@@ -280,20 +278,12 @@ void do_child_uclinux()
 #endif
 
 /*
- * sighandler() - handle signals
- */
-void sighandler(int sig)
-{
-	/* we don't need to do anything here */
-}
-
-/*
  * setup() - performs all the ONE TIME setup for this test.
  */
 void setup(void)
 {
 
-	tst_sig(FORK, sighandler, cleanup);
+	tst_sig(FORK, SIG_IGN, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);

@@ -125,7 +125,6 @@ int main(int argc, char **argv)
 		if (signal(SIGPIPE, sighandler) == SIG_ERR)
 			tst_brkm(TFAIL|TERRNO, cleanup, "signal(SIGPIPE, ..)");
 
-
 		if ((fd[0] = open(f_name, O_WRONLY|O_CREAT, 0666)) < 0)
 			tst_brkm(TFAIL|TERRNO, cleanup,
 			    "open(.., O_WRONLY|O_CREAT, ..) failed");

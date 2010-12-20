@@ -104,13 +104,11 @@ int TST_TOTAL = 1; /* total number of tests in this file.   */
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+void cleanup() {
 
 	TEST_CLEANUP;
 	tst_rmdir();
 }
-
-void sighandler(int sig); /* signals handler function for the test */
 
 /* Local  Functions */
 /******************************************************************************/
@@ -132,7 +130,7 @@ void sighandler(int sig); /* signals handler function for the test */
 /******************************************************************************/
 void setup() {
 	/* Capture signals if any */
-	tst_sig(NOFORK, sighandler, cleanup);
+	tst_sig(NOFORK, SIG_IGN, cleanup);
 
 	/* Create temporary directories */
 	TEST_PAUSE;
@@ -387,16 +385,6 @@ cleanup:
 		wait(&st);
 	}
 	return result;
-}
-
-/*
- * sighandler()
- */
-void sighandler(int sig) {
-	if (sig == SIGINT)
-		return;
-
-	return;
 }
 
 /*

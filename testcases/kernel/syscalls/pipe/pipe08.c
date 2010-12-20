@@ -117,11 +117,10 @@ int main(int ac, char **av)
  */
 void sighandler(int sig)
 {
-	if (sig != SIGPIPE) {
+	if (sig != SIGPIPE)
 		tst_resm(TFAIL, "expected SIGPIPE, got %d", sig);
-	} else {
+	else
 		tst_resm(TPASS, "got expected SIGPIPE signal");
-	}
 }
 
 /*

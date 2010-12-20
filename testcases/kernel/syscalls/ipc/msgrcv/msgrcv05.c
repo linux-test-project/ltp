@@ -67,7 +67,6 @@
 void do_child(void);
 void cleanup(void);
 void setup(void);
-void sighandler(int);
 #ifdef UCLINUX
 #define PIPE_NAME	"msgrcv05"
 void do_child_uclinux(void);
@@ -204,19 +203,11 @@ void do_child_uclinux()
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
-	tst_sig(FORK, sighandler, cleanup);
+	signal(FORK, SIG_IGN, cleanup);
 
 	do_child();
 }
 #endif
-
-/*
- * sighandler() - handle signals
- */
-void sighandler(int sig)
-{
-	/* we don't need to do anything here */
-}
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
@@ -224,7 +215,7 @@ void sighandler(int sig)
 void setup(void)
 {
 
-	tst_sig(FORK, sighandler, cleanup);
+	tst_sig(FORK, SIG_IGN, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);

@@ -166,9 +166,6 @@ void check_functionality()
 	}
 }
 
-/*
- * sighandler()
- */
 void sighandler(sig)
 {
 	/* if we have received a SIGSEGV, we are almost done */
@@ -176,9 +173,9 @@ void sighandler(sig)
 		/* set the global variable and jump back */
 		pass = 1;
 		siglongjmp(env, 1);
-	} else {
-		tst_brkm(TBROK, cleanup, "received an unexpected signal");
-	}
+	} else
+		tst_brkm(TBROK, cleanup,
+		    "received an unexpected signal: %d", sig);
 }
 
 /*

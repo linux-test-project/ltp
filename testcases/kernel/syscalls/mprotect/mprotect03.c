@@ -179,10 +179,9 @@ void sighandler(int sig)
 {
 	if (sig == SIGSEGV) {
 		tst_resm(TINFO, "received signal: SIGSEGV");
-	} else {
+		tst_exit();
+	} else
 		tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
-	}
-	tst_exit();
 }
 
 /*

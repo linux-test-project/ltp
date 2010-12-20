@@ -53,7 +53,6 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <limits.h>		/* for PAGESIZE */
-#include <signal.h>
 #include <wait.h>
 #include <test.h>
 #include <usctest.h>
@@ -199,23 +198,12 @@ int main()
 
 #endif /* UCLINUX */
 
-void sighandler(int sig)
-{
-	tst_resm(TINFO, "received signal: %d", sig);
-	if (sig == SIGSEGV) {
-		exit(1);
-	} else {
-		tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
-	}
-	tst_exit();
-}
-
 /*
  * setup() - performs all ONE TIME setup for this test
  */
 void setup()
 {
-	tst_sig(FORK, sighandler, NULL);
+	tst_sig(FORK, DFL_HANDLER, NULL);
 
 	TEST_PAUSE;
 

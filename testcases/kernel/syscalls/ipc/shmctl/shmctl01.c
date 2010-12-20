@@ -82,8 +82,6 @@ void *set_shared;
 pid_t pid_arr[N_ATTACH];
 int sync_pipes[2];
 
-void sighandler(int);
-
 /*
  * These are the various setup and check functions for the commands
  * that we are checking.
@@ -487,23 +485,10 @@ void func_rmid()
 	shm_id_1 = -1;
 }
 
-/*
- * sighandler() - handle signals, in this case SIGUSR1 is the only one expected
- */
-void sighandler(sig)
-{
-	if (sig != SIGUSR1) {
-		tst_resm(TINFO, "received unexpected signal %d", sig);
-	}
-}
-
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
 void setup(void)
 {
 
-	tst_sig(FORK, sighandler, cleanup);
+	tst_sig(FORK, DFL_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
