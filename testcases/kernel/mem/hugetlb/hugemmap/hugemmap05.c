@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
 		overcommit();
 	}	
 	cleanup();
+	tst_exit();
 }
 
 static void overcommit(void)
@@ -288,7 +289,6 @@ static void cleanup(void)
 	}
 	TEST_CLEANUP;
 	tst_rmdir();
-	tst_exit();
 }
 
 static void setup(void)
