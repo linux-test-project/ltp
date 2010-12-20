@@ -1,10 +1,14 @@
 #include <sys/types.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <pwd.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *
 safe_basename(const char *file, const int lineno, void (*cleanup_fn)(void),
@@ -62,6 +66,76 @@ safe_dirname(const char *file, const int lineno, void (*cleanup_fn)(void),
 	return (rval);
 }
 
+char *
+safe_getcwd(const char *file, const int lineno, void (*cleanup_fn)(void),
+    char *buf, size_t size)
+{
+	char *rval;
+
+	rval = getcwd(buf, size);
+	if (rval == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "getcwd failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+struct passwd*
+safe_getpwnam(const char *file, const int lineno, void (*cleanup_fn)(void),
+    const char *name)
+{
+	struct passwd *rval;
+
+	rval = getpwnam(name);
+	if (rval == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "getpwnam failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+void*
+safe_malloc(const char *file, const int lineno, void (*cleanup_fn)(void),
+    size_t size)
+{
+	void *rval;
+
+	rval = malloc(size);
+	if (rval == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "malloc failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+void*
+safe_mmap(const char *file, const int lineno, void (*cleanup_fn)(void),
+    void *addr, size_t length, int prot, int flags, int fd, off_t offset)
+{
+	void *rval;
+
+	rval = mmap(addr, length, prot, flags, fd, offset);
+	if (rval == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "mmap failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+int
+safe_munmap(const char *file, const int lineno, void (*cleanup_fn)(void),
+    void *addr, size_t length)
+{
+	int rval;
+
+	rval = munmap(addr, length);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "munmap failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
 int
 safe_open(const char *file, const int lineno, void (*cleanup_fn)(void),
     const char *pathname, int oflags, ...)
@@ -105,6 +179,34 @@ safe_read(const char *file, const int lineno, void (*cleanup_fn)(void),
 	rval = read(fildes, buf, nbyte);
 	if ((len_strict == 0 && rval == -1) || rval != nbyte)
 		tst_brkm(TBROK|TERRNO, cleanup_fn, "read failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+int
+safe_setgid(const char *file, const int lineno, void (*cleanup_fn)(void),
+    gid_t gid)
+{
+	int rval;
+
+	rval = setgid(gid);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "setgid failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+int
+safe_setuid(const char *file, const int lineno, void (*cleanup_fn)(void),
+    uid_t uid)
+{
+	int rval;
+
+	rval = setuid(uid);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "setuid failed at %s:%d",
 		    file, lineno);
 
 	return (rval);

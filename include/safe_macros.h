@@ -43,6 +43,33 @@ char*	safe_dirname(const char *file, const int lineno,
 #define SAFE_DIRNAME(cleanup_fn, path)	\
 	safe_dirname(__FILE__, __LINE__, (cleanup_fn), (path))
 
+char*	safe_getcwd(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), char *buf, size_t size);
+#define	SAFE_GETCWD(cleanup_fn, buf, size)	\
+	safe_getcwd(__FILE__, __LINE__, (cleanup_fn), (buf), (size))
+
+struct passwd*	safe_getpwnam(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), const char *name);
+#define SAFE_GETPWNAM(cleanup_fn, name)	\
+	safe_getpwnam(__FILE__, __LINE__, cleanup_fn, (name))
+
+void*	safe_malloc(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), size_t size);
+#define SAFE_MALLOC(cleanup_fn, size)	\
+	safe_malloc(__FILE__, __LINE__, (cleanup_fn), (size))
+
+void*	safe_mmap(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), void *addr, size_t length, int prot,
+	    int flags, int fd, off_t offset);
+#define SAFE_MMAP(cleanup_fn, addr, length, prot, flags, fd, offset)	\
+	safe_mmap(__FILE__, __LINE__, (cleanup_fn), (addr), (length), (prot), \
+	    (flags), (fd), (offset))
+
+int	safe_munmap(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), void *addr, size_t length);
+#define SAFE_MUNMAP(cleanup_fn, addr, length)	\
+	safe_munmap(__FILE__, __LINE__, (cleanup_fn), (addr), (length))
+
 int	safe_open(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), const char *pathname, int oflags, ...);
 #define SAFE_OPEN(cleanup_fn, pathname, oflags, ...)	\
@@ -60,6 +87,16 @@ ssize_t	safe_read(const char *file, const int lineno,
 #define SAFE_READ(cleanup_fn, len_strict, fildes, buf, nbyte)	\
 	safe_read(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
 	    (buf), (nbyte))
+
+int	safe_setgid(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), gid_t gid);
+#define SAFE_SETGID(cleanup_fn, gid)	\
+	safe_setgid(__FILE__, __LINE__, cleanup_fn, (gid))
+
+int	safe_setuid(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), uid_t uid);
+#define SAFE_SETUID(cleanup_fn, uid)	\
+	safe_setuid(__FILE__, __LINE__, cleanup_fn, (uid))
 
 int	safe_unlink(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), const char *pathname);
