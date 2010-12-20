@@ -203,7 +203,7 @@ void do_child_uclinux()
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
-	signal(FORK, SIG_IGN, cleanup);
+	tst_sig(FORK, SIG_IGN, cleanup);
 
 	do_child();
 }
