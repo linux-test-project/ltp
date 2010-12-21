@@ -58,8 +58,9 @@
 #include <limits.h>
 #include "test.h"
 #include "usctest.h"
-#include "rmobj.h"
 #include "linux_syscall_numbers.h"
+#include "rmobj.h"
+#include "safe_macros.h"
 
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
@@ -172,11 +173,8 @@ struct test_struct {
 	  TEST_DIR1"/"TEST_FIFO, TEST_DIR2"/"TEST_FILE1, 0 } */
 };
 
-/* Test program identifier. */
 char *TCID = "linkat01";
-/* Total number of test cases. */
 int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);
-/* Test Case counter for tst_* routines */
 
 #define SUCCEED_OR_DIE(syscall, message, ...)		\
 	(errno = 0,					\
@@ -199,34 +197,21 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-	/* Disable test if the version of the kernel is less than 2.6.16 */
 	if ((tst_kvercmp(2, 6, 16)) < 0) {
 		tst_resm(TWARN, "This test can only run on kernels that are ");
 		tst_resm(TWARN, "2.6.16 and higher");
 		exit(0);
 	}
 
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
 	setup();
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
-		/*
-		 * Call linkat
-		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 			setup_every_copy();
 			mylinkat_test(&test_desc[i]);
@@ -234,12 +219,8 @@ int main(int ac, char **av)
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
-	return (0);
+	tst_exit();
 }
 
 static void setup_every_copy()
@@ -259,42 +240,25 @@ static void mylinkat_test(struct test_struct* desc)
 
 	TEST(mylinkat(*desc->oldfd, desc->oldfn, *desc->newfd, desc->newfn, desc->flags));
 
-	/* check return code */
 	if (TEST_ERRNO == desc->expected_errno) {
 
-		/***************************************************************
-		 * only perform functional verification if flag set (-f not given)
-		 ***************************************************************/
 		if (STD_FUNCTIONAL_TEST) {
-			/* No Verification test, yet... */
 
 			if (TEST_RETURN == 0 && desc->referencefn1 != NULL) {
 				int tnum=rand(), vnum=~tnum;
-				int len;
-				fd = SUCCEED_OR_DIE(open,
-						"open(%s, 0x%x) failed",
-						desc->referencefn1, O_RDWR);
-				if ((len=write(fd, &tnum, sizeof(tnum))) != sizeof(tnum)) {
-					tst_brkm(TBROK | TERRNO, cleanup,
-						"write() failed: expected %" PRId64
-						", returned %d", sizeof(tnum), len);
-				}
-				SUCCEED_OR_DIE(close, "close(%d) failed", fd);
+				fd = SAFE_OPEN(cleanup, desc->referencefn1,
+				    O_RDWR);
+				SAFE_WRITE(cleanup, 1, fd, &tnum, sizeof(tnum));
+				SAFE_CLOSE(cleanup, fd);
 
-				fd = SUCCEED_OR_DIE(open,
-							"open(%s, 0x%x) failed",
-							desc->referencefn2,
-							O_RDONLY);
-				if ((len=read(fd, &vnum, sizeof(vnum))) != sizeof(tnum)) {
-					tst_brkm(TBROK | TERRNO, cleanup,
-						"read() failed: expected %"
-						PRId64 ", returned %d",
-						sizeof(vnum), len);
-				}
-				SUCCEED_OR_DIE(close, "close(%d) failed", fd);
+				fd = SAFE_OPEN(cleanup, desc->referencefn2,
+				    O_RDONLY);
+				SAFE_READ(cleanup, 1, fd, &vnum, sizeof(vnum));
+				SAFE_CLOSE(cleanup, fd);
 
 				if (tnum == vnum)
-					tst_resm(TPASS, "Test passed");
+					tst_resm(TPASS,
+					    "linkat is functionality correct");
 				else {
 					tst_resm(TFAIL,
 						"The link file's content isn't "
@@ -302,24 +266,26 @@ static void mylinkat_test(struct test_struct* desc)
 						"although linkat returned 0");
 				}
 			} else {
-				tst_resm(TPASS | TTERRNO,
-						"linkat() returned the "
-						"expected errno");
+				if (TEST_RETURN == 0)
+					tst_resm(TPASS,
+					    "linkat succeeded as expected");
+				else
+					tst_resm(TPASS|TTERRNO,
+					    "linkat failed as expected");
 			}
 		} else
 			tst_resm(TPASS, "Test passed");
 	} else {
-		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_resm(TFAIL | (TEST_RETURN == 0 ? 0 : TTERRNO),
-			 "linkat() %s",
-			(TEST_RETURN == 0 ?
-			 "succeeded unexpectedly" : "failed"));
+		if (TEST_RETURN == 0)
+			tst_resm(TFAIL, "linkat succeeded unexpectedly");
+		else
+			tst_resm(TFAIL|TTERRNO,
+			    "linkat failed unexpectedly; expected %d - %s",
+			    desc->expected_errno,
+			    strerror(desc->expected_errno));
 	}
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 	char *cwd;
@@ -329,10 +295,10 @@ void setup()
 	tst_tmpdir();
 
 	cwd = get_current_dir_name();
-	if (cwd == NULL) {
-		tst_brkm(TFAIL | TERRNO, cleanup,
+	if (cwd == NULL)
+		tst_brkm(TFAIL|TERRNO, cleanup,
 			"Failed to get current working directory");
-	} else {
+	else {
 
 		SUCCEED_OR_DIE(mkdir, "mkdir(%s, %o) failed", TEST_DIR1, 0700);
 		SUCCEED_OR_DIE(mkdir, "mkdir(%s, %o) failed", TEST_DIR3, 0700);
@@ -361,17 +327,8 @@ void setup()
 
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ***************************************************************/
 static void cleanup(void)
 {
 	tst_rmdir();
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
