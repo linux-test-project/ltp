@@ -25,6 +25,10 @@ top_srcdir		?= ..
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/functions.mk
 
+# XXX (garrcoop): some versions of flex/bison generate crap code that doesn't
+# check the return code from fwrite(3).
+CPPFLAGS		+= -Wno-error
+
 CPPFLAGS		+= -I$(abs_srcdir)
 
 LDLIBS			+= -lm $(LEXLIB)
