@@ -194,7 +194,6 @@ void dochild2_uc()
 	dochild2(uc_file_flag, uc_dup_flag);
 }
 #endif
-#endif
 
 int dofork(int file_flag, int file_mode)
 {
