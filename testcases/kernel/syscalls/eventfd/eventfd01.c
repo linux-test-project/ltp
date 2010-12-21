@@ -45,20 +45,20 @@
 
 #include "config.h"
 
-#include <sys/select.h>
-#include <sys/signal.h>
 #include <sys/types.h>
+#include <sys/select.h>
 #include <sys/wait.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <errno.h>
-#include <string.h>
-#include <stdint.h>
+#include <fcntl.h>
 #include <inttypes.h>
 #include <poll.h>
+#include <signal.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
 
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #define CLEANUP cleanup
 #include "linux_syscall_numbers.h"
 
@@ -74,12 +74,7 @@ int TST_TOTAL = 15;
 static int myeventfd(unsigned int initval, int flags)
 {
 	/* eventfd2 uses FLAGS but eventfd doesn't take FLAGS. */
-#if defined (__NR_eventfd)
 	return syscall(__NR_eventfd, initval);
-#else
-	errno = ENOSYS;
-	return -1;
-#endif
 }
 
 /*
