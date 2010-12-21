@@ -761,7 +761,7 @@ void dochild()
 			break;
 		case 0:	/* child */
 #ifdef UCLINUX
-			if (self_exec(argv0, "n", 1) < 0) {
+			if (self_exec(argv0, "nd", 1, parent) < 0) {
 				tst_resm(TFAIL, "self_exec failed");
 				break;
 			}
@@ -978,7 +978,7 @@ int main(int ac, char **av)
 #ifdef UCLINUX
 	argv0 = av[0];
 
-	maybe_run_child(&do_usleep_child, "n", 1);
+	maybe_run_child(&do_usleep_child, "nd", 1, &parent);
 	thiscase = malloc(sizeof(testcase));
 
 	maybe_run_child(&dochild, "nddddddddd", 2, &thiscase->c_type,
