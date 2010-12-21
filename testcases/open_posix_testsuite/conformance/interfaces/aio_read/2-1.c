@@ -25,7 +25,7 @@
 int main()
 {
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L ||
-	    sysconf(_SC_PRIORITIZED_IO) != 200112L)
+	    sysconf(_SC_PRIORITIZED_IO) < 200112L)
 		exit(PTS_UNSUPPORTED);
 	exit(PTS_UNTESTED);
 }
