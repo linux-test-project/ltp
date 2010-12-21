@@ -24,9 +24,12 @@
 #define SLEEPDELTA 3
 #define ACCEPTABLEDELTA 1
 
+int caught_signal;
+
 void handler(int signo)
 {
 	printf("Caught signal\n");
+	caught_signal = 1;
 }
 
 int main(int argc, char *argv[])
@@ -40,27 +43,24 @@ int main(int argc, char *argv[])
 	timer_t tid;
 	struct itimerspec its;
 	struct timespec ts, tsleft;
-	int rc;
+	time_t start_time, end_time;
+	int overrun_time, rc;
 
 	rc = sysconf(_SC_CPUTIME);
-	printf("sysconf(_SC_CPUTIME) returns: %d\n", rc);
-	if (rc <= 0) {
+	printf("sysconf(_SC_CPUTIME) returned: %d\n", rc);
+	if (rc <= 0)
 		return PTS_UNRESOLVED;
-	}
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;
 	its.it_value.tv_sec = TIMERSEC;
 	its.it_value.tv_nsec = 0;
-
-	ts.tv_sec=TIMERSEC+SLEEPDELTA;
-	ts.tv_nsec=0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
 		perror("Error calling sigemptyset");
@@ -71,8 +71,13 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
+	if (time(&start_time) == -1) {
+		perror("time failed");
+		return PTS_UNRESOLVED;
+	}
+
 	if (timer_create(CLOCK_PROCESS_CPUTIME_ID, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -82,21 +87,17 @@ int main(int argc, char *argv[])
 	}
 
 	if (nanosleep(&ts, &tsleft) != -1) {
-		perror("nanosleep() not interrupted");
+		perror("nanosleep was not interrupted");
 		return PTS_FAIL;
 	}
 
-	if (abs(tsleft.tv_sec-SLEEPDELTA) <= ACCEPTABLEDELTA) {
-		printf("Test PASSED");
+	if ((end_time - start_time) == (TIMERSEC + overrun_amount)) {
+		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("Timer did not last for correct amount of time\n");
-		printf("timer: %d != correct %d\n",
-				(int) ts.tv_sec- (int) tsleft.tv_sec,
-				TIMERSEC);
-		return PTS_FAIL;
 	}
-
-	return PTS_UNRESOLVED;
+	printf("Timer did not last for correct amount of time\n"
+		"timer: %d != correct %d\n",
+		(int) (end_time - start_time), TIMERSEC);
+	return PTS_FAIL;
 #endif
 }
