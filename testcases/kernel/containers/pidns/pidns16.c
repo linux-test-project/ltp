@@ -46,8 +46,8 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
-#include <usctest.h>
-#include <test.h>
+#include "usctest.h"
+#include "test.h"
 #include <libclone.h>
 #define CHILD_PID	1
 #define PARENT_PID	0

@@ -50,8 +50,8 @@
 #include <errno.h>
 #include <wait.h>
 #include <time.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <signal.h>
 #include <stdint.h>
 

@@ -54,8 +54,8 @@
 #include <sys/mman.h>
 #include <limits.h>		/* for PAGESIZE */
 #include <wait.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 #ifndef PAGESIZE
 #define PAGESIZE 4096

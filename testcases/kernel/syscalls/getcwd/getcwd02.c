@@ -59,8 +59,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #define FAILED 1
 
 char *pwd = "/bin/pwd";

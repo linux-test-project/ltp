@@ -45,8 +45,8 @@
  */
 #include <pwd.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 TCID_DEFINE(setgid02);
 int TST_TOTAL = 1;

@@ -31,7 +31,7 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <libclone.h>
-#include <test.h>
+#include "test.h"
 
 #define MY_KEY     154326L
 #define UNSHARESTR "unshare"

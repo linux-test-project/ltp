@@ -61,8 +61,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 #define	MAXKIDS	8
 

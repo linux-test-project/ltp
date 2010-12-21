@@ -61,8 +61,8 @@
 #define _GNU_SOURCE 1
 #include <pwd.h>
 #include <stdlib.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <errno.h>
 #include <sys/wait.h>
 

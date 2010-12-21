@@ -66,8 +66,8 @@
 #include <pwd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <errno.h>
 
 char *TCID = "setresuid01";
