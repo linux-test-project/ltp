@@ -93,9 +93,7 @@
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
-#ifdef GARRETT_IS_A_PEDANTIC_BASTARD
 #include <assert.h>
-#endif
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -122,17 +120,18 @@ pid_t		spawned_program_pid;
 /*
  * EXPAND_VAR_ARGS - Expand the variable portion (arg_fmt) of a result
  *                   message into the specified string.
+ *
+ * NOTE (garrcoop):  arg_fmt _must_ be the last element in each function
+ *		     argument list that employs this.
  */
-#define EXPAND_VAR_ARGS(buf, arg_fmt, buf_len) {      \
-	va_list ap;                                   \
-	                                              \
-	if (arg_fmt != NULL) {                        \
-		va_start(ap, arg_fmt);                \
-		vsnprintf(buf, buf_len, arg_fmt, ap); \
-		va_end(ap);                           \
-	} else                                        \
-		buf[0] = '\0';                        \
-}
+#define EXPAND_VAR_ARGS(buf, arg_fmt, buf_len) do {\
+	va_list ap;				\
+	assert(arg_fmt != NULL);		\
+	va_start(ap, arg_fmt);			\
+	vsnprintf(buf, buf_len, arg_fmt, ap);	\
+	va_end(ap);				\
+	assert(strlen(buf) > 0);		\
+} while (0)
 
 /*
  * Define local function prototypes.
