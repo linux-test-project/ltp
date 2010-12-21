@@ -121,9 +121,8 @@ int main(int ac, char **av)
 	if (pid == 0) {
 		do_master_child(av);
 		return (0);
-	} else {
+	} else
 		waitpid(pid, &status, 0);
-	}
 
 	cleanup();
 	tst_exit();
@@ -151,41 +150,31 @@ void do_master_child(char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		*flag = 0;
 
-		/*
-		 * Fork a process and set the euid so that it is
-		 * different from this one.
-		 */
-
 		pid1 = FORK_OR_VFORK();
 
-		if (pid1 < 0) {
+		if (pid1 == -1)
 			tst_brkm(TBROK, cleanup, "Fork failed");
-		}
 
-		if (pid1 == 0) {	/* child */
+		if (pid1 == 0) {
 			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) == -1) {
 				tst_resm(TWARN, "setreuid failed in child");
 			}
 #ifdef UCLINUX
-			if (self_exec(av[0], "") < 0) {
+			if (self_exec(av[0], "") < 0)
 				tst_brkm(TBROK, cleanup,
 					 "self_exec of child failed");
-			}
 #else
 			do_child();
 #endif
-		} else {	/* parent */
-			if (setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid) == -1) {
+		} else {
+			if (setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid) == -1)
 				tst_resm(TWARN, "seteuid failed in child");
-			}
 
 			TEST(kill(pid1, TEST_SIG));
 
@@ -208,85 +197,52 @@ void do_master_child(char **av)
 		 * Check to see if the errno was set to the expected
 		 * value of 1 : EPERM
 		 */
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		if (TEST_ERRNO == EPERM) {
-			tst_resm(TPASS, "errno set to %d : %s, as "
-				 "expected", TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
-			tst_resm(TFAIL, "errno set to %d : %s expected "
-				 "%d : %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO), 1, strerror(1));
-		}
+		if (TEST_ERRNO == EPERM)
+			tst_resm(TPASS, "kill failed with EPERM");
+		else
+			tst_resm(TFAIL|TTERRNO,
+			    "kill failed unexpectedly; expected EPERM");
 	}
 }
 
-/*
- * do_child()
- */
 void do_child()
 {
 	pid_t my_pid;
 
 	my_pid = getpid();
 	while (1) {
-		if (*flag == 1) {
+		if (*flag == 1)
 			exit(0);
-		} else {
+		else
 			sleep(1);
-		}
 	}
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
 void setup(void)
 {
-	/* Check that the process is owned by root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, cleanup, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
-	/* Make a temp directory and cd to it.
-	 * Usefull to be sure getipckey generated different IPC keys.
-	 */
 	tst_tmpdir();
 
-	/* get an IPC resource key */
 	semkey = getipckey();
 
 	if ((shmid1 = shmget(semkey, (int)getpagesize(),
-			     0666 | IPC_CREAT)) == -1) {
+			     0666 | IPC_CREAT)) == -1)
 		tst_brkm(TBROK, cleanup, "Failed to setup shared memory");
-	}
 
-	/*flag = (int *)shmat(shmid1, 0, 0); */
-	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1) {
+	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1)
 		tst_brkm(TBROK|TERRNO, cleanup,
 			 "Failed to attatch shared memory:%d", shmid1);
-	}
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * or premature exit.
- */
 void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified.
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
 
-	/*
-	 * if it exists, remove the shared memory
-	 */
 	rm_shm(shmid1);
 
 }
