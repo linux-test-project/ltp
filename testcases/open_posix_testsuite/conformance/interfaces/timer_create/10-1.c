@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	struct itimerspec its;
 	struct timespec ts, tsleft;
 	time_t start_time, end_time;
-	int overrun_time, rc;
+	int overrun_amount, rc;
 
 	rc = sysconf(_SC_CPUTIME);
 	printf("sysconf(_SC_CPUTIME) returned: %d\n", rc);
