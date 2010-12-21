@@ -184,6 +184,34 @@ safe_read(const char *file, const int lineno, void (*cleanup_fn)(void),
 	return (rval);
 }
 
+	int
+safe_setegid(const char *file, const int lineno, void (*cleanup_fn)(void),
+    gid_t egid)
+{
+	int rval;
+
+	rval = setegid(egid);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "setegid failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+int
+safe_seteuid(const char *file, const int lineno, void (*cleanup_fn)(void),
+    uid_t euid)
+{
+	int rval;
+
+	rval = seteuid(euid);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "seteuid failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
 int
 safe_setgid(const char *file, const int lineno, void (*cleanup_fn)(void),
     gid_t gid)

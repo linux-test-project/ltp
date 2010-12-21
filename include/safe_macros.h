@@ -88,6 +88,16 @@ ssize_t	safe_read(const char *file, const int lineno,
 	safe_read(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
 	    (buf), (nbyte))
 
+int	safe_setegid(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), gid_t egid);
+#define SAFE_SETEGID(cleanup_fn, egid)	\
+	safe_setegid(__FILE__, __LINE__, cleanup_fn, (egid))
+
+int	safe_seteuid(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), uid_t euid);
+#define SAFE_SETEUID(cleanup_fn, euid)	\
+	safe_seteuid(__FILE__, __LINE__, cleanup_fn, (euid))
+
 int	safe_setgid(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), gid_t gid);
 #define SAFE_SETGID(cleanup_fn, gid)	\
