@@ -27,19 +27,19 @@ static const char *policy = "";
 
 static void show_result(int result, char should_success)
 {
-	int err = errno;
+	int error = errno;
 	printf("%s : ", policy);
 	if (should_success) {
 		if (result != EOF)
 			printf("OK\n");
 		else
-			printf("FAILED: %s\n", strerror(err));
+			printf("FAILED: %s\n", strerror(error));
 	} else {
 		if (result == EOF) {
-			if (err == EPERM)
+			if (error == EPERM)
 				printf("OK: Permission denied.\n");
 			else
-				printf("FAILED: %s\n", strerror(err));
+				printf("FAILED: %s\n", strerror(error));
 		} else {
 			printf("BUG: didn't fail.\n");
 		}
@@ -94,7 +94,7 @@ static void stage_file_test(void)
 	int buffer[2] = { 32768, 61000 };
 	size_t size = sizeof(buffer);
 	int pipe_fd[2] = { EOF, EOF };
-	int err = 0;
+	int error = 0;
 	int fd;
 	char pbuffer[1024];
 	struct stat sbuf;
@@ -153,35 +153,37 @@ static void stage_file_test(void)
 	write_domain_policy(policy, 0);
 	fflush(stdout);
 	fflush(stderr);
-	pipe(pipe_fd);
+	if (pipe(pipe_fd) == -1)
+		err(1, "pipe");
 	if (fork() == 0) {
 		execl("/bin/true", "/bin/true", NULL);
-		err = errno;
-		write(pipe_fd[1], &err, sizeof(err));
-		_exit(0);
+		if (write(pipe_fd[1], &errno, sizeof(errno)) == -1)
+			err(1, "write");
+		exit(0);
 	}
 	close(pipe_fd[1]);
-	read(pipe_fd[0], &err, sizeof(err));
+	(void)read(pipe_fd[0], &error, sizeof(error));
 	close(pipe_fd[0]);
 	wait(NULL);
-	errno = err;
-	show_result(err ? EOF : 0, 1);
+	errno = error;
+	show_result(error ? EOF : 0, 1);
 	write_domain_policy(policy, 1);
 	fflush(stdout);
 	fflush(stderr);
-	pipe(pipe_fd);
+	if (pipe(pipe_fd) == -1)
+		err(1, "pipe");
 	if (fork() == 0) {
 		execl("/bin/true", "/bin/true", NULL);
-		err = errno;
-		write(pipe_fd[1], &err, sizeof(err));
+		if (write(pipe_fd[1], &errno, sizeof(errno)) == -1)
+			err(1, "write");
 		_exit(0);
 	}
 	close(pipe_fd[1]);
-	read(pipe_fd[0], &err, sizeof(err));
+	(void)read(pipe_fd[0], &error, sizeof(error));
 	close(pipe_fd[0]);
 	wait(NULL);
-	errno = err;
-	show_result(err ? EOF : 0, 0);
+	errno = error;
+	show_result(errno ? EOF : 0, 0);
 
 	policy = "allow_read /dev/null";
 	write_domain_policy(policy, 0);

@@ -93,21 +93,22 @@ static void stage_file_test(void)
 
 	{
 		int pipe_fd[2] = { EOF, EOF };
-		int err = 0;
+		int error = 0;
 		fflush(stdout);
 		fflush(stderr);
-		pipe(pipe_fd);
+		if (pipe(pipe_fd) == -1)
+			err(1, "pipe");
 		if (fork() == 0) {
 			execl("/bin/true", "/bin/true", NULL);
-			err = errno;
-			write(pipe_fd[1], &err, sizeof(err));
+			write(pipe_fd[1], &errno, sizeof(errno));
 			_exit(0);
 		}
 		close(pipe_fd[1]);
-		read(pipe_fd[0], &err, sizeof(err));
+		if (read(pipe_fd[0], &error, sizeof(error)) == -1)
+			err(1, "read");
 		show_prompt("execve()");
-		errno = err;
-		show_result(err ? EOF : 0);
+		errno = error;
+		show_result(error ? EOF : 0);
 	}
 
 	show_prompt("open(O_RDONLY)");

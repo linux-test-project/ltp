@@ -23,25 +23,25 @@
  */
 #include "include.h"
 
-static int result = 0;
-static int err = 0;
+static int result;
+static int error;
 
 static void show_result(const char *test, int should_success)
 {
-	err = errno;
+	error = errno;
 	printf("%s : ", test);
 	if (should_success) {
-		if (err == 0)
+		if (error == 0)
 			printf("OK (%d)\n", result);
 		else
-			printf("FAILED: %s\n", strerror(err));
+			printf("FAILED: %s\n", strerror(error));
 	} else {
-		if (err == 0)
+		if (error == 0)
 			printf("BUG: Didn't fail (%d)\n", result);
-		else if (err == EPERM)
+		else if (error == EPERM)
 			printf("OK: permission denied\n");
 		else
-			printf("FAILED: %s\n", strerror(err));
+			printf("FAILED: %s\n", strerror(error));
 	}
 }
 
@@ -100,24 +100,23 @@ static void test_execute_bin_true(void)
 	char *argv[] = { "/bin/true", NULL };
 	char *envp[] = { "HOME=/", NULL };
 	int pipe_fd[2] = { EOF, EOF };
-	int err = 0;
 	pipe(pipe_fd);
 	switch (fork()) {
 	case 0:
 		execve("/bin/true", argv, envp);
-		err = errno;
-		write(pipe_fd[1], &err, sizeof(err));
+		error = errno;
+		write(pipe_fd[1], &error, sizeof(error));
 		_exit(0);
 		break;
 	case -1:
-		err = -ENOMEM;
+		error = ENOMEM;
 		break;
 	}
 	close(pipe_fd[1]);
-	read(pipe_fd[0], &err, sizeof(err));
+	read(pipe_fd[0], &error, sizeof(error));
 	close(pipe_fd[0]);
-	result = err ? EOF : 0;
-	errno = err;
+	result = error ? EOF : 0;
+	errno = error;
 }
 
 static void test_chmod_dev_null(void)
@@ -140,9 +139,9 @@ static void test_ioctl_dev_null(void)
 	int fd = open("/dev/null", O_RDWR);
 	errno = 0;
 	result = ioctl(fd, 0x5451, NULL);
-	err = errno;
+	error = errno;
 	close(fd);
-	errno = err;
+	errno = error;
 }
 
 static void setup_chmod_group(void)

@@ -51,6 +51,7 @@
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <linux/ip.h>
+#include <err.h>
 
 /* 
  * Some architectures like mips n32 don't have __NR_uselib defined in the

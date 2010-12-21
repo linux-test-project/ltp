@@ -291,9 +291,10 @@ int main(int argc, char *argv[])
 			    S_ISBLK(sbuf.st_mode) && MAJOR(sbuf.st_rdev) == 1)
 				fp = popen(buf, "w");
 			if (fp) {
-				fwrite(compressed_ext2_image_sample, 1,
-				       sizeof(compressed_ext2_image_sample),
-				       fp);
+				if (fwrite(compressed_ext2_image_sample, 1,
+				    sizeof(compressed_ext2_image_sample), fp) !=
+				    sizeof(compressed_ext2_image_sample))
+					err(1, "fwrite");
 				pclose(fp);
 			} else
 				fprintf(stderr, "Can't write to %s .\n",
