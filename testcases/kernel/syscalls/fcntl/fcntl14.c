@@ -47,8 +47,8 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <inttypes.h>
-#include <usctest.h>
-#include <test.h>
+#include "usctest.h"
+#include "test.h"
 
 #define SKIP 0x0c00
 #if SKIP == F_RDLCK || SKIP== F_WRLCK

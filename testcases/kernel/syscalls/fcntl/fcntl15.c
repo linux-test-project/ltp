@@ -53,8 +53,8 @@
 
 #include <signal.h>
 #include <fcntl.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/types.h>

@@ -43,8 +43,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 char *TCID = "fcntl12";
 int TST_TOTAL = 1;
