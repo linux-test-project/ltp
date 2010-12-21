@@ -31,17 +31,15 @@
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
 
+#include <sys/wait.h>
+#include <errno.h>
+#include <nl_types.h>
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <sys/wait.h>
-#include <errno.h>
-
-#include <nl_types.h>
 
 #include "testfrmw.h"
 #include "testfrmw.c"
@@ -87,16 +85,22 @@ static char *messcat_in =
 
 static int create_catalog(void)
 {
-	FILE *f = fopen(MESSCAT_IN, "w");
+	FILE *f;
 
-	if (f == NULL)
+	if ((f = fopen(MESSCAT_IN, "w")) == NULL) {
+		perror("fopen");
 		return 1;
+	}
 
-	if (fputs(messcat_in, f) <= 0)
+	if (fputs(messcat_in, f) == EOF) {
+		perror("fputs");
 		return 1;
+	}
 
-	if (fclose(f))
+	if (fclose(f) == EOF) {
+		perror("fclose");
 		return 1;
+	}
 
 	return 0;
 }
@@ -112,14 +116,11 @@ int main(int argc, char * argv[])
 	/* Generate the message catalog file from the text sourcefile */
 	if (system(NULL)) {
 
-		if (create_catalog() != 0) {
+		if (create_catalog() != 0)
 			UNRESOLVED(errno, "Can't create "MESSCAT_IN);
-		}
 
 		ret = system("gencat "MESSCAT_OUT" "MESSCAT_IN);
 
-	if (messcat == -1)
-	{
 		if (ret != 0)
 			output("Could not find the source file for message catalog.\n" \
 			        "You may need to execute gencat yourself.\n");

@@ -44,19 +44,19 @@ void *thread_func()
 
 	if ((rc = pthread_getattr_np(pthread_self(), &attr)) != 0) {
 		printf(ERROR_PREFIX "pthread_getattr_np: %s", strerror(rc));
-		pthread_exit(PTS_UNRESOLVED);
+		pthread_exit((void*)PTS_UNRESOLVED);
 	}
 	if ((rc = pthread_attr_getstack(&attr, &saddr, &ssize)) != 0) {
 		printf(ERROR_PREFIX "pthread_attr_getstack: %s", strerror(rc));
-		pthread_exit(PTS_UNRESOLVED);
+		pthread_exit((void*)PTS_UNRESOLVED);
 	}
 	if (ssize != stack_size || saddr != stack_addr)
 	{
 		printf(ERROR_PREFIX "got the wrong stacksize or stackaddr");
-		pthread_exit(PTS_FAIL);
+		pthread_exit((void*)PTS_FAIL);
 	}
 
-	pthread_exit(0);
+	pthread_exit(NULL);
 	return NULL;
 }
 
@@ -91,41 +91,35 @@ int main()
 	 */
 	stack_size = PTHREAD_STACK_MIN * 4;
 
-	if ((rc = posix_memalign (&stack_addr, sysconf(_SC_PAGE_SIZE),
-            stack_size)) != 0)
-    	{
+	if ((rc = posix_memalign(&stack_addr, sysconf(_SC_PAGE_SIZE),
+	    stack_size)) != 0) {
 		printf(ERROR_PREFIX "posix_memalign: %s\n", strerror(rc));
 		exit(PTS_UNRESOLVED);
     	}
 
-	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != 0) {
+	if ((rc = pthread_attr_setstack(&attr, stack_addr, stack_size)) != 0) {
                 printf(ERROR_PREFIX "pthread_attr_setstack: %s\n",
 			strerror(rc));
                 exit(PTS_UNRESOLVED);
         }
 
-	rc = pthread_attr_getstack(&attr, &saddr, &ssize);
-        if (rc != 0) {
+	if ((rc = pthread_attr_getstack(&attr, &saddr, &ssize)) != 0) {
                 printf(ERROR_PREFIX "pthread_attr_getstack: %s\n",
 			strerror(rc));
                 exit(PTS_UNRESOLVED);
         }
 
-	rc = pthread_create(&new_th, &attr, thread_func, NULL);
-	if (rc != 0) {
+	if ((rc = pthread_create(&new_th, &attr, thread_func, NULL)) != 0) {
 		printf(ERROR_PREFIX "pthread_create: %s\n", strerror(rc));
                 exit(PTS_FAIL);
         }
 
-	rc = pthread_join(new_th, NULL);
-	if (rc != 0) {
+	if ((rc = pthread_join(new_th, NULL)) != 0) {
                 printf(ERROR_PREFIX "pthread_join: %s\n", strerror(rc));
 		exit(PTS_UNRESOLVED);
         }
 
-	rc = pthread_attr_destroy(&attr);
-	if (rc != 0) {
+	if ((rc = pthread_attr_destroy(&attr)) != 0) {
                 printf(ERROR_PREFIX "pthread_attr_destroy: %s\n", strerror(rc));
 		exit(PTS_UNRESOLVED);
         }

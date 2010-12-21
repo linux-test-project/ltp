@@ -137,10 +137,10 @@ void scenar_init()
 	for (i = 0; i < NSCENAR; i++)
 	{
 #if VERBOSE > 2
-		output("Initializing attribute for scenario %i: %s\n", i, scenarii[ i ].descr);
+		output("Initializing attribute for scenario %i: %s\n", i, scenarii[i].descr);
 #endif
 
-		ret = pthread_attr_init(&scenarii[ i ].ta);
+		ret = pthread_attr_init(&scenarii[i].ta);
 
 		if (ret != 0)
 		{
@@ -151,7 +151,7 @@ void scenar_init()
 		if (tps > 0)     /* This routine is dependent on the Thread Execution Scheduling option */
 		{
 
-			if (scenarii[ i ].explicitsched == 1)
+			if (scenarii[i].explicitsched == 1)
 				ret = pthread_attr_setinheritsched(&scenarii[i].ta, PTHREAD_EXPLICIT_SCHED);
 			else
 				ret = pthread_attr_setinheritsched(&scenarii[i].ta, PTHREAD_INHERIT_SCHED);
@@ -175,14 +175,14 @@ void scenar_init()
 		if (tps > 0)     /* This routine is dependent on the Thread Execution Scheduling option */
 		{
 
-			if (scenarii[ i ].schedpolicy == 1)
+			if (scenarii[i].schedpolicy == 1)
 			{
-				ret = pthread_attr_setschedpolicy(&scenarii[ i ].ta, SCHED_FIFO);
+				ret = pthread_attr_setschedpolicy(&scenarii[i].ta, SCHED_FIFO);
 			}
 
-			if (scenarii[ i ].schedpolicy == 2)
+			if (scenarii[i].schedpolicy == 2)
 			{
-				ret = pthread_attr_setschedpolicy(&scenarii[ i ].ta, SCHED_RR);
+				ret = pthread_attr_setschedpolicy(&scenarii[i].ta, SCHED_RR);
 			}
 
 			if (ret != 0)
@@ -191,7 +191,7 @@ void scenar_init()
 			}
 
 #if VERBOSE > 4
-			if (scenarii[ i ].schedpolicy)
+			if (scenarii[i].schedpolicy)
 				output("Sched policy was set sucessfully\n");
 			else
 				output("Sched policy untouched\n");
@@ -204,30 +204,25 @@ void scenar_init()
 
 #endif
 
-		if (scenarii[ i ].schedparam != 0)
+		if (scenarii[i].schedparam != 0)
 		{
 
 			struct sched_param sp;
 
-			ret = pthread_attr_getschedpolicy(&scenarii[ i ].ta, &old);
+			ret = pthread_attr_getschedpolicy(&scenarii[i].ta, &old);
 
 			if (ret != 0)
 			{
 				UNRESOLVED(ret, "Unable to get sched policy from attribute");
 			}
 
-			if (scenarii[ i ].schedparam == 1)
+			if (scenarii[i].schedparam == 1)
 				sp.sched_priority = sched_get_priority_max( old );
 
-			if (scenarii[ i ].schedparam == -1)
-				sp.sched_priority = sched_get_priority_min( old );
-				sp.sched_priority = sched_get_priority_max(old);
-
-			if (scenarii[ i ].schedparam == -1)
+			if (scenarii[i].schedparam == -1)
 				sp.sched_priority = sched_get_priority_min(old);
->>>>>>> origin
 
-			ret = pthread_attr_setschedparam(&scenarii[ i ].ta, &sp);
+			ret = pthread_attr_setschedparam(&scenarii[i].ta, &sp);
 
 			if (ret != 0)
 			{
@@ -246,21 +241,21 @@ void scenar_init()
 
 		if (tps > 0)     /* This routine is dependent on the Thread Execution Scheduling option */
 		{
-			ret = pthread_attr_getscope(&scenarii[ i ].ta, &old);
+			ret = pthread_attr_getscope(&scenarii[i].ta, &old);
 
 			if (ret != 0)
 			{
 				UNRESOLVED(ret, "Failed to get contension scope from thread attribute");
 			}
 
-			if (scenarii[ i ].altscope != 0)
+			if (scenarii[i].altscope != 0)
 			{
 				if (old == PTHREAD_SCOPE_PROCESS)
 					old = PTHREAD_SCOPE_SYSTEM;
 				else
 					old = PTHREAD_SCOPE_PROCESS;
 
-				ret = pthread_attr_setscope(&scenarii[ i ].ta, old);
+				ret = pthread_attr_setscope(&scenarii[i].ta, old);
 
 				//if (ret != 0)  {  UNRESOLVED(ret, "Failed to set contension scope");  }
 				if (ret != 0)
@@ -301,7 +296,7 @@ void scenar_init()
 					UNRESOLVED(errno, "Unable to alloc enough memory for alternative stack");
 				}
 
-				ret = pthread_attr_setstack(&scenarii[i].ta, scenarii[ i ].bottom, minstacksize);
+				ret = pthread_attr_setstack(&scenarii[i].ta, scenarii[i].bottom, minstacksize);
 
 				if (ret != 0)
 				{
@@ -309,7 +304,7 @@ void scenar_init()
 				}
 
 #if VERBOSE > 1
-				output("Alternate stack created successfully. Bottom=%p, Size=%i\n", scenarii[ i ].bottom, minstacksize);
+				output("Alternate stack created successfully. Bottom=%p, Size=%i\n", scenarii[i].bottom, minstacksize);
 
 #endif
 
@@ -323,17 +318,17 @@ void scenar_init()
 #endif
 
 #ifndef WITHOUT_XOPEN
-		if (scenarii[ i ].guard != 0)
+		if (scenarii[i].guard != 0)
 		{
-			if (scenarii[ i ].guard == 1)
-				ret = pthread_attr_setguardsize( &scenarii[ i ].ta, 0 );
+			if (scenarii[i].guard == 1)
+				ret = pthread_attr_setguardsize( &scenarii[i].ta, 0 );
 
-			if (scenarii[ i ].guard == 2)
-				ret = pthread_attr_setguardsize( &scenarii[ i ].ta, pagesize );
-				ret = pthread_attr_setguardsize(&scenarii[ i ].ta, 0);
+			if (scenarii[i].guard == 2)
+				ret = pthread_attr_setguardsize( &scenarii[i].ta, pagesize );
+				ret = pthread_attr_setguardsize(&scenarii[i].ta, 0);
 
-			if (scenarii[ i ].guard == 2)
-				ret = pthread_attr_setguardsize(&scenarii[ i ].ta, pagesize);
+			if (scenarii[i].guard == 2)
+				ret = pthread_attr_setguardsize(&scenarii[i].ta, pagesize);
 
 			if (ret != 0)
 			{
@@ -341,7 +336,7 @@ void scenar_init()
 			}
 
 #if VERBOSE > 4
-			output("Guard size set to %i\n", (scenarii[ i ].guard == 1) ? 1 : pagesize);
+			output("Guard size set to %i\n", (scenarii[i].guard == 1) ? 1 : pagesize);
 
 #endif
 
@@ -352,9 +347,9 @@ void scenar_init()
 		if (tss > 0)     /* This routine is dependent on the Thread Stack Size Attribute option */
 		{
 
-			if (scenarii[ i ].altsize != 0)
+			if (scenarii[i].altsize != 0)
 			{
-				ret = pthread_attr_setstacksize(&scenarii[ i ].ta, minstacksize);
+				ret = pthread_attr_setstacksize(&scenarii[i].ta, minstacksize);
 
 				if (ret != 0)
 				{
@@ -390,10 +385,10 @@ void scenar_fini(void)
 
 	for (i = 0; i < NSCENAR; i++)
 	{
-		if (scenarii[ i ].bottom != NULL)
-			free(scenarii[ i ].bottom);
+		if (scenarii[i].bottom != NULL)
+			free(scenarii[i].bottom);
 
-		ret = pthread_attr_destroy(&scenarii[ i ].ta);
+		ret = pthread_attr_destroy(&scenarii[i].ta);
 
 		if (ret != 0)
 		{

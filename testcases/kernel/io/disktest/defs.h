@@ -79,7 +79,7 @@ typedef __int64 OFF_T;
 typedef int pid_t;
 
 #else
-#include <malloc.h>
+#include <stdlib.h>
 #define ALLOC(size) malloc(size)
 #define RESIZE(mem, size) realloc(mem, size)
 #define FREE(mem) free(mem)

@@ -55,7 +55,7 @@
 #include "usctest.h"
 
 #include <stdlib.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define NCHILD		3
