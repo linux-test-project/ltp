@@ -33,31 +33,17 @@ int TST_TOTAL = 3;
 #include <errno.h>
 #include <string.h>
 
-/*
- * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
- */
 void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
 }
 
 int main(int argc, char **argv)
@@ -65,7 +51,7 @@ int main(int argc, char **argv)
 	int lc;			/* loop counter */
 	char *msg;		/* parse_opts() return message */
 
-	io_context_t ctx;
+	io_context_t ctx = -1;
 	long expected_return;
 
 	int rval;
@@ -73,16 +59,12 @@ int main(int argc, char **argv)
 	struct iocb iocb;
 	struct iocb *iocbs[1];
 
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
 	setup();
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		/*
@@ -142,9 +124,9 @@ int main(int argc, char **argv)
 			long expected_inval = -EINVAL;
 
 			TEST(io_submit(ctx, 0, (void *)-1));
-			if (TEST_RETURN == 0) {
+			if (TEST_RETURN == 0)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
-			} else if (TEST_RETURN == expected_fault
+			else if (TEST_RETURN == expected_fault
 				   || TEST_RETURN == expected_inval) {
 				tst_resm(TPASS, "expected failure - "
 					 "returned value = %ld : %s",
@@ -170,14 +152,13 @@ int main(int argc, char **argv)
 		iocbs[0] = &iocb;
 		memset(&ctx, 0, sizeof(io_context_t));
 		rval = io_setup(1, &ctx);
-		if (rval != 0) {
+		if (rval != 0)
 			tst_brkm(TBROK, cleanup, "io_setup failed: %d", rval);
-		 }
 
 		TEST(io_submit(ctx, 1, iocbs));
-		if (TEST_RETURN == 0) {
+		if (TEST_RETURN == 0)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
-		} else if (TEST_RETURN == expected_return) {
+		else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
 				 "returned value = %ld : %s", (-1 * TEST_RETURN),
 				 strerror(-1 * TEST_RETURN));
@@ -202,7 +183,6 @@ int main(int argc, char **argv)
 #else
 int main(int argc, char **argv)
 {
-	tst_resm(TCONF, "System doesn't support execution of the test");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
 }
 #endif

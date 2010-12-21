@@ -52,11 +52,9 @@ void cleanup(void)
  */
 void setup()
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
 }
 
 int main(int argc, char **argv)
@@ -64,7 +62,7 @@ int main(int argc, char **argv)
 	int lc;			/* loop counter */
 	char *msg;		/* parse_opts() return message */
 
-	io_context_t ctx;
+	io_context_t ctx = -1;
 	int expected_return;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
@@ -176,7 +174,6 @@ int main(int argc, char **argv)
 #else
 int main(int argc, char **argv)
 {
-	tst_resm(TCONF, "System doesn't support execution of the test");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
 }
 #endif
