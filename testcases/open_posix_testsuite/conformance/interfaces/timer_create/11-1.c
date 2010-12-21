@@ -80,13 +80,20 @@ int main(int argc, char *argv[])
 	}
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success");
+		perror("timer_settime did not return success");
 		return PTS_UNRESOLVED;
 	}
 
-	if (nanosleep(&ts, &tsleft) != -1) {
-		perror("nanosleep was not interrupted");
-		return PTS_FAIL;
+	while (!caught_signal) ;
+
+	if (time(&end_time) == -1) {
+		perror("time failed");
+		return PTS_UNRESOLVED;
+	}
+
+	if ((overrun_amount = timer_getoverrun(tid)) == -1) {
+		perror("timer_getoverrun failed");
+		return PTS_UNRESOLVED;
 	}
 
 	if ((end_time - start_time) == (TIMERSEC + overrun_amount)) {
@@ -95,7 +102,7 @@ int main(int argc, char *argv[])
 	}
 	printf("Timer did not last for correct amount of time\n"
 		"timer: %d != correct %d\n",
-		(int) (end_time - start_time), TIMERSEC);
+		(int) (end_time - start_time), TIMERSEC + overrun_amount);
 	return PTS_FAIL;
 #endif
 }
