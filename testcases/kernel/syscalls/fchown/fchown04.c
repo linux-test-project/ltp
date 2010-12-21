@@ -82,29 +82,26 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-#define MODE_RWX	S_IRWXU | S_IRWXG | S_IRWXO
-#define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define MODE_RWX	(S_IRWXU|S_IRWXG|S_IRWXO)
+#define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define TEST_FILE1	"tfile_1"
 #define TEST_FILE2	"tfile_2"
 
-int no_setup();
-int setup1();			/* setup function to test chmod for EPERM */
-int setup2();			/* setup function to test chmod for EBADF */
+void setup1();			/* setup function to test chmod for EPERM */
+void setup2();			/* setup function to test chmod for EBADF */
 
 int fd1;			/* File descriptor for testfile1 */
 int fd2;			/* File descriptor for testfile2 */
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int fd;
-	char *desc;
 	int exp_errno;
-	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	1, "Process is not owner/root", EPERM, setup1}, {
-	2, "File descriptor is not valid", EBADF, setup2}, {
-	0, NULL, 0, no_setup}
+	void (*setupfunc) ();
+} test_cases[] = {
+	{ 1, EPERM, setup1 },
+	{ 2, EBADF, setup2 }, 
 };
 
 char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
@@ -122,29 +119,18 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	char *test_desc;	/* test specific error message */
 	int fd;			/* test file descriptor */
-	int ind;		/* counter to test different test conditions */
+	int i;		/* counter to test different test conditions */
 	uid_t user_id;		/* Effective user id of a test process */
 	gid_t group_id;		/* Effective group id of a test process */
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-	/*
-	 * Invoke setup function to call individual test setup functions
-	 * to simulate test conditions.
-	 */
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Set uid/gid values to that of test process */
 	user_id = geteuid();
 	group_id = getegid();
 
@@ -152,207 +138,94 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			fd = Test_cases[ind].fd;
-			test_desc = Test_cases[ind].desc;
+		for (i = 0; i < TST_TOTAL; i++) {
 
-			if (fd == 1) {
+			fd = test_cases[i].fd;
+
+			if (fd == 1)
 				fd = fd1;
-			} else {
+			else
 				fd = fd2;
-			}
 
-			/*
-			 * Call fchown(2) to test different test conditions.
-			 * verify that it fails with -1 return value and
-			 * sets appropriate errno.
-			 */
 			TEST(fchown(fd, user_id, group_id));
 
-			/* Check return code from fchown(2) */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-					tst_resm(TPASS,
-						 "fchown() fails, %s, errno:%d",
-						 test_desc, TEST_ERRNO);
-				} else {
-					tst_resm(TFAIL, "fchown() fails, %s, "
-						 "errno:%d, expected errno:%d",
-						 test_desc, TEST_ERRNO,
-						 Test_cases[ind].exp_errno);
-				}
-			} else {
-				tst_resm(TFAIL, "fchown() returned %ld, expected"
-					 " -1, errno:%d", TEST_RETURN,
-					 Test_cases[ind].exp_errno);
-			}
+				if (TEST_ERRNO == test_cases[i].exp_errno)
+					tst_resm(TPASS|TTERRNO,
+					    "fchown failed as expected");
+				else
+					tst_resm(TFAIL|TTERRNO,
+					    "fchown failed unexpectedly; "
+					    "expected %d - %s",
+					    test_cases[i].exp_errno,
+					    strerror(test_cases[i].exp_errno));
+			} else
+				tst_resm(TFAIL, "fchown passed unexpectedly");
 		}
 
 	}
 
-	/*
-	 * Invoke cleanup() to delete the test directory/file(s) created
-	 * in the setup().
-	 */
 	cleanup();
 
-	  return (0);
+	tst_exit();
 }
 
-/*
- * setup(void) - performs all ONE TIME setup for this test.
- *
- *	Exit the test program on receipt of unexpected signals.
- *	Create a temporary directory and change directory to it.
- *	Invoke individual test setup functions according to the order
- *	set in struct. definition.
- */
 void setup()
 {
-	int ind;
-
-	ltpuser = getpwnam(bin_uid);
-
-	/* Capture unexpected signals */
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	int i;
 
 	TEST_PAUSE;
 
-/*
- * changed by prashant yendigeri because the temp directory creating and
- * deleting are with different uids, so this test case will fail in most of
- * the scenario.
- */
-	/* Make a temp dir and cd to it */
-	/* tst_tmpdir(); */
+	tst_require_root(NULL);
 
-	/* Switch to bin user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, cleanup, "Test must be run as root");
-	}
+	ltpuser = SAFE_GETPWNAM(NULL, bin_uid);
 
-	/* to let chown(TESTDIR, -1, getgid()) in tst_tmpdir() run
-	 * successfully even if getgid() is not in group_info of
-	 * the current process's task_struct till now
-	 */
+	tst_tmpdir();
+
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	initgroups("root", getgid());
 
-	if (setegid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setegid failed to "
-			 "to set the effective gid to %d", ltpuser->pw_uid);
-		perror("setegid");
-	}
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
-//prashant yendigeri added the below line
-	/* Make a temp dir and cd to it */
+	SAFE_SETEGID(NULL, ltpuser->pw_uid);
+	SAFE_SETEUID(NULL, ltpuser->pw_gid);
+
 	tst_tmpdir();
 
-	/* call individual setup functions */
-	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-		Test_cases[ind].setupfunc();
-	}
+	for (i = 0; i < TST_TOTAL; i++)
+		if (test_cases[i].setupfunc != NULL)
+			test_cases[i].setupfunc();
 }
 
-/*
- * setup1() - setup function for a test condition for which fchown(2)
- *	      returns -1 and sets errno to EPERM.
- *
- *  Create a test file under temporary directory.
- *  Get the current working directory of the process and invoke setuid
- *  to root program to change the ownership of testfile to that of
- *  "ltpuser2" user.
- */
-int setup1()
+void setup1()
 {
 	int old_uid;
 	struct passwd *nobody;
 
-	/* Create a testfile under temporary directory */
-	fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, 0666);
-	if (fd1 == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	fd1 = SAFE_OPEN(cleanup, TEST_FILE1, O_RDWR|O_CREAT, 0666);
 
 	old_uid = geteuid();
-	seteuid(0);
 
-	nobody = getpwnam("nobody");
-	if (!nobody)
-		tst_brkm(TBROK, cleanup, "Couldn't find user nobody: %s",
-						strerror(errno));
+	SAFE_SETEUID(cleanup, 0);
+
+	nobody = SAFE_GETPWNAM(cleanup, "nobody");
 
 	if (fchown(fd1, nobody->pw_uid, nobody->pw_gid) < 0)
-		tst_brkm(TBROK, cleanup, "Fail to modify %s ownership(s)! %s",
-					TEST_FILE1, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "fchown failed");
 
-	seteuid(old_uid);
-
-	return 0;
+	SAFE_SETEUID(cleanup, old_uid);
 }
 
-/*
- * setup2() - setup function for a test condition for which fchown(2)
- *	      returns -1 and sets errno to EBADF.
- *
- *  Create a testfile under temporary directory and close it such that
- *  fchown(2) attempts to modify the file which is already closed.
- */
-int setup2()
+void setup2()
 {
-	/* Create a testfile under temporary directory */
-	if ((fd2 = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
-
-	/* Close the testfile opened above */
-	if (close(fd2) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
-	return 0;
+	fd2 = SAFE_OPEN(cleanup, TEST_FILE2, O_RDWR|O_CREAT, 0666);
+	SAFE_CLOSE(cleanup, fd2);
 }
 
-/*
- * no_setup() - Some test conditions for mknod(2) do not any setup.
- *              Hence, this function just returns 0.
- */
-int no_setup()
-{
-	return 0;
-}
-
-/*
- * cleanup() - Performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *
- *	Print test timing stats and errno log if test executed with options.
- *	Close the testfile if still opened.
- *	Remove temporary directory and sub-directories/files under it
- *	created during setup().
- *	Exit the test program with normal exit code.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	if (close(fd1) == -1) {
-		tst_resm(TBROK, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	SAFE_CLOSE(NULL, fd1);
 
 	tst_rmdir();
 
