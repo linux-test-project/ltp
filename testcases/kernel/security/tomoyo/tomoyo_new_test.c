@@ -100,12 +100,14 @@ static void test_execute_bin_true(void)
 	char *argv[] = { "/bin/true", NULL };
 	char *envp[] = { "HOME=/", NULL };
 	int pipe_fd[2] = { EOF, EOF };
-	pipe(pipe_fd);
+	if (pipe(pipe_fd) == -1)
+		err(1, "pipe");
 	switch (fork()) {
 	case 0:
 		execve("/bin/true", argv, envp);
 		error = errno;
-		write(pipe_fd[1], &error, sizeof(error));
+		if (write(pipe_fd[1], &error, sizeof(error)) == -1)
+			err(1, "write");
 		_exit(0);
 		break;
 	case -1:
@@ -113,7 +115,7 @@ static void test_execute_bin_true(void)
 		break;
 	}
 	close(pipe_fd[1]);
-	read(pipe_fd[0], &error, sizeof(error));
+	(void)read(pipe_fd[0], &error, sizeof(error));
 	close(pipe_fd[0]);
 	result = error ? EOF : 0;
 	errno = error;

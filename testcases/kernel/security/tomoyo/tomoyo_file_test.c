@@ -100,12 +100,12 @@ static void stage_file_test(void)
 			err(1, "pipe");
 		if (fork() == 0) {
 			execl("/bin/true", "/bin/true", NULL);
-			write(pipe_fd[1], &errno, sizeof(errno));
+			if (write(pipe_fd[1], &errno, sizeof(errno)) == -1)
+				err(1, "write");
 			_exit(0);
 		}
 		close(pipe_fd[1]);
-		if (read(pipe_fd[0], &error, sizeof(error)) == -1)
-			err(1, "read");
+		(void)read(pipe_fd[0], &error, sizeof(error));
 		show_prompt("execve()");
 		errno = error;
 		show_result(error ? EOF : 0);
