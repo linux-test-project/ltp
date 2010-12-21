@@ -113,9 +113,8 @@ int main(int ac, char **av)
 	void do_child();
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "dd", &i_uclinux, &sem_id_1);
 #endif
@@ -257,6 +256,15 @@ void do_child(int i)
 	exit(0);
 }
 
+void
+sighandler(int sig)
+{
+	if (sig == SIGHUP)
+		return;
+	else
+		tst_brkm(TBROK, NULL, "unexpected signal %d received", sig);
+}
+
 #ifdef UCLINUX
 /*
  * do_child_uclinux() - capture signals, re-initialize s_buf then call do_child
@@ -266,7 +274,7 @@ void do_child_uclinux()
 {
 	int i = i_uclinux;
 
-	tst_sig(FORK, SIG_IGN, cleanup);
+	tst_sig(FORK, sighandler, cleanup);
 
 	/* initialize the s_buf buffer */
 	s_buf.sem_op = TC[i].op;
@@ -283,7 +291,7 @@ void do_child_uclinux()
 void setup(void)
 {
 
-	tst_sig(FORK, SIG_IGN, cleanup);
+	tst_sig(FORK, sighandler, cleanup);
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
