@@ -167,8 +167,7 @@ char *argv[];
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGTERM);
 	if (sigaction(SIGTERM, &act, NULL) < 0) {
-		tst_resm(TFAIL, "Sigset SIGTERM failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Sigset SIGTERM failed");
 	}
 	/* Set up array of unique keys for use in allocating message
 	 * queues
@@ -209,10 +208,8 @@ char *argv[];
 		/* Child does this */
 		if (pid == 0) {
 #ifdef UCLINUX
-			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0) {
-				tst_resm(TFAIL, "\tself_exec failed");
-				tst_exit();
-			}
+			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0)
+				tst_brkm(TFAIL, NULL, "\tself_exec failed");
 #else
 			procstat = 1;
 			exit(dotest(keyarray[i], i));
@@ -322,9 +319,7 @@ int child_process;
 	exit(PASS);
 }
 
-int doreader(id, key, child)
-int id, child;
-long key;
+int doreader(int id, long key, int child)
 {
 	int i, size;
 
