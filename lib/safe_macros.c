@@ -25,6 +25,20 @@ safe_basename(const char *file, const int lineno, void (*cleanup_fn)(void),
 }
 
 int
+safe_chdir(const char *file, const int lineno, void (*cleanup_fn)(void),
+    const char *path)
+{
+	int rval;
+
+	rval = chdir(path);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "chdir failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+int
 safe_close(const char *file, const int lineno, void (*cleanup_fn)(void),
     int fildes)
 {
@@ -103,6 +117,20 @@ safe_malloc(const char *file, const int lineno, void (*cleanup_fn)(void),
 	rval = malloc(size);
 	if (rval == NULL)
 		tst_brkm(TBROK|TERRNO, cleanup_fn, "malloc failed at %s:%d",
+		    file, lineno);
+
+	return (rval);
+}
+
+int
+safe_mkdir(const char *file, const int lineno, void (*cleanup_fn)(void),
+    const char *pathname, mode_t mode)
+{
+	int rval;
+
+	rval = mkdir(pathname, mode);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "mkdir failed at %s:%d",
 		    file, lineno);
 
 	return (rval);
