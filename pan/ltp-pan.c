@@ -51,17 +51,18 @@
  */
 /* $Id: ltp-pan.c,v 1.4 2009/10/15 18:45:55 yaberauneya Exp $ */
 
-#include <errno.h>
-#include <string.h>
 #include <sys/param.h>
-#include <sys/types.h>
-#include <sys/times.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
-#include <time.h>
-#include <stdlib.h>
-#include <limits.h>
+#include <sys/times.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/utsname.h>
+#include <errno.h>
+#include <err.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 #include "splitstr.h"
 #include "zoolib.h"
@@ -856,7 +857,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 	if (!quiet_mode)
 		write_test_start(active);
 
-    if ((cpid = fork()) < 0) {
+    if ((cpid = fork()) == -1) {
 	fprintf(stderr, "pan(%s): fork failed (tag %s).  errno:%d  %s\n",
 		panname, colle->name, errno, strerror(errno));
 	if (capturing) {
@@ -876,6 +877,13 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 
 	umask(0);
 
+#define WRITE_OR_DIE(fd, buf, buflen) do {				\
+	if (write((fd), (buf), (buflen)) != (buflen)) {			\
+		err(1, "failed to write out %zd bytes at line %d",	\
+		    buflen, __LINE__);					\
+	}								\
+} while(0)
+
 	/* if we're putting output into a buffer file, we need to do the
 	 * redirection now.  If we fail
 	 */
@@ -883,23 +891,23 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 	    if (dup2(c_stdout, fileno(stdout)) == -1) {
 		errlen = sprintf(errbuf, "pan(%s): couldn't redirect stdout for tag %s.  errno:%d  %s",
 				panname, colle->name, errno, strerror(errno));
-		write(errpipe[1], &errlen, sizeof(errlen));
-		write(errpipe[1], errbuf, errlen);
+		WRITE_OR_DIE(errpipe[1], &errlen, sizeof(errlen));
+		WRITE_OR_DIE(errpipe[1], errbuf, errlen);
 		exit(2);
 	    }
 	    if (dup2(c_stdout, fileno(stderr)) == -1) {
 		errlen = sprintf(errbuf, "pan(%s): couldn't redirect stderr for tag %s.  errno:%d  %s",
 				panname, colle->name, errno, strerror(errno));
-		write(errpipe[1], &errlen, sizeof(errlen));
-		write(errpipe[1], errbuf, errlen);
+		WRITE_OR_DIE(errpipe[1], &errlen, sizeof(errlen));
+		WRITE_OR_DIE(errpipe[1], errbuf, errlen);
 		exit(2);
 	    }
 	} else { /* stderr still needs to be redirected */
 	    if (dup2(fileno(stdout), fileno(stderr)) == -1) {
 		errlen = sprintf(errbuf, "pan(%s): couldn't redirect stderr for tag %s.  errno:%d  %s",
 				panname, colle->name, errno, strerror(errno));
-		write(errpipe[1], &errlen, sizeof(errlen));
-		write(errpipe[1], errbuf, errlen);
+		WRITE_OR_DIE(errpipe[1], &errlen, sizeof(errlen));
+		WRITE_OR_DIE(errpipe[1], errbuf, errlen);
 		exit(2);
 	    }
 	}
@@ -925,8 +933,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 		    "pan(%s): execvp of '%s' (tag %s) failed.  errno:%d  %s",
 		    panname, arg_v[0], colle->name, errno, strerror(errno));
 	}
-	write(errpipe[1], &errlen, sizeof(errlen));
-	write(errpipe[1], errbuf, errlen);
+	WRITE_OR_DIE(errpipe[1], &errlen, sizeof(errlen));
+	WRITE_OR_DIE(errpipe[1], errbuf, errlen);
 	exit(errno);
     }
 
@@ -935,7 +943,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
     /* subst_pcnt_f() allocates the command line dynamically
      * free the malloc to prevent a memory leak
      */
-    if (colle->pcnt_f) free(c_cmdline);
+    if (colle->pcnt_f)
+	free(c_cmdline);
 
     close(errpipe[1]);
 
