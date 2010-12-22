@@ -53,6 +53,17 @@ char *TCID = "acct01";
 int TST_TOTAL = 6;
 
 char tmpbuf[80];
+int fd;
+
+static void cleanup(void)
+{
+
+	if (acct(NULL) == -1)
+		tst_resm(TBROK|TERRNO, "acct(NULL) failed");
+
+	tst_rmdir();
+}
+
 
 static void setup(void)
 {
@@ -79,15 +90,6 @@ static void setup(void)
 	}
 }
 
-static void cleanup(void)
-{
-
-	if (acct(NULL) == -1)
-		tst_resm(TBROK|TERRNO, "acct(NULL) failed");
-
-	tst_rmdir();
-}
-
 int main(int argc, char *argv[])
 {
 	struct passwd *pwent;
@@ -106,7 +108,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TFAIL|TERRNO, cleanup,
 		    "didn't fail as expected; expected EACCES");
 
-	if (acct("does/not/exist") == -1 && errno == ENOTDIR)
+	if (acct("/tmp/does/not/exist") == -1 && errno == ENOTDIR)
 		tst_resm(TPASS, "Failed with ENOTDIR as expected");
 	else
 		tst_brkm(TFAIL|TERRNO, cleanup,
@@ -120,9 +122,9 @@ int main(int argc, char *argv[])
 	if (acct(tmpbuf) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "acct failed unexpectedly");
 
-	pwent = SAFE_GETPWNAM("nobody");
+	pwent = SAFE_GETPWNAM(cleanup, "nobody");
 
-	SAFE_SETEUID(pwent->pw_uid);
+	SAFE_SETEUID(cleanup, pwent->pw_uid);
 
 	if (acct(tmpbuf) == -1 && errno == EPERM)
 		tst_resm(TPASS, "acct failed as expected with EPERM");
@@ -130,7 +132,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK|TERRNO, cleanup,
 		    "acct didn't fail as expected with EPERM");
 
-	SAFE_SETEGID(0);
+	SAFE_SETEGID(cleanup, 0);
 
 	SAFE_UNLINK(cleanup, tmpbuf);
 
