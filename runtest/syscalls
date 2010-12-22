@@ -524,7 +524,7 @@ mkdir08 mkdir08
 mkdir09 mkdir09
 
 #mkdirat test cases
-mkdirat01 mkdir01
+mkdirat01 mkdirat01
 
 mknod01 mknod01
 mknod02 mknod02
