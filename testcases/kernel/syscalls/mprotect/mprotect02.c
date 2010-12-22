@@ -78,7 +78,7 @@ int main(int ac, char **av)
 	char *msg;
 	char *buf = "abcdefghijklmnopqrstuvwxyz";
 
-	int bytes_to_write, fd, i, num_bytes;
+	int bytes_to_write, fd, num_bytes;
 	pid_t pid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -186,7 +186,6 @@ int main()
 
 static void setup()
 {
-	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
