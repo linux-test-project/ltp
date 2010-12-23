@@ -138,9 +138,8 @@ int main(int ac, char **av)
 	void check_functionality(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(do_child, "ddd", &stat_i, &stat_time, &shm_id_1);
@@ -485,10 +484,19 @@ void func_rmid()
 	shm_id_1 = -1;
 }
 
+/*
+ * sighandler() - handle signals, in this case SIGUSR1 is the only one expected
+ */
+void sighandler(sig)
+{
+	if (sig != SIGUSR1)
+		tst_resm(TBROK, "received unexpected signal %d", sig);
+}
+
 void setup(void)
 {
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, sighandler, cleanup);
 
 	TEST_PAUSE;
 

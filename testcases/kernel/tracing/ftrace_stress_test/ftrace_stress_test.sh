@@ -34,6 +34,7 @@ export TRACING_PATH="$PWD/debugfs/tracing"
 export SPATH="$TPATH/ftrace_stress"
 
 test_interval=$1
+test_success=true
 
 save_old_setting()
 {
@@ -100,22 +101,22 @@ restore_old_setting()
 
 clean_up()
 {
-	kill -KILL $pid1
-	kill -KILL $pid2
-	kill -KILL $pid3
-	kill -KILL $pid4
-	kill -KILL $pid5
-	kill -KILL $pid6
-	kill -KILL $pid7
-	kill -KILL $pid8
-	kill -KILL $pid9
-	kill -KILL $pid10
-	kill -KILL $pid11
-	kill -USR1 $pid12
-	kill -KILL $pid13
-	kill -KILL $pid14
-	kill -KILL $pid15
-	kill -KILL $pid16
+	kill -KILL $pid1 || test_success=false
+	kill -KILL $pid2 || test_success=false
+	kill -KILL $pid3 || test_success=false
+	kill -KILL $pid4 || test_success=false
+	kill -KILL $pid5 || test_success=false
+	kill -KILL $pid6 || test_success=false
+	kill -KILL $pid7 || test_success=false
+	kill -KILL $pid8 || test_success=false
+	kill -KILL $pid9 || test_success=false
+	kill -KILL $pid10 || test_success=false
+	kill -KILL $pid11 || test_success=false
+	kill -USR1 $pid12 || test_success=false
+	kill -KILL $pid13 || test_success=false
+	kill -KILL $pid14 || test_success=false
+	kill -KILL $pid15 || test_success=false
+	kill -KILL $pid16 || test_success=false
 
 	sleep 2
 	restore_old_setting
@@ -233,5 +234,10 @@ clean_up
 
 echo "Ftrace Stress Test End"
 
-tst_resm TPASS "finished running the test. Run dmesg to double-check for bugs"
+if $test_success; then
+	tst_resm TPASS "finished running the test. Run dmesg to double-check for bugs"
+else
+	tst_resm TFAIL "please check log message."
+	exit 1
+fi
 

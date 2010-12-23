@@ -1436,7 +1436,7 @@ allocsp_f(int opno, long r)
 	e = ioctl(fd, XFS_IOC_ALLOCSP64, &fl) < 0 ? errno : 0;
 	if (v)
 		printf("%d/%d: ioctl(XFS_IOC_ALLOCSP64) %s %lld 0 %d\n",
-			procid, opno, f.path, off, e);
+			procid, opno, f.path, (long long)off, e);
 	free_pathname(&f);
 	close(fd);
 }
@@ -1571,7 +1571,7 @@ bulkstat_f(int opno, long r)
 	free(t);
 	if (verbose)
 		printf("%d/%d: bulkstat nent %d total %lld\n",
-			procid, opno, nent, total);
+			procid, opno, nent, (long long)total);
 	close(fd);
 }
 
@@ -1704,7 +1704,7 @@ creat_f(int opno, long r)
 				geom.rtextsize * geom.blocksize * extsize;
 			if (ioctl(fd, XFS_IOC_FSSETXATTR, &a) < 0)
 				e1 = errno;
-			esz = a.fsx_estsize;
+			esz = a.fsx_extsize;
 
 		}
 #endif
@@ -1746,7 +1746,7 @@ void
 dread_f(int opno, long r)
 {
 	__int64_t	align;
-	char		*buf;
+	char		*buf = NULL;
 	struct dioattr	diob;
 	int		e;
 	pathname_t	f;
@@ -1826,7 +1826,14 @@ dread_f(int opno, long r)
 		len = align;
 	else if (len > diob.d_maxiosz)
 		len = diob.d_maxiosz;
-	buf = memalign(diob.d_mem, len);
+	if ((e = posix_memalign((void **)&buf, diob.d_mem, len)) != 0) {
+		fprintf(stderr, "posix_memalign: %s\n", strerror(e));
+		exit(1);
+	}
+	if (buf == NULL) {
+		fprintf(stderr, "posix_memalign: buf is NULL\n");
+		exit(1);
+	}
 	e = read(fd, buf, len) < 0 ? errno : 0;
 	free(buf);
 	if (v)
@@ -1840,7 +1847,7 @@ void
 dwrite_f(int opno, long r)
 {
 	__int64_t	align;
-	char		*buf;
+	char		*buf = NULL;
 	struct dioattr	diob;
 	int		e;
 	pathname_t	f;
@@ -1909,7 +1916,14 @@ dwrite_f(int opno, long r)
 		len = align;
 	else if (len > diob.d_maxiosz)
 		len = diob.d_maxiosz;
-	buf = memalign(diob.d_mem, len);
+	if ((e = posix_memalign((void **)&buf, diob.d_mem, len)) != 0) {
+		fprintf(stderr, "posix_memalign: %s\n", strerror(e));
+		exit(1);
+	}
+	if (buf == NULL) {
+		fprintf(stderr, "posix_memalign: buf is NULL\n");
+		exit(1);
+	}
 	off %= maxfsize;
 	lseek64(fd, off, SEEK_SET);
 	memset(buf, nameseq & 0xff, len);
@@ -2002,7 +2016,7 @@ freesp_f(int opno, long r)
 	e = ioctl(fd, XFS_IOC_FREESP64, &fl) < 0 ? errno : 0;
 	if (v)
 		printf("%d/%d: ioctl(XFS_IOC_FREESP64) %s %lld 0 %d\n",
-			procid, opno, f.path, off, e);
+			procid, opno, f.path, (long long)off, e);
 	free_pathname(&f);
 	close(fd);
 }
@@ -2374,8 +2388,8 @@ resvsp_f(int opno, long r)
 	fl.l_len = (off64_t)(random() % (1024 * 1024));
 	e = ioctl(fd, XFS_IOC_RESVSP64, &fl) < 0 ? errno : 0;
 	if (v)
-		printf("%d/%d: ioctl(XFS_IOC_RESVSP64) %s %lld %lld %d\n",
-			procid, opno, f.path, off, fl.l_len, e);
+		printf("%d/%d: ioctl(XFS_IOC_RESVSP64) %s %lld %ld %d\n",
+			procid, opno, f.path, (long long)off, fl.l_len, e);
 	free_pathname(&f);
 	close(fd);
 }
@@ -2591,8 +2605,8 @@ unresvsp_f(int opno, long r)
 	fl.l_len = (off64_t)(random() % (1 << 20));
 	e = ioctl(fd, XFS_IOC_UNRESVSP64, &fl) < 0 ? errno : 0;
 	if (v)
-		printf("%d/%d: ioctl(XFS_IOC_UNRESVSP64) %s %lld %lld %d\n",
-			procid, opno, f.path, off, fl.l_len, e);
+		printf("%d/%d: ioctl(XFS_IOC_UNRESVSP64) %s %lld %ld %d\n",
+			procid, opno, f.path, (long long)off, fl.l_len, e);
 	free_pathname(&f);
 	close(fd);
 }

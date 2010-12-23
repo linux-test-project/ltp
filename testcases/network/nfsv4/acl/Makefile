@@ -22,8 +22,8 @@
 
 top_srcdir		?= ../../../..
 
-include $(top_srcdir)/include/mk/env_post.mk
+include $(top_srcdir)/include/mk/env_pre.mk
 
-LDLIBS			+= -lacl
+LDLIBS			+= $(ACL_LIBS)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

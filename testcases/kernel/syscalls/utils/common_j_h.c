@@ -42,7 +42,7 @@
 #define barrier() __asm__ __volatile__("": : :"memory")
 #define WITH_SIGNALS_BLOCKED(code) {					\
 		sigset_t held_sigs_;					\
-		sigfillset(&held_sigs_)					\
+		sigfillset(&held_sigs_);				\
 		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_);	\
 		barrier();						\
 		code;							\

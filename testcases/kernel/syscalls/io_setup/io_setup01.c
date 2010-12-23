@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) Crackerjack Project., 2007
+ *   Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "io_setup01";	/* Test program identifier.    */
+char *TCID = "io_setup01";
 
 int TST_TOTAL = 4;
 
@@ -33,36 +34,32 @@ int TST_TOTAL = 4;
 #include <errno.h>
 #include <string.h>
 
-/*
- * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-int main(int argc, char **argv)
+/*
+   DESCRIPTION
+   io_setup  creates  an asynchronous I/O context capable of receiving at
+   least nr_events.  ctxp must not point to an AIO context  that  already
+   exists, and must be initialized to 0 prior to the call.  On successful
+   creation of the AIO context, *ctxp is filled  in  with  the  resulting
+   handle.
+ */
+int main(int argc, char *argv[])
 {
-	int lc;			/* loop counter */
-	char *msg;		/* parse_opts() return message */
+	int lc;
+	char *msg;
 
-	io_context_t ctx = -1;
+	io_context_t ctx;
 	int expected_return;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
@@ -70,21 +67,10 @@ int main(int argc, char **argv)
 
 	setup();
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/*
-
-		   DESCRIPTION
-		   io_setup  creates  an asynchronous I/O context capable of receiving at
-		   least nr_events.  ctxp must not point to an AIO context  that  already
-		   exists, and must be initialized to 0 prior to the call.  On successful
-		   creation of the AIO context, *ctxp is filled  in  with  the  resulting
-		   handle.
-		 */
-		memset(&ctx, 0, sizeof(io_context_t));
+		memset(&ctx, 0, sizeof(ctx));
 		expected_return = 0;
 		TEST(io_setup(1, &ctx));
 
@@ -96,16 +82,7 @@ int main(int argc, char **argv)
 				 "expected %d", TEST_RETURN, expected_return);
 		}
 
-		/*
-		   RETURN VALUE
-		   io_setup  returns 0 on success; otherwise, one of the errors listed in
-		   the "Errors" section is returned.
-
-		   ERRORS
-		   EINVAL ctxp is not initialized, or the specified nr_events exceeds in-
-		   ternal limits. nr_events should be greater than 0.
-		 */
-		memset(&ctx, 1, sizeof(io_context_t));
+		memset(&ctx, 1, sizeof(ctx));
 		expected_return = -EINVAL;
 		TEST(io_setup(1, &ctx));
 
@@ -121,7 +98,7 @@ int main(int argc, char **argv)
 				 "expected %d", TEST_RETURN, expected_return);
 		}
 
-		memset(&ctx, 0, sizeof(io_context_t));
+		memset(&ctx, 0, sizeof(ctx));
 		expected_return = -EINVAL;
 		TEST(io_setup(-1, &ctx));
 		if (TEST_RETURN == 0) {
@@ -137,7 +114,6 @@ int main(int argc, char **argv)
 		}
 
 		/*
-
 		   EFAULT An invalid pointer is passed for ctxp.
 		 */
 		expected_return = -EFAULT;
@@ -154,26 +130,15 @@ int main(int argc, char **argv)
 				 "expected %d", TEST_RETURN, expected_return);
 		}
 
-		/*
-		   ENOMEM Insufficient kernel resources are available.
-
-		   EAGAIN The  specified  nr_events exceeds the user's limit of available
-		   events.
-		 */
-		/*
-		   ENOSYS io_setup is not implemented on this architecture.
-		 */
-		/* Crackerjack has a test case for ENOSYS. But Testing for ENOSYS
-		   is not meaningful for LTP, I think.
-		   -- Masatake */
 	}
 	cleanup();
 
 	tst_exit();
 }
 #else
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
+	tst_exit();
 }
 #endif

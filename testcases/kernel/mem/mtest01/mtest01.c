@@ -59,7 +59,8 @@ void handler(int signo)
 
 int main(int argc, char* argv[])
 {
-	char c, *mem;
+	int c;
+	char *mem;
 	float percent;
 	unsigned int maxpercent = 0, dowrite = 0, verbose=0, j;
 	unsigned long bytecount, alloc_bytes, max_pids;

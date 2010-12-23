@@ -90,6 +90,7 @@ static int check_mode(int, int, ...);
 %option noinput
 %option nolex-compat
 %option nounput
+%option yylineno
 
 UI      [0-9]+
 A       [a-zA-Z]+

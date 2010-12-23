@@ -146,7 +146,7 @@ int main(int ac, char **av)
 			tst_resm(TWARN|TERRNO, "close(pfd[0]) failed");
 		}
 
-		parent_env = getenv("TERM");
+		parent_env = getenv("TERM") ? : "";
 
 		if ((strcmp(buff, parent_env)) == 0) {
 			tst_resm(TPASS, "Test Passed");

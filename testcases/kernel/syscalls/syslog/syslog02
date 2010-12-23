@@ -36,8 +36,6 @@ export TST_TOTAL=8
 
 syslog_case2()
 {
-	RSYSLOG_CONFIG=""
-
 	level_no=0
 	levels="emerg alert crit err warning notice info debug"
 	tst_resm TINFO "testing whether messages are logged into log file"
@@ -47,7 +45,12 @@ syslog_case2()
 		tst_resm TINFO "Doing level: $level..."
 
 		case "$CONFIG_FILE" in
-		/etc/syslog.conf|/etc/rsyslog.conf)
+		/etc/syslog.conf)
+			# Create the configuration file specific to this level
+			echo "mail.$level	$MAILLOG" >> $CONFIG_FILE
+			;;
+
+		/etc/rsyslog.conf)
 			# Create the configuration file specific to this level
 			echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
 			echo "mail.$level	$MAILLOG" >> $CONFIG_FILE
@@ -104,7 +107,7 @@ syslog_case2()
 		# Increment the level_no for next level...
 		: $(( level_no += 1 ))
 
-		tst_count_incr
+		incr_tst_count
 	done
 }
 

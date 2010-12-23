@@ -74,7 +74,7 @@ syslog_case3()
 	fi
 
 	newvalue4=`grep -c "SYSLOG_CASE3" /var/log/messages`
-	if [ "x$(( $newvalue4 - $oldvalue4 ))" != 1 ]; then
+	if [ "x$(( $newvalue4 - $oldvalue4 ))" != x1 ]; then
 		status_flag=1
 	fi
 }

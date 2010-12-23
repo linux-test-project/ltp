@@ -100,12 +100,13 @@
 #include "test.h"
 #include "usctest.h"
 
+char *TCID = "madvise03";	/* Test program modifier */
+
 #ifdef MADV_REMOVE
 
 /* Uncomment the following line in DEBUG mode */
 //#define MM_DEBUG 1
 
-char *TCID = "madvise03";	/* Test program modifier */
 int TST_TOTAL = 3;		/* Total no of test cases */
 
 #define BUFFER_SIZE  256

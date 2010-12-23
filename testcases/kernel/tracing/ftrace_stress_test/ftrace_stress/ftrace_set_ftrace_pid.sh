@@ -36,7 +36,12 @@ for ((; ; ))
 			eval echo $str >> "$TRACING_PATH"/set_ftrace_pid
 		}
 
-		echo > "$TRACING_PATH"/set_ftrace_pid
+		if ! echo > "$TRACING_PATH"/set_ftrace_pid >/dev/null 2>&1; then
+			if ! echo -1 > "$TRACING_PATH"/set_ftrace_pid >/dev/null 2>&1; then
+				tst_resm TBROK "Cannot disable set_ftrace_pid!"
+				exit 1
+			fi
+		fi
 	}
 
 	sleep 1

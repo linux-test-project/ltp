@@ -40,7 +40,6 @@ AC_CHECK_HEADERS([ \
     linux/mempolicy.h \
     linux/module.h \
     linux/netlink.h \
-    sys/acl.h \
     sys/epoll.h \
     sys/inotify.h \
     sys/jfsdmapi.h \
@@ -163,5 +162,6 @@ LTP_CHECK_SYSCALL_UNSHARE
 LTP_CHECK_TASKSTATS
 LTP_CHECK_TIME
 LTP_CHECK_MADVISE
+LTP_CHECK_ACL_SUPPORT
 
 AC_OUTPUT

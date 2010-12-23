@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) Crackerjack Project., 2007
+ *   Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "io_cancel01";	/* Test program identifier.    */
+char *TCID = "io_cancel01";
 
 int TST_TOTAL = 1;
 
@@ -33,28 +34,46 @@ int TST_TOTAL = 1;
 #include <errno.h>
 #include <string.h>
 
-void cleanup(void)
+static void cleanup(void)
 {
 	TEST_CLEANUP;
-
 }
 
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
 }
 
-int main(int argc, char **argv)
-{
-	int lc;			/* loop counter */
-	char *msg;		/* parse_opts() return message */
+/*
+   DESCRIPTION
+   io_cancel attempts to cancel an asynchronous I/O operation  previously
+   submitted  with  the io_submit system call.  ctx_id is the AIO context
+   ID of the operation to be cancelled.  If the AIO context is found, the
+   event  will be cancelled and then copied into the memory pointed to by
+   result without being placed into the completion queue.
 
-	io_context_t ctx = 0;
-	long expected_return;
+   RETURN VALUE
+   io_cancel returns 0 on success; otherwise, it returns one of  the  er-
+   rors listed in the "Errors" section.
+
+   ERRORS
+   EINVAL The AIO context specified by ctx_id is invalid.
+
+   EFAULT One of the data structures points to invalid data.
+ */
+
+#define EXP_RET (-EFAULT)
+
+int main(int argc, char *argv[])
+{
+	int lc;
+	char *msg;
+
+	io_context_t ctx;
+
+	memset(&ctx, 0, sizeof(ctx));
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -64,56 +83,36 @@ int main(int argc, char **argv)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		/*
-		   DESCRIPTION
-		   io_cancel attempts to cancel an asynchronous I/O operation  previously
-		   submitted  with  the io_submit system call.  ctx_id is the AIO context
-		   ID of the operation to be cancelled.  If the AIO context is found, the
-		   event  will be cancelled and then copied into the memory pointed to by
-		   result without being placed into the completion queue.
-
-		   RETURN VALUE
-		   io_cancel returns 0 on success; otherwise, it returns one of  the  er-
-		   rors listed in the "Errors" section.
-
-		   ERRORS
-		   EINVAL The AIO context specified by ctx_id is invalid.
-
-		   EFAULT One of the data structures points to invalid data.
-		 */
-		expected_return = -EFAULT;
 		TEST(io_cancel(ctx, NULL, NULL));
 
-		if (TEST_RETURN == 0) {
+		switch (TEST_RETURN) {
+		case 0:
 			tst_resm(TFAIL, "call succeeded unexpectedly");
-			continue;
-		}
-
-		if (TEST_RETURN == expected_return) {
+		break;
+		case EXP_RET:
 			tst_resm(TPASS, "expected failure - "
 				 "returned value = %ld : %s", TEST_RETURN,
-				 strerror(-1 * TEST_RETURN));
-		} else {
-			tst_resm(TFAIL, "unexpected returned value - %ld - "
-				 "expected %ld", TEST_RETURN, expected_return);
+				 strerror(-TEST_RETURN));
+		break;
+		case -ENOSYS:
+			tst_resm(TCONF, "io_cancel returned ENOSYS");
+		break;
+		default:
+			tst_resm(TFAIL, "unexpected returned value - %s (%i) - "
+				 "expected %s (%i)", strerror(-TEST_RETURN),
+				 (int)TEST_RETURN, strerror(-EXP_RET), EXP_RET);
+		break;
 		}
 
-		/*
-		   EAGAIN The iocb specified was not cancelled.
-
-		   ENOSYS io_cancel is not implemented on this architecture.
-		 */
-		/* Crackerjack has a test case for ENOSYS. But Testing for ENOSYS
-		   is not meaningful for LTP, I think.
-		   -- Masatake */
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 #else
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	tst_brkm(TCONF, NULL, "System doesn't have libaio support");
+	tst_exit();
 }
 #endif

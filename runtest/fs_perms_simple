@@ -2,13 +2,13 @@
 # These tests are setting file permissions/group/uid and are trying to
 # open/write/execute the file.
 #
-#
-#
 # fs_perms file_mode file_uid file_gid test_uid test_gid mode (r|w|x) expected_result
-#
-fs_perms01 fs_perms 001 99 99 12 100 x 0
-fs_perms02 fs_perms 010 99 99 200 99 x 0
-fs_perms03 fs_perms 100 99 99 99 500 x 0
+
+# We are executing shell script, thuss 
+# both exec and read right is needed.
+fs_perms01 fs_perms 005 99 99 12 100 x 0
+fs_perms02 fs_perms 050 99 99 200 99 x 0
+fs_perms03 fs_perms 500 99 99 99 500 x 0
 fs_perms04 fs_perms 002 99 99 12 100 w 0
 fs_perms05 fs_perms 020 99 99 200 99 w 0
 fs_perms06 fs_perms 200 99 99 99 500 w 0

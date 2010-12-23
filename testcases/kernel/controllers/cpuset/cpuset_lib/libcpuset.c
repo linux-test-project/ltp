@@ -3080,13 +3080,15 @@ static int sched_setaffinity(pid_t pid, unsigned len, unsigned long *mask)
 	return syscall(__NR_sched_setaffinity, pid, len, mask);
 }
 
-#if HAVE_DECL_MEMPOLICY
+#if HAVE_DECL_MPOL_F_ADDR && HAVE_DECL_MPOL_F_NODE
 static int get_mempolicy(int *policy, unsigned long *nmask,
 			unsigned long maxnode, void *addr, int flags)
 {
 	return syscall(__NR_get_mempolicy, policy, nmask, maxnode, addr, flags);
 }
+#endif
 
+#if HAVE_DECL_MPOL_BIND || HAVE_DECL_MPOL_DEFAULT
 static int set_mempolicy(int mode, unsigned long *nmask, unsigned long maxnode)
 {
 	return syscall(__NR_set_mempolicy, mode, nmask, maxnode);

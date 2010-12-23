@@ -86,15 +86,13 @@ int main(int argc, char* argv[])
 
 void check(void)
 {
-	int lc;
+	long lc;
 	pid_t last_pid = 0;
 	pid_t pid;
 	int child_exit_code, distance, reaped, status;
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		if (lc % PIDMAX == 0)
-			tst_resm(TINFO, "Iter: %d", lc/PIDMAX);
 		child_exit_code = lc % RETURN;
 		switch (pid = fork()) {
 		case -1:
@@ -103,31 +101,36 @@ void check(void)
 			exit(child_exit_code);
 		default:
 			if (lc > 0) {
-				tst_resm(TINFO, "last_pid = %d pid = %d",
-					last_pid, pid);
 				distance = pid_distance(last_pid, pid);
-				if (distance == 0)
+				if (distance == 0) {
 					tst_resm(TFAIL,
 						"Unexpected pid sequence: "
 						"previous fork: pid=%d, "
 						"current fork: pid=%d for "
-						"iteration=%d.", last_pid, pid,
+						"iteration=%ld.", last_pid, pid,
 						lc);
+					return;
+				}
 			}
 			last_pid = pid;
 
 			reaped = wait(&status);
-			if (reaped != pid)
+			if (reaped != pid) {
 				tst_resm(TFAIL,
 					"Wait return value: expected pid=%d, "
-					"got %d, iteration %d.", pid, reaped,
+					"got %d, iteration %ld.", pid, reaped,
 					lc);
-			else if (WEXITSTATUS(status) != child_exit_code)
+				return;
+			}
+			else if (WEXITSTATUS(status) != child_exit_code) {
 				tst_resm(TFAIL, "Unexpected exit status %x, "
-					"iteration %d.", WEXITSTATUS(status),
+					"iteration %ld.", WEXITSTATUS(status),
 					lc);
+				return;
+			}
 		}
 	}
+	tst_resm(TPASS, "%ld pids forked, all passed", lc);
 }
 
 void setup(void)
@@ -171,9 +174,9 @@ void cleanup(void)
 	TEST_CLEANUP;
 }
 
-/* The distance mod 32768 between two pids, where the first pid is
+/* The distance mod PIDMAX between two pids, where the first pid is
    expected to be smaller than the second. */
 int pid_distance(pid_t first, pid_t second)
 {
-	return (second + 32768 - first) % 32768;
+	return (second + PIDMAX - first) % PIDMAX;
 }

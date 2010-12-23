@@ -271,16 +271,17 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	TEST_PAUSE;
-
 	/* ... */
+
+	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	/* ... */
 
 	TEST_CLEANUP;
+
+	/* ... */
 
 	tst_rmdir();
 }

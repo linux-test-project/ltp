@@ -61,14 +61,16 @@
 #include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
+#include "config.h"
 
 #define SIZE (5*1024*1024)
 
 char *TCID = "mmap10";
 int TST_TOTAL = 1;
 
-#ifdef HAVE_MADV_MERGEABLE
-static int fd, opt_anon, opt_ksm;
+static int  fd, opt_anon, opt_ksm;
+static long ps;
+static char *x;
 
 void setup(void);
 void cleanup(void);
@@ -89,73 +91,92 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, options, help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	if (opt_ksm)
+	{
+#ifdef HAVE_MADV_MERGEABLE
+		tst_resm(TINFO, "add to KSM regions.");
+#else
+		tst_brkm(TCONF, NULL, "MADV_MERGEABLE missing in sys/mman.h");
+#endif
+	}
+	if (opt_anon)
+		tst_resm(TINFO, "use anonymous pages.");
+	else
+		tst_resm(TINFO, "use /dev/zero.");
+
 	setup();
+
+	tst_resm(TINFO, "start tests.");
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		tst_resm(TINFO, "start tests.");
 		mmapzero();
 	}
+
 	cleanup();
 	tst_exit();
 }
 
 void mmapzero(void)
 {
-	char *x;
 	int n;
 
 	if (opt_anon) {
-		tst_resm(TINFO, "use anonymous pages.");
-		x = mmap(NULL, SIZE+SIZE-4096, PROT_READ|PROT_WRITE,
+		x = mmap(NULL, SIZE+SIZE-ps, PROT_READ|PROT_WRITE,
 			MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 	} else {
-		tst_resm(TINFO, "use /dev/zero.");
 		if ((fd = open("/dev/zero", O_RDWR, 0666)) < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "open");
-		x = mmap(NULL, SIZE+SIZE-4096, PROT_READ|PROT_WRITE,
+		x = mmap(NULL, SIZE+SIZE-ps, PROT_READ|PROT_WRITE,
 			MAP_PRIVATE, fd, 0);
 	}
 	if (x == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+		tst_brkm(TFAIL|TERRNO, cleanup, "mmap");
+#ifdef HAVE_MADV_MERGEABLE
 	if (opt_ksm) {
-		tst_resm(TINFO, "add to KSM regions.");
-		if (madvise(x, SIZE+SIZE-4096, MADV_MERGEABLE) == -1)
+		if (madvise(x, SIZE+SIZE-ps, MADV_MERGEABLE) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "madvise");
 	}
+#endif
 	x[SIZE] = 0;
 
 	switch(n = fork()) {
 	case -1:
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
 	case 0:
-		if (munmap(x + SIZE+4096, SIZE-4096*2) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+		if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
+			tst_brkm(TFAIL|TERRNO, cleanup, "munmap");
 		exit(0);
 	default:
 		break;
 	}
+
 	switch(n = fork()) {
 	case -1:
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
 	case 0:
-		if (munmap(x + SIZE+4096, SIZE-4096*2) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+		if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
+			tst_brkm(TFAIL|TERRNO, cleanup, 
+					"subsequent munmap #1");
 		exit(0);
 	default:
 		switch (n = fork()) {
 		case -1:
 			tst_brkm(TBROK|TERRNO, cleanup, "fork");
 		case 0:
-			if (munmap(x + SIZE+4096, SIZE-4096*2) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+			if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
+				tst_brkm(TFAIL|TERRNO, cleanup, 
+						"subsequent munmap #2");
 			exit(0);
 		default:
 			break;
 		}
 		break;
 	}
-	if (munmap(x, SIZE+SIZE-4096) == -1)
-		tst_resm(TFAIL|TERRNO, "munmap");
+
+	if (munmap(x, SIZE+SIZE-ps) == -1)
+		tst_resm(TFAIL|TERRNO, "munmap all");
+
 	while (waitpid(-1, &n, WUNTRACED | WCONTINUED) > 0)
 		if (WEXITSTATUS(n) != 0)
 			tst_resm(TFAIL, "child exit status is %d",
@@ -173,6 +194,9 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
+
+	if ((ps = sysconf(_SC_PAGESIZE)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "sysconf(_SC_PAGESIZE)");
 }
 
 void help(void)
@@ -180,9 +204,3 @@ void help(void)
 	printf("  -a      Test anonymous pages\n");
 	printf("  -s      Add to KSM regions\n");
 }
-#else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "MADV_MERGEABLE missing in sys/mman.h");
-}
-#endif
