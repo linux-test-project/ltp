@@ -1,6 +1,7 @@
 CVS
 *~
 *.o
+*.obj
 *.gdb
 lib*.a
 
@@ -23,7 +24,16 @@ autom4te.cache
 /execltp
 /ltp-devel.spec
 /README.ltp-devel
+/Version
+/include/mk/config.mk
+/include/mk/features.mk
 /m4/ltp-version.m4
+/lib/ltp.pc
+/pan/ltp-bump
+/pan/ltp-pan
+/pan/ltp-scanner
+/tools/gethost
+/tools/rand_lines
 
 .gitattributes
 .pc/
