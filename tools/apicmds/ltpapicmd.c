@@ -73,21 +73,10 @@
 #include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 char *TCID;             /* Name of the testcase                               */
 int TST_TOTAL;          /* Total number of testcases                          */
-extern int Tst_count;   /* running cnt of num test results reported so far    */
-
-/*
- * Function: Cleanup
- *
- * Description: dummy does nothing
- */
-void
-cleanup()
-{
-}
-
 
 /*
  * Function:    ident_ttype - Return test result type.
@@ -163,10 +152,10 @@ int main( int argc,
     char *tst_count;    /* sets the value of Tst_count with this value        */
     char *file_name;    /* contents of this file are printed; see tst_res()   */
 
-    arg_fmt = malloc(1024);
-    cmd_name = malloc(1024);
+    arg_fmt = SAFE_MALLOC(NULL, 1024);
+    cmd_name = SAFE_MALLOC(NULL, 1024);
 
-    strcpy(cmd_name, (char *)basename(argv++[0]));
+    strcpy(cmd_name, SAFE_BASENAME(NULL, argv++[0]));
 
     if (((TCID = getenv("TCID")) == NULL) ||
             ((tst_total = getenv("TST_TOTAL")) == NULL) ||
@@ -178,6 +167,8 @@ int main( int argc,
                     "export TCID=<test name>\n"
                     "export TST_TOTAL=<Total Number of Tests >\n"
                     "export TST_COUNT=<Test case number>\n\n");
+	    /* Make sure the user knows there's an error. */
+	    abort();
         }
     }
     else
@@ -189,18 +180,18 @@ int main( int argc,
         if (strcmp(TCID, " ") == 0)
         {
             fprintf(stderr, "Variable TCID not set, use: TCID=<test name>\n");
-            exit(-1);
+            exit(1);
         }
-        if (TST_TOTAL == 0)
+        if (TST_TOTAL <= 0)
         {
             fprintf(stderr, "Variable TST_TOTAL is set to 0, must be "
                     "greater than zero\n");
-	    exit(-1);
+	    exit(1);
         }
     }
 
 
-    if (strcmp((char *)cmd_name, "tst_brk") == 0)
+    if (strcmp(cmd_name, "tst_brk") == 0)
     {
         if (argc < 5)
         {
@@ -210,16 +201,16 @@ int main( int argc,
             "\tFNAME  - Print contents of this file after the message\n"
             "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit (-1);
+            exit(1);
         }
         trestype = ident_ttype(argv++[0]);
         file_name = argv++[0];
         argv++;
         strcpy(arg_fmt, *argv);
-        tst_brk(trestype, file_name, cleanup, arg_fmt);
+        tst_brk(trestype, file_name, NULL, arg_fmt);
     }
     else
-    if (strcmp((char *)cmd_name, "tst_res") == 0)
+    if (strcmp(cmd_name, "tst_res") == 0)
     {
         if (argc < 4)
         {
@@ -228,7 +219,7 @@ int main( int argc,
             "and  TRETR.\n"
             "\tFNAME  - Print contents of this file after the message\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit (-1);
+            exit(1);
         }
         trestype = ident_ttype(argv++[0]);
         file_name = argv++[0];
@@ -236,7 +227,7 @@ int main( int argc,
         tst_res(trestype, file_name, arg_fmt);
     }
     else
-    if (strcmp((char *)cmd_name, "tst_brkm") == 0)
+    if (strcmp(cmd_name, "tst_brkm") == 0)
     {
         if (argc < 4)
         {
@@ -245,15 +236,15 @@ int main( int argc,
             "and TRETR.\n"
             "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit (-1);
+            exit (1);
         }
         trestype = ident_ttype(argv++[0]);
         argv++;
         strcpy(arg_fmt, *argv);
-        tst_brkm(trestype, cleanup, arg_fmt);
+        tst_brkm(trestype, NULL, arg_fmt);
     }
     else
-    if (strcmp((char *)cmd_name, "tst_resm") == 0)
+    if (strcmp(cmd_name, "tst_resm") == 0)
     {
         if (argc < 3)
         {
@@ -261,20 +252,20 @@ int main( int argc,
             "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
             "and TRETR.\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit (-1);
+            exit(1);
         }
         trestype = ident_ttype(argv++[0]);
         strcpy(arg_fmt, *argv);
         tst_resm(trestype, arg_fmt);
     }
     else
-    if (strcmp((char *)cmd_name, "tst_exit") == 0)
+    if (strcmp(cmd_name, "tst_exit") == 0)
         tst_exit();
     else
-    if (strcmp((char *)cmd_name, "tst_flush") == 0)
+    if (strcmp(cmd_name, "tst_flush") == 0)
         tst_flush();
     else
-    if (strcmp((char *)cmd_name, "tst_kvercmp") == 0)
+    if (strcmp(cmd_name, "tst_kvercmp") == 0)
     {
 	int exit_value;
 
@@ -290,7 +281,7 @@ int main( int argc,
 	    "\t\tkernel specified by NUM NUM NUM.\n"
 	    "\tExit status is 1 for kernels of the same age.\n"
 	    "\tExit status is 2 if the running kernel is newer.\n", cmd_name);
-            exit (-1);
+            exit(1);
         }
 	exit_value = tst_kvercmp(atoi(argv[0]), atoi(argv[1]), atoi(argv[2]));
 	if (exit_value < 0)
