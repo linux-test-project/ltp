@@ -98,12 +98,12 @@
  *
  **************************************************************/
 
-#include <unistd.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "random_range.h"
 
@@ -341,7 +341,8 @@ long seed;
 
 	    if (offsets[cnt].used) {
 	        fseek(infile, offsets[cnt].offset, SEEK_SET);
-	        fgets(line, MAX_LN_SZ, infile);
+	        if (fgets(line, MAX_LN_SZ, infile) == NULL)
+		    err(1, "fgets");
 	        fputs(line, stdout);
 	    }
         }
