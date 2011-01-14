@@ -23,6 +23,7 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include "posixtest.h"
 
@@ -33,29 +34,38 @@ int cleanup_flag;	/* Flag to indicate the thread's cleanup handler was called */
  * cleanup_flag is 1, it means that the thread was canceled. */
 void a_cleanup_func()
 {
-	cleanup_flag=1;
-	return;
+	cleanup_flag = 1;
 }
 
 /* Thread's function. */
 void *a_thread_func()
 {
-	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
+	int err;
+
+	if ((err = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL)) != 0) {
+		fprintf(stderr, "pthread_setcancelstate: %s", strerror(err));
+		goto thread_exit_failure;
+	}
+
+	if ((err = pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL)) != 0) {
+		fprintf(stderr, "pthread_setcanceltype: %s", strerror(err));
+		goto thread_exit_failure;
+	}
 
 	/* Set up the cleanup handler */
-	pthread_cleanup_push(a_cleanup_func,NULL);
+	pthread_cleanup_push(a_cleanup_func, NULL);
 
 	/* Wait for a timeout period for the cancel request to be sent. */
 
 	sleep(TIMEOUT);
 
-	/* Should not get here, but just in case pthread_testcancel() didn't work. */
-	/* Cancel request timed out. */
+	/* Should not get here, but just in case pthread_testcancel() didn't
+	 * work -- the cancel request timed out. */
 	pthread_cleanup_pop(0);
-	cleanup_flag=-1;
 
-	pthread_exit(0);
+thread_exit_failure:
+	cleanup_flag = -1;
+
 	return NULL;
 }
 
@@ -63,39 +73,35 @@ int main()
 {
 	pthread_t new_th;
 
-	/* Initialize flag */
-	cleanup_flag = 0;
+	int err;
 
-	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
-		perror("Error creating thread\n");
+	if ((err = pthread_create(&new_th, NULL, a_thread_func, NULL)) != 0) {
+		fprintf(stderr, "pthread_create: %s\n", strerror(err));
 		return PTS_UNRESOLVED;
 	}
 
-	/* Send cancel request to the thread.  */
-	if (pthread_cancel(new_th) != 0)
-	{
-		perror("Couldn't cancel thread\n");
+	/* Remove potential for race */
+	sleep(TIMEOUT / 2);
+
+	if ((err = pthread_cancel(new_th)) != 0) {
+		fprintf(stderr, "pthread_cancel: %s\n", strerror(err));
 		return PTS_UNRESOLVED;
 	}
 
-	/* Wait for thread to return */
-	if (pthread_join(new_th, NULL) != 0)
-	{
-		perror("Error in pthread_join()\n");
+	if ((err = pthread_join(new_th, NULL)) != 0) {
+		fprintf(stderr, "pthread_join: %s\n", strerror(err));
 		return PTS_UNRESOLVED;
 	}
 
-	if (cleanup_flag == 0)
-	{
-		printf("Test FAILED: Thread did not finish execution when pthread_join returned. \n");
+	if (cleanup_flag == 0) {
+		printf("Test FAILED: Thread did not finish execution when "
+		    "pthread_join returned.\n");
 		return PTS_FAIL;
 	}
 
-	if (cleanup_flag == -1)
-	{
-		perror("Error in pthread_testcancel().  Cancel request timed out.\n");
+	if (cleanup_flag == -1) {
+		printf("Error in pthread_testcancel.  Cancel request timed "
+		    "out.\n");
 		return PTS_UNRESOLVED;
 	}
 
