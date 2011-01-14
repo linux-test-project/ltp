@@ -33,24 +33,22 @@
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
-#include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
-
 #include <sys/wait.h>
- #include <errno.h>
-
-#include <semaphore.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c"
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -83,26 +81,19 @@
 sem_t * sem;
 
 /* Thread function */
-void * threaded(void * arg)
+void * threaded(void *arg)
 {
 	int ret = 0;
 
-	do
-	{
+	do {
 		ret = sem_wait(sem);
-	}
-	while ((ret != 0) && (errno == EINTR));
+	} while (ret != 0 && errno == EINTR);
 
 	if (ret != 0)
-	{
 		UNRESOLVED(errno, "failed to wait for the semaphore in child");
-	}
 
-	if (*(pid_t *) arg != getpid())
->>>>>>> origin
-	{
+	if (*((pid_t *) arg) != getpid())
 		FAILED("The thread is executing in the child process");
-	}
 
 	return NULL;
 }
@@ -122,10 +113,8 @@ int main(int argc, char * argv[])
 	/* Initialize the semaphore */
 	sem = sem_open("/fork_21_1", O_CREAT, O_RDWR, 0);
 
-	if (sem == (sem_t*) SEM_FAILED)
-	{
+	if (sem == SEM_FAILED)
 		UNRESOLVED(errno, "Failed to open the semaphore");
-	}
 
 	sem_unlink("/fork_21_1");
 
@@ -133,33 +122,24 @@ int main(int argc, char * argv[])
 	ret = pthread_create(&th, NULL, threaded, &ctl);
 
 	if (ret != 0)
-	{
 		UNRESOLVED(ret, "Failed to create the thread");
-	}
 
 	/* Create the child */
 	child = fork();
 
 	if (child == -1)
-	{
 		UNRESOLVED(errno, "Failed to fork");
-	}
 
 	/* We post the semaphore twice */
-	do
-	{
+	do {
 		ret = sem_post(sem);
-	}
-	while ((ret != 0) && (errno == EINTR));
+	} while (ret != 0 && errno == EINTR);
 
 	if (ret != 0)
-	{
 		UNRESOLVED(errno, "Failed to post the semaphore");
-	}
 
 	/* child */
-	if (child == 0)
-	{
+	if (child == 0) {
 		/* sleep a little while to let the thread execute in case it exists */
 		sleep(1);
 
@@ -171,29 +151,21 @@ int main(int argc, char * argv[])
 	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
-	{
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
-	}
 
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
-	{
+	if (!WIFEXITED(status) || WEXITSTATUS(status) != PTS_PASS)
 		FAILED("Child exited abnormally");
-	}
 
 	/* Destroy everything */
 	ret = sem_close(sem);
 
 	if (ret != 0)
-	{
 		UNRESOLVED(errno, "Failed to close the semaphore");
-	}
 
 	ret = pthread_join(th, NULL);
 
 	if (ret != 0)
-	{
 		UNRESOLVED(ret, "Failed to join the thread in parent");
-	}
 
 	/* Test passed */
 #if VERBOSE > 0
