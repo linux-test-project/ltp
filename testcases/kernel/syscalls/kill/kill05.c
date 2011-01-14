@@ -66,18 +66,21 @@
  *	Looping with the -i option does not work correctly.
  */
 
-#include "test.h"
-#include "usctest.h"
-
-#include <errno.h>
-#include <malloc.h>
-#include <pwd.h>
-#include <signal.h>
-#include <unistd.h>
+#include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
+#include <pwd.h>
+#include <signal.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include "test.h"
+#include "usctest.h"
+#include "safe_macros.h"
 
 extern void rm_shm(int);
 
@@ -105,9 +108,8 @@ int main(int ac, char **av)
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
@@ -115,15 +117,15 @@ int main(int ac, char **av)
 	setup();		/* global setup */
 
 	pid = FORK_OR_VFORK();
-	if (pid < 0)
+	if (pid == -1)
 		tst_brkm(TBROK, cleanup, "Fork failed");
-
-	if (pid == 0) {
+	else if (pid == 0)
 		do_master_child(av);
-		return (0);
-	} else
-		waitpid(pid, &status, 0);
 
+	if (waitpid(pid, &status, 0) == -1)
+		tst_resm(TBROK|TERRNO, "waitpid failed");
+	else if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+		tst_resm(TFAIL, "child exited abnormally");
 	cleanup();
 	tst_exit();
 }
@@ -133,76 +135,73 @@ int main(int ac, char **av)
  */
 void do_master_child(char **av)
 {
-	int lc;			/* loop counter */
-
 	pid_t pid1;
 	int status;
 
 	char user1name[] = "nobody";
 	char user2name[] = "bin";
 
-	extern struct passwd *my_getpwnam(char *);
-
 	struct passwd *ltpuser1, *ltpuser2;
 
-	ltpuser1 = my_getpwnam(user1name);
-	ltpuser2 = my_getpwnam(user2name);
+	ltpuser1 = SAFE_GETPWNAM(NULL, user1name);
+	ltpuser2 = SAFE_GETPWNAM(NULL, user2name);
 
 	TEST_EXP_ENOS(exp_enos);
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	Tst_count = 0;
 
-		Tst_count = 0;
+	*flag = 0;
 
-		*flag = 0;
+	pid1 = FORK_OR_VFORK();
 
-		pid1 = FORK_OR_VFORK();
+	if (pid1 == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
 
-		if (pid1 == -1)
-			tst_brkm(TBROK, cleanup, "Fork failed");
+	if (pid1 == 0) {
 
-		if (pid1 == 0) {
-			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) == -1) {
-				tst_resm(TWARN, "setreuid failed in child");
-			}
-#ifdef UCLINUX
-			if (self_exec(av[0], "") < 0)
-				tst_brkm(TBROK, cleanup,
-					 "self_exec of child failed");
-#else
-			do_child();
-#endif
-		} else {
-			if (setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid) == -1)
-				tst_resm(TWARN, "seteuid failed in child");
-
-			TEST(kill(pid1, TEST_SIG));
-
-			/* signal the child that we're done */
-			*flag = 1;
-
-			waitpid(pid1, &status, 0);
-
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "%s failed - errno = "
-					 "%d : %s Expected a return "
-					 "value of -1 got %ld", TCID, TEST_ERRNO,
-					 strerror(TEST_ERRNO), TEST_RETURN);
-
-				continue;
-			}
+		if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) == -1) {
+			perror("setreuid failed (in child)");
+			exit(1);
 		}
-
-		/*
-		 * Check to see if the errno was set to the expected
-		 * value of 1 : EPERM
-		 */
-		if (TEST_ERRNO == EPERM)
-			tst_resm(TPASS, "kill failed with EPERM");
-		else
-			tst_resm(TFAIL|TTERRNO,
-			    "kill failed unexpectedly; expected EPERM");
+#ifdef UCLINUX
+		if (self_exec(av[0], "") < 0) {
+			perror("self_exec failed");
+			exit(1);
+		}
+#else
+		do_child();
+#endif
 	}
+	if (setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid) == -1) {
+		perror("seteuid failed");
+		exit(1);
+	}
+
+	TEST(kill(pid1, TEST_SIG));
+
+	/* signal the child that we're done */
+	*flag = 1;
+
+	if (waitpid(pid1, &status, 0) == -1) {
+		perror("waitpid failed");
+		exit(1);
+	}
+
+	if (TEST_RETURN != -1) {
+		printf("kill succeeded unexpectedly\n");
+		exit(1);
+	}
+
+	/*
+	 * Check to see if the errno was set to the expected
+	 * value of 1 : EPERM
+	 */
+	if (TEST_ERRNO == EPERM) {
+		printf("kill failed with EPERM\n");
+		exit(0);
+	}
+	perror("kill failed unexpectedly");
+	exit(1);
 }
 
 void do_child()
@@ -228,21 +227,19 @@ void setup(void)
 
 	semkey = getipckey();
 
-	if ((shmid1 = shmget(semkey, (int)getpagesize(),
-			     0666 | IPC_CREAT)) == -1)
+	if ((shmid1 = shmget(semkey, (int)getpagesize(), 0666|IPC_CREAT)) == -1)
 		tst_brkm(TBROK, cleanup, "Failed to setup shared memory");
 
 	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1)
 		tst_brkm(TBROK|TERRNO, cleanup,
-			 "Failed to attatch shared memory:%d", shmid1);
+			 "Failed to attach shared memory:%d", shmid1);
 }
 
 void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	tst_rmdir();
-
 	rm_shm(shmid1);
 
+	tst_rmdir();
 }
