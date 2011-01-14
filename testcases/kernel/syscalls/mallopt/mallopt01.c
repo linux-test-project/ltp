@@ -39,16 +39,16 @@
 #include <errno.h>
 /* 
  * NOTE: struct mallinfo is only exported via malloc.h (not stdlib.h), even
- * though it's an obsolete header.
+ * though it's an obsolete header for malloc(3).
  *
  * Inconsistencies rock.
  */
 #include <malloc.h>
 #include <stdio.h>
 
-/*****	LTP Port	*****/
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #define FAILED 0
 #define PASSED 1
@@ -72,8 +72,7 @@ int main(int argc, char *argv[])
 
 	tst_tmpdir();
 
-	if ((buf = malloc(20480)) == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
+	buf = SAFE_MALLOC(NULL, 20480);
 
 	/*
 	 * Check space usage.
@@ -95,8 +94,7 @@ int main(int argc, char *argv[])
 	 */
 	mallopt(M_MXFAST, 2048);
 	mallopt(M_NLBLKS, 50);
-	if ((buf = malloc(1024)) == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
+	buf = SAFE_MALLOC(NULL, 1024);
 
 	free(buf);
 
