@@ -33,12 +33,18 @@
  * RESTRICTIONS
  */
 
-#include <stdio.h>		/* needed by testhead.h         */
 #ifdef CONFIG_COLDFIRE
 #define __MALLOC_STANDARD__
 #endif
-#include <stdlib.h>
 #include <errno.h>
+/* 
+ * NOTE: struct mallinfo is only exported via malloc.h (not stdlib.h), even
+ * though it's an obsolete header.
+ *
+ * Inconsistencies rock.
+ */
+#include <malloc.h>
+#include <stdio.h>
 
 /*****	LTP Port	*****/
 #include "test.h"
@@ -58,26 +64,16 @@ extern int Tst_COUNT;		/* Test Case counter for tst_routines */
 void printinfo();
 
 #if !defined(UCLINUX)
-/*****	*	*	*****/
 struct mallinfo info;
 
-/*--------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
 	char *buf;
-	int flag;
 
-	temp = stderr;
 	tst_tmpdir();
-/*--------------------------------------------------------------*/
-	local_flag = PASSED;
 
-	flag = 0;
-
-	if ((buf = malloc(20480)) == NULL) {
-		tst_resm(TBROK, "Reason: Malloc failed! %s", strerror(errno));
-		tst_exit();
-	}
+	if ((buf = malloc(20480)) == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
 
 	/*
 	 * Check space usage.
@@ -85,18 +81,12 @@ int main(int argc, char *argv[])
 
 	info = mallinfo();
 	if (info.uordblks < 20480) {
-		fprintf(temp, "mallinfo failed: uordblks < 20K\n");
-		flag = 1;
-		local_flag = FAILED;
-	};
-	if (info.smblks != 0) {
-		fprintf(temp, "mallinfo failed: smblks != 0\n");
-		flag = 1;
-		local_flag = FAILED;
-	}
-	if (flag == 1) {
 		printinfo();
-		flag = 0;
+		tst_resm(TFAIL, "mallinfo failed: uordblks < 20K");
+	}
+	if (info.smblks != 0) {
+		printinfo();
+		tst_resm(TFAIL, "mallinfo failed: smblks != 0");
 	}
 	free(buf);
 
@@ -105,48 +95,35 @@ int main(int argc, char *argv[])
 	 */
 	mallopt(M_MXFAST, 2048);
 	mallopt(M_NLBLKS, 50);
-	if ((buf = malloc(1024)) == NULL) {
-		tst_resm(TBROK, "Reason:Malloc failed. %s", strerror(errno));
-		tst_exit();
-	}
+	if ((buf = malloc(1024)) == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
 
 	free(buf);
 
-	(local_flag == PASSED) ? tst_resm(TPASS,
-					  "Test passed") : tst_resm(TFAIL,
-								    "Test failed");
-/*--------------------------------------------------------------*/
-/* Clean up any files created by test before call to anyfail.	*/
-
 	unlink("core");
 	tst_rmdir();
-	tst_exit();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 	tst_exit();
 }
 
-/*--------------------------------------------------------------*/
 void printinfo()
 {
 
-	fprintf(temp, "mallinfo structure:\n");
-	fprintf(temp, "mallinfo.arena = %d\n", info.arena);
-	fprintf(temp, "mallinfo.ordblks = %d\n", info.ordblks);
-	fprintf(temp, "mallinfo.smblks = %d\n", info.smblks);
-	fprintf(temp, "mallinfo.hblkhd = %d\n", info.hblkhd);
-	fprintf(temp, "mallinfo.hblks = %d\n", info.hblks);
-	fprintf(temp, "mallinfo.usmblks = %d\n", info.usmblks);
-	fprintf(temp, "mallinfo.fsmblks = %d\n", info.fsmblks);
-	fprintf(temp, "mallinfo.uordblks = %d\n", info.uordblks);
-	fprintf(temp, "mallinfo.fordblks = %d\n", info.fordblks);
-	fprintf(temp, "mallinfo.keepcost = %d\n", info.keepcost);
+	fprintf(stderr, "mallinfo structure:\n");
+	fprintf(stderr, "mallinfo.arena = %d\n", info.arena);
+	fprintf(stderr, "mallinfo.ordblks = %d\n", info.ordblks);
+	fprintf(stderr, "mallinfo.smblks = %d\n", info.smblks);
+	fprintf(stderr, "mallinfo.hblkhd = %d\n", info.hblkhd);
+	fprintf(stderr, "mallinfo.hblks = %d\n", info.hblks);
+	fprintf(stderr, "mallinfo.usmblks = %d\n", info.usmblks);
+	fprintf(stderr, "mallinfo.fsmblks = %d\n", info.fsmblks);
+	fprintf(stderr, "mallinfo.uordblks = %d\n", info.uordblks);
+	fprintf(stderr, "mallinfo.fordblks = %d\n", info.fordblks);
+	fprintf(stderr, "mallinfo.keepcost = %d\n", info.keepcost);
 }
 
 #else
-
 int main()
 {
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }
-
 #endif /* if !defined(UCLINUX) */
