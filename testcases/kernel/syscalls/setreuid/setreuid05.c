@@ -64,7 +64,7 @@
 
 #include <errno.h>
 #include <pwd.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <test.h>
 #include <usctest.h>
 #include <sys/wait.h>

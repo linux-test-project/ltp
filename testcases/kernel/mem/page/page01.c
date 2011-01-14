@@ -36,14 +36,11 @@ CALLS:	malloc(3)
 >BUGS:  <
 ======================================================================*/
 
-#include <stdio.h>
-#include <wait.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
-
-#ifdef LINUX
+#include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
-#endif
 
 int bd_arg(char*);
 

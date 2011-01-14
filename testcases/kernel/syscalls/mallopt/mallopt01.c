@@ -37,7 +37,7 @@
 #ifdef CONFIG_COLDFIRE
 #define __MALLOC_STANDARD__
 #endif
-#include <malloc.h>
+#include <stdlib.h>
 #include <errno.h>
 
 /*****	LTP Port	*****/
