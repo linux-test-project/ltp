@@ -227,7 +227,7 @@ void setup(void)
 
 	semkey = getipckey();
 
-	if ((shmid1 = shmget(semkey, (int)getpagesize(), 0666|IPC_CREAT)) == -1)
+	if ((shmid1 = shmget(semkey, getpagesize(), 0666|IPC_CREAT)) == -1)
 		tst_brkm(TBROK, cleanup, "Failed to setup shared memory");
 
 	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1)
