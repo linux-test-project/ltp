@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
+
 	printf("Timer did not last for correct amount of time\n"
 		"timer: %d != correct %d\n",
 		(int) (end_time - start_time), TIMERSEC + overrun_amount);
