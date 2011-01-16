@@ -53,8 +53,8 @@
 
 #include <signal.h>
 #include <fcntl.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -182,11 +182,16 @@ int dochild1(int file_flag, int file_mode)
 }
 
 #ifdef UCLINUX
-int uc_file_flag, uc_file_mode;
+int uc_file_flag, uc_file_mode, uc_dup_flag;
 
 void dochild1_uc()
 {
 	dochild1(uc_file_flag, uc_file_mode);
+}
+
+void dochild2_uc()
+{
+	dochild2(uc_file_flag, uc_dup_flag);
 }
 #endif
 
@@ -459,7 +464,13 @@ int run_test(int file_flag, int file_mode, int dup_flag)
 		tst_rmdir();
 		return 1;
 	} else if (child2 == 0) {	/* child */
+#ifdef UCLINUX
+		if (self_exec(argv0, "ndddds", 2, file_flag, file_mode,
+		    dup_flag, parent, tmpname) < 0)
+			tst_brkm(TBROK|TERRNO, NULL, "self_exec failed");
+#else
 		dochild2(file_flag, file_mode, dup_flag);
+#endif
 	}
 
 	/* parent */
@@ -543,6 +554,8 @@ int main(int ac, char **av)
 #ifdef UCLINUX
 	maybe_run_child(&dochild1_uc, "nddds", 1, &uc_file_flag,
 			&uc_file_mode, &parent, tmpname);
+	maybe_run_child(&dochild2_uc, "nddds", 1, &uc_file_flag,
+			&uc_file_mode, &uc_dup_flag, &parent, tmpname);
 	argv0 = av[0];
 #endif
 

@@ -56,6 +56,7 @@
 #include<sys/stat.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 char *TCID = "chdir01";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
@@ -71,7 +72,7 @@ char testdir[40] = "";
 int main(int ac, char **av)
 {
 	DIR *ddir, *opendir();
-	int fd, ret;
+	int fd;
 	char *filname = "chdirtest";
 	char *filenames[3];
 
@@ -90,17 +91,12 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		if ((ret = chdir(testdir)) != 0) {
-			tst_brkm(TBROK|TERRNO, cleanup, "chdir(%s) failed", testdir);
-		}
-		if ((fd = creat(filname, 0000)) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup, "creat(%s) failed", filname);
-		}
-		if (close(fd) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "close failed");
-		if ((ddir = opendir(".")) == NULL) {
+		SAFE_CHDIR(cleanup, testdir);
+
+		fd = SAFE_CREAT(cleanup, filname, 0000);
+		SAFE_CLOSE(cleanup, fd);
+		if ((ddir = opendir(".")) == NULL)
 			tst_brkm(TBROK|TERRNO, cleanup, "opendir(.) failed");
-		}
 
 		filenames[0] = ".";
 		filenames[1] = "..";
@@ -123,7 +119,7 @@ int main(int ac, char **av)
 		if (unlink(filname) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "Couldn't remove file");
 
-		chdir("..");
+		SAFE_CHDIR(cleanup, "..");
 
 	}
 	cleanup();
@@ -132,9 +128,6 @@ int main(int ac, char **av)
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
 void setup(void)
 {
 
@@ -144,31 +137,18 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(testdir, "Testdir.%d", getpid());
 
-	if (mkdir(testdir, 0700) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", testdir);
-	}
+	SAFE_MKDIR(cleanup, testdir, 0700);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
 
-	/* Delete the test directory created in setup(). */
 	tst_rmdir();
-
 }
 
 void checknames(char **pfilnames, int fnamecount, DIR *ddir)
@@ -177,9 +157,12 @@ void checknames(char **pfilnames, int fnamecount, DIR *ddir)
 	int i, found;
 
 	found = 0;
-	while ((dir = readdir(ddir)) != (struct dirent *)0) {
+	while ((dir = readdir(ddir)) != NULL) {
 		for (i = 0; i < fnamecount; i++) {
-			/* if dir->d_name is not null terminated it is a bug anyway */
+			/* 
+			 * if dir->d_name is not null terminated it is a bug
+			 * anyway
+			 */
 			if (strcmp(pfilnames[i], dir->d_name) == 0) {
 				tst_resm(TINFO, "Found file %s", dir->d_name);
 				found++;

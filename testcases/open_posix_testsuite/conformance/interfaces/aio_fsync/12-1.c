@@ -25,7 +25,7 @@ int main()
 {
 	struct aiocb aiocb;
 
-	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
 	memset(&aiocb, 0, sizeof(struct aiocb));

@@ -54,8 +54,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <usctest.h>
-#include <test.h>
+#include "usctest.h"
+#include "test.h"
 #define CLEANUP cleanup
 #include "libclone.h"
 

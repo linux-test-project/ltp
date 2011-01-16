@@ -45,20 +45,20 @@
 
 #include "config.h"
 
-#include <sys/select.h>
-#include <sys/signal.h>
 #include <sys/types.h>
+#include <sys/select.h>
 #include <sys/wait.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <errno.h>
-#include <string.h>
-#include <stdint.h>
+#include <fcntl.h>
 #include <inttypes.h>
 #include <poll.h>
+#include <signal.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
 
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #define CLEANUP cleanup
 #include "linux_syscall_numbers.h"
 
@@ -74,12 +74,7 @@ int TST_TOTAL = 15;
 static int myeventfd(unsigned int initval, int flags)
 {
 	/* eventfd2 uses FLAGS but eventfd doesn't take FLAGS. */
-#if defined (__NR_eventfd)
 	return syscall(__NR_eventfd, initval);
-#else
-	errno = ENOSYS;
-	return -1;
-#endif
 }
 
 /*
@@ -120,9 +115,8 @@ static int set_counter(int fd, uint64_t val)
 	int ret;
 
 	ret = clear_counter(fd);
-	if (ret == -1) {
+	if (ret == -1)
 		return -1;
-	}
 
 	ret = write(fd, &val, sizeof(val));
 	if (ret == -1) {
@@ -174,9 +168,8 @@ static void read_eagain_test(int fd)
 			tst_resm(TPASS, "read failed with EAGAIN as expected");
 		else
 			tst_resm(TFAIL|TERRNO, "read failed (wanted EAGAIN)");
-	} else {
+	} else
 		tst_resm(TFAIL, "read returned with %d", ret);
-	}
 }
 
 /*
@@ -220,9 +213,8 @@ static void write_eagain_test(int fd)
 			tst_resm(TPASS, "write failed with EAGAIN as expected");
 		else
 			tst_resm(TFAIL, "write failed (wanted EAGAIN)");
-	} else {
+	} else
 		tst_resm(TFAIL, "write returned with %d", ret);
-	}
 }
 
 /*
@@ -236,14 +228,12 @@ static void read_einval_test(int fd)
 
 	ret = read(fd, &invalid, sizeof(invalid));
 	if (ret == -1) {
-		if (errno == EINVAL) {
+		if (errno == EINVAL)
 			tst_resm(TPASS, "read failed with EINVAL as expected");
-		} else {
+		else
 			tst_resm(TFAIL|TERRNO, "read failed (wanted EINVAL)");
-		}
-	} else {
+	} else
 		tst_resm(TFAIL, "read returned with %d", ret);
-	}
 }
 
 /*
@@ -257,14 +247,12 @@ static void write_einval_test(int fd)
 
 	ret = write(fd, &invalid, sizeof(invalid));
 	if (ret == -1) {
-		if (errno == EINVAL) {
+		if (errno == EINVAL)
 			tst_resm(TPASS, "write failed with EINVAL as expected");
-		} else {
+		else
 			tst_resm(TFAIL|TERRNO, "write failed (wanted EINVAL)");
-		}
-	} else {
+	} else
 		tst_resm(TFAIL, "write returned with %d", ret);
-	}
 }
 
 /*
@@ -439,9 +427,8 @@ static void child_inherit_test(int fd)
 
 	cpid = fork();
 	if (cpid == -1)
-		tst_resm(TBROK|TERRNO, "fork() failed");
-	if (cpid != 0) {
-		/* Parent */
+		tst_resm(TBROK|TERRNO, "fork failed");
+	else if (cpid != 0) {
 		ret = wait(&status);
 		if (ret == -1) {
 			tst_resm(TBROK, "error getting child exit status");
@@ -450,7 +437,7 @@ static void child_inherit_test(int fd)
 
 		if (WEXITSTATUS(status) == 1) {
 			tst_resm(TBROK, "counter value write not "
-				 "succesful in child");
+				 "successful in child");
 			return;
 		}
 
@@ -582,9 +569,9 @@ static void overflow_select_test(int evfd)
 	FD_ZERO(&readfds);
 	FD_SET(evfd, &readfds);
 	ret = select(evfd + 1, &readfds, NULL, NULL, &timeout);
-	if (ret == -1) {
+	if (ret == -1)
 		tst_resm(TBROK|TERRNO, "error getting evfd status with select");
-	} else {
+	else {
 		if (FD_ISSET(evfd, &readfds))
 			tst_resm(TPASS, "read fd set as expected");
 		else
@@ -610,9 +597,9 @@ static void overflow_poll_test(int evfd)
 	pollfd.events = POLLIN;
 	pollfd.revents = 0;
 	ret = poll(&pollfd, 1, 10000);
-	if (ret == -1) {
+	if (ret == -1)
 		tst_resm(TBROK|TERRNO, "error getting evfd status with poll");
-	} else {
+	else {
 		if (pollfd.revents & POLLERR)
 			tst_resm(TPASS, "POLLERR occurred as expected");
 		else
@@ -635,9 +622,9 @@ static void overflow_read_test(int evfd)
 	}
 
 	ret = read(evfd, &count, sizeof(count));
-	if (ret == -1) {
+	if (ret == -1)
 		tst_resm(TBROK|TERRNO, "error reading eventfd");
-	} else {
+	else {
 
 		if (count == UINT64_MAX)
 			tst_resm(TPASS, "overflow occurred as expected");
@@ -669,22 +656,15 @@ int main(int argc, char **argv)
 	char *msg;		/* message returned from parse_opts */
 	int fd;
 
-	/* parse standard options */
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-
-	}
 
 	setup();
 
-	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int ret;
 		uint64_t einit = 10;
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		fd = myeventfd(einit, 0);
@@ -719,9 +699,6 @@ int main(int argc, char **argv)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
 static void setup(void)
 {
 
@@ -730,23 +707,13 @@ static void setup(void)
 	if (tst_kvercmp(2, 6, 22) < 0)
 		tst_brkm(TCONF, NULL, "2.6.22 or greater kernel required");
 
-	/* Create a temporary directory & chdir there */
 	tst_tmpdir();
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
+
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test
- */
 static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();

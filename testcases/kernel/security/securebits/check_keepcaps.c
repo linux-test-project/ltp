@@ -5,7 +5,7 @@
 #endif
 #include <sys/prctl.h>
 #include <linux/securebits.h>
-#include <test.h>
+#include "test.h"
 
 int errno;
 

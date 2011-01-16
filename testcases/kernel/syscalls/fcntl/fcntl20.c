@@ -46,6 +46,7 @@
 #include <inttypes.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #define STRINGSIZE	27
 #define STRING		"abcdefghijklmnopqrstuvwxyz\n"
@@ -92,44 +93,33 @@ void setup()
 
 	TEST_PAUSE;
 
-	pipe(parent_pipe);
-	pipe(child_pipe);
 	parent_pid = getpid();
 
+	SAFE_PIPE(NULL, parent_pipe);
+	SAFE_PIPE(NULL, child_pipe);
+
 	tst_tmpdir();
+
 	snprintf(template, PATH_MAX, "fcntl20XXXXXX");
 
-	if ((fd = mkstemp(template)) < 0) {
-		tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
-	}
+	if ((fd = mkstemp(template)) == -1)
+		tst_resm(TFAIL|TERRNO, "mkstemp failed");
 
-	if (write(fd, buf, STRINGSIZE) < 0) {
-		tst_resm(TFAIL, "Couldn't write to temp file! errno = %d",
-			 errno);
-	}
+	SAFE_WRITE(cleanup, 0, fd, buf, STRINGSIZE);
 
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = catch_child;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGCLD);
-	if ((sigaction(SIGCLD, &act, NULL)) < 0) {
-		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d", errno);
-		fail = 1;
-	}
+	if (sigaction(SIGCLD, &act, NULL) == -1)
+		tst_brkm(TFAIL|TERRNO, cleanup, "SIGCLD signal setup failed");
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at completion or
- *	premature exit
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
+
+	SAFE_CLOSE(NULL, fd);
 
 	tst_rmdir();
 
@@ -144,8 +134,7 @@ void do_child()
 	while (1) {
 		child_get(&fl);
 		if (fcntl(fd, F_GETLK, &fl) < 0) {
-			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
-				 errno);
+			tst_resm(TFAIL|TERRNO, "fcntl on file failed");
 			fail = 1;
 		}
 		child_put(&fl);
@@ -411,11 +400,10 @@ int main(int ac, char **av)
 		 */
 		unlock_file();
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 2: FAILED");
-		} else {
+		else
 			tst_resm(TINFO, "Test block 2: PASSED");
-		}
 		tst_resm(TINFO, "Exit block 2");
 
 /* //block3: */
@@ -455,11 +443,10 @@ int main(int ac, char **av)
 		 */
 		unlock_file();
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 3: FAILED");
-		} else {
+		else
 			tst_resm(TINFO, "Test block 3: PASSED");
-		}
 		tst_resm(TINFO, "Exit block 3");
 
 /* //block4: */
@@ -505,11 +492,10 @@ int main(int ac, char **av)
 		 */
 		unlock_file();
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 4: FAILED");
-		} else {
+		else
 			tst_resm(TINFO, "Test block 4: PASSED");
-		}
 		tst_resm(TINFO, "Exit block 4");
 
 /* //block5: */
@@ -549,11 +535,10 @@ int main(int ac, char **av)
 		 */
 		unlock_file();
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 5: FAILED");
-		} else {
+		else
 			tst_resm(TINFO, "Test block 5: PASSED");
-		}
 		tst_resm(TINFO, "Exit block 5");
 
 /* //block6: */
@@ -593,11 +578,10 @@ int main(int ac, char **av)
 		 */
 		unlock_file();
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 6: FAILED");
-		} else {
+		else
 			tst_resm(TINFO, "Test block 6: PASSED");
-		}
 		tst_resm(TINFO, "Exit block 6");
 
 /* //block7: */
@@ -638,16 +622,14 @@ int main(int ac, char **av)
 		 */
 		unlock_file();
 
-		if (fail) {
+		if (fail)
 			tst_resm(TINFO, "Test block 7: FAILED");
-		} else {
+		else
 			tst_resm(TINFO, "Test block 7: PASSED");
-		}
 
 		tst_resm(TINFO, "Exit block 7");
 
 		stop_child();
-		close(fd);
 	}
 	cleanup();
 	tst_exit();

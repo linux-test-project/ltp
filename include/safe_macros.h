@@ -28,6 +28,11 @@ char*	safe_basename(const char *file, const int lineno,
 #define SAFE_BASENAME(cleanup_fn, path)	\
 	safe_basename(__FILE__, __LINE__, (cleanup_fn), (path))
 
+int	safe_chdir(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), const char *path);
+#define SAFE_CHDIR(cleanup_fn, path)	\
+	safe_chdir(__FILE__, __LINE__, (cleanup_fn), (path))
+
 int	safe_close(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), int fildes);
 #define SAFE_CLOSE(cleanup_fn, fildes)	\
@@ -57,6 +62,11 @@ void*	safe_malloc(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), size_t size);
 #define SAFE_MALLOC(cleanup_fn, size)	\
 	safe_malloc(__FILE__, __LINE__, (cleanup_fn), (size))
+
+int	safe_mkdir(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), const char *pathname, mode_t mode);
+#define SAFE_MKDIR(cleanup_fn, pathname, mode)	\
+	safe_mkdir(__FILE__, __LINE__, (cleanup_fn), (pathname), (mode))
 
 void*	safe_mmap(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), void *addr, size_t length, int prot,

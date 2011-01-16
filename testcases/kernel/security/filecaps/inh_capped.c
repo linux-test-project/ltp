@@ -29,7 +29,7 @@
 #if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>
 #endif
-#include <test.h>
+#include "test.h"
 
 char *TCID = "filecaps";
 int TST_TOTAL=1;

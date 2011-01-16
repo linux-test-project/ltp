@@ -65,8 +65,8 @@
 #include <errno.h>
 #include <pwd.h>
 #include <stdlib.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <sys/wait.h>
 
 char *TCID = "setreuid05";

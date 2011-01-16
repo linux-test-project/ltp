@@ -41,7 +41,7 @@
 #include <sys/capability.h>
 #endif
 #include <sys/prctl.h>
-#include <test.h>
+#include "test.h"
 
 #define TSTPATH "print_caps"
 char *TCID = "filecaps";

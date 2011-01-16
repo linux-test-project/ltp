@@ -58,8 +58,8 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <unistd.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 #define	FAILED		1
 #define	VAL_SEC		100

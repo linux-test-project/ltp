@@ -51,8 +51,8 @@
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <sys/mman.h>
 
 /* 0 terminated list of expected errnos */

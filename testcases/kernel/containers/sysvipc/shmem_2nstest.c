@@ -44,7 +44,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <libclone.h>
-#include <test.h>
+#include "test.h"
 
 #define TESTKEY    124426L
 #define UNSHARESTR "unshare"

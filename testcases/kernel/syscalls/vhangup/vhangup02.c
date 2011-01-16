@@ -45,8 +45,8 @@
 #include <errno.h>
 #include <pwd.h>
 #include <wait.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 void setup(void);
 void cleanup(void);

@@ -38,17 +38,10 @@
 #define NUM_AIOCBS	10
 #define BUF_SIZE	1024*1024
 
-int received_selected	= 0;
 int received_all	= 0;
 
 void
 sigrt1_handler(int signum, siginfo_t *info, void *context)
-{
-	received_selected = info->si_value.sival_int;
-}
-
-void
-sigrt2_handler(int signum, siginfo_t *info, void *context)
 {
 	received_all = 1;
 }
@@ -67,7 +60,7 @@ int main()
 	int err;
 	int i;
 
-	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_1_1_%d",
@@ -106,45 +99,24 @@ int main()
 		aiocbs[i]->aio_nbytes = BUF_SIZE;
 		aiocbs[i]->aio_lio_opcode = LIO_WRITE;
 
-		/* Use SIRTMIN+1 for individual completions */
-		aiocbs[i]->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
-		aiocbs[i]->aio_sigevent.sigev_signo = SIGRTMIN+1;
-		aiocbs[i]->aio_sigevent.sigev_value.sival_int = i;
 	}
 
-	/* Use SIGRTMIN+2 for list completion */
+	/* Use SIGRTMIN+1 for list completion */
 	event.sigev_notify = SIGEV_SIGNAL;
-	event.sigev_signo = SIGRTMIN+2;
+	event.sigev_signo = SIGRTMIN+1;
 	event.sigev_value.sival_ptr = NULL;
 
-	/* Setup handler for individual operation completion */
+	/* Setup handler for list completion */
 	action.sa_sigaction = sigrt1_handler;
 	sigemptyset(&action.sa_mask);
 	action.sa_flags = SA_SIGINFO|SA_RESTART;
 	sigaction(SIGRTMIN+1, &action, NULL);
-
-	/* Setup handler for list completion */
-	action.sa_sigaction = sigrt2_handler;
-	sigemptyset(&action.sa_mask);
-	action.sa_flags = SA_SIGINFO|SA_RESTART;
-	sigaction(SIGRTMIN+2, &action, NULL);
 
 	/* Submit request list */
 	ret = lio_listio(LIO_WAIT, aiocbs, NUM_AIOCBS, &event);
 
 	if (ret) {
 		printf(TNAME " Error at lio_listio() %d: %s\n", errno, strerror(errno));
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
-	}
-
-	if (received_selected != NUM_AIOCBS-1)
-	{
-		printf(TNAME " lio_listio() did not wait\n");
 		for (i=0; i<NUM_AIOCBS; i++)
 			free (aiocbs[i]);
 		free (bufs);

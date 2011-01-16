@@ -59,8 +59,8 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 void do_child(int);
 void setup(void);

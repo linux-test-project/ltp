@@ -54,8 +54,8 @@
 #include <termio.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 char *TCID = "ioctl01";
 int TST_TOTAL = 5;
