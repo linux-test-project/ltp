@@ -10,8 +10,6 @@
  * Same test as 1-1.c.
  */
 
-#define _XOPEN_SOURCE 600
-
 #include <time.h>
 #include <signal.h>
 #include <stdio.h>
@@ -21,8 +19,6 @@
 
 #define SIGTOTEST SIGALRM
 #define TIMERSEC 2
-#define SLEEPDELTA 3
-#define ACCEPTABLEDELTA 1
 
 int caught_signal;
 
@@ -47,9 +43,10 @@ int main(int argc, char *argv[])
 	int overrun_time, rc;
 
 	rc = sysconf(_SC_CPUTIME);
-	printf("sysconf(_SC_CPUTIME) returned: %d\n", rc);
-	if (rc <= 0)
+	if (rc == -1) {
+		printf("_SC_CPUTIME unsupported\n");
 		return PTS_UNRESOLVED;
+	}
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
@@ -66,6 +63,7 @@ int main(int argc, char *argv[])
 		perror("Error calling sigemptyset");
 		return PTS_UNRESOLVED;
 	}
+
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
 		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;

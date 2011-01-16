@@ -19,8 +19,6 @@
 
 #define SIGTOTEST SIGALRM
 #define TIMERSEC 2
-#define SLEEPDELTA 3
-#define ACCEPTABLEDELTA 1
 
 int caught_signal;
 
@@ -44,10 +42,11 @@ int main(int argc, char *argv[])
 	time_t start_time, end_time;
 	int overrun_amount, rc;
 
-	rc = sysconf(_SC_CPUTIME);
-	printf("sysconf(_SC_CPUTIME) returned: %d\n", rc);
-	if (rc <= 0)
-		return PTS_UNRESOLVED;
+	rc = sysconf(_SC_THREAD_CPUTIME);
+	if (rc == -1) {
+		printf("_SC_THREAD_CPUTIME unsupported\n");
+		return PTS_UNSUPPORTED;
+	}
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
@@ -64,6 +63,7 @@ int main(int argc, char *argv[])
 		perror("Error calling sigemptyset");
 		return PTS_UNRESOLVED;
 	}
+
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
 		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;
