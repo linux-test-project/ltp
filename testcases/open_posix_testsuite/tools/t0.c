@@ -36,6 +36,9 @@
 /* This utility should compile on any POSIX-conformant implementation. */
 #define _POSIX_C_SOURCE 200112L
 
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <errno.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
@@ -43,16 +46,32 @@
 #include <string.h>
 #include <unistd.h>
 
+pid_t pid_to_monitor;
+
+void sighandler(int sig)
+{
+	if (0 <= pid_to_monitor) {
+		if (kill(pid_to_monitor, SIGKILL) == -1) {
+			perror("kill(.., SIGKILL) failed");
+			abort(); /* Something's really screwed up if we get here. */
+			exit(SIGALRM + 128); /* Something's uber screwed up if we get here. */
+		}
+	}
+	exit(1);
+}
+
 int main (int argc, char * argv[])
 {
-	int ret, timeout;
+	int status, timeout;
+
+	if (signal(SIGALRM, sighandler) == SIG_ERR) {
+		perror("signal failed");
+		exit(1);
+	}
 
 	/* Special case: t0 0 */
-	if (argc == 2 && (strncmp(argv[1], "0", 1) == 0)) {
+	if (argc == 2 && (strncmp(argv[1], "0", 1) == 0))
 		kill(getpid(), SIGALRM);
-		sleep(1);
-		return 1;
-	}
 
 	/* General case */
 	if (argc < 3) {
@@ -64,23 +83,45 @@ int main (int argc, char * argv[])
 		printf("  exe     is the executable filename to run,\n");
 		printf("  arglist is the arguments to be passed to executable.\n\n");
 		printf("  The second use case will emulate an immediate timeout.\n\n");
-		return 1;
+		exit(1);
 	}
 
 	timeout = atoi(argv[1]);
-	if (timeout < 1)
-	{
+	if (timeout < 1) {
 		fprintf(stderr, "Invalid timeout value \"%s\". Timeout must be a positive integer.\n", argv[1]);
-		return 1;
+		exit(1);
 	}
 
 	/* Set the timeout */
 	alarm(timeout);
 
-	/* Execute the command */
-	ret = execvp(argv[2], &argv[2]);
+	setpgrp(0, 0);
 
-	/* Application was not launched */
-	perror("Unable to run child application");
-	return 1;
+	switch (pid_to_monitor = fork()) {
+	case -1:
+		perror("fork failed");
+		exit(1);
+	case 0:
+		execvp(argv[2], &argv[2]);
+		perror("execvp failed");
+		exit(1);
+	default:
+
+		for (;;) {
+			if (waitpid(pid_to_monitor, &status, 0) == 0)
+				break;
+			else if (errno == EINTR) {
+				perror("waitpid failed");
+				exit(1);
+			}
+		}
+		/* Relay the child's status back to run-tests.sh */
+		if (WIFEXITED(status))
+			exit(WEXITSTATUS(status));
+		else if (WIFSIGNALED(status))
+			exit(WTERMSIG(status) + 128);
+
+	}	
+
+	exit(1);
 }
