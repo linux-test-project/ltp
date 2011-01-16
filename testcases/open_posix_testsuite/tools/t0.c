@@ -95,20 +95,20 @@ int main (int argc, char * argv[])
 	/* Set the timeout */
 	alarm(timeout);
 
-	setpgrp(0, 0);
-
 	switch (pid_to_monitor = fork()) {
 	case -1:
 		perror("fork failed");
 		exit(1);
 	case 0:
+		setpgrp(0, 0);
 		execvp(argv[2], &argv[2]);
 		perror("execvp failed");
 		exit(1);
 	default:
 
 		for (;;) {
-			if (waitpid(pid_to_monitor, &status, 0) == 0)
+			if (waitpid(pid_to_monitor, &status, 0) ==
+			    pid_to_monitor)
 				break;
 			else if (errno == EINTR) {
 				perror("waitpid failed");
