@@ -64,14 +64,11 @@ int main (int argc, char * argv[])
 {
 	int status, timeout;
 
-	if (signal(SIGALRM, sighandler) == SIG_ERR) {
-		perror("signal failed");
+	/* Special case: t0 0 */
+	if (argc == 2 && (strncmp(argv[1], "0", 1) == 0)) {
+		kill(getpid(), SIGALRM);
 		exit(1);
 	}
-
-	/* Special case: t0 0 */
-	if (argc == 2 && (strncmp(argv[1], "0", 1) == 0))
-		kill(getpid(), SIGALRM);
 
 	/* General case */
 	if (argc < 3) {
@@ -92,7 +89,11 @@ int main (int argc, char * argv[])
 		exit(1);
 	}
 
-	/* Set the timeout */
+	if (signal(SIGALRM, sighandler) == SIG_ERR) {
+		perror("signal failed");
+		exit(1);
+	}
+
 	alarm(timeout);
 
 	switch (pid_to_monitor = fork()) {
