@@ -32,54 +32,40 @@
  * 
  * 
  */
+
+#ifndef __TESTFRMW_H__
+#define __TESTFRMW_H__
  
+#include <string.h>
+
 #include "posixtest.h"
-#include <string.h> /* for the strerror() routine */
 
-
-#ifdef __GNUC__ /* We are using GCC */
-
-  #define UNRESOLVED(x, s) \
- { output("Test %s unresolved: got %i (%s) on line %i (%s)\n", __FILE__, x, strerror(x), __LINE__, s); \
- 	output_fini(); \
- 	exit(PTS_UNRESOLVED); }
+#define UNRESOLVED(x, s)						\
+do {									\
+	output("Test %s unresolved: got %i (%s) on line %i (%s)\n",	\
+	    __FILE__, x, strerror(x), __LINE__, s);			\
+ 	output_fini();							\
+ 	exit(PTS_UNRESOLVED);						\
+} while (0)
  	
- #define FAILED(s) \
- { output("Test %s FAILED: %s\n", __FILE__, s); \
- 	output_fini(); \
- 	exit(PTS_FAIL); }
+#define FAILED(s) 							\
+do {									\
+	output("Test %s FAILED: %s\n", __FILE__, s);			\
+ 	output_fini();							\
+ 	exit(PTS_FAIL);							\
+} while (0)
  	
- #define PASSED \
-  output_fini(); \
-  exit(PTS_PASS);
+#define PASSED								\
+do {									\
+	output_fini();							\
+	exit(PTS_PASS);							\
+} while (0)
   
- #define UNTESTED(s) \
-{	output("File %s cannot test: %s\n", __FILE__, s); \
-	  output_fini(); \
-  exit(PTS_UNTESTED); \
-}
+#define UNTESTED(s)							\
+do {									\
+	output("File %s cannot test: %s\n", __FILE__, s);		\
+	output_fini();							\
+	exit(PTS_UNTESTED);						\
+} while (0)
   
-#else /* not using GCC */
-
-  #define UNRESOLVED(x, s) \
- { output("Test unresolved: got %i (%s) on line %i (%s)\n", x, strerror(x), __LINE__, s); \
-  output_fini(); \
- 	exit(PTS_UNRESOLVED); }
- 	
- #define FAILED(s) \
- { output("Test FAILED: %s\n", s); \
-  output_fini(); \
- 	exit(PTS_FAIL); }
- 	
- #define PASSED \
-  output_fini(); \
-  exit(PTS_PASS);
-
- #define UNTESTED(s) \
-{	output("Unable to test: %s\n", s); \
-	  output_fini(); \
-  exit(PTS_UNTESTED); \
-}
-
 #endif
-
