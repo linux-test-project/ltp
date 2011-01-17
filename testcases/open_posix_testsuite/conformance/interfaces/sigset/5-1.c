@@ -36,7 +36,10 @@ int is_empty(sigset_t *set) {
 #ifdef SIGPOLL
 		SIGPOLL,
 #endif
-		SIGPROF, SIGSYS,
+#ifdef SIGPROF
+		SIGPROF,
+#endif
+		SIGSYS,
                 SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
         for (i=0; i<NUMSIGNALS; i++) {

@@ -20,7 +20,7 @@
 then reinstalling it with act must be valid.
 
 * The steps are:
-* -> register a signal handler for SIGPOLL with signal().
+* -> register a signal handler for SIGALRM with signal().
 * -> check this signal handler works.
 * -> change the signal handler with sigaction, saving old handler in oact.
 * -> check the new signal handler works.
@@ -159,7 +159,7 @@ void output_fini()
 #define VERBOSE 1
 #endif
 
-#define SIGNAL SIGPOLL
+#define SIGNAL SIGALRM
 
 /******************************************************************************/
 /***************************    Test case   ***********************************/
@@ -209,7 +209,7 @@ int main()
 		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
-	/* Install the signal handler for SIGPOLL */
+	/* Install the signal handler for SIGALRM */
 	ret = sigaction(SIGNAL, &sa, &save);
 
 	if (ret != 0)

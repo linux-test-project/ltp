@@ -29,7 +29,7 @@ int main()
 	sigemptyset(&blocked_set1);
 	sigemptyset(&blocked_set2);
 	sigaddset(&blocked_set1, SIGABRT);
-	sigaddset(&blocked_set2, SIGALRM);
+	sigaddset(&blocked_set2, SIGUSR2);
 
 	act.sa_handler = handler;
 	act.sa_flags = 0;
@@ -41,7 +41,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaction(SIGALRM,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2,  &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
@@ -57,7 +57,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if ((raise(SIGABRT) == -1) | (raise(SIGALRM) == -1)) {
+	if ((raise(SIGABRT) == -1) | (raise(SIGUSR2) == -1)) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
@@ -73,7 +73,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if ((sigismember(&pending_set, SIGABRT) != 1) | (sigismember(&pending_set, SIGALRM) != 1)) {
+	if ((sigismember(&pending_set, SIGABRT) != 1) | (sigismember(&pending_set, SIGUSR2) != 1)) {
 		perror("FAIL: sigismember did not return 1\n");
 		return PTS_UNRESOLVED;
 	}

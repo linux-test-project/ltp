@@ -30,7 +30,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if ((sigaddset(&blockset, SIGALRM) == -1) ||
+	if ((sigaddset(&blockset, SIGUSR2) == -1) ||
 		(sigaddset(&blockset, SIGHUP) == -1) ||
 		(sigaddset(&blockset, SIGQUIT) == -1)) {
 		perror("Error calling sigaddset()\n");
@@ -42,8 +42,8 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
 	if (raise(SIGQUIT) != 0) {
@@ -56,7 +56,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGALRM) == 1) {
+	if (sigismember(&pendingset, SIGUSR2) == 1) {
 		if (sigismember(&pendingset, SIGQUIT) == 1) {
 			printf("All pending signals found\n");
 			if (sigismember(&pendingset, SIGHUP) == 0) {

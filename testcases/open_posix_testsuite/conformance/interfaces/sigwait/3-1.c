@@ -37,36 +37,36 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Add SIGALRM to the set of blocked signals */
-	if (sigaddset(&newmask, SIGALRM) == -1)
+	/* Add SIGUSR2 to the set of blocked signals */
+	if (sigaddset(&newmask, SIGUSR2) == -1)
 	{
 		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Block SIGALRM */
+	/* Block SIGUSR2 */
 	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1)
 	{
 		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Send SIGALRM signal 4 times to this process.  Since it is blocked,
+	/* Send SIGUSR2 signal 4 times to this process.  Since it is blocked,
 	 * it should be pending. */
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -76,9 +76,9 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Make sure SIGALRM is pending */
-	if (sigismember(&pendingset, SIGALRM) == 0) {
-		printf("Error: signal SIGALRM not pending\n");
+	/* Make sure SIGUSR2 is pending */
+	if (sigismember(&pendingset, SIGUSR2) == 0) {
+		printf("Error: signal SIGUSR2 not pending\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -89,13 +89,13 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Make sure SIGALRM is not in the pending list anymore */
+	/* Make sure SIGUSR2 is not in the pending list anymore */
 	if (sigpending(&pendingset) == -1) {
 		printf("Error calling sigpending()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGALRM) == 1)
+	if (sigismember(&pendingset, SIGUSR2) == 1)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

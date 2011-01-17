@@ -41,8 +41,8 @@ void handler(int signo)
 		printf("Could not call sigemptyset()\n");
 		exit(-1);
 	}
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		exit(-1);
 	}
 	if (raise(SIGCONT) != 0) {
@@ -55,7 +55,7 @@ void handler(int signo)
 		exit(-1);
 	}
 
-	if (sigismember(&pendingset, SIGALRM) == 1 &&
+	if (sigismember(&pendingset, SIGUSR2) == 1 &&
 	    sigismember(&pendingset, SIGCONT) == 1) {
 		printf("All pending signals found\n");
 		if ((sigismember(&pendingset, SIGHUP) == 0) &&
@@ -92,7 +92,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-        if ((sigaddset(&blockset, SIGALRM) == -1) ||
+        if ((sigaddset(&blockset, SIGUSR2) == -1) ||
             (sigaddset(&blockset, SIGHUP) == -1)) {
                 perror("Error calling sigaddset()\n");
                 return PTS_UNRESOLVED;

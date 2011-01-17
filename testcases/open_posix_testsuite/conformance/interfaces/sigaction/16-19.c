@@ -21,8 +21,8 @@
 
 * The steps are:
 * -> create a child thread
-* -> child registers a handler for SIGPOLL with SA_RESTART, then waits for the semaphore
-* -> parent kills the child with SIGPOLL, then post the semaphore.
+* -> child registers a handler for SIGALRM with SA_RESTART, then waits for the semaphore
+* -> parent kills the child with SIGALRM, then post the semaphore.
 
 * The test fails if the sem_wait function returns EINTR
 
@@ -71,18 +71,11 @@ Anyway, a false negative status cannot be returned.
  * Those may be used to output information.
  */
 
-/******************************************************************************/
-/**************************** Configuration ***********************************/
-/******************************************************************************/
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
 
-#define SIGNAL SIGPOLL
-
-/******************************************************************************/
-/***************************    Test case   ***********************************/
-/******************************************************************************/
+#define SIGNAL SIGALRM
 
 volatile sig_atomic_t caught = 0;
 sem_t sem;
@@ -90,12 +83,11 @@ sem_t sem;
 /* Handler function */
 void handler(int signo)
 {
-	printf("Caught signal %d\n", signo);
 	caught++;
 }
 
 /* Thread function */
-void * threaded (void * arg)
+void* threaded (void * arg)
 {
 	int ret = 0;
 

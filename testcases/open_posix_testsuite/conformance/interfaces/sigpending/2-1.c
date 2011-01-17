@@ -29,7 +29,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaddset(&blockset, SIGALRM) == -1) {
+	if (sigaddset(&blockset, SIGUSR2) == -1) {
 		perror("Error calling sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -39,13 +39,13 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigpending(&pendingset) == 0) {
-		if (sigismember(&pendingset, SIGALRM) == 1) {
+		if (sigismember(&pendingset, SIGUSR2) == 1) {
 			printf("sigpending returned 0 when successful\n");
 			printf("Test PASSED\n");
 			return PTS_PASS;

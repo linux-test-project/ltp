@@ -31,22 +31,22 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Add SIGALRM to the set of blocked signals */
-	if (sigaddset(&newmask, SIGALRM) == -1) {
+	/* Add SIGUSR2 to the set of blocked signals */
+	if (sigaddset(&newmask, SIGUSR2) == -1) {
 		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Block SIGALRM */
+	/* Block SIGUSR2 */
 	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1) {
 		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Send SIGALRM signal to this process.  Since it is blocked,
+	/* Send SIGUSR2 signal to this process.  Since it is blocked,
 	 * it should be pending */
-	if (raise(SIGALRM) != 0) {
-		printf("Could not raise SIGALRM\n");
+	if (raise(SIGUSR2) != 0) {
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -58,8 +58,8 @@ int main()
 	}
 
 	/* If we get here, then the process was suspended until
-	 * SIGALRM was raised.  */
-	if (sig == SIGALRM) {
+	 * SIGUSR2 was raised.  */
+	if (sig == SIGUSR2) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
