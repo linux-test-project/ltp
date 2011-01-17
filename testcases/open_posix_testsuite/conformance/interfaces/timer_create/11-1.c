@@ -78,7 +78,8 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	while (!caught_signal) ;
+	while (!caught_signal)
+		;
 
 	if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts_end) != 0) {
 		perror("clock_gettime() failed");
