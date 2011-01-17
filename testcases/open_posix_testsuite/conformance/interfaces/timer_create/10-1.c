@@ -19,12 +19,12 @@
 
 #define SIGTOTEST SIGALRM
 #define TIMERSEC 2
+#define ACCEPTABLEDELTA 1
 
 int caught_signal;
 
 void handler(int signo)
 {
-	printf("Caught signal\n");
 	caught_signal = 1;
 }
 
@@ -38,9 +38,8 @@ int main(int argc, char *argv[])
 	struct sigaction act;
 	timer_t tid;
 	struct itimerspec its;
-	struct timespec ts, tsleft;
-	time_t start_time, end_time;
-	int overrun_amount, rc;
+	struct timespec ts_start, ts_end;
+	int rc;
 
 	rc = sysconf(_SC_CPUTIME);
 	if (rc == -1) {
@@ -69,13 +68,13 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	if (time(&start_time) == -1) {
-		perror("time failed");
+	if (timer_create(CLOCK_PROCESS_CPUTIME_ID, &ev, &tid) != 0) {
+		perror("timer_create did not return success");
 		return PTS_UNRESOLVED;
 	}
 
-	if (timer_create(CLOCK_PROCESS_CPUTIME_ID, &ev, &tid) != 0) {
-		perror("timer_create did not return success");
+	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts_start) != 0) {
+		perror("clock_gettime() failed");
 		return PTS_UNRESOLVED;
 	}
 
@@ -86,24 +85,21 @@ int main(int argc, char *argv[])
 
 	while (!caught_signal) ;
 
-	if (time(&end_time) == -1) {
-		perror("time failed");
+	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts_end) != 0) {
+		perror("clock_gettime() failed");
 		return PTS_UNRESOLVED;
 	}
 
-	if ((overrun_amount = timer_getoverrun(tid)) == -1) {
-		perror("timer_getoverrun failed");
-		return PTS_UNRESOLVED;
-	}
-
-	if ((end_time - start_time) == (TIMERSEC + overrun_amount)) {
+	if (abs(ts_end.tv_sec - ts_start.tv_sec - TIMERSEC) <=
+	    ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
 	printf("Timer did not last for correct amount of time\n"
-		"timer: %d != correct %d\n",
-		(int) (end_time - start_time), TIMERSEC + overrun_amount);
+		"stop - start = %d - %d > %d\n",
+		(int) ts_end.tv_sec, (int) ts_start.tv_sec,
+		TIMERSEC + ACCEPTABLEDELTA);
 	return PTS_FAIL;
 #endif
 }
