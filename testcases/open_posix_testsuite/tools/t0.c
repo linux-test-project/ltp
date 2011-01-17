@@ -55,6 +55,7 @@ void sighandler(int sig)
 			perror("kill(.., SIGKILL) failed");
 			abort(); /* Something's really screwed up if we get here. */
 		}
+		waitpid(pid_to_monitor, NULL, WNOHANG);
 	}
 	exit(SIGALRM + 128);
 }
