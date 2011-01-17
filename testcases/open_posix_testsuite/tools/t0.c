@@ -50,14 +50,13 @@ pid_t pid_to_monitor;
 
 void sighandler(int sig)
 {
-	if (0 <= pid_to_monitor) {
+	if (0 < pid_to_monitor) {
 		if (kill(pid_to_monitor, SIGKILL) == -1) {
 			perror("kill(.., SIGKILL) failed");
 			abort(); /* Something's really screwed up if we get here. */
-			exit(SIGALRM + 128); /* Something's uber screwed up if we get here. */
 		}
 	}
-	exit(1);
+	exit(SIGALRM + 128);
 }
 
 int main (int argc, char * argv[])
