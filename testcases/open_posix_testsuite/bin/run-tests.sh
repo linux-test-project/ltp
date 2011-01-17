@@ -19,11 +19,11 @@ run_test_loop() {
 	for t in $*; do
 
 		if run_test "$t"; then
-			NUM_PASS=`expr $NUM_PASS + 1`
+			NUM_PASS=$(expr $NUM_PASS + 1)
 		else
-			NUM_FAIL=`expr $NUM_FAIL + 1`
+			NUM_FAIL=$(expr $NUM_FAIL + 1)
 		fi
-		NUM_TESTS=`expr $NUM_TESTS + 1`
+		NUM_TESTS=$(expr $NUM_TESTS + 1)
 
 	done
 
@@ -31,10 +31,10 @@ run_test_loop() {
 *******************
 SUMMARY
 *******************
-`printf "PASS\t\t%3d" $NUM_PASS`
-`printf "FAIL\t\t%3d" $NUM_FAIL`
+$(printf "PASS\t\t%3d" $NUM_PASS)
+$(printf "FAIL\t\t%3d" $NUM_FAIL)
 *******************
-`printf "TOTAL\t\t%3d" $NUM_TESTS`
+$(printf "TOTAL\t\t%3d" $NUM_TESTS)
 *******************
 EOF
 
@@ -44,7 +44,7 @@ run_test() {
 
 	testname="$TEST_PATH/${1%.*}"
 
-	complog=`basename $testname`.log.$$
+	complog=$(basename $testname).log.$$
 
 	sh -c "$SCRIPT_DIR/t0 $TIMEOUT_VAL ./$1 $(cat ./$(echo "$1" | sed 's,\.[^\.]*,,').args 2>/dev/null)" > $complog 2>&1
 
@@ -70,7 +70,11 @@ run_test() {
 			msg="HUNG"
 			;;
 		*)
-			msg="SIGNALED"
+			if [ $ret_code -gt 128 ]; then
+				msg="SIGNALED"
+			else
+				msg="EXITED ABNORMALLY"
+			fi
 		esac
 		echo "$testname: execution: $msg: Output: " >> "${LOGFILE}"
 		cat $complog >> "${LOGFILE}"
@@ -93,7 +97,7 @@ else
 	exit 1
 fi
 
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_DIR=$(dirname "$0")
 TEST_PATH=$1; shift
 T0=$SCRIPT_DIR/t0
 T0_VAL=$SCRIPT_DIR/t0.val
@@ -104,10 +108,10 @@ if [ ! -x $T0 ]; then
 fi
 
 if [ ! -f "$T0_VAL" ]; then
-	$SCRIPT_DIR/t0 0
+	$SCRIPT_DIR/t0 0 >/dev/null 2>&1
 	echo $? > "$T0_VAL"
 fi
-if TIMEOUT_RET=`cat "$T0_VAL"`; then
+if TIMEOUT_RET=$(cat "$T0_VAL"); then
 
 	TIMEOUT_VAL=${TIMEOUT_VAL:=240}
 	if [ -f test_defs ] ; then
