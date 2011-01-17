@@ -15,7 +15,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 28
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 int main() {
 

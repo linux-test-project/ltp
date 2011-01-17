@@ -19,7 +19,7 @@ returned by the pthread_sigmask functions.
 #include <stdio.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 26
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 void *a_thread_func()
 {

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 25
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 int is_changed(sigset_t set) {
 

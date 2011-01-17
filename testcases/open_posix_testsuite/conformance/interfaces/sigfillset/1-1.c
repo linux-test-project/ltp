@@ -14,14 +14,14 @@
 #include <string.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 28
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 int main(void)
 {
 	sigset_t signalset;
 	int i, test_failed=0;
 
-      int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
+	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
 		SIGKILL, SIGPIPE, SIGQUIT, SIGSEGV, SIGSTOP,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU, SIGUSR1,

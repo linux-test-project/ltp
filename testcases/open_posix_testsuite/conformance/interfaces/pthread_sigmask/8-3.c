@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 26
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 int is_changed(sigset_t set, int sig) {
 
