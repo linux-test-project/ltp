@@ -19,10 +19,10 @@
 char overcommit[BUFSIZ];
 
 void oom(int testcase, int mempolicy, int lite);
-void testoom(int mempolicy, int lite);
+void testoom(int mempolicy, int lite, int numa);
 long count_numa(void);
 int path_exist(const char *path, ...);
-void alloc_mem(long int length, int testcase);
+int alloc_mem(long int length, int testcase);
 void test_alloc(int testcase, int lite);
 void gather_cpus(char *cpus);
 void umount_mem(char *path, char *path_new);

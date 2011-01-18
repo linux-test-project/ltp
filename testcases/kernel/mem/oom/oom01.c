@@ -79,18 +79,12 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK|TERRNO, cleanup, "write");
 		oom(OVERCOMMIT, 0, 0);
 
-		tst_resm(TINFO, "start normal OOM testing.");
 		if (lseek(fd, SEEK_SET, 0) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "lseek");
 		if (write(fd, "1", 1) != 1)
 			tst_brkm(TBROK|TERRNO, cleanup, "write");
-		oom(NORMAL, 0, 0);
-
-		tst_resm(TINFO, "start OOM testing for mlocked pages.");
-		oom(MLOCK, 0, 0);
-
-		tst_resm(TINFO, "start OOM testing for KSM pages.");
-		oom(KSM, 0, 0);
+		close(fd);
+		testoom(0, 0, 0);
 	}
 	cleanup();
 }

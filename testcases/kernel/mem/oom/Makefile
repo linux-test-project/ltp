@@ -24,6 +24,7 @@ LDLIBS			+= $(NUMA_LIBS) -loom
 LIBDIR			:= lib
 LIB			:= $(LIBDIR)/liboom.a
 FILTER_OUT_DIRS		:= $(LIBDIR)
+LDFLAGS			+= -L$(LIBDIR)
 
 $(LIBDIR):
 	mkdir -p "$@"

@@ -8,26 +8,36 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <numaif.h>
 #include <stdarg.h>
 #include "test.h"
 #include "usctest.h"
 #include "oom.h"
+#include "config.h"
+#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
+	&& HAVE_MPOL_CONSTANTS
+#include <numaif.h>
+#endif
 
 void oom(int testcase, int mempolicy, int lite)
 {
 	pid_t pid;
 	int status;
+#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
+	&& HAVE_MPOL_CONSTANTS
 	unsigned long nmask = 2;
+#endif
 
 	switch(pid = fork()) {
 	case -1:
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
 	case 0:
+#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
+	&& HAVE_MPOL_CONSTANTS
 		if (mempolicy)
 			if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
 				tst_brkm(TBROK|TERRNO, cleanup,
 					"set_mempolicy");
+#endif
 		test_alloc(testcase, lite);
 		exit(0);
 	default:
@@ -48,24 +58,24 @@ void oom(int testcase, int mempolicy, int lite)
 	}
 }
 
-void testoom(int mempolicy, int lite)
+void testoom(int mempolicy, int lite, int numa)
 {
 	int fd;
 	char buf[BUFSIZ] = "";
 	char cpus[BUFSIZ] = "";
 
-	if (!mempolicy) {
+	if (numa && !mempolicy) {
 		gather_cpus(cpus);
 		tst_resm(TINFO, "CPU list for 2nd node is %s.", cpus);
 
-		fd = open(CPATH_NEW "/cpuset.mems", O_WRONLY);
+		fd = open(CPATH_NEW "/mems", O_WRONLY);
 		if (fd == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
 		if (write(fd, "1", 1) != 1)
 			tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
 		close(fd);
 
-		fd = open(CPATH_NEW "/cpuset.cpus", O_WRONLY);
+		fd = open(CPATH_NEW "/cpus", O_WRONLY);
 		if (fd == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
 		if (write(fd, cpus, strlen(cpus)) != strlen(cpus))
@@ -130,7 +140,7 @@ void gather_cpus(char *cpus)
 	cpus[strlen(cpus) - 1] = '\0';
 }
 
-void alloc_mem(long int length, int testcase)
+int alloc_mem(long int length, int testcase)
 {
 	void *s;
 
@@ -139,7 +149,7 @@ void alloc_mem(long int length, int testcase)
 		MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 	if (s == MAP_FAILED) {
 		if (testcase == OVERCOMMIT && errno == ENOMEM)
-			return;
+			return 1;
 		else
 			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
 	}
@@ -149,6 +159,8 @@ void alloc_mem(long int length, int testcase)
 		&& madvise(s, length, MADV_MERGEABLE) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "madvise");
 	memset(s, '\a', length);
+
+	return 0;
 }
 
 void test_alloc(int testcase, int lite)
@@ -157,7 +169,8 @@ void test_alloc(int testcase, int lite)
 		alloc_mem(TESTMEM + MB, testcase);
 	else
 		while(1)
-			alloc_mem(LENGTH, testcase);
+			if (alloc_mem(LENGTH, testcase))
+				return;
 }
 
 void umount_mem(char *path, char *path_new)
