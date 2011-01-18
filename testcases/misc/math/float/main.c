@@ -42,7 +42,7 @@ myexit (int x)
 		tst_resm (TFAIL, "Test failed");
 	else
 		tst_resm (TPASS, "Test passed");
-	exit(0);
+	tst_exit();
 }
 
 TH_DATA *pcom;
