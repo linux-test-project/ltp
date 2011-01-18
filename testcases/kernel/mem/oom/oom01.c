@@ -85,20 +85,23 @@ int main(int argc, char *argv[])
 		testoom(0, 0, 0);
 	}
 	cleanup();
+	tst_exit();
 }
 
 void setup(void)
 {
 	int fd;
 
+	tst_require_root(NULL);
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
 	fd = open(SYSFS_OVER, O_RDONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
+		tst_brkm(TBROK|TERRNO, NULL, "open");
 	if (read(fd, &overcommit, 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "read");
+		tst_brkm(TBROK|TERRNO, NULL, "read");
 	close(fd);
 }
 

@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
 		testoom(0, 0, 1);
 	}
 	cleanup();
+	tst_exit();
 }
 
 void setup(void)
