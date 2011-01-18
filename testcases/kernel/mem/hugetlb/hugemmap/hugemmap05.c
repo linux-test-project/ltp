@@ -51,18 +51,18 @@
 #include "usctest.h"
 
 #define PROTECTION		(PROT_READ | PROT_WRITE)
-#define _PATH_MEMINFO		"/proc/meminfo"
-#define _PATH_SYS_HUGE		"/sys/kernel/mm/hugepages"
-#define _PATH_SYS_2M		_PATH_SYS_HUGE "/hugepages-2048kB/"
-#define _PATH_SYS_2M_OVER	_PATH_SYS_2M "nr_overcommit_hugepages"
-#define _PATH_SYS_2M_FREE	_PATH_SYS_2M "free_hugepages"
-#define _PATH_SYS_2M_RESV	_PATH_SYS_2M "resv_hugepages"
-#define _PATH_SYS_2M_SURP	_PATH_SYS_2M "surplus_hugepages"
-#define _PATH_SYS_2M_HUGE	_PATH_SYS_2M "nr_hugepages"
-#define _PATH_PROC_VM		"/proc/sys/vm/"
-#define _PATH_PROC_OVER		_PATH_PROC_VM "nr_overcommit_hugepages"
-#define _PATH_PROC_HUGE		_PATH_PROC_VM "nr_hugepages"
-#define _PATH_SHMMAX		"/proc/sys/kernel/shmmax"
+#define PATH_MEMINFO		"/proc/meminfo"
+#define PATH_SYS_HUGE		"/sys/kernel/mm/hugepages"
+#define PATH_SYS_2M		PATH_SYS_HUGE "/hugepages-2048kB/"
+#define PATH_SYS_2M_OVER	PATH_SYS_2M "nr_overcommit_hugepages"
+#define PATH_SYS_2M_FREE	PATH_SYS_2M "free_hugepages"
+#define PATH_SYS_2M_RESV	PATH_SYS_2M "resv_hugepages"
+#define PATH_SYS_2M_SURP	PATH_SYS_2M "surplus_hugepages"
+#define PATH_SYS_2M_HUGE	PATH_SYS_2M "nr_hugepages"
+#define PATH_PROC_VM		"/proc/sys/vm/"
+#define PATH_PROC_OVER		PATH_PROC_VM "nr_overcommit_hugepages"
+#define PATH_PROC_HUGE		PATH_PROC_VM "nr_hugepages"
+#define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
 #define MB			(1024 * 1024)
 
 /* Only ia64 requires this */
@@ -115,15 +115,15 @@ int main(int argc, char *argv[])
 	if (msg != NULL)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	if (opt_sysfs) {
-		strncpy(path, _PATH_SYS_2M_HUGE,
-			strlen(_PATH_SYS_2M_HUGE) + 1);
-		strncpy(pathover, _PATH_SYS_2M_OVER,
-			strlen(_PATH_SYS_2M_OVER) + 1);
+		strncpy(path, PATH_SYS_2M_HUGE,
+			strlen(PATH_SYS_2M_HUGE) + 1);
+		strncpy(pathover, PATH_SYS_2M_OVER,
+			strlen(PATH_SYS_2M_OVER) + 1);
 	} else {
-		strncpy(path, _PATH_PROC_HUGE,
-			strlen(_PATH_PROC_HUGE) + 1);
-		strncpy(pathover, _PATH_PROC_OVER,
-			strlen(_PATH_PROC_OVER) + 1);
+		strncpy(path, PATH_PROC_HUGE,
+			strlen(PATH_PROC_HUGE) + 1);
+		strncpy(pathover, PATH_PROC_OVER,
+			strlen(PATH_PROC_OVER) + 1);
 	}
 	if (opt_alloc) {
 		size = atoi(opt_allocstr);
@@ -147,7 +147,7 @@ static void overcommit(void)
 
 	if (shmid != -1) {
 		/* Use /proc/meminfo to generate an IPC key. */
-		key = ftok(_PATH_MEMINFO, strlen(_PATH_MEMINFO));
+		key = ftok(PATH_MEMINFO, strlen(PATH_MEMINFO));
 		if (key == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "ftok");
 		shmid = shmget(key, (long)(length * MB),
@@ -168,22 +168,22 @@ static void overcommit(void)
 
 	if (opt_sysfs) {
 		tst_resm(TINFO, "check sysfs before allocation.");
-		if (checksys(_PATH_SYS_2M_HUGE, "HugePages_Total",
+		if (checksys(PATH_SYS_2M_HUGE, "HugePages_Total",
 				length / 2) != 0)
 			return;
-		if (checksys(_PATH_SYS_2M_FREE, "HugePages_Free",
+		if (checksys(PATH_SYS_2M_FREE, "HugePages_Free",
 				length / 2) != 0)
 			return;
-		if (checksys(_PATH_SYS_2M_SURP, "HugePages_Surp",
+		if (checksys(PATH_SYS_2M_SURP, "HugePages_Surp",
 				length / 2 - size) != 0)
 			return;
-		if (checksys(_PATH_SYS_2M_RESV, "HugePages_Rsvd",
+		if (checksys(PATH_SYS_2M_RESV, "HugePages_Rsvd",
 				length / 2) != 0)
 			return;
 	} else {
 		tst_resm(TINFO,
 			"check /proc/meminfo before allocation.");
-		fp = fopen(_PATH_MEMINFO, "r");
+		fp = fopen(PATH_MEMINFO, "r");
 		if (fp == NULL)
 			tst_brkm(TBROK|TERRNO, cleanup, "fopen");
 		if (checkproc(fp, "HugePages_Total", length / 2) != 0)
@@ -209,21 +209,21 @@ static void overcommit(void)
 	}
 	if (opt_sysfs) {
 		tst_resm(TINFO, "check sysfs.");
-		if (checksys(_PATH_SYS_2M_HUGE, "HugePages_Total",
+		if (checksys(PATH_SYS_2M_HUGE, "HugePages_Total",
 				length / 2) != 0)
 			return;
-		if (checksys(_PATH_SYS_2M_FREE, "HugePages_Free", 0)
+		if (checksys(PATH_SYS_2M_FREE, "HugePages_Free", 0)
 			!= 0)
 			return;
-		if (checksys(_PATH_SYS_2M_SURP, "HugePages_Surp",
+		if (checksys(PATH_SYS_2M_SURP, "HugePages_Surp",
 				length / 2 - size) != 0)
 			return;
-		if (checksys(_PATH_SYS_2M_RESV, "HugePages_Rsvd", 0)
+		if (checksys(PATH_SYS_2M_RESV, "HugePages_Rsvd", 0)
 			!= 0)
 			return;
 	} else {
 		tst_resm(TINFO, "check /proc/meminfo.");
-		fp = fopen(_PATH_MEMINFO, "r");
+		fp = fopen(PATH_MEMINFO, "r");
 		if (fp == NULL)
 			tst_brkm(TBROK|TERRNO, cleanup, "fopen");
 		if (checkproc(fp, "HugePages_Total", length / 2) != 0)
@@ -251,7 +251,7 @@ static void cleanup(void)
 	int fd;
 
 	if (restore_shmmax) {
-		fd = open(_PATH_SHMMAX, O_WRONLY);
+		fd = open(PATH_SHMMAX, O_WRONLY);
 		if (fd == -1)
 			tst_resm(TWARN|TERRNO, "open");
 		if (write(fd, shmmax, strlen(shmmax)) != strlen(shmmax))
@@ -299,7 +299,7 @@ static void setup(void)
 	tst_tmpdir();
 
 	if (shmid != -1) {
-		fp = fopen(_PATH_SHMMAX, "r");
+		fp = fopen(PATH_SHMMAX, "r");
 		if (fp == NULL)
 			tst_brkm(TBROK|TERRNO, cleanup, "fopen");
 		if (fgets(shmmax, BUFSIZ, fp) == NULL)
@@ -308,7 +308,7 @@ static void setup(void)
 
 		if (atol(shmmax) < (long)(length * MB)) {
 			restore_shmmax = 1;
-			fd = open(_PATH_SHMMAX, O_RDWR);
+			fd = open(PATH_SHMMAX, O_RDWR);
 			if (fd == -1)
 				tst_brkm(TBROK|TERRNO, cleanup, "open");
 			snprintf(buf, BUFSIZ, "%ld", (long)(length * MB));
