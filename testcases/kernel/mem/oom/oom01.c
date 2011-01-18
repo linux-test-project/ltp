@@ -51,14 +51,12 @@ int main(int argc, char *argv[])
 	char *msg;
 	int lc, fd;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-#ifdef __i386__
-	tst_brkm(TCONF, tst_exit,
-		"this test is not designed for 32-bit system.");
-#endif /* __i386__ */
+#ifdef __WORDSIZE == 32
+	tst_brkm(TCONF, NULL, "test is not designed for 32-bit system.");
+#endif
 
 	setup();
 

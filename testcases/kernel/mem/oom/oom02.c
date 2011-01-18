@@ -56,9 +56,8 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 #ifdef __WORDSIZE == 32
-	tst_brkm(TCONF, NULL,
-		"this test is not designed for 32-bit system.");
-#endif /* __i386__ */
+	tst_brkm(TCONF, NULL, "test is not designed for 32-bit system.");
+#endif
 
 	nnodes = count_numa();
 	if (count_numa() == 1)
@@ -76,10 +75,10 @@ int main(int argc, char *argv[])
 		close(fd);
 
 		tst_resm(TINFO, "process mempolicy.");
-		testoom(1, 0);
+		testoom(1, 0, 1);
 
 		tst_resm(TINFO, "process cpuset.");
-		testoom(0, 0);
+		testoom(0, 0, 1);
 	}
 	cleanup();
 }

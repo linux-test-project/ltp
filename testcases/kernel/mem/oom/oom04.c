@@ -91,18 +91,16 @@ int main(int argc, char *argv[])
 	unsigned long nnodes = 1;
 	char buf[BUFSIZ], mem[BUFSIZ];
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != (char *)NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-#ifdef __i386__
-	tst_brkm(TCONF, tst_exit,
-		"test is not designed for 32-bit system.");
-#endif /* __i386__ */
+#ifdef __WORDSIZE == 32
+	tst_brkm(TCONF, NULL, "test is not designed for 32-bit system.");
+#endif
 
 	nnodes = count_numa();
 	if (count_numa() == 1)
-		tst_brkm(TCONF, tst_exit, "required a NUMA system.");
+		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();
 
