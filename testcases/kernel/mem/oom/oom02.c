@@ -34,7 +34,6 @@
 
 char *TCID = "oom02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
@@ -53,18 +52,17 @@ int main(int argc, char *argv[])
 	int lc, fd;
 	unsigned long nnodes = 1;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-#ifdef __i386__
-	tst_brkm(TCONF, tst_exit,
+#ifdef __WORDSIZE == 32
+	tst_brkm(TCONF, NULL,
 		"this test is not designed for 32-bit system.");
 #endif /* __i386__ */
 
 	nnodes = count_numa();
 	if (count_numa() == 1)
-		tst_brkm(TCONF, tst_exit, "required a NUMA system.");
+		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();
 
@@ -95,9 +93,9 @@ void setup(void)
 
 	fd = open(SYSFS_OVER, O_RDONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
+		tst_brkm(TBROK|TERRNO, NULL, "open");
 	if (read(fd, &overcommit, 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "read");
+		tst_brkm(TBROK|TERRNO, NULL, "read");
 	close(fd);
 
 	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
@@ -117,13 +115,11 @@ void cleanup(void)
 	umount_mem(CPATH, CPATH_NEW);
 
 	TEST_CLEANUP;
-	tst_exit();
 }
 
 #else /* no NUMA */
 int main(void)
 {
-	tst_resm(TCONF, "no NUMA development packages installed.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
 }
 #endif
