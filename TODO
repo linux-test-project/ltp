@@ -20,18 +20,6 @@ quotactl01 test and destroyed at the end.
 
 The following items need fixing with the new Makefile infrastructure:
 
-testcases/Makefile:
-1. mce-test doesn't fit cleanly in the build, yet.
-2. pounder21 is just broken (wasn't traversed before).
-
-testcases/ballista:
-1. Not integrated with the Make infrastructure (and thus the output isn't
-   guaranteed to function with cross-compilation based envs).
-2. Is a mess (there's a lot of shoddy Make and perl code that I'm cleaning up
-   up right now).
-3. Uses cshell for some weird arse reason, instead of using Bourne shell
-   compat scripts.
-
 testcases/kernel/controllers/freezer/libcgroup_freezer:
 1. Uses pushd / popd, which isn't present in busybox.
 
