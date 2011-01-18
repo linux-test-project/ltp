@@ -57,7 +57,7 @@ int TST_TOTAL = 1;
 #define MAXNODES		512
 #define CPATH			"/dev/cpuset"
 #define CPATH_NEW		"/dev/cpuset/1"
-#define _PATH_SYS_SYSTEM	"/sys/devices/system"
+#define PATH_SYS_SYSTEM		"/sys/devices/system"
 
 static pid_t *pids;
 volatile int end;
@@ -297,7 +297,7 @@ long count_numa(void)
 {
 	int nnodes = 0;
 
-	while(path_exist(_PATH_SYS_SYSTEM "/node/node%d", nnodes))
+	while(path_exist(PATH_SYS_SYSTEM "/node/node%d", nnodes))
 		nnodes++;
 
 	return nnodes;
@@ -307,7 +307,7 @@ long count_cpu(void)
 {
 	int ncpus = 0;
 
-	while(path_exist(_PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
+	while(path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
 		ncpus++;
 
 	return ncpus;
