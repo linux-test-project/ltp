@@ -212,7 +212,6 @@ New Testcases
 
     #include <sys/types.h>
     #include <sys/stat.h>
-    #include <sys/types.h>
     #include <netinet/icmp.h>
     #include <stdio.h>
     #include <dbus-1.0/dbus/dbus.h>
