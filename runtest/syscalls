@@ -274,6 +274,7 @@ fork08 fork08
 fork09 fork09
 fork10 fork10
 fork11 fork11
+fork13 fork13 -c 2 -i 10000000
 
 fpathconf01 fpathconf01
 
