@@ -167,6 +167,11 @@ if ((this_is_a_poorly_formed_really_long_variable = function_call()) == NULL &&
 	    "to sea. Fisherman would find them a mile offshore, swimming.");
 }
 
+14. Don't use linux/ headers if at all possible. Usually they are
+    replaced with sys/ headers as things work their way into glibc.
+    Furthermore, linux/ headers get shuffled around a lot more than
+    their sys/ counterparts it seems.
+
 
 Porting Testcases
 ---------------------------
