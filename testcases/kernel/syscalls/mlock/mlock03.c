@@ -110,6 +110,8 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
+	tst_require_root(NULL);
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 }

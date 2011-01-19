@@ -294,6 +294,7 @@ static void setup(void)
 	FILE *fp;
 	int fd;
 
+	tst_require_root(NULL);
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 	tst_tmpdir();

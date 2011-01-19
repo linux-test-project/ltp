@@ -177,6 +177,8 @@ void testcpuset(void)
 
 void setup(void)
 {
+	tst_require_root(NULL);
+
 	if (count_numa() == 1)
 		tst_brkm(TCONF, NULL, "required a NUMA system.");
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -223,7 +225,6 @@ void cleanup(void)
 		tst_resm(TWARN|TERRNO, "rmdir");
 
 	TEST_CLEANUP;
-
 }
 
 void sighandler(int signo LTP_ATTRIBUTE_UNUSED)
