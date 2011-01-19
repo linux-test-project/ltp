@@ -113,7 +113,7 @@ int main(int ac, char **av) {
 	cpid = fork();     //call exit_group()
 	if (cpid == -1) {
         	tst_brkm(TFAIL|TERRNO, cleanup, "fork failed");
-	} else if (TEST_RETURN == 0) {
+	} else if (cpid == 0) {
 		sleep(5);
 		TEST(syscall(__NR_exit_group,4));
 	} else {
