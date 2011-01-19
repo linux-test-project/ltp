@@ -170,7 +170,8 @@ int main(int ac, char **av)
 				    "return value of 0x0, got %#x", rval);
 				break;
 			}
-			if (((rval = fcntl(fd0, F_GETFL, 0)) != O_WRONLY)) {
+			if ((rval = (fcntl(fd0, F_GETFL, 0) & O_ACCMODE)) !=
+			    O_WRONLY) {
 				tst_resm(TFAIL, "fctnl F_GETFL bad rval on fd0 "
 					"Expected %#x got %#x", O_WRONLY, rval);
 			}
