@@ -35,9 +35,6 @@ include $(top_srcdir)/include/mk/gitignore.mk
 .SUFFIXES:
 .SUFFIXES: .am .default .h .in .m4 .mk
 
-foo:
-
-
 vpath %.am		$(top_srcdir)/m4
 vpath %.default		$(top_srcdir)/include
 vpath %.h		$(top_srcdir)/include:$(top_builddir)/include
