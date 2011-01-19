@@ -1,0 +1,265 @@
+INTRODUCTION
+===========================
+
+Welcome to the LTP Project Coding Guideline document! This document is
+designed to guide committers and contributors to produce consistent
+quality deterministic testcases and port testcases from other sources
+to LTP so that they can be easily maintained by project members and
+external contributors.
+
+Please refer to the Linux Kernel Coding Guidelines unless stated
+otherwise in this document.
+
+USING LIBLTP
+===========================
+
+Of course the manpages should be the primary source of information in
+terms of how you should use libltp, but this section provides a quick
+set of guidelines to hit the ground running with libltp:
+
+In General
+---------------------------
+
+When you can use libltp and should use libltp for porting or new
+when writing new testcases, please observe the following:
+
+1.  Only use libltp in non-forked processes and functions. Use
+    perror(3)/exit(3) otherwise.
+    - This is to avoid complicated info messages to relay whether or
+      not I'm in the child or parent.
+    - You won't accidentally call cleanup from a child process which
+      nulls and voids determinism.
+    - You won't need to establish a complicated scheme of tracking
+      the testcase state for teardown. Stateless teardown is divine.
+
+2.  Use SAFE_* macros (see safe_macros.h) instead of bare calls to
+    libcalls and syscalls. This will:
+    - Reduce number of lines wasted on repeated in multiple files with
+      error catching logic.
+    - Ensure that error catching is consistent and informative; all
+      SAFE_* macros contain the line number of the failure as well as
+      the file where the failure occurred by design. So unless the
+      stack gets stomped on, you will be able to determine where
+      the failures occurred if and when they do occur with absolute
+      determinism.
+    - Mute some unchecked return code warnings.
+
+3.  Don't call cleanup() from within setup() unless you need to clean
+    up or reset system state that wouldn't otherwise be handled by a
+    proper release of OS resources. This includes (but is not limited
+    to):
+    - Memory mapped pages.
+    - Mounted filesystems.
+    - File descriptors (if they're in temporary directories, etc).
+    - Temporary files / directories.
+    - Waiting for child processes.
+    - /proc // /sysfs tunable states.
+
+    You don't need to clean up the following:
+    - malloc(3)'ed memory.
+    - Read-only file descriptors in persistent paths (i.e. not
+      temporary directories).
+
+4.  Call APIs that don't require freeing up resources on failure
+    first, i.e.
+    - tst_require_root(NULL) .
+    - tst_sig(...) .
+    - malloc(3) .
+    - tst_tmpdir() .
+
+    That way you can simplify your setup and avoid calling cleanup
+    whenever possible!
+
+5.  Avoid tst_kvercmp if possible.
+
+    I realize it's a libltp API, but it causes more problems than it's
+    worth because people _do_ backport changes from later kernel
+    versions or opt out of changes in kernel interfaces (at their own
+    risk -- I know -- but still.. assuming that features are fixed to
+    minor versions is a design flaw with a number of newer-ish tests
+    in LTP).
+
+    That being said, do this as a best-effort so this guideline is more
+    squishy than others.
+
+6.  If you need to become root, check to make sure that you're root
+    first via tst_require_root(...).
+
+7.  Don't roll your own reporting APIs unless you're porting testcases
+    or are concerned about portability.
+
+8.  Use TBROK when an unexpected failure unrelated to the goal of the
+    testcase occurred, and use TFAIL when an unexpected failure
+    related to the goal of the testcase occurred.
+
+9.  Don't roll your own syscalls. linux_syscall_numbers.h exists for
+    this purpose and does a pretty dang good job.
+
+10. Keep errors as short and sweet as possible, e.g.
+
+	if (fork() == -1)
+		tst_brkm(TBROK, cleanup, "fork failed");
+
+    or...
+
+	if (fork() == -1)
+		tst_brkm(TBROK, cleanup, "fork # 1 failed");
+
+	if (fork() == -1)
+		tst_brkm(TBROK, cleanup, "fork # 2 failed");
+
+    If you can't determine where the failure has occurred in a testcase
+    based on the entire content of the failure messages, then
+    determining the cause of failure may be impossible.
+
+Porting Testcases
+---------------------------
+
+1. You are porting a testcase directly to LTP which doesn't need to
+   be ported outside of Linux.
+2. The beforementioned project or source is no longer contributing
+   changes to the testcases.
+
+If the above items aren't true, then please add porting shims around
+the testcases using libltp APIs to reduce longterm maintenance.
+
+New Testcases
+---------------------------
+
+1. Always use libltp for Linux centric tests. No ifs, ands, or buts
+   about it.
+2. Sort headers, like:
+
+   /* 
+    * sys/types.h is usually (but not always) required by POSIX
+    * APIs.
+    */
+   #include <sys/types.h>
+   /* sys headers, alphabetical order. */
+   /* directory prefixed libc headers. */
+   /* non-directory prefixed libc headers. */
+   /* directory prefixed non-libc (third-party) headers. */
+   /* non-directory prefixed non-libc (third-party) headers. */
+   /* Sourcebase relative includes. */
+
+   e.g.
+
+   #include <sys/types.h>
+   #include <sys/stat.h>
+   #include <sys/types.h>
+   #include <netinet/icmp.h>
+   #include <stdio.h>
+   #include <dbus-1.0/dbus/dbus.h>
+   #include <archive.h>
+   #include "foo/bar.h"
+   #include "test.h"
+
+3. Do not use obvious comments ("child process", "parse options",
+   etc). This leads to visual comment noise pollution.
+4. Don't do inline assignment, i.e.
+
+   int foo = 0;
+
+   Use separate statements:
+
+   int foo;
+
+   foo = 0;
+
+5. Your testcase should be runnable as root and non-root. What does
+   that mean? It should fail gracefull as non-root if it has
+   insufficient privileges, or use tst_require_root(NULL) if root
+   access is absolutely required.
+
+   A lot of newer testcases don't honor this fact and it causes random
+   unnecessary errors when run as non-privileged users.
+
+6. Use tst_tmpdir() if your testcase will:
+   - Create temporary files.
+   - Dump core.
+   Etc. Otherwise, don't bother with the API :)!
+
+7. Use tst_sig instead of rolling your own signal handler. This
+   reduces potential of leaving a mess around if your test doesn't
+   exit cleanly (now, there are some signals that can't be blocked,
+   i.e. SIGKILL and SIGSTOP, but the rest can be caught, so do it
+   ;)..).
+
+8. Always write testcases in the following format:
+
+#include "test.h"
+
+char *TCID = "testname";
+int TST_TOTAL = /* ... */
+
+static void setup(void)
+{
+	/* ... */
+
+	tst_require_root(NULL);
+
+	TEST_PAUSE;
+
+	tst_tmpdir();
+
+	/* ... */
+}
+
+static void cleanup
+
+int main(void)
+{
+	/* ... */
+
+	setup();	/* Optional */
+
+	cleanup();	/* Optional */
+	tst_exit();	/* DON'T FORGET THIS! */
+}
+
+/* ... */
+
+Cleaning Up Testcases
+---------------------------
+
+Unless you have an absurd interest in exercising self-masochism, do
+minimal changes to the testcase so it's easier to track potential
+breakage in testcases after a commit is made (mistakes happen and no
+one is perfect). If it works after you fix it -- great -- move on.
+It's the job of the committers / maintainers to do things like style
+commits.
+
+It's better to focus on adding more content to LTP as a contributor and
+fixing functional issues with existing tests than it is worrying about
+whitespace, pedanticness of function calls, etc.
+
+As ugly as the style is in the surrounding code may be, stick to it.
+Otherwise anyone reading the code will cringe at the chaos and
+non-uniform `style'.
+
+CONTRIBUTING TO THE PROJECT
+===========================
+
+Since CVS is effectively dead in LTP (still alive and well in lcov), we
+ask that you submit patches that are git friendly and patchable.
+
+Guidelines for submitting patches are as follows:
+
+1. Use `git commit -s' . You know you want to (and if you do then you
+   will be submitted a correct signed-off-by line!) ;)... You may need
+   to use git config first though.
+2. Provide a short (<50 character) description of the commit.
+3. Provide a little more terse (1-2 paragraph maximum, 72 character)
+   description of what the commit does, if necessary. 
+4. Format the email with `git format-patch --attach' command .
+
+Example of a commit message:
+
+======================================
+Short description of my commit.
+
+This is a much longer description of my commit. Blah blah blah blah
+blah blah blah blah blah.
+
+Signed-off-by: John Smith <dev@null>
+======================================
