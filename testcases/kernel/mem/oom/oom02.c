@@ -42,9 +42,7 @@ int TST_TOTAL = 1;
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
-#include "lib/oom.h"
-
-static void setup(void);
+#include "../include/mem.h"
 
 int main(int argc, char *argv[])
 {

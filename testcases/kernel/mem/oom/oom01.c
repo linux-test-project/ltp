@@ -38,13 +38,10 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
-#include "lib/oom.h"
+#include "../include/mem.h"
 
 char *TCID = "oom01";
 int TST_TOTAL = 1;
-extern int Tst_count;
-
-static void setup(void);
 
 int main(int argc, char *argv[])
 {

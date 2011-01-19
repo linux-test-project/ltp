@@ -20,9 +20,9 @@ top_srcdir              ?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-LDLIBS			+= $(NUMA_LIBS) -loom
-LIBDIR			:= lib
-LIB			:= $(LIBDIR)/liboom.a
+LDLIBS			+= $(NUMA_LIBS) -lmem
+LIBDIR			:= ../lib
+LIB			:= $(LIBDIR)/libmem.a
 FILTER_OUT_DIRS		:= $(LIBDIR)
 LDFLAGS			+= -L$(LIBDIR)
 
