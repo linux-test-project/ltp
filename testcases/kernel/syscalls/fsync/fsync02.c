@@ -102,7 +102,8 @@ int main(int ac, char **av)
 		}
 
 		for (i = 1; i <= data_blocks; i++) {
-			offset = (i * BLOCKSIZE * max_block) / data_blocks - BUFSIZ;
+			offset = i * ((BLOCKSIZE * max_block) / data_blocks);
+			offset -= BUFSIZ;
 			if ((offsetret = lseek(fd, offset, SEEK_SET)) != offset)
 				tst_brkm(TBROK|TERRNO, cleanup, "lseek failed: %ld, %ld", offsetret, offset);
 			if ((ret = write(fd, pbuf, BUFSIZ)) != BUFSIZ)
