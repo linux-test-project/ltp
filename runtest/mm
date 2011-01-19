@@ -55,23 +55,30 @@ mmapstress09 mmapstress09 -p 20 -t 0.2
 mmapstress10 mmapstress10 -p 20 -t 0.2
 
 mmap10 mmap10
-
-mlock03 mlock03 -i 20
-
-mbind01 mbind01
-
-hugemmap05 hugemmap05
-hugemmap05_1 hugemmap05 -m
-hugemmap05_2 hugemmap05 -s
-hugemmap05_3 hugemmap05 -s -m
 mmap10_1 mmap10 -a
 mmap10_2 mmap10 -s
 mmap10_3 mmap10 -a -s
 mmap10_4 mmap10 -a -s -c 60
 
 ksm01 ksm01
+ksm01_1 ksm01 -u 128
+ksm02 ksm02
+ksm02_1 ksm02 -u 128
+ksm03 ksm03
+ksm03_1 ksm03 -u 128
+ksm04 ksm04
+ksm04_1 ksm04 -u 128
+
+hugemmap05 hugemmap05
+hugemmap05_1 hugemmap05 -m
+hugemmap05_2 hugemmap05 -s
+hugemmap05_3 hugemmap05 -s -m
 
 cpuset01 cpuset01 -I 3600
+
+mlock03 mlock03 -i 20
+
+mbind01 mbind01
 
 oom01 oom01
 oom02 oom02
