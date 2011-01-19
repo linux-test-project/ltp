@@ -13,9 +13,9 @@
   Steps:
   1. Fork a new process
   2. (parent) wait for child
-  3. (child) Setup a signal handler for SIGALRM with SIGSTOP added to
+  3. (child) Setup a signal handler for SIGUSR2 with SIGSTOP added to
              the signal mask
-  4. (child) raise SIGALRM
+  4. (child) raise SIGUSR2
   5. (child, signal handler) raise SIGSTOP
   5. (child) If still around then return -1
   6. (parent - returning from wait) If child was stopped then return
@@ -50,13 +50,13 @@ int main()
 		act.sa_flags = 0;
 		sigemptyset(&act.sa_mask);
 		sigaddset(&act.sa_mask, SIGSTOP);
-		if (sigaction(SIGALRM,  &act, 0) == -1) {
+		if (sigaction(SIGUSR2,  &act, 0) == -1) {
 			perror("Unexpected error while attempting to "
 			       "setup test pre-conditions");
 			return PTS_UNRESOLVED;
 		}
 
-		if (raise(SIGALRM) == -1) {
+		if (raise(SIGUSR2) == -1) {
 			perror("Unexpected error while attempting to "
 			       "setup test pre-conditions");
 		}

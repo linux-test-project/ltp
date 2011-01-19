@@ -62,9 +62,9 @@
  */
 
 #include <pwd.h>
-#include <malloc.h>
-#include <test.h>
-#include <usctest.h>
+#include <stdlib.h>
+#include "test.h"
+#include "usctest.h"
 #include <errno.h>
 
 #define FAILED  1

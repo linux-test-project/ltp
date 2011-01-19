@@ -33,11 +33,10 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #define LOCAL_UDP_SERVER_PORT   10000
 #define LOCAL_TCP_SERVER_PORT   10001

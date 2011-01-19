@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 26
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 int is_empty(sigset_t *set) {
 
@@ -36,7 +36,10 @@ int is_empty(sigset_t *set) {
 #ifdef SIGPOLL
 		SIGPOLL,
 #endif
-		SIGPROF, SIGSYS,
+#ifdef SIGPROF
+		SIGPROF,
+#endif
+		SIGSYS,
                 SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
         for (i=0; i<NUMSIGNALS; i++) {
@@ -48,7 +51,6 @@ int is_empty(sigset_t *set) {
 
 void myhandler(int signo)
 {
-	printf("SIGCHLD called. Inside handler\n");
 }
 
 int main()

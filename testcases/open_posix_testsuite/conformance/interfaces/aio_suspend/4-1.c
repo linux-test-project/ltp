@@ -47,8 +47,7 @@ int received_all	= 0;
 void
 sigrt1_handler(int signum, siginfo_t *info, void *context)
 {
-	if (info->si_value.sival_int == WAIT_FOR_AIOCB)
-		received_selected = 1;
+	received_selected = 1;
 }
 
 void
@@ -68,13 +67,13 @@ main ()
 	char *bufs;
 	struct sigaction action;
 	struct sigevent event;
-	struct timespec ts = {0, 10000000}; /* 10 ms */
+	struct timespec ts = {0, 1000}; /* 1 us */
 	int errors = 0;
 	int ret;
 	int err;
 	int i;
 
-	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_suspend_4_1_%d",
@@ -120,10 +119,12 @@ main ()
 		aiocbs[i]->aio_nbytes = BUF_SIZE;
 		aiocbs[i]->aio_lio_opcode = LIO_READ;
 
-		/* Use SIRTMIN+1 for individual completions */
-		aiocbs[i]->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
-		aiocbs[i]->aio_sigevent.sigev_signo = SIGRTMIN+1;
-		aiocbs[i]->aio_sigevent.sigev_value.sival_int = i;
+		/* Use SIGRTMIN+1 for individual completions */
+		if (i == WAIT_FOR_AIOCB) {
+			aiocbs[i]->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+			aiocbs[i]->aio_sigevent.sigev_signo = SIGRTMIN+1;
+			aiocbs[i]->aio_sigevent.sigev_value.sival_int = i;
+		}
 	}
 
 	/* Use SIGRTMIN+2 for list completion */

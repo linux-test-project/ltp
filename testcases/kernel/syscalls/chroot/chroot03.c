@@ -63,8 +63,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <fcntl.h>
 
 char *TCID = "chroot03";

@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 26
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 int is_changed(sigset_t set, int sig) {
 
@@ -28,7 +28,14 @@ int is_changed(sigset_t set, int sig) {
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
 		SIGPIPE, SIGQUIT, SIGSEGV,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
-		SIGUSR1, SIGUSR2, SIGPOLL, SIGPROF, SIGSYS,
+		SIGUSR1, SIGUSR2,
+#ifdef SIGPOLL
+		SIGPOLL,
+#endif
+#ifdef SIGPROF
+		SIGPROF,
+#endif
+		SIGSYS,
 		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
 	if (sigismember(&set, sig) != 1) {

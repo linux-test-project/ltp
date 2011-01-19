@@ -26,9 +26,9 @@ void SIGABRT_handler(int signo)
 	printf("Caught SIGABRT\n");
 }
 
-void SIGALRM_handler(int signo)
+void SIGUSR2_handler(int signo)
 {
-	printf("Caught SIGALRM\n");
+	printf("Caught SIGUSR2\n");
 	raise(SIGABRT);
 	if (SIGABRT_count) {
 		printf("Test FAILED\n");
@@ -40,11 +40,11 @@ int main()
 {
 	struct sigaction act;
 
-	act.sa_handler = SIGALRM_handler;
+	act.sa_handler = SIGUSR2_handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGABRT);
-	if (sigaction(SIGALRM,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2,  &act, 0) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;
@@ -59,7 +59,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGALRM) == -1) {
+	if (raise(SIGUSR2) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;

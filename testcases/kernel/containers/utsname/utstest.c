@@ -52,7 +52,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <test.h>
+#include "test.h"
 #include <libclone.h>
 
 char *TCID = "uts_namespace";

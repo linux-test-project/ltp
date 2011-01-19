@@ -12,9 +12,9 @@
 
   Steps:
   1. Initialize global variable to indicate handler has not been called
-  2. Set the signal handler for SIGPOLL to handler
+  2. Set the signal handler for SIGUSR2 to handler
   3. Call sigaction with a null act
-  4. raise SIGPOLL
+  4. raise SIGUSR2
   5. Verify handler was called.
 */
 
@@ -37,19 +37,19 @@ int main()
 	act.sa_handler = handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGPOLL,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2,  &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaction(SIGPOLL,  0, &oact) == -1) {
+	if (sigaction(SIGUSR2,  0, &oact) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGPOLL) == -1) {
+	if (raise(SIGUSR2) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;

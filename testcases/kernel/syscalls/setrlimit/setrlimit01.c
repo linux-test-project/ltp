@@ -44,16 +44,15 @@
  * RESTRICTIONS
  *	Must run test as root.
  */
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <sys/types.h>
+#include <sys/resource.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include <sys/time.h>
+#include <sys/wait.h>
 #include <errno.h>
-#include <wait.h>
+#include <fcntl.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 

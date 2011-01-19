@@ -33,38 +33,38 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Add SIGALRM to the set of blocked signals */
-	if (sigaddset(&newmask, SIGALRM) == -1)
+	/* Add SIGUSR2 to the set of blocked signals */
+	if (sigaddset(&newmask, SIGUSR2) == -1)
 	{
 		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Block SIGALRM */
+	/* Block SIGUSR2 */
 	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1)
 	{
 		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Send SIGALRM signal to this process.  Since it is blocked,
+	/* Send SIGUSR2 signal to this process.  Since it is blocked,
 	 * it should be pending */
-	if (raise(SIGALRM) != 0)
+	if (raise(SIGUSR2) != 0)
 	{
-		printf("Could not raise SIGALRM\n");
+		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Test that SIGALRM is pending */
+	/* Test that SIGUSR2 is pending */
 	if (sigpending(&pendingset) == -1)
 	{
 		printf("Could not get pending signal set\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGALRM) != 1)
+	if (sigismember(&pendingset, SIGUSR2) != 1)
 	{
-		printf("Signal SIGALRM is not pending!\n");
+		printf("Signal SIGUSR2 is not pending!\n");
 		return PTS_FAIL;
 	}
 
@@ -75,27 +75,27 @@ int main()
 		return PTS_FAIL;
 	}
 
-	if (sig != SIGALRM)
+	if (sig != SIGUSR2)
 	{
 		printf("sigwait selected another signal\n");
 		return PTS_FAIL;
 	}
 
-	/* Test that SIGALRM is not pending anymore */
+	/* Test that SIGUSR2 is not pending anymore */
 	if (sigpending(&pendingset) == -1)
 	{
 		printf("Could not get pending signal set\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGALRM) != 0)
+	if (sigismember(&pendingset, SIGUSR2) != 0)
 	{
-		printf("Signal SIGALRM is not pending!\n");
+		printf("Signal SIGUSR2 is not pending!\n");
 		return PTS_FAIL;
 	}
 
 	/* If we get here, then the process was suspended until
-	 * SIGALRM was raised.  */
+	 * SIGUSR2 was raised.  */
 	printf("Test PASSED\n");
 
 	return PTS_PASS;

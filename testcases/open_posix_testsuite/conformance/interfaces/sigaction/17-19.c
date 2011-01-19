@@ -7,7 +7,7 @@
  * source tree.
 
   Test assertion #17 by verifying that select returns -1 with
-  errno set to EINTR if a handler for the SIGPOLL signal is setup with
+  errno set to EINTR if a handler for the SIGALRM signal is setup with
   the SA_RESTART flag cleared.
  * 12/18/02 - Adding in include of sys/time.h per
  *            rodrigc REMOVE-THIS AT attbi DOT com input that it needs
@@ -29,7 +29,6 @@ volatile sig_atomic_t wakeup = 1;
 
 void handler(int signo)
 {
-	printf("Caught SIGPOLL\n");
 	wakeup++;
 }
 
@@ -45,7 +44,7 @@ int main()
 		act.sa_handler = handler;
 		act.sa_flags = 0;
 		sigemptyset(&act.sa_mask);
-		sigaction(SIGPOLL,  &act, 0);
+		sigaction(SIGALRM,  &act, 0);
 
 		while (wakeup == 1) {
 			tv.tv_sec = 3;
@@ -64,7 +63,7 @@ int main()
 
 		/*
 		   There is a race condition between the parent
-		   process sending the SIGPOLL signal, and the
+		   process sending the SIGALRM signal, and the
 		   child process being inside the 'select' function
 		   call.
 
@@ -79,7 +78,7 @@ int main()
 		tv.tv_usec = 0;
 		select(0, NULL, NULL, NULL, &tv);
 
-		kill(pid, SIGPOLL);
+		kill(pid, SIGALRM);
 		waitpid(pid, &s, 0);
 		if (WEXITSTATUS(s) == PTS_PASS) {
 			printf("Test PASSED\n");

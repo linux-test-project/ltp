@@ -22,7 +22,7 @@
 #include <sched.h>
 #include <signal.h>
 #include <unistd.h>
-#include <test.h>
+#include "test.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 

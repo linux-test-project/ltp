@@ -60,10 +60,10 @@
  */
 
 #include <errno.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <pwd.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <sys/wait.h>
 
 char *TCID = "setreuid04";

@@ -15,7 +15,7 @@
 *
 ***************************************************************************/
 #include <stdio.h>
-#include <test.h>
+#include "test.h"
 
 int get_supp_sched_mc(void) {
 	if (tst_kvercmp(2,6,29) < 0)

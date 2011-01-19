@@ -41,7 +41,7 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <test.h>
+#include "test.h"
 #include "libclone.h"
 #include "config.h"
 

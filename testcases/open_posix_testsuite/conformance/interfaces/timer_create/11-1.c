@@ -19,85 +19,83 @@
 
 #define SIGTOTEST SIGALRM
 #define TIMERSEC 2
-#define SLEEPDELTA 3
 #define ACCEPTABLEDELTA 1
+
+int caught_signal;
 
 void handler(int signo)
 {
-	printf("Caught signal\n");
+	caught_signal = 1;
 }
 
 int main(int argc, char *argv[])
 {
-	int rc;
-	rc = sysconf(_SC_THREAD_CPUTIME);
-	printf("rc = %d\n", rc);
-
-#if _POSIX_THREAD_CPUTIME != -1
+#if _POSIX_THREAD_CPUTIME == -1
+	printf("_POSIX_THREAD_CPUTIME not defined\n");
+	return PTS_UNSUPPORTED;
+#else
 	struct sigevent ev;
 	struct sigaction act;
 	timer_t tid;
 	struct itimerspec its;
-	struct timespec ts, tsleft;
+	struct timespec ts_start, ts_end;
+	int rc;
 
+	rc = sysconf(_SC_THREAD_CPUTIME);
 	if (rc == -1) {
-		printf("_POSIX_THREAD_CPUTIME unsupported\n");
+		printf("_SC_THREAD_CPUTIME unsupported\n");
 		return PTS_UNSUPPORTED;
 	}
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;
 	its.it_value.tv_sec = TIMERSEC;
 	its.it_value.tv_nsec = 0;
 
-	ts.tv_sec=TIMERSEC+SLEEPDELTA;
-	ts.tv_nsec=0;
-
 	if (sigemptyset(&act.sa_mask) == -1) {
 		perror("Error calling sigemptyset");
 		return PTS_UNRESOLVED;
 	}
+
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
 		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_create(CLOCK_THREAD_CPUTIME_ID, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success");
+		perror("timer_settime did not return success");
 		return PTS_UNRESOLVED;
 	}
 
-	if (nanosleep(&ts, &tsleft) != -1) {
-		perror("nanosleep() not interrupted");
-		return PTS_FAIL;
+	while (!caught_signal)
+		;
+
+	if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts_end) != 0) {
+		perror("clock_gettime() failed");
+		return PTS_UNRESOLVED;
 	}
 
-	if (abs(tsleft.tv_sec-SLEEPDELTA) <= ACCEPTABLEDELTA) {
-		printf("Test PASSED");
+	if (abs(ts_end.tv_sec - ts_start.tv_sec - TIMERSEC) <=
+	    ACCEPTABLEDELTA) {
+		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("Timer did not last for correct amount of time\n");
-		printf("timer: %d != correct %d\n",
-				(int) ts.tv_sec- (int) tsleft.tv_sec,
-				TIMERSEC);
-		return PTS_FAIL;
 	}
 
-	return PTS_UNRESOLVED;
-#else
-	printf("_POSIX_THREAD_CPUTIME unsupported\n");
-	return PTS_UNSUPPORTED;
+	printf("Timer did not last for correct amount of time\n"
+		"stop - start = %d - %d > %d\n",
+		(int) ts_end.tv_sec, (int) ts_start.tv_sec,
+		TIMERSEC + ACCEPTABLEDELTA);
+	return PTS_FAIL;
 #endif
-
 }

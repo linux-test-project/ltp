@@ -51,7 +51,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <dirent.h>
 #include <errno.h>
 #include <string.h>

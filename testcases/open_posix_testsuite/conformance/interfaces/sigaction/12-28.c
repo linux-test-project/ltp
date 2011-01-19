@@ -27,7 +27,7 @@ void handler(int signo)
 {
 	stack_t oss;
 
-	printf("Caught SIGALRM\n");
+	printf("Caught SIGUSR2\n");
 
 	if (sigaltstack((stack_t *)0, &oss) == -1) {
 		perror("Unexpected error while attempting to setup test "
@@ -48,7 +48,7 @@ int main()
 	act.sa_handler = handler;
 	act.sa_flags = SA_ONSTACK;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGALRM,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2,  &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
@@ -60,7 +60,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGALRM) == -1) {
+	if (raise(SIGUSR2) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;

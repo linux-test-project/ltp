@@ -21,6 +21,13 @@
 
 #define SIGTOTEST SIGABRT
 
+#if 0 && defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+int main(void)
+{
+	printf("Function definition doesn't match POSIX definition and preceded POSIX definition; interface is obsolete\n");
+	return PTS_UNSUPPORTED;
+}
+#else
 int main()
 {
 	int return_value = 0;
@@ -37,9 +44,8 @@ int main()
 		}
 	} else {
 		printf ("Test FAILED: sigpause did not return -1\n");
-		if (errno == EINVAL) {
+		if (errno == EINVAL)
 			printf ("Test FAILED: sigpause did not set errno to EINVAL\n");
-		}
 		result = 1;
 	}
 
@@ -53,3 +59,4 @@ int main()
         printf("Test PASSED\n");
 	return PTS_PASS;
 }
+#endif

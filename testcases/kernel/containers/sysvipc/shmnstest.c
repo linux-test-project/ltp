@@ -31,7 +31,7 @@
 #include <errno.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <test.h>
+#include "test.h"
 #include <libclone.h>
 
 char *TCID = "sysvipc_namespace";

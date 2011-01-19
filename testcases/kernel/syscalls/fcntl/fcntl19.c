@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	fcnlt08.c
+ *	fcntl19.c
  *
  * DESCRIPTION
  *	Testcase to check locking of regions of a file
@@ -47,8 +47,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <inttypes.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #define STRINGSIZE	27
 #define STRING		"abcdefghijklmnopqrstuvwxyz\n"
@@ -79,10 +81,6 @@ void cleanup(void);
 
 int fail = 0;
 
-/*
- * setup
- *	performs all ONE TIME setup for this test
- */
 void setup()
 {
 	char *buf = STRING;
@@ -95,8 +93,8 @@ void setup()
 
 	TEST_PAUSE;
 
-	pipe(parent_pipe);
-	pipe(child_pipe);
+	SAFE_PIPE(cleanup, parent_pipe);
+	SAFE_PIPE(cleanup, child_pipe);
 	parent_pid = getpid();
 
 	tst_tmpdir();
@@ -122,17 +120,8 @@ void setup()
 	}
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at completion or
- *	premature exit
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
@@ -147,11 +136,8 @@ void do_child()
 	close(child_pipe[0]);
 	while (1) {
 		child_get(&fl);
-		if (fcntl(fd, F_GETLK, &fl) < 0) {
-			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
-				 errno);
-			fail = 1;
-		}
+		if (fcntl(fd, F_GETLK, &fl) < 0)
+			tst_resm(TFAIL|TERRNO, "fcntl on file failed");
 		child_put(&fl);
 	}
 }

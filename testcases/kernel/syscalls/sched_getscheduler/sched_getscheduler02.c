@@ -43,8 +43,8 @@
 #include <stdio.h>
 #include <sched.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 #define INVALID_PID	999999
 

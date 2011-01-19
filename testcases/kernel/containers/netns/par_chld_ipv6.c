@@ -40,7 +40,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <test.h>
+#include "test.h"
 #include "config.h"
 
 extern int crtchild(char *);

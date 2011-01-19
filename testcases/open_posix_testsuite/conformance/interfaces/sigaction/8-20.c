@@ -18,19 +18,19 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int SIGPOLL_count = 0;
+int SIGUSR2_count = 0;
 
-void SIGPOLL_handler(int signo)
+void SIGUSR2_handler(int signo)
 {
-	SIGPOLL_count++;
-	printf("Caught SIGPOLL\n");
+	SIGUSR2_count++;
+	printf("Caught SIGUSR2\n");
 }
 
 void SIGPROF_handler(int signo)
 {
 	printf("Caught SIGPROF\n");
-	raise(SIGPOLL);
-	if (SIGPOLL_count) {
+	raise(SIGUSR2);
+	if (SIGUSR2_count) {
 		printf("Test FAILED\n");
 		exit(-1);
 	}
@@ -43,17 +43,17 @@ int main()
 	act.sa_handler = SIGPROF_handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	sigaddset(&act.sa_mask, SIGPOLL);
+	sigaddset(&act.sa_mask, SIGUSR2);
 	if (sigaction(SIGPROF,  &act, 0) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	act.sa_handler = SIGPOLL_handler;
+	act.sa_handler = SIGUSR2_handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGPOLL,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2,  &act, 0) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;

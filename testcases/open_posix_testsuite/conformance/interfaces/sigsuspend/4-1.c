@@ -33,11 +33,10 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 26
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 void handler(int signo)
 {
-	printf("Now inside signal handler\n");
 }
 
 int is_changed(sigset_t set, int sig) {
@@ -47,7 +46,14 @@ int is_changed(sigset_t set, int sig) {
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
 		SIGPIPE, SIGQUIT, SIGSEGV,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
-		SIGUSR1, SIGUSR2, SIGPOLL, SIGPROF, SIGSYS,
+		SIGUSR1, SIGUSR2,
+#ifdef SIGPOLL
+		SIGPOLL,
+#endif
+#ifdef SIGPROF
+		SIGPROF,
+#endif
+		SIGSYS,
 		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
 	if (sigismember(&set, sig) != 1) {
@@ -82,7 +88,7 @@ int main()
 	        sigemptyset(&tempmask);
 		sigaddset(&tempmask, SIGUSR2);
 
-	        if (sigaction(SIGUSR1,  &act, 0) == -1) {
+	        if (sigaction(SIGUSR1, &act, 0) == -1) {
 	                perror("Unexpected error while attempting to pre-conditions");
                 	return PTS_UNRESOLVED;
 	        }

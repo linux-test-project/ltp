@@ -14,10 +14,10 @@
   Steps:
   1. Fork a new process
   2. (parent) wait for child
-  3. (child) Setup a signal handler for SIGPOLL
-  4. (child) raise SIGPOLL
+  3. (child) Setup a signal handler for SIGUSR2
+  4. (child) raise SIGUSR2
   5. (child, signal handler) increment handler count
-  6. (child, signal handler) if count is 1 then raise SIGPOLL
+  6. (child, signal handler) if count is 1 then raise SIGUSR2
   7. (child, signal handler) if count is 2 then set error variable
   8. (child) if error is set then return -1, else return 0
   6. (parent - returning from wait) If child returned 0 then exit 0,
@@ -38,7 +38,7 @@ void handler(int signo)
 {
 	static int inside_handler = 0;
 
-	printf("SIGPOLL caught\n");
+	printf("SIGUSR2 caught\n");
 	if (inside_handler) {
 		printf("Signal caught while inside handler\n");
 		handler_error++;
@@ -49,9 +49,9 @@ void handler(int signo)
 	handler_count++;
 
 	if (handler_count == 1) {
-		printf("Raising SIGPOLL\n");
-		raise(SIGPOLL);
-		printf("Returning from raising SIGPOLL\n");
+		printf("Raising SIGUSR2\n");
+		raise(SIGUSR2);
+		printf("Returning from raising SIGUSR2\n");
 	}
 
 	inside_handler--;
@@ -67,13 +67,13 @@ int main()
 		act.sa_handler = handler;
 		act.sa_flags = 0;
 		sigemptyset(&act.sa_mask);
-		if (sigaction(SIGPOLL,  &act, 0) == -1) {
+		if (sigaction(SIGUSR2,  &act, 0) == -1) {
 			perror("Unexpected error while attempting to "
 			       "setup test pre-conditions");
 			return PTS_UNRESOLVED;
 		}
 
-		if (raise(SIGPOLL) == -1) {
+		if (raise(SIGUSR2) == -1) {
 			perror("Unexpected error while attempting to "
 			       "setup test pre-conditions");
 			return PTS_UNRESOLVED;

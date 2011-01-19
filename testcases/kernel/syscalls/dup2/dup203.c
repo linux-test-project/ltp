@@ -48,8 +48,8 @@
 #include <sys/param.h>
 #include <errno.h>
 #include <string.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 
 void setup(void);
 void cleanup(void);

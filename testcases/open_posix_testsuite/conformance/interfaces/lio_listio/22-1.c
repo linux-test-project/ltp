@@ -13,7 +13,7 @@
 
 int main()
 {
-	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		exit(PTS_UNSUPPORTED);
 	exit(PTS_UNTESTED);
 }

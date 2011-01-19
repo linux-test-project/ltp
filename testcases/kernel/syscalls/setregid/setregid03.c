@@ -64,11 +64,11 @@
 
 #include <errno.h>
 #include <grp.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <pwd.h>
 #include <string.h>
-#include <test.h>
-#include <usctest.h>
+#include "test.h"
+#include "usctest.h"
 #include <sys/wait.h>
 
 

@@ -15,16 +15,23 @@
 #include <string.h>
 #include "posixtest.h"
 
-#define NUMSIGNALS 28
+#define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
 int main() {
 
 	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
-			SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
-                        SIGKILL, SIGPIPE, SIGQUIT, SIGSEGV, SIGSTOP,
-                        SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU, SIGUSR1,
-                        SIGUSR2, SIGPOLL, SIGPROF, SIGSYS, SIGTRAP,
-                        SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
+		SIGKILL, SIGPIPE, SIGQUIT, SIGSEGV, SIGSTOP,
+		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU, SIGUSR1,
+		SIGUSR2,
+#ifdef SIGPOLL
+		SIGPOLL,
+#endif
+#ifdef SIGPROF
+		SIGPROF,
+#endif
+		SIGSYS,
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
 	sigset_t signalset;
 	int i, test_failed=0;

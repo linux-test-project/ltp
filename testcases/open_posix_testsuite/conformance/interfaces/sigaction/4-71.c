@@ -7,7 +7,7 @@
  * source tree.
 
   Test case for assertion #4 of the sigaction system call that shows
-  that attempting to add SIGKILL to the signal mask of SIGPOLL will
+  that attempting to add SIGKILL to the signal mask of SIGALRM will
   not result in sigaction returning -1
 */
 
@@ -30,7 +30,7 @@ int main()
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGKILL);
-	if (sigaction(SIGPOLL,  &act, 0) == -1) {
+	if (sigaction(SIGALRM,  &act, 0) == -1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

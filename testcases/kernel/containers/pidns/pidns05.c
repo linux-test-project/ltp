@@ -47,8 +47,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <usctest.h>
-#include <test.h>
+#include "usctest.h"
+#include "test.h"
 #include <libclone.h>
 
 #define INIT_PID	1

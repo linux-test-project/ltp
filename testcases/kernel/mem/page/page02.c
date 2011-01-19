@@ -44,7 +44,7 @@ CALLS:	malloc(3)
 #ifdef LINUX
 #include <stdlib.h>
 #include <unistd.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #endif
 

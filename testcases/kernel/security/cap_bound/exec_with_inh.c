@@ -32,7 +32,7 @@
 #include <sys/capability.h>
 #endif
 #include <sys/prctl.h>
-#include <test.h>
+#include "test.h"
 
 char *TCID = "exec_with_inh";
 int TST_TOTAL=1;

@@ -6,7 +6,7 @@
  * source tree.
 
   Test case for assertion #5 of the sigaction system call that verifies
-  setting the SA_INFO bit in the signal mask for SIGPOLL will result
+  setting the SA_INFO bit in the signal mask for SIGUSR2 will result
   in sa_sigaction identifying the signal-catching function.
 */
 
@@ -34,13 +34,13 @@ int main()
 	act.sa_flags = SA_SIGINFO;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGSTOP);
-	if (sigaction(SIGPOLL,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2,  &act, 0) == -1) {
 		printf("Unexpected error while attempting to setup test "
 		       "pre-conditions\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGPOLL) == -1) {
+	if (raise(SIGUSR2) == -1) {
 		printf("Unexpected error while attempting to setup test "
 		       "pre-conditions\n");
 		return PTS_UNRESOLVED;

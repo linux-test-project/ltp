@@ -23,16 +23,14 @@ int SIGUSR2_count = 0;
 void SIGUSR2_handler(int signo)
 {
 	SIGUSR2_count++;
-	printf("Caught SIGUSR2\n");
 }
 
-void SIGPOLL_handler(int signo)
+void SIGUSR1_handler(int signo)
 {
-	printf("Caught SIGPOLL\n");
 	raise(SIGUSR2);
 	if (SIGUSR2_count) {
-		printf("Test FAILED\n");
-		exit(-1);
+		printf("Got SIGUSR2\nTest FAILED\n");
+		exit(PTS_FAIL);
 	}
 }
 
@@ -40,11 +38,12 @@ int main()
 {
 	struct sigaction act;
 
-	act.sa_handler = SIGPOLL_handler;
+	act.sa_handler = SIGUSR1_handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGUSR2);
-	if (sigaction(SIGPOLL,  &act, 0) == -1) {
+
+	if (sigaction(SIGUSR1, &act, 0) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;
@@ -53,13 +52,14 @@ int main()
 	act.sa_handler = SIGUSR2_handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGUSR2,  &act, 0) == -1) {
+
+	if (sigaction(SIGUSR2, &act, 0) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGPOLL) == -1) {
+	if (raise(SIGUSR1) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;

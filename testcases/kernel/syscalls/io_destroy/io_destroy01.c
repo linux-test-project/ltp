@@ -33,24 +33,12 @@ int TST_TOTAL = 1;
 #include <errno.h>
 #include <string.h>
 
-/*
- * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
- */
 void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
 
@@ -65,19 +53,15 @@ int main(int argc, char **argv)
 	int lc;			/* loop counter */
 	char *msg;		/* parse_opts() return message */
 
-	io_context_t ctx;
+	io_context_t ctx = -1;
 	long expected_return;
 
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
 	setup();
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 /*
@@ -124,7 +108,6 @@ ERRORS
 #else
 int main(int argc, char **argv)
 {
-	tst_resm(TCONF, "System doesn't support execution of the test");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
 }
 #endif
