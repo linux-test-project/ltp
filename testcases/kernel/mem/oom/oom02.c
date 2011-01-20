@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-#ifdef __WORDSIZE == 32
+#if __WORDSIZE == 32
 	tst_brkm(TCONF, NULL, "test is not designed for 32-bit system.");
 #endif
 
