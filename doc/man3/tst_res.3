@@ -31,15 +31,15 @@
 .\" 
 .\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
 .\"
-.TH TST_RES 3 07/25/2000 "Linux Test Project"
+.TH TST_RES 3 01/21/2011 "Linux Test Project"
 .SH NAME
 tst_res \- Print result message, including file contents
 .sp
 tst_resm \- Print result message
 .sp
-tst_brk \- Print result message and break remaining test cases
+tst_brk \- Print result message, including file contents, and break remaining test cases
 .sp
-tst_brkm \- Print result message, including file contents, and break remaining test cases
+tst_brkm \- Print result message and break remaining test cases
 .sp
 tst_flush \- Print any messages pending because of CONDENSE mode, and flush output stream
 .sp
@@ -74,7 +74,7 @@ extern int Tst_range;
 .SH DESCRIPTION
 .SS Introduction
 This library of functions are used by UNICOS tests to report results to
-standard out in a consistent manner.  It is assumed that tests using this
+standard output in a consistent manner.  It is assumed that tests using this
 library have a distinct number of test cases, and that each test case is
 distinct and uniquely identified by the test case number.  It is also assumed
 that test case results are printed in consecutive order, starting with 1.

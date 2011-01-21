@@ -31,7 +31,7 @@
 .\" 
 .\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
 .\"
-.TH PARSE_OPTS 3 "30 Aug 2000" "LTP" "Linux Test Project"
+.TH PARSE_OPTS 3 "21 Jan 2011" "LTP" "Linux Test Project"
 .SH NAME
 parse_opts \- parse standard and user options for LTP test programs
 .SH SYNOPSIS
@@ -115,9 +115,9 @@ Run for \fIn\fR iterations. A value of 0 makes the test loop infinitely.
 The test will loop until \fIx\fR seconds have passed. (default 0.0)
 .TP
 .B \-p
-Pause for SIGUSR1 before testing. The test will pause were you place
+Pause for SIGUSR1 before testing. The test will pause where you place
 TEST_PAUSE.  \fIWarning\fR: The test will also fork at this point if \-c is
-used.  
+used.
 .TP
 .BI \-P " x"
 This option will do a delay of \fIx\fR seconds after each iteration. (default 0.0)
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 {
 	char *msg;
 
-	if ( (msg=parse_opts(argc, argv, options, &help)) != NULL )
+	if ((msg = parse_opts(argc, argv, options, &help)) != NULL)
 		error_exit(msg);
 
 	return 0;
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 {
 	char *msg;
 
-	if ((msg=parse_opts(argc, argv, (option_t *)NULL, NULL)) != NULL)
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		error_exit(msg);
 	
 	return 0;
@@ -177,5 +177,3 @@ int main(int argc, char *argv[])
 .fi
 .SH "SEE ALSO"
 usctest(3), getopt(3).
-
-

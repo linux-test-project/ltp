@@ -30,7 +30,7 @@
 .\" 
 .\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
 .\"
-.TH USCTEST 3 07/25/2000 "Linux Test Project"
+.TH USCTEST 3 01/21/2011 "Linux Test Project"
 .SH NAME
 usctest \-  macros and libraries for common functions in system call tests
 .SH SYNOPSIS
@@ -114,8 +114,7 @@ The \fBparse_opts\fR routine parses the command line (see \fBparse_opts(3)\fR). 
 variables used are set by the \fBparse_opts(3)\fR routine.
 
 .SH EXAMPLES
-Below is a partial template of a system call test using these routines, macros, and global variables.  A complete
-template may be found in the CUTS/sun/skel directory, in the file \fBusctest.c\fR.
+Below is a partial template of a system call test using these routines, macros, and global variables.
 
 .nf
 void
@@ -143,14 +142,14 @@ int main(ac, av)
 	setup();	/* execute setup */
 
 	/* parse options */
-	msg=parse_opts(ac, av, (option_t *)NULL);
+	msg = parse_opts(ac, av, NULL, NULL);
 
 	/* Check parse_opts return */
 
 	for (lc=0; TEST_LOOPING(lc); lc++) {
 		TEST(open("file", O_RDWR))
 	
-		if ( TEST_RETURN == -1) {
+		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO)
 			/* BREAK test case, or whatever... */
 		}
