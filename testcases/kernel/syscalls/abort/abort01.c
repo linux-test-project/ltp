@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 		if ((kidpid = FORK_OR_VFORK()) == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv[0], "")) {
-				if (!instress())
+				if (!instress()) {
 					perror("fork failed");
 					exit(1);
 				}
