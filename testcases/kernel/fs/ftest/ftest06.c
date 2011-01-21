@@ -249,7 +249,7 @@ int main(int ac, char *av[])
 		tst_resm(TPASS, "Test passed.");
 
 	cleanup();
-	return 1;
+	tst_exit();
 }
 
 #define	warn(val,m1,m2)	if ((val) < 0) dowarn(me,m1,m2)

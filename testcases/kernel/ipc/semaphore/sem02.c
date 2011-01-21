@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 	tst_resm(TPASS, "passed");
     cleanup();
 
-    return 1;
+    tst_exit();
 }
 
 /* This thread sleeps 10 seconds then waits on the semaphore.  As long

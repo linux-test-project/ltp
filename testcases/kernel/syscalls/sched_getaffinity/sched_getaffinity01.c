@@ -236,6 +236,5 @@ realloc:
 
 	cleanup();
 
-	return (1);
-
+	tst_exit();
 }
