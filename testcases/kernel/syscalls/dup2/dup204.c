@@ -132,7 +132,7 @@ void cleanup()
 
 	TEST_CLEANUP;
 
-	for (i = 0; i < sizeof(fd); i++) {
+	for (i = 0; i < (sizeof(fd) / sizeof(fd[0])); i++) {
 		close(fd[i]);
 		close(nfd[i]);
 	}
