@@ -231,6 +231,8 @@ New Testcases
 
     foo = 0;
 
+    The only exception to this is when you define global variables.
+
 5.  Your testcase should be runnable as root and non-root. What does
     that mean? It should fail gracefull as non-root if it has
     insufficient privileges, or use tst_require_root(NULL) if root
