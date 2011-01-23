@@ -44,9 +44,9 @@
 
 #include "test.h"
 
-#define FIVE_HUNDRED_KB (unsigned long long)(500*1024*1024)
-#define ONE_MEGABYTE	(unsigned long long)(1024*1024*1024)
-#define THREE_MEGABYTES (unsigned long long)(3*ONE_MEGABYTE)
+#define FIVE_HUNDRED_MB (unsigned long long)(500*1024*1024)
+#define ONE_GB	(unsigned long long)(1024*1024*1024)
+#define THREE_GB (unsigned long long)(3*ONE_GB)
 
 char *TCID = "mtest01";
 int TST_TOTAL = 1;
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 	total_free = sstats.freeram + sstats.freeswap;
 	/* Total Free Pre-Test RAM */
 	pre_mem = sstats.mem_unit * total_free;   
-	max_pids = total_ram / (unsigned long)FIVE_HUNDRED_KB + 1;
+	max_pids = total_ram / (unsigned long)FIVE_HUNDRED_MB + 1;
  
 	if ((pid_list = malloc(max_pids * sizeof(pid_t))) == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "malloc failed.");
@@ -171,47 +171,47 @@ int main(int argc, char* argv[])
 	pid_list[i] = pid;
 
 #if defined (_s390_) /* s390's 31bit addressing requires smaller chunks */
-	while (pid != 0 && maxbytes > FIVE_HUNDRED_KB) {
+	while (pid != 0 && maxbytes > FIVE_HUNDRED_MB) {
 		i++;
-		maxbytes -= FIVE_HUNDRED_KB;
+		maxbytes -= FIVE_HUNDRED_MB;
 		pid = fork();
 		if (pid != 0) {
 			pid_cntr++;
 			pid_list[i] = pid;
 		}
 	}
-	if (maxbytes > FIVE_HUNDRED_KB)
-		alloc_bytes = FIVE_HUNDRED_KB;
+	if (maxbytes > FIVE_HUNDRED_MB)
+		alloc_bytes = FIVE_HUNDRED_MB;
 	else
 		alloc_bytes = (unsigned long) maxbytes;
 	
 #elif __WORDSIZE == 32
-	while (pid != 0 && maxbytes > ONE_MEGABYTE) {
+	while (pid != 0 && maxbytes > ONE_GB) {
 		i++;
-		maxbytes -= ONE_MEGABYTE;
+		maxbytes -= ONE_GB;
 		pid = fork();
 		if (pid != 0) {
 			pid_cntr++;
 			pid_list[i]=pid;
 		}
 	}
-	if (maxbytes > ONE_MEGABYTE)
-		alloc_bytes = ONE_MEGABYTE;
+	if (maxbytes > ONE_GB)
+		alloc_bytes = ONE_GB;
 	else
 		alloc_bytes = (unsigned long)maxbytes;
 	
 #elif __WORDSIZE == 64
-	while (pid != 0 && maxbytes > THREE_MEGABYTES) {
+	while (pid != 0 && maxbytes > THREE_GB) {
 		i++;
-		maxbytes -= THREE_MEGABYTES;
+		maxbytes -= THREE_GB;
 		pid = fork();
 		if (pid != 0) {
 			pid_cntr++;
 			pid_list[i] = pid;
 		}
 	}
-	if (maxbytes > THREE_MEGABYTES)
-		alloc_bytes = THREE_MEGABYTES;
+	if (maxbytes > THREE_GB)
+		alloc_bytes = THREE_GB;
 	else
 		alloc_bytes = maxbytes;
 #endif
