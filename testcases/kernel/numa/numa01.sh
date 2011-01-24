@@ -471,6 +471,10 @@ test04()
     run_on_cpu=$[$[$no_of_cpus+1]/2]		
     numactl --physcpubind=$run_on_cpu support_numa $PAUSE & #just waits for sigint
     pid=$!
+    var=`awk '{ print $2 }' /proc/$pid/stat`
+    while [ $var = '(numactl)' ]; do
+        var=`awk '{ print $2 }' /proc/$pid/stat`
+    done
     # Warning !! 39 represents cpu number, on which process pid is currently running and 
     # this may change if Some more fields are added in the middle, may be in future
     running_on_cpu=$(awk '{ print $39; }' /proc/$pid/stat) 
