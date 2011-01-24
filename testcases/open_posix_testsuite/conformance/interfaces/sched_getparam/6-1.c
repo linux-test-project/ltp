@@ -20,13 +20,13 @@
   */
 
 #define _XOPEN_SOURCE 600
-#include <stdio.h>
-#include <sched.h>
-#include <errno.h>
-#include <unistd.h>
 #include <sys/types.h>
+#include <errno.h>
 #include <pwd.h>
+#include <sched.h>
+#include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 /** Set the euid of this process to a non-root uid */
@@ -36,7 +36,7 @@ int set_nonroot()
 	setpwent();
 	/* search for the first user which is non root */
 	while ((pw = getpwent()) != NULL)
-		if (strcmp(pw->pw_name, "root"))
+		if (pw->pw_uid != 0)
 			break;
 	endpwent();
 	if (pw == NULL) {
@@ -44,17 +44,24 @@ int set_nonroot()
 		return 1;
 	}
 
-	if (setuid(pw->pw_uid) != 0) {
+	if (setgid(pw->pw_gid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
-			return 1;
-		}
-		perror("An error occurs when calling seteuid()");
+			printf("You don't have permission to change your GID.\n");
+		} else
+			perror("setgid failed");
 		return 1;
 	}
 
-	printf("Testing with user '%s' (euid: %d)(uid: %d)\n",
-	       pw->pw_name, (int)geteuid(), (int)getuid());
+	if (setuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
+			printf("You don't have permission to change your UID.\n");
+		} else
+			perror("setuid failed");
+		return 1;
+	}
+
+	printf("Testing with user '%s' (euid,uid) = (%d,%d)\n",
+	       pw->pw_name, geteuid(), getuid());
 	return 0;
 }
 
@@ -67,7 +74,7 @@ int main(int argc, char **argv)
 	/* We assume process Number 1 is created by root */
 	/* and can only be accessed by root */
 	/* This test should be run under standard user permissions */
-	if (getuid() == 0) {
+	if (geteuid() == 0) {
                 if (set_nonroot() != 0) {
 			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
