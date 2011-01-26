@@ -18,7 +18,7 @@
 
 top_srcdir              ?= ../../../..
 
-include $(top_srcdir)/include/mk/env_pre.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
 LDLIBS			+= $(NUMA_LIBS) -lmem
 LIBDIR			:= ../lib
@@ -39,5 +39,4 @@ trunk-clean:: | lib-clean
 lib-clean:: $(LIBDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
-include $(top_srcdir)/include/mk/testcases.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
