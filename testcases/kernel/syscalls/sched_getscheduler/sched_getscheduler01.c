@@ -45,9 +45,9 @@
  *	Must run test as root.
  */
 
-#include <stdio.h>
-#include <sched.h>
 #include <errno.h>
+#include <sched.h>
+#include <stdio.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -62,14 +62,11 @@ struct test_case_t {
 	int policy;
 } TC[] = {
 	/* set scheduling policy to SCHED_RR */
-	{
-	1, SCHED_RR},
-	    /* set scheduling policy to SCHED_OTHER */
-	{
-	0, SCHED_OTHER},
-	    /* set scheduling policy to SCHED_FIFO */
-	{
-	1, SCHED_FIFO}
+	{ 1, SCHED_RR},
+	/* set scheduling policy to SCHED_OTHER */
+	{ 0, SCHED_OTHER},
+	/* set scheduling policy to SCHED_FIFO */
+	{ 1, SCHED_FIFO}
 };
 
 int main(int ac, char **av)
@@ -80,28 +77,22 @@ int main(int ac, char **av)
 	int i;
 	struct sched_param param;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			/* set up test specific conditions */
 			param.sched_priority = TC[i].prio;
 
-			if (sched_setscheduler(0, TC[i].policy, &param) == -1) {
-				tst_brkm(TBROK, cleanup, "sched_setscheduler() "
-					 "failed");
-			}
+			if (sched_setscheduler(0, TC[i].policy, &param) == -1)
+				tst_brkm(TBROK, cleanup,
+				    "sched_setscheduler failed");
 
 			TEST(sched_getscheduler(0));
 
@@ -111,48 +102,34 @@ int main(int ac, char **av)
 			}
 
 			if (STD_FUNCTIONAL_TEST) {
-				if (TEST_RETURN != TC[i].policy) {
-					tst_resm(TFAIL, "policy value returned "
-						 "is not correct");
-				} else {
-					tst_resm(TPASS, "policy value returned "
-						 "is correct");
-				}
-			} else {
+				if (TEST_RETURN != TC[i].policy)
+					tst_resm(TFAIL,
+					    "policy value returned is not "
+					    "correct");
+				else
+					tst_resm(TPASS,
+					    "policy value returned is correct");
+			} else
 				tst_resm(TPASS, "call succeeded");
-			}
 		}
 	}
 	cleanup();
 
 	tst_exit();
- }
+}
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup()
 {
-	/* Must run test as root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must run test as root");
-	}
+
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
+	TEST_CLEANUP;
 }
