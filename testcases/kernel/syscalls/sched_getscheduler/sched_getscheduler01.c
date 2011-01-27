@@ -125,7 +125,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	return -1;
+	tst_exit();
  }
 
 /*
