@@ -98,18 +98,18 @@
  *
 ***************************************************************************/
 
-#include <errno.h>
-#include <signal.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #ifdef __linux__
 /* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */
@@ -207,9 +207,6 @@ int main(int argc, char **argv)
 	 */
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
@@ -236,9 +233,6 @@ int main(int argc, char **argv)
 
 	}
 
-	/*
-	 * cleanup and exit
-	 */
 	cleanup();
 	tst_exit();
 
@@ -564,8 +558,7 @@ static int setup_sigs()
  *      signal after the signal has been released.  All signals must be
  *      caught in order for a PASS.
  ****************************************************************************/
-static void handler(sig)
-int sig;			/* the signal causing the execution of this handler */
+static void handler(int sig)
 {
 	static int s = 0;	/* semaphore so that we don't handle 2 */
 	/* sigs at once */
@@ -639,9 +632,7 @@ int fd;
  *  write_pipe(msg) : write msg to pipe.  If it fails, put message in
  *       mesg and return -1, else return 0.
  ****************************************************************************/
-static int write_pipe(fd, msg)
-int fd;
-char *msg;			/* expected message from pipe */
+static int write_pipe(int fd, char *msg)
 {
 
 #if DEBUG > 0
@@ -711,14 +702,8 @@ static void wait_a_while ()
 		if (sig_caught == TRUE)
 			break;
 	}
-
-	return;
-
 }				/* end of wait_a_while */
 
-/*****************************************************************************
- *  getout() : attempt to kill child process and call cleanup().
- ****************************************************************************/
 static void getout()
 {
 	if (pid > 0 && kill(pid, SIGKILL) < 0)
@@ -728,11 +713,7 @@ static void getout()
 }				/* end of getout */
 
 #ifdef VAX
-/***********************************************************************
- * unit test for vax only
- ***********************************************************************/
-static int sighold(signo)
-int signo;
+static int sighold(int signo)
 {
 	return 0;
 }
@@ -744,11 +725,7 @@ int signo;
 }
 #endif
 
-/***********************************************************************
- *  This function is where signals not under test are ignored
- ***********************************************************************/
-int choose_sig(sig)
-int sig;
+int choose_sig(int sig)
 {
 	switch (sig) {
 
@@ -778,13 +755,10 @@ int sig;
 
 	}
 
-	return 1;		/* choose signal */
+	return 1;
 
-}				/* end of choose_sig */
+}
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -792,50 +766,33 @@ void setup()
 
 	TEST_PAUSE;
 
-	/* create a temporary directory and go to it */
 	tst_tmpdir();
 
 	/* set up pipe for parent/child communications */
-	if (pipe(pipe_fd) < 0) {
-		tst_resm(TBROK|TERRNO, "pipe() failed");
-		cleanup();
-	}
+	SAFE_PIPE(cleanup, pipe_fd);
 
 	/*
 	 * Cause the read to return 0 once EOF is encountered and the
 	 * read to return -1 if pipe is empty.
 	 */
 	if (fcntl(pipe_fd[0], F_SETFL, O_NONBLOCK) == -1)
-		tst_brkm(TBROK, cleanup,
-			 "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed: errno=%d",
-			 errno);
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed");
 
 	/* set up pipe for parent/child communications */
-	if (pipe(pipe_fd2) < 0) {
-		tst_resm(TBROK|TERRNO, "pipe() failed");
-		cleanup();
-	}
+	SAFE_PIPE(cleanup, pipe_fd2);
 
 	/*
 	 * Cause the read to return 0 once EOF is encountered and the
 	 * read to return -1 if pipe is empty.
 	 */
 	if (fcntl(pipe_fd2[0], F_SETFL, O_NONBLOCK) == -1)
-		tst_brkm(TBROK, cleanup,
-			 "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed: errno=%d",
-			 errno);
+		tst_brkm(TBROK|TERRNO, cleanup,
+		    "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed");
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *              completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
