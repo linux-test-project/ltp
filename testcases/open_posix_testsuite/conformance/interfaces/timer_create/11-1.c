@@ -73,6 +73,11 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
+	if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts_start) != 0) {
+		perror("clock_gettime() failed");
+		return PTS_UNRESOLVED;
+	}
+
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
 		perror("timer_settime did not return success");
 		return PTS_UNRESOLVED;
