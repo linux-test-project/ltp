@@ -49,7 +49,7 @@
 static volatile int countdown = BUF_NB;
 static volatile int canceled = 0;
 
-void sigusr1_handler(int signum, siginfo_t *info, void *context)
+void sig_handler(int signum, siginfo_t *info, void *context)
 {
 	struct aiocb *a = info->si_value.sival_ptr;
 
@@ -58,13 +58,10 @@ void sigusr1_handler(int signum, siginfo_t *info, void *context)
 
 	aio_return(a);	/* free entry */
 
-	free((void*)a->aio_buf);
-	free(a);
-
 	countdown--;
 }
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	int fd;
@@ -90,7 +87,7 @@ int main()
 
 	/* install signal handler */
 
-	action.sa_sigaction = sigusr1_handler;
+	action.sa_sigaction = sig_handler;
 	sigemptyset(&action.sa_mask);
 	action.sa_flags = SA_SIGINFO|SA_RESTART;
 	if (sigaction(SIGRTMIN+1, &action, NULL))
@@ -155,6 +152,6 @@ int main()
 	if (!canceled)
 		return PTS_UNRESOLVED;
 
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
