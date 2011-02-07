@@ -282,5 +282,6 @@ int main(int argc, char *argv[])
 	printf("High priority lock aquisition maximum delay: %dus\n", max_delay_us);
 	printf("Low priority lock drop to high priority acqusistion time: %dus\n", max_drop2grab_us);
 	printf("\n");
-	tst_exit();
+
+	return 0;
 }

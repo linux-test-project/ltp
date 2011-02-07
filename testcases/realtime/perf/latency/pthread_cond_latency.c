@@ -217,5 +217,5 @@ main(int argc, char *argv[])
 	iter = strtol(argv[1], NULL, 0);
 	test_signal(argc == 2, iter);
 
-	tst_exit();
+	return 0;
 }

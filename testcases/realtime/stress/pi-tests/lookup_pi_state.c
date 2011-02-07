@@ -191,5 +191,5 @@ int main(int argc, char *argv[])
 
 	join_threads();
 
-	tst_exit();
+	return 0;
 }

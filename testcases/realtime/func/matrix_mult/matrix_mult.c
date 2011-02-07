@@ -343,5 +343,5 @@ int main(int argc, char *argv[])
 	set_priority(PRIO);
 	main_thread();
 
-	tst_exit();
+	return 0;
 }

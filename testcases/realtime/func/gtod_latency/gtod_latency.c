@@ -341,5 +341,5 @@ int main(int argc, char *argv[])
 	stats_container_free(&hist);
 	stats_quantiles_free(&quantiles);
 
-	tst_exit();
+	return 0;
 }

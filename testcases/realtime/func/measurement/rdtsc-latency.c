@@ -155,5 +155,5 @@ int main(int argc, char *argv[])
 	printf("     Min: %llu ns\n", min);
 	printf("     Avg: %llu ns\n", avg);
 
-	tst_exit();
+	return 0;
 }
