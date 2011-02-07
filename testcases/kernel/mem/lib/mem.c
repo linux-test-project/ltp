@@ -182,9 +182,11 @@ int alloc_mem(long int length, int testcase)
 	}
 	if (testcase == MLOCK && mlock(s, length) == -1)
 		tst_brkm(TINFO|TERRNO, cleanup, "mlock");
+#ifdef HAVE_MADV_MERGEABLE
 	if (testcase == KSM
 		&& madvise(s, length, MADV_MERGEABLE) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "madvise");
+#endif
 	memset(s, '\a', length);
 
 	return 0;
@@ -345,9 +347,12 @@ void create_same_memory(int size, int num, int unit)
 					MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			if (memory[0][j] == MAP_FAILED)
 				tst_brkm(TBROK|TERRNO, tst_exit, "mmap");
+
+#ifdef HAVE_MADV_MERGEABLE
 			if (madvise(memory[0][j], unit * MB, MADV_MERGEABLE)
 				== -1)
 				tst_brkm(TBROK|TERRNO, tst_exit, "madvise");
+#endif
 			for (i = 0; i < unit * MB; i++)
 				memory[0][j][i] = 'c';
 		}
@@ -395,9 +400,11 @@ void create_same_memory(int size, int num, int unit)
 					MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 			if (memory[1][j] == MAP_FAILED)
 				tst_brkm(TBROK|TERRNO, tst_exit, "mmap");
+#ifdef HAVE_MADV_MERGEABLE
 			if (madvise(memory[1][j], unit * MB, MADV_MERGEABLE)
 				== -1)
 				tst_brkm(TBROK|TERRNO, tst_exit, "madvise");
+#endif
 			for (i = 0; i < unit * MB; i++)
 				memory[1][j][i] = 'a';
 		}
@@ -467,10 +474,12 @@ void create_same_memory(int size, int num, int unit)
 				if (memory[k][j] == MAP_FAILED)
 					tst_brkm(TBROK|TERRNO, cleanup,
 						"mmap");
+#ifdef HAVE_MADV_MERGEABLE
 				if (madvise(memory[k][j], unit * MB,
 						MADV_MERGEABLE) == -1)
 					tst_brkm(TBROK|TERRNO, cleanup,
 						"madvise");
+#endif
 				for (i = 0; i < unit * MB; i++)
 					memory[k][j][i] = 'a';
 			}

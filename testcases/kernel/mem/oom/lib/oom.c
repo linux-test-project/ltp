@@ -155,9 +155,11 @@ int alloc_mem(long int length, int testcase)
 	}
 	if (testcase == MLOCK && mlock(s, length) == -1)
 		tst_brkm(TINFO|TERRNO, cleanup, "mlock");
+#ifdef HAVE_MADV_MERGEABLE
 	if (testcase == KSM
 		&& madvise(s, length, MADV_MERGEABLE) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "madvise");
+#endif
 	memset(s, '\a', length);
 
 	return 0;

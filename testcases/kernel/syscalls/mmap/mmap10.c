@@ -66,6 +66,8 @@
 
 char *TCID = "mmap10";
 int TST_TOTAL = 1;
+
+#ifdef HAVE_MADV_MERGEABLE
 static int fd, opt_anon, opt_ksm;
 
 void setup(void);
@@ -178,3 +180,9 @@ void help(void)
 	printf("  -a      Test anonymous pages\n");
 	printf("  -s      Add to KSM regions\n");
 }
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "MADV_MERGEABLE missing in sys/mman.h");
+}
+#endif
