@@ -7,6 +7,10 @@
 #include <linux/securebits.h>
 #include "test.h"
 
+#ifndef SECBIT_KEEP_CAPS
+#define SECBIT_KEEP_CAPS (1<<4)
+#endif
+
 int errno;
 
 /* Tests:
@@ -29,7 +33,8 @@ int TST_TOTAL=1;
 #ifdef HAVE_LIBCAP
 static int eff_caps_empty(cap_t c)
 {
-	int i, ret, v, empty=1;
+	int i, ret, empty=1;
+	cap_flag_value_t v;
 
 	for (i = 0; i < CAP_LAST_CAP; i++) {
 		ret = cap_get_flag(c, i, CAP_PERMITTED, &v);
