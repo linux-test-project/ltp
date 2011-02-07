@@ -172,6 +172,11 @@ if ((this_is_a_poorly_formed_really_long_variable = function_call()) == NULL &&
     Furthermore, linux/ headers get shuffled around a lot more than
     their sys/ counterparts it seems.
 
+15. Avoid doing tricky things in signal handlers. Calling most of the libc
+    functions from signal handler may lead to deadlocks or memory corruption.
+    If you really need to do anything more complicated that "should_run = 0;"
+    in your signal handler consult "man 7 signal" for async-signal-safe
+    functions.
 
 Porting Testcases
 ---------------------------
