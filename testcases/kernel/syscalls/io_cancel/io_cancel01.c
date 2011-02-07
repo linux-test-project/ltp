@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	int lc;			/* loop counter */
 	char *msg;		/* parse_opts() return message */
 
-	aio_context_t ctx = 0;
+	io_context_t ctx = 0;
 	long expected_return;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
