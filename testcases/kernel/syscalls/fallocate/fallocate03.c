@@ -267,9 +267,8 @@ int main(int ac, char **av)
 			/* check return code */
 			if (TEST_RETURN != test_data[test_index].error) {
 				if (TEST_ERRNO == EOPNOTSUPP || TEST_ERRNO == ENOSYS) {
-					tst_resm(TCONF,
+					tst_brkm(TCONF, cleanup,
 						 "fallocate system call is not implemented");
-					cleanup();	/* calls tst_exit */
 				}
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL|TTERRNO,
