@@ -779,7 +779,7 @@ main()
 			#Go ahead to Inject Fault & Create required
 			#Command Files for LTP run
 			echo Running tests with Fault Injection Enabled in the Kernel...
-			${LTPROOT}/tools/create_kernel_faults_in_loops_and_probability.pl\
+			${LTPROOT}/bin/create_kernel_faults_in_loops_and_probability.pl\
 				${TMP}/alltests $INJECT_FAULT_LOOPS_PER_TEST $INJECT_KERNEL_FAULT_PERCENTAGE > ${TMP}/alltests.tmp
 			cp ${TMP}/alltests.tmp ${TMP}/alltests
 			rm -rf ${TMP}/alltests.tmp
@@ -796,15 +796,15 @@ main()
 			which valgrind || VALGRIND_CHECK_TYPE=XYZ
 			case $VALGRIND_CHECK_TYPE in
 				1)
-				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 1 > ${TMP}/alltests.tmp
+				${LTPROOT}/bin/create_valgrind_check.pl ${TMP}/alltests 1 > ${TMP}/alltests.tmp
 				cp ${TMP}/alltests.tmp ${TMP}/alltests
 				rm -rf ${TMP}/alltests.tmp;;
 				2)
-				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 2 > ${TMP}/alltests.tmp
+				${LTPROOT}/bin/create_valgrind_check.pl ${TMP}/alltests 2 > ${TMP}/alltests.tmp
 				cp ${TMP}/alltests.tmp ${TMP}/alltests
 				rm -rf ${TMP}/alltests.tmp;;
 				3)
-				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 3 > ${TMP}/alltests.tmp
+				${LTPROOT}/bin/create_valgrind_check.pl ${TMP}/alltests 3 > ${TMP}/alltests.tmp
 				cp ${TMP}/alltests.tmp ${TMP}/alltests
 				rm -rf ${TMP}/alltests.tmp;;
 				*) echo "Invalid Memory Check Type, or, Valgrind is not available";;
@@ -859,7 +859,7 @@ main()
        export TEST_OUTPUT_DIRECTORY="$LTPROOT/output"
        export TEST_LOGS_DIRECTORY=$LOGS_DIRECTORY
        echo "Generating HTML Output.....!!"
-       ( perl $LTPROOT/bin/genhtml.pl $LTPROOT/tools/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_DIRECTORY  > $HTMLFILE; )   
+       ( perl $LTPROOT/bin/genhtml.pl $LTPROOT/bin/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_DIRECTORY  > $HTMLFILE; )   
        echo "Generated HTML Output.....!!"
        echo "Location: $HTMLFILE";
 
