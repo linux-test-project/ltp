@@ -45,25 +45,21 @@ void *thread_func()
 		printf(ERROR_PREFIX "pthread_getattr_np: %s\n", strerror(rc));
 		exit(PTS_FAIL);
 	}
-	if ((rc = pthread_attr_init(&attr)) != 0) {
-		printf(ERROR_PREFIX "pthread_attr_init: %s\n", strerror(rc));
-		exit(PTS_FAIL);
-	}
 	if ((rc = pthread_attr_getstacksize(&attr, &ssize)) != 0) {
 		printf(ERROR_PREFIX "pthread_attr_getstacksize: %s\n",
 			strerror(rc));
 		exit(PTS_FAIL);
 	}
-	if (ssize != stack_size) {
-		printf(ERROR_PREFIX "stack size doesn't match expected stack "
-			"size (%u != %u)\n", ssize, stack_size);
+	if (ssize < stack_size) {
+		printf(ERROR_PREFIX "stack size is lesser than minimal "
+			"size (%u < %u)\n", ssize, stack_size);
 		exit(PTS_FAIL);
 	}
 
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 	pthread_attr_t attr;
