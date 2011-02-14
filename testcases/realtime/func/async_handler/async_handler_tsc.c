@@ -221,5 +221,5 @@ int main(int argc, char *argv[])
 	printf("%d samples over 25 us latency\n", over_25);
 	printf("%d samples over 30 us latency\n", over_30);
 
-	tst_exit();
+	return 0;
 }

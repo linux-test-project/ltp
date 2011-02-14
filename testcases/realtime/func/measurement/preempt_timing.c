@@ -147,5 +147,5 @@ int main(int argc, char *argv[])
 	printf("Maximum: %llu \n", max);
 	printf("Average: %llu \n", avg);
 
-	tst_exit();
+	return 0;
 }

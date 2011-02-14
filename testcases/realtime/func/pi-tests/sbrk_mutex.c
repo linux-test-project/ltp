@@ -145,11 +145,13 @@ int main(int argc, char* argv[])
 			free(mutexes[m]);
 		}
 	}
-	tst_exit();
+
+	return 0;
 }
 
 #else
 int main(void) {
-	tst_brkm(TCONF, NULL, "Your system doesn't support the pthread robust mutexattr APIs\n");
+	printf("Your system doesn't support the pthread robust mutexattr APIs\n");
+	return 1;
 }
 #endif

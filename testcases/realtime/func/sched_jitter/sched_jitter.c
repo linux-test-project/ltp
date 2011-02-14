@@ -177,5 +177,5 @@ int main(int argc, char *argv[])
 	flag = 1;
 	join_thread(interrupter);
 
-	tst_exit();
+	return 0;
 }

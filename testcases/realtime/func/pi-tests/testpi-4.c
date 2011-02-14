@@ -222,5 +222,6 @@ int main(int argc, char *argv[])
 	pthread_mutex_destroy(glob_mutex);
 	pthread_mutex_destroy(&cond_mutex);
 	pthread_cond_destroy(&cond_var);
-	tst_exit();
+
+	return 0;
 }

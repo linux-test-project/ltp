@@ -118,5 +118,5 @@ main(int argc, char **argv)
 		exit(1);
 	}
 
-	tst_exit();
+	return 0;
 }

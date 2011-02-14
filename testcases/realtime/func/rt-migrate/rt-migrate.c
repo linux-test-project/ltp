@@ -516,10 +516,9 @@ int main(int argc, char **argv)
 		else
 			exit(1);
 	}
+
 	if (check < 0)
 		exit(-1);
 	else
 		exit(0);
-
-	tst_exit();
 }
