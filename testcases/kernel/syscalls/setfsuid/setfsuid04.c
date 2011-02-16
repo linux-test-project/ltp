@@ -43,18 +43,21 @@
  * RESTRICTIONS
  * 	Must be run as root.
  */
-#include <errno.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <unistd.h>
 #ifdef __GLIBC__
 #include <sys/fsuid.h>
 #endif
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <pwd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
-#include <pwd.h>
 
 char *TCID = "setfsuid04";
 int TST_TOTAL = 1;
@@ -76,13 +79,9 @@ int main(int ac, char **av)
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
@@ -91,20 +90,16 @@ int main(int ac, char **av)
 	if (pid < 0)
 		tst_brkm(TBROK, cleanup, "Fork failed");
 
-	if (pid == 0) {
+	if (pid == 0)
 		do_master_child();
 
-	} else {
-		waitpid(pid, &status, 0);
-		if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
-			tst_resm(WEXITSTATUS(status),
-				 "son process exits with error");
-	}
+	if (waitpid(pid, &status, 0) == -1)
+		tst_resm(TBROK|TERRNO, "waitpid failed");
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
+		tst_resm(TFAIL, "child process terminated abnormally");
 
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*
@@ -112,95 +107,87 @@ int main(int ac, char **av)
  */
 void do_master_child()
 {
-	int lc;			/* loop counter */
 	int pid;
 	int status;
+	int tst_fd;
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		int tst_fd;
-
-		/* Reset Tst_count in case we are looping */
-		Tst_count = 0;
-
-		if (setfsuid(ltpuser->pw_uid) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "setfsuid failed to set the euid to %d",
-				 ltpuser->pw_uid);
-		}
-
-		/* Test 1: Check the process with new uid cannot open the file
-		 *         with RDWR permissions.
-		 */
-		TEST(tst_fd = open(testfile, O_RDWR));
-
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-			close(tst_fd);
-		}
-
-		if (TEST_ERRNO == EACCES) {
-			tst_resm(TPASS, "open returned errno EACCES");
-		} else {
-			tst_resm(TFAIL, "open returned unexpected errno - %d",
-				 TEST_ERRNO);
-			continue;
-		}
-
-		/* Test 2: Check a son process cannot open the file
-		 *         with RDWR permissions.
-		 */
-		pid = FORK_OR_VFORK();
-		if (pid < 0)
-			tst_brkm(TBROK, cleanup, "Fork failed");
-
-		if (pid == 0) {
-			int tst_fd2;
-
-			/* Test to open the file in son process */
-			TEST(tst_fd2 = open(testfile, O_RDWR));
-
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-				close(tst_fd2);
-			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO == EACCES) {
-				tst_resm(TPASS, "open returned errno EACCES");
-			} else {
-				tst_resm(TFAIL,
-					 "open returned unexpected errno - %d",
-					 TEST_ERRNO);
-			}
-			continue;
-		} else {
-			/* Wait for son completion */
-			waitpid(pid, &status, 0);
-			if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
-				exit(WEXITSTATUS(status));
-		}
-
-		/* Test 3: Fallback to initial uid and check we can again open
-		 *         the file with RDWR permissions.
-		 */
-		Tst_count++;
-		if (setfsuid(0) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "setfsuid failed to set the euid to 0");
-		}
-
-		TEST(tst_fd = open(testfile, O_RDWR));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "open returned unexpected errno %d",
-				 TEST_ERRNO);
-			continue;
-		} else {
-			tst_resm(TPASS, "open call succeeded");
-			close(tst_fd);
-		}
+	if (setfsuid(ltpuser->pw_uid) == -1) {
+		perror("setfsuid failed");
+		exit(1);
 	}
+
+	/* Test 1: Check the process with new uid cannot open the file
+	 *         with RDWR permissions.
+	 */
+	tst_fd = open(testfile, O_RDWR);
+
+	if (tst_fd != -1) {
+		printf("open succeeded unexpectedly");
+		close(tst_fd);
+		exit(1);
+	}
+
+	if (errno == EACCES)
+		printf("open failed with EACCES as expected");
+	else {
+		perror("open failed unexpectedly");
+		exit(1);
+	}
+
+	/* Test 2: Check a son process cannot open the file
+	 *         with RDWR permissions.
+	 */
+	pid = FORK_OR_VFORK();
+	if (pid < 0)
+		tst_brkm(TBROK, cleanup, "Fork failed");
+
+	if (pid == 0) {
+		int tst_fd2;
+
+		/* Test to open the file in son process */
+		tst_fd2 = open(testfile, O_RDWR);
+
+		if (tst_fd2 != -1) {
+			printf("call succeeded unexpectedly\n");
+			close(tst_fd2);
+			exit(1);
+		}
+
+		if (errno == EACCES)
+			printf("open failed with EACCES as expected\n");
+		else {
+			printf("open failed unexpectedly\n");
+			exit(1);
+		}
+	} else {
+		/* Wait for son completion */
+		if (waitpid(pid, &status, 0) == -1) {
+			perror("waitpid failed");
+			exit(1);
+		}
+		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+			exit(WEXITSTATUS(status));
+	}
+
+	/* Test 3: Fallback to initial uid and check we can again open
+	 *         the file with RDWR permissions.
+	 */
+	Tst_count++;
+	if (setfsuid(0) == -1) {
+		perror("setfsuid failed");
+		exit(1);
+	}
+
+	tst_fd = open(testfile, O_RDWR);
+
+	if (tst_fd == -1) {
+		perror("open failed unexpectedly");
+		exit(1);
+	} else {
+		printf("open call succeeded");
+		close(tst_fd);
+	}
+	exit(0);
 }
 
 /*
@@ -208,9 +195,7 @@ void do_master_child()
  */
 void setup(void)
 {
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	ltpuser = getpwnam(nobody_uid);
 
