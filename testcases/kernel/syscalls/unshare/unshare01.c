@@ -109,14 +109,14 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /* Description: Performs all one time clean up for this test on successful    */
 /*	      completion,  premature exit or  failure. Closes all temporary */
 /*	      files, removes all temporary directories exits the test with  */
-/*	      appropriate TEST_RETURNurn code by calling tst_exit() function.       */
+/*	      appropriate return code by calling tst_exit() function.       */
 /*									    */
 /* Input:       None.							 */
 /*									    */
 /* Output:      None.							 */
 /*									    */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' TEST_RETURNurn code.   */
-/*	      On success - Exits calling tst_exit(). With '0' TEST_RETURNurn code.  */
+/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
+/*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
 extern void cleanup() {
@@ -140,7 +140,7 @@ extern void cleanup() {
 /* Output:      None.							 */
 /*									    */
 /* Return:      On failure - Exits by calling cleanup().		      */
-/*	      On success - TEST_RETURNurns 0.				       */
+/*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
 void setup() {
@@ -154,7 +154,7 @@ int main(int ac, char **av) {
 	pid_t pid1;
 	int lc;			/* loop counter */
 	int rval;
-	char *msg;		/* message TEST_RETURNurned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -166,30 +166,29 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			TEST(pid1 = fork());    //call to fork()
-			if (TEST_RETURN == -1) {
-				tst_brkm(TFAIL|TTERRNO, cleanup, "fork failed");
-			} else if (TEST_RETURN == 0) {
-				TEST(unshare(CLONE_FILES));
-				if (TEST_RETURN == 0) {
+			pid1 = fork();    //call to fork()
+			if (pid1 == -1) {
+				tst_brkm(TFAIL|TERRNO, cleanup, "fork failed");
+			} else if (pid1 == 0) {
+				switch (unshare(CLONE_FILES)) {
+				case 0:
 					printf("unshare with CLONE_FILES call "
 					    "succeeded\n");
 					rval = 0;
-				} else if (TEST_RETURN == -1) {
-					if (TEST_ERRNO == ENOSYS) {
+					break;
+				case -1:
+					if (errno == ENOSYS)
 						rval = 1;
-					} else {
-						errno = TEST_ERRNO;
+					else {
 						perror("unshare failed");
 						rval = 2;
 					}
 				}
 				exit(rval);
 			} else {
-				if (wait(&rval) == -1) {
+				if (wait(&rval) == -1)
 					tst_brkm(TBROK|TERRNO, cleanup,
 					    "wait failed");
-				}
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
@@ -200,36 +199,34 @@ int main(int ac, char **av) {
 					default:
 						tst_brkm(TFAIL, cleanup,
 						    "unshare failed");
-						break;
 					}
 				}
 			}
 
 			pid1 = fork();
-			if (TEST_RETURN == -1) {
+			if (pid1 == -1) {
 				tst_brkm(TFAIL|TERRNO, cleanup,
 				    "fork failed");
 			} else if (pid1 == 0) {
-				TEST(unshare(CLONE_FS));
-				if (TEST_RETURN == 0) {
+				switch (unshare(CLONE_FS)) {
+				case 0:
 					printf("unshare with CLONE_FS call "
 					    "succeeded\n");
 					rval = 0;
-				} else if (TEST_RETURN == -1) {
-					if (TEST_ERRNO == ENOSYS) {
+					break;
+				case -1:
+					if (errno == ENOSYS)
 						rval = 1;
-					} else {
-						errno = TEST_ERRNO;
+					else {
 						perror("unshare failed");
 						rval = 2;
 					}
 				}
 				exit(rval);
 			} else {
-				if (wait(&rval) == -1) {
+				if (wait(&rval) == -1)
 					tst_brkm(TBROK|TERRNO, cleanup,
 					    "wait failed");
-				}
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
@@ -240,7 +237,6 @@ int main(int ac, char **av) {
 					default:
 						tst_brkm(TFAIL, cleanup,
 						    "unshare failed");
-						break;
 					}
 				}
 			}
@@ -249,27 +245,26 @@ int main(int ac, char **av) {
 			if (pid1 == -1) {
 				tst_brkm(TFAIL|TERRNO, cleanup,
 				    "fork() failed.");
-			} else if (TEST_RETURN == 0) {
-				TEST(unshare(CLONE_NEWNS));
-				if (TEST_RETURN == 0) {
+			} else if (pid1 == 0) {
+				switch (unshare(CLONE_NEWNS)) {
+				case 0:
 					printf("unshare call with CLONE_NEWNS "
 					    "succeeded\n");
 					rval = 0;
-				} else if (TEST_RETURN == -1) {
-					if (TEST_ERRNO == ENOSYS) {
+					break;
+				case -1:
+					if (errno == ENOSYS)
 						rval = 1;
-					} else {
-						errno = TEST_ERRNO;
+					else {
 						perror("unshare failed");
 						rval = 2;
 					}
 				}
 				exit(rval);
 			} else {
-				if (wait(&rval) == -1) {
+				if (wait(&rval) == -1)
 					tst_brkm(TBROK|TERRNO, cleanup,
 					    "wait failed");
-				}
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
@@ -280,7 +275,6 @@ int main(int ac, char **av) {
 					default:
 						tst_brkm(TFAIL, cleanup,
 						    "unshare failed");
-						break;
 					}
 
 				}
