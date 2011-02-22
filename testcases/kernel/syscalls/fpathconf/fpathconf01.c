@@ -146,7 +146,7 @@ struct pathconf_args {
 	"_PC_PIPE_BUF", _PC_PIPE_BUF, 0}
 };
 
-int TST_TOTAL = ((sizeof(args) / sizeof(args[0])));
+int TST_TOTAL = (sizeof(args) / sizeof(args[0]));
 int fd = -1;			/* temp file for fpathconf */
 
 int main(int ac, char **av)
@@ -154,49 +154,28 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-			/*
-			 * Call fpathconf(2) with one of the valid arguments in the args array
-			 */
+
 			TEST(fpathconf(fd, args[i].value));
 
-			/* check return code -- if the return value is defined */
-			if ((TEST_RETURN == -1) && args[i].defined) {
+			if (TEST_RETURN == -1 && args[i].defined) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL,
-					 "fpathconf(fd, %s) Failed, errno=%d : %s",
-					 args[i].define_tag, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,
+				    "fpathconf(fd, %s) failed",
+				    args[i].define_tag);
 			} else {
-
-		/***************************************************************
-		 * only perform functional verification if flag set (-f not given)
-		 ***************************************************************/
 				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
 					tst_resm(TPASS,
 						 "fpathconf(fd, %s) returned %ld",
 						 args[i].define_tag,
@@ -206,17 +185,11 @@ int main(int ac, char **av)
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
 	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 
@@ -232,23 +205,13 @@ void setup()
 
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	if (fd >= 0) {
-		if (close(fd) == -1) {
-			tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-				 FILENAME, errno, strerror(errno));
-		}
+	if (fd != -1) {
+		if (close(fd) == -1)
+			tst_resm(TWARN|TERRNO, "close failed");
 		fd = -1;
 	}
 
