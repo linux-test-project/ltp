@@ -29,11 +29,11 @@
 #include <limits.h>
 #include "linux_syscall_numbers.h"
 
-#define SUCCEED_OR_DIE(syscall, message, ...)														\
-	(errno = 0,																														\
-		({int ret=syscall(__VA_ARGS__);																			\
-			if (ret==-1)																												\
-				tst_brkm(TBROK|TERRNO, cleanup, message);												\
+#define SUCCEED_OR_DIE(syscall, message, ...)				 \
+	(errno = 0,							 \
+		({int ret=syscall(__VA_ARGS__);				 \
+			if (ret==-1)					 \
+				tst_brkm(TBROK|TERRNO, cleanup, message);\
 			ret;}))
 
 /* Report success iff TEST_RETURN and TEST_ERRNO are equal to
@@ -41,7 +41,7 @@
 	 true, report condition_errmsg
 */
 static void report_success_cond(const char *func, const char* file, int line,
-													 long exp_return, int exp_errno, int condition, char* condition_errmsg)
+		long exp_return, int exp_errno, int condition, char* condition_errmsg)
 {
 	if (exp_return == TEST_RETURN && (exp_return != -1 || exp_errno == TEST_ERRNO))
 		if (condition)
@@ -82,8 +82,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 
+	TEST_CLEANUP;
 }
 
 typedef int (*swi_func)(const sigset_t* set, siginfo_t* info, struct timespec* timeout);
@@ -105,6 +105,7 @@ static int my_sigwait(const sigset_t* set, siginfo_t* info, struct timespec* tim
 #ifdef TEST_SIGWAITINFO
 static int my_sigwaitinfo(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
 {
+
 	return sigwaitinfo(set, info);
 }
 #endif
@@ -112,6 +113,7 @@ static int my_sigwaitinfo(const sigset_t* set, siginfo_t* info, struct timespec*
 #ifdef TEST_SIGTIMEDWAIT
 static int my_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
 {
+
 	return sigtimedwait(set, info, timeout);
 }
 #endif
@@ -119,6 +121,7 @@ static int my_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec
 #ifdef TEST_RT_SIGTIMEDWAIT
 static int my_rt_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
 {
+
 	/* The last argument is (number_of_signals)/(bits_per_byte), which are 64 and 8, resp. */
 	return syscall(__NR_rt_sigtimedwait, set, info, timeout, 8);
 }
