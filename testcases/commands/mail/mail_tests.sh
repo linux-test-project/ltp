@@ -169,7 +169,7 @@ else
 		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 		    $LTPTMP/tst_mail.res)
 	else
-		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDeliverySubsys")}' \
+		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDelivery(Subsys|System)")}' \
 		    $LTPTMP/tst_mail.res)
 	fi
 
@@ -250,7 +250,7 @@ else
 		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 		    $LTPTMP/tst_mail.res)
 	else
-		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDeliverySubsys")}' \
+		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDelivery(Subsys|System)")}' \
 		    $LTPTMP/tst_mail.res)
 	fi
 	##################################################################
