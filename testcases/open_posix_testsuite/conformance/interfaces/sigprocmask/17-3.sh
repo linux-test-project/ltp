@@ -9,4 +9,4 @@
 #   Test various methods of passing invalid signals to sigignore().
 # 
 
-conformance/interfaces/sigprocmask/17-core-buildonly.test 3
+./17-core 3

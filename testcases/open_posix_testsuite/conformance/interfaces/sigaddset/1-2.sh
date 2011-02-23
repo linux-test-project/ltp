@@ -13,6 +13,6 @@
 #   3)  Verify that SIGALRM is a member of the signal set.
 # 
 
-# Calling 1-core-buildonly.test with a 1 parameter initializes to an
+# Calling 1-core with a 1 parameter initializes to an
 # full set.
-conformance/interfaces/sigaddset/1-core-buildonly.test 1
+./1-core 1

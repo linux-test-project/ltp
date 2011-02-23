@@ -9,4 +9,4 @@
 #   Test various methods of adding invalid signals to sighold().
 # 
 
-conformance/interfaces/sighold/3-core-buildonly.test 1
+./3-core 1

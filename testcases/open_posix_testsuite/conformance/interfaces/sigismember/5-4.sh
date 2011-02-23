@@ -9,4 +9,4 @@
 #   Test various methods of checking for invalid signals using sigismember().
 # 
 
-conformance/interfaces/sigismember/5-core-buildonly.test 4
+./5-core 4

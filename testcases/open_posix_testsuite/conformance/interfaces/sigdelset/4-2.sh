@@ -10,4 +10,4 @@
 #   Test various methods of removing invalid signals to sigaddset().
 # 
 
-conformance/interfaces/sigdelset/4-core-buildonly.test 2
+./4-core 2

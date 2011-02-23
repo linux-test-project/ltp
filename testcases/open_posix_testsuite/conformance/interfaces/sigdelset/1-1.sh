@@ -11,6 +11,6 @@
 #   This test initializes an empty signal set first.
 # 
 
-# Calling 1-core-buildonly.test with a 0 parameter initializes to an
+# Calling 1-core with a 0 parameter initializes to an
 # empty set.
-conformance/interfaces/sigdelset/1-core-buildonly.test 0
+./1-core 0
