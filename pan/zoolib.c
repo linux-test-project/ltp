@@ -49,6 +49,7 @@
  *
  */
 
+#include <signal.h>
 #include <stdlib.h> /* for getenv */
 #include <string.h>
 #include "zoolib.h"

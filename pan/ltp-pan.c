@@ -60,6 +60,7 @@
 #include <errno.h>
 #include <err.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -805,6 +806,7 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 static pid_t
 run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 {
+    ssize_t errlen;
     int cpid;
     int c_stdout = -1;		/* child's stdout, stderr */
     int capturing = 0;		/* output is going to a file instead of stdout */
@@ -812,7 +814,6 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
     static long cmdno = 0;
     int errpipe[2];		/* way to communicate to parent that the tag  */
     char errbuf[1024];		/* didn't actually start */
-    int errlen;
 
     /* Try to open the file that will be stdout for the test */
     if (test_out_dir) {
