@@ -39,7 +39,6 @@
 #include <string.h>
 #include <time.h>	/* strftime */
 #include <unistd.h>	/* getopt */
-#include <malloc.h>	/* malloc / realloc */
 #include "symbol.h"
 #include "splitstr.h"
 

@@ -51,7 +51,7 @@
  *
  */
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>        /* for string functions */
 #ifdef UNIT_TEST
 #include <assert.h>

@@ -57,11 +57,10 @@
  *		accompanied by lex OUT or CUTS states.
  */
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>	/* malloc / realloc */
-#include <stdarg.h>
 
 #include "scan.h"
 #include "reporter.h"

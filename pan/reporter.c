@@ -40,7 +40,6 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <malloc.h>
 #include "reporter.h"
 #include "symbol.h"
 #include "tag_report.h"

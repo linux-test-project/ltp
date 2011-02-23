@@ -119,13 +119,13 @@
  *	- Each tag has a "_keys" tag that contains the key fields from
  *	  the TEST_START and EXECUTION_STATUS fields.
  */
+
+#include <getopt.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
-#include <unistd.h>
-#include <stdarg.h>
 #include <string.h>
-#include <getopt.h>
+#include <unistd.h>
 #include "scan.h"
 #include "debug.h"
 #include "reporter.h"
