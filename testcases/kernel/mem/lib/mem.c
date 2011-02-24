@@ -89,16 +89,32 @@ void write_cpusets(void)
 	gather_cpus(cpus);
 	tst_resm(TINFO, "CPU list for 2nd node is %s.", cpus);
 
+	/* try either '/dev/cpuset/mems' or '/dev/cpuset/cpuset.mems'
+	 * please see Documentation/cgroups/cpusets.txt of kernel src for detail */
 	fd = open(CPATH_NEW "/mems", O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	if (fd == -1) {
+		if (errno == ENOENT) {
+			fd = open(CPATH_NEW "/cpuset.mems", O_WRONLY);
+			if (fd == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+		} else
+			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	}
 	if (write(fd, "1", 1) != 1)
 		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
 	close(fd);
 
+	/* try either '/dev/cpuset/cpus' or '/dev/cpuset/cpuset.cpus'
+	 * please see Documentation/cgroups/cpusets.txt of kernel src for detail */
 	fd = open(CPATH_NEW "/cpus", O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	if (fd == -1) {
+		if (errno == ENOENT) {
+			fd = open(CPATH_NEW "/cpuset.cpus", O_WRONLY);
+			if (fd == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+		} else
+			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	}
 	if (write(fd, cpus, strlen(cpus)) != strlen(cpus))
 		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
 	close(fd);
