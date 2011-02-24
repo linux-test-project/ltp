@@ -136,6 +136,11 @@ int main(int ac, char **av)
 			 "Cannot do utime on a file located on an NFS filesystem");
 	}
 
+        if (tst_is_cwd_v9fs()) {
+                tst_brkm(TCONF, cleanup,
+                         "Cannot do utime on a file located on an 9P filesystem");
+        }
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 

@@ -31,6 +31,16 @@ int tst_is_cwd_nfs(void)
 	return sf.f_type == NFS_MAGIC ? 1 : 0;
 }
 
+#define V9FS_MAGIC 0x01021997 /* kernel-source/include/linux/magic.h */
+int tst_is_cwd_v9fs(void)
+{
+        struct statfs sf;
+        statfs(".", &sf);
+
+        /*  Verify that the file is not on a nfs filesystem */
+        return (sf.f_type == V9FS_MAGIC);
+}
+
 #define RAMFS_MAGIC 0x858458f6
 int tst_is_cwd_ramfs(void)
 {
