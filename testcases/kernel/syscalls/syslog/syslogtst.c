@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
 	else if (argc == 2) {
 		ch = atoi(argv[1]);
-		if (atoi(argv[1]) == 2 || atoi(argv[1]) == 8) {
+		if (ch == 2 || ch == 8) {
 			if (ch == 2)
 				ch1 = random() % 8;
 			if (ch == 8)
@@ -90,7 +90,8 @@ int main(int argc, char *argv[])
 			ch1 = atoi(argv[2]);
 	}
 
-	assert (ch1 != -1);
+	/* Ensure ch1 is properly allocated when ch == 2 or ch == 8. */
+	assert (!((ch == 2 || ch == 8) && ch1 == -1));
 
 	/*
 	 * Send syslog messages according to the case number, which
