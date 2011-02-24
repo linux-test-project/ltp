@@ -298,8 +298,34 @@ void group_check(int run, int pages_shared, int pages_sharing,
 		int pages_volatile, int pages_unshared,
 		int sleep_millisecs, int pages_to_scan)
 {
-        /* 5 seconds for ksm to scan pages. */
-	sleep(5);
+	int fd;
+	char buf[BUFSIZ];
+	int old_num, new_num;
+
+	/* 1 seconds for ksm to scan pages. */
+	while (sleep(1) == 1)
+	    continue;
+
+	fd = open("/sys/kernel/mm/ksm/full_scans", O_RDONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open");
+
+	/* wait 3 increments of full_scans */
+	if (read(fd, buf, BUFSIZ) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "read");
+	old_num = new_num = atoi(buf);
+	if (lseek(fd, 0, SEEK_SET) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "lseek");
+	while (new_num < old_num * 3) {
+		sleep(1);
+		if (read(fd, buf, BUFSIZ) < 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "read");
+		new_num = atoi(buf);
+		if (lseek(fd, 0, SEEK_SET) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "lseek");
+	}
+	close(fd);
+
 	tst_resm(TINFO, "check!");
 	check("run", run);
 	check("pages_shared", pages_shared);
