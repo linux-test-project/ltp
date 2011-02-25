@@ -214,6 +214,7 @@ int tst_kvercmp(int r1, int r2, int r3);
 
 /* lib/tst_is_cwd.c */
 int tst_is_cwd_nfs(void);
+int tst_is_cwd_v9fs(void);
 int tst_is_cwd_tmpfs(void);
 int tst_is_cwd_ramfs(void);
 
