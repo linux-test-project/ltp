@@ -18,6 +18,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
+#include "timespec.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,7 @@ int main(int argc, char *argv[])
 #else
 	unsigned long time_to_set;
 	clockid_t clockid_1, clockid_2;
+	struct timespec t1, t2, t3;
 
 	if (sysconf(_SC_CPUTIME) == -1) {
 		printf("_POSIX_CPUTIME unsupported\n");
@@ -43,15 +45,35 @@ int main(int argc, char *argv[])
 		return PTS_FAIL;
 	}
 
-	/* Get the time of clockid_1. */
-	if (clockid_1 != clockid_2) {
-		printf("clock_getcpuclockid(0, ..) != "
-		    "clock_getcpuclockid(%d, ..): (%d != %d)\n", clockid_1,
-		    clockid_2);
+	/* if ids are the same, we are done */
+	if (clockid_1 == clockid_2 && clockid_2 == CLOCK_PROCESS_CPUTIME_ID) {
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	}
+
+	/* otherwise get cputimes and check that they differs only a little */
+	if (clock_gettime(clockid_1, &t1) != 0) {
+		printf("clock_gettime(clockid_1,) failed\n");
 		return PTS_FAIL;
 	}
+
+	if (clock_gettime(clockid_2, &t2) != 0) {
+		printf("clock_gettime(clockid_2,) failed\n");
+		return PTS_FAIL;
+	}
+	
+	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t3) != 0) {
+		printf("clock_gettime(CLOCK_PROCESS_CPUTIME_ID,) failed\n");
+		return PTS_FAIL;
+	}
+
+	if (timespec_nsec_diff(&t1, &t2) > NSEC_IN_SEC/2 ||
+	    timespec_nsec_diff(&t2, &t3) > NSEC_IN_SEC/2) {
+		printf("reported times differ too much\n");
+		return PTS_FAIL;
+	}
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
-
 #endif
 }
