@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 #
@@ -51,9 +51,9 @@
 #
 # RETURNS:              None.
 #=============================================================================
-function err_log
+err_log()
 {
-    let step_errors=$step_errors+1
+    : $((step_errors += 1))
 }
 
 
@@ -66,7 +66,7 @@ function err_log
 #
 # RETURNS: 		None.
 #=============================================================================
-function make_subdirs 
+make_subdirs ()
 {
     i=0;
     while [ "$i" -lt "$numsubdirs" ]; do
@@ -74,7 +74,7 @@ function make_subdirs
             echo "$0: mkdir dir$i"
             mkdir -p dir$i || echo "mkdir dir$i FAILED"
         }
-	let i="$i + 1"
+	: $((i += 1))
     done;
 } 
 
@@ -88,7 +88,7 @@ function make_subdirs
 #
 # RETURNS: 		None.
 #=============================================================================
-function touch_files 
+touch_files()
 {
     echo "$0: touch files [0-$numsubdirs]/file$numsubdirs[0-$numfiles]"
     j=0;
@@ -99,10 +99,10 @@ function touch_files
 
 	while [ "$k" -lt "$numfiles" ]; do  
 	    >file$j$k || err_log ">file$j$k FAILED"
-	    let k="$k + 1"
+	    : $((k += 1))
 	done
 
-	let j="$j + 1"
+	: $((j += 1))
 	cd ..
     done
 }
@@ -117,7 +117,7 @@ function touch_files
 #
 # RETURNS: 	None.
 #=============================================================================
-function rm_files 
+rm_files()
 {
     echo "$0: rm files [0-$numsubdirs]/file$numsubdirs[0-$numfiles]"
     j=0;
@@ -128,10 +128,10 @@ function rm_files
 
 	while [ "$k" -lt "$numfiles" ]; do  
 	    rm -f file$j$k || err_log "rm -f file$j$k FAILED"
-	    let k="$k + 1"
+	    : $((k += 1))
 	done
 
-	let j="$j + 1"
+	: $((j += 1))
 	cd ..
     done
 }
@@ -146,7 +146,7 @@ function rm_files
 #
 # RETURNS: 		None.
 #=============================================================================
-function step1 
+step1 ()
 { 
     echo "=============================================="
     echo "MULTIPLE PROCESSES CREATING AND DELETING FILES"
@@ -199,7 +199,7 @@ function step1
 	rm_files &
 	pid1=$!
 
-	let i="$i + 1"
+	: $((i += 1))
     done
 
     # wait for all background processes to complete execution
@@ -244,7 +244,7 @@ function step1
          step$I
          if [ $? != 0 ]; then
             echo "step$I failed - see above errors"
-            let ERRORS=$ERRORS+$step_errors
+            : $((ERRORS += step_errors))
          fi
     done   
 
