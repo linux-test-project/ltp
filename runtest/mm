@@ -76,6 +76,7 @@ hugemmap05_3 hugemmap05 -s -m
 
 cpuset01 cpuset01 -I 3600
 
+mlock01 mlock01
 mlock03 mlock03 -i 20
 
 mbind01 mbind01
