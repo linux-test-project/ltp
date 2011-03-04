@@ -283,7 +283,7 @@ int main(int ac, char **av)
 void setup_sigint(void)
 {
 	if (signal(SIGINT, inthandlr) == SIG_ERR)
-		tst_brkm(TFAIL|TERRNO, "signal SIGINT failed");
+		tst_brkm(TFAIL|TERRNO, NULL, "signal SIGINT failed");
 }
 
 void setup(void)
