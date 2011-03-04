@@ -76,7 +76,7 @@ int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of expected errnos */
 int main(void)
 {
 
-	tst_brkm(CONF, NULL, "this test will only run on i386");
+	tst_brkm(TCONF, NULL, "this test will only run on i386");
 }
 #else
 
