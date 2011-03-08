@@ -143,9 +143,6 @@ void do_master_child(char **av)
 
 	struct passwd *ltpuser1, *ltpuser2;
 
-	ltpuser1 = SAFE_GETPWNAM(NULL, user1name);
-	ltpuser2 = SAFE_GETPWNAM(NULL, user2name);
-
 	TEST_EXP_ENOS(exp_enos);
 
 	Tst_count = 0;
@@ -158,7 +155,7 @@ void do_master_child(char **av)
 		tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
 
 	if (pid1 == 0) {
-
+		ltpuser1 = SAFE_GETPWNAM(NULL, user1name);
 		if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) == -1) {
 			perror("setreuid failed (in child)");
 			exit(1);
@@ -172,6 +169,7 @@ void do_master_child(char **av)
 		do_child();
 #endif
 	}
+	ltpuser2 = SAFE_GETPWNAM(NULL, user2name);
 	if (setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid) == -1) {
 		perror("seteuid failed");
 		exit(1);
