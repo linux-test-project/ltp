@@ -185,5 +185,6 @@ void help(void)
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "MADV_MERGEABLE missing in sys/mman.h");
+	tst_exit();
 }
 #endif

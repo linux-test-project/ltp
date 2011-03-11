@@ -76,8 +76,8 @@ int exp_enos[] = { ENOTDIR, 0 };	/* 0 terminated list of expected errnos */
 #ifndef __i386__
 int main(void)
 {
-
 	tst_brkm(TCONF, NULL, "this test will only run on i386");
+	tst_exit();
 }
 #else
 

@@ -58,57 +58,22 @@ int  TST_TOTAL = 3;		   /* total number of tests in this file.   */
 #if defined(HAVE_ASM_LDT_H) && defined(HAVE_STRUCT_USER_DESC)
 /* Extern Global Variables */
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*										*/
-/* Function:	cleanup							   */
-/*										*/
-/* Description: Performs all one time clean up for this test on successful	*/
-/*		  completion,  premature exit or  failure. Closes all temporary */
-/*		  files, removes all temporary directories exits the test with  */
-/*		  appropriate return code by calling tst_exit() function.	   */
-/*										*/
-/* Input:	   None.							 */
-/*										*/
-/* Output:	  None.							 */
-/*										*/
-/* Return:	  On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*		  On success - Exits calling tst_exit(). With '0' return code.  */
-/*										*/
-/******************************************************************************/
-extern void cleanup() {
-
+extern void cleanup()
+{
 	TEST_CLEANUP;
 	tst_rmdir();
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*										*/
-/* Function:	setup							 */
-/*										*/
-/* Description: Performs all one time setup for this test. This function is   */
-/*		  typically used to capture signals, create temporary dirs	  */
-/*		  and temporary files that may be used in the course of this	*/
-/*		  test.							 */
-/*										*/
-/* Input:	   None.							 */
-/*										*/
-/* Output:	  None.							 */
-/*										*/
-/* Return:	  On failure - Exits by calling cleanup().			  */
-/*		  On success - returns 0.					   */
-/*										*/
-/******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
-
+int main(int ac, char **av)
+{
 	thread_area_s u_info;
 
 	setup();
@@ -148,7 +113,9 @@ int main(int ac, char **av) {
 	tst_exit();
 }
 #else
-int main(void) {
+int main(void)
+{
 	tst_brkm(TCONF, NULL, "set_thread_area isn't available for this architecture");
+	tst_exit();
 }
 #endif
