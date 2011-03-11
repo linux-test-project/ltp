@@ -31,8 +31,6 @@
  *      not, the test fail.
  */
 
-#define _XOPEN_SOURCE 600
-
 #include <sched.h>
 #include <stdio.h>
 #include <signal.h>
@@ -54,14 +52,11 @@
 # include <sys/pstat.h>
 #endif
 
-/* Max number of loop for child_process */
-#define NB_LOOP 100000
+static int nb_cpu;
+static int *shmptr;
 
-int nb_cpu;
-int *shmptr; /* shared memory */
-
-/* Get the number of CPUs */
-int get_ncpu() {
+static int get_ncpu(void)
+{
 	int ncpu = -1;
 
 	/* This syscall is not POSIX but it should work on many system */
@@ -86,7 +81,8 @@ int get_ncpu() {
 	return ncpu;
 }
 
-void child_process() {
+static void child_process(void)
+{
 	struct sched_param param;
 
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);
@@ -98,10 +94,10 @@ void child_process() {
 	/* to avoid blocking */
 	alarm(2);
 	while (1);
-
 }
 
-void test_process() {
+static void test_process(void)
+{
 	/* to avoid blocking */
 	alarm(2);
 
@@ -111,27 +107,28 @@ void test_process() {
 	}
 }
 
-void kill_children(int *child_pid) {
+static void kill_children(int *child_pid)
+{
 	int i;
 
-	for (i=0; i<nb_cpu; i++) {
+	for (i = 0; i < nb_cpu; i++)
 		kill(child_pid[i], SIGTERM);
-	}
 }
 
-int main() {
-        int *child_pid, oldcount, newcount, shm_id, i, j;
+int main(void)
+{
+	int *child_pid, oldcount, newcount, shm_id, i, j;
 	struct sched_param param;
 	key_t key;
 
-	/* Get the number of CPUs */
 	nb_cpu = get_ncpu();
+
 	if (nb_cpu == -1) {
 		printf("Can not get the number of CPUs of your machines.\n");
 		return PTS_UNRESOLVED;
 	}
 
-	child_pid = malloc(nb_cpu);
+	child_pid = malloc(nb_cpu * sizeof(int));
 
 	key = ftok("conformance/interfaces/sched_setparam/9-1.c",1234);
 	shm_id = shmget(key, sizeof(int), IPC_CREAT|0600);
@@ -140,8 +137,8 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	shmptr = (int *)shmat(shm_id, 0, 0);
-	if (shmptr < (int*)0) {
+	shmptr = shmat(shm_id, 0, 0);
+	if (shmptr == (void*)-1) {
 		perror("An error occurs when calling shmat()");
 		return PTS_UNRESOLVED;
 	}
@@ -150,7 +147,8 @@ int main() {
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO);
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
 		if (errno == EPERM) {
-			printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
+			printf("This process does not have the permission to set its own scheduling "
+			       "parameter.\nTry to launch this test as root\n");
 		} else {
 			perror("An error occurs when calling sched_setscheduler()");
 		}
