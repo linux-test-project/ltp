@@ -42,13 +42,15 @@
 #include "linux_syscall_numbers.h"
 #include "test.h"
 #include "usctest.h"
+
+char *TCID = "cpuset_syscall_test";
+
 #if HAVE_LINUX_MEMPOLICY_H
 #include <linux/mempolicy.h>
 
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/bitmask.h"
 
-char *TCID = "cpuset_syscall_test";
 int TST_TOTAL = 1;
 
 unsigned long mask;
