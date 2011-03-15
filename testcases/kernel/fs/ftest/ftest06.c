@@ -110,9 +110,8 @@ int main(int ac, char *av[])
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/*
 	 * Default values for run conditions.
@@ -162,7 +161,7 @@ int main(int ac, char *av[])
 		for (k = 0; k < nchild; k++) {
 			if ((child = fork()) == 0) {
 				dotest(k, iterations);
-
+				tst_exit();
 			}
 			if (child < 0) {
 				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
@@ -239,7 +238,6 @@ int main(int ac, char *av[])
 		}
 
 		sync();
-		cleanup();
 
 	}
 
