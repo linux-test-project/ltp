@@ -38,8 +38,8 @@
 #if defined(NO_XFS)
 # include "xfscompat.h"
 #else
-# include <libxfs.h>
-# include <attributes.h>
+# include <xfs/libxfs.h>
+# include <attr/attributes.h>
 #endif
 
 /* libc includes */
