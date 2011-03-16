@@ -1746,7 +1746,7 @@ void
 dread_f(int opno, long r)
 {
 	__int64_t	align;
-	char		*buf;
+	char		*buf = NULL;
 	struct dioattr	diob;
 	int		e;
 	pathname_t	f;
@@ -1826,7 +1826,14 @@ dread_f(int opno, long r)
 		len = align;
 	else if (len > diob.d_maxiosz)
 		len = diob.d_maxiosz;
-	buf = memalign(diob.d_mem, len);
+	if ((e = posix_memalign((void **)&buf, diob.d_mem, len)) != 0) {
+		fprintf(stderr, "posix_memalign: %s\n", strerror(e));
+		exit(1);
+	}
+	if (buf == NULL) {
+		fprintf(stderr, "posix_memalign: buf is NULL\n");
+		exit(1);
+	}
 	e = read(fd, buf, len) < 0 ? errno : 0;
 	free(buf);
 	if (v)
@@ -1840,7 +1847,7 @@ void
 dwrite_f(int opno, long r)
 {
 	__int64_t	align;
-	char		*buf;
+	char		*buf = NULL;
 	struct dioattr	diob;
 	int		e;
 	pathname_t	f;
@@ -1909,7 +1916,14 @@ dwrite_f(int opno, long r)
 		len = align;
 	else if (len > diob.d_maxiosz)
 		len = diob.d_maxiosz;
-	buf = memalign(diob.d_mem, len);
+	if ((e = posix_memalign((void **)&buf, diob.d_mem, len)) != 0) {
+		fprintf(stderr, "posix_memalign: %s\n", strerror(e));
+		exit(1);
+	}
+	if (buf == NULL) {
+		fprintf(stderr, "posix_memalign: buf is NULL\n");
+		exit(1);
+	}
 	off %= maxfsize;
 	lseek64(fd, off, SEEK_SET);
 	memset(buf, nameseq & 0xff, len);
