@@ -91,7 +91,6 @@ static int pidlist[MAXCHILD];
 
 static char homedir[MAXPATHLEN];
 static char dirname[MAXPATHLEN];
-static char tmpname[MAXPATHLEN];
 static int dirlen;
 static int mnt = 0;
 static char startdir[MAXPATHLEN], mntpoint[MAXPATHLEN];
@@ -140,22 +139,22 @@ int main(int ac, char *av[])
 			}
 		}
 		cwd = startdir;
-		strcat(dirname, cwd);
-		sprintf(tmpname, "/ftest06.%d", getpid());
-		strcat(dirname, tmpname);
-		strcat(homedir, cwd);
-		sprintf(tmpname, "/ftest06h.%d", getpid());
-		strcat(homedir, tmpname);
+		
+		snprintf(dirname, ARRAY_SIZE(dirname),
+		         "%s/ftest06.%d", cwd, getpid());
+		snprintf(homedir, ARRAY_SIZE(homedir),
+		         "%s/ftest06h.%d", cwd, getpid());
 
 		mkdir(dirname, 0755);
 		mkdir(homedir, 0755);
-		if (chdir(dirname) < 0) {
+
+		if (chdir(dirname) < 0)
 			tst_brkm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", dirname);
-		}
+		
 		dirlen = strlen(dirname);
-		if (chdir(homedir) < 0) {
+
+		if (chdir(homedir) < 0)
 			tst_brkm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", homedir);
-		}
 
 		/* enter block */
 		for (k = 0; k < nchild; k++) {
@@ -206,7 +205,8 @@ int main(int ac, char *av[])
 				unlink(name);
 			}
 
-		chdir(startdir);
+		if (chdir(startdir) < 0)
+			tst_brkm(TFAIL|TERRNO, cleanup, "Can't chdir(%s)", startdir);
 
 		pid = fork();
 		if (pid < 0) {
