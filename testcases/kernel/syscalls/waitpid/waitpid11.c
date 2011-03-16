@@ -150,7 +150,7 @@ int main(int ac, char **av)
 	/* Now send all the kids a SIGINT to tell them to proceed */
 	for (i = 0; i < MAXKIDS; i++)
 		if (kill(fork_kid_pid[i], SIGINT) < 0)
-			tst_resm(TFAIL|TERRNO, "Kill of child %d failed");
+			tst_resm(TFAIL|TERRNO, "Kill of child %d failed", i);
 
 	/*
 	 * Wait till all kids have terminated.  Stash away their

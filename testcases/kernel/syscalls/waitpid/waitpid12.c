@@ -134,7 +134,8 @@ int main(int argc, char **argv)
 		}
 
 		if (ret_val < 0)
-			tst_resm(TFAIL|TERRNO, "forking kid %d failed");
+			tst_resm(TFAIL|TERRNO, "forking kid %d failed",
+			         kid_count);
 
 		/* parent */
 		fork_kid_pid[kid_count] = ret_val;
@@ -157,7 +158,7 @@ int main(int argc, char **argv)
 	for (i = 0; i < MAXKIDS; i++)
 		if (kill(fork_kid_pid[i], SIGINT) < 0)
 			tst_resm(TFAIL|TERRNO,
-			    "killing child %d failed");
+			    "killing child %d failed", i);
 
 	/*
 	 * Wait till all kids have terminated.  Stash away their

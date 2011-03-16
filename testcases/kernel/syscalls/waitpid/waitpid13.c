@@ -134,7 +134,8 @@ int main(int ac, char **av)
 		}
 
 		if (ret_val < 0)
-			tst_resm(TFAIL|TERRNO, "forking kid %d failed");
+			tst_resm(TFAIL|TERRNO, "forking kid %d failed",
+			         kid_count);
 
 		/* parent */
 		fork_kid_pid[kid_count] = ret_val;
