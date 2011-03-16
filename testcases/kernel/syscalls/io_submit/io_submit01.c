@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) Crackerjack Project., 2007
+ *   Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "io_submit01";	/* Test program identifier.    */
+char *TCID = "io_submit01";
 
 int TST_TOTAL = 3;
 
@@ -33,31 +34,50 @@ int TST_TOTAL = 3;
 #include <errno.h>
 #include <string.h>
 
-void cleanup(void)
+static void cleanup(void)
 {
 	TEST_CLEANUP;
-
 }
 
-void setup()
+static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-int main(int argc, char **argv)
-{
-	int lc;			/* loop counter */
-	char *msg;		/* parse_opts() return message */
+/*
+   DESCRIPTION
+   io_submit() queues nr I/O request blocks for processing in the AIO con-
+   text ctx_id.  iocbpp should be an array of nr AIO request blocks, which
+   will be submitted to context ctx_id.
 
-	io_context_t ctx = -1;
+   RETURN VALUE
+   On  success,  io_submit()  returns the number of iocbs submitted (which
+   may be 0 if nr is zero); on failure,  it  returns  one  of  the  errors
+   listed under ERRORS.
+
+   ERRORS
+   EINVAL The aio_context specified by ctx_id is invalid.  nr is less than
+   0.  The iocb at *iocbpp[0] is not properly initialized,  or  the
+   operation  specified  is  invalid for the file descriptor in the
+   iocb.
+ */
+int main(int argc, char *argv[])
+{
+	int lc;
+	char *msg;
+
 	long expected_return;
 
 	int rval;
 	char buf[256];
 	struct iocb iocb;
 	struct iocb *iocbs[1];
+	
+	io_context_t ctx;
+
+	memset(&ctx, 0, sizeof(ctx));
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -67,24 +87,6 @@ int main(int argc, char **argv)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		/*
-
-		   DESCRIPTION
-		   io_submit() queues nr I/O request blocks for processing in the AIO con-
-		   text ctx_id.  iocbpp should be an array of nr AIO request blocks, which
-		   will be submitted to context ctx_id.
-
-		   RETURN VALUE
-		   On  success,  io_submit()  returns the number of iocbs submitted (which
-		   may be 0 if nr is zero); on failure,  it  returns  one  of  the  errors
-		   listed under ERRORS.
-
-		   ERRORS
-		   EINVAL The aio_context specified by ctx_id is invalid.  nr is less than
-		   0.  The iocb at *iocbpp[0] is not properly initialized,  or  the
-		   operation  specified  is  invalid for the file descriptor in the
-		   iocb.
-		 */
 		expected_return = -EINVAL;
 		TEST(io_submit(ctx, 0, NULL));
 		if (TEST_RETURN == 0) {
@@ -166,23 +168,15 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "unexpected returned value - %ld - "
 				 "expected %ld", TEST_RETURN, expected_return);
 		}
-
-		/*
-		   EAGAIN Insufficient resources are available to queue any iocbs.
-
-		   ENOSYS io_submit() is not implemented on this architecture.
-		 */
-		/* Crackerjack has a test case for ENOSYS. But Testing for ENOSYS
-		   is not meaningful for LTP, I think.
-		   -- Masatake */
 	}
 	cleanup();
 
 	tst_exit();
 }
 #else
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
+	tst_exit();
 }
 #endif
