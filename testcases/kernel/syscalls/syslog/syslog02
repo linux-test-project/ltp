@@ -104,7 +104,7 @@ syslog_case2()
 		# Increment the level_no for next level...
 		: $(( level_no += 1 ))
 
-		tst_count_incr
+		incr_tst_count
 	done
 }
 
