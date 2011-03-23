@@ -1,7 +1,7 @@
 /*
- * overcommit libhugetlbfs and check the statistics.
+ * overcommit hugetlbfs and check the statistics.
  *
- * libhugetlbfs allows to overcommit hugepages and there are tunables in
+ * hugetlbfs allows to overcommit hugepages and there are tunables in
  * sysfs and procfs. The test here want to ensure it is possible to
  * overcommit by either mmap or shared memory. Also ensure those
  * reservation can be read/write, and several statistics work correctly.
@@ -52,18 +52,18 @@
 
 #define PROTECTION		(PROT_READ | PROT_WRITE)
 #define PATH_MEMINFO		"/proc/meminfo"
-#define PATH_SYS_HUGE		"/sys/kernel/mm/hugepages"
-#define PATH_SYS_2M		PATH_SYS_HUGE "/hugepages-2048kB/"
-#define PATH_SYS_2M_OVER	PATH_SYS_2M "nr_overcommit_hugepages"
-#define PATH_SYS_2M_FREE	PATH_SYS_2M "free_hugepages"
-#define PATH_SYS_2M_RESV	PATH_SYS_2M "resv_hugepages"
-#define PATH_SYS_2M_SURP	PATH_SYS_2M "surplus_hugepages"
-#define PATH_SYS_2M_HUGE	PATH_SYS_2M "nr_hugepages"
+
+char path_sys_sz[BUFSIZ];
+char path_sys_sz_over[BUFSIZ];
+char path_sys_sz_free[BUFSIZ];
+char path_sys_sz_resv[BUFSIZ];
+char path_sys_sz_surp[BUFSIZ];
+char path_sys_sz_huge[BUFSIZ];
+
 #define PATH_PROC_VM		"/proc/sys/vm/"
 #define PATH_PROC_OVER		PATH_PROC_VM "nr_overcommit_hugepages"
 #define PATH_PROC_HUGE		PATH_PROC_VM "nr_hugepages"
 #define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
-#define MB			(1024 * 1024)
 
 /* Only ia64 requires this */
 #ifdef __ia64__
@@ -86,6 +86,7 @@ static char nr_hugepages[BUFSIZ], nr_overcommit_hugepages[BUFSIZ];
 static char buf[BUFSIZ], line[BUFSIZ], path[BUFSIZ], pathover[BUFSIZ];
 static char shmmax[BUFSIZ];
 static char *opt_allocstr;
+static int hugepagesize; /* in Bytes */
 static int opt_sysfs, opt_alloc;
 static int shmid = -1;
 static int restore_shmmax = 0;
@@ -105,20 +106,25 @@ static int lookup (char *line, char *pattern);
 static void usage(void);
 static int checkproc(FILE *fp, char *string, int value);
 static int checksys(char *path, char *pattern, int value);
+static void init_hugepagesize(void);
+static void init_sys_sz_paths(void);
 
 int main(int argc, char *argv[])
 {
 	int lc;
 	char *msg;
 
+	init_hugepagesize();
+	init_sys_sz_paths();
+
 	msg = parse_opts(argc, argv, options, usage);
 	if (msg != NULL)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	if (opt_sysfs) {
-		strncpy(path, PATH_SYS_2M_HUGE,
-			strlen(PATH_SYS_2M_HUGE) + 1);
-		strncpy(pathover, PATH_SYS_2M_OVER,
-			strlen(PATH_SYS_2M_OVER) + 1);
+		strncpy(path, path_sys_sz_huge,
+			strlen(path_sys_sz_huge) + 1);
+		strncpy(pathover, path_sys_sz_over,
+			strlen(path_sys_sz_over) + 1);
 	} else {
 		strncpy(path, PATH_PROC_HUGE,
 			strlen(PATH_PROC_HUGE) + 1);
@@ -150,7 +156,7 @@ static void overcommit(void)
 		key = ftok(PATH_MEMINFO, strlen(PATH_MEMINFO));
 		if (key == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "ftok");
-		shmid = shmget(key, (long)(length * MB),
+		shmid = shmget(key, (long)(length / 2 * hugepagesize),
 			SHM_HUGETLB | IPC_CREAT | SHM_R | SHM_W);
 		if (shmid == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "shmget");
@@ -160,24 +166,24 @@ static void overcommit(void)
 		fd = open(s, O_CREAT | O_RDWR, 0755);
 		if (fd == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "open");
-		addr = mmap(ADDR, (long)(length * MB), PROTECTION, FLAGS, fd,
-			0);
+		addr = mmap(ADDR, (long)(length / 2 * hugepagesize), PROTECTION,
+				FLAGS, fd, 0);
 		if (addr == MAP_FAILED)
 			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
 	}
 
 	if (opt_sysfs) {
 		tst_resm(TINFO, "check sysfs before allocation.");
-		if (checksys(PATH_SYS_2M_HUGE, "HugePages_Total",
+		if (checksys(path_sys_sz_huge, "HugePages_Total",
 				length / 2) != 0)
 			return;
-		if (checksys(PATH_SYS_2M_FREE, "HugePages_Free",
+		if (checksys(path_sys_sz_free, "HugePages_Free",
 				length / 2) != 0)
 			return;
-		if (checksys(PATH_SYS_2M_SURP, "HugePages_Surp",
+		if (checksys(path_sys_sz_surp, "HugePages_Surp",
 				length / 2 - size) != 0)
 			return;
-		if (checksys(PATH_SYS_2M_RESV, "HugePages_Rsvd",
+		if (checksys(path_sys_sz_resv, "HugePages_Rsvd",
 				length / 2) != 0)
 			return;
 	} else {
@@ -209,16 +215,16 @@ static void overcommit(void)
 	}
 	if (opt_sysfs) {
 		tst_resm(TINFO, "check sysfs.");
-		if (checksys(PATH_SYS_2M_HUGE, "HugePages_Total",
+		if (checksys(path_sys_sz_huge, "HugePages_Total",
 				length / 2) != 0)
 			return;
-		if (checksys(PATH_SYS_2M_FREE, "HugePages_Free", 0)
+		if (checksys(path_sys_sz_free, "HugePages_Free", 0)
 			!= 0)
 			return;
-		if (checksys(PATH_SYS_2M_SURP, "HugePages_Surp",
+		if (checksys(path_sys_sz_surp, "HugePages_Surp",
 				length / 2 - size) != 0)
 			return;
-		if (checksys(PATH_SYS_2M_RESV, "HugePages_Rsvd", 0)
+		if (checksys(path_sys_sz_resv, "HugePages_Rsvd", 0)
 			!= 0)
 			return;
 	} else {
@@ -240,7 +246,7 @@ static void overcommit(void)
 		if (shmdt(shmaddr) != 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "shmdt");
 	} else {
-		munmap(addr, (long)(length * MB));
+		munmap(addr, (long)(length / 2 * hugepagesize));
 		close(fd);
 		unlink(s);
 	}
@@ -282,7 +288,7 @@ static void cleanup(void)
 	if (umount(buf) == -1)
 		tst_resm(TWARN|TERRNO, "umount");
 	if (shmid != -1) {
-		tst_resm(TINFO|TERRNO, "shmdt");
+		tst_resm(TINFO, "shmdt cleaning");
 		shmctl(shmid, IPC_RMID, NULL);
 	}
 	TEST_CLEANUP;
@@ -307,12 +313,12 @@ static void setup(void)
 			tst_brkm(TBROK|TERRNO, cleanup, "fgets");
 		fclose(fp);
 
-		if (atol(shmmax) < (long)(length * MB)) {
+		if (atol(shmmax) < (long)(length / 2 * hugepagesize)) {
 			restore_shmmax = 1;
 			fd = open(PATH_SHMMAX, O_RDWR);
 			if (fd == -1)
 				tst_brkm(TBROK|TERRNO, cleanup, "open");
-			snprintf(buf, BUFSIZ, "%ld", (long)(length * MB));
+			snprintf(buf, BUFSIZ, "%ld", (long)(length / 2 * hugepagesize));
 			if (write(fd, buf, strlen(buf)) != strlen(buf))
 				tst_brkm(TBROK|TERRNO, cleanup,
 					"failed to change shmmax.");
@@ -378,7 +384,7 @@ static void write_bytes(void *addr)
 {
 	long i;
 
-	for (i = 0; i < (long)(length * MB); i++)
+	for (i = 0; i < (long)(length / 2 * hugepagesize); i++)
 		((char *)addr)[i] = '\a';
 }
 
@@ -387,7 +393,7 @@ static void read_bytes(void *addr)
 	long i;
 
 	tst_resm(TINFO, "First hex is %x", *((unsigned int *)addr));
-	for (i = 0; i < (long)(length * MB); i++) {
+	for (i = 0; i < (long)(length / 2 * hugepagesize); i++) {
 		if (((char *)addr)[i] != '\a') {
 			tst_resm(TFAIL, "mismatch at %ld", i);
 			break;
@@ -452,4 +458,41 @@ static int checkproc(FILE *fp, char *pattern, int value)
 		return 1;
 	}
 	return 0;
+}
+
+static void init_hugepagesize(void)
+{
+	FILE *fp;
+
+	memset(buf, -1, BUFSIZ);
+	if ((fp = fopen(PATH_MEMINFO, "r")) == NULL)
+		tst_brkm(TBROK, NULL, "can't open %s", PATH_MEMINFO);
+	while (fgets(line, BUFSIZ, fp) != NULL) {
+		if (lookup(line, "Hugepagesize")) {
+			tst_resm(TINFO, "Hugepagesize is %s kB", buf);
+			hugepagesize = atoi(buf) * 1024;
+			return;
+		}
+	}
+	tst_brkm(TBROK, NULL, "get Hugepagesize failed.");
+}
+
+/* 
+ * It's not easy to #define tunable file paths via sysfs,
+ * use function init_hugepagesize and global variable instead.
+ */
+static void init_sys_sz_paths(void)
+{
+	sprintf(path_sys_sz, "/sys/kernel/mm/hugepages/hugepages-%dkB",
+			hugepagesize / 1024);
+	sprintf(path_sys_sz_over, "%s/nr_overcommit_hugepages",
+			path_sys_sz);
+	sprintf(path_sys_sz_free, "%s/free_hugepages",
+			path_sys_sz);
+	sprintf(path_sys_sz_resv, "%s/resv_hugepages",
+			path_sys_sz);
+	sprintf(path_sys_sz_surp, "%s/surplus_hugepages",
+			path_sys_sz);
+	sprintf(path_sys_sz_huge, "%s/nr_hugepages",
+			path_sys_sz);
 }
