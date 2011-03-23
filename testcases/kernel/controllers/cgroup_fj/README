@@ -42,7 +42,7 @@ cgroup_fj_stress.sh
 --------------------
 This script runs a stress test.
 
-cgroup_fj_testcases
+cgroup_fj_testcases.sh
 --------------------
 Prestored test cases for function test and stress test.
 
