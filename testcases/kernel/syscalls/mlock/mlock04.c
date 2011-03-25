@@ -34,7 +34,7 @@
 #include "usctest.h"
 #include "config.h"
 
-char *TCID = "mlock01";
+char *TCID = "mlock04";
 int TST_TOTAL = 1;
 
 #include <sys/mman.h>
@@ -47,30 +47,10 @@ int TST_TOTAL = 1;
 #include <sys/types.h>
 
 int fd, file_len = 40960;
-char *testfile = "test_mmap";
+char *testfile = "test_mlock";
 
-static void cleanup(void)
-{
-	TEST_CLEANUP;
-	
-	close(fd);
-
-	tst_rmdir();
-}
-
-static void setup(void)
-{
-	tst_tmpdir();
-
-	fd = open(testfile, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-
-	if (ftruncate(fd, file_len) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "ftruncate");
-
-	TEST_PAUSE;
-}
+static void setup(void);
+static void cleanup(void);
 
 int main(void)
 {
@@ -97,9 +77,32 @@ int main(void)
 			tst_brkm(TBROK|TERRNO, cleanup, "munmap");
 	}
 
-	tst_resm(TPASS, "mlock01 pass");
+	tst_resm(TPASS, "test succeeded.");
 
 	cleanup();
 
 	tst_exit();
+}
+
+static void setup(void)
+{
+	tst_tmpdir();
+
+	fd = open(testfile, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open");
+
+	if (ftruncate(fd, file_len) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "ftruncate");
+
+	TEST_PAUSE;
+}
+
+static void cleanup(void)
+{
+	TEST_CLEANUP;
+
+	close(fd);
+
+	tst_rmdir();
 }

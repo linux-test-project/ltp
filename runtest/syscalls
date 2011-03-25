@@ -541,6 +541,8 @@ mknodat01 cd $LTPROOT/testcases/bin && chown root mknodat01 && chmod 04755 mknod
 
 mlock01 mlock01
 mlock02 mlock02
+mlock03 mlock03 -i 20
+mlock04 mlock04
 
 qmm01 mmap001 -m 1
 mmap01 mmap01
@@ -552,6 +554,7 @@ mmap06 mmap06
 mmap07 mmap07
 mmap08 mmap08
 mmap09 mmap09
+mmap11 mmap11 -i 30000
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
@@ -1290,5 +1293,3 @@ writev03 writev03
 writev04 writev04
 writev05 writev05
 writev06 writev06
-
-mmap11 mmap11 -i 30000
