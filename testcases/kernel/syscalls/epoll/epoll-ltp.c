@@ -98,8 +98,8 @@
 #include "config.h"
 #include "test.h"
 
-char *TCID = "sys_epoll02";	/* test program identifier */
-int TST_TOTAL = 1;		/* total number of tests in this file */
+char *TCID = "epoll01";
+int TST_TOTAL = 1;
 
 #ifdef HAVE_SYS_EPOLL_H
 
@@ -627,9 +627,13 @@ int test_epoll_ctl(int epoll_fd)
 									      [result]));
 							}
 							num_epoll_ctl_test_fails++;
+#ifdef DEBUG
 						} else	/* The call of epoll_ctl behaved as expected */
 							EPOLL_CTL_TEST_PASS((result_strings
 									     [result]));
+#else
+						}
+#endif
 					}
 				}
 			}
