@@ -1,6 +1,7 @@
 /*
 * Copyright (c) 2005, Bull S.A..  All rights reserved.
 * Created by: Sebastien Decugis
+* Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
 
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of version 2 of the GNU General Public License as
@@ -32,12 +33,6 @@
 
 */
 
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
-/******************************************************************************/
-/*************************** standard includes ********************************/
-/******************************************************************************/
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -49,140 +44,90 @@
 #include <signal.h>
 #include <errno.h>
 
-/******************************************************************************/
-/***************************   Test framework   *******************************/
-/******************************************************************************/
+#include <timespec.h>
+
 #include "testfrmw.h"
 #include "testfrmw.c"
-/* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);
- *    where descr is a description of the error and ret is an int
- *   (error code for example)
- * FAILED(descr);
- *    where descr is a short text saying why the test has failed.
- * PASSED();
- *    No parameter.
- *
- * Both three macros shall terminate the calling process.
- * The testcase shall not terminate in any other maneer.
- *
- * The other file defines the functions
- * void output_init()
- * void output(char * string, ...)
- *
- * Those may be used to output information.
- */
 
-/******************************************************************************/
-/**************************** Configuration ***********************************/
-/******************************************************************************/
-#ifndef VERBOSE
-#define VERBOSE 1
-#endif
+static sem_t sem;
 
-/******************************************************************************/
-/***************************    Test case   ***********************************/
-/******************************************************************************/
-sem_t sem;
-
-void handler(int sig)
+static void handler(int sig)
 {
 	int ret;
 	ret = sem_post(&sem);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to post semaphore");
 	}
 }
 
-/* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
-
 	struct timespec ts_ref, ts_fin;
-
 	struct sigaction sa;
 
-	/* Initialize output */
 	output_init();
 
-	/* Initialize semaphore */
 	ret = sem_init(&sem, 0, 0);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to init semaphore");
 	}
 
-	/* Register signal handler */
 	sa.sa_flags = 0;
-
 	sa.sa_handler = handler;
 
 	ret = sigemptyset(&sa.sa_mask);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	sigaction(SIGALRM, &sa, 0);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
-	/* Save current time */
 	ret = clock_gettime(CLOCK_REALTIME, &ts_ref);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Unable to read clock");
 	}
 
-	/* Alarm */
-	alarm(1);
+	/* 
+	 * POSIX allows for alarm to quite unprecise, so we ask for 2 seconds
+	 * and check for at least one.
+	 */
+	alarm(2);
 
-	/* Wait for the semaphore */
 	ret = sem_wait(&sem);
 
-	if (ret != 0 && errno != EINTR)
-	{
+	if (ret != 0 && errno != EINTR) {
 		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}
 
-	/* Check that 1 second has really elapsed */
 	ret = clock_gettime(CLOCK_REALTIME, &ts_fin);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Unable to read clock");
 	}
 
-	if (((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000000) +
-	    (ts_fin.tv_nsec - ts_ref.tv_nsec) < 1000000000)
-	{
-		output("Ts: %d.%9.9d  ->  %d.%9.9d\n", ts_ref.tv_sec, ts_ref.tv_nsec, ts_fin.tv_sec, ts_fin.tv_nsec);
+	if (timespec_nsec_diff(&ts_fin, &ts_ref) < NSEC_IN_SEC) {
+		output("Ts: %d.%9.9d  ->  %d.%9.9d\n",
+		       ts_ref.tv_sec, ts_ref.tv_nsec,
+                       ts_fin.tv_sec, ts_fin.tv_nsec);
 		FAILED("The sem_wait call did not block");
 	}
-
-	/* Destroy the semaphore */
+	
 	ret = sem_destroy(&sem);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to sem_destroy");
 	}
 
-	/* Test passed */
-#if VERBOSE > 0
-
 	output("Test passed\n");
-
-#endif
 
 	PASSED;
 }
