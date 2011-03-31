@@ -26,8 +26,13 @@
 //#include "../tests.h"
 #include <dirent.h>
 #include <unistd.h>
-#include <sys/acl.h>
 #include <errno.h>
+
+#include <config.h>
+
+#ifdef HAVE_SYS_ACL_H
+
+#include <sys/acl.h>
 
 #define OP_READ 0x1
 #define OP_WRITE 0x2
@@ -36,7 +41,7 @@
 acl_t testacl;
 /* the "typical" acl used for the test */
 
-static char * permtab[] = {"---","r--","-w-","rw-","--x","r-x","-wx","rwx"};
+static char *permtab[] = {"---","r--","-w-","rw-","--x","r-x","-wx","rwx"};
 
 struct statstore {
 	/* number of passed tests */
@@ -338,10 +343,7 @@ showstats(void)
 	printf("\nACL TESTS RESULTS: %d passed, %d failed\n\n", aclstat.ok, aclstat.failed);
 }
 
-int
-main(argc, argv)
-	int argc;
-	char **argv;
+int main(int argc, char *argv[])
 {
 	int result;
 	aclstat.ok=0;
@@ -384,3 +386,13 @@ main(argc, argv)
 	showstats();
 	return 1;
 }
+
+#else
+
+int main(void)
+{
+	printf("The acl library was missing upon compilation.\n");
+	return 0;
+}
+
+#endif /* HAVE_SYS_ACL_H */
