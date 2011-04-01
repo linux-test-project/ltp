@@ -87,6 +87,115 @@
 #include "random_range.h"
 #include "string_to_tokens.h"
 
+#define	NMEMALLOC	32
+#define	MEM_DATA	1	/* data space 				*/
+#define	MEM_SHMEM	2	/* System V shared memory 		*/
+#define	MEM_T3ESHMEM	3	/* T3E Shared Memory 			*/
+#define	MEM_MMAP	4	/* mmap(2) 				*/
+
+#define	MEMF_PRIVATE	0001
+#define	MEMF_AUTORESRV	0002
+#define	MEMF_LOCAL	0004
+#define	MEMF_SHARED	0010
+
+#define	MEMF_FIXADDR	0100
+#define	MEMF_ADDR	0200
+#define	MEMF_AUTOGROW	0400
+#define	MEMF_FILE	01000	/* regular file -- unlink on close	*/
+#define	MEMF_MPIN	010000	/* use mpin(2) to lock pages in memory */
+
+struct memalloc {
+	int	memtype;
+	int	flags;
+	int	nblks;
+	char	*name;
+	void	*space;		/* memory address of allocated space */
+	int	fd;		/* FD open for mmaping */
+	int	size;
+}	Memalloc[NMEMALLOC];
+
+/*
+ * Structure for maintaining open file test descriptors.  Used by
+ * alloc_fd().
+ */
+
+struct fd_cache {
+	char    c_file[MAX_FNAME_LENGTH+1];
+	int	c_oflags;
+	int	c_fd;
+	long    c_rtc;
+#ifdef sgi
+	int	c_memalign;	/* from F_DIOINFO */
+	int	c_miniosz;
+	int	c_maxiosz;
+#endif
+#ifndef CRAY
+	void	*c_memaddr;	/* mmapped address */
+	int	c_memlen;	/* length of above region */
+#endif
+};
+
+/*
+ * Name-To-Value map
+ * Used to map cmdline arguments to values
+ */
+struct smap {
+	char    *string;
+	int	value;
+};
+
+struct aio_info {
+	int			busy;
+	int			id;
+	int			fd;
+	int			strategy;
+	volatile int		done;
+#ifdef CRAY
+	struct iosw		iosw;
+#endif
+#ifdef sgi
+	aiocb_t			aiocb;
+	int			aio_ret;	/* from aio_return */
+	int			aio_errno;	/* from aio_error */
+#endif
+	int			sig;
+	int			signalled;
+	struct sigaction	osa;
+};
+
+/* ---------------------------------------------------------------------------
+ *
+ * A new paradigm of doing the r/w system call where there is a "stub"
+ * function that builds the info for the system call, then does the system
+ * call; this is called by code that is common to all system calls and does
+ * the syscall return checking, async I/O wait, iosw check, etc.
+ *
+ * Flags:
+ *	WRITE, ASYNC, SSD/SDS,
+ *	FILE_LOCK, WRITE_LOG, VERIFY_DATA,
+ */
+
+struct	status {
+	int	rval;		/* syscall return */
+	int	err;		/* errno */
+	int	*aioid;		/* list of async I/O structures */
+};
+
+struct syscall_info {
+	char		*sy_name;
+	int		sy_type;
+	struct status	*(*sy_syscall)();
+	int		(*sy_buffer)();
+	char		*(*sy_format)();
+	int		sy_flags;
+	int		sy_bits;
+};
+
+#define	SY_WRITE		00001
+#define	SY_ASYNC		00010
+#define	SY_IOSW			00020
+#define	SY_SDS			00100
+
 #ifndef O_SSD
 #define O_SSD 0	    	/* so code compiles on a CRAY2 */
 #endif
@@ -173,60 +282,12 @@ int	havesigint = 0;
 
 #define SKIP_REQ	-2	/* skip I/O request */
 
-#define	NMEMALLOC	32
-#define	MEM_DATA	1	/* data space 				*/
-#define	MEM_SHMEM	2	/* System V shared memory 		*/
-#define	MEM_T3ESHMEM	3	/* T3E Shared Memory 			*/
-#define	MEM_MMAP	4	/* mmap(2) 				*/
-
-#define	MEMF_PRIVATE	0001
-#define	MEMF_AUTORESRV	0002
-#define	MEMF_LOCAL	0004
-#define	MEMF_SHARED	0010
-
-#define	MEMF_FIXADDR	0100
-#define	MEMF_ADDR	0200
-#define	MEMF_AUTOGROW	0400
-#define	MEMF_FILE	01000	/* regular file -- unlink on close	*/
-#define MEMF_MPIN	010000	/* use mpin(2) to lock pages in memory */
-
-struct memalloc {
-	int	memtype;
-	int	flags;
-	int	nblks;
-	char	*name;
-	void	*space;		/* memory address of allocated space */
-	int	fd;		/* FD open for mmaping */
-	int	size;
-}	Memalloc[NMEMALLOC];
-
 /*
  * Global file descriptors
  */
 
 int 	Wfd_Append; 	    /* for appending to the write-log	    */
 int 	Wfd_Random; 	    /* for overlaying write-log entries	    */
-
-/*
- * Structure for maintaining open file test descriptors.  Used by
- * alloc_fd().
- */
-
-struct fd_cache {
-	char    c_file[MAX_FNAME_LENGTH+1];
-	int	c_oflags;
-	int	c_fd;
-	long    c_rtc;
-#ifdef sgi
-	int	c_memalign;	/* from F_DIOINFO */
-	int	c_miniosz;
-	int	c_maxiosz;
-#endif
-#ifndef CRAY
-	void	*c_memaddr;	/* mmapped address */
-	int	c_memlen;	/* length of above region */
-#endif
-};
 
 #define FD_ALLOC_INCR	32      /* allocate this many fd_map structs	*/
 				/* at a time */
@@ -297,40 +358,12 @@ struct	fd_cache *alloc_fdcache(char *, int);
 
 #define U_ALL	    	(U_CORRUPTION | U_IOSW | U_RVAL)
 
-/*
- * Name-To-Value map
- * Used to map cmdline arguments to values
- */
-struct smap {
-	char    *string;
-	int	value;
-};
-
 struct smap Upanic_Args[] = {
 	{ "corruption",	U_CORRUPTION	},
 	{ "iosw",	U_IOSW		},
 	{ "rval",	U_RVAL  	},
 	{ "all",	U_ALL   	},
 	{ NULL,         0               }
-};
-
-struct aio_info {
-	int			busy;
-	int			id;
-	int			fd;
-	int			strategy;
-	volatile int		done;
-#ifdef CRAY
-	struct iosw		iosw;
-#endif
-#ifdef sgi
-	aiocb_t			aiocb;
-	int			aio_ret;	/* from aio_return */
-	int			aio_errno;	/* from aio_error */
-#endif
-	int			sig;
-	int			signalled;
-	struct sigaction	osa;
 };
 
 struct aio_info	Aio_Info[MAX_AIO];
@@ -2219,39 +2252,6 @@ struct io_req	*req;
 #endif
 
 #endif /* _CRAY1 */
-
-/* ---------------------------------------------------------------------------
- *
- * A new paradigm of doing the r/w system call where there is a "stub"
- * function that builds the info for the system call, then does the system
- * call; this is called by code that is common to all system calls and does
- * the syscall return checking, async I/O wait, iosw check, etc.
- *
- * Flags:
- *	WRITE, ASYNC, SSD/SDS,
- *	FILE_LOCK, WRITE_LOG, VERIFY_DATA,
- */
-
-struct	status {
-	int	rval;		/* syscall return */
-	int	err;		/* errno */
-	int	*aioid;		/* list of async I/O structures */
-};
-
-struct syscall_info {
-	char		*sy_name;
-	int		sy_type;
-	struct status	*(*sy_syscall)();
-	int		(*sy_buffer)();
-	char		*(*sy_format)();
-	int		sy_flags;
-	int		sy_bits;
-};
-
-#define	SY_WRITE		00001
-#define	SY_ASYNC		00010
-#define	SY_IOSW			00020
-#define	SY_SDS			00100
 
 char *
 fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
