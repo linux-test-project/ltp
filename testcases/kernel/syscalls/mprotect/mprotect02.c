@@ -69,6 +69,7 @@ int fd, status;
 char file1[BUFSIZ];
 
 char *addr = MAP_FAILED;
+char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
 #ifndef UCLINUX
 
@@ -76,7 +77,6 @@ int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	char *buf = "abcdefghijklmnopqrstuvwxyz";
 
 	int bytes_to_write, fd, num_bytes;
 	pid_t pid;
@@ -106,7 +106,7 @@ int main(int ac, char **av)
 		} while (0 < num_bytes);
 
 		/* mmap the PAGESIZE bytes as read only. */
-		addr = SAFE_MMAP(cleanup, 0, strlen(buf), PROT_READ,
+		addr = SAFE_MMAP(cleanup, 0, sizeof(buf), PROT_READ,
 		    MAP_SHARED, fd, 0);
 
 		if ((pid = FORK_OR_VFORK()) == -1)
@@ -129,7 +129,7 @@ int main(int ac, char **av)
 			    status);
 
 		/* Change the protection to WRITE. */
-		TEST(mprotect(addr, strlen(buf), PROT_WRITE));
+		TEST(mprotect(addr, sizeof(buf), PROT_WRITE));
 
 		if (TEST_RETURN != -1) {
 
@@ -163,7 +163,8 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		SAFE_MUNMAP(cleanup, addr, strlen(buf));
+		SAFE_MUNMAP(cleanup, addr, sizeof(buf));
+		addr = MAP_FAILED;
 
 		SAFE_CLOSE(cleanup, fd);
 
@@ -199,7 +200,7 @@ static void cleanup()
 	TEST_CLEANUP;
 
 	if (addr != MAP_FAILED) {
-		SAFE_MUNMAP(NULL, addr, sizeof(file1));
+		SAFE_MUNMAP(NULL, addr, sizeof(buf));
 		SAFE_CLOSE(NULL, fd);
 	}
 
