@@ -113,6 +113,18 @@ struct strmap {
 	int	m_flags;
 };
 
+void		startup_info(FILE *stream, int seed);
+int		init_output(void);
+int		form_iorequest(struct io_req *req);
+int		get_file_info(struct file_info *rec);
+int		create_file(char *path, int nbytes);
+int		str_to_value(struct strmap *map, char *str);
+struct strmap	*str_lookup(struct strmap *map, char *str);
+char		*value_to_string(struct strmap *map, int val);
+int		parse_cmdline(int argc, char **argv, char *opts);
+int		help(FILE *stream);
+int		usage(FILE *stream);
+
 /*
  * Declare cmdline option flags/variables initialized in parse_cmdline()
  */
@@ -164,8 +176,6 @@ int	Fileio = 0;		/* flag indicating that a file		    */
 				/* io syscall has been chosen.	 	    */
 int	Naio_Strat_Types = 0;	/* # async io completion types		    */
 struct	strmap *Aio_Strat_List[128]; /* Async io completion types	    */
-
-void	startup_info();
 
 /*
  * Map async io completion modes (-a args) names to values.  Macros are
@@ -366,16 +376,8 @@ char	Byte_Patterns[26] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 			      'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
 			      'Y', 'Z' };
 
-int form_iorequest(struct io_req *);
-int init_output();
-int parse_cmdline(int argc, char **argv, char *opts);
-int help(FILE *stream);
-int usage(FILE *stream);
-
 int
-main(argc, argv)
-int 	argc;
-char	**argv;
+main(int argc, char **argv)
 {
     int	    	    rseed, outfd, infinite;
     time_t  	    start_time;
@@ -533,7 +535,7 @@ startup_info(FILE *stream, int seed)
  * error code if this cannot be done.
  */
 int
-init_output()
+init_output(void)
 {
     int	 outfd;
     struct stat	    sbuf;
@@ -579,8 +581,7 @@ init_output()
  */
 
 int
-form_iorequest(req)
-struct io_req   *req;
+form_iorequest(struct io_req *req)
 {
     int	    	    	mult, offset=0, length=0, slength;
     int	    	    	minlength, maxlength, laststart, lastend;
@@ -926,8 +927,7 @@ struct io_req   *req;
  */
 
 int
-get_file_info(rec)
-struct file_info    *rec;
+get_file_info(struct file_info *rec)
 {
     struct stat			sbuf;
 #ifdef CRAY
@@ -1047,9 +1047,7 @@ struct file_info    *rec;
  */
 
 int
-create_file(path, nbytes)
-char	*path;
-int 	nbytes;
+create_file(char *path, int nbytes)
 {
     int	    	fd, rval;
     char    	c;
@@ -1298,9 +1296,7 @@ int 	nbytes;
  */
 
 int
-str_to_value(map, str)
-struct strmap	*map;
-char	    	*str;
+str_to_value(struct strmap *map, char *str)
 {
     struct strmap   *mp;
 
@@ -1317,9 +1313,7 @@ char	    	*str;
  */
 
 struct strmap *
-str_lookup(map, str)
-struct strmap	*map;
-char	    	*str;
+str_lookup(struct strmap *map, char *str)
 {
     struct strmap   *mp;
 
@@ -1336,9 +1330,7 @@ char	    	*str;
  */
 
 char *
-value_to_string(map, val)
-struct strmap   *map;
-int		val;
+value_to_string(struct strmap *map, int val)
 {
     struct strmap  *mp;
 
@@ -1355,10 +1347,7 @@ int		val;
  */
 
 int
-parse_cmdline(argc, argv, opts)
-int 	argc;
-char	**argv;
-char	*opts;
+parse_cmdline(int argc, char **argv, char *opts)
 {
     int	    	    	o, len, nb, format_error;
     struct strmap	*flgs, *sc;
@@ -1870,8 +1859,7 @@ char	*opts;
 }
 
 int
-help(stream)
-FILE	*stream;
+help(FILE *stream)
 {
     usage(stream);
     fprintf(stream, "\n");
@@ -1981,8 +1969,7 @@ FILE	*stream;
  */
 
 int
-usage(stream)
-FILE	*stream;
+usage(FILE *stream)
 {
     fprintf(stream, "usage%s:  iogen [-hoq] [-a aio_type,...] [-f flag[,flag...]] [-i iterations] [-p outpipe] [-m offset-mode] [-s syscall[,syscall...]] [-t mintrans] [-T maxtrans] [ -O file-create-flags ] [[len:]file ...]\n", TagName);
   return 0;
