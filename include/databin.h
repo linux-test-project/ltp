@@ -39,6 +39,6 @@
 
 void databingen( int mode, char *buffer, int bsize, int offset );
 
-void databinchedk( int mode, unsigned char *buffer, int bsize, int offset, char **errmsg);
+int databinchk( int mode, char *buffer, int bsize, int offset, char **errmsg);
 
 #endif

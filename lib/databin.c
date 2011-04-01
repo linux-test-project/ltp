@@ -91,7 +91,7 @@ int ind;
 int
 databinchk(mode, buffer, bsize, offset, errmsg)
 int mode;	/* either a, c, r, z, o, or C */
-unsigned char *buffer;	/* buffer pointer */
+char *buffer;	/* buffer pointer */
 int bsize;	/* size of buffer */
 int offset;	/* offset into the file where buffer starts */
 char **errmsg;
@@ -102,7 +102,7 @@ char **errmsg;
     long expbits;
     long actbits;
 
-	chr=buffer;
+	chr = (unsigned char *) buffer;
 	total=bsize;
 
 	if (errmsg != NULL) {
