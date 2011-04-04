@@ -186,13 +186,8 @@ void kill_nested_containers()
 
 	/* Loops through the containers created to exit from sleep() */
 	for (i = 0; i < MAX_DEPTH; i++) {
-		if (waitpid(pids[i], &status, 0) == -1)
-			tst_resm(TFAIL|TERRNO, "waitpid(%d, ...) failed",
-			    pids[i]);
-		else {
-			kill(pids[i], SIGKILL);
-			waitpid(pids[i], &status, 0);
-		}
+		kill(pids[i], SIGKILL);
+		waitpid(pids[i], &status, 0);
 	}
 }
 
@@ -222,7 +217,10 @@ int main(int argc, char *argv[])
 		if (waitpid(pid, &status, 0) == -1) {
 			perror("wait failed");
 		}
-		exit(status);
+		if (WIFEXITED(status))
+			exit(WEXITSTATUS(status));
+		else
+			exit(status);
 	}
 
 	/* To make all the containers share the same PGID as its parent */
