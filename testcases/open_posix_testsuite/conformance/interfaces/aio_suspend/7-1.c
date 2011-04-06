@@ -43,14 +43,12 @@
 
 int received_all	= 0;
 
-void
-sigrt1_handler(int signum, siginfo_t *info, void *context)
+void sigrt1_handler(int signum, siginfo_t *info, void *context)
 {
 	received_all = 1;
 }
 
-int
-main ()
+int main(void)
 {
 	char tmpfname[256];
 	int fd;
@@ -83,22 +81,22 @@ main ()
 
 	unlink(tmpfname);
 
-	bufs = (char *) malloc (NUM_AIOCBS*BUF_SIZE);
+	bufs = malloc(NUM_AIOCBS*BUF_SIZE);
 
 	if (bufs == NULL) {
-		printf (TNAME " Error at malloc(): %s\n", strerror (errno));
-		close (fd);
+		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
 	if (write (fd, bufs, NUM_AIOCBS*BUF_SIZE) != (NUM_AIOCBS*BUF_SIZE)) {
 		printf(TNAME " Error at write(): %s\n", strerror(errno));
-		free (bufs);
-		close (fd);
+		free(bufs);
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	aiocbs = (struct aiocb**)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
+	aiocbs = malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
 
 	/* Queue up a bunch of aio reads */
 	for (i = 0; i < NUM_AIOCBS; i++) {
@@ -134,65 +132,65 @@ main ()
 	if (ret) {
 		printf(TNAME " Error at lio_listio() %d: %s\n", errno, strerror(errno));
 		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_UNRESOLVED);
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_UNRESOLVED);
 	}
 
 	/* Check selected request has not completed yet */
-	if (EINPROGRESS != aio_error(aiocbs[WAIT_FOR_AIOCB])) {
-		printf (TNAME " Error : AIOCB %d already completed before suspend\n",
+	if (aio_error(aiocbs[WAIT_FOR_AIOCB]) != EINPROGRESS) {
+		printf(TNAME " Error : AIOCB %d already completed before suspend\n",
 			WAIT_FOR_AIOCB);
 		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* Suspend on selected request */
 	ret = aio_suspend((const struct aiocb **)plist, 2, &ts);
 
 	/* Check selected request has not completed */
-	if (EINPROGRESS != aio_error(aiocbs[WAIT_FOR_AIOCB])) {
-		printf (TNAME " Error : AIOCB %d should not have completed after timed out suspend\n",
+	if (aio_error(aiocbs[WAIT_FOR_AIOCB]) != EINPROGRESS) {
+		printf(TNAME " Error : AIOCB %d should not have completed after timed out suspend\n",
 			WAIT_FOR_AIOCB);
 		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* timed out aio_suspend should return -1 and set errno to EAGAIN */
 	if (ret != -1) {
-		printf (TNAME " aio_suspend() should return -1\n");
+		printf(TNAME " aio_suspend() should return -1\n");
 		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	if (errno != EAGAIN) {
-		printf (TNAME " aio_suspend() should set errno to EAGAIN: %d (%s)\n",
-			errno, strerror (errno));
+		printf(TNAME " aio_suspend() should set errno to EAGAIN: %d (%s)\n",
+			errno, strerror(errno));
 		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* Wait for list processing completion */
 	while (!received_all)
-		sleep (1);
+		sleep(1);
 
 	/* Check return code and free things */
 	for (i = 0; i < NUM_AIOCBS; i++) {
@@ -204,18 +202,18 @@ main ()
 			errors++;
 		}
 
-		free (aiocbs[i]);
+		free(aiocbs[i]);
 	}
 
-	free (bufs);
-	free (aiocbs);
+	free(bufs);
+	free(aiocbs);
 
 	close(fd);
 
 	if (errors != 0)
-		exit (PTS_FAIL);
+		exit(PTS_FAIL);
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }
