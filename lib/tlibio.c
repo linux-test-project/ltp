@@ -79,7 +79,9 @@
  */
 
 #ifdef __linux__
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #define _LARGEFILE64_SOURCE
 #endif
 #include "config.h"
@@ -113,6 +115,7 @@
 #include <stdlib.h> /* atoi, abs */
 
 #include "tlibio.h"		/* defines LIO* marcos */
+#include "random_range.h"
 
 #ifndef PATH_MAX
 #define PATH_MAX	MAXPATHLEN
@@ -470,7 +473,6 @@ int
 lio_random_methods(long curr_mask)
 {
     int mask=0;
-    long random_bit();
 
     /* remove random select, io type, and wait method bits from curr_mask */
     mask = curr_mask & (~(LIO_IO_TYPES | LIO_WAIT_TYPES | LIO_RANDOM));
