@@ -214,7 +214,7 @@ set_shmat()
 	rval = shmat(shm_id_1, 0, 0);
 
 	if (rval == (void *)-1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmat() failed.")
+		tst_brkm(TBROK|TERRNO, cleanup, "shmat() failed.");
 
 	return rval;
 }
