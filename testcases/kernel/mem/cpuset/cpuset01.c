@@ -179,7 +179,7 @@ void setup(void)
 {
 	tst_require_root(NULL);
 
-	if (count_numa() == 1)
+	if (count_numa() <= 1)
 		tst_brkm(TCONF, NULL, "required a NUMA system.");
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
