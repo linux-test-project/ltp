@@ -28,13 +28,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
 #include "posixtest.h"
 
 #define TIMEOUT 1
 
 static pthread_rwlock_t rwlock;
 static int thread_state;
-static int currsec1, currsec2;
 static int expired;
 
 /* thread_state indicates child thread state:
@@ -53,56 +53,54 @@ static void* fn(void *arg)
 	int rc;
 	thread_state = ENTERED_THREAD;
 
-	/* Absolute time, not relative. */
-	abs_timeout.tv_sec = currsec1 - TIMEOUT;
-	abs_timeout.tv_nsec = 0;
+	if (clock_gettime(CLOCK_REALTIME, &abs_timeout) != 0) {
+		perror("thread: clock_gettime");
+		exit(PTS_UNRESOLVED);
+	}
+
+	/* 
+	 * The CLOCK_REALTIME represents time passed since the Epoch
+	 * so we may expect that tv_sec is > TIMEOUT (1 sec)
+	 */
+	abs_timeout.tv_sec -= TIMEOUT;
 
 	printf("thread: attempt timed write-lock\n");
 	rc = pthread_rwlock_timedwrlock(&rwlock, &abs_timeout);
-	if (rc  == ETIMEDOUT)
-	{
+
+	if (rc == ETIMEDOUT) {
 		printf("thread: timer expired\n");
 		expired = 1;
-	}
-	else if (rc == 0)
-	{
+	} else if (rc == 0) {
 		printf("thread: acquired write lock\n");
 		expired = 0;
 		printf("thread: unlock write lock\n");
-		if (pthread_rwlock_unlock(&rwlock) != 0)
-		{
+		if (pthread_rwlock_unlock(&rwlock) != 0) {
 			printf("thread: failed to release lock\n");
 			exit(PTS_UNRESOLVED);
 		}
-	}
-	else
-	{
+	} else {
 		printf("Error in pthread_rwlock_timedwrlock(), error code:%d.\n", rc);
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* Get time after the mutex timed out in locking. */
-	currsec2 = time(NULL);
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 	pthread_t thread1;
 
-	if (pthread_rwlock_init(&rwlock, NULL) != 0)
-	{
+	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
 		printf("Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	printf("main: attempt write lock\n");
 	/* We have no lock, this write lock should succeed */
-	if (pthread_rwlock_wrlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_wrlock(&rwlock) != 0) {
 		printf("Error at pthread_rwlock_wrlock()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -110,8 +108,7 @@ int main()
 
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread\n");
-	if (pthread_create(&thread1, NULL, fn, NULL) != 0)
-	{
+	if (pthread_create(&thread1, NULL, fn, NULL) != 0) {
 		printf("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
@@ -120,47 +117,41 @@ int main()
 	   we regard it as blocked */
 	/* We expect the thread _NOT_ to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 3);
+	} while (thread_state != EXITING_THREAD && cnt++ < 3);
 
-	if (thread_state == EXITING_THREAD)
-	{
+	switch (thread_state) {
+	case EXITING_THREAD:
 		/* the child thread does not block, check the time expired or not */
-		if (expired != 1)
-		{
+		if (expired != 1) {
 			printf("Test FAILED: abs_timeout should expire\n");
 			exit(PTS_FAIL);
-		}
-		else
+		} else
 			printf("thread correctly expired and did not wait\n");
-	}
-	else if (thread_state == ENTERED_THREAD)
-	{
+	break;
+	case ENTERED_THREAD:
 		printf("Test FAILED: thread blocked even when the timer expired\n");
 		exit(PTS_FAIL);
-	}
-	else
-	{
+	break;
+	default:
 		printf("Unexpected thread state %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
+	break;
 	}
 
 	printf("main: unlock write lock\n");
-	if (pthread_rwlock_unlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_unlock(&rwlock) != 0) {
 		printf("main: Error at pthread_rwlock_unlock()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_join(thread1, NULL) != 0)
-	{
+	if (pthread_join(thread1, NULL) != 0) {
 		printf("main: Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_rwlock_destroy(&rwlock) != 0)
-	{
+	if (pthread_rwlock_destroy(&rwlock) != 0) {
 		printf("main: Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
