@@ -33,48 +33,72 @@ int TST_TOTAL = 3;
 #include <libaio.h>
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
+
+#define TESTFILE	"testfile"
 
 static void cleanup(void)
 {
 	TEST_CLEANUP;
+
+	tst_rmdir();
 }
 
 static void setup(void)
 {
+	int fd;
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
+
+	tst_tmpdir();
+
+	fd = open(TESTFILE, O_CREAT|O_RDWR, 0755);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open");
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close");
 }
 
-/*
-   DESCRIPTION
-   io_submit() queues nr I/O request blocks for processing in the AIO con-
-   text ctx_id.  iocbpp should be an array of nr AIO request blocks, which
-   will be submitted to context ctx_id.
+static void check_result(long exp, long act)
+{
+	if (exp >= 0) {
+		if (act == exp)
+			tst_resm(TPASS, "expected success - "
+					"returned value = %ld", act);
+		else
+			tst_resm(TFAIL, "unexpected failure - "
+					"returned value = %ld : %s",
+					act, strerror(-1 * act));
+		return;
+	}
 
-   RETURN VALUE
-   On  success,  io_submit()  returns the number of iocbs submitted (which
-   may be 0 if nr is zero); on failure,  it  returns  one  of  the  errors
-   listed under ERRORS.
+	/* if return value is expected to be < 0 */
+	if (act == exp)
+		tst_resm(TPASS, "expected failure - "
+				"returned value = %ld : %s",
+				act, strerror(-1 * act));
+	else if (act == 0)
+		tst_resm(TFAIL, "call succeeded unexpectedly");
+	else
+		tst_resm(TFAIL, "unexpected failure - "
+				"returned value = %ld : %s, "
+				"expected value = %ld : %s",
+				act, strerror(-1 * act),
+				exp, strerror(-1 * exp));
+}
 
-   ERRORS
-   EINVAL The aio_context specified by ctx_id is invalid.  nr is less than
-   0.  The iocb at *iocbpp[0] is not properly initialized,  or  the
-   operation  specified  is  invalid for the file descriptor in the
-   iocb.
- */
 int main(int argc, char *argv[])
 {
 	int lc;
 	char *msg;
 
-	long expected_return;
-
-	int rval;
+	int rval, fd;
 	char buf[256];
 	struct iocb iocb;
 	struct iocb *iocbs[1];
-	
+
 	io_context_t ctx;
 
 	memset(&ctx, 0, sizeof(ctx));
@@ -87,87 +111,73 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		expected_return = -EINVAL;
+		/* 1 - EINVAL */
+		/* 1.1 - EINVAL: invalid ctx */
 		TEST(io_submit(ctx, 0, NULL));
-		if (TEST_RETURN == 0) {
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-		} else if (TEST_RETURN == expected_return) {
-			tst_resm(TPASS, "expected failure - "
-				 "returned value = %ld : %s", (-1 * TEST_RETURN),
-				 strerror(-1 * TEST_RETURN));
-		} else {
-			tst_resm(TFAIL, "unexpected returned value - %ld - "
-				 "expected %ld", TEST_RETURN, expected_return);
-		}
+		check_result(-EINVAL, TEST_RETURN);
 
-		/*
-		   EFAULT One of the data structures points to invalid data.
-		 */
-		expected_return = -EFAULT;
-		TEST(io_submit(ctx, 1, (void *)-1));
-		if (TEST_RETURN == 0) {
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-		} else if (TEST_RETURN == expected_return) {
-			tst_resm(TPASS, "expected failure - "
-				 "returned value = %ld : %s", (-1 * TEST_RETURN),
-				 strerror(-1 * TEST_RETURN));
-		} else {
-			tst_resm(TFAIL, "unexpected returned value - %ld - "
-				 "expected %ld", TEST_RETURN, expected_return);
-		}
-
-		/* Special case EFAULT or EINVAL (indetermination)
-
-		   The errno depends on the per architecture implementation
-		   of io_submit. On the architecture using compat_sys_io_submit
-		   as its implementation, errno is set to -EINVAL. */
-		{
-			long expected_fault = -EFAULT;
-			long expected_inval = -EINVAL;
-
-			TEST(io_submit(ctx, 0, (void *)-1));
-			if (TEST_RETURN == 0)
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-			else if (TEST_RETURN == expected_fault
-				   || TEST_RETURN == expected_inval) {
-				tst_resm(TPASS, "expected failure - "
-					 "returned value = %ld : %s",
-					 (-1 * TEST_RETURN),
-					 strerror(-1 * TEST_RETURN));
-			} else {
-				tst_resm(TFAIL,
-					 "unexpected returned value - %ld - "
-					 "expected %ld(%s) or %ld(%s)",
-					 TEST_RETURN, expected_fault,
-					 strerror(-1 * expected_fault),
-					 expected_inval,
-					 strerror(-1 * expected_inval));
-			}
-
-		}
-
-		/*
-		   EBADF  The file descriptor specified in the first iocb is invalid.
-		 */
-		expected_return = -EBADF;
-		io_prep_pread(&iocb, -1, (void *)buf, sizeof(buf), 0);
-		iocbs[0] = &iocb;
-		memset(&ctx, 0, sizeof(io_context_t));
+		/* 1.2 - EINVAL: invalid nr */
 		rval = io_setup(1, &ctx);
 		if (rval != 0)
 			tst_brkm(TBROK, cleanup, "io_setup failed: %d", rval);
+		TEST(io_submit(ctx, -1, NULL));
+		check_result(-EINVAL, TEST_RETURN);
 
+		/* 1.3 - EINVAL: uninitialized iocb */
+		iocbs[0] = &iocb;
 		TEST(io_submit(ctx, 1, iocbs));
+		check_result(-EINVAL, TEST_RETURN);
+
+		/* 2 - EFAULT: iocb points to invalid data */
+		TEST(io_submit(ctx, 1, (struct iocb **)-1));
+		check_result(-EFAULT, TEST_RETURN);
+
+		/*
+		 * 3 - Special case EFAULT or EINVAL (indetermination)
+		 *
+		 * The errno depends on the per architecture implementation
+		 * of io_submit. On the architecture using compat_sys_io_submit
+		 * as its implementation, errno is set to -EINVAL.
+		 */
+		TEST(io_submit(ctx, -1, (struct iocb **)-1));
 		if (TEST_RETURN == 0)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
-		else if (TEST_RETURN == expected_return) {
+		else if (TEST_RETURN == -EFAULT
+				|| TEST_RETURN == -EINVAL)
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %ld : %s", (-1 * TEST_RETURN),
-				 strerror(-1 * TEST_RETURN));
-		} else {
-			tst_resm(TFAIL, "unexpected returned value - %ld - "
-				 "expected %ld", TEST_RETURN, expected_return);
-		}
+					"returned value = %ld : %s",
+					TEST_RETURN, strerror(-1 * TEST_RETURN));
+		else
+			tst_resm(TFAIL, "unexpected failure - "
+					"returned value = %ld : %s, "
+					"expected = %d : %s or %d : %s",
+					TEST_RETURN, strerror(-1 * TEST_RETURN),
+					-EFAULT, strerror(EFAULT),
+					-EINVAL, strerror(EINVAL));
+
+		/*
+		 * 4 - EBADF: fd in iocb is invalid
+		 */
+		io_prep_pread(&iocb, -1, buf, sizeof(buf), 0);
+		iocbs[0] = &iocb;
+		TEST(io_submit(ctx, 1, iocbs));
+		check_result(-EBADF, TEST_RETURN);
+
+		/* 5 - Positive test: nr == 0 */
+		TEST(io_submit(ctx, 0, NULL));
+		check_result(0, TEST_RETURN);
+
+		/* 6 - Positive test: valid fd */
+		fd = open(TESTFILE, O_RDONLY);
+		if (fd == -1)
+			tst_resm(TBROK|TERRNO, "open");
+		io_prep_pread(&iocb, fd, buf, sizeof(buf), 0);
+		iocbs[0] = &iocb;
+		TEST(io_submit(ctx, 1, iocbs));
+		check_result(1, TEST_RETURN);
+		if (close(fd) == -1)
+			tst_resm(TBROK|TERRNO, "close");
+
 	}
 	cleanup();
 
