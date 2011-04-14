@@ -299,11 +299,11 @@ int main(int argc, char *argv[])
 	memset(&sigusr_action, 0, sizeof(sigusr_action));
 
 	/* TODO: add error handling below. */
-	sigemptyset(&sigusr_action.sa_mask);
+	sigemptyset(&sigint_action.sa_mask);
 	sigint_action.sa_handler = &sigint_handler;
 	sigaction(SIGINT, &sigint_action, NULL);
 
-	sigemptyset(&sigint_action.sa_mask);
+	sigemptyset(&sigusr_action.sa_mask);
 	sigusr_action.sa_handler = &sigusr_handler;
 	sigaction(SIGUSR1, &sigusr_action, NULL);
 
