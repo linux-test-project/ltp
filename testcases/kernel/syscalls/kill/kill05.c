@@ -206,9 +206,7 @@ void do_master_child(char **av)
 
 void do_child()
 {
-	pid_t my_pid;
 
-	my_pid = getpid();
 	while (1) {
 		if (*flag == 1)
 			exit(0);
