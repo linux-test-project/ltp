@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	nnodes = count_numa();
-	if (count_numa() == 1)
+	if (count_numa() <= 1)
 		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();
