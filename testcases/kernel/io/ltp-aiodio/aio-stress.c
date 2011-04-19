@@ -161,16 +161,16 @@ struct io_oper {
     /* read,write, random, etc */
     int rw;
 
-    /* number of ios that will get sent to aio */
+    /* number of I/O that will get sent to aio */
     int total_ios;
 
-    /* number of ios we've already sent */
+    /* number of I/O we've already sent */
     int started_ios;
 
     /* last offset used in an io operation */
     off_t last_offset;
 
-    /* stonewalled = 1 when we got cut off before submitting all our ios */
+    /* stonewalled = 1 when we got cut off before submitting all our I/O */
     int stonewalled;
 
     /* list management */
@@ -217,7 +217,7 @@ struct thread_info {
     /* list of io units available for io */
     struct io_unit *free_ious;
 
-    /* number of io units in the ios array */
+    /* number of io units in the I/O array */
     int num_global_ios;
 
     /* number of io units in flight */
@@ -745,7 +745,7 @@ resubmit:
     calc_latency(&start_time, &stop_time, &t->io_submit_latency);
 
     if (ret != num_ios) {
-	/* some ios got through */
+	/* some I/O got through */
 	if (ret > 0) {
 	    update_iou_counters(my_iocbs, ret, &stop_time);
 	    my_iocbs += ret;
@@ -1165,7 +1165,7 @@ restart:
 
     if (t->stage_mb_trans && t->num_files > 0) {
         double seconds = time_since_now(&stage_time);
-	fprintf(stderr, "thread %d %s totals (%.2f MB/s) %.2f MB in %.2fs\n",
+	fprintf(stderr, "thread %td %s totals (%.2f MB/s) %.2f MB in %.2fs\n",
 	        t - global_thread_info, this_stage, t->stage_mb_trans/seconds,
 		t->stage_mb_trans, seconds);
     }
@@ -1270,8 +1270,10 @@ void print_usage(void) {
     printf("\t-s size in MB of the test file(s), default 1024MB\n");
     printf("\t-r record size in KB used for each io, default 64KB\n");
     printf("\t-d number of pending aio requests for each file, default 64\n");
-    printf("\t-i number of ios per file sent before switching\n\t   to the next file, default 8\n");
-    printf("\t-I total number of ayncs IOs the program will run, default is run until Cntl-C\n");
+    printf("\t-i number of I/O per file sent before switching\n"
+	    "\t   to the next file, default 8\n");
+    printf("\t-I total number of ayncs I/O the program will run, "
+	    "default is run until Cntl-C\n");
     printf("\t-O Use O_DIRECT (not available in 2.4 kernels),\n");
     printf("\t-S Use O_SYNC for writes\n");
     printf("\t-o add an operation to the list: write=0, read=1,\n");
@@ -1391,7 +1393,7 @@ int main(int ac, char **av)
     }
 
     /*
-     * make sure we don't try to submit more ios than we have allocated
+     * make sure we don't try to submit more I/O than we have allocated
      * memory for
      */
     if (depth < io_iter) {
@@ -1426,7 +1428,7 @@ int main(int ac, char **av)
         max_io_submit = num_files * io_iter * num_contexts;
 
     /*
-     * make sure we don't try to submit more ios than max_io_submit allows
+     * make sure we don't try to submit more I/O than max_io_submit allows
      */
     if (max_io_submit < io_iter) {
         io_iter = max_io_submit;
@@ -1446,17 +1448,21 @@ int main(int ac, char **av)
     }
 
     if (file_size < num_contexts * context_offset) {
-        fprintf(stderr, "file size %Lu too small for %d contexts\n",
-	        file_size, num_contexts);
+        fprintf(stderr, "file size %ld too small for %d contexts\n",
+	        (long)file_size, num_contexts);
 	exit(1);
     }
 
-    fprintf(stderr, "file size %LuMB, record size %luKB, depth %d, ios per iteration %d\n", file_size / (1024 * 1024), rec_len / 1024, depth, io_iter);
+    fprintf(stderr, "file size %ldMB, record size %ldKB, depth %d, "
+	    "I/O per iteration %d\n",
+	    (long)(file_size / (1024 * 1024)),
+	    rec_len / 1024, depth, io_iter);
     fprintf(stderr, "max io_submit %d, buffer alignment set to %luKB\n",
             max_io_submit, (page_size_mask + 1)/1024);
-    fprintf(stderr, "threads %d files %d contexts %d context offset %LuMB verification %s\n",
-            num_threads, num_files, num_contexts,
-	    context_offset / (1024 * 1024), verify ? "on" : "off");
+    fprintf(stderr, "threads %d files %d contexts %d context offset %ldMB "
+	    "verification %s\n", num_threads, num_files, num_contexts,
+	    (long)(context_offset / (1024 * 1024)),
+	    verify ? "on" : "off");
     /* open all the files and do any required setup for them */
     for (i = optind ; i < ac ; i++) {
 	int thread_index;
