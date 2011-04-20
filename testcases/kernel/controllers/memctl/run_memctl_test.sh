@@ -105,15 +105,6 @@ case ${TEST_NUM} in
 	MEM_TOTAL=`expr $MEM_TASK \* $TOTAL_TASKS`;	# total memory allocated in a group
 	TEST_NAME=" TASK MIGRATION TEST:";
 	;;
-"3" )
-	NUM_GROUPS=1;
-	MEMLIMIT_GROUP_1=50M;				# MEM_TASK > MEMLIMIT_GROUP_1
-	CHUNK_SIZE=6291456;				# malloc n chunks of size m(6M)
-	NUM_CHUNKS=10;					# (say)60 MB memory(6*10)
-	TOTAL_TASKS=1;					# num of tasks in a group(1)
-	MEM_TASK=`expr $CHUNK_SIZE \* $NUM_CHUNKS`;	# memory allocated by a task
-	TEST_NAME=" FAILCNT CHECK TEST:";
-	;;
 *  )	usage;
 	exit -1
 		;;
@@ -242,53 +233,6 @@ case $TEST_NUM in
 	fi;
 	;;
 
-"3" )
-	setmemlimits;
-	if [ -f memctl_test01 ]
-	then
-		MYGROUP=/dev/memctl/group_1;
-		cp memctl_test01 memctl_task_1 # 2>/dev/null;
-		chmod +x memctl_task_1;
-		TEST_NUM=$TEST_NUM MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID CHUNK_SIZE=$CHUNK_SIZE \
-			NUM_CHUNKS=$NUM_CHUNKS ./memctl_task_$i &
-		if [ $? -ne 0 ]
-		then
-			echo "Error: Could not run ./memctl_task_1"
-			cleanup;
-			exit -1;
-		else
-			PID[1]=$!;
-		fi
-
-		# Wait untill tasks allocate memory from group1
-		while [ 1 -gt 0 ]
-		do
-			sleep 1;
-			GRP1_MEMUSAGE=`cat /dev/memctl/group_1/memory.usage_in_bytes`;
-			MEMLIMIT_GROUP_1=`echo $MEMLIMIT_GROUP_1 | cut -d"M" -f1`;
-			if [ $GRP1_MEMUSAGE -gt $MEMLIMIT_GROUP_1 ]
-			then
-				break;
-			fi
-		done
-		# now memory.usage_in_bytes > memory.limit_in_bytes
-		# hence memory.failcnt should be greater than 0
-		FAILCNT=`cat /dev/memctl/group_1/memory.failcnt`;
-		if [ $FAILCNT -gt 0 ]
-		then
-			# Now we can signal the task to finish and do the cleanup
-			echo failcnt = $FAILCNT;
-			kill -SIGUSR1 ${PID[1]};
-			echo "TPASS   Memory Resource Controller: failcnt check test PASSED";
-		else
-			echo "TFAIL   Memory Resource Controller: failcnt check test FAILED";
-		fi;
-	else
-		echo "Source file not compiled..Please check Makefile...Exiting test"
-		cleanup;
-		exit -1;
-	fi;
-		;;
 	"*" )
 		usage;
 		exit -1;
