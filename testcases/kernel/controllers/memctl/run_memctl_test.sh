@@ -158,6 +158,12 @@ case $TEST_NUM in
 		echo Before task migration to group2
 		echo group2 memory usage: $GRP2_MEMUSAGE_OLD Bytes
 
+		# We do not want to migrate charges during migration
+		if [ -f "/dev/memctl/group_2/memory.move_charge_at_immigrate" ]
+		then
+			echo 0 > /dev/memctl/group_2/memory.move_charge_at_immigrate
+		fi
+
 		# Now migrate the tasks to another group
 		for i in $(seq 1 $NUM_MIG_TASKS)
 		do
