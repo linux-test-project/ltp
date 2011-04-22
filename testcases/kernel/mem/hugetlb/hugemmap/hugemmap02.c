@@ -62,10 +62,8 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "system_specific_hugepages_info.h"
 
-#define PAGE_SIZE      ((1UL) << 12) 	/* Normal page size */
-#define HPAGE_SIZE     ((1UL) << 24) 	/* Huge page size */
-#define MAP_SIZE       (2*HPAGE_SIZE) 	/* Huge map page size */
 #define LOW_ADDR       (void *)(0x80000000)
 #define LOW_ADDR2      (void *)(0x90000000)
 
@@ -95,6 +93,7 @@ main(int ac, char **av)
 	int lc;
 	char *msg;
         int Hflag = 0;
+	int page_sz, map_sz;
 
        	option_t options[] = {
         	{ "H:",   &Hflag, &Hopt },    /* Required for location of hugetlbfs */
@@ -109,6 +108,9 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL,
 		    "-H option is REQUIRED for this test, use -h for options help");
 	}
+
+	page_sz = getpagesize();
+	map_sz = 2 * 1024 * hugepages_size();
 
 	setup();
 
@@ -138,14 +140,14 @@ main(int ac, char **av)
 
 		/* mmap using normal pages and a low memory address */
 		errno = 0;
-		addr = mmap(LOW_ADDR, PAGE_SIZE, PROT_READ,
+		addr = mmap(LOW_ADDR, page_sz, PROT_READ,
 			    MAP_SHARED | MAP_FIXED, nfildes, 0);
 		if (addr == MAP_FAILED)
 			tst_brkm(TBROK, cleanup,"mmap failed on nfildes");
 
 		/* Attempt to mmap a huge page into a low memory address */
 		errno = 0;
-		addr2 = mmap(LOW_ADDR2, MAP_SIZE, PROT_READ | PROT_WRITE,
+		addr2 = mmap(LOW_ADDR2, map_sz, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
 
 #if __WORDSIZE == 64 /* 64-bit process */
@@ -177,11 +179,11 @@ main(int ac, char **av)
         	}
 
 #if __WORDSIZE == 64
-		if (munmap(addr2, MAP_SIZE) == -1) {
+		if (munmap(addr2, map_sz) == -1) {
 			tst_brkm(TFAIL|TERRNO, NULL, "huge munmap failed");
 		}
 #endif
-		if (munmap(addr, PAGE_SIZE) == -1) {
+		if (munmap(addr, page_sz) == -1) {
 			tst_brkm(TFAIL|TERRNO, NULL, "munmap failed");
 		}
 
