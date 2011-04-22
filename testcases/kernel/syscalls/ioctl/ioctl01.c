@@ -49,11 +49,11 @@
  *      test may have to be run as root depending on the tty permissions
  */
 
-#include <stdio.h>
-#include <sys/termios.h>
-#include <termio.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <termio.h>
+#include <termios.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -71,7 +71,6 @@ int exp_enos[] = { EBADF, EFAULT, EINVAL, ENOTTY, EFAULT, 0 };
 int fd, fd1;
 int bfd = -1;
 
-char *tty;
 struct termio termio;
 
 struct test_case_t {
@@ -123,10 +122,8 @@ int main(int ac, char **av)
 
 	setup();
 
-	if ((fd = open(devname, O_RDWR, 0777)) < 0) {
-		tst_brkm(TBROK, cleanup, "Couldn't open %s, errno = %d",
-			 tty, errno);
-	}
+	if ((fd = open(devname, O_RDWR, 0777)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't open %s", devname);
 
 	TEST_EXP_ENOS(exp_enos);
 
@@ -146,15 +143,12 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - "
-					 "errno = %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "unexpected error - %d : %s - "
-					 "expected %d", TEST_ERRNO,
-					 strerror(TEST_ERRNO), TC[i].error);
-			}
+			if (TEST_ERRNO == TC[i].error)
+				tst_resm(TPASS|TTERRNO, "failed as expected");
+			else
+				tst_resm(TFAIL|TTERRNO,
+				    "failed unexpectedly; expected %d - %s",
+				    TC[i].error, strerror(TC[i].error));
 		}
 	}
 	cleanup();
@@ -168,14 +162,14 @@ int main(int ac, char **av)
  */
 void help()
 {
+
 	printf("  -D <tty device> : for example, /dev/tty[0-9]\n");
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
-{
+void setup(void) {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -185,17 +179,16 @@ void setup()
 	tst_tmpdir();
 
 	/* create a temporary file */
-	if ((fd1 = open("x", O_CREAT, 0777)) < 0) {
-		tst_resm(TFAIL, "Could not open test file, errno = %d", errno);
-	}
+	if ((fd1 = open("x", O_CREAT, 0777)) == -1)
+		tst_resm(TFAIL|TERRNO, "Could not open test file");
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
-{
+void cleanup(void) {
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
@@ -206,5 +199,4 @@ void cleanup()
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();
-
 }
