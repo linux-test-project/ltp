@@ -43,7 +43,7 @@ if (!defined($dir)) {
 	push @ERRORS, "Failed to create a temporary directory: $!\n";
 	printerr();
 }
-if (chmod(0777, $dir) != 0) {
+if (chmod(0777, $dir) == 0) {
 	push @ERRORS, "Failed to change mode for temporary directory: $!\n";
 	printerr();
 }
