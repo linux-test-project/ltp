@@ -59,6 +59,7 @@
 #define MPOL_MF_WAIT    (1<<2)  /* Wait for existing pages to migrate */
 #endif
 
+#if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
 static inline int nodemask_isset(nodemask_t *mask, int node)
 {
 	if ((unsigned)node >= NUMA_NUM_NODES)
@@ -74,6 +75,7 @@ static inline void nodemask_set(nodemask_t *mask, int node)
 	mask->n[node / (8*sizeof(unsigned long))] |=
 		(1UL<<(node%(8*sizeof(unsigned long))));
 }
+#endif
 
 static char *whitespace = " \t";
 

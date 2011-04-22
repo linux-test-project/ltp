@@ -45,6 +45,8 @@ int TST_TOTAL = 1;
 #include <string.h>
 #include <errno.h>
 
+#if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
+
 static unsigned long pagesize;
 static int opt_node;
 static char *opt_nodestr;
@@ -138,7 +140,12 @@ void usage(void)
 {
 	printf("  -n      Number of NUMA nodes\n");
 }
-
+#else /* libnuma v1 */
+int main(void) {
+	tst_brkm(TCONF, "XXX: test is only supported on libnuma v2.");
+	tst_exit();
+}
+#endif
 #else /* no NUMA */
 int main(void) {
 	tst_resm(TCONF, "no NUMA development packages installed.");
