@@ -20,7 +20,6 @@ top_srcdir		?= ../../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
-LDLIBS			+= -lmm
 LIBDIR			:= lib
 LIB			:= $(LIBDIR)/libipc_hugetlb.a
 FILTER_OUT_DIRS		:= $(LIBDIR)
@@ -36,6 +35,6 @@ MAKE_DEPS		:= $(LIB)
 trunk-clean:: | lib-clean
 
 lib-clean:: $(LIBDIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean 
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
