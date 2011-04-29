@@ -130,9 +130,11 @@ EOF
 
 		cat > "$makefile.3" <<EOF
 all: \$(MAKE_TARGETS)
+	@if [ -d speculative ]; then \$(MAKE) -C speculative all; fi
 
 clean:
 	rm -f \$(MAKE_TARGETS) logfile* run.sh *.core
+	@if [ -d speculative ]; then \$(MAKE) -C speculative clean; fi
 
 install: \$(INSTALL_DIR) run.sh
 	set -e; for file in \$(INSTALL_TARGETS) run.sh; do	\\
@@ -141,6 +143,7 @@ install: \$(INSTALL_DIR) run.sh
 				\$(INSTALL_DIR)/\$\$file;	\\
 		fi;						\\
 	done
+	@if [ -d speculative ]; then \$(MAKE) -C speculative install; fi
 
 test: run.sh
 	@./run.sh
