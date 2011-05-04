@@ -130,6 +130,16 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
+void wait_for_flag(int value)
+{
+	while (1) {
+		if (*flag == value)
+			break;
+		else
+			sleep(1);
+	}
+}
+
 /*
  * do_master_child()
  */
@@ -160,6 +170,7 @@ void do_master_child(char **av)
 			perror("setreuid failed (in child)");
 			exit(1);
 		}
+		*flag = 1;
 #ifdef UCLINUX
 		if (self_exec(av[0], "") < 0) {
 			perror("self_exec failed");
@@ -175,10 +186,13 @@ void do_master_child(char **av)
 		exit(1);
 	}
 
+	/* wait until child sets its euid */
+	wait_for_flag(1);
+
 	TEST(kill(pid1, TEST_SIG));
 
 	/* signal the child that we're done */
-	*flag = 1;
+	*flag = 2;
 
 	if (waitpid(pid1, &status, 0) == -1) {
 		perror("waitpid failed");
@@ -204,13 +218,8 @@ void do_master_child(char **av)
 
 void do_child()
 {
-
-	while (1) {
-		if (*flag == 1)
-			exit(0);
-		else
-			sleep(1);
-	}
+	wait_for_flag(2);
+	exit(0);
 }
 
 void setup(void)
