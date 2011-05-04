@@ -22,8 +22,6 @@
 
 
 # Default stuff common to all testcases
-#
-# THIS IS NOT TO BE INCLUDED WITH lib!!!
 
 realtime_reldir		:= testcases/realtime
 
@@ -31,6 +29,7 @@ realtime_builddir	:= $(abs_top_builddir)/$(realtime_reldir)
 realtime_srcdir		:= $(abs_top_srcdir)/$(realtime_reldir)
 
 CPPFLAGS		+= -I$(realtime_srcdir)/include
+CPPFLAGS		+= -I$(realtime_builddir)/include
 CFLAGS			+= -D_GNU_SOURCE
 LDLIBS			+= -lrealtime -lpthread -lrt -lm
 LDFLAGS			+= -L$(realtime_builddir)/lib
