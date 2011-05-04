@@ -142,13 +142,11 @@ void usage(void)
 }
 #else /* libnuma v1 */
 int main(void) {
-	tst_brkm(TCONF, "XXX: test is only supported on libnuma v2.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "XXX: test is only supported on libnuma v2.");
 }
 #endif
 #else /* no NUMA */
 int main(void) {
-	tst_resm(TCONF, "no NUMA development packages installed.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
 }
 #endif
