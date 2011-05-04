@@ -394,7 +394,11 @@ get_arg_nodeid_list(char *args, unsigned int *list)
 	int         node, count = 0;
 
         gcp = &glctx;
-        my_allowed_nodes = numa_get_membind_compat();
+#if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
+	my_allowed_nodes = numa_get_membind_compat();
+#else
+	my_allowed_nodes = numa_get_membind();
+#endif
 	while (*args != '\0') {
 		if (!isdigit(*args)) {
 			fprintf(stderr, "%s:  expected digit for <node/list>\n",
@@ -452,7 +456,11 @@ get_current_nodeid_list(unsigned int *fromids)
 	int        node;
 
         gcp = &glctx;
-        my_allowed_nodes = numa_get_membind_compat();
+#if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
+	my_allowed_nodes = numa_get_membind_compat();
+#else
+	my_allowed_nodes = numa_get_membind();
+#endif
 	for (node=0; node <= max_node; ++node) {
 		if (nodemask_isset(&my_allowed_nodes, node))
 			*(fromids + nr_nodes++) = node;
