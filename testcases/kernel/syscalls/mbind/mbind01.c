@@ -405,7 +405,7 @@ int main(int argc, char **argv) {
 }
 #else /* libnuma v2 */
 int main(void) {
-	tst_resm(TBROK, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
+	tst_resm(TCONF, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
 	tst_exit();
 }
 #endif
