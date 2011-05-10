@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 			if (errno != ENOSYS)
 				tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
 			else
-				tst_resm(TCONF, cleanup,
+				tst_brkm(TCONF, cleanup,
 					"set_mempolicy syscall is not implemented on your system.");
 		}
 		create_same_memory(size, num, unit);
