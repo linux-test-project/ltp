@@ -167,6 +167,10 @@ void setup()
 
 	tst_require_root(NULL);
 
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	tst_tmpdir();
+
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "getpwnam(\"nobody\") failed");
@@ -176,10 +180,6 @@ void setup()
 	if (seteuid(ltpuser->pw_uid) == -1)
 		tst_brkm(TBROK|TERRNO, NULL, "seteuid(%d) failed",
 		    ltpuser->pw_uid);
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	tst_tmpdir();
 
 	/* Create a test file under temporary directory */
 	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1)
