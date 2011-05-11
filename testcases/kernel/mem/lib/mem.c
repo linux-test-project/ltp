@@ -358,6 +358,10 @@ void create_same_memory(int size, int num, int unit)
 	int i, j, k;
 	int status, fd;
 	int *child;
+	long ps, pages;
+
+	ps = sysconf(_SC_PAGE_SIZE);
+	pages = 1024 * 1024 / ps;
 
 	child = malloc(num);
 	if (child == NULL)
@@ -558,7 +562,7 @@ void create_same_memory(int size, int num, int unit)
 		tst_brkm(TBROK|TERRNO, cleanup, "write");
 	close(fd);
 	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, "pages_to_scan");
-	snprintf(buf2, BUFSIZ, "%d", size * 256 * num);
+	snprintf(buf2, BUFSIZ, "%ld", size * pages * num);
 	fd = open(buf, O_WRONLY);
 	if (fd == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "open");
@@ -587,7 +591,7 @@ void create_same_memory(int size, int num, int unit)
 		if (kill(child[k], SIGCONT) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "kill child[%d]", k);
 	}
-	group_check(1, 2, size * num * 256 - 2, 0, 0, 0, size * 256 * num);
+	group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
@@ -599,7 +603,7 @@ void create_same_memory(int size, int num, int unit)
 	tst_resm(TINFO, "resume child 1.");
 	if (kill(child[1], SIGCONT) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "kill");
-	group_check(1, 3, size * num * 256 - 3, 0, 0, 0, size * 256 * num);
+	group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
@@ -613,7 +617,7 @@ void create_same_memory(int size, int num, int unit)
 		if (kill(child[k], SIGCONT) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "kill child[%d]", k);
 	}
-	group_check(1, 1, size * num * 256 - 1, 0, 0, 0, size * 256 * num);
+	group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
@@ -627,7 +631,7 @@ void create_same_memory(int size, int num, int unit)
 	tst_resm(TINFO, "resume child 1.");
 	if (kill(child[1], SIGCONT) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "kill");
-	group_check(1, 1, size * num * 256 - 2, 0, 1, 0, size * 256 * num);
+	group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
@@ -647,7 +651,7 @@ void create_same_memory(int size, int num, int unit)
 		tst_brkm(TBROK|TERRNO, cleanup, "open");
 	if (write(fd, "2", 1) != 1)
 		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	group_check(2, 0, 0, 0, 0, 0, size * 256 * num);
+	group_check(2, 0, 0, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
@@ -668,7 +672,7 @@ void create_same_memory(int size, int num, int unit)
 	if (write(fd, "0", 1) != 1)
 		tst_brkm(TBROK|TERRNO, cleanup, "write");
 	close(fd);
-	group_check(0, 0, 0, 0, 0, 0, size * 256 * num);
+	group_check(0, 0, 0, 0, 0, 0, size * pages * num);
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0)
 		if (WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child exit status is %d",
