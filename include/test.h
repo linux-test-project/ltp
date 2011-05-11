@@ -189,7 +189,7 @@ void tst_resm(int ttype, char *arg_fmt, ...)
 void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	__attribute__ ((format (printf, 4, 5)));
 void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
-	__attribute__ ((format (printf, 3, 4)));
+	__attribute__ ((format (printf, 3, 4))) LTP_ATTRIBUTE_NORETURN;
 void tst_require_root(void (*func)(void));
 int  tst_environ(void);
 void tst_exit(void) LTP_ATTRIBUTE_NORETURN;
