@@ -265,7 +265,7 @@ test02()
     if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
-		"Test #2: uncompressing directory $LTPTMP/tst_gzip.tmp failed.  Reason"
+		"Test #2: compressing directory $LTPTMP/tst_gzip.tmp failed.  Reason"
 		return $RC
 	fi
 
