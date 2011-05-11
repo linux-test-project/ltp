@@ -295,16 +295,17 @@ int main(int argc, char *argv[])
 	if ((fd = open("/dev/zero", O_RDWR)) == -1)
 		err(1, "open /dev/zero failed");
 
-	/* TODO: writer error handling here. */
+	memset(&sigint_action, 0, sizeof(sigint_action));
+	memset(&sigusr_action, 0, sizeof(sigusr_action));
+
+	/* TODO: add error handling below. */
 	sigemptyset(&sigint_action.sa_mask);
 	sigint_action.sa_handler = &sigint_handler;
 	sigaction(SIGINT, &sigint_action, NULL);
 
-	sigemptyset(&sigint_action.sa_mask);
+	sigemptyset(&sigusr_action.sa_mask);
 	sigusr_action.sa_handler = &sigusr_handler;
 	sigaction(SIGUSR1, &sigusr_action, NULL);
-
-	sigemptyset(&sigusr_action.sa_mask);
 
 	process_options(argc, argv);
 

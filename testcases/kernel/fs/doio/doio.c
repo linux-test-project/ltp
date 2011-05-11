@@ -86,6 +86,116 @@
 #include "write_log.h"
 #include "random_range.h"
 #include "string_to_tokens.h"
+#include "pattern.h"
+
+#define	NMEMALLOC	32
+#define	MEM_DATA	1	/* data space 				*/
+#define	MEM_SHMEM	2	/* System V shared memory 		*/
+#define	MEM_T3ESHMEM	3	/* T3E Shared Memory 			*/
+#define	MEM_MMAP	4	/* mmap(2) 				*/
+
+#define	MEMF_PRIVATE	0001
+#define	MEMF_AUTORESRV	0002
+#define	MEMF_LOCAL	0004
+#define	MEMF_SHARED	0010
+
+#define	MEMF_FIXADDR	0100
+#define	MEMF_ADDR	0200
+#define	MEMF_AUTOGROW	0400
+#define	MEMF_FILE	01000	/* regular file -- unlink on close	*/
+#define	MEMF_MPIN	010000	/* use mpin(2) to lock pages in memory */
+
+struct memalloc {
+	int	memtype;
+	int	flags;
+	int	nblks;
+	char	*name;
+	void	*space;		/* memory address of allocated space */
+	int	fd;		/* FD open for mmaping */
+	int	size;
+}	Memalloc[NMEMALLOC];
+
+/*
+ * Structure for maintaining open file test descriptors.  Used by
+ * alloc_fd().
+ */
+
+struct fd_cache {
+	char    c_file[MAX_FNAME_LENGTH+1];
+	int	c_oflags;
+	int	c_fd;
+	long    c_rtc;
+#ifdef sgi
+	int	c_memalign;	/* from F_DIOINFO */
+	int	c_miniosz;
+	int	c_maxiosz;
+#endif
+#ifndef CRAY
+	void	*c_memaddr;	/* mmapped address */
+	int	c_memlen;	/* length of above region */
+#endif
+};
+
+/*
+ * Name-To-Value map
+ * Used to map cmdline arguments to values
+ */
+struct smap {
+	char    *string;
+	int	value;
+};
+
+struct aio_info {
+	int			busy;
+	int			id;
+	int			fd;
+	int			strategy;
+	volatile int		done;
+#ifdef CRAY
+	struct iosw		iosw;
+#endif
+#ifdef sgi
+	aiocb_t			aiocb;
+	int			aio_ret;	/* from aio_return */
+	int			aio_errno;	/* from aio_error */
+#endif
+	int			sig;
+	int			signalled;
+	struct sigaction	osa;
+};
+
+/* ---------------------------------------------------------------------------
+ *
+ * A new paradigm of doing the r/w system call where there is a "stub"
+ * function that builds the info for the system call, then does the system
+ * call; this is called by code that is common to all system calls and does
+ * the syscall return checking, async I/O wait, iosw check, etc.
+ *
+ * Flags:
+ *	WRITE, ASYNC, SSD/SDS,
+ *	FILE_LOCK, WRITE_LOG, VERIFY_DATA,
+ */
+
+struct	status {
+	int	rval;		/* syscall return */
+	int	err;		/* errno */
+	int	*aioid;		/* list of async I/O structures */
+};
+
+struct syscall_info {
+	char		*sy_name;
+	int		sy_type;
+	struct status	*(*sy_syscall)();
+	int		(*sy_buffer)();
+	char		*(*sy_format)();
+	int		sy_flags;
+	int		sy_bits;
+};
+
+#define	SY_WRITE		00001
+#define	SY_ASYNC		00010
+#define	SY_IOSW			00020
+#define	SY_SDS			00100
 
 #ifndef O_SSD
 #define O_SSD 0	    	/* so code compiles on a CRAY2 */
@@ -173,60 +283,12 @@ int	havesigint = 0;
 
 #define SKIP_REQ	-2	/* skip I/O request */
 
-#define	NMEMALLOC	32
-#define	MEM_DATA	1	/* data space 				*/
-#define	MEM_SHMEM	2	/* System V shared memory 		*/
-#define	MEM_T3ESHMEM	3	/* T3E Shared Memory 			*/
-#define	MEM_MMAP	4	/* mmap(2) 				*/
-
-#define	MEMF_PRIVATE	0001
-#define	MEMF_AUTORESRV	0002
-#define	MEMF_LOCAL	0004
-#define	MEMF_SHARED	0010
-
-#define	MEMF_FIXADDR	0100
-#define	MEMF_ADDR	0200
-#define	MEMF_AUTOGROW	0400
-#define	MEMF_FILE	01000	/* regular file -- unlink on close	*/
-#define MEMF_MPIN	010000	/* use mpin(2) to lock pages in memory */
-
-struct memalloc {
-	int	memtype;
-	int	flags;
-	int	nblks;
-	char	*name;
-	void	*space;		/* memory address of allocated space */
-	int	fd;		/* FD open for mmaping */
-	int	size;
-}	Memalloc[NMEMALLOC];
-
 /*
  * Global file descriptors
  */
 
 int 	Wfd_Append; 	    /* for appending to the write-log	    */
 int 	Wfd_Random; 	    /* for overlaying write-log entries	    */
-
-/*
- * Structure for maintaining open file test descriptors.  Used by
- * alloc_fd().
- */
-
-struct fd_cache {
-	char    c_file[MAX_FNAME_LENGTH+1];
-	int	c_oflags;
-	int	c_fd;
-	long    c_rtc;
-#ifdef sgi
-	int	c_memalign;	/* from F_DIOINFO */
-	int	c_miniosz;
-	int	c_maxiosz;
-#endif
-#ifndef CRAY
-	void	*c_memaddr;	/* mmapped address */
-	int	c_memlen;	/* length of above region */
-#endif
-};
 
 #define FD_ALLOC_INCR	32      /* allocate this many fd_map structs	*/
 				/* at a time */
@@ -250,42 +312,158 @@ int	Pattern_Length;
  * Signal handlers, and related globals
  */
 
-void	sigint_handler();	/* Catch SIGINT in parent doio, propagate
-				 * to children, does not die. */
+char		*syserrno(int err);
+void		doio(void);
+void		doio_delay(void);
+char		*format_oflags(int oflags);
+char		*format_strat(int strategy);
+char		*format_rw(struct io_req *ioreq, int fd, void *buffer,
+			int signo, char *pattern, void *iosw);
+#ifdef CRAY
+char		*format_sds(struct io_req *ioreq, void *buffer, int sds
+			char *pattern);
+#endif /* CRAY */
 
-void	die_handler();		/* Bad sig in child doios, exit 1. */
-void	cleanup_handler();	/* Normal kill, exit 0. */
+int		do_read(struct io_req *req);
+int		do_write(struct io_req *req);
+int		lock_file_region(char *fname, int fd, int type, int start,
+			int nbytes);
+
+#ifdef CRAY
+char		*format_listio(struct io_req *ioreq, int lcmd,
+			struct listreq *list, int nent, int fd, char *pattern);
+#endif /* CRAY */
+
+int		do_listio(struct io_req *req);
+
+#if defined(_CRAY1) || defined(CRAY)
+int		do_ssdio(struct io_req *req);
+#endif /* defined(_CRAY1) || defined(CRAY) */
+
+char		*fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy,
+			int fd);
+
+#ifdef CRAY
+struct status	*sy_listio(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+int		listio_mem(struct io_req *req, int offset, int fmstride,
+			int *min, int *max);
+char		*fmt_listio(struct io_req *req, struct syscall_info *sy,
+			int fd, char *addr);
+#endif /* CRAY */
+
+#ifdef sgi
+struct status	*sy_pread(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+struct status	*sy_pwrite(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+char		*fmt_pread(struct io_req *req, struct syscall_info *sy,
+			int fd, char *addr);
+#endif	/* sgi */
 
 #ifndef CRAY
-void	sigbus_handler();	/* Handle sigbus--check active_mmap_rw to
-				   decide if this should be a normal exit. */
-#endif
+struct status	*sy_readv(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+struct status	*sy_writev(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+struct status	*sy_rwv(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr, int rw);
+char		*fmt_readv(struct io_req *req, struct syscall_info *sy,
+			int fd, char *addr);
+#endif /* !CRAY */
 
-void	cb_handler();		/* Posix aio callback handler. */
-void	noop_handler();		/* Delayop alarm, does nothing. */
-char	*hms();
-char	*format_rw();
-char	*format_sds();
-char	*format_listio();
-char	*check_file();
-int	doio_fprintf(FILE *stream, char *format, ...);
-void	doio_upanic();
-void	doio();
-void	help();
-void	doio_delay();
-int     alloc_fd( char *, int );
-int     alloc_mem( int );
-int     do_read( struct io_req * );
-int     do_write( struct io_req * );
-int     do_rw( struct io_req * );
-int     do_sync( struct io_req * );
-int     usage( FILE * );
-int     aio_unregister( int );
-int	pattern_check(char *buf, int buflen, char *pat, int patlen, int patshift);
-int	pattern_fill(char *buf, int buflen, char *pat, int patlen, int patshift);
-int     parse_cmdline( int, char **, char * );
-int     lock_file_region( char *, int, int, int, int );
-struct	fd_cache *alloc_fdcache(char *, int);
+#ifdef sgi
+struct status	*sy_aread(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+struct status	*sy_awrite(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr)
+struct status	*sy_arw(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr, int rw);
+char		*fmt_aread(struct io_req *req, struct syscall_info *sy,
+			int fd, char *addr);
+#endif /* sgi */
+
+#ifndef CRAY
+struct status	*sy_mmread(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+struct status	*sy_mmwrite(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+struct status	*sy_mmrw(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr, int rw);
+char		*fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd,
+			char *addr);
+#endif /* !CRAY */
+
+int		do_rw(struct io_req *req);
+
+#ifdef sgi
+int		do_fcntl(struct io_req *req);
+#endif /* sgi */
+
+#ifndef CRAY
+int		do_sync(struct io_req *req);
+#endif /* !CRAY */
+
+int		doio_pat_fill(char *addr, int mem_needed, char *Pattern,
+			int Pattern_Length, int shift);
+char		*doio_pat_check(char *buf, int offset, int length,
+			char *pattern, int pattern_length, int patshift);
+char		*check_file(char *file, int offset, int length, char *pattern,
+			int pattern_length, int patshift, int fsa);
+int		doio_fprintf(FILE *stream, char *format, ...);
+int		alloc_mem(int nbytes);
+
+#if defined(_CRAY1) || defined(CRAY)
+int		alloc_sds(int nbytes);
+#endif /* defined(_CRAY1) || defined(CRAY) */
+
+int		alloc_fd(char *file, int oflags);
+struct fd_cache	*alloc_fdcache(char *file, int oflags);
+
+#ifdef sgi
+void		signal_info(int sig, siginfo_t *info, void *v);
+void		cleanup_handler(int sig, siginfo_t *info, void *v);
+void		die_handler(int sig, siginfo_t *info, void *v);
+void		sigbus_handler(int sig, siginfo_t *info, void *v);
+#else	/* !sgi */
+void		cleanup_handler(int sig);
+void		die_handler(int sig);
+
+#ifndef CRAY
+void		sigbus_handler(int sig);
+#endif /* !CRAY */
+#endif /* sgi */
+
+void		noop_handler(int sig);
+void		sigint_handler(int sig);
+void		aio_handler(int sig);
+void		dump_aio(void);
+
+#ifdef sgi
+void		cb_handler(sigval_t val);
+#endif /* sgi */
+
+struct aio_info	*aio_slot(int aio_id);
+int		aio_register(int fd, int strategy, int sig);
+int		aio_unregister(int aio_id);
+
+#ifndef __linux__
+int		aio_wait(int aio_id);
+#endif /* !__linux__ */
+
+char		*hms(time_t t);
+int		aio_done(struct aio_info *ainfo);
+void		doio_upanic(int mask);
+int		parse_cmdline(int argc, char **argv, char *opts);
+
+#ifndef CRAY
+void		parse_memalloc(char *arg);
+void		dump_memalloc(void);
+#endif /* !CRAY */
+
+void		parse_delay(char *arg);
+int		usage(FILE *stream);
+void		help(FILE *stream);
 
 /*
  * Upanic conditions, and a map from symbolics to values
@@ -297,15 +475,6 @@ struct	fd_cache *alloc_fdcache(char *, int);
 
 #define U_ALL	    	(U_CORRUPTION | U_IOSW | U_RVAL)
 
-/*
- * Name-To-Value map
- * Used to map cmdline arguments to values
- */
-struct smap {
-	char    *string;
-	int	value;
-};
-
 struct smap Upanic_Args[] = {
 	{ "corruption",	U_CORRUPTION	},
 	{ "iosw",	U_IOSW		},
@@ -314,29 +483,7 @@ struct smap Upanic_Args[] = {
 	{ NULL,         0               }
 };
 
-struct aio_info {
-	int			busy;
-	int			id;
-	int			fd;
-	int			strategy;
-	volatile int		done;
-#ifdef CRAY
-	struct iosw		iosw;
-#endif
-#ifdef sgi
-	aiocb_t			aiocb;
-	int			aio_ret;	/* from aio_return */
-	int			aio_errno;	/* from aio_error */
-#endif
-	int			sig;
-	int			signalled;
-	struct sigaction	osa;
-};
-
 struct aio_info	Aio_Info[MAX_AIO];
-
-struct aio_info	*aio_slot();
-int     aio_done( struct aio_info * );
 
 /* -C data-fill/check type */
 #define	C_DEFAULT	1
@@ -377,9 +524,7 @@ syserrno(int err)
 ******/
 
 int
-main(argc, argv)
-int 	argc;
-char	**argv;
+main(int argc, char **argv)
 {
 	int	    	    	i, pid, stat, ex_stat;
 #ifdef CRAY
@@ -611,7 +756,7 @@ char	**argv;
  */
 
 void
-doio()
+doio(void)
 {
 	int	    	    	rval, i, infd, nbytes;
 	char			*cp;
@@ -940,7 +1085,7 @@ doio()
 }  /* doio */
 
 void
-doio_delay()
+doio_delay(void)
 {
 	struct timeval tv_delay;
 	struct sigaction sa_al, sa_old;
@@ -1118,18 +1263,8 @@ format_strat(int strategy)
 }
 
 char *
-format_rw(
-	struct	io_req	*ioreq,
-	int		fd,
-	void		*buffer,
-	int		signo,
-	char		*pattern,
-#ifdef CRAY
-	struct	iosw	*iosw
-#else
-	void		*iosw
-#endif
-	)
+format_rw(struct io_req *ioreq, int fd, void *buffer, int signo, char *pattern,
+	void *iosw)
 {
 	static char		*errbuf=NULL;
 	char			*aio_strat, *cp;
@@ -1198,12 +1333,7 @@ format_rw(
 
 #ifdef CRAY
 char *
-format_sds(
-	struct	io_req	*ioreq,
-	void		*buffer,
-	int		sds,
-	char		*pattern
-	)
+format_sds(struct io_req *ioreq, void *buffer, int sds, char *pattern)
 {
 	int			i;
 	static char		*errbuf=NULL;
@@ -1238,8 +1368,7 @@ format_sds(
  */
 
 int
-do_read(req)
-struct io_req	*req;
+do_read(struct io_req *req)
 {
 	int	    	    	fd, offset, nbytes, oflags, rval;
 	char    	    	*addr, *file;
@@ -1429,8 +1558,7 @@ struct io_req	*req;
  */
 
 int
-do_write(req)
-struct io_req	*req;
+do_write(struct io_req *req)
 {
 	static int		pid = -1;
 	int	    	    	fd, nbytes, oflags, signo;
@@ -1784,12 +1912,7 @@ struct io_req	*req;
  */
 
 int
-lock_file_region(fname, fd, type, start, nbytes)
-char	*fname;
-int	fd;
-int	type;
-int	start;
-int	nbytes;
+lock_file_region(char *fname, int fd, int type, int start, int nbytes)
 {
 	struct flock	flk;
 
@@ -1816,14 +1939,8 @@ int	nbytes;
 
 #ifdef CRAY
 char *
-format_listio(
-	struct	io_req	*ioreq,
-	int		lcmd,
-	struct listreq	*list,
-	int		nent,
-	int		fd,
-	char		*pattern
-	)
+format_listio(struct io_req *ioreq, int lcmd, struct listreq *list,
+	int nent, int fd, char *pattern)
 {
 	static	char		*errbuf=NULL;
 	struct	listio_req	*liop = &ioreq->r_data.listio;
@@ -1879,8 +1996,7 @@ format_listio(
 #endif /* CRAY */
 
 int
-do_listio(req)
-struct io_req	*req;
+do_listio(struct io_req *req)
 {
 #ifdef CRAY
 	struct listio_req	*lio;
@@ -2134,8 +2250,7 @@ struct io_req	*req;
 #ifdef _CRAY1
 
 int
-do_ssdio(req)
-struct io_req	*req;
+do_ssdio(struct io_req *req)
 {
 	int	    nbytes, nb;
 	char    errbuf[BSIZE];
@@ -2207,8 +2322,7 @@ struct io_req	*req;
 #ifdef CRAY
 
 int
-do_ssdio(req)
-struct io_req	*req;
+do_ssdio(struct io_req *req)
 {
 	doio_fprintf(stderr,
 		     "Internal Error - do_ssdio() called on a non-cray1 system\n");
@@ -2216,42 +2330,9 @@ struct io_req	*req;
 	exit(E_INTERNAL);
 }
 
-#endif
+#endif /* CRAY */
 
 #endif /* _CRAY1 */
-
-/* ---------------------------------------------------------------------------
- *
- * A new paradigm of doing the r/w system call where there is a "stub"
- * function that builds the info for the system call, then does the system
- * call; this is called by code that is common to all system calls and does
- * the syscall return checking, async I/O wait, iosw check, etc.
- *
- * Flags:
- *	WRITE, ASYNC, SSD/SDS,
- *	FILE_LOCK, WRITE_LOG, VERIFY_DATA,
- */
-
-struct	status {
-	int	rval;		/* syscall return */
-	int	err;		/* errno */
-	int	*aioid;		/* list of async I/O structures */
-};
-
-struct syscall_info {
-	char		*sy_name;
-	int		sy_type;
-	struct status	*(*sy_syscall)();
-	int		(*sy_buffer)();
-	char		*(*sy_format)();
-	int		sy_flags;
-	int		sy_bits;
-};
-
-#define	SY_WRITE		00001
-#define	SY_ASYNC		00010
-#define	SY_IOSW			00020
-#define	SY_SDS			00100
 
 char *
 fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
@@ -2350,11 +2431,7 @@ fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
  */
 #ifdef CRAY
 struct status *
-sy_listio(req, sysc, fd, addr)
-struct io_req	*req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_listio(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	int		offset, nbytes, nstrides, nents, aio_strat;
 	int		aio_id, signo, o, i, lc;
@@ -2435,8 +2512,7 @@ char *addr;
  * This assumes filestride & memstride = 0.
  */
 int
-listio_mem(struct io_req *req, int offset, int fmstride,
-	   int *min, int *max)
+listio_mem(struct io_req *req, int offset, int fmstride, int *min, int *max)
 {
 	int	i, size;
 
@@ -2477,11 +2553,7 @@ fmt_listio(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 
 #ifdef sgi
 struct status *
-sy_pread(req, sysc, fd, addr)
-struct io_req	*req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_pread(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	int rc;
 	struct status	*status;
@@ -2503,11 +2575,7 @@ char *addr;
 }
 
 struct status *
-sy_pwrite(req, sysc, fd, addr)
-struct io_req	*req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_pwrite(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	int rc;
 	struct status	*status;
@@ -2552,34 +2620,22 @@ fmt_pread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 
 #ifndef CRAY
 struct status *
-sy_readv(req, sysc, fd, addr)
-struct io_req	*req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_readv(struct io_req	*req, struct syscall_info *sysc, int fd, char *addr)
 {
 	struct status *sy_rwv();
 	return sy_rwv(req, sysc, fd, addr, 0);
 }
 
 struct status *
-sy_writev(req, sysc, fd, addr)
-struct io_req	*req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_writev(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	struct status *sy_rwv();
 	return sy_rwv(req, sysc, fd, addr, 1);
 }
 
 struct status *
-sy_rwv(req, sysc, fd, addr, rw)
-struct io_req	*req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
-int rw;
+sy_rwv(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
+	int rw)
 {
 	int rc;
 	struct status	*status;
@@ -2628,22 +2684,14 @@ fmt_readv(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 
 #ifdef sgi
 struct status *
-sy_aread(req, sysc, fd, addr)
-struct io_req *req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_aread(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	struct status *sy_arw();
 	return sy_arw(req, sysc, fd, addr, 0);
 }
 
 struct status *
-sy_awrite(req, sysc, fd, addr)
-struct io_req *req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_awrite(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	struct status *sy_arw();
 	return sy_arw(req, sysc, fd, addr, 1);
@@ -2655,12 +2703,8 @@ char *addr;
  */
 
 struct status *
-sy_arw(req, sysc, fd, addr, rw)
-struct io_req *req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
-int rw;
+sy_arw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
+	int rw)
 {
 	/* POSIX 1003.1b-1993 Async read */
 	struct status		*status;
@@ -2736,34 +2780,22 @@ fmt_aread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 #ifndef CRAY
 
 struct status *
-sy_mmread(req, sysc, fd, addr)
-struct io_req *req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_mmread(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	struct status *sy_mmrw();
 	return sy_mmrw(req, sysc, fd, addr, 0);
 }
 
 struct status *
-sy_mmwrite(req, sysc, fd, addr)
-struct io_req *req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
+sy_mmwrite(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 {
 	struct status *sy_mmrw();
 	return sy_mmrw(req, sysc, fd, addr, 1);
 }
 
 struct status *
-sy_mmrw(req, sysc, fd, addr, rw)
-struct io_req *req;
-struct syscall_info *sysc;
-int fd;
-char *addr;
-int rw;
+sy_mmrw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
+	int rw)
 {
 	/*
 	 * mmap read/write
@@ -2958,8 +2990,7 @@ struct syscall_info syscalls[] = {
 };
 
 int
-do_rw(req)
-	struct io_req	*req;
+do_rw(struct io_req *req)
 {
 	static int		pid = -1;
 	int	    		fd, offset, nbytes, nstrides, nents, oflags;
@@ -3382,8 +3413,7 @@ do_rw(req)
  */
 #ifdef sgi
 int
-do_fcntl(req)
-	struct io_req	*req;
+do_fcntl(struct io_req *req)
 {
 	int	    		fd, oflags, offset, nbytes;
 	int			rval, op;
@@ -3474,15 +3504,14 @@ do_fcntl(req)
 
 	return (rval == -1) ? -1 : 0;
 }
-#endif
+#endif /* sgi */
 
 /*
  *  fsync(2) and fdatasync(2)
  */
 #ifndef CRAY
 int
-do_sync(req)
-	struct io_req	*req;
+do_sync(struct io_req *req)
 {
 	int	    		fd, oflags;
 	int			rval;
@@ -3516,23 +3545,18 @@ do_sync(req)
 	}
 	return (rval == -1) ? -1 : 0;
 }
-#endif
+#endif /* !CRAY */
 
 int
 doio_pat_fill(char *addr, int mem_needed, char *Pattern, int Pattern_Length,
-	      int shift)
+	int shift)
 {
 	return pattern_fill(addr, mem_needed, Pattern, Pattern_Length, 0);
 }
 
 char *
-doio_pat_check(buf, offset, length, pattern, pattern_length, patshift)
-char	*buf;
-int	offset;
-int 	length;
-char	*pattern;
-int	pattern_length;
-int	patshift;
+doio_pat_check(char *buf, int offset, int length, char *pattern,
+	int pattern_length, int patshift)
 {
 	static char	errbuf[4096];
 	int		nb, i, pattern_index;
@@ -3610,14 +3634,8 @@ int	patshift;
  */
 
 char *
-check_file(file, offset, length, pattern, pattern_length, patshift, fsa)
-char 	*file;
-int 	offset;
-int 	length;
-char	*pattern;
-int	pattern_length;
-int	patshift;
-int	fsa;
+check_file(char *file, int offset, int length, char *pattern,
+	int pattern_length, int patshift, int fsa)
 {
 	static char	errbuf[4096];
 	int	    	fd, nb, flags;
@@ -3742,8 +3760,7 @@ doio_fprintf(FILE *stream, char *format, ...)
  */
 #ifndef CRAY
 int
-alloc_mem(nbytes)
-int nbytes;
+alloc_mem(int nbytes)
 {
 	char    	*cp;
 	void		*addr;
@@ -4002,12 +4019,9 @@ int nbytes;
 	mturn++;
 	return 0;
 }
-#endif /* !CRAY */
-
-#ifdef CRAY
+#else /* CRAY */
 int
-alloc_mem(nbytes)
-int nbytes;
+alloc_mem(int nbytes)
 {
 	char    *cp;
 	int	ip;
@@ -4083,8 +4097,7 @@ int nbytes;
 #ifdef _CRAY1
 
 int
-alloc_sds(nbytes)
-int nbytes;
+alloc_sds(int nbytes)
 {
 	int nblks;
 
@@ -4107,8 +4120,7 @@ int nbytes;
 #ifdef CRAY
 
 int
-alloc_sds(nbytes)
-int	nbytes;
+alloc_sds(int nbytes)
 {
 	doio_fprintf(stderr,
 		     "Internal Error - alloc_sds() called on a CRAY2 system\n");
@@ -4133,9 +4145,7 @@ int	nbytes;
  */
 
 int
-alloc_fd(file, oflags)
-char	*file;
-int	oflags;
+alloc_fd(char *file, int oflags)
 {
 	struct fd_cache *fdc;
 	struct fd_cache *alloc_fdcache(char *file, int oflags);
@@ -4148,9 +4158,7 @@ int	oflags;
 }
 
 struct fd_cache *
-alloc_fdcache(file, oflags)
-char	*file;
-int	oflags;
+alloc_fdcache(char *file, int oflags)
 {
 	int			fd;
 	struct fd_cache		*free_slot, *oldest_slot, *cp;
@@ -4369,9 +4377,7 @@ signal_info(int sig, siginfo_t *info, void *v)
 		doio_fprintf(stderr, "signal_info: sig %d\n", sig);
 	}
 }
-#endif
 
-#ifdef sgi
 void
 cleanup_handler(int sig, siginfo_t *info, void *v)
 {
@@ -4419,7 +4425,7 @@ sigbus_handler(int sig, siginfo_t *info, void *v)
 #else
 
 void
-cleanup_handler()
+cleanup_handler(int sig)
 {
 	havesigint=1; /* in case there's a followup signal */
 	alloc_mem(-1);
@@ -4427,8 +4433,7 @@ cleanup_handler()
 }
 
 void
-die_handler(sig)
-int sig;
+die_handler(int sig)
 {
 	doio_fprintf(stderr, "terminating on signal %d\n", sig);
 	alloc_mem(-1);
@@ -4437,8 +4442,7 @@ int sig;
 
 #ifndef CRAY
 void
-sigbus_handler(sig)
-int sig;
+sigbus_handler(int sig)
 {
 	/* See sigbus_handler() in the 'ifdef sgi' case for details.  Here,
 	   we don't have the siginfo stuff so the guess is weaker but we'll
@@ -4446,7 +4450,7 @@ int sig;
 	*/
 
 	if (active_mmap_rw && havesigint)
-		cleanup_handler();
+		cleanup_handler(sig);
 	else
 		die_handler(sig);
 }
@@ -4454,8 +4458,7 @@ int sig;
 #endif /* sgi */
 
 void
-noop_handler(sig)
-int sig;
+noop_handler(int sig)
 {
 	return;
 }
@@ -4467,7 +4470,7 @@ int sig;
  */
 
 void
-sigint_handler()
+sigint_handler(int sig)
 {
 	int	i;
 
@@ -4485,8 +4488,7 @@ sigint_handler()
  */
 
 void
-aio_handler(sig)
-int	sig;
+aio_handler(int sig)
 {
 	unsigned int	i;
 	struct aio_info	*aiop;
@@ -4508,7 +4510,7 @@ int	sig;
  * dump info on all open aio slots
  */
 void
-dump_aio()
+dump_aio(void)
 {
 	unsigned int	i, count;
 
@@ -4536,8 +4538,7 @@ dump_aio()
  * Aio_Info[] index.
  */
 void
-cb_handler(val)
-sigval_t val;
+cb_handler(sigval_t val)
 {
 	struct aio_info	*aiop;
 
@@ -4557,8 +4558,7 @@ sigval_t val;
 #endif
 
 struct aio_info *
-aio_slot(aio_id)
-int	aio_id;
+aio_slot(int aio_id)
 {
 	unsigned int	i;
 	static int	id = 1;
@@ -4594,13 +4594,9 @@ int	aio_id;
 }
 
 int
-aio_register(fd, strategy, sig)
-int		fd;
-int		strategy;
-int		sig;
+aio_register(int fd, int strategy, int sig)
 {
 	struct aio_info		*aiop;
-	void			aio_handler();
 	struct sigaction	sa;
 
 	aiop = aio_slot(-1);
@@ -4630,8 +4626,7 @@ int		sig;
 }
 
 int
-aio_unregister(aio_id)
-int	aio_id;
+aio_unregister(int aio_id)
 {
 	struct aio_info	*aiop;
 
@@ -4647,8 +4642,7 @@ int	aio_id;
 
 #ifndef __linux__
 int
-aio_wait(aio_id)
-int	aio_id;
+aio_wait(int aio_id)
 {
 #ifdef RECALL_SIZEOF
 	long		mask[RECALL_SIZEOF];
@@ -4771,8 +4765,7 @@ int	aio_id;
  */
 
 char *
-hms(t)
-time_t	t;
+hms(time_t t)
 {
 	static char	ascii_time[9];
 	struct tm	*ltime;
@@ -4826,8 +4819,7 @@ aio_done(struct aio_info *ainfo)
  */
 
 void
-doio_upanic(mask)
-int	mask;
+doio_upanic(int mask)
 {
 	if (U_opt == 0 || (mask & Upanic_Conditions) == 0) {
 		return;
@@ -4854,10 +4846,7 @@ int	mask;
  */
 
 int
-parse_cmdline(argc, argv, opts)
-int 	argc;
-char	**argv;
-char	*opts;
+parse_cmdline(int argc, char **argv, char *opts)
 {
 	int	    	c;
 	char    	cc, *cp=NULL, *tok=NULL;
@@ -4867,9 +4856,6 @@ char	*opts;
 	struct smap	*s;
 	char		*memargs[NMEMALLOC];
 	int		nmemargs, ma;
-	void		parse_memalloc(char *arg);
-	void		parse_delay(char *arg);
-	void		dump_memalloc();
 
 	if (*argv[0] == '-') {
 		argv[0]++;
@@ -5241,7 +5227,7 @@ parse_memalloc(char *arg)
 }
 
 void
-dump_memalloc()
+dump_memalloc(void)
 {
 	int	ma;
 	char	*mt;
@@ -5314,8 +5300,7 @@ parse_delay(char *arg)
  */
 
 int
-usage(stream)
-FILE	*stream;
+usage(FILE *stream)
 {
 	/*
 	 * Only do this if we are on vpe 0, to avoid seeing it from every
@@ -5331,8 +5316,7 @@ FILE	*stream;
 }
 
 void
-help(stream)
-FILE	*stream;
+help(FILE *stream)
 {
 	/*
 	 * Only the app running on vpe 0 gets to issue help - this prevents

@@ -78,3 +78,5 @@ oom01 oom01
 oom02 oom02
 oom03 oom03
 oom04 oom04
+
+thp01 thp01 -I 120

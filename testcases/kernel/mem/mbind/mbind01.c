@@ -43,6 +43,9 @@ int TST_TOTAL = 1;
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+
+#if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
 
 static unsigned long pagesize;
 static int opt_node;
@@ -90,8 +93,13 @@ int main(int argc, char** argv)
 		/* first mbind */
 		err = mbind(addr+pagesize, pagesize, MPOL_BIND, nmask->maskp,
 			nmask->size, MPOL_MF_MOVE_ALL);
-		if (err != 0)
-			tst_brkm(TBROK|TERRNO, NULL, "mbind1");
+		if (err != 0) {
+			if (errno != ENOSYS)
+				tst_brkm(TBROK|TERRNO, NULL, "mbind1");
+			else
+				tst_brkm(TCONF, NULL,
+					"mbind syscall not implemented on this system.");
+		}
 
 		/* second mbind */
 		err = mbind(addr, pagesize*3, MPOL_DEFAULT, NULL, 0, 0);
@@ -132,10 +140,13 @@ void usage(void)
 {
 	printf("  -n      Number of NUMA nodes\n");
 }
-
+#else /* libnuma v1 */
+int main(void) {
+	tst_brkm(TCONF, NULL, "XXX: test is only supported on libnuma v2.");
+}
+#endif
 #else /* no NUMA */
 int main(void) {
-	tst_resm(TCONF, "no NUMA development packages installed.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
 }
 #endif

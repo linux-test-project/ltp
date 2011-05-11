@@ -419,6 +419,7 @@ int main(int argc, char **argv)
 		}
 #ifndef NO_XFS
 		if (!no_xfs) {
+		memset(&geom, 0, sizeof(geom));
 		i = ioctl(fd, XFS_IOC_FSGEOMETRY, &geom);
 		if (i >= 0 && geom.rtblocks)
 			rtpct = MIN(MAX(geom.rtblocks * 100 /
@@ -447,6 +448,7 @@ int main(int argc, char **argv)
 				errtag += (random() % (XFS_ERRTAG_MAX - errtag));
 			}
 			printf("Injecting failure on tag #%d\n", errtag);
+			memset(&err_inj, 0, sizeof(err_inj));
 			err_inj.errtag = errtag;
 			err_inj.fd = fd;
 			srval = ioctl(fd, XFS_IOC_ERROR_INJECTION, &err_inj);
@@ -476,6 +478,7 @@ int main(int argc, char **argv)
 		}
 #ifndef NO_XFS
 		if (errtag != 0) {
+			memset(&err_inj, 0, sizeof(err_inj));
 			err_inj.errtag = 0;
 			err_inj.fd = fd;
 			if ((srval = ioctl(fd, XFS_IOC_ERROR_CLEARALL, &err_inj)) != 0) {
@@ -1396,9 +1399,9 @@ allocsp_f(int opno, long r)
 	int		e;
 	pathname_t	f;
 	int		fd;
-	struct flock64	fl;
-	__int64_t	lr;
-	off64_t		off;
+	struct xfs_flock64 fl;
+	__s64		lr;
+	__s64		off;
 	struct stat64	stb;
 	int		v;
 
@@ -1427,9 +1430,10 @@ allocsp_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	lr = ((__int64_t)random() << 32) + random();
-	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));
+	lr = ((__s64)random() << 32) + random();
+	off = lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE);
 	off %= maxfsize;
+	memset(&fl, 0, sizeof(fl));
 	fl.l_whence = SEEK_SET;
 	fl.l_start = off;
 	fl.l_len = 0;
@@ -1547,10 +1551,10 @@ attr_set_f(int opno, long r)
 void
 bulkstat_f(int opno, long r)
 {
-	int		count;
+	__s32		count;
 	int		fd;
-	__uint64_t	last;
-	int		nent;
+	__u64		last;
+	__s32		nent;
 	xfs_bstat_t	*t;
 	__int64_t	total;
 	xfs_fsop_bulkreq_t bsr;
@@ -1561,6 +1565,7 @@ bulkstat_f(int opno, long r)
 	fd = open(".", O_RDONLY);
 	total = 0;
 
+	memset(&bsr, 0, sizeof(bsr));
 	bsr.lastip=&last;
 	bsr.icount=nent;
 	bsr.ubuffer=t;
@@ -1571,7 +1576,7 @@ bulkstat_f(int opno, long r)
 	free(t);
 	if (verbose)
 		printf("%d/%d: bulkstat nent %d total %lld\n",
-			procid, opno, nent, (long long)total);
+			procid, opno, (int)nent, (long long)total);
 	close(fd);
 }
 
@@ -1582,7 +1587,7 @@ bulkstat1_f(int opno, long r)
 	pathname_t	f;
 	int		fd;
 	int		good;
-	__uint64_t	ino;
+	__u64		ino;
 	struct stat64	s;
 	xfs_bstat_t	t;
 	int		v;
@@ -1617,6 +1622,7 @@ bulkstat1_f(int opno, long r)
 	}
 	fd = open(".", O_RDONLY);
 
+	memset(&bsr, 0, sizeof(bsr));
 	bsr.lastip=&ino;
 	bsr.icount=1;
 	bsr.ubuffer=&t;
@@ -1625,7 +1631,8 @@ bulkstat1_f(int opno, long r)
 	e = ioctl(fd, XFS_IOC_FSBULKSTAT_SINGLE, &bsr) < 0 ? errno : 0;
 	if (v)
 		printf("%d/%d: bulkstat1 %s ino %lld %d\n",
-			procid, opno, good?"real":"random", (int64_t)ino, e);
+			procid, opno, good ? "real" : "random",
+			(long long)ino, e);
 	close(fd);
 }
 
@@ -1698,6 +1705,7 @@ creat_f(int opno, long r)
 	if (fd >= 0) {
 #ifndef NO_XFS
 		struct fsxattr	a;
+		memset(&a, 0, sizeof(a));
 		if (extsize && ioctl(fd, XFS_IOC_FSGETXATTR, &a) >= 0) {
 			a.fsx_xflags |= XFS_XFLAG_REALTIME;
 			a.fsx_extsize =
@@ -1799,6 +1807,7 @@ dread_f(int opno, long r)
 		return;
 	}
 
+	memset(&diob, 0, sizeof(diob));
 	if (no_xfs) {
 		diob.d_miniosz = stb.st_blksize;
 		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */
@@ -1889,6 +1898,7 @@ dwrite_f(int opno, long r)
 		close(fd);
 		return;
 	}
+	memset(&diob, 0, sizeof(diob));
 	if (no_xfs) {
 		diob.d_miniosz = stb.st_blksize;
 		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */
@@ -1976,9 +1986,9 @@ freesp_f(int opno, long r)
 	int		e;
 	pathname_t	f;
 	int		fd;
-	struct flock64	fl;
-	__int64_t	lr;
-	off64_t		off;
+	struct xfs_flock64 fl;
+	__s64		lr;
+	__s64		off;
 	struct stat64	stb;
 	int		v;
 
@@ -2007,9 +2017,10 @@ freesp_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	lr = ((__int64_t)random() << 32) + random();
-	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));
+	lr = ((__s64)random() << 32) + random();
+	off = lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE);
 	off %= maxfsize;
+	memset(&fl, 0, sizeof(fl));
 	fl.l_whence = SEEK_SET;
 	fl.l_start = off;
 	fl.l_len = 0;
@@ -2349,9 +2360,9 @@ resvsp_f(int opno, long r)
 	int		e;
 	pathname_t	f;
 	int		fd;
-	struct flock64	fl;
-	__int64_t	lr;
-	off64_t		off;
+	struct xfs_flock64 fl;
+	__s64		lr;
+	__s64		off;
 	struct stat64	stb;
 	int		v;
 
@@ -2380,16 +2391,18 @@ resvsp_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	lr = ((__int64_t)random() << 32) + random();
-	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));
+	lr = ((__s64)random() << 32) + random();
+	off = lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE);
 	off %= maxfsize;
+	memset(&fl, 0, sizeof(fl));
 	fl.l_whence = SEEK_SET;
 	fl.l_start = off;
-	fl.l_len = (off64_t)(random() % (1024 * 1024));
+	fl.l_len = (__s64)(random() % (1024 * 1024));
 	e = ioctl(fd, XFS_IOC_RESVSP64, &fl) < 0 ? errno : 0;
 	if (v)
-		printf("%d/%d: ioctl(XFS_IOC_RESVSP64) %s %lld %ld %d\n",
-			procid, opno, f.path, (long long)off, fl.l_len, e);
+		printf("%d/%d: ioctl(XFS_IOC_RESVSP64) %s %lld %lld %d\n",
+			procid, opno, f.path, (long long)off,
+			(long long)fl.l_len, e);
 	free_pathname(&f);
 	close(fd);
 }
@@ -2524,7 +2537,7 @@ truncate_f(int opno, long r)
 		return;
 	}
 	lr = ((__int64_t)random() << 32) + random();
-	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));
+	off = lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE);
 	off %= maxfsize;
 	e = truncate64_path(&f, off) < 0 ? errno : 0;
 	check_cwd();
@@ -2566,9 +2579,9 @@ unresvsp_f(int opno, long r)
 	int		e;
 	pathname_t	f;
 	int		fd;
-	struct flock64	fl;
-	__int64_t	lr;
-	off64_t		off;
+	struct xfs_flock64 fl;
+	__s64		lr;
+	__s64		off;
 	struct stat64	stb;
 	int		v;
 
@@ -2597,16 +2610,18 @@ unresvsp_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	lr = ((__int64_t)random() << 32) + random();
-	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));
+	lr = ((__s64)random() << 32) + random();
+	off = lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE);
 	off %= maxfsize;
+	memset(&fl, 0, sizeof(fl));
 	fl.l_whence = SEEK_SET;
 	fl.l_start = off;
-	fl.l_len = (off64_t)(random() % (1 << 20));
+	fl.l_len = (__s64)(random() % (1 << 20));
 	e = ioctl(fd, XFS_IOC_UNRESVSP64, &fl) < 0 ? errno : 0;
 	if (v)
-		printf("%d/%d: ioctl(XFS_IOC_UNRESVSP64) %s %lld %ld %d\n",
-			procid, opno, f.path, (long long)off, fl.l_len, e);
+		printf("%d/%d: ioctl(XFS_IOC_UNRESVSP64) %s %lld %lld %d\n",
+			procid, opno, f.path, (long long)off,
+			(long long)fl.l_len, e);
 	free_pathname(&f);
 	close(fd);
 }

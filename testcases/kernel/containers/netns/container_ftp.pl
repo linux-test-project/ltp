@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 ################################################################################ 
 ##                                                                            ##
@@ -21,19 +21,34 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################ 
 
+use File::Temp 'tempdir';
 use Net::FTP;
 
+if ($#ARGV == -1) {
+	print "usage: $0 host\n";
+	exit 1;
+}
 my $host =  $ARGV[0];
 
 my $newname;
 my $i = 0;
 my $kount = 51;
 my $file="junkfile";
-my $dir="/tmp/ftpdir";
 
-mkdir $dir;
+my $tmpdir = defined($ENV{TMPDIR}) ? $ENV{TMPDIR} : "/tmp";
+
+my $dir;
+$dir = tempdir("container_ftp.XXXXXXX", DIR => $tmpdir);
+if (!defined($dir)) {
+	push @ERRORS, "Failed to create a temporary directory: $!\n";
+	printerr();
+}
+if (chmod(0777, $dir) == 0) {
+	push @ERRORS, "Failed to change mode for temporary directory: $!\n";
+	printerr();
+}
 chdir $dir;
-system("dd if=/dev/zero of=$putdir$file bs=512 count=10 > /dev/null 2>&1 ");
+system("dd if=/dev/zero of=$file bs=512 count=10 > /dev/null 2>&1 ");
 
 while ( $i < $kount )
 {
@@ -59,11 +74,14 @@ while ( $i < $kount )
         $i++;
         $ftp->quit;
 }
-system("rm -rf $dir");
-exit 0;
 
 sub printerr {
-  print "Error: ";
-  print @ERRORS;
-  exit -1;
+	print "Error: ";
+	print @ERRORS;
+	exit 1;
+}
+
+END {
+	unlink("$dir/$file");
+	rmdir("$dir");
 }

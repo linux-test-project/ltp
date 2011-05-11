@@ -105,26 +105,6 @@ case ${TEST_NUM} in
 	MEM_TOTAL=`expr $MEM_TASK \* $TOTAL_TASKS`;	# total memory allocated in a group
 	TEST_NAME=" TASK MIGRATION TEST:";
 	;;
-"3" )
-	NUM_GROUPS=1;
-	MEMLIMIT_GROUP_1=50M;				# MEM_TASK > MEMLIMIT_GROUP_1
-	CHUNK_SIZE=6291456;				# malloc n chunks of size m(6M)
-	NUM_CHUNKS=10;					# (say)60 MB memory(6*10)
-	TOTAL_TASKS=1;					# num of tasks in a group(1)
-	MEM_TASK=`expr $CHUNK_SIZE \* $NUM_CHUNKS`;	# memory allocated by a task
-	TEST_NAME=" FAILCNT CHECK TEST:";
-	;;
-"4" )
-	NUM_GROUPS=1;
-	MEMLIMIT_GROUP_1=100M;				# Memory limit of group1
-	CHUNK_SIZE=6291456;				# malloc n chunks of size m(6M)
-	NUM_CHUNKS=10;					# (say)60 MB memory(6*10)
-	TOTAL_TASKS=1;					# num of tasks in a group(1)
-	MEM_TASK=`expr $CHUNK_SIZE \* $NUM_CHUNKS`;	# memory allocated by a task
-	MEM_TOTAL=`expr $MEM_TASK \* $TOTAL_TASKS`;	# total memory allocated in a group
-	TEST_NAME=" STATS CHECK TEST:";
-	SECOND_READ=0;
-	;;
 *  )	usage;
 	exit -1
 		;;
@@ -177,6 +157,12 @@ case $TEST_NUM in
 		GRP2_MEMUSAGE_OLD=`cat /dev/memctl/group_2/memory.usage_in_bytes`;
 		echo Before task migration to group2
 		echo group2 memory usage: $GRP2_MEMUSAGE_OLD Bytes
+
+		# We do not want to migrate charges during migration
+		if [ -f "/dev/memctl/group_2/memory.move_charge_at_immigrate" ]
+		then
+			echo 0 > /dev/memctl/group_2/memory.move_charge_at_immigrate
+		fi
 
 		# Now migrate the tasks to another group
 		for i in $(seq 1 $NUM_MIG_TASKS)
@@ -253,132 +239,6 @@ case $TEST_NUM in
 	fi;
 	;;
 
-"3" )
-	setmemlimits;
-	if [ -f memctl_test01 ]
-	then
-		MYGROUP=/dev/memctl/group_1;
-		cp memctl_test01 memctl_task_1 # 2>/dev/null;
-		chmod +x memctl_task_1;
-		TEST_NUM=$TEST_NUM MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID CHUNK_SIZE=$CHUNK_SIZE \
-			NUM_CHUNKS=$NUM_CHUNKS ./memctl_task_$i &
-		if [ $? -ne 0 ]
-		then
-			echo "Error: Could not run ./memctl_task_1"
-			cleanup;
-			exit -1;
-		else
-			PID[1]=$!;
-		fi
-
-		# Wait untill tasks allocate memory from group1
-		while [ 1 -gt 0 ]
-		do
-			sleep 1;
-			GRP1_MEMUSAGE=`cat /dev/memctl/group_1/memory.usage_in_bytes`;
-			MEMLIMIT_GROUP_1=`echo $MEMLIMIT_GROUP_1 | cut -d"M" -f1`;
-			if [ $GRP1_MEMUSAGE -gt $MEMLIMIT_GROUP_1 ]
-			then
-				break;
-			fi
-		done
-		# now memory.usage_in_bytes > memory.limit_in_bytes
-		# hence memory.failcnt should be greater than 0
-		FAILCNT=`cat /dev/memctl/group_1/memory.failcnt`;
-		if [ $FAILCNT -gt 0 ]
-		then
-			# Now we can signal the task to finish and do the cleanup
-			echo failcnt = $FAILCNT;
-			kill -SIGUSR1 ${PID[1]};
-			echo "TPASS   Memory Resource Controller: failcnt check test PASSED";
-		else
-			echo "TFAIL   Memory Resource Controller: failcnt check test FAILED";
-		fi;
-	else
-		echo "Source file not compiled..Please check Makefile...Exiting test"
-		cleanup;
-		exit -1;
-	fi;
-		;;
-"4" )
-	setmemlimits;
-	if [ -f memctl_test01 ]
-	then
-		MYGROUP=/dev/memctl/group_1;
-		cp memctl_test01 memctl_task_1 # 2>/dev/null;
-		chmod +x memctl_task_1;
-		TEST_NUM=$TEST_NUM MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID \
-			CHUNK_SIZE=$CHUNK_SIZE 	NUM_CHUNKS=$NUM_CHUNKS \
-							./memctl_task_$i &
-		if [ $? -ne 0 ]
-		then
-			echo "Error: Could not run ./memctl_task_1"
-			cleanup;
-			exit -1;
-		else
-			PID[1]=$!;
-		fi
-
-		# Wait untill tasks allocate memory from group1
-		check_mem_allocated;# $MEM_TOTAL;
-		# now we can check the memory usage from both files
-		USAGE_FROM_STAT=`cat /dev/memctl/group_1/memory.stat \
-					| grep -w "rss" | cut -d" " -f2`;
-		if [ $USAGE_FROM_USAGE_IN_BYTES -eq $USAGE_FROM_STAT ]
-		then
-			echo "memory usage from memory.usage_in_bytes= $USAGE_FROM_USAGE_IN_BYTES";
-
-			echo "memory usage from memory.stat= $USAGE_FROM_STAT";
-			echo "TINFO   Memory Resource Controller: stat check test passes first run";
-
-			echo Test continues to run the second step.
-			FIRST_STEP_PASS=1;
-		else
-			echo "TINFO   Memory Resource Controller: stat check test fails in first run";
-			FIRST_STEP_PASS=0;
-		fi;
-		kill -SIGUSR2 ${PID[1]};
-
-		# just second run of the test with different memory allocations
-		# Wait untill tasks allocate memory from group1
-		while [ 1 -gt 0 ]
-		do
-			sleep 1;
-			USAGE_FROM_USAGE_IN_BYTESGRP1_MEMUSAGE=`cat /dev/memctl/group_1/memory.usage_in_bytes`;
-
-			if [ $USAGE_FROM_USAGE_IN_BYTESGRP1_MEMUSAGE -gt $MEM_TOTAL ]
-			then
-				if [ $USAGE_FROM_USAGE_IN_BYTESGRP1_MEMUSAGE -eq $SECOND_READ ]
-				then
-				# seems memory allocation is over now
-					break;
-				fi;
-				sleep 5;
-				SECOND_READ=`cat /dev/memctl/group_1/memory.usage_in_bytes`;
-			fi
-		done
-
-		# now we can check the memory usage from both files
-		USAGE_FROM_STAT=`cat /dev/memctl/group_1/memory.stat \
-					| grep -w "rss" | cut -d" " -f2`;
-		if [ $USAGE_FROM_USAGE_IN_BYTESGRP1_MEMUSAGE -eq $USAGE_FROM_STAT ] \
-							&& [ $FIRST_STEP_PASS -eq 1 ]
-		then
-			# Now we can signal the task to finish and do cleanup
-			kill -SIGUSR1 ${PID[1]};
-			echo "memory usage from memory.usage_in_bytes= $USAGE_FROM_USAGE_IN_BYTESGRP1_MEMUSAGE";
-
-			echo "memory usage from memory.stat=$USAGE_FROM_STAT";
-			echo "TPASS   Memory Resource Controller: stat check test PASSED";
-		else
-			echo "TFAIL   Memory Resource Controller: stat check test FAILED";
-		fi;
-	else
-		echo "Source file not compiled..Please check Makefile...Exiting test"
-		cleanup;
-		exit -1;
-	fi;
-		;;
 	"*" )
 		usage;
 		exit -1;

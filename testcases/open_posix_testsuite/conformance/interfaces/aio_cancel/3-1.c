@@ -69,8 +69,10 @@ int main(void)
 	struct sigaction action;
 	int i;
 
-	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L) {
+		printf(TNAME " %ld\n", sysconf(_SC_ASYNCHRONOUS_IO));
 		return PTS_UNSUPPORTED;
+	}
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_3_1_%d",
 		  getpid());

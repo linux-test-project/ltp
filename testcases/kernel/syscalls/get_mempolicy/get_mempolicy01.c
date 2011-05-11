@@ -377,7 +377,7 @@ int main(int argc, char **argv) {
 }
 #else
 int main(void) {
-	tst_brkm(TBROK, NULL, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
+	tst_brkm(TCONF, NULL, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
 	tst_exit();
 }
 #endif

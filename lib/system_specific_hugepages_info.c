@@ -29,22 +29,19 @@
 #include <sys/types.h>
 #include <test.h>
 
-#define BUFSIZE 512
-
 int get_no_of_hugepages() {
  #ifdef __linux__
        FILE *f;
        char buf[BUFSIZ];
 
        f = popen("grep 'HugePages_Total' /proc/meminfo | cut -d ':' -f2 | tr -d ' \n'", "r");
-       if (!f) {
-               tst_resm(TBROK, "Could not get info about Total_Hugepages from /proc/meminfo");
-               tst_exit();
-       }
+       if (!f)
+              tst_brkm(TBROK, NULL,
+                     "Could not get info about Total_Hugepages from /proc/meminfo");
        if (!fgets(buf, 10, f)) {
                fclose(f);
-               tst_resm(TBROK, "Could not read Total_Hugepages from /proc/meminfo");
-               tst_exit();
+               tst_brkm(TBROK, NULL,
+                     "Could not read Total_Hugepages from /proc/meminfo");
        }
        pclose(f);
        return(atoi(buf));
@@ -53,6 +50,26 @@ int get_no_of_hugepages() {
  #endif
 }
 
+int get_no_of_free_hugepages() {
+ #ifdef __linux__
+       FILE *f;
+       char buf[BUFSIZ];
+
+       f = popen("grep 'HugePages_Free' /proc/meminfo | cut -d ':' -f2 | tr -d ' \n'", "r");
+       if (!f)
+               tst_brkm(TBROK, NULL,
+                     "Could not get info about HugePages_Free from /proc/meminfo");
+       if (!fgets(buf, 10, f)) {
+               fclose(f);
+               tst_brkm(TBROK, NULL,
+                     "Could not read HugePages_Free from /proc/meminfo");
+       }
+       pclose(f);
+       return(atoi(buf));
+ #else
+        return -1;
+ #endif
+}
 
 int hugepages_size() {
  #ifdef __linux__
@@ -60,14 +77,13 @@ int hugepages_size() {
        char buf[BUFSIZ];
 
        f = popen("grep 'Hugepagesize' /proc/meminfo | cut -d ':' -f2 | tr -d 'kB \n'", "r");
-       if (!f) {
-               tst_resm(TBROK, "Could not get info about HugePages_Size from /proc/meminfo");
-               tst_exit();
-       }
+       if (!f)
+               tst_brkm(TBROK, NULL,
+                     "Could not get info about HugePages_Size from /proc/meminfo");
        if (!fgets(buf, 10, f)) {
                fclose(f);
-               tst_resm(TBROK, "Could not read HugePages_Size from /proc/meminfo");
-               tst_exit();
+               tst_brkm(TBROK, NULL,
+                     "Could not read HugePages_Size from /proc/meminfo");
        }
        pclose(f);
        return(atoi(buf));

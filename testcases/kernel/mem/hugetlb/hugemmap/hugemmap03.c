@@ -53,8 +53,8 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "system_specific_hugepages_info.h"
 
-#define PAGE_SIZE      ((1UL) << 12) 	/* Normal page size */
 #define HIGH_ADDR      (void *)(0x1000000000000)
 
 char* TEMPFILE="mmapfile";
@@ -76,15 +76,14 @@ void help()
 int
 main(int ac, char **av)
 {
-#if __WORDSIZE==32  /* 32-bit compiled */
-      	tst_resm(TCONF,"This test is only for 64bit");
-	tst_exit();
-
-       	return 1;
-#else	/* 64-bit compiled */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
         int Hflag=0;              /* binary flag: opt or not */
+	int page_sz;
+
+#if __WORDSIZE==32  /* 32-bit compiled */
+	tst_brkm(TCONF, NULL, "This test is only for 64bit");
+#endif
 
        	option_t options[] = {
         	{ "H:",   &Hflag, &Hopt },    /* Required for location of hugetlbfs */
@@ -103,6 +102,8 @@ main(int ac, char **av)
 		tst_exit();
 	}
 
+	page_sz = getpagesize();
+
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -118,7 +119,7 @@ main(int ac, char **av)
 
 		/* Attempt to mmap using normal pages and a high memory address */
 		errno = 0;
-		addr = mmap(HIGH_ADDR, PAGE_SIZE, PROT_READ,
+		addr = mmap(HIGH_ADDR, page_sz, PROT_READ,
 			    MAP_SHARED | MAP_FIXED, fildes, 0);
 		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL, "Normal mmap() into high region unexpectedly succeeded on %s, errno=%d : %s",
@@ -135,7 +136,6 @@ main(int ac, char **av)
 	cleanup();
 
 	tst_exit();
-#endif
 }
 
 /*

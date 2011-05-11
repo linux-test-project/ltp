@@ -36,24 +36,6 @@ ifneq ($(HAVE_SECUREBITS),yes)
 FILTER_OUT_DIRS		+= securebits
 endif
 
-# XXX (garrcoop): avoid compilation failures on RHEL 5.4, as reported by
-# Mitani-san, because of policy versioning issues...
-ifeq (1,1)
-FILTER_OUT_DIRS		+= selinux-testsuite
-else
-# Omit the selinux-testsuite if -lselinux is missing or the policy-devel
-# package isn't present.
-ifneq ($(strip $(SELINUX_LIBS)),)
-FILTER_OUT_DIRS		+= selinux-testsuite
-else
-# NOTE (garrcoop): Keep this in sync with
-# testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
-ifeq ($(wildcard $(DESTDIR)/usr/share/selinux/devel),)
-FILTER_OUT_DIRS		+= selinux-testsuite
-endif
-endif
-endif
-
 OPT_CFLAGS		+= -O
 DEBUG_LDFLAGS		+= -s
 

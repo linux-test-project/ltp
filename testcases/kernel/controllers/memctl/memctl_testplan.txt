@@ -22,25 +22,3 @@ This test is an extension of the above test 1. After migration the task does
 memory allocation again and so this time the memory should be claimed from
 group b. The test checks if memory is claimed from group b and reports pass
 or failure accordingly.
-
-Test03: FAILCNT CHECK TEST
--------------------------------
-Whenever tasks in a group try to allocate memory and total memory allocated
-becomes more than the limit of that group, the failcnt increases. This test
-creates a group with say x limit on memory and runs a task in it with memory
-allocation more than group's limit(say y). When y becomes greater than x
-it checks if failcnt has increased and reports pass if yes otherwise reports
-failure.
-* This test will fail if system does not have swap enabled.
-
-Test04: STAT CHECK TEST
--------------------------------
-This test is run to check the memory usage from different stats file.
-memory.usage_in_bytes gives the current memory usage of the group. memory.stat
-file has four fields which give different statistics. The memory usage from
-the two files should be same. This test compares these stats and reports pass
-if the two values are same and fail if the two values differ.
-
-For any other information please refer to Documentation/controllers/memory.txt
-in kernel documentation.
-

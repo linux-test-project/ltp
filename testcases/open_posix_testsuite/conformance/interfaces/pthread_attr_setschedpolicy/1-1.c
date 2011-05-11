@@ -8,48 +8,27 @@
  * This test case initializes an attr and sets its schedpolicy,
  * then create a thread with the attr.
 
+ *
+ * Complete rewrite by Peter W. Morreale <pmorreale AT novell DOT com>
+ * Date: 20/05/2011
+
  */
 
-#include <pthread.h>
-#include <stdio.h>
-#include <errno.h>
-#include "posixtest.h"
+#include "common.h"
 
-void *thread_func()
+int main(void)
 {
-	pthread_exit(0);
-	return (void*)(0);
-}
+	int rc;
+	struct params p;
 
-int main()
-{
-	pthread_t thread;
-	pthread_attr_t attr;
-    	void *status;
-    	int rc;
-	int policy = SCHED_FIFO;
+	p.policy = SCHED_OTHER;
+	p.priority = PRIORITY_OTHER;
+	p.policy_label = "SCHED_OTHER";
+	p.status = PTS_UNRESOLVED;
+	rc = create_test_thread(&p);
 
-	if (pthread_attr_init(&attr) != 0) {
-		printf("Error on pthread_attr_init()\n");
-		return PTS_UNRESOLVED;
-	}
+	if (rc == PTS_PASS)
+		printf("Test PASS\n");
 
-	if ((rc=pthread_attr_setschedpolicy(&attr,policy)) != 0) {
-    		printf("Error on pthread_attr_setschedpolicy()\t rc=%d\n", rc);
-    		return PTS_FAIL;
-    	}
-
-    	if ((rc=pthread_create(&thread,&attr,thread_func,NULL)) != 0) {
-  		if (rc == EPERM) {
-  	    		printf("Permission Denied when creating thread with policy %d\n", policy);
-  	    		return PTS_UNRESOLVED;
-  	    	} else {
-	    		printf("Error on pthread_create()\t rc=%d\n", rc);
-    			return PTS_FAIL;
-    		}
-    	}
-
-	pthread_join(thread, &status);
-	pthread_attr_destroy(&attr);
-	return PTS_PASS;
+	return rc;
 }

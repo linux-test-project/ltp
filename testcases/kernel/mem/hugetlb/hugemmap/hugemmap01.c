@@ -72,6 +72,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "system_specific_hugepages_info.h"
 
 #define BUFFER_SIZE  256
 
@@ -87,8 +88,6 @@ int aftertest=0;		/* Amount of free huge pages after testing */
 int hugepagesmapped=0;		/* Amount of huge pages mapped after testing */
 
 void setup();			/* Main setup function of test */
-int getfreehugepages();		/* Reads free huge pages */
-int get_huge_pagesize();        /* Reads huge page size */
 void cleanup();			/* cleanup function for the test */
 
 void help()
@@ -135,10 +134,10 @@ main(int ac, char **av)
 		Tst_count=0;
 
 		/* Note the number of free huge pages BEFORE testing */
-		beforetest = getfreehugepages();
+		beforetest = get_no_of_free_hugepages();
 
 		/* Note the size of huge page size BEFORE testing */
-		page_sz = get_huge_pagesize();
+		page_sz = hugepages_size();
 
 		/*
 		 * Call mmap
@@ -160,7 +159,7 @@ main(int ac, char **av)
 		}
 
 		/* Make sure the number of free huge pages AFTER testing decreased */
-		aftertest = getfreehugepages();
+		aftertest = get_no_of_free_hugepages();
 		hugepagesmapped = beforetest - aftertest;
 		if (hugepagesmapped < 1) {
 			tst_resm(TWARN,"Number of HUGEPAGES_FREE stayed the same. Okay if");
@@ -176,8 +175,7 @@ main(int ac, char **av)
 	}
 
 	cleanup();
-
-	return 1;
+	tst_exit();
 }
 
 /*
@@ -203,62 +201,6 @@ setup()
 
 	TEST_PAUSE;
 
-}
-
-/*
- * getfreehugepages() - Reads the number of free huge pages from /proc/meminfo
- */
-int
-getfreehugepages()
-{
-	int hugefree;
-	FILE* f;
-	int retcode=0;
-	char buff[BUFFER_SIZE];
-
-        f = fopen("/proc/meminfo", "r");
-	if (!f)
-     		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
-
-	while (fgets(buff,BUFFER_SIZE, f) != NULL) {
-		if ((retcode = sscanf(buff, "HugePages_Free: %d ", &hugefree)) == 1)
-	  		break;
-	}
-
-        if (retcode != 1) {
-        	fclose(f);
-       		tst_brkm(TFAIL, cleanup, "Failed reading number of huge pages free.");
-     	}
-	fclose(f);
-	return(hugefree);
-}
-
-/*
- * get_huge_pagesize() - Reads the size of huge page size from /proc/meminfo
- */
-int
-get_huge_pagesize()
-{
-        int hugesize;
-        FILE* f;
-        int retcode=0;
-        char buff[BUFFER_SIZE];
-
-        f = fopen("/proc/meminfo", "r");
-        if (!f)
-                tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
-
-        while (fgets(buff,BUFFER_SIZE, f) != NULL) {
-                if ((retcode = sscanf(buff, "Hugepagesize: %d ", &hugesize)) == 1)
-                        break;
-        }
-
-        if (retcode != 1) {
-                fclose(f);
-                tst_brkm(TFAIL, cleanup, "Failed reading size of huge page.");
-        }
-        fclose(f);
-        return(hugesize);
 }
 
 /*

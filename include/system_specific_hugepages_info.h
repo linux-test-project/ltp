@@ -22,7 +22,9 @@
 
 /*Returns Total No. of available Hugepages in the system from /proc/meminfo*/
 int get_no_of_hugepages(void);
+/*Returns No. of Hugepages_Free  from /proc/meminfo*/
+int get_no_of_free_hugepages(void);
 /*Returns Hugepages Size from /proc/meminfo*/
 int hugepages_size(void);
-#endif
 
+#endif

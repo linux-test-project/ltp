@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	nnodes = count_numa();
-	if (count_numa() == 1)
+	if (count_numa() <= 1)
 		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();
@@ -102,8 +102,13 @@ int main(int argc, char *argv[])
 		Tst_count = 0;
 		check_ksm_options(&size, &num, &unit);
 
-		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
+		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1) {
+			if (errno != ENOSYS)
+				tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
+			else
+				tst_brkm(TCONF, cleanup,
+					"set_mempolicy syscall is not implemented on your system.");
+		}
 		create_same_memory(size, num, unit);
 
 		write_cpusets();
@@ -122,6 +127,9 @@ void cleanup(void)
 void setup(void)
 {
 	tst_require_root(NULL);
+
+	if (tst_kvercmp(2, 6, 32) < 0)
+		tst_brkm(TCONF, NULL, "2.6.32 or greater kernel required");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;

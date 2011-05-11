@@ -97,7 +97,7 @@ test_1()
 	./fork_processes &
 	sleep 1
 
-	mount -t cgroup xxx cgroup/
+	mount -t cgroup -o none,name=foo cgroup cgroup/
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount cgroup filesystem"
 		failed=1
@@ -124,7 +124,7 @@ test_1()
 #---------------------------------------------------------------------------
 test_2()
 {
-	mount -t cgroup xxx cgroup/
+	mount -t cgroup -o none,name=foo cgroup cgroup/
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "Failed to mount cgroup filesystem"
 		failed=1
@@ -220,7 +220,7 @@ test_4()
 		return
 	fi
 
-	mount -t cgroup xxx cgroup/
+	mount -t cgroup -o none,name=foo cgroup cgroup/
 	mkdir cgroup/0
 	rmdir cgroup/0
 	umount cgroup/
@@ -360,7 +360,7 @@ test_7_1()
 
 test_7_2()
 {
-	mount -t cgroup xxx cgroup/
+	mount -t cgroup -o none,name=foo cgroup cgroup/
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount $subsys"
 		failed=1
@@ -429,7 +429,7 @@ test_7()
 #---------------------------------------------------------------------------
 test_8()
 {
-	mount -t cgroup xxx cgroup/
+	mount -t cgroup -o none,name=foo cgroup cgroup/
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount cgroup filesystem"
 		failed=1

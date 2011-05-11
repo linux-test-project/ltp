@@ -213,14 +213,8 @@ set_shmat()
 	/* attach the shared memory */
 	rval = shmat(shm_id_1, 0, 0);
 
-	/*
-	 * if shmat() fails, the only thing we can do is
-	 * print a message to that effect.
-	 */
-	if (rval == (void *)-1) {
-		tst_resm(TBROK, "shmat() failed - %s",strerror(errno));
-		cleanup();
-	}
+	if (rval == (void *)-1)
+		tst_brkm(TBROK|TERRNO, cleanup, "shmat() failed.");
 
 	return rval;
 }

@@ -70,7 +70,6 @@ result()
 # Check rss size and cache size from memory.stat
 #
 # $1 - Expected rss size
-# $2 - Expected cache size
 check_mem_stat()
 {
 	case $cur_id in
@@ -83,15 +82,14 @@ check_mem_stat()
 	esac
 
 	rss=`cat memory.stat | grep rss | head -n 1 | cut -d " " -f 2`
-	cache=`cat memory.stat | grep cache | head -n 1 | cut -d " " -f 2`
 
-	if [ "$1" = "$rss" ] && [ "$2" = "$cache" ] ; then
+	if [ "$1" = "$rss" ]; then
 		pass=$PASS
 	else
 		pass=$FAIL
 	fi
 
-	result $pass "rss=$rss/$1, cache=$cache/$2"
+	result $pass "rss=$rss/$1"
 }
 
 # Run test cases which checks memory.stat after make
@@ -100,8 +98,7 @@ check_mem_stat()
 # $1 - the parameters of 'process', such as --shm
 # $2 - the -s parameter of 'process', such as 4096
 # $3 - the expected rss size
-# $4 - the expected pagecache size
-# $5 - check after free ?
+# $4 - check after free ?
 test_mem_stat()
 {
 	$TEST_PATH/memcg_process $1 -s $2 &
@@ -110,11 +107,11 @@ test_mem_stat()
 	/bin/kill -s SIGUSR1 $! 2> /dev/null
 	sleep 1
 
-	check_mem_stat $3 $4
+	check_mem_stat $3
 
 	/bin/kill -s SIGUSR1 $! 2> /dev/null
 	sleep 1
-	if [ $5 -eq 1 ]; then
+	if [ $4 -eq 1 ]; then
 		check_mem_stat 0 0
 	fi
 	/bin/kill -s SIGINT $! 2> /dev/null
@@ -259,75 +256,75 @@ test_subgroup()
 # Case 1 - 10: Test the management and counting of memory
 testcase_1()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE 0 0
+	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE 0
 }
 
 testcase_2()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE 0 $PAGESIZE 0
+	test_mem_stat "--mmap-file" $PAGESIZE 0 0
 }
 
 testcase_3()
 {
-	test_mem_stat "--shm -k 3" $PAGESIZE 0 $PAGESIZE 0
+	test_mem_stat "--shm -k 3" $PAGESIZE 0 0
 }
 
 testcase_4()
 {
 	test_mem_stat "--mmap-anon --mmap-file --shm" $PAGESIZE \
-		      $PAGESIZE $(($PAGESIZE*2)) 0
+		      $PAGESIZE 0
 }
 
 testcase_5()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE 0 0
+	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE 0
 }
 
 testcase_6()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE 0 1
+	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE 1
 }
 
 testcase_7()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE 0 $PAGESIZE 1
+	test_mem_stat "--mmap-file" $PAGESIZE 0 1
 }
 
 testcase_8()
 {
-	test_mem_stat "--shm -k 8" $PAGESIZE 0 $PAGESIZE 1
+	test_mem_stat "--shm -k 8" $PAGESIZE 0 1
 }
 
 testcase_9()
 {
 	test_mem_stat "--mmap-anon --mmap-file --shm" $PAGESIZE \
-		      $PAGESIZE $(($PAGESIZE*2)) 1
+		      $PAGESIZE 1
 }
 
 testcase_10()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE 0 1
+	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE 1
 }
 
 # Case 11 - 13: Test memory.failcnt
 testcase_11()
 {
 	echo $PAGESIZE > memory.limit_in_bytes
-	test_mem_stat "--mmap-anon" $(($PAGESIZE*2)) $PAGESIZE 0 0
+	test_mem_stat "--mmap-anon" $(($PAGESIZE*2)) $PAGESIZE 0
 	test_failcnt
 }
 
 testcase_12()
 {
 	echo $PAGESIZE > memory.limit_in_bytes
-	test_mem_stat "--mmap-file" $(($PAGESIZE*2)) 0 $PAGESIZE 0
+	test_mem_stat "--mmap-file" $(($PAGESIZE*2)) 0 0
 	test_failcnt
 }
 
 testcase_13()
 {
 	echo $PAGESIZE > memory.limit_in_bytes
-	test_mem_stat "--shm" $(($PAGESIZE*2)) 0 $PAGESIZE 0
+	test_mem_stat "--shm" $(($PAGESIZE*2)) 0 0
 	test_failcnt
 }
 

@@ -23,7 +23,6 @@
 top_srcdir              ?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
-include $(abs_srcdir)/../Makefile.inc
 
 CPPFLAGS		+= -DLINUX
 
