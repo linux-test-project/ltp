@@ -128,6 +128,9 @@ void setup(void)
 {
 	tst_require_root(NULL);
 
+	if (tst_kvercmp(2, 6, 32) < 0)
+		tst_brkm(TCONF, NULL, "2.6.32 or greater kernel required");
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
