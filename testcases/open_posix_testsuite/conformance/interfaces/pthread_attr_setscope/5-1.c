@@ -16,42 +16,47 @@
 
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include "posixtest.h"
 
-#define TEST "5-1"
-#define FUNCTION "pthread_attr_setscope"
-#define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
+#define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
+					f, strerror(rc), rc)
 
-/* What is the unsupported value of scope paramter? */
-#define UNSUPSCOPE -1
-
-int main()
+int main(void)
 {
-	if (1) {
-		printf("Untested for now, cannot find a unsupported inheritsched value\n");
-		return PTS_UNTESTED;
-	}
-	int                   rc=0;
-	pthread_attr_t        attr;
+	int rc1;
+	int rc2;
+	pthread_attr_t attr;
+	int status = PTS_PASS;
 
-	rc = pthread_attr_init(&attr);
-	if (rc != 0) {
-		printf(ERROR_PREFIX "pthread_attr_init\n");
+	rc1 = pthread_attr_init(&attr);
+	if (rc1 != 0) {
+		ERR_MSG("pthread_attr_init()", rc1);
 		exit(PTS_UNRESOLVED);
 	}
 
-  	rc = pthread_attr_setscope(&attr, UNSUPSCOPE);
-	if ((rc != ENOTSUP)) {
-		printf(ERROR_PREFIX "pthread_attr_setscope\n");
-		exit(PTS_UNRESOLVED);
+	rc1 = pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+	rc2 = pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
+	if (rc1 || rc2) {
+		if (rc1 && rc2) {
+			/* at least one must be supported */
+			ERR_MSG("pthread_attr_setscope()", rc1);
+			ERR_MSG("pthread_attr_setscope()", rc2);
+		}
+		if (rc1 && rc1 != ENOTSUP) {
+			ERR_MSG("pthread_attr_setscope()", rc1);
+			status = PTS_FAIL;
+		}
+		if (rc2 && rc2 != ENOTSUP) {
+			ERR_MSG("pthread_attr_setscope()", rc2);
+			status = PTS_FAIL;
+		}
 	}
-  	rc = pthread_attr_destroy(&attr);
-	if (rc != 0) {
-		printf(ERROR_PREFIX "pthread_attr_destroy\n");
-		exit(PTS_UNRESOLVED);
-	}
-	printf("Test PASS\n");
-	return PTS_PASS;
+
+	pthread_attr_destroy(&attr);
+
+	if (status == PTS_PASS)
+		printf("Test PASS\n");
+	return status;
 }
