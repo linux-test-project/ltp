@@ -5,7 +5,7 @@ Assertion	Tested?
 2		YES
 3		YES
 4		YES
-5		Incorrect test -- What's the unsupported value?
+5		YES
 6		won't test
 
 Note: 
