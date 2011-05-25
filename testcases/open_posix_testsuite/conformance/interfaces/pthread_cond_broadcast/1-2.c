@@ -110,7 +110,7 @@
 
 /* Do not create more than this amount of children: */
 #define MAX_PROCESS_CHILDREN  (200)
-#define MAX_THREAD_CHILDREN   (10000)
+#define MAX_THREAD_CHILDREN   (1000)
 
 #define TIMEOUT  (180)
 
