@@ -4,8 +4,10 @@
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
-
+ *
  * Test pthread_attr_setschedpolicy()
+ *
+ * Fix coding style:  Peter W. Morreale <pmorreale AT novell DOT com>
  *
  * Steps:
  * 1.  Initialize a pthread_attr_t object using pthread_attr_init()
@@ -15,37 +17,35 @@
 
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include "posixtest.h"
 
-#define TEST "4-1"
-#define FUNCTION "pthread_attr_setschedpolicy"
-#define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
+#define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
+				f, strerror(rc), rc)
 
 #define INVALIDPOLICY 999
 
-int main()
+int main(void)
 {
-	int                   rc=0;
-	pthread_attr_t        attr;
+	int rc;
+	pthread_attr_t attr;
+	int status = PTS_PASS;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
-		printf(ERROR_PREFIX "pthread_attr_init\n");
+		ERR_MSG("pthread_attr_init()", rc);
 		exit(PTS_UNRESOLVED);
 	}
 
   	rc = pthread_attr_setschedpolicy(&attr, INVALIDPOLICY);
-	if ((rc != EINVAL)) {
-		printf(ERROR_PREFIX "pthread_attr_setinheritsched\n");
-		exit(PTS_FAIL);
+	if (rc != EINVAL) {
+		ERR_MSG("pthread_attr_setschedpolicy()", rc);
+		status = PTS_FAIL;
 	}
-  	rc = pthread_attr_destroy(&attr);
-	if (rc != 0) {
-		printf(ERROR_PREFIX "pthread_attr_destroy\n");
-		exit(PTS_UNRESOLVED);
-	}
-	printf("Test PASS\n");
-	return PTS_PASS;
+
+	pthread_attr_destroy(&attr);
+
+	if (status == PTS_PASS)
+		printf("Test PASS\n");
+	return status;
 }
