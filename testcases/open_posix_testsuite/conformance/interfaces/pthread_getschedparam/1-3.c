@@ -211,6 +211,13 @@ int main(int argc, char *argv[])
 		UNRESOLVED(ret, "Failed to set inherit sched");
 	}
 
+	ret = pthread_attr_setschedpolicy(&ta, SCHED_RR);
+
+	if (ret != 0)
+	{
+		UNRESOLVED(ret, "Failed to set attribute policy");
+	}
+
 	sp.sched_priority = sched_get_priority_min(SCHED_RR);
 
 	if (sp.sched_priority == -1)
@@ -223,13 +230,6 @@ int main(int argc, char *argv[])
 	if (ret != 0)
 	{
 		UNRESOLVED(ret, "Failed to set attribute param");
-	}
-
-	ret = pthread_attr_setschedpolicy(&ta, SCHED_RR);
-
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to set attribute policy");
 	}
 
 	/* Create the thread with this attribute */
