@@ -21,9 +21,13 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "posixtest.h"
 
-void *a_thread_func()
+#define ERR_MSG(f, rc)  printf("Failed: func %s rc: %s (%u)\n", \
+				f, strerror(rc), rc)
+
+void *thread_func(void)
 {
 	struct sched_param sparam;
 	int policy, priority, policy_1;
@@ -34,35 +38,38 @@ void *a_thread_func()
 	sparam.sched_priority = priority;
 
 	rc = pthread_setschedparam(pthread_self(), policy, &sparam);
-	if (rc != 0)
-	{
-		printf("Error at pthread_setschedparam: rc=%d\n", rc);
+	if (rc) {
+		ERR_MSG("pthread_setschedparam()", rc);
 		exit(PTS_UNRESOLVED);
 	}
 	rc = pthread_getschedparam(pthread_self(), &policy_1, &sparam);
-	if (rc != 0)
-	{
-		printf("Error at pthread_getschedparam: rc=%d\n", rc);
-		exit(PTS_FAIL);
-	}
-	//printf("policy: %d, priority: %d\n", policy_1, sparam.sched_priority);
-	if (policy_1 != policy || sparam.sched_priority != priority)
-	{
-		printf("pthread_getschedparam did not get the correct value\n");
+	if (rc != 0) {
+		ERR_MSG("pthread_getschedparam()", rc);
 		exit(PTS_FAIL);
 	}
 
-	pthread_exit(0);
+	if (policy_1 != policy) {
+		printf("Failed:  policys:  %u != %u\n", policy_1, policy);
+		exit(PTS_FAIL);
+	}
+
+	if (sparam.sched_priority != priority) {
+		printf("Failed:  priorities: %u != %u\n",
+					sparam.sched_priority, priority);
+		exit(PTS_FAIL);
+	}
+
 	return NULL;
 }
 
 int main()
 {
 	pthread_t new_th;
+	int rc;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
-		perror("Error creating thread\n");
+	rc = pthread_create(&new_th, NULL, thread_func, NULL);
+	if (rc) {
+		ERR_MSG("pthread_create()", rc);
 		return PTS_UNRESOLVED;
 	}
 
