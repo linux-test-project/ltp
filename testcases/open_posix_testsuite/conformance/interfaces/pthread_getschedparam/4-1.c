@@ -1,323 +1,222 @@
 /*
-* Copyright (c) 2005, Bull S.A..  All rights reserved.
-* Created by: Sebastien Decugis
-
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it would be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program; if not, write the Free Software Foundation, Inc., 59
-* Temple Place - Suite 330, Boston MA 02111-1307, USA.
-
-* This sample test aims to check the following assertion:
-*
-* The function does not return EINTR
-
-* The steps are:
-* -> kill a thread which calls pthread_getschedparam
-* -> check that EINTR is never returned
-
-*/
-
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
-/******************************************************************************/
-/*********************** standard includes ************************************/
-/******************************************************************************/
-#include <pthread.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-#include <sched.h>
-#include <semaphore.h>
-#include <errno.h>
-#include <signal.h>
-
-/******************************************************************************/
-/***********************   Test framework   ***********************************/
-/******************************************************************************/
-#include "testfrmw.h"
-#include "testfrmw.c"
-/* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);
- *    where descr is a description of the error and ret is an int
- *   (error code for example)
- * FAILED(descr);
- *    where descr is a short text saying why the test has failed.
- * PASSED();
- *    No parameter.
  *
- * Both three macros shall terminate the calling process.
- * The testcase shall not terminate in any other maneer.
+ *   Copyright (c) Novell Inc. 2011
  *
- * The other file defines the functions
- * void output_init()
- * void output(char * string, ...)
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms in version 2 of the GNU General Public License as
+ *   published by the Free Software Foundation.
  *
- * Those may be used to output information.
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *   Author:  Peter W. Morreale <pmorreale AT novell DOT com>
+ *
+ *   Date:  27/05/2011
+ *
+ *   Test assertion 4 - EINTR is not returned.   Do this be creating two
+ *   in SCHED_FIFO, one thread spins until a signal is sent from the
+ *   other thread.
  */
 
-/******************************************************************************/
-/***************************** Configuration **********************************/
-/******************************************************************************/
-#ifndef VERBOSE
-#define VERBOSE 1
-#endif
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <errno.h>
+#include <signal.h>
+#include <posixtest.h>
 
-#define WITH_SYNCHRO
+#define ERR_MSG(f, rc)	printf("Failed: function: %s status: %s(%u)\n", \
+						f, strerror(rc), rc)
 
-/******************************************************************************/
-/*****************************    Test case   *********************************/
-/******************************************************************************/
+typedef void * (*tfunc)(void *);
 
-char do_it = 1;
-unsigned long count_ope = 0;
-#ifdef WITH_SYNCHRO
-sem_t semsig1;
-sem_t semsig2;
-unsigned long count_sig = 0;
-#endif
+/* Fleg, indicates when signal is sent */
+static int sent;
 
-sigset_t usersigs;
+#define SIG SIGHUP
 
-typedef struct
+/*
+ * Used to verify a signal is pending
+ * Note that this will pop the signal from the stack.
+ */
+#if VERIFY_PENDING
+static void verify(void)
 {
-	int sig;
-#ifdef WITH_SYNCHRO
-	sem_t *sem;
-#endif
+	sigset_t sig;
+	int s = 0;
+
+	sigemptyset(&sig);
+	sigaddset(&sig, SIG);
+	rc = sigwait(&sig, &s);
+	printf("sigwait: rc = %d, s = %d\n", rc, s);
 }
-
-thestruct;
-
-/* the following function keeps on sending the signal to the process */
-void * sendsig (void * arg)
-{
-	thestruct * thearg = (thestruct *) arg;
-	int ret;
-	pid_t process;
-
-	process = getpid();
-
-	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
-	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
-
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in signal thread");
-	}
-
-	while (do_it)
-	{
-#ifdef WITH_SYNCHRO
-
-		if ((ret = sem_wait(thearg->sem)) == -1)
-		{
-			UNRESOLVED(errno, "Sem_wait in sendsig");
-		}
-
-		count_sig++;
 #endif
 
-		ret = kill(process, thearg->sig);
-
-		if (ret != 0)
-		{
-			UNRESOLVED(errno, "Kill in sendsig");
-		}
-
-	}
-
-	return NULL;
-}
-
-/* Next are the signal handlers. */
-/* This one is registered for signal SIGUSR1 */
-void sighdl1(int sig)
+static void *test_thread(void *data)
 {
-#ifdef WITH_SYNCHRO
-
-	if (sem_post(&semsig1) == -1)
-	{
-		UNRESOLVED(errno, "Sem_post in signal handler 1");
-	}
-
-#endif
-}
-
-/* This one is registered for signal SIGUSR2 */
-void sighdl2(int sig)
-{
-#ifdef WITH_SYNCHRO
-
-	if (sem_post(&semsig2) == -1)
-	{
-		UNRESOLVED(errno, "Sem_post in signal handler 2");
-	}
-
-#endif
-}
-
-/* Test function -- calls pthread_equal() and checks that EINTR is never returned. */
-void * test(void * arg)
-{
-	int ret = 0;
-	int pol;
-
 	struct sched_param sp;
+	int policy;
+	int rc;
+	long status;
 
-	/* We don't block the signals SIGUSR1 and SIGUSR2 for this THREAD */
-	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 in worker thread");
+	/*
+	 * Wait until the signal is posted
+	 */
+	while (!sent)
+		sched_yield();
+
+#if  VERIFY_PENDING
+	verify();
+#endif
+
+	rc = pthread_getschedparam(pthread_self(), &policy, &sp);
+	switch (rc) {
+	case EINTR:
+		status = PTS_FAIL;
+		ERR_MSG("pthread_getschedparam", rc);
+		break;
+	case 0:
+		status = PTS_PASS;
+		break;
+	default:
+		ERR_MSG("pthread_getschedparam", rc);
+		status = PTS_UNRESOLVED;
+		break;
 	}
 
-	while (do_it)
-	{
-		count_ope++;
-		ret = pthread_getschedparam(pthread_self(), &pol, &sp);
-
-		if (ret == EINTR)
-		{
-			FAILED("EINTR was returned");
-		}
-
-		if (ret != 0)
-		{
-			UNRESOLVED(ret, "Unexpected error returned");
-		}
-	}
-
-	return NULL;
+	return (void *) status;
 }
 
-/* Main function */
-int main (int argc, char * argv[])
+static void *kill_thread(void *data)
 {
-	int ret;
-	pthread_t th_work, th_sig1, th_sig2;
-	thestruct arg1, arg2;
+	pthread_t *t = data;
+	int rc;
 
-	struct sigaction sa;
+	rc = pthread_kill(*t, SIG);
 
-	/* Initialize output routine */
-	output_init();
+	/* Tell test thread signal is sent */
+	sent = 1;
 
-	/* We need to register the signal handlers for the PROCESS */
-	sigemptyset (&sa.sa_mask);
-	sa.sa_flags = 0;
-	sa.sa_handler = sighdl1;
-
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)) == -1)
-	{
-		UNRESOLVED(ret, "Unable to register signal handler1");
+	if (rc) {
+		ERR_MSG("pthread_kill()", rc);
+		return (void *) PTS_UNRESOLVED;
 	}
 
-	sa.sa_handler = sighdl2;
+	return (void *) PTS_PASS;
+}
 
-	if ((ret = sigaction (SIGUSR2, &sa, NULL)) == -1)
-	{
-		UNRESOLVED(ret, "Unable to register signal handler2");
+static int create_thread(int prio, tfunc f, void *data, pthread_t *tid)
+{
+	int rc;
+	char *func;
+	struct sched_param sp;
+	pthread_attr_t attr;
+
+	func = "pthread_attr_init()";
+	rc = pthread_attr_init(&attr);
+	if (rc != 0)
+		goto done;
+
+	func = "pthread_attr_setschedpolicy()";
+	rc = pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+	if (rc != 0)
+		goto error;
+
+	func = "pthread_attr_setinheritsched()";
+	rc = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+	if (rc != 0)
+		goto error;
+
+	func = "pthread_attr_setschedparam()";
+	sp.sched_priority = prio;
+	rc = pthread_attr_setschedparam(&attr, &sp);
+	if (rc != 0)
+		goto error;
+
+	rc = pthread_create(tid, &attr, f, data);
+	if (rc) {
+		ERR_MSG("pthread_create()", rc);
+		goto error;
 	}
 
-	/* We prepare a signal set which includes SIGUSR1 and SIGUSR2 */
-	sigemptyset(&usersigs);
+	pthread_attr_destroy(&attr);
 
-	ret = sigaddset(&usersigs, SIGUSR1);
+	return 0;
 
-	ret |= sigaddset(&usersigs, SIGUSR2);
+error:
+	pthread_attr_destroy(&attr);
+done:
+	ERR_MSG(func, rc);
+	return -1;
+}
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Unable to add SIGUSR1 or 2 to a signal set");
-	}
 
-	/* We now block the signals SIGUSR1 and SIGUSR2 for this THREAD */
-	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in main thread");
-	}
+int main(void)
+{
+	int status;
+	int rc;
+	void *r1;
+	void *r2;
+	char *name;
+	pthread_t t1;
+	pthread_t t2;
+	sigset_t sig;
 
-#ifdef WITH_SYNCHRO
-	if (sem_init(&semsig1, 0, 1) == -1)
-	{
-		UNRESOLVED(errno, "Semsig1  init");
-	}
+	status = PTS_UNRESOLVED;
 
-	if (sem_init(&semsig2, 0, 1) == -1)
-	{
-		UNRESOLVED(errno, "Semsig2  init");
-	}
+	name = "sigaddmask()";
+	sigemptyset(&sig);
+	rc = sigaddset(&sig, SIG);
+	if (rc)
+		goto done;
 
-#endif
+	name = "pthread_sigmask()";
+	rc = pthread_sigmask(SIG_BLOCK, &sig, NULL);
+	if (rc)
+		goto done;
 
-	if ((ret = pthread_create(&th_work, NULL, test, NULL)) == -1)
-	{
-		UNRESOLVED(ret, "Worker thread creation failed");
-	}
+	name = "pthread_create() - test_thread";
+	rc = create_thread(25, test_thread, NULL, &t1);
+	if (rc)
+		goto done;
 
-	arg1.sig = SIGUSR1;
-	arg2.sig = SIGUSR2;
-#ifdef WITH_SYNCHRO
-	arg1.sem = &semsig1;
-	arg2.sem = &semsig2;
-#endif
+	name = "pthread_create() - kill_thread";
+	rc = create_thread(25, kill_thread, &t1, &t2);
+	if (rc)
+		goto done;
 
-	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) & arg1)) != 0)
-	{
-		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
-	}
+	name = "pthread_join() - test_thread";
+	rc = pthread_join(t1, &r1);
+	if (rc)
+		goto done;
 
-	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *) & arg2)))
-	{
-		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
-	}
+	name = "pthread_join() - kill_thread";
+	rc = pthread_join(t2, &r2);
+	if (rc)
+		goto done;
 
-	/* Let's wait for a while now */
-	sleep(1);
+	status = PTS_PASS;
+	if ((long) r1 != PTS_PASS)
+		status = (long) r1;
+	if ((long) r2 != PTS_PASS)
+		status = (long) r2;
 
-	/* Now stop the threads and join them */
-	do {
-		do_it = 0;
-	} while (do_it);
+	if (status == PTS_PASS)
+		printf("Test PASS\n");
 
-	if ((ret = pthread_join(th_sig1, NULL)))
-	{
-		UNRESOLVED(ret, "Signal 1 sender thread join failed");
-	}
+	return status;
 
-	if ((ret = pthread_join(th_sig2, NULL)))
-	{
-		UNRESOLVED(ret, "Signal 2 sender thread join failed");
-	}
+done:
+	ERR_MSG(name, rc);
+	return PTS_UNRESOLVED;
 
-	if ((ret = pthread_join(th_work, NULL)))
-	{
-		UNRESOLVED(ret, "Worker thread join failed");
-	}
-
-#if VERBOSE > 0
-	output("Test executed successfully.\n");
-
-	output("  %d initializations.\n", count_ope);
-
-#ifdef WITH_SYNCHRO
-	output("  %d signals were sent meanwhile.\n", count_sig);
-
-#endif
-#endif
-	PASSED;
 }
