@@ -19,33 +19,34 @@
 
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include "posixtest.h"
 
-void *a_thread_func()
+#define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
+				f, strerror(rc), rc)
+
+static void *thread_func(void)
 {
 	struct sched_param sparam;
 	int policy;
 	int rc;
 
 	rc = pthread_getschedparam(pthread_self(), &policy, &sparam);
-	if (rc != 0)
-	{
-		printf("Error at pthread_getschedparam: rc=%d\n", rc);
+	if (rc != 0) {
+		ERR_MSG("pthread_getschedparam()", rc);
 		exit(PTS_FAIL);
 	}
-	printf("policy: %d, priority: %d\n", policy, sparam.sched_priority);
-	pthread_exit(0);
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
+	int rc;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
-		perror("Error creating thread\n");
+	rc = pthread_create(&new_th, NULL, thread_func, NULL);
+	if (rc) {
+		ERR_MSG("pthread_create()", rc);
 		return PTS_UNRESOLVED;
 	}
 
