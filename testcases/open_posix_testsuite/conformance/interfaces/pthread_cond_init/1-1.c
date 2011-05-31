@@ -7,45 +7,56 @@
 
  * Test that pthread_cond_init()
  *   shall initialize the condition variable referenced by cond with attributes
- *   referenced by attr. If attr is NULL, the default condition variable attributes
- *   shall be used; the effect is the same as passing the address of a default
- *   condition variable attributes object.
+ *   referenced by attr. If attr is NULL, the default condition variable
+ *   attributes shall be used; the effect is the same as passing the address
+ *   of a default condition variable attributes object.
 
  * NOTE: There is no direct way to judge if two condition variables are equal,
  *       so this test does not cover the statement in the last sentence.
  *
+ *
+ *  Modified - LK coding style 30/05/2011
+ *  Peter W. Morreale <pmorreale AT novell DOT com>
  */
 
 #include <pthread.h>
 #include <stdio.h>
+#include <string.h>
 #include "posixtest.h"
 
-int main()
+#define ERR_MSG(f, rc)  printf("Failed: func: %s rc: %s (%u)\n", \
+					f, strerror(rc), rc);
+
+int main(void)
 {
 	pthread_condattr_t condattr;
-	pthread_cond_t  cond1, cond2;
+	pthread_cond_t cond1;
+	pthread_cond_t cond2;
 	int rc;
+	char *f;
+	int status = PTS_UNRESOLVED;
 
-	/* Initialize a condition variable attributes object */
-	if ((rc=pthread_condattr_init(&condattr)) != 0) {
-		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
-		return PTS_UNRESOLVED;
-	}
+	f = "pthread_condattr_init()";
+	rc = pthread_condattr_init(&condattr);
+	if (rc)
+		goto done;
 
-	/* Initialize cond1 with the default condition variable attributes */
-	if ((rc=pthread_cond_init(&cond1,&condattr)) != 0) {
-		fprintf(stderr,"Fail to initialize cond1, rc=%d\n",rc);
-		printf("Test FAILED\n");
-		return PTS_FAIL;
-	}
+	status = PTS_FAIL;
+	f = "pthread_cond_init() - condattr";
+	rc = pthread_cond_init(&cond1, &condattr);
+	if (rc)
+		goto done;
 
-	/* Initialize cond2 with NULL attributes */
-	if ((rc=pthread_cond_init(&cond2,NULL)) != 0) {
-		fprintf(stderr,"Fail to initialize cond2, rc=%d\n",rc);
-		printf("Test FAILED\n");
-		return PTS_FAIL;
-	}
+	f = "pthread_cond_init() - NULL";
+	rc = pthread_cond_init(&cond2, NULL);
+	if (rc)
+		goto done;
 
 	printf("Test PASSED\n");
 	return PTS_PASS;
+
+done:
+	ERR_MSG(f, rc);
+	return status;
+
 }
