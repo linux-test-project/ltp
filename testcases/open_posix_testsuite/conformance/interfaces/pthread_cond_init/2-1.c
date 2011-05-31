@@ -11,13 +11,11 @@
  */
 
 #include <pthread.h>
-#include <stdio.h>
-#include <errno.h>
 #include "posixtest.h"
 
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
-int main()
+int main(void)
 {
 	printf("Test PASSED\n");
 	return PTS_PASS;
