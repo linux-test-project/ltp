@@ -92,7 +92,6 @@ do_test()
 	echo "TEST PASSES"
 	do_cleanup
 	return 0
-
 }
 do_setup
 do_test
