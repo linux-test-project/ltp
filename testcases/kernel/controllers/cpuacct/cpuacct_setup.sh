@@ -58,7 +58,7 @@ cleanup ()
 }
 task_kill ()
 {
-	for i in `ps -e | grep cpuacct_taski* | cut -d" " -f1`
+	for i in `ps -e | grep cpuacct_task | awk '{print $1}'`
 	do
 		kill -SIGUSR1 $i
 	done
