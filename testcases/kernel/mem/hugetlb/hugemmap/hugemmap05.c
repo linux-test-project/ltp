@@ -299,8 +299,16 @@ static void setup(void)
 {
 	FILE *fp;
 	int fd;
+	struct stat stat_buf;
 
 	tst_require_root(NULL);
+
+	if (stat(pathover, &stat_buf) == -1) {
+		if (errno == ENOENT || errno == ENOTDIR)
+			tst_brkm(CONF, NULL,
+			    "file %s does not exist in the system", pathover);
+	}
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 	tst_tmpdir();
