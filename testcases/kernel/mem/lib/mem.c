@@ -256,8 +256,16 @@ void mount_mem(char *name, char *fs, char *options, char *path, char *path_new)
 {
 	if (mkdir(path, 0777) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir %s", path);
-	if (mount(name, path, fs, 0, options) == -1)
+	if (mount(name, path, fs, 0, options) == -1) {
+		if (errno == ENODEV) {
+			if (rmdir(path) == -1)
+				tst_resm(TWARN|TERRNO, "rmdir %s failed",
+				    path);
+			tst_brkm(TCONF, NULL,
+			    "file system %s is not configured in kernel", fs);
+		}
 		tst_brkm(TBROK|TERRNO, cleanup, "mount %s", path);
+	}
 	if (mkdir(path_new, 0777) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir %s", path_new);
 }
