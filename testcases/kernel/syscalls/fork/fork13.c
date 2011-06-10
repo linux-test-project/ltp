@@ -114,7 +114,7 @@ void check(void)
 			}
 			last_pid = pid;
 
-			reaped = wait(&status);
+			reaped = waitpid(pid, &status, 0);
 			if (reaped != pid) {
 				tst_resm(TFAIL,
 					"Wait return value: expected pid=%d, "
