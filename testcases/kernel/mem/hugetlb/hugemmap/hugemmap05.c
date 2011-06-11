@@ -305,7 +305,7 @@ static void setup(void)
 
 	if (stat(pathover, &stat_buf) == -1) {
 		if (errno == ENOENT || errno == ENOTDIR)
-			tst_brkm(CONF, NULL,
+			tst_brkm(TCONF, NULL,
 			    "file %s does not exist in the system", pathover);
 	}
 
