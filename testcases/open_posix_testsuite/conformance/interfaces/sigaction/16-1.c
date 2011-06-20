@@ -1,37 +1,27 @@
 /*
-* Copyright (c) 2005, Bull S.A..  All rights reserved.
-* Created by: Sebastien Decugis
-
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it would be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program; if not, write the Free Software Foundation, Inc., 59
-* Temple Place - Suite 330, Boston MA 02111-1307, USA.
-
-* This sample test aims to check the following assertions:
-*
-* If SA_RESTART is set in sa_flags, interruptible function interrupted by signal
-* shall restart silently.
-
-* The steps are:
-* -> create a child thread
-* -> child registers a handler for SIGABRT with SA_RESTART, then waits for the semaphore
-* -> parent kills the child with SIGABRT, then post the semaphore.
-
-* The test fails if the sem_wait function returns EINTR
-
-*Note:
-This test uses sem_wait to check if EINTR is returned. As the function is not required to
-fail with EINTR, the test may return PASS and the feature not be correct (false positive).
-Anyway, a false negative status cannot be returned.
-
-*/
+ * Copyright (c) 2011, Novell Inc.  All rights reserved.
+ * Author: Peter W. Morreale <pmorreale@novell.com>
+ *
+ * Based on a similar original program written by Sebastien Decugis
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write the Free Software Foundation, Inc., 59
+ * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ *
+ * This sample test aims to check the following assertions:
+ *
+ * If SA_RESTART is set in sa_flags, interruptible function interrupted
+ * by signal shall restart silently.
+ *
+ */
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
@@ -39,184 +29,212 @@ Anyway, a false negative status cannot be returned.
 /* This test tests for an XSI feature */
 #define _XOPEN_SOURCE 600
 
-/******************************************************************************/
-/*************************** standard includes ********************************/
-/******************************************************************************/
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <semaphore.h>
 #include <signal.h>
 #include <errno.h>
+#include <posixtest.h>
 
-/******************************************************************************/
-/***************************   Test framework   *******************************/
-/******************************************************************************/
-#include "testfrmw.h"
-#include "testfrmw.c"
-/* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);
- *    where descr is a description of the error and ret is an int
- *   (error code for example)
- * FAILED(descr);
- *    where descr is a short text saying why the test has failed.
- * PASSED();
- *    No parameter.
- *
- * Both three macros shall terminate the calling process.
- * The testcase shall not terminate in any other maneer.
- *
- * The other file defines the functions
- * void output_init()
- * void output(char * string, ...)
- *
- * Those may be used to output information.
+
+/*
+ * Define an array of signals we want to test against.
+ * Add more if desired.
  */
 
-/******************************************************************************/
-/**************************** Configuration ***********************************/
-/******************************************************************************/
-#ifndef VERBOSE
-#define VERBOSE 1
-#endif
+struct sig_info {
+	int sig;
+	char *sig_name;
+	char caught;
+};
 
-#define SIGNAL SIGABRT
+static struct sig_info sigs[] = {
+	{SIGHUP, "SIGHUP", 0},
+	{SIGINT, "SIGINT", 0},
+	{SIGQUIT, "SIGQUIT", 0},
+	{SIGILL, "SIGILL", 0},
+	{SIGTRAP, "SIGTRAP", 0},
+	{SIGABRT, "SIGABRT", 0},
+	{SIGBUS, "SIGBUS", 0},
+	{SIGFPE, "SIGFPE", 0},
+	{SIGUSR1, "SIGUSR1", 0},
+	{SIGSEGV, "SIGSEGV", 0},
+	{SIGUSR2, "SIGUSR2", 0},
+	{SIGPIPE, "SIGPIPE", 0},
+	{SIGALRM, "SIGALRM", 0},
+	{SIGTERM, "SIGTERM", 0},
+	{SIGSTKFLT, "SIGSTKFLT", 0},
+	{SIGCHLD, "SIGCHLD", 0},
+	{SIGCONT, "SIGCONT", 0},
+	{SIGTSTP, "SIGTSTP", 0},
+	{SIGTTIN, "SIGTTIN", 0},
+	{SIGTTOU, "SIGTTOU", 0},
+	{SIGURG, "SIGURG", 0},
+	{SIGXCPU, "SIGXCPU", 0},
+	{SIGXFSZ, "SIGXFSZ", 0},
+	{SIGVTALRM, "SIGVTALRM", 0},
+	{SIGPROF, "SIGPROF", 0},
+	{SIGWINCH, "SIGWINCH", 0},
+	{SIGPOLL, "SIGPOLL", 0},
+	{-1, NULL, 0}  /* add  real time sigs? */
+};
 
-/******************************************************************************/
-/***************************    Test case   ***********************************/
-/******************************************************************************/
+static int ready;
+static sem_t sem;
 
-volatile sig_atomic_t caught = 0;
-sem_t sem;
+/* Lookup */
+struct sig_info *lookup(int signo)
+{
+	struct sig_info *s = &sigs[0];
+
+	while (s->sig > 0) {
+		if (s->sig == signo)
+			return s;
+		s++;
+	}
+	return NULL;
+}
 
 /* Handler function */
 void handler(int signo)
 {
-	printf("Caught signal %d\n", signo);
-	caught++;
+	struct sig_info *s;
+
+	s = lookup(signo);
+	if (s)
+		s->caught = 1;
 }
 
 /* Thread function */
-void * threaded (void * arg)
+void *threaded(void *arg)
 {
-	int ret = 0;
+	int rc;
+	int status = PTS_PASS;
+	struct sched_param sp = {10};
+	struct sig_info *s = arg;
 
-	ret = sem_wait(&sem);
-
-	if (ret != 0)
-	{
-		if (errno == EINTR)
-		{
-			FAILED("The function returned EINTR while SA_RESTART is set");
-		}
-		else
-		{
-			UNRESOLVED(errno, "sem_wait failed");
-		}
+	/*
+	 * Move into SCHED_FIFO to help ensure we are waiting in
+	 * sem_wait when the signal is delivered
+	 */
+	rc = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
+	if (rc) {
+		printf("Failed: pthread_setschedparam(SCHED_FIFO), root?\n");
+		ready = 1;
+		return (void *) PTS_UNRESOLVED;
 	}
 
-	return NULL;
+	ready = 1;
+
+	rc = sem_wait(&sem);
+	if (rc) {
+		status = PTS_UNRESOLVED;
+		printf("Failed: sem_wait(): errno: %s signal: %s\n",
+				strerror(errno), s->sig_name);
+		if (errno == EINTR)
+			status = PTS_FAIL;
+	}
+
+	return (void *)((long) status);
 }
 
-/* main function */
-int main()
+int test_sig(struct sig_info *s)
 {
-	int ret;
+	int rc;
+	int status = PTS_UNRESOLVED;
 	pthread_t child;
+	char *label;
+	void *thread_status;
 
-	struct sigaction sa;
+	label = "sem_init()";
+	rc = sem_init(&sem, 0, 0);
+	if (rc)
+		goto done;
 
-	/* Initialize output */
-	output_init();
+	/* reset flag */
+	ready = 0;
 
-	/* Set the signal handler */
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = handler;
-	ret = sigemptyset(&sa.sa_mask);
+	label = "pthread_create()";
+	rc = pthread_create(&child, NULL, threaded, s);
+	if (rc)
+		goto done;
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to empty signal set");
-	}
-
-	/* Install the signal handler for SIGNAL */
-	ret = sigaction(SIGNAL, &sa, 0);
-
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to set signal handler");
-	}
-
-	/* Initialize the semaphore */
-	ret = sem_init(&sem, 0, 0);
-
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to init a semaphore");
-	}
-
-	/* Create the child thread */
-	ret = pthread_create(&child, NULL, threaded, NULL);
-
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to create a child thread");
-	}
-
-	/* Let the child thread enter the wait routine...
-	  we use sched_yield as there is no certain way to test that the child
-	  is waiting for the semaphore... */
+	/*
+	 * sync on the ready flag.  Since the child is running in
+	 * SCHED_FIFO, it likely will continue running and wind up in
+	 * sem_wait() prior to this thread sending a signal.
+	 *
+	 * Do one more yield for good luck.
+	 */
+	while (!ready)
+		sched_yield();
 	sched_yield();
 
-	sched_yield();
+	label = "pthread_kill()";
+	rc = pthread_kill(child, s->sig);
+	if (rc)
+		goto done;
 
-	sched_yield();
-
-	/* Ok, now kill the child */
-	ret = pthread_kill(child, SIGNAL);
-
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to kill the child thread");
-	}
-
-	/* wait that the child receives the signal */
-	while (!caught)
+	while (!s->caught)
 		sched_yield();
 
-	/* Now let the child run and terminate */
-	ret = sem_post(&sem);
+	label = "sem_post()";
+	rc = sem_post(&sem);
+	if (rc)
+		goto done;
 
-	if (ret != 0)
-	{
-		UNRESOLVED(errno, "Failed to post the semaphore");
+	label = "pthread_join()";
+	rc = pthread_join(child, &thread_status);
+	if (rc)
+		goto done;
+
+	sem_destroy(&sem);
+
+	status = ((long) thread_status) && 0xFFFFFFFF;
+
+	return status;
+
+done:
+	printf("Failed: func: %s, rc: %d errno: %s signal: %s\n",
+			label, rc, strerror(errno), s->sig_name);
+	return status;
+}
+
+int main(void)
+{
+	int rc;
+	struct sig_info *s = &sigs[0];
+	struct sigaction sa;
+	struct sigaction sa_org;
+
+	sa.sa_flags = SA_RESTART;
+	sa.sa_handler = handler;
+
+	while (s->sig > 0) {
+		sigemptyset(&sa.sa_mask);
+		rc = sigaction(s->sig, &sa, &sa_org);
+		if (rc)
+			goto done;
+
+		rc = test_sig(s);
+		if (rc != PTS_PASS)
+			break;
+
+		sigaction(s->sig, &sa_org, NULL);
+		s++;
 	}
 
-	ret = pthread_join(child, NULL);
+	if (rc == PTS_PASS)
+		printf("Test PASS\n");
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to join the thread");
-	}
+	return rc;
 
-	/* terminate */
-	ret = sem_destroy(&sem);
-
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Failed to destroy the semaphore");
-	}
-
-	/* Test passed */
-#if VERBOSE > 0
-
-	output("Test passed\n");
-
-#endif
-
-	PASSED;
+done:
+	printf("Failed: sigaction(): errno: %s, signal: %s\n",
+			strerror(errno), s->sig_name);
+	return PTS_FAIL;
 }
