@@ -32,11 +32,6 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void myhandler(int signo, siginfo_t *info, void *context)
-{
-	printf("Inside Handler\n");
-}
-
 int main(void)
 {
 	int pid = getpid();
@@ -44,12 +39,6 @@ int main(void)
 	long syslimit;
 	int rc;
 	union sigval value;
-	struct sigaction act;
-
-	act.sa_flags = SA_SIGINFO;
-	act.sa_sigaction = myhandler;
-	sigemptyset(&act.sa_mask);
-	sigaction(SIGTOTEST, &act, 0);
 
 	value.sival_int = 0;	/* 0 is just an arbitrary value */
 	pid = getpid();
