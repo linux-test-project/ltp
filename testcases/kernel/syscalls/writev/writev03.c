@@ -62,8 +62,6 @@
 #define	MAX_IOVEC	4
 #define	DATA_FILE	"writev_data_file"
 
-#if !defined(UCLINUX)
-
 char buf1[K_1], buf2[K_1], buf3[K_1];
 char *bad_addr = 0;
 
@@ -284,9 +282,3 @@ void l_seek(int fdesc, off_t offset, int whence)
 	if (lseek(fdesc, offset, whence) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "lseek failed");
 }
-#else
-int main()
-{
-	tst_brkm(TCONF, NULL, "test is not available on uClinux");
-}
-#endif /* if !defined(UCLINUX) */

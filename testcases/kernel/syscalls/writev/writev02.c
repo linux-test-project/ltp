@@ -59,8 +59,6 @@
 #include "usctest.h"
 #include <sys/mman.h>
 
-#if !defined(UCLINUX)
-
 #define	K_1	8192
 
 #define	NBUFS		2
@@ -242,9 +240,3 @@ void l_seek(int fdesc, off_t offset, int whence)
 	if (lseek(fdesc, offset, whence) == -1)
 		tst_resm(TBROK|TERRNO, "lseek failed");
 }
-#else
-int main()
-{
-	tst_brkm(TCONF, NULL, "test is not available on uClinux");
-}
-#endif /* if !defined(UCLINUX) */
