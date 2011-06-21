@@ -37,6 +37,8 @@ int main()
 {
 	sigset_t pendingset;
 	struct sigaction act;
+	int rc;
+
 	act.sa_handler = myhandler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
@@ -46,7 +48,8 @@ int main()
                	return PTS_UNRESOLVED;
         }
 
-        if (sigset(SIGCHLD,SIG_HOLD) != SIG_HOLD) {
+        rc = sigset(SIGCHLD,SIG_HOLD);
+        if (rc < 0) {
                 perror("Unexpected error while using sigset()");
                	return PTS_UNRESOLVED;
         }
