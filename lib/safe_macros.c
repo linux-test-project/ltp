@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/mman.h>
+#include <sys/resource.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -106,6 +107,20 @@ safe_getpwnam(const char *file, const int lineno, void (*cleanup_fn)(void),
 		    file, lineno);
 
 	return (rval);
+}
+
+int
+safe_getrusage(const char *file, const int lineno, void (*cleanup_fn)(void),
+	    int who, struct rusage *usage)
+{
+	int rval;
+
+	rval = getrusage(who, usage);
+	if (rval == -1)
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "getrusage failed at %s:%d",
+		    file, lineno);
+
+	return rval;
 }
 
 void*

@@ -58,6 +58,11 @@ struct passwd*	safe_getpwnam(const char *file, const int lineno,
 #define SAFE_GETPWNAM(cleanup_fn, name)	\
 	safe_getpwnam(__FILE__, __LINE__, cleanup_fn, (name))
 
+int     safe_getrusage(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), int who, struct rusage *usage);
+#define SAFE_GETRUSAGE(cleanup_fn, who, usage) \
+	safe_getrusage(__FILE__, __LINE__, (cleanup_fn), (who), (usage))
+
 void*	safe_malloc(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), size_t size);
 #define SAFE_MALLOC(cleanup_fn, size)	\
