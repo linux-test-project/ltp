@@ -99,7 +99,7 @@ calc_allowed_latency()
 		sys_latency=`cat /proc/sys/kernel/sched_wakeup_granularity_ns`
 		allowed_latency=`expr $sys_latency / 1000` # in microseconds
 	else
-		num_cpus=`cat /proc/cpuinfo | grep -w processor | wc -l`
+		num_cpus=`cat /proc/cpuinfo | grep -w -i processor | wc -l`
 		log2 $num_cpus;
 		ln_num_cpus=$?
 		ln_num_cpus=`expr $ln_num_cpus + 1`
@@ -170,7 +170,7 @@ PWD=`pwd`
 	"2")	# With group scheduling
 		echo TINFO "Running cpuctl Latency Test 2"
 
-		NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`;
+		NUM_CPUS=`cat /proc/cpuinfo | grep -w -i processor | wc -l`;
 		get_num_groups;	# NUM_GROUPS is set now
 		do_setup;
 

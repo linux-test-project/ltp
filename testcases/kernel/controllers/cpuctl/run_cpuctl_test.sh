@@ -59,7 +59,7 @@ NICEVALUE=-20;		# Nice value to renice a task with
 SCRIPT_PID=$$;
 PWD=`pwd`
 cd $LTPROOT/testcases/bin/
-NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
+NUM_CPUS=`cat /proc/cpuinfo | grep -w -i processor | wc -l`
 
 . parameters.sh
 

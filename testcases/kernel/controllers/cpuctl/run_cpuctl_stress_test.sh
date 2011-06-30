@@ -64,7 +64,7 @@ SCRIPT_PID=$$;
 FILE="stress-678";		# suffix for results file
 TEST_NAME="CPUCTL NUM_GROUPS vs NUM_TASKS TEST:";
 
-NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
+NUM_CPUS=`cat /proc/cpuinfo | grep -w -i processor | wc -l`
 N=$NUM_CPUS;		# Default total num of groups (classes)
 M=10;			# Default total num of tasks in a group
 

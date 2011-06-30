@@ -68,7 +68,7 @@ cleanup
 
 mes="CPU Accounting Controller"
 cg_path="/dev/cpuacct";
-num_online_cpus=`cat /proc/cpuinfo | grep -w processor | wc -l`
+num_online_cpus=`cat /proc/cpuinfo | grep -w -i processor | wc -l`
 
 #Function to create tasks equal to num_online_cpus.
 nr_tasks ()
