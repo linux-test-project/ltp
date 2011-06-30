@@ -45,6 +45,7 @@ FAIL=1
 
 PAGESIZE=`./memcg_getpagesize`
 HUGEPAGESIZE=`grep Hugepagesize /proc/meminfo | awk '{ print $2 }'`
+[ -z $HUGEPAGESIZE ] && HUGEPAGESIZE=0
 HUGEPAGESIZE=$(( $HUGEPAGESIZE * 1024 ))
 
 cur_id=0
