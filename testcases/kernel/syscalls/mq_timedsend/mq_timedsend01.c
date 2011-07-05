@@ -367,7 +367,7 @@ static int do_test(struct test_case *tc)
 	/*
 	 * Prepare send message
 	 */
-	for (i = 0; i < tc->len; i++)
+	for (i = 0; i < tc->len && i < sizeof(smsg); i++)
 		smsg[i] = i;
 
 	/*
