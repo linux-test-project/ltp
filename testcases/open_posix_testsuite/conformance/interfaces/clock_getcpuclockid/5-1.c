@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 
 		pwd = getpwnam("nobody");
 		if (pwd != NULL) {
-			setuid(pwd->pw_uid);
 			setgid(pwd->pw_gid);
+			setuid(pwd->pw_uid);
 		}
 
 	}
