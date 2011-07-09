@@ -19,6 +19,7 @@
  */
 #include <sched.h>
 #include <stdio.h>
+#include <limits.h>
 #include <errno.h>
 #include <unistd.h>
 #include "posixtest.h"
@@ -28,12 +29,7 @@ int main() {
 	struct sched_param param;
 	int invalid_policy;
 
-	invalid_policy = 0;
-	/* Linux does not treat minus value as invalid for policy */
-	while (invalid_policy == SCHED_OTHER ||
-		invalid_policy == SCHED_FIFO ||
-		invalid_policy == SCHED_RR)
-	invalid_policy++;
+	invalid_policy = INT_MAX;
 
 	if (sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
