@@ -1,68 +1,88 @@
 /*
- * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
- * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this
- * source tree.
-
- This program tests the assertion that there are no alternate signal stacks in the new
- process image, after a successful call to one of the exec functions.
-
- Steps:
- - Set up a handler for signal SIGTOTEST and set the sa_flags member to SA_ONSTACK.
- - Allocate memory for the alternate signal stack
- - call sigaltstack() to define the alternate signal stack
- - Now execl() to a helper program call 9-buildonly.test.
- - The helper program will use sigaltstack to examine/obtain the current alternate signal
-   stack and verify that the alternate signal stack defined here has not been carried
-   over to the helper program.
-*/
+ *   Copyright (c) Novell Inc. 2011
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms in version 2 of the GNU General Public License as
+ *   published by the Free Software Foundation.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *   Author:  Peter W. Morreale <pmorreale AT novell DOT com>
+ *   Date:    09.07.2011
+ *
+ *
+ * Test assertion 9-1 - Prove that an established alternate signal stack
+ * is not available after an exec.
+ *
+ */
 
 #define _XOPEN_SOURCE 600
 
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <signal.h>
 #include "posixtest.h"
 
-#define SIGTOTEST SIGUSR1
+static stack_t a;
+static char path[PATH_MAX+1];
 
-stack_t alternate_s;
-
-void handler (int signo) {
-	printf("Inside Handler\n");
-}
-
-int main()
+int main(int argc, char **argv)
 {
+	int rc;
+	char path[PATH_MAX+1];
 
-	struct sigaction act;
-	act.sa_flags = SA_ONSTACK;
-	act.sa_handler = handler;
-	sigemptyset(&act.sa_mask);
+	/* Called with no args, do the exec, otherwise check.  */
+	if (argc == 1) {
+		a.ss_flags = 0;
+		a.ss_size = SIGSTKSZ;
+		a.ss_sp = malloc(SIGSTKSZ);
+		if (!a.ss_sp) {
+			printf("Failed: malloc(SIGSTKSZ) == NULL\n");
+			exit(PTS_UNRESOLVED);
+		}
 
-	if (sigaction(SIGTOTEST,  &act, 0) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
-		return PTS_UNRESOLVED;
+		rc = sigaltstack(&a, NULL);
+		if (rc) {
+			printf("Failed: sigaltstack() rc: %d errno: %s\n",
+						rc, strerror(errno));
+			exit(PTS_UNRESOLVED);
+		}
+
+		/* Get abs path if needed and exec ourself */
+		if (*argv[0] != '/') {
+			getcwd(path, PATH_MAX);
+			strcat(path, "/");
+			strcat(path, argv[0]);
+		} else {
+			strcpy(path, argv[0]);
+		}
+		execl(path, argv[0], "verify", NULL);
+		printf("Failed: execl() errno: %s\n", strerror(errno));
+		exit(PTS_UNRESOLVED);
+
+	} else if (strcmp(argv[1], "verify")) {
+		printf("Failed: %s called with unexpected argument: %s\n",
+						argv[0], argv[1]);
+		exit(PTS_UNRESOLVED);
 	}
 
-	if ((alternate_s.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
-		return PTS_UNRESOLVED;
-	}
-
-	alternate_s.ss_flags = 0;
-	alternate_s.ss_size = SIGSTKSZ;
-
-	if (sigaltstack(&alternate_s, (stack_t *)0) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
-		return PTS_UNRESOLVED;
-	}
-
-	if (execl("conformance/interfaces/sigaltstack/9-buildonly.test", "9-buildonly.test", NULL) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
-		return PTS_UNRESOLVED;
+	/* Verify the alt stack is disabled */
+	rc = sigaltstack(NULL, &a);
+	if (rc || a.ss_flags != SS_DISABLE) {
+		printf("Failed: sigaltstack() rc: %d ss_flags: %u\n",
+					rc, a.ss_flags);
+		exit(PTS_FAIL);
 	}
 
 	printf("Test PASSED\n");
