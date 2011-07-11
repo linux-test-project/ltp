@@ -1,6 +1,6 @@
 #!/bin/sh
 ################################################################################
-## Copyright (c) Oliver Hartkopp <oliver.hartkopp@volkswagen.de>, 2009        ##
+## Copyright (c) Oliver Hartkopp <oliver.hartkopp@volkswagen.de>, 2011        ##
 ## Copyright (c) International Business Machines  Corp., 2009                 ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
@@ -24,25 +24,34 @@ if [ $(id -ru) -ne 0 ]; then
      exit 1
 fi
 
-cat <<-EOF > /etc/modprobe.d/vcan
-# protocol family PF_CAN
-alias net-pf-29 can
-# protocols in PF_CAN
-alias can-proto-1 can-raw
-alias can-proto-2 can-bcm
-alias can-proto-3 can-tp16
-alias can-proto-4 can-tp20
-alias can-proto-5 can-mcnet
-alias can-proto-6 can-isotp
-EOF
-
+# load needed CAN networklayer modules
 modprobe -f can
 modprobe -f can_raw
-modprobe -f vcan
-ip link add dev vcan0 type vcan
-ifconfig vcan0 up
 
-./tst-filter-server > output_ltp-can.txt &
-./tst-filter-master | tee output_ltp-can-verify.txt
+# ensure the vcan driver to perform the ECHO on driver level
+modprobe -r vcan
+modprobe -f vcan echo=1
+
+VCAN=vcan0
+
+# create virtual CAN device
+ip link add dev $VCAN type vcan || exit 1
+ifconfig $VCAN up
+
+# check precondition for CAN frame flow test
+HAS_ECHO=`ip link show $VCAN | grep -c ECHO`
+
+if [ $HAS_ECHO -ne 1 ]
+then
+    exit 1
+fi
+
+# test of CAN filters on af_can.c 
+./tst-filter $VCAN || exit 1
+
+# test of CAN frame flow down to the netdevice and up again
+./tst-rcv-own-msgs $VCAN || exit 1
+
+exit 0
 
 
