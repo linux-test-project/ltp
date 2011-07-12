@@ -325,7 +325,7 @@ void do_child()
 		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 	/* do an assignement for fun */
-	*(int *)test = stat_i;
+	memcpy(test, &stat_i, sizeof(stat_i));
 
 	/* pause until we get a signal from stat_cleanup() */
 	rval = pause();
