@@ -7,7 +7,6 @@ Assertion	Tested?
 4		YES
 5		YES
 			5-1.c: Test for ENOMEM
-			5-3.c: Test for EINTR
 			speculative/5-2.c: Test for EPERM. Not available on
 Linux.
 NOTE:
