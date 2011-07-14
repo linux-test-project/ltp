@@ -126,6 +126,8 @@ int main(int ac, char **av)
 		tst_resm(TBROK|TERRNO, "waitpid failed");
 	else if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL, "child exited abnormally");
+	else
+		tst_resm(TPASS, "received expected errno(EPERM)");
 	cleanup();
 	tst_exit();
 }
