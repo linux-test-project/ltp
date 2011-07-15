@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
 #else
 	clockid_t clockid_1;
 
-	if (clock_getcpuclockid(-1, &clockid_1) == 0) {
-		printf("clock_getcpuclockid(-1, ..) failed\n");
+	if (clock_getcpuclockid(-2, &clockid_1) == 0) {
+		printf("clock_getcpuclockid(-2, ..) succeeded unexpectedly\n");
 		return PTS_UNRESOLVED;
 	}
 	printf("Test PASSED\n");
