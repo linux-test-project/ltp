@@ -88,6 +88,7 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
         matches = re.finditer('tag=(?P<tag>\w+).+exit=(?P<exit>\w+) '
                               'stat=(?P<stat>\d+) core=(?P<core>\w+)', content)
     finally:
+        content = None
         fd.close()
 
     if not matches:
@@ -123,12 +124,7 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
 
         try:
 
-            try:
-                lines = fd.readlines()
-            finally:
-                fd.close()
-
-            fd.close()
+            line_iterator = getattr(fd, 'xreadlines', getattr(fd, 'readlines'))
 
             end_output = '<<<execution_status>>>'
             output_start = '<<<test_output>>>'
@@ -140,8 +136,6 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
             local_context = ''
 
             search_tag = None
-
-            line_iterator = lines.__iter__()
 
             try:
 
@@ -183,11 +177,13 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
                     raise ResultsParseException('Leftover token in search '
                                                 'keys: %s' % k)
 
-        except Exception, exc:
+        except Exception as exc:
             # XXX (garrcoop): change from Exception to soft error and print
             # out warning with logging module.
             raise ResultsParseException('Encountered exception reading output '
                                         'for context: %s' % str(exc))
+        finally:
+            fd.close()
 
     return failed, passed, context
 
@@ -380,7 +376,7 @@ def main():
                     parse_ltp_results(exec_log, output_log,
                                   verbose=opts.verbose)
 
-            except ResultsParseException, rpe:
+            except ResultsParseException as rpe:
                 output_dest.write('Error encountered when parsing results for '
                                   'test - %s: %s\n' % (testsuite, str(rpe)))
                 continue
