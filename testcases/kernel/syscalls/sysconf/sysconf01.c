@@ -25,9 +25,6 @@
  *
  * USAGE :
  *      sysconf01
- *
- * RESTRICTIONS
- * MUST RUN AS ROOT
  */
 
 #define _GNU_SOURCE 1
@@ -83,8 +80,6 @@ static void _test_sysconf(long name, const char *strname)
 
 int main(void)
 {
-	tst_require_root(NULL);
-
 	/* 1 - 5 */
 	test_sysconf(_SC_CLK_TCK);
 	test_sysconf(_SC_ARG_MAX);
