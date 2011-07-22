@@ -365,7 +365,7 @@ test_7_2()
 {
 	mount -t cgroup -o none,name=foo cgroup cgroup/
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "failed to mount $subsys"
+		tst_resm TFAIL "failed to mount cgroup"
 		failed=1
 		return
 	fi
