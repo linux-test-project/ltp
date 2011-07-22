@@ -502,8 +502,9 @@ test_10()
 	wait $pid1
 	wait $pid2
 
-	rmdir cgroup/0 2> /dev/null
-	umount cgroup/ 2> /dev/null
+	mount -t cgroup none cgroup 2> /dev/null
+	rmdir cgroup/0
+	umount cgroup/
 
 	check_kernel_bug
 	if [ $? -eq 1 ]; then
