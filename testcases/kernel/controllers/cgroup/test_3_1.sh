@@ -22,11 +22,10 @@
 ##                                                                            ##
 ################################################################################
 
+trap exit SIGUSR1
 for ((; ;))
 {
 	mkdir cgroup/0
 	rmdir cgroup/0
-
-	trap exit SIGUSR1
 }
 

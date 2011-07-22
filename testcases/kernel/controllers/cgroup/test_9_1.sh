@@ -22,13 +22,12 @@
 ##                                                                            ##
 ################################################################################
 
+trap exit SIGUSR1
 for ((; ;))
 {
 #	mount -t cgroup -o debug xxx cgroup/ > /dev/null 2>&1
 	mount -t cgroup xxx cgroup/ > /dev/null 2>&1
 	cat cgroup/release_agent > /dev/null 2>&1
 	umount cgroup/ > /dev/null 2>&1
-
-	trap exit SIGUSR1
 }
 

@@ -22,10 +22,9 @@
 ##                                                                            ##
 ################################################################################
 
+trap exit SIGUSR1
 for ((; ;))
 {
 	cat /proc/sched_debug > /dev/null
-
-	trap exit SIGUSR1
 }
 

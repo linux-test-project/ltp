@@ -22,12 +22,11 @@
 ##                                                                            ##
 ################################################################################
 
+trap exit SIGUSR1
 for ((; ;))
 {
 	mount -t cgroup -o ns xxx cgroup/ > /dev/null 2>&1
 	rmdir cgroup/[1-9]* > /dev/null 2>&1
 	umount cgroup/ > /dev/null 2>&1
-
-	trap exit SIGUSR1
 }
 
