@@ -40,6 +40,7 @@ elif [ "x$(id -ru)" != x0 ]; then
 	exit 0
 fi
 
+dmesg -c > /dev/null
 nr_bug=`dmesg | grep -c "kernel BUG"`
 nr_null=`dmesg | grep -c "kernel NULL pointer dereference"`
 nr_warning=`dmesg | grep -c "^WARNING"`
@@ -78,6 +79,8 @@ check_kernel_bug()
 	nr_warning=$new_warning
 	nr_lockdep=$new_lockdep
 
+	echo "check_kernel_bug found something!"
+	dmesg
 	failed=1
 	return 0
 }
