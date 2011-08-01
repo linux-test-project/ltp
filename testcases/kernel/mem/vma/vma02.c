@@ -31,7 +31,7 @@
 #include "usctest.h"
 #include "config.h"
 
-char *TCID = "mbind01";
+char *TCID = "vma02";
 int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
