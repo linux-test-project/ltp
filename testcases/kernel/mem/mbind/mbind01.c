@@ -60,11 +60,11 @@ static void usage(void);
 int main(int argc, char** argv)
 {
 	FILE *fp;
-	void* addr;
+	void *addr, *start, *end, *lastend;
 	int node, err, lc;
+	char buf[BUFSIZ];
 	struct bitmask *nmask = numa_allocate_nodemask();
-	char buf[BUFSIZ], start[BUFSIZ], end[BUFSIZ], string[BUFSIZ];
-	char *p, *msg;
+	char *msg;
 
 	pagesize = getpagesize();
 	msg = parse_opts(argc, argv, options, usage);
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		addr = mmap(NULL, pagesize*3, PROT_READ|PROT_WRITE,
+		addr = mmap(NULL, pagesize*3, PROT_WRITE,
 			MAP_ANON|MAP_PRIVATE, 0, 0);
 		if (addr == MAP_FAILED)
 			tst_brkm(TBROK|TERRNO, NULL, "mmap");
@@ -108,26 +108,44 @@ int main(int argc, char** argv)
 
 		/* /proc/self/maps in the form of
 		   "00400000-00406000 r-xp 00000000". */
-		sprintf(string, "%p", addr);
 		fp = fopen("/proc/self/maps", "r");
 		if (fp == NULL)
 			tst_brkm(TBROK|TERRNO, NULL, "fopen");
 
 		while (fgets(buf, BUFSIZ, fp) != NULL) {
-			/* Find out the 1st VMAs. */
-			if (sscanf(buf, "%s-%s ", start, end) != 2)
+			if (sscanf(buf, "%p-%p ", &start, &end) != 2)
 				continue;
-			/* Remove leading 0x. */
-			if (strcmp(string + 2, start) != 0)
-				continue;
-			/* Find out the second VMA. */
-			if (fgets(buf, BUFSIZ, fp) == NULL)
-				tst_brkm(TBROK|TERRNO, NULL, "fgets");
-			p = strtok(buf, "-");
-			if (p == NULL || strcmp(p, end) != 0)
-				tst_resm(TPASS, "only 1 VMA.");
-			else
-				tst_resm(TFAIL, "more than 1 VMA.");
+
+			if (start == addr) {
+				tst_resm(TINFO, "start = %p, end = %p",
+					start, end);
+				if (end == addr + pagesize*3) {
+					tst_resm(TPASS, "only 1 VMA.");
+					break;
+				}
+
+				lastend = end;
+				while (fgets(buf, BUFSIZ, fp) != NULL) {
+					/* No more VMAs, break */
+					if (sscanf(buf, "%p-%p ", &start,
+						&end) != 2)
+						break;
+					tst_resm(TINFO, "start = %p, end = %p",
+						start, end);
+
+					/* more VMAs found */
+					if (start == lastend)
+						lastend = end;
+					if (end == addr + pagesize*3) {
+						tst_resm(TFAIL,
+							">1 unmerged VMAs.");
+						break;
+					}
+				}
+				if (end != addr + pagesize*3)
+					tst_resm(TFAIL, "no matched VMAs.");
+				break;
+			}
 		}
 		fclose(fp);
 		if (munmap(addr, pagesize*3) == -1)
