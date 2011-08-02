@@ -1,5 +1,6 @@
 #ifndef _MEM_H
 #define _MEM_H
+#include "config.h"
 #include "test.h"
 #include "usctest.h"
 
