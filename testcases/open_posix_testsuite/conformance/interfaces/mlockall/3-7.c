@@ -24,6 +24,7 @@ int main() {
 	size_t page_size;
 	int result, fd;
 	void *foo;
+	char filename[] = "/tmp/mlockall_3-7-XXXXXX";
 
 	page_size = sysconf(_SC_PAGESIZE);
 	if (errno) {
@@ -31,11 +32,12 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	fd = open("conformance/interfaces/mlockall/3-7.c", O_RDONLY);
+	fd = mkstemp(filename);
 	if (fd == -1) {
 		perror("An error occurs when calling open()");
 		return PTS_UNRESOLVED;
 	}
+	unlink(filename);
 
 	foo = mmap(NULL, page_size, PROT_READ, MAP_SHARED, fd, 0);
 		if (foo == MAP_FAILED) {
