@@ -46,10 +46,30 @@ int main(int argc, char *argv[]) {
 	pid_t pid;
 	struct sigaction zig;
 	unsigned int revs = 0;
+	int use_max_failures = 0;
+	int max_failures = 0;
+	int fail_counter = 1;
 
 	if (argc < 2) {
-		printf("Usage: %s command [args]\n", argv[0]);
+		printf("Usage: %s [-m max_failures] command [args]\n", argv[0]);
 		exit(1);
+	}
+
+	//by default, set max_failures to whatever the env variable $MAX_FAILURES is
+        char *max_failures_env = getenv("MAX_FAILURES");
+        max_failures = atoi(max_failures_env);
+
+	//if the -m option is used when calling infinite_loop, override max_failures
+	//specified by $MAX_FAILURES with the given argument instead
+	if (argc > 3 && strcmp(argv[1], "-m") == 0) {
+		if((max_failures = atoi(argv[2])) >= 0) {
+			use_max_failures = 1;
+		}
+		else {
+			printf("Usage: %s [-m max_failures] command [args]\n", argv[0]);
+			printf("max_failures should be a nonnegative integer\n");
+			exit(1);
+		}
 	}
 
 	tty_fp = fdopen(3, "w+");
@@ -61,11 +81,21 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	progname = rindex(argv[1], '/');
-	if (progname == NULL) {
-		progname = argv[1];
-	} else {
-		progname++;
+	if (use_max_failures) {
+		progname = rindex(argv[3], '/');
+		if (progname == NULL) {
+			progname = argv[3];
+		} else {
+			progname++;
+		}
+	}
+	else {
+		progname = rindex(argv[1], '/');
+		if (progname == NULL) {
+			progname = argv[1];
+		} else {
+			progname++;
+		}
 	}
 
 	/* Set up signals */
@@ -86,13 +116,24 @@ int main(int argc, char *argv[]) {
 			}
 
 			// run the program
-			if (argc > 3) {
-				stat = execvp(argv[1], &argv[1]);
-			} else {
-				stat = execvp(argv[1], &argv[1]);
-			}
+			if (use_max_failures) {	
+				if (argc > 5) {
+					stat = execvp(argv[3], &argv[3]);
+				} else {
+					stat = execvp(argv[3], &argv[3]);
+				}
 
-			perror(argv[1]);
+				perror(argv[3]);
+			}
+			else {
+				if (argc > 3) {
+					stat = execvp(argv[1], &argv[1]);
+				} else {
+					stat = execvp(argv[1], &argv[1]);
+				}
+
+				perror(argv[1]);
+			}
 
 			exit(-1);
 		}
@@ -123,6 +164,12 @@ int main(int argc, char *argv[]) {
 			} else {
 				pounder_fprintf(tty_fp, "%s: %s with code %d.\n",
 					progname, fail_msg, res);
+				if (max_failures > 0) {
+					if(++fail_counter > max_failures) {
+						pounder_fprintf("Reached max number of failures allowed: %d. Aborting.", max_failures);
+						exit(-1);
+					}
+				}
 			}
 		}
 	}
