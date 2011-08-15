@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-if [ -z "$NTP_SERVER" ]; then
+if [ -z "$NTP_SERVER" -o "$NTP_SERVER" == "0" ]; then
 	echo "NTP server is not configured."
 	exit 255
 fi
@@ -35,19 +35,25 @@ DFT=500
 LOGFILE=/proc/$$/fd/1
 
 # Why do we need this?  Output is already being logged!
-#cp -f $LOGFILE $POUNDER_TMPDIR/ntpdrift-$$
+cp -f $LOGFILE $POUNDER_TMPDIR/ntpdrift-$$
 
 # Do we have a python interpreter?
 PYTHON=`which python`
 if [ -n "$PYTHON" -a -x "$PYTHON" ]; then
-	$POUNDER_HOME/timed_loop 900 "$POUNDER_SRCDIR/time_tests/drift-test.py" $NTP_SERVER $FREQ
+		$POUNDER_HOME/timed_loop 900 "$POUNDER_SRCDIR/time_tests/drift-test.py" $NTP_SERVER $FREQ
 else
 	echo "There is no python interpreter installed.  Aborting."
 	exit -1
 fi
 
-# Did we see any failures?
+# Did drift-test.py fail to run properly?
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+
+# Did we see any failures in actual drift test?
 ERRORS=0
+cp -f $LOGFILE $POUNDER_TMPDIR/ntpdrift2-$$
 diff -u $POUNDER_TMPDIR/ntpdrift-$$ $LOGFILE | while read a b c d e field drift garbage; do
 	if [ "$field" != "drift:" ]; then
 		continue;

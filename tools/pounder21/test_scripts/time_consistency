@@ -25,7 +25,6 @@ LOGFILE=/proc/$$/fd/1
 OLD_ERRORS=`grep ^--- $LOGFILE | wc -l`
 
 $POUNDER_HOME/timed_loop 600 "$POUNDER_SRCDIR/time_tests/inconsistency-check"
-
 # Can we find any new errors?
 NEW_ERRORS=`grep ^--- $LOGFILE | wc -l`
 

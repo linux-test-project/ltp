@@ -58,6 +58,7 @@ wait
 
 # Save another copy of dmesg
 dmesg > "$POUNDER_TMPDIR/randasys-after"
+echo "CECHK 5"
 
 # Diff
 DMESG_DIFF_LINES=`diff "$POUNDER_TMPDIR/randasys-before" "$POUNDER_TMPDIR/randasys-after" | wc -l`

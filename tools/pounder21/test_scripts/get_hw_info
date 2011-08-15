@@ -82,6 +82,6 @@ fdisk -l /dev/sd[a-z] /dev/hd[a-z]
 echo
 echo "sysfs Device Info:"
 echo "=================="
-find /sys -type f | while read f; do echo $f: `cat $f`; done
+find /sys -mount -type f | while read f; do echo $f: `cat $f`; done
 
 exit 0
