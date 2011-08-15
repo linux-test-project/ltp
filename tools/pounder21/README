@@ -1,46 +1,211 @@
-This is pounder21, as of 2006-01-24.  Copyright (C) 2003-2006 IBM.
-The above line is used to detect the pounder release version.  If
-you change the line, be sure to update build_scripts/00checklatest.
+This is pounder30 as of 2011-08-09.  Copyright (C) 2003-2011 IBM.
+(Do not delete top line. It is used for version checking.)
+
+It would be a good idea to read this README file and the SCHEDULER and
+CONFIGURATION files (in the doc/ directory) prior to dabbling with pounder!
 
 Licensing
 =========
 All files in this tarball are licensed under the GPL.  Please see
 the file COPYING for more details.
 
+Contents
+========
+1. Overview
+2. Getting Started
+3. Files and Directories
+4. The Install Script
+5. Configuration
+6. The Pounder Script
+7. Credits
+
 Overview
 ========
-This package is a system stress test.
+Pounder provides a framework for building, running, and logging results
+for user-defined sets of tests.  Almost any test or test suite may be run
+as a subtest from within this framework, including the LTP test suite.
+(For more guidelines on building, scheduling, and running user-defined
+subtests, see doc/SCHEDULER)
 
-Unlike the original pounder, pounder21 *does* report pass/fail and
-it is NOT infinite.  There is a -k option to kill the tests manually,
-though ^C in the pounder terminal works.  With the new scheduler,
-one can enforce an order in which tests are run, and even control
-which ones get run in parallel.  See SCHEDULER for details.
+Getting Started
+===============
 
-There are only two prerequisites:
+Some sample test "schedules" comprised of various publically available
+tests, including LTP, are provided. The default test schedule illustrates
+how one might use pounder and is also a useful general purpose stress test.
 
-    - Get a CD with some data on it and put in the drive.
-      This is used to test optical drives, which are typically
-      the only IDE devices on a server.
-    - Make sure you can mount an NFS server.  See libpounder.sh for
-      config details.
+The following steps describe how to build and run the default schedule:
 
-If you downloaded the source tarball, then do this to get started:
+	0. Install your operating system.  gcc and related development packages are
+		required to build pounder.  Missing dependencies will be identified at
+		build time. X development packages are needed for the included video test.
 
-    1. Run "./Install" - this builds tests for your machine
-       Proceed to step 2.
+	1. Download and unpack the LTP tarball.  You've already done this.
 
-If you downloaded a binary tarball, then do this to start testing:
+	2. cd tools/pounder21/.  You've already done this too.
 
-    2. Run "./pounder" (see pounder script for usage options) to 
-        start the tests
+	3. (optional) Set up a NFS server to export "/pounder21" (unless you wish 
+		to skip nfs tests).
 
-    3. When you want to stop the tests press ^C or run "./pounder -k"
+	4. (optional) Modify any variables in "config" (see doc/CONFIGURATION for details).
+
+	5. Run "make install" to build tests for your machine
+		The Install script will attempt to build all the subtests in the
+		build_scripts folder. It will prompt you for the test scheduler
+		you want to unpack. Go ahead of type "default" or simply press
+		enter. It will then ask if you want to automate skipping of
+		failed subtests. If you enter "y", the script will automatically
+		delete any subtests from the test scheduler that fail to build.
+		If you enter "n", the script will prompt you each time a test
+		fails to build on whether or not to skip the failed test.
+       
+	6. Run "./pounder" to start the tests (run "./pounder -h" for usage options).
+
+	7. Press ^C or run "./pounder -k" to stop the tests
+		The default scheduler runs tests for 48 hours, but you can set a new
+		duration in seconds by modifying config (see doc/CONFIGURATION for details)
+		or by using the -d option when starting pounder (./pounder -d <duration in seconds>)
+
+	8. Run "make mrclean" to restore everything to the state before the tarball 
+		was unpacked (running this command will of course require you to 
+		rebuild with "make install" for the next pounder run)
+
+See doc/SCHEDULER for details on defining the order in which tests are run, and whether they
+are run serially or in parallel.
+
+A few of the sample subtests have prerequisites:
+
+	- ide_cdrom_copy: Requires a CD with some data on it to be put in the drive.
+
+	- nfs, ping_nfs: Make sure you can mount an NFS server. Specify NFS in config
+		or run "./pounder -n ipaddr"
+
+	- xterm_stress: Make sure you can start X sessions. Enable X testing by setting
+		the DO_X_TESTS flag in config or run "./pounder -x"
+
+These tests can be skipped during the build phase if reqs aren't met though.
+
+Files and Directories
+=====================
+Below are brief descriptions of the files and directories found under the pounder/
+directory.
+
+Files:
+
+	CHANGELOG
+		- A log of changes made to pounder
+	COPYING
+		- GNU general public license info
+	Install
+		- The script used to build pounder
+	Makefile
+		- Makefile for pounder
+	debug.c
+		- Debugging routines used for logging pounder results
+	infinite_loop.c, timed_loop.c, fancy_timed_loop.c
+		- Procedures used to run tests repeatedly (see doc/SCHEDULER for more
+		information)
+	config
+		- Environment variables used for customizing pounder run are defined
+		here (see doc/CONFIGURATION for details)
+	libpounder.sh
+		- More environment variables defined here. Unlike the ones in config,
+		these are not meant to be modified by the user. (see doc/CONFIGURATION
+		for details)
+	nfs_logging
+		- Script that sets up user-defined NFS server for logging pounder output.
+		This script is executed when pounder is run with $NFS_LOGGING enabled in
+		config (see doc/CONFIGURATION) or when "pounder -r" is used. Normally when
+		running pounder, test output will be directly logged to $POUNDER_LOGLOCAL,
+		but with NFS logging enabled, output will instead be logged to user-specified
+		remote directory of an NFS server, $NFS_LOGSERVER:$NFS_LOGDIR.
+		See doc/CONFIGURATION for more information on these variables.
+	pounder
+		- Script used to run pounder. (see "The Pounder Script" section below
+		for details)
+	proclist.c
+		- Manages list of processes during pounder run.
+	README
+		- This file, which gives an overview of pounder's structure and how to
+		build and start pounder.
+	run.c
+		- Program to run the tests in the test scheduler.
+
+Directories:
+
+	build_scripts/
+		- Scripts to build your subtests go here. (see doc/SCHEDULER for details)
+	doc/
+		- Contains the SCHEDULER file, which describes how to create, build,
+		schedule, and run your own tests with pounder.
+		- Contains the CONFIGURATION file, which describes pounder's environment
+		variables.
+	schedulers/
+		- Test scheduler tarballs are in here. (see doc/SCHEDULER for details)
+	src/
+		- Sources packaged with pounder are in here.
+	test_repo/
+		- This directory is a copy of the default test scheduler. It provides an
+		example of what an test scheduler should look like after unpacking.
+	test_scripts/
+		- Scripts to run your subtests go here. (see doc/SCHEDULER for details)
+	tests/
+		- Symlinks to run the tests in a particular order. (see doc/SCHEDULER for
+		details)
+
+After running "make install," you will see three additional directories:
+
+	opt/
+		- Third party packages (LTP, kernel, etc) go here.
+	tmp/
+		- Temporary directory to hold files that a test needs.
+	log/
+		- Logs of output from pounder runs go here.
+
+Note that for the provided tests, third party test packages (bonnie, kernel, etc) aren't
+packaged with pounder. The build scripts should download them to opt/ (stored in
+$POUNDER_OPTDIR) and build them as necessary. The use of a cache might come in handy here
+(see doc/CONFIGURATION for details regarding the $POUNDER_CACHE variable).
+
+The Install Script
+==================
+The Install script has no options.  Run it to build whatever tests have been
+imported into the pounder package.
+
+Configuration
+=============
+See doc/CONFIGURATION documentation file for details.
+
+The Pounder Script
+==================
+The pounder script has the following syntax:
+
+Usage: ./pounder [-g logdir] [-x] [-d duration] [-n ipaddr] [-m max_failures] [-f] [-h|-u|-r|-k|-l|-e subtests|-i subtests|-c scheduler] [-s]
+
+-h              Brings up this menu
+-c scheduler    Creates a new test scheduler called scheduler-tests.tar.gz in the pounder/schedulers folder.
+                All subtests to be packaged with this scheduler must first be placed in the pounder/tests folder.
+-x              Enable X stress tests.
+-d duration     Run pounder for duration seconds.
+-n ipaddr       Use ipaddr for NFS tests.
+-f              Remove pounder pid file before running.
+-u              Unmount NFS log storage.
+-r              Remount NFS log storage.
+-g logdir       Use logdir as the log directory. (You probably want -s too.)
+-s              Store logs locally.
+-l              List (both included and excluded) subtests that came with the test scheduler
+-e subtests     Exclude subtests from next pounder run
+-i subtests     Include previously excluded subtests in the next pounder run
+-k              Kill pounder.
+
+run "./pounder" to run all subtests
+run "./pounder subtest" to run just one particular subtest
+        (example: ./pounder tests/T90ramp/D02build_kernel)
 
 Credits
 =======
 o Inspired by Sammy Benjamin (sammy@us.ibm.com).  None of his code remains
-  in pounder21 today.
+  in this version of pounder today.
 o Modifications and additions by members of the LTC xSeries Kernel Team:
     Darrick Wong (djwong@us.ibm.com)
     Chris McDermott (lcm@us.ibm.com)
@@ -56,6 +221,7 @@ o Modifications and additions by members of the LTC xSeries Kernel Team:
     Pradeep Kumar (pradeepkumars@in.ibm.com)
     Bhaskar Rangaswamy (bharanga@in.ibm.com)
     Manikandan Chidambaram (cmanikandan@in.ibm.com)
+    Lucy Liang (lgliang@us.ibm.com)
 o Other contributers:
 
 Also utilizes:
@@ -71,55 +237,3 @@ o schedutils, to test CPU affinity (with lame)
 
 (note that the above packages are not distributed with pounder
  and are simply installed by the installer script)
-
-Improvements in pounder2
-========================
-This iteration of pounder you're looking at has been reworked a bit.
-First, pounder environment variables are defined in libpounder.sh.
-There are a lot more of them than there used to be.
-
-Second, I've attempted to make test integration a bit easier than it
-used to be.  There are several new directories; they are detailed below.
-
-build_scripts/   Put a script to build your test in here.
-config/          Put config files for your test in here.
-src/             Sources packaged with pounder go in here.
-opt/             Third party packages (LTP, kernel, etc) go here.
-tmp/             Temporary directory for files that a test needs.
-test_scripts/    Put a script to run your test in here.
-tests/           Symlinks to run the tests in a particular order.
-                 See the SCHEDULER documentation file for details.
-log/             Logs from pounder runs go here.
-
-Like before, all the tests are run in parallel.
-
-Note that third party test packages (LTP, kernel, etc) aren't packaged
-with pounder; the build scripts should download them and build them
-as necessary.
-
-The Install Script
-==================
-The Install script has no options.  Run it to build whatever tests have been
-imported into the pounder package.
-
-Configuration
-=============
-See the Configuration section of the SCHEDULER documentation file for details.
-See libpounder.sh for the actual configuration variables.
-
-The pounder Script
-==================
-The pounder script has the following syntax:
-
-Usage: ./pounder [-l logdir] [-x] [-d duration] [-n ipaddr] [-f] [-u|-r|-k] [-s]
-
--x      Enable X stress tests.
--d      Run pounder for duration seconds.
--n      Use ipaddr for NFS tests.
--f      Remove pounder pid file before running.
--u      Unmount NFS log storage.
--r      Remount NFS log storage.
--l      Use logdir as the log directory. (You probably want -s too.)
--s      Store logs locally.
--k      Kill pounder.
-
