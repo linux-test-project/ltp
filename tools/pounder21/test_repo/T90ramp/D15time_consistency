@@ -1,0 +1,5 @@
+#!/bin/bash 
+
+trap 'exit 0' 15
+$POUNDER_HOME/infinite_loop $POUNDER_HOME/test_scripts/time_consistency
+exit $?

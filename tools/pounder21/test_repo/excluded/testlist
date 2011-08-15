@@ -1,0 +1,7 @@
+# The purpose of this file is to keep tabs on
+# which pounder subtests are excluded from the
+# test run. Whenever ./pounder -e subtest-to-exclude
+# is used, the subtest name and path get logged
+# here.
+
+# DO NOT MODIFY THIS FILE.
