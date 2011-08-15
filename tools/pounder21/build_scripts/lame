@@ -21,12 +21,8 @@
 
 source "$POUNDER_HOME/libpounder.sh"
 
-PKGNAME=lame-3.96.1
-TARNAME="$PKGNAME.tar.gz"
-PROGNAME=lame
-
 # Is it already installed?
-PROG=`which $PROGNAME`
+PROG=`which lame`
 if [ ! -z "$PROG" ]; then
 	exit 0
 fi
@@ -35,11 +31,39 @@ fi
 NASM=`which nasm`
 if [ -z "$NASM" ]; then
 	# Build it so we can test MMX/SSE.
-	./`dirname $0`/nasm
+	NASM_PKG=nasm-0.98.38
+	NASM_TAR="$NASM_PKG.tar.gz"
+
+	# Retrieve tarball
+	cd "$POUNDER_OPTDIR"
+	if [ ! -f "$NASM_TAR" ]; then
+        	if [ $USE_CACHE -eq 1 ]; then
+                	wget "${POUNDER_CACHE}${NASM_TAR}"
+        	fi
+        	if [ ! -f "$NASM_TAR" ]; then
+                	get_from_sourceforge nasm $NASM_TAR
+        	fi
+	fi
+
+	# Unpack if necessary
+	if [ ! -d "NASM_PKG" ]; then
+        	tar -xzf "$NASM_TAR"
+	fi
+
+	# Build
+	cd "$NASM_PKG"
+	./configure
+	make $*
+
 	export PATH=`/bin/ls -d $POUNDER_OPTDIR/nasm*/`:$PATH
+
 fi
 
-# Retrieve binary, if necessary
+# Retrieve binary for lame, if necessary
+PKGNAME=lame-3.96.1
+TARNAME="$PKGNAME.tar.gz"
+PROGNAME=lame
+
 cd "$POUNDER_OPTDIR"
 if [ ! -f "$TARNAME" ]; then
 	if [ $USE_CACHE -eq 1 ]; then
@@ -58,4 +82,46 @@ fi
 # Build with MMX/SSE/3dnow/whatever support
 cd "$PKGNAME"
 ./configure --enable-nasm
+make $*
+
+# Now build schedutils for CPU affinity assignments
+_PKGNAME=schedutils-1.4.0
+S_TARNAME="$S_PKGNAME.tar.gz"
+S_PROGNAME=taskset
+
+# Is it already installed?
+S_PROG=`which $S_PROGNAME`
+if [ ! -z "$S_PROG" ]; then
+        exit 0
+fi
+
+# Does this OS support taskset?
+grep sched_setaffinity /usr/include/sched.h > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+        # Can't find the sched_setaffinity syscall; abort.
+        # Probably we want to remove the schedutils dir in case
+        # this install was leftover from another distro.
+        cd "$POUNDER_OPTDIR"
+        rm -rf "$S_PKGNAME"
+        exit 0
+fi
+
+# Retrieve tarball, if necessary
+cd "$POUNDER_OPTDIR"
+if [ ! -f "$S_TARNAME" ]; then
+        if [ $USE_CACHE -eq 1 ]; then
+                wget "${POUNDER_CACHE}${S_TARNAME}"
+        fi
+        if [ ! -f "$S_TARNAME" ]; then
+                wget "http://tech9.net/rml/schedutils/packages/$VERSION/$S_TARNAME"
+        fi
+fi
+
+# Unpack if necessary
+if [ ! -d "S_PKGNAME" ]; then
+        tar -xzf "$S_TARNAME"
+fi
+
+# Build
+cd "$S_PKGNAME"
 make $*

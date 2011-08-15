@@ -26,9 +26,9 @@ Req_Maj=1
 Req_Min=8
 Req_Pat=7
 
-TESTCURRENTIPMI=0
+TESTCURRENTIPMI=1 #TODO: 0
 
-PKGNAME=ipmitool-1.8.8
+PKGNAME=ipmitool-1.8.9
 #end of stuff to move
 TARNAME="$PKGNAME.tar.gz"
 PROGNAME=ipmitool
@@ -58,6 +58,7 @@ if [ $TESTCURRENTIPMI -ne 0 ]; then
 		if [ ! -f "$TARNAME" ]; then
 			get_from_sourceforge $PROGNAME $TARNAME
 		fi
+		#TODO: what if no target found?
 	fi
 	
 	# Unpack if req'd
