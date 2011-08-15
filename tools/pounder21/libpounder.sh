@@ -25,13 +25,12 @@ export TESTS=`/bin/ls test_scripts/`
 export BUILDS=`/bin/ls build_scripts/`
 export POUNDER_HOME=`pwd`
 export POUNDER_PIDFILE="$POUNDER_HOME/pounder.pid"
-export POUNDER_LOGLOCAL="$POUNDER_HOME/log/"
+export POUNDER_LOGLOCAL="$POUNDER_HOME/log"
 export POUNDER_LOGDIR="$POUNDER_LOGLOCAL/$DATE/"
 export POUNDER_TMPDIR="$POUNDER_HOME/tmp/"
 export POUNDER_OPTDIR="$POUNDER_HOME/opt/"
 export POUNDER_SRCDIR="$POUNDER_HOME/src/"
-export POUNDER_CFGDIR="$POUNDER_HOME/config/"
-export POUNDER_VERSION=`head -1 "$POUNDER_HOME/README" | awk -F " " '{print $6}' | sed -e 's/\.//g'`
+export POUNDER_VERSION=`head -1 "$POUNDER_HOME/README" | awk -F " " '{print $3}' | sed -e 's/\.//g'`
 export NR_CPUS=`getconf _NPROCESSORS_ONLN`
 export NFS_LOGLOCAL="`echo "$HOSTNAME" | sed -e 's/\..*//g'`/`uname -r`-`uname -m`"
 
