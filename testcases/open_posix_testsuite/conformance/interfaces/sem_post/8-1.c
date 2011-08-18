@@ -83,21 +83,22 @@ int child_fn(int priority, int id)
 		exit(-1);
 	
 	sem = sem_open(semname, 0);
-	if (sem == SEM_FAILED || sem == NULL) {
+	if (sem == SEM_FAILED) {
 		perror("sem_open(semname)");
-		return -1;
+		exit(-1);
 	}
 	
 	sem_1 = sem_open(semname_1, 0);
-	if (sem_1 == SEM_FAILED || sem_1 == NULL) {
+	if (sem_1 == SEM_FAILED) {
 		perror("sem_open(semname_1)");
-		return -1;
+		exit(-1);
 	}
 	
-	sem_wait(sem_1);
 	fprintf(stderr, "child %d try to get lock, prio: %d\n",
 			id, get_my_prio());
-	
+
+	sem_wait(sem_1);
+
 	if (sem_wait(sem) == -1) {
 		perror("Error at sem_wait");
 		fprintf(stderr, "Child %d: Cannot get lock", id);
@@ -115,7 +116,7 @@ int main(void)
 	return PTS_UNTESTED;
 #endif
 	sem_t *sem, *sem_1;
-	int val = 3; /* for sem_1 to track the child state */
+	int val;
 	int priority;
 	pid_t c_1, c_2, c_3, ret_pid;
 	int retval = PTS_UNRESOLVED;
@@ -123,7 +124,7 @@ int main(void)
 
 	snprintf(semname, sizeof(semname), "/" TEST "_%d", getpid());
 	
-	sem = sem_open(semname, O_CREAT, 0777, 1);
+	sem = sem_open(semname, O_CREAT | O_EXCL, 0777, 1);
 	if (sem == SEM_FAILED) {
 		perror("sem_open(semname)");
 		return PTS_UNRESOLVED;
@@ -131,13 +132,13 @@ int main(void)
 
 	snprintf(semname_1, sizeof(semname_1), "/" TEST "_%d_1", getpid());
 	
-	sem_1 = sem_open(semname_1, O_CREAT, 0777, val);
+	sem_1 = sem_open(semname_1, O_CREAT | O_EXCL, 0777, 3);
 	if (sem_1 == SEM_FAILED) {
 		perror("sem_open(semname_1)");
 		sem_unlink(semname);
 		return PTS_UNRESOLVED;
 	}
-
+	
 	/* The parent has highest priority */
 	priority = sched_get_priority_min(SCHED_FIFO) + 3;
 	if (set_my_prio(priority) == -1) {
@@ -163,7 +164,7 @@ int main(void)
 		goto clean_up;
 	break;
 	}
-	fprintf(stderr, "P: child_1:%d forked\n", c_1);
+	fprintf(stderr, "P: child_1: %d forked\n", c_1);
 
 	c_2 = fork();
 	switch (c_2) {
@@ -180,11 +181,11 @@ int main(void)
 
 	/* Make sure the two children has been waiting */
 	do {
-		sched_yield();
+		usleep(100);
 		sem_getvalue(sem_1, &val);
-	//	printf("val = %d\n", val);
 	} while (val != 1);
-	
+	usleep(100);
+
 	c_3 = fork();
 	switch (c_3) {
 	case 0:
@@ -200,10 +201,10 @@ int main(void)
 
 	/* Make sure child 3 has been waiting for the lock */
 	do {
-		sched_yield();
+		usleep(100);
 		sem_getvalue(sem_1, &val);
-	//	printf("val = %d\n", val);
 	} while (val != 0);
+	usleep(100);
 
 	/* Ok, let's release the lock */
 	fprintf(stderr, "P: release lock\n");
