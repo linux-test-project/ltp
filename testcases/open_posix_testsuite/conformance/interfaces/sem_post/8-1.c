@@ -4,6 +4,9 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
  * adam.li@intel.com 2004-03
+ * 
+ * Cleaned up the code and uncommented the lock synchronization.
+ * Cyril Hrubis <chrubis@suse.cz> 2011
  */
 
 /*
@@ -42,68 +45,70 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 
-#define TEST "8-1"
-#define FUNCTION "sem_wait"
-#define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
+#define TEST "sem_post_8-1"
 
 static char semname[28];
 static char semname_1[28]; /* Used to record state */
 
-/* set my schedule priority to @priority */
 int set_my_prio(int priority)
 {
 	struct sched_param sp;
 	sp.sched_priority = priority;
 
-	/* Set priority */
-	if (sched_setscheduler(0, SCHED_FIFO, &sp) == -1)
-	{
-		perror("Error at sched_setscheduler()\n");
+	if (sched_setscheduler(0, SCHED_FIFO, &sp) == -1) {
+		perror("sched_setscheduler()");
 		return -1;
 	}
+
 	return 0;
 }
 
-int get_my_prio()
+int get_my_prio(void)
 {
 	struct sched_param sp;
-	if (sched_getparam(0, &sp) == -1)
-	{
-		perror("Error at sched_getparam()\n");
+	
+	if (sched_getparam(0, &sp) == -1) {
+		perror("sched_getparam()");
 		return -1;
 	}
+
 	return sp.sched_priority;
 }
 
 int child_fn(int priority, int id)
 {
 	sem_t *sem, *sem_1;
-	if (set_my_prio(priority) == -1)
+	
+	if (set_my_prio(priority))
 		exit(-1);
+	
 	sem = sem_open(semname, 0);
 	if (sem == SEM_FAILED || sem == NULL) {
-		perror(ERROR_PREFIX "sem_open: sem");
+		perror("sem_open(semname)");
 		return -1;
 	}
+	
 	sem_1 = sem_open(semname_1, 0);
 	if (sem_1 == SEM_FAILED || sem_1 == NULL) {
-		perror(ERROR_PREFIX "sem_open: sem_1");
+		perror("sem_open(semname_1)");
 		return -1;
 	}
+	
 	sem_wait(sem_1);
 	fprintf(stderr, "child %d try to get lock, prio: %d\n",
 			id, get_my_prio());
-	if (sem_wait(sem) == -1)
-	{
+	
+	if (sem_wait(sem) == -1) {
 		perror("Error at sem_wait");
 		fprintf(stderr, "Child %d: Cannot get lock", id);
 		exit(-1);
 	}
+	
 	fprintf(stderr, "child %d got lock\n", id);
 	exit(0);
 }
 
-int main()
+int main(void)
 {
 #ifndef _POSIX_PRIORITY_SCHEDULING
 	printf("_POSIX_PRIORITY_SCHEDULING not defined\n");
@@ -116,18 +121,19 @@ int main()
 	int retval = PTS_UNRESOLVED;
 	int status;
 
-	snprintf(semname, 20, "/" TEST "_%d", getpid());
-	/* Initial value of Semaphore is 1 */
+	snprintf(semname, sizeof(semname), "/" TEST "_%d", getpid());
+	
 	sem = sem_open(semname, O_CREAT, 0777, 1);
-	if (sem == SEM_FAILED || sem == NULL) {
-		perror(ERROR_PREFIX "sem_open");
+	if (sem == SEM_FAILED) {
+		perror("sem_open(semname)");
 		return PTS_UNRESOLVED;
 	}
 
-	snprintf(semname_1, 20, "/" TEST "_%d_1", getpid());
+	snprintf(semname_1, sizeof(semname_1), "/" TEST "_%d_1", getpid());
+	
 	sem_1 = sem_open(semname_1, O_CREAT, 0777, val);
-	if (sem_1 == SEM_FAILED || sem_1 == NULL) {
-		perror(ERROR_PREFIX "sem_open: sem_1");
+	if (sem_1 == SEM_FAILED) {
+		perror("sem_open(semname_1)");
 		sem_unlink(semname);
 		return PTS_UNRESOLVED;
 	}
@@ -141,84 +147,81 @@ int main()
 
 	/* Lock Semaphore */
 	if (sem_wait(sem) == -1) {
-		perror(ERROR_PREFIX "sem_wait");
+		perror("sem_wait()");
 		retval = PTS_UNRESOLVED;
 		goto clean_up;
 	}
 
 	c_1 = fork();
-	if (c_1 == 0)
-	{
-		/* Child 1, should block */
+	switch (c_1) {
+	case 0:
 		child_fn(priority - 2, 1);
-	}
-	else if (c_1 < 0)
-	{
-		perror("Error at fork");
+	break;
+	case -1:
+		perror("fork()");
 		retval = PTS_UNRESOLVED;
 		goto clean_up;
+	break;
 	}
 	fprintf(stderr, "P: child_1:%d forked\n", c_1);
 
 	c_2 = fork();
-	if (c_2 == 0)
-	{
-		/* Child 2 */
+	switch (c_2) {
+	case 0:
 		child_fn(priority - 1, 2);
-	}
-	else if (c_2 < 0)
-	{
-		perror("Error at fork");
+	break;
+	case -1:
+		perror("fork()");
 		retval = PTS_UNRESOLVED;
 		goto clean_up;
+	break;
 	}
 	fprintf(stderr, "P: child_2: %d forked\n", c_2);
 
 	/* Make sure the two children has been waiting */
-	/*do {
-		sleep(1);
+	do {
+		sched_yield();
 		sem_getvalue(sem_1, &val);
-		//printf("val = %d\n", val);
+	//	printf("val = %d\n", val);
 	} while (val != 1);
-	*/
+	
 	c_3 = fork();
-	if (c_3 == 0)
-	{
-		/* Child 3 */
+	switch (c_3) {
+	case 0:
 		child_fn(priority - 1, 3);
+	break;
+	case -1:
+		perror("fork()");
+		retval = PTS_UNRESOLVED;
+		goto clean_up;
+	break;
 	}
 	fprintf(stderr, "P: child_3: %d forked\n", c_3);
 
 	/* Make sure child 3 has been waiting for the lock */
-	/*do {
-		sleep(1);
+	do {
+		sched_yield();
 		sem_getvalue(sem_1, &val);
-		//printf("val = %d\n", val);
+	//	printf("val = %d\n", val);
 	} while (val != 0);
-	*/
 
-	/* Synchronization required before release the lock */
-	sleep(1);
 	/* Ok, let's release the lock */
 	fprintf(stderr, "P: release lock\n");
 	sem_post(sem);
 	ret_pid = wait(&status);
 	if (ret_pid == c_2 && WIFEXITED(status)
-				&& WEXITSTATUS(status) == 0)
-	{
+	    && WEXITSTATUS(status) == 0) {
 		fprintf(stderr, "P: release lock\n");
 		sem_post(sem);
 		ret_pid = wait(&status);
 		if (ret_pid == c_3 && WIFEXITED(status)
-				&& WEXITSTATUS(status) == 0)
-		{
+		    && WEXITSTATUS(status) == 0){
 			fprintf(stderr, "P: release lock\n");
 			sem_post(sem);
 			ret_pid = wait(&status);
 			if (ret_pid == c_1 && WIFEXITED(status)
-				&& WEXITSTATUS(status) == 0)
-			{
-				printf("Test Pass\n");
+			    && WEXITSTATUS(status) == 0) {
+				printf("Test PASSED\n");
 				retval = PTS_PASS;
 				goto clean_up;
 			}
@@ -226,9 +229,7 @@ int main()
 				c_1, ret_pid);
 			retval = PTS_FAIL;
 			goto clean_up;
-		}
-		else
-		{
+		} else {
 			printf("Test Fail: Expect child_3: %d, got %d\n",
 			c_3, ret_pid);
 			retval = PTS_FAIL;
@@ -236,9 +237,7 @@ int main()
 			while ((wait(NULL) > 0));
 			goto clean_up;
 		}
-	}
-	else
-	{
+	} else {
 		printf("Test Fail: Expect child_2: %d, got %d\n",
 			c_2, ret_pid);
 		retval = PTS_FAIL;
