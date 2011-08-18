@@ -41,7 +41,7 @@ int main()
                	return PTS_UNRESOLVED;
         }
 
-        if (sigset(SIGCHLD,SIG_HOLD) != SIG_HOLD) {
+        if (sigset(SIGCHLD,SIG_HOLD) < 0) {
                 perror("Unexpected error while using sigset()");
                	return PTS_UNRESOLVED;
         }
