@@ -83,7 +83,7 @@ int main()
 		return PTS_FAIL;
 	}
 
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 
 }

@@ -224,7 +224,7 @@ int main(void)
 
 	pthread_join(child, NULL);
 
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 
 	return PTS_PASS;
 }

@@ -47,6 +47,6 @@ int main()
 		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
 	}
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

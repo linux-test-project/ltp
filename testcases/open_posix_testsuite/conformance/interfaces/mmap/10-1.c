@@ -98,6 +98,6 @@ int main()
   }
 
   close (fd);
-  printf ("Test PASS\n");
+  printf ("Test PASSED\n");
   return PTS_PASS;
 }

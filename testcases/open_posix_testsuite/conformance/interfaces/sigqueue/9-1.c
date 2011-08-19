@@ -70,7 +70,7 @@ int main(void)
 	}
 
 done:
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 
 	return PTS_PASS;
 }

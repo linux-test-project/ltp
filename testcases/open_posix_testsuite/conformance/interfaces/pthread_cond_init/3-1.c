@@ -48,7 +48,7 @@ int main(void)
 		goto done;
 	}
 
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 
 done:

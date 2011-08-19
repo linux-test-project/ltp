@@ -35,7 +35,7 @@ int main(void)
 	rc = create_test_thread(&p);
 
 	if (rc == PTS_PASS)
-		printf("Test PASS\n");
+		printf("Test PASSED\n");
 
 	return rc;
 }

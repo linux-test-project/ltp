@@ -57,6 +57,6 @@ int main(void)
 	pthread_attr_destroy(&attr);
 
 	if (status == PTS_PASS)
-		printf("Test PASS\n");
+		printf("Test PASSED\n");
 	return status;
 }
