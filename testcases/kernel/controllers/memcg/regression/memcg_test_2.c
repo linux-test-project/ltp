@@ -41,7 +41,7 @@ int main(void)
 {
 	struct sigaction sigusr_action;
 
-	sigemptyset(&sigusr_action.sa_mask);
+	memset(&sigusr_action, 0, sizeof(sigusr_action));
 	sigusr_action.sa_handler = &sigusr_handler;
 	sigaction(SIGUSR1, &sigusr_action, NULL);
 
