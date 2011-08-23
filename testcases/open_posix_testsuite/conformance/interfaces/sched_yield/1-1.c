@@ -111,15 +111,15 @@ int main(void)
 	}
 
 	/* Can only get here if sched_yield works. */
-	kill(pid, SIGINT);
+	kill(pid, SIGTERM);
 	waitpid(pid, &s, 0);
 
 	status = PTS_PASS;
 	if (WIFSIGNALED(s)) {
 		s = WTERMSIG(s);
-		if (s != SIGINT) {
+		if (s != SIGTERM) {
 			printf("Failed: kill signal: %d, should be: %d\n",
-					s, SIGINT);
+					s, SIGTERM);
 			status = PTS_FAIL;
 		}
 	} else if (WIFEXITED(s)) {
@@ -129,7 +129,7 @@ int main(void)
 	}
 
 	if (status == PTS_PASS)
-		printf("Test: PASS\n");
+		printf("Test PASSED\n");
 
 	return status;
 }
