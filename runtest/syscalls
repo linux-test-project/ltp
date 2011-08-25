@@ -1000,7 +1000,6 @@ setrlimit03 setrlimit03
 
 set_robust_list01 set_robust_list01
 set_thread_area01 set_thread_area01
-set_thread_area02 set_thread_area02
 set_tid_address01 set_tid_address01
 
 setsid01 setsid01
