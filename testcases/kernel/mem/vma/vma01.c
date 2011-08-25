@@ -60,6 +60,7 @@ int TST_TOTAL = 1;
 
 static void check_vma(void);
 static void *get_end_addr(void *addr_s, char *mapfile);
+static void check_status(int status);
 static void setup(void);
 static void cleanup(void);
 
@@ -110,26 +111,30 @@ static void check_vma(void)
 		memset(t, 2, ps);
 		u = mmap(t + 3*ps, 3*ps, PROT_WRITE,
 			    MAP_ANONYMOUS|MAP_PRIVATE, 0, 0);
-		if (u == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, NULL, "mmap");
-		tst_resm(TINFO, "u = %p", u);
+		if (u == MAP_FAILED) {
+			perror("mmap failed.\n");
+			exit(255);
+		}
+		printf("u = %p\n", u);
 		memset(u, 2, 4096);
+
 		x = get_end_addr(u, MAPS_FILE);
 		if (x == u + 6*ps)
-			tst_resm(TFAIL, "A single 6*ps VMA found.");
-		else if (x == u + 3*ps) {
+			exit(1);
+		if (x == u + 3*ps) {
 			y = get_end_addr(x, MAPS_FILE);
 			if (y == x + 3*ps)
-				tst_resm(TPASS, "two 3*ps VMAs found.");
-		} else
-			tst_brkm(TBROK, cleanup, "unexpected VMA found.");
-		exit(0);
+				exit(0);
+		}
+		exit(255);
 	default:
 		if (waitpid(-1, &status, 0) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+		if (!WIFEXITED(status))
+			tst_brkm(TBROK, cleanup, "child exited abnormally.");
+		check_status(WEXITSTATUS(status));
 		break;
 	}
-
 }
 
 static void *get_end_addr(void *addr_s, char *mapfile)
@@ -152,6 +157,20 @@ static void *get_end_addr(void *addr_s, char *mapfile)
 	}
 	fclose(fp);
 	tst_brkm(TBROK, cleanup, "no matched s = %p found.", addr_s);
+}
+
+static void check_status(int status)
+{
+	switch (status) {
+	case 0:
+		tst_resm(TPASS, "two 3*ps VMAs found.");
+		break;
+	case 1:
+		tst_resm(TFAIL, "A single 6*ps VMA found.");
+		break;
+	default:
+		tst_brkm(TBROK, cleanup, "unexpected VMA found.");
+	}
 }
 
 static void setup(void)
