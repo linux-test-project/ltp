@@ -96,13 +96,14 @@
 #define __THROW
 #endif
 
+#define _GNU_SOURCE
+
 #include <errno.h>
-#include <sched.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
-#include <linux/unistd.h>
+#include <sched.h>
 #include "test.h"
 #include "usctest.h"
 

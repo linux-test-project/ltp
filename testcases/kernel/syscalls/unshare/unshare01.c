@@ -74,6 +74,8 @@
 /*	      Manas Kumar Nayak maknayak@in.ibm.com>				*/
 /********************************************************************************/
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <sys/wait.h>
 #include <sys/types.h>

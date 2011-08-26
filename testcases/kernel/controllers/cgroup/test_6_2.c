@@ -20,6 +20,8 @@
 /*                                                                            */
 /******************************************************************************/
 
+#define _GNU_SOURCE
+
 #include <sched.h>
 #include <stdlib.h>
 #include <unistd.h>

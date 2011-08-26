@@ -24,6 +24,8 @@
 * Author:	  Veerendra <veeren@linux.vnet.ibm.com>
 =========================================================================*/
 
+#define _GNU_SOURCE
+
 #include <sys/utsname.h>
 #include <sched.h>
 #include <stdio.h>

@@ -28,6 +28,8 @@
 *                      31/07/2008
 *******************************************************************************/
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sched.h>
