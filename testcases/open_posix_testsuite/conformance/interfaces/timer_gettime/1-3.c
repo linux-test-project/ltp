@@ -25,9 +25,9 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-#define TIMERNSEC 80000000
-#define SLEEPNSEC 40000000
-#define ACCEPTABLEDELTA 3000000
+#define TIMERNSEC 800000000
+#define SLEEPNSEC 400000000
+#define ACCEPTABLEDELTA 30000000
 
 int main(int argc, char *argv[])
 {
