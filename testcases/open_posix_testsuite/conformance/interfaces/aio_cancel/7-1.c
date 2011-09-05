@@ -78,6 +78,7 @@ int main()
 		{
 			printf(TNAME " Error at malloc(): %s\n",
 		       		strerror(errno));
+			close(fd);
 			return PTS_UNRESOLVED;
 		}
 		aiocb[i]->aio_fildes = fd;
@@ -86,6 +87,7 @@ int main()
 		{
 			printf(TNAME " Error at malloc(): %s\n",
 		       		strerror(errno));
+			close(fd);
 			return PTS_UNRESOLVED;
 		}
 		aiocb[i]->aio_nbytes = BUF_SIZE;
@@ -96,6 +98,7 @@ int main()
 		{
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
 			       i, strerror(errno));
+			close(fd);
 			return PTS_FAIL;
 		}
 	}
@@ -109,10 +112,9 @@ int main()
 	{
 		printf(TNAME " Error at aio_cancel(): %s\n",
 		       strerror(errno));
+		close(fd);
 		return PTS_FAIL;
 	}
-
-	close(fd);
 
 	do {
 		in_progress = 0;
@@ -126,6 +128,7 @@ int main()
 			{
 				printf(TNAME " Error at aio_error(): %s\n",
 		       			strerror(errno));
+				close(fd);
 				return PTS_FAIL;
 			}
 			else if (ret == EINPROGRESS)
@@ -139,6 +142,7 @@ int main()
 				if (gret != AIO_NOTCANCELED)
 				{
 					printf(TNAME " Error at aio_error(): %s\n", strerror(errno));
+					close(fd);
 					return PTS_FAIL;
 				}
 
@@ -155,11 +159,14 @@ int main()
 				if (gret == AIO_NOTCANCELED)
 				{
 					printf ("Test PASSED\n");
+					close(fd);
 					return PTS_PASS;
 				}
 			}
 		}
 	} while (in_progress);
+
+	close(fd);
 
 	return PTS_UNRESOLVED;
 }
