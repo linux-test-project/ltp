@@ -76,16 +76,16 @@ void sig_handler(int sig)
 		if (created_thread == 1)
 		{
 			printf("Test FAILED: Created thread though an invalid attribute was passed to pthread_create().\n");
-			pthread_exit((void*)PTS_FAIL);
+			_exit(PTS_FAIL);
 		}
 
 		printf("Test PASSED\n");
-		pthread_exit((void*)PTS_PASS);
+		_exit(PTS_PASS);
 		return;
 	}
 
 	printf("Test FAILED: Did not receive segmentation fault signal, waited 10 seconds.\n");
-	pthread_exit((void*)PTS_FAIL);
+	_exit(PTS_FAIL);
 	return;
 }
 
