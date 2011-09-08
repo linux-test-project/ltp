@@ -106,6 +106,8 @@ void setup(void)
 
 	if (tst_kvercmp(2, 6, 32) < 0)
 		tst_brkm(TCONF, NULL, "2.6.32 or greater kernel required");
+	if (access(PATH_KSM, F_OK) == -1)
+		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
 
 	tst_sig(FORK, DEF_HANDLER, NULL);
 	TEST_PAUSE;
