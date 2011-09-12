@@ -64,6 +64,7 @@
 #include "config.h"
 
 #define SIZE (5*1024*1024)
+#define PATH_KSM "/sys/kernel/mm/ksm/"
 
 char *TCID = "mmap10";
 int TST_TOTAL = 1;
@@ -94,6 +95,8 @@ int main(int argc, char *argv[])
 
 	if (opt_ksm)
 	{
+		if (access(PATH_KSM, F_OK) == -1)
+			tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
 #ifdef HAVE_MADV_MERGEABLE
 		tst_resm(TINFO, "add to KSM regions.");
 #else
