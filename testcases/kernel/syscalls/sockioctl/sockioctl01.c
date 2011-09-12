@@ -227,6 +227,11 @@ void setup1(void)
 			 strerror(errno));
 	}
 	sinlen = sizeof(fsin1);
+
+	if (strncmp(tdat[testno].desc, "ATMARK on UDP", 14) == 0) {
+		if ((tst_kvercmp(2, 6, 39)) >= 0)
+			tdat[testno].experrno = ENOTTY;
+	}
 }
 
 void setup2(void)
