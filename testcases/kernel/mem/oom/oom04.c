@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 #endif
 
 	nnodes = count_numa();
-	if (count_numa() == 1)
+	if (count_numa() <= 1)
 		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();
@@ -122,6 +122,7 @@ int main(int argc, char *argv[])
 		testoom(0, 1, 1);
 	}
 	cleanup();
+	tst_exit();
 }
 
 void setup(void)
@@ -159,7 +160,6 @@ void cleanup(void)
 	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
 
 	TEST_CLEANUP;
-	tst_exit();
 }
 
 #else /* no NUMA */
