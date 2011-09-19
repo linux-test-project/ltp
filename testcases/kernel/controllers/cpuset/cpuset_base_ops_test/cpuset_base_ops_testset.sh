@@ -176,28 +176,6 @@ test_flags()
 	done # for filename in flagfiles
 }
 
-test_domain()
-{
-	cfile_name="sched_relax_domain_level"
-	while read domain_level result
-	do
-		base_op_test "$CPUSET/sched_relax_domain_level" "$domain_level" "$result"
-	done <<- EOF
-		NULL	0
-		0	0
-		1	1
-		2	2
-		3	3
-		4	4
-		5	5
-		6	WRITE_ERROR
-		-1	-1
-		-2	WRITE_ERROR
-		A	WRITE_ERROR
-	EOF
-	# while read domain_level result
-}
-
 # attach_task_test <cpus> <mems> <expect>
 attach_task_test()
 {
@@ -288,10 +266,7 @@ test_mems
 # Case 36-83
 test_flags
 
-# Case 84-94
-test_domain
-
-# Case 95-97
+# Case 84-86
 test_attach_task
 
 exit $exit_status
