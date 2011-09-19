@@ -219,7 +219,7 @@ test_4()
 }
 
 # main
-
+failed=0
 mkdir memcg/
 
 for cur in $(seq 1 $TST_TOTAL); do
@@ -228,6 +228,7 @@ for cur in $(seq 1 $TST_TOTAL); do
 	mount -t cgroup -o memory xxx memcg/
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount memory subsytem"
+		failed=1
 		continue
 	fi
 
