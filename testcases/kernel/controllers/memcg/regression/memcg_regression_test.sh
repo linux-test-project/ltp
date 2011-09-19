@@ -211,6 +211,10 @@ test_4()
 	# test_4.sh might be killed by oom, so do clean up here
 	killall -9 memcg_test_4 2> /dev/null
 	killall -9 memcg_test_4.sh 2> /dev/null
+
+	# if test_4.sh gets killed, it won't clean cgroup it created
+	rmdir memcg/0 2> /dev/null
+
 	swapon -a
 }
 
