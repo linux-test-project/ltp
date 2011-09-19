@@ -47,10 +47,13 @@ if [ $? -eq 0 ]; then
 	exit 0
 fi
 
-nr_bug=`dmesg | grep -c "kernel BUG"`
-nr_null=`dmesg | grep -c "kernel NULL pointer dereference"`
-nr_warning=`dmesg | grep -c "^WARNING"`
-nr_lockdep=`dmesg | grep -c "possible recursive locking detected"`
+#buffer can rotate and number of found bugs can actually go down
+#so clear the buffer to avoid this
+dmesg -c > /dev/null
+nr_bug=0
+nr_null=0
+nr_warning=0
+nr_lockdep=0
 
 # check_kernel_bug - check if some kind of kernel bug happened
 check_kernel_bug()
@@ -85,6 +88,8 @@ check_kernel_bug()
 	nr_warning=$new_warning
 	nr_lockdep=$new_lockdep
 
+	echo "check_kernel_bug found something!"
+	dmesg
 	failed=1
 	return 0
 }
