@@ -90,19 +90,12 @@ int main(int argc, char **argv)
 static void check_vma(void)
 {
 	int status;
-	void *t, *u, *v, *x, *y;
+	void *t, *u, *x, *y;
 
 	t = mmap(NULL, 3*ps, PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, 0, 0);
 	if (t == MAP_FAILED)
 		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
-	tst_resm(TINFO, "t = %p", t);
 	memset(t, 1, ps);
-
-	v = mmap(NULL, 3*ps, PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, 0, 0);
-	if (v == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
-	tst_resm(TINFO, "v = %p", v);
-	memset(v, 2, ps);
 
 	switch (fork()) {
 	case -1:
@@ -115,8 +108,9 @@ static void check_vma(void)
 			perror("mmap failed.\n");
 			exit(255);
 		}
-		printf("u = %p\n", u);
-		memset(u, 2, 4096);
+		printf("parent: t = %p\n", t);
+		printf("child : u = %p\n", u);
+		memset(u, 2, ps);
 
 		x = get_end_addr(u, MAPS_FILE);
 		if (x == u + 6*ps)
