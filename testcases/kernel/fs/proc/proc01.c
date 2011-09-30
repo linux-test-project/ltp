@@ -94,6 +94,8 @@ const Mapping known_issues[] = {
     {"read", "/proc/self/task/[0-9]*/mem", EIO},
     {"read", "/proc/self/attr/*", EINVAL},
     {"read", "/proc/self/task/[0-9]*/attr/*", EINVAL},
+    {"read", "/proc/self/ns/*", EINVAL},
+    {"read", "/proc/self/task/[0-9]*/ns/*", EINVAL},
     {"read", "/proc/ppc64/rtas/error_log", EINVAL},
     {"read", "/proc/powerpc/rtas/error_log", EINVAL},
     {"read", "/proc/fs/nfsd/unlock_filesystem", EINVAL},
