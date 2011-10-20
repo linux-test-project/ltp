@@ -555,7 +555,8 @@ mmap06 mmap06
 mmap07 mmap07
 mmap08 mmap08
 mmap09 mmap09
-mmap11 mmap11 -i 30000
+# test is broken, mask it for now.
+#mmap11 mmap11 -i 30000
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
@@ -999,7 +1000,6 @@ setrlimit03 setrlimit03
 
 set_robust_list01 set_robust_list01
 set_thread_area01 set_thread_area01
-set_thread_area02 set_thread_area02
 set_tid_address01 set_tid_address01
 
 setsid01 setsid01

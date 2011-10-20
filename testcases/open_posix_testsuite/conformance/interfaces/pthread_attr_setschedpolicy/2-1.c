@@ -226,7 +226,7 @@ int main(void)
 
 done:
 	if (status == PTS_PASS)
-		printf("Test PASS\n");
+		printf("Test PASSED\n");
 
 	return status;
 }

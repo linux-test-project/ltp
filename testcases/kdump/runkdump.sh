@@ -166,7 +166,7 @@ RunTest ()
 }
 
 # Start test.
-conf="runkdump.conf"
+conf="./runkdump.conf"
 lib="lib"
 log="log"
 

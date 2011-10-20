@@ -281,6 +281,6 @@ int main()
 		printf("High priority was not woken up. Test FAILED.\n");
 		exit(PTS_FAIL);
 	}
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 	exit(PTS_PASS);
 }

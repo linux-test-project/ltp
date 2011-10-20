@@ -85,17 +85,18 @@ int main(int ac, char **av) {
 		else if (TEST_RETURN == 0) {
 			uinfo.si_errno = 0;
 			uinfo.si_code = SI_QUEUE;
-			TEST(syscall(__NR_rt_sigqueueinfo, getpid(), 17,
+			TEST(syscall(__NR_rt_sigqueueinfo, getpid(), SIGCHLD,
 			    &uinfo));
 			if (TEST_RETURN != 0)
 				err(1, "rt_sigqueueinfo");
 			exit(0);
-		} else
+		} else {
 			wait(&status);
 			if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 				tst_resm(TPASS, "Test Succeeded");
 			else
 				tst_resm(TFAIL, "Test Failed");
+		}
 		cleanup();
 	}
 	tst_exit();

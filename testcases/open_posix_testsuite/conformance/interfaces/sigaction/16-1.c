@@ -229,7 +229,7 @@ int main(void)
 	}
 
 	if (rc == PTS_PASS)
-		printf("Test PASS\n");
+		printf("Test PASSED\n");
 
 	return rc;
 

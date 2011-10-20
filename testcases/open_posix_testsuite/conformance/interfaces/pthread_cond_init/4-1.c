@@ -134,7 +134,7 @@ int main(void)
 		status = WEXITSTATUS(child_status);
 
 	if (status == PTS_PASS)
-		printf("Test PASS\n");
+		printf("Test PASSED\n");
 
 done:
 	return status;

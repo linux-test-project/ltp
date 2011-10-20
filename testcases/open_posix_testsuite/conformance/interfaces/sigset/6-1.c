@@ -21,42 +21,52 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 #include "posixtest.h"
+
+#define ERR_MSG(f, rc) printf("Failed: func: %s rc: %u errno: %s\n", \
+						f, rc, strerror(errno))
 
 void myhandler(int signo)
 {
 	printf("SIGCHLD called. Inside handler\n");
 }
 
-int main()
+int main(void)
 {
 	sigset_t pendingset;
 	struct sigaction act;
 	act.sa_handler = myhandler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
+	int rc;
 
-	if (sigaction(SIGCHLD, &act, 0) != 0) {
-                perror("Unexpected error while using sigaction()");
-               	return PTS_UNRESOLVED;
-        }
+	rc = sigaction(SIGCHLD, &act, 0);
+	if (rc) {
+		ERR_MSG("sigaction()", rc);
+		return PTS_UNRESOLVED;
+	}
 
-        if (sigset(SIGCHLD,SIG_HOLD) != SIG_HOLD) {
-                perror("Unexpected error while using sigset()");
-               	return PTS_UNRESOLVED;
-        }
+	rc = sigset(SIGCHLD, SIG_HOLD);
+	if (rc < 0) {
+		ERR_MSG("sigset()", rc);
+		return PTS_UNRESOLVED;
+	}
 
 	raise(SIGCHLD);
 
-        if (sigpending(&pendingset) == -1) {
-                printf("Error calling sigpending()\n");
-                return PTS_UNRESOLVED;
-        }
+	rc = sigpending(&pendingset);
+	if (rc) {
+		ERR_MSG("sigpending()", rc);
+		return PTS_UNRESOLVED;
+	}
 
-        if (sigismember(&pendingset, SIGCHLD) != 1) {
-		printf("Test FAILED: Signal SIGCHLD was not successfully blocked\n");
+	if (sigismember(&pendingset, SIGCHLD) != 1) {
+		printf("Test FAILED: Signal SIGCHLD wasn't hold.\n");
 		return PTS_FAIL;
 	}
 
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

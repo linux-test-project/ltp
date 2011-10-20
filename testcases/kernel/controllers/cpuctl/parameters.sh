@@ -70,6 +70,8 @@ cleanup ()
         echo "Cleanup called";
 	killall cpuctl_def_task01 1>/dev/null 2>&1;
 	killall cpuctl_def_task02 1>/dev/null 2>&1;
+	killall cpuctl_task_* 1>/dev/null 2>&1;
+	sleep 1
         rm -f cpuctl_task_* 2>/dev/null
 	for task in `cat /dev/cpuctl/group_def/tasks`; do
 		echo $task > /dev/cpuctl/tasks 2>/dev/null 1>&2;

@@ -44,6 +44,20 @@ TCdat=${TCdat:-`pwd`}
 TCtmp=${TCtmp:-/tmp/ld-$$}
 mkdir $TCtmp
 
+if uname -a | grep -iq x86_64
+then
+	file $TCdat/ldmain.obj | grep 32-bit >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		export LDEMULATION="elf_i386"
+	fi
+elif uname -a | grep -iq powerpc
+then
+	file $TCdat/f1.obj | grep 64-bit >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		export LDEMULATION="elf64ppc"
+	fi
+fi
+
 #ASSERTION 1 
 #Test for graceful failure when ld can't find a fileTest calling ld directly
 #
@@ -139,13 +153,8 @@ fi
 ## Making sure the "shared" option works as designed
 ##
 echo "Assertion 5 .................."
-# Check for ppc64 architecture
-file f1.obj | grep PowerPC | grep 64-bit >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-	$LD -m elf64ppc -shared $TCdat/f1.obj $TCdat/d1.obj -o $TCtmp/test.lib
-else
-	$LD -shared $TCdat/f1.obj $TCdat/d1.obj -o $TCtmp/test.lib
-fi
+
+$LD -shared $TCdat/f1.obj $TCdat/d1.obj -o $TCtmp/test.lib
 file $TCtmp/test.lib | grep -q shared
 if [ $? -eq 0 ]; then
 	echo "-)"
@@ -162,15 +171,8 @@ fi
 ##
 echo "Assertion 6 .................."
 
-# Check for ppc64 architecture
-file f1.obj | grep PowerPC | grep 64-bit >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-	$LD -m elf64ppc -Bdynamic -shared $TCdat/f1.obj $TCdat/d1.obj -o $TCtmp/lola 2>$TCtmp/errmsg.out
-	$LD -m elf64ppc -Bstatic  -L. $TCdat/ldmain.obj $TCdat/rd1.obj $TCtmp/lola -o $TCtmp/a.out 2> $TCtmp/errmsg.out
- else
-	$LD -Bdynamic -shared $TCdat/f1.obj $TCdat/d1.obj -o $TCtmp/lola 2>$TCtmp/errmsg.out
-	$LD -Bstatic  -L. $TCdat/ldmain.obj $TCdat/rd1.obj $TCtmp/lola -o $TCtmp/a.out 2> $TCtmp/errmsg.out
-fi
+$LD -Bdynamic -shared $TCdat/f1.obj $TCdat/d1.obj -o $TCtmp/lola 2>$TCtmp/errmsg.out
+$LD -Bstatic  -L. $TCdat/ldmain.obj $TCdat/rd1.obj $TCtmp/lola -o $TCtmp/a.out 2> $TCtmp/errmsg.out
 #nm $TCtmp/a.out | grep -q DYNAMIC
 rc_code=$?
 

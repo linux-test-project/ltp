@@ -83,6 +83,6 @@ int main()
 		exit(PTS_PASS);
 	}
 
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 	exit(PTS_PASS);
 }

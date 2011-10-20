@@ -67,7 +67,7 @@ int main(void)
 	if (rc)
 		goto done;
 
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 
 done:
 	return rc;

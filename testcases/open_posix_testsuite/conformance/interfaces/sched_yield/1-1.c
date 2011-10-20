@@ -1,236 +1,135 @@
 /*
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   Copyright (c) Novell Inc. 2011
  *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms in version 2 of the GNU General Public License as
+ *   published by the Free Software Foundation.
  *
- * Test that the running thread relinquish the processor until it again becomes
- * the head of its thread list.
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
  *
- * Steps:
- *  1. Set the policy to SCHED_FIFO.
- *  2. Launch as many processes as number CPU minus 1. These processses set
- *     their priority to the max and block all but 1 processor.
- *  3. Launch a thread which increase a counter in a infinite loop.
- *  4. Launch a thread which call sched_yield() and check that the counter has
- *     changed since the call.
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *   Author:  Peter W. Morreale <pmorreale AT novell DOT com>
+ *   Date:    11/08/2011
  */
 
-#ifdef __linux__
 #define _GNU_SOURCE
-#endif
-
+#include <stdio.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <string.h>
+#include <signal.h>
 #include <pthread.h>
 #include <sched.h>
 #include <signal.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "posixtest.h"
 
-#define LOOP 1000     /* Shall be >= 1 */
+#include <affinity.h>
 
-volatile int nb_call = 0;
 
-/* Get the number of CPUs */
-int get_ncpu() {
-	int ncpu = -1;
+#define ERR_LOG(l, rc)   printf("Failed: %s rc: %d errno: %s\n", \
+					l, rc, strerror(errno))
 
-	/* This syscall is not POSIX but it should work on many system */
-#ifdef _SC_NPROCESSORS_ONLN
-	ncpu = sysconf(_SC_NPROCESSORS_ONLN);
-#endif
-
-	return ncpu;
-}
-
-#ifdef __linux__
-int set_process_affinity(int cpu)
+static int child_busy(int fd)
 {
-	int retval = -1;
-	cpu_set_t cpu_mask;
+	int rc;
 
-	CPU_ZERO(&cpu_mask);
-	if (cpu >= 0 && cpu <= CPU_SETSIZE) {
-		CPU_SET(cpu, &cpu_mask);
-	} else {
-		fprintf (stderr, "Wrong cpu id: %d\n", cpu);
-		return -1;
+	/* suicide if sched_yield fails */
+	alarm(4);
+
+	/* Tell the parent we're ready */
+	write(fd, "go", 2);
+	
+	for (;;) {
+		rc = sched_yield();
+		if (rc) {
+			ERR_LOG("child: sched_yield", rc);
+			exit(1);
+		}
 	}
 
-//#ifndef P2_SCHED_SETAFFINITY
-	retval = sched_setaffinity(0, sizeof(cpu_mask), &cpu_mask);
-//#else
-//	retval = sched_setaffinity(0, &cpu_mask);
-//#endif
-	if (retval == -1)
-	perror("Error at sched_setaffinity()");
-
-        return retval;
+	/* should not get here */
+	exit(2);
 }
 
-int set_thread_affinity(int cpu)
+int main(void)
 {
-	int retval = -1;
-	cpu_set_t cpu_mask;
+	int pid;
+	int rc;
+	int pfd[2];
+	int status = PTS_UNRESOLVED;
+	int s;
+	struct sched_param sp;
+	char buf[8];
 
-	CPU_ZERO(&cpu_mask);
-	if (cpu >= 0 && cpu <= CPU_SETSIZE) {
-		CPU_SET(cpu, &cpu_mask);
-	} else {
-		fprintf (stderr, "Wrong cpu id: %d\n", cpu);
-		return -1;
+	/* Set up a pipe, for synching.  */
+	rc = pipe(pfd);
+	if (rc) {
+		ERR_LOG("pipe", rc);
+		return status;
 	}
-//#ifndef P2_PTHREAD_SETAFFINITY
-	retval = pthread_setaffinity_np(pthread_self(),
-			sizeof(cpu_mask), &cpu_mask);
-//#else
-//	retval = pthread_setaffinity_np(pthread_self(), &cpu_mask);
-//#endif
-        if (retval != 0)
-	fprintf (stderr, "Error at pthread_setaffinity_np():\n");
-	return retval;
-}
 
-#endif
+	/* get in FIFO */
+	sp.sched_priority = sched_get_priority_min(SCHED_FIFO);
+	rc = sched_setscheduler(getpid(), SCHED_FIFO, &sp);
+	if (rc) {
+		ERR_LOG("sched_setscheduler", rc);
+		return status;
+	}
 
-void * runner(void * arg) {
-	int i=0, nc;
-	long result = 0;
-#ifdef __linux__
-        set_thread_affinity(*(int *)arg);
-        fprintf(stderr, "%ld bind to cpu: %d\n", pthread_self(), *(int*)arg);
-#endif
+	/* Must only use a single CPU */
+	rc = set_affinity(0);
+	if (rc) {
+		ERR_LOG("set_affinity", rc);
+		return status;
+	}
 
-	for (;i<LOOP;i++) {
-		nc = nb_call;
-		sched_yield();
+	pid = fork();
+	if (pid == 0)
+		child_busy(pfd[1]);
 
-		/* If the value of nb_call has not change since the last call
-		   of sched_yield, that means that the thread does not
-		   relinquish the processor */
-		if (nc == nb_call) {
-			result++;
+	if (pid < 0) {
+		ERR_LOG("fork", rc);
+		return status;
+	}
+
+	/* wait for child */
+	rc = read(pfd[0], buf, sizeof(buf));
+	if (rc != 2) {
+		kill(pid, SIGTERM);
+		waitpid(pid, NULL, 0);
+		ERR_LOG("read", rc);
+		return status;
+	}
+
+	/* Can only get here if sched_yield works. */
+	kill(pid, SIGINT);
+	waitpid(pid, &s, 0);
+
+	status = PTS_PASS;
+	if (WIFSIGNALED(s)) {
+		s = WTERMSIG(s);
+		if (s != SIGINT) {
+			printf("Failed: kill signal: %d, should be: %d\n",
+					s, SIGINT);
+			status = PTS_FAIL;
 		}
+	} else if (WIFEXITED(s)) {
+		printf("Failed: child prematurely exited with: %d\n",
+				WEXITSTATUS(s));
+		status = PTS_FAIL;
 	}
 
-	pthread_exit((void*)(result));
+	if (status == PTS_PASS)
+		printf("Test: PASS\n");
 
-	return NULL;
-}
-
-void * busy_thread(void *arg) {
-#ifdef __linux__
-        set_thread_affinity(*(int *)arg);
-        fprintf(stderr, "%ld bind to cpu: %d\n", pthread_self(), *(int*)arg);
-#endif
-        while (1) {
-                nb_call++;
-		sched_yield();
-	}
-
-	return NULL;
-}
-
-void busy_process(int cpu) {
-        struct sched_param param;
-
-#ifdef __linux__
-        /* Bind to a processor */
-        set_process_affinity(cpu);
-        fprintf(stderr, "%d bind to cpu: %d\n", getpid(), cpu);
-#endif
-        param.sched_priority = sched_get_priority_max(SCHED_FIFO);
-        if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
-                perror("An error occurs when calling sched_setparam()");
-                return;
-        }
-
-        /* to avoid blocking */
-        alarm(2);
-        while (1);
-
-}
-
-int main() {
-	int i, ncpu;
-	int *child_pid;
-	pthread_t tid, tid_runner;
-	void *tmpresult;
-	long result;
-	pthread_attr_t attr;
-        struct sched_param param;
-        int thread_cpu;
-
-	ncpu = get_ncpu();
-	if (ncpu == -1) {
-		printf("Can not get the number of CPUs of your machines.\n");
-		return PTS_UNRESOLVED;
-	}
-
-	printf("System has %d processors\n", ncpu);
-
-        param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 1;
-        if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
-		if (errno == EPERM) {
-			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
-			return PTS_UNRESOLVED;
-		}
-		perror("An error occurs when calling sched_setscheduler()");
-                return PTS_UNRESOLVED;
-        }
-
-	child_pid = malloc((ncpu-1)*sizeof(int));
-
-	for (i=0; i<ncpu-1; i++) {
-		child_pid[i] = fork();
-		if (child_pid[i] == -1) {
-			perror("An error occurs when calling fork()");
-			return PTS_UNRESOLVED;
-		} else if (child_pid[i] == 0) {
-
-			busy_process(i);
-
-			printf("This code should not be executed.\n");
-			return PTS_UNRESOLVED;
-		}
-	}
-
-	pthread_attr_init(&attr);
-        pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
-
-        thread_cpu = ncpu -1;
-	if (pthread_create(&tid, &attr, busy_thread, &thread_cpu) != 0) {
-		perror("An error occurs when calling pthread_create()");
-		return PTS_UNRESOLVED;
-	}
-
-	if (pthread_create(&tid_runner, &attr, runner, &thread_cpu) != 0) {
-		perror("An error occurs when calling pthread_create()");
-		return PTS_UNRESOLVED;
-	}
-
-	if (pthread_join(tid_runner, &tmpresult) != 0) {
-		perror("An error occurs when calling pthread_join()");
-		return PTS_UNRESOLVED;
-	}
-
-        for (i=0; i<ncpu-1; i++)
-                waitpid(child_pid[i], NULL, 0);
-
-        result = (long)tmpresult;
-	if (result) {
-		printf("A thread does not relinquish the processor.\n");
-		return PTS_FAIL;
-	}
-
-	printf("Test PASSED\n");
-	return PTS_PASS;
-
+	return status;
 }

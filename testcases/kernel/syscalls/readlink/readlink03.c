@@ -173,6 +173,11 @@ int main(int ac, char **av)
 				buf_size = sizeof(buffer);
 			}
 
+			if (strncmp(test_desc, "Symlink Pathname is empty", 25) == 0) {
+				if ((tst_kvercmp(2, 6, 39)) >= 0)
+					Test_cases[i].exp_errno = EINVAL;
+			}
+
 			/*
 			 * Call readlink(2) to test different test conditions.
 			 * verify that it fails with -1 return value and sets

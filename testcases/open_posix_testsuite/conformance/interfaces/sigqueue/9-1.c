@@ -29,8 +29,30 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <pwd.h>
 #include "posixtest.h"
+
+#define MAX_ATTEMPTS	10000
+
+static int reset_uid(void)
+{
+	uid_t uid;
+
+	if (getuid())
+		return 0;
+
+	/* Search for an unused uid */
+	for (uid = 0; uid < MAX_ATTEMPTS; uid++) {
+		if (!getpwuid(uid) && !setuid(uid))
+			return 0;
+	}
+
+	printf("Failed: No unused uid's in %d attempts\n", MAX_ATTEMPTS);
+	return -1;
+}
 
 int main(void)
 {
@@ -44,6 +66,10 @@ int main(void)
 	pid = getpid();
 
 	sighold(SIGTOTEST);
+
+	rc = reset_uid();
+	if (rc)
+		return PTS_UNRESOLVED;
 
 	/*
 	 * Get system limit.  Note that this limit is optional.
@@ -70,7 +96,7 @@ int main(void)
 	}
 
 done:
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 
 	return PTS_PASS;
 }

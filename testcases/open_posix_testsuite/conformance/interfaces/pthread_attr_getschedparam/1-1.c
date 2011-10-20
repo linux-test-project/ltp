@@ -98,6 +98,6 @@ int main()
 		printf(ERROR_PREFIX "pthread_attr_destroy\n");
 		exit(PTS_UNRESOLVED);
 	}
-	printf("Test PASS\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

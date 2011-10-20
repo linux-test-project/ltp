@@ -86,6 +86,7 @@ int main(int ac, char **av)
 	uid_t save_myuid, user1_uid;
 	pid_t mypid;
 
+	int fd;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
@@ -240,7 +241,8 @@ int main(int ac, char **av)
 		/*
 		 * Create the file with setgid not set
 		 */
-		if (open(nosetgid_A, O_CREAT|O_EXCL|O_RDWR, MODE_RWX) == -1) {
+		fd = open(nosetgid_A, O_CREAT|O_EXCL|O_RDWR, MODE_RWX);
+		if (fd == -1) {
 			tst_resm(TFAIL, "Creation of %s failed", nosetgid_A);
 			local_flag = FAILED;
 		}
@@ -262,12 +264,13 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "%s: Incorrect group", nosetgid_A);
 			local_flag = FAILED;
 		}
+		close(fd);
 
 		/*
 		 * Create the file with setgid set
 		 */
-		if (open(setgid_A, O_CREAT | O_EXCL | O_RDWR, MODE_SGID) ==
-		    -1) {
+		fd = open(setgid_A, O_CREAT | O_EXCL | O_RDWR, MODE_SGID);
+		if (fd == -1) {
 			tst_resm(TFAIL, "Creation of %s failed", setgid_A);
 			local_flag = FAILED;
 		}
@@ -291,6 +294,8 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "got %u and %u", buf.st_gid, mygid);
 			local_flag = FAILED;
 		}
+		close(fd);
+
 		if (local_flag == PASSED) {
 			tst_resm(TPASS, "Test passed in block1.");
 		} else {
@@ -308,7 +313,8 @@ int main(int ac, char **av)
 		/*
 		 * Create the file with setgid not set
 		 */
-		if (creat(nosetgid_B, MODE_RWX) == -1) {
+		fd = creat(nosetgid_B, MODE_RWX);
+		if (fd == -1) {
 			tst_resm(TFAIL, "Creation of %s failed", nosetgid_B);
 			local_flag = FAILED;
 		}
@@ -331,11 +337,13 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "%s: Incorrect group", nosetgid_B);
 			local_flag = FAILED;
 		}
+		close(fd);
 
 		/*
 		 * Create the file with setgid set
 		 */
-		if (creat(setgid_B, MODE_SGID) == -1) {
+		fd = creat(setgid_B, MODE_SGID);
+		if (fd == -1) {
 			tst_resm(TFAIL, "Creation of %s failed", setgid_B);
 			local_flag = FAILED;
 		}
@@ -360,6 +368,7 @@ int main(int ac, char **av)
 				 setgid_B);
 			local_flag = FAILED;
 		}
+		close(fd);
 
 		if (local_flag == PASSED) {
 			tst_resm(TPASS, "Test passed in block2.");
@@ -381,7 +390,8 @@ int main(int ac, char **av)
 		}
 
 		/* Create the file with setgid set */
-		if (creat(root_setgid_B, MODE_SGID) == -1) {
+		fd = creat(root_setgid_B, MODE_SGID);
+		if (fd == -1) {
 			tst_resm(TFAIL, "Creation of %s failed", root_setgid_B);
 			local_flag = FAILED;
 		}
@@ -406,6 +416,7 @@ int main(int ac, char **av)
 				 group2_gid);
 			local_flag = FAILED;
 		}
+		close(fd);
 
 		if (local_flag == PASSED) {
 			tst_resm(TPASS, "Test passed in block3");

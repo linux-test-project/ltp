@@ -25,9 +25,9 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-#define TIMERNSEC 80000000
-#define SLEEPNSEC 40000000
-#define ACCEPTABLEDELTA 3000000
+#define TIMERNSEC 800000000
+#define SLEEPNSEC 400000000
+#define ACCEPTABLEDELTA 30000000
 
 int main(int argc, char *argv[])
 {
@@ -45,25 +45,25 @@ int main(int argc, char *argv[])
 	itsset.it_value.tv_sec = 0;
 	itsset.it_value.tv_nsec = TIMERNSEC;
 
-	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+	if (timer_create(CLOCK_REALTIME, &ev, &tid)) {
+		perror("timer_create()");
 		return PTS_UNRESOLVED;
 	}
 
-	if (timer_settime(tid, 0, &itsset, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
+	if (timer_settime(tid, 0, &itsset, NULL)) {
+		perror("timer_settime()");
 		return PTS_UNRESOLVED;
 	}
 
-	ts.tv_sec=0;
-	ts.tv_nsec=SLEEPNSEC;
-	if (nanosleep(&ts, NULL) != 0) {
-		perror("nanosleep() did not return success\n");
+	ts.tv_sec = 0;
+	ts.tv_nsec = SLEEPNSEC;
+	if (nanosleep(&ts, NULL)) {
+		perror("nanosleep()");
 		return PTS_UNRESOLVED;
 	}
 
-	if (timer_gettime(tid, &itsget) != 0) {
-		perror("timer_gettime() did not return success\n");
+	if (timer_gettime(tid, &itsget)) {
+		perror("timer_gettime()");
 		return PTS_UNRESOLVED;
 	}
 
@@ -73,34 +73,21 @@ int main(int argc, char *argv[])
 	 * - itsset-itsget nsec must be <= ACCEPTABLEDELTA
 	 */
 
-	if (itsget.it_value.tv_sec > 0) {
-		printf("FAIL:  timer_gettime() value > time expected left\n");
-		printf("%d seconds > 0 seconds\n",
-				(int) itsget.it_value.tv_sec);
+	if (itsget.it_value.tv_sec) {
+		printf("FAIL:  timer_gettime tv_sec: %lu seconds > 0 seconds\n",
+			itsget.it_value.tv_sec);
 		return PTS_FAIL;
 	}
 
-	deltans=(itsset.it_value.tv_nsec - ts.tv_nsec)- itsget.it_value.tv_nsec;
+	deltans = (itsset.it_value.tv_nsec - ts.tv_nsec) -
+					itsget.it_value.tv_nsec;
 
-	if (deltans < 0) {
-		printf("FAIL:  timer_gettime() value > time expected left\n");
-		printf("%d > %d\n", (int) itsget.it_value.tv_nsec,
-				(int) itsset.it_value.tv_nsec -
-					(int) ts.tv_nsec);
+	if (deltans < 0 || deltans > ACCEPTABLEDELTA) {
+		printf("FAIL:  timer_gettime() deltans: %d allowed: %u\n", 
+			deltans, ACCEPTABLEDELTA);
 		return PTS_FAIL;
 	}
 
-	if (deltans <= ACCEPTABLEDELTA) {
-		printf("Test PASSED\n");
-		return PTS_PASS;
-	} else {
-		printf("FAIL:  timer_gettime() value !~= time expected left\n");
-		printf("%d !~= %d\n", (int) itsget.it_value.tv_nsec,
-				(int) itsset.it_value.tv_nsec -
-					(int) ts.tv_nsec);
-		return PTS_FAIL;
-	}
-
-	printf("This code should not be executed\n");
-	return PTS_UNRESOLVED;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

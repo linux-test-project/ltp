@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 	mqstat.mq_flags = 0;
 
 	for (i = 0; i < num; i++) {
-	  	if ((mq[i] = mq_open(MQ_NAME[i],oflag,0777, &mqstat)) != -1) {
+	  	if ((mq[i] = mq_open(MQ_NAME[i],oflag,0777, &mqstat)) == -1) {
 			perror("mq_open doesn't return success \n");
 			return PTS_UNRESOLVED;
 		}

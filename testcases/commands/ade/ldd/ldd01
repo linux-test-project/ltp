@@ -46,23 +46,24 @@ do_setup()
 {
 	mkdir $TCtmp
 
-	# Check for ppc64 architecture
-	file lddfile1.obj | grep PowerPC | grep 64-bit >/dev/null 2>&1
-	if [ $? -eq 0 ]; then
-		$CC -m64 -shared -o $TCtmp/lddfile1.obj.so $TCdat/lddfile1.obj
-		$CC -m64 -shared -o $TCtmp/lddfile2.obj.so $TCdat/lddfile2.obj
-		$CC -m64 -shared -o $TCtmp/lddfile3.obj.so $TCdat/lddfile3.obj
-		$CC -m64 -shared -o $TCtmp/lddfile4.obj.so $TCdat/lddfile4.obj
-		$CC -m64 -shared -o $TCtmp/lddfile5.obj.so $TCdat/lddfile5.obj
-		$CC -m64 -O -o $TCtmp/a.out $TCtmp/lddfile*.obj.so $TCdat/main.obj
-	else
-		$CC -shared -o $TCtmp/lddfile1.obj.so $TCdat/lddfile1.obj
-		$CC -shared -o $TCtmp/lddfile2.obj.so $TCdat/lddfile2.obj
-		$CC -shared -o $TCtmp/lddfile3.obj.so $TCdat/lddfile3.obj
-		$CC -shared -o $TCtmp/lddfile4.obj.so $TCdat/lddfile4.obj
-		$CC -shared -o $TCtmp/lddfile5.obj.so $TCdat/lddfile5.obj
-		$CC -O -o $TCtmp/a.out $TCtmp/lddfile*.obj.so $TCdat/main.obj
+	# Check for ppc64 architecture or x86_64 architecture
+	if uname -a | grep -iq powerpc; then
+		file lddfile1.obj | grep 64-bit >/dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			CFLAGS="-m64"
+		fi
+	elif uname -a | grep -iq x86_64; then
+		file lddfile1.obj | grep 32-bit >/dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			CFLAGS="-m32"
+		fi
 	fi
+	$CC $CFLAGS -shared -o $TCtmp/lddfile1.obj.so $TCdat/lddfile1.obj
+	$CC $CFLAGS -shared -o $TCtmp/lddfile2.obj.so $TCdat/lddfile2.obj
+	$CC $CFLAGS -shared -o $TCtmp/lddfile3.obj.so $TCdat/lddfile3.obj
+	$CC $CFLAGS -shared -o $TCtmp/lddfile4.obj.so $TCdat/lddfile4.obj
+	$CC $CFLAGS -shared -o $TCtmp/lddfile5.obj.so $TCdat/lddfile5.obj
+	$CC $CFLAGS -O -o $TCtmp/a.out $TCtmp/lddfile*.obj.so $TCdat/main.obj
 } 
 
 do_test()

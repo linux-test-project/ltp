@@ -2,10 +2,9 @@
  *
  *   Copyright (c) Novell Inc. 2011
  *
- *   This program is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU General Public License
- *   as published by the Free Software Foundation; either version 2
- *   of the License, or (at your option) any later version.
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms in version 2 of the GNU General Public License as
+ *   published by the Free Software Foundation.
  *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
@@ -17,25 +16,29 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  *   Author:  Peter W. Morreale <pmorreale AT novell DOT com>
- *
- *   Date:  20/05/2011
+ *   Date:    11/08/2011
  */
 
-#include "common.h"
+/*
+ * Must be ported to OS's other than Linux 
+ */
 
-int main(void)
+#ifdef __linux__
+#include <sched.h>
+
+static int set_affinity(int cpu)
 {
-	int rc;
-	struct params p;
+	cpu_set_t mask;
 
-	p.policy = SCHED_FIFO;
-	p.priority = PRIORITY_FIFO;
-	p.policy_label = "SCHED_FIFO";
-	p.status = PTS_UNRESOLVED;
-	rc = create_test_thread(&p);
+	CPU_ZERO(&mask);
+	CPU_SET(cpu, &mask);
 
-	if (rc == PTS_PASS)
-		printf("Test PASSED\n");
-
-	return rc;
+	return (sched_setaffinity(0, sizeof(cpu_set_t), &mask));
 }
+#else
+static int set_affinity(int cpu)
+{
+	errno = ENOSYS;
+	return -1;
+}
+#endif
