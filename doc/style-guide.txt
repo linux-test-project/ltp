@@ -71,7 +71,7 @@ You don't need to clean up the following:
 
  * +malloc(3)+'ed memory.
  * Read-only file descriptors in persistent paths (i.e. not
-   emporary directories).
+   temporary directories).
 
 Please be aware of some of the caveats surrounding forking,
 exec'ing and descriptor inheritance, etc.
@@ -423,12 +423,11 @@ patches that are git friendly and patchable.
 
 Guidelines for submitting patches are as follows:
 
-1. Use +git commit -s+ . You know you want to (and if you do then you
-   will be submitted a correct signed-off-by line!) ;)... You may need
-   to use git config first though.
+1. Use +git commit -s+ . You know you want to ;) .. (you may need to
+   submit a correct signed-off-by line, e.g. use git config first).
 2. Provide a short (<= 50 character) description of the commit.
 3. Provide a little more terse (1-2 paragraph maximum, <= 72 character
-   lines) description of what the commit does, if necessary.
+   lines) description of what the commit does.
 4. Format the email with +git format-patch --attach+ command .
 
 Example of a commit message:
