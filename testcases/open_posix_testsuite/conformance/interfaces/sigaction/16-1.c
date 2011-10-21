@@ -124,8 +124,11 @@ void *threaded(void *arg)
 	rc = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
 	if (rc) {
 		printf("Failed: pthread_setschedparam(SCHED_FIFO), root?\n");
-		ready = 1;
-		return (void *) PTS_UNRESOLVED;
+		
+		if (rc == EPERM)
+			exit(PTS_UNTESTED);
+		else
+			exit(PTS_UNRESOLVED);
 	}
 
 	ready = 1;
