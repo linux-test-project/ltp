@@ -129,7 +129,7 @@ char fname[255];
 int fd;
 int Rec_sigsys = 0;
 
-int Whences[] = { 4, -1, 7 };
+int Whences[] = { 5, -1, 7 };
 
 int main(int ac, char **av)
 {
