@@ -34,12 +34,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_fsync_4_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -52,8 +51,7 @@ int main()
 	aiocb_write.aio_buf = buf;
 	aiocb_write.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb_write) == -1)
-	{
+	if (aio_write(&aiocb_write) == -1) {
 		printf(TNAME " Error at aio_write(): %s\n",
 		       strerror(errno));
 		exit(PTS_FAIL);
@@ -62,19 +60,17 @@ int main()
 	memset(&aiocb_fsync, 0, sizeof(aiocb_fsync));
 	aiocb_fsync.aio_fildes = fd;
 
-	if (aio_fsync(O_SYNC, &aiocb_fsync) != 0)
-	{
+	if (aio_fsync(O_SYNC, &aiocb_fsync) != 0) {
 		printf(TNAME " Error at aio_fsync()\n");
 		exit(PTS_FAIL);
 	}
 
-	if (aio_error(&aiocb_fsync) < 0)
-	{
+	if (aio_error(&aiocb_fsync) < 0) {
 		printf(TNAME " Error at aio_error() : %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
