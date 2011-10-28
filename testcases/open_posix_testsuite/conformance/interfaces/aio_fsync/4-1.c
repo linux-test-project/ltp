@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2004, Bull SA. All rights reserved.
+ * Copyright (c) 2011, Wanlong Gao <gaowanlong@cn.fujitsu.com>
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
@@ -27,6 +28,7 @@ int main()
 #define BUF_SIZE 111
 	char buf[BUF_SIZE];
 	int fd;
+	int ret = 0;
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
 
@@ -65,8 +67,18 @@ int main()
 		exit(PTS_FAIL);
 	}
 
-	if (aio_error(&aiocb_fsync) < 0) {
-		printf(TNAME " Error at aio_error() : %s\n", strerror(errno));
+	while ((ret = aio_error(&aiocb_fsync) == EINPROGRESS))
+		usleep(10000);
+	if (ret < 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
+		exit(PTS_FAIL);
+	}
+
+	/* Upon successful completion, fsync() shall return 0.
+	 * Otherwise, -1 shall be returned and errno set to indicate the error.
+	 */
+	if (aio_return(&aiocb_fsync)) {
+		printf(TNAME " Error at aio_return() \n");
 		exit(PTS_FAIL);
 	}
 
