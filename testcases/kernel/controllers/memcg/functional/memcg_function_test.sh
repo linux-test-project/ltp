@@ -93,6 +93,34 @@ check_mem_stat()
 	result $pass "rss=$rss/$1"
 }
 
+warmup()
+{
+	pid=$1
+
+	case $cur_id in
+	"11"|"12"|"13")
+		#no warmp here, these are expected to fail
+		;;
+	*)
+		echo "Warming up for test: $cur_id, pid: $pid"
+		/bin/kill -s SIGUSR1 $pid 2> /dev/null
+		sleep 1
+		/bin/kill -s SIGUSR1 $pid 2> /dev/null
+		sleep 1
+
+		kill -0 $pid
+		if [ $? -ne 0 ]; then
+			result $FAIL "cur_id=$cur_id"
+			return 1
+		else
+			echo "Process is still here after warm up: $pid"
+		fi
+		;;
+	esac
+	return 0
+}
+
+
 # Run test cases which checks memory.stat after make
 # some memory allocation
 #
@@ -102,8 +130,15 @@ check_mem_stat()
 # $4 - check after free ?
 test_mem_stat()
 {
+	echo "Running $TEST_PATH/memcg_process $1 -s $2"
 	$TEST_PATH/memcg_process $1 -s $2 &
 	sleep 1
+
+	warmup $!
+	if [ $? -ne 0 ]; then
+		return
+	fi
+
 	echo $! > tasks
 	/bin/kill -s SIGUSR1 $! 2> /dev/null
 	sleep 1
@@ -235,8 +270,15 @@ test_subgroup()
 	echo $1 > memory.limit_in_bytes
 	echo $2 > subgroup/memory.limit_in_bytes
 
+	echo "Running $TEST_PATH/memcg_process --mmap-anon -s $PAGESIZE"
 	$TEST_PATH/memcg_process --mmap-anon -s $PAGESIZE &
 	sleep 1
+
+	warmup $!
+	if [ $? -ne 0 ]; then
+		return
+	fi
+
 	echo $! > tasks
 	/bin/kill -s SIGUSR1 $! 2> /dev/null
 	sleep 1
@@ -520,6 +562,7 @@ fi
 
 cleanup()
 {
+	killall -9 memcg_process 2>/dev/null
 	if [ -e /dev/memcg ]; then
 		umount /dev/memcg 2>/dev/null
 		rmdir /dev/memcg 2>/dev/null
