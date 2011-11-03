@@ -127,24 +127,24 @@ int mkfile(int size)
 	return fd;
 }
 
-void *map_write_unmap(void *args)
+void *map_write_unmap(void *ptr)
 {
-	long *mwuargs = args;
-	long i = 0;
+	long *args = ptr;
+	long i;
 
 	tst_resm(TINFO, "pid[%d]: map, change contents, unmap files %ld times",
-	         getpid(), mwuargs[2]);
+	         getpid(), args[2]);
 
 	if (verbose_print)
 		tst_resm(TINFO, "map_write_unmap() arguments are: "
 		                "fd - arg[0]: %ld; "
 		                "size of file - arg[1]: %ld; "
 		                "num of map/write/unmap - arg[2]: %ld",
-		                mwuargs[0], mwuargs[1], mwuargs[2]);
+		                args[0], args[1], args[2]);
 
-	while (i++ < mwuargs[2]) {
-		map_address = mmap(0, (size_t)mwuargs[1], PROT_WRITE|PROT_READ,
-		                        MAP_SHARED, (int)mwuargs[0], 0);
+	for (i = 0; i < args[2]; i++) {
+		map_address = mmap(0, (size_t)args[1], PROT_WRITE|PROT_READ,
+		                        MAP_SHARED, (int)args[0], 0);
 		
 		if (map_address == (caddr_t *) -1) {
 			perror("map_write_unmap(): mmap()");
@@ -154,15 +154,15 @@ void *map_write_unmap(void *args)
 		if (verbose_print)
 			tst_resm(TINFO, "map address = %p", map_address);
 
-		memset(map_address, 'a', mwuargs[1]);
+		memset(map_address, 'a', args[1]);
 
 		if (verbose_print)
 			tst_resm(TINFO, "[%ld] times done: of total [%ld] iterations, "
 			         "map_write_unmap():memset() content of memory = %s",
-                                 i, mwuargs[2], (char*)map_address);
+                                 i, args[2], (char*)map_address);
 		usleep(1);
 
-		if (munmap(map_address, (size_t)mwuargs[1]) == -1) {
+		if (munmap(map_address, (size_t)args[1]) == -1) {
 			perror("map_write_unmap(): mmap()");
 			pthread_exit((void *)1);
 		}
@@ -171,25 +171,25 @@ void *map_write_unmap(void *args)
 	pthread_exit((void *)0);
 }
 
-void *read_mem(void *args)
+void *read_mem(void *ptr)
 {
-	static long i = 0;
-	long *rmargs = args;
+	long i = 0;
+	long *args = ptr;
 
 	tst_resm(TINFO, "pid[%d] - read contents of memory %p %ld times",
-	         getpid(), map_address, rmargs[2]);
+	         getpid(), map_address, args[2]);
 
 	if (verbose_print)
 		tst_resm(TINFO, "read_mem() arguments are: "
 		         "number of reads to be performed - arg[2]: %ld; "
 		         "read from address %p",
-                         rmargs[2], map_address);
+                         args[2], map_address);
 
-	while (i++ < rmargs[2]) {
+	for (i = 0; i < args[2]; i++) {
 		
 		if (verbose_print)
 			tst_resm(TINFO, "read_mem() in while loop %ld times "
-			         "to go %ld times", i, rmargs[2]);
+			         "to go %ld times", i, args[2]);
 
 		if (setjmp(jmpbuf) == 1) {
 			if (verbose_print)
