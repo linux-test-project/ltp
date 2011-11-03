@@ -244,18 +244,17 @@ static struct signal_info sig_info[] = {
 
 int main(int  argc, char **argv)
 {
-	int c;
-	int thrd_ndx = 0;
+	int c, i;
 	int file_size;
 	int num_iter;
 	double exec_time;
 	int fd;
 	int status[2];
-	int sig_ndx;
 	pthread_t thid[2];
 	long chld_args[3];
 	extern char *optarg;
 	struct sigaction sigptr;
+	int ret;
 
 	/* set up the default values */
 	file_size = 1024;
@@ -312,61 +311,49 @@ int main(int  argc, char **argv)
 	sigdelset(&sigptr.sa_mask, SIGSEGV);
 	sigptr.sa_flags = SA_SIGINFO | SA_NODEFER;
 	
-	for (sig_ndx = 0; sig_info[sig_ndx].signum != -1; sig_ndx++) {
-		if (sigaction(sig_info[sig_ndx].signum, &sigptr, NULL) == -1) {
+	for (i = 0; sig_info[i].signum != -1; i++) {
+		if (sigaction(sig_info[i].signum, &sigptr, NULL) == -1) {
 			perror( "man(): sigaction()" );
 			fprintf(stderr, "could not set handler for %s, errno = %d\n",
-			sig_info[sig_ndx].signame, errno);
+			sig_info[i].signame, errno);
 			exit(-1);
 		}
 	}
 
 	for (;;) {
 	        /* create temporary file */
-		if ((fd = mkfile(file_size)) == -1) {
-			fprintf(stderr, "main(): mkfile(): Failed to create temporary file\n");
-			exit(-1);
-		} else {
-			if (verbose_print)
-				tst_resm(TINFO, "Tmp file created");
-		}
+		if ((fd = mkfile(file_size)) == -1)
+			tst_brkm(TBROK, NULL, "main(): mkfile(): Failed to create temp file");
+		
+		if (verbose_print)
+			tst_resm(TINFO, "Tmp file created");
 
-		/* setup arguments to the function executed by process X */
 		chld_args[0] = fd;
 		chld_args[1] = file_size;
 		chld_args[2] = num_iter;
 
-		/* create process X */
-		if (pthread_create(&thid[0], NULL, map_write_unmap, chld_args)) {
-			perror("main(): pthread_create()");
-			exit(-1);
-		} else {
-			tst_resm(TINFO, "created thread[%ld]", thid[0]);
-		}
+		if ((ret = pthread_create(&thid[0], NULL, map_write_unmap, chld_args)))
+			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s", strerror(ret));
+		
+		tst_resm(TINFO, "created thread[%ld]", thid[0]);
 
 		sched_yield();
 		
-		if (pthread_create(&thid[1], NULL, read_mem, chld_args)) {
-			perror("main(): pthread_create()");
-			exit(-1);
-		} else {
-			tst_resm(TINFO, "created thread[%ld]", thid[1]);
-		}
+		if ((ret = pthread_create(&thid[1], NULL, read_mem, chld_args)))
+			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s", strerror(ret));
+		
+		tst_resm(TINFO, "created thread[%ld]", thid[1]);
 
 		sched_yield();
 
-		for (thrd_ndx = 0; thrd_ndx < 2; thrd_ndx++) {
-			if (pthread_join(thid[thrd_ndx], (void *)&status[thrd_ndx])) {
-				perror("main(): pthread_join()");
-				exit(-1);
-			} else {
-				if (status[thrd_ndx]) {
-					fprintf(stderr, "thread [%ld] - "
-					        "process exited with errors %d\n",
-						thid[thrd_ndx], status[thrd_ndx]);
-					exit(-1);
-				}
-			}
+		for (i = 0; i < 2; i++) {
+			if ((ret = pthread_join(thid[i], (void*)&status[i])))
+				tst_brkm(TBROK, NULL, "main(): pthread_join(): %s",
+				         strerror(ret));
+			
+			if (status[i])
+				tst_brkm(TFAIL, NULL, "thread [%ld] - process exited "
+				         "with %d\n", thid[i], status[i]);
 		}
 
 		close(fd);
