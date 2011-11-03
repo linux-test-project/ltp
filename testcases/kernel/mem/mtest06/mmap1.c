@@ -306,7 +306,7 @@ int main(int  argc, char **argv)
 	set_timer(exec_time);
 
 	/* Do not mask SIGSEGV, as we are interested in handling it. */
-	sigptr.sa_handler = (void (*)(int signal))sig_handler;
+	sigptr.sa_sigaction = sig_handler;
 	sigfillset(&sigptr.sa_mask);
 	sigdelset(&sigptr.sa_mask, SIGSEGV);
 	sigptr.sa_flags = SA_SIGINFO | SA_NODEFER;
