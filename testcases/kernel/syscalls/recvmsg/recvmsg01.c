@@ -281,7 +281,8 @@ void setup(void)
 
 void cleanup(void)
 {
-	(void)kill(pid, SIGKILL);	/* kill server */
+	if (pid > 0)
+		(void)kill(pid, SIGKILL);	/* kill server */
 	if (tmpsunpath[0] != '\0')
 		(void)unlink(tmpsunpath);
 	TEST_CLEANUP;
