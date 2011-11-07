@@ -173,11 +173,6 @@ int main(int ac, char **av)
 				buf_size = sizeof(buffer);
 			}
 
-			if (strncmp(test_desc, "Symlink Pathname is empty", 25) == 0) {
-				if ((tst_kvercmp(2, 6, 39)) >= 0)
-					Test_cases[i].exp_errno = EINVAL;
-			}
-
 			/*
 			 * Call readlink(2) to test different test conditions.
 			 * verify that it fails with -1 return value and sets
@@ -204,6 +199,10 @@ int main(int ac, char **av)
 					 "errno=%d, expected errno=%d",
 					 test_desc, TEST_ERRNO,
 					 Test_cases[i].exp_errno);
+				if ((strncmp(test_desc, "Symlink Pathname is empty", 25) == 0) &&
+				     TEST_ERRNO == EINVAL)
+					tst_resm(TWARN, "It may be a Kernel Bug, see the patch:"
+						 "http://git.kernel.org/linus/1fa1e7f6");
 			}
 		}
 	}
