@@ -107,20 +107,6 @@ static void sig_handler_mapped(int signal, siginfo_t *info, void *ut)
 	}
 }
 
-static void set_timer(double run_time)
-{
-	struct itimerval timer;
-
-	memset(&timer, 0, sizeof(struct itimerval));
-	timer.it_interval.tv_usec = 0;
-	timer.it_interval.tv_sec = 0;
-	timer.it_value.tv_usec = 0;
-	timer.it_value.tv_sec = (time_t)(run_time * 3600);
-
-	if (setitimer(ITIMER_REAL, &timer, NULL))
-		tst_brkm(TBROK|TERRNO, NULL, "setitimer() failed");
-}
-
 int mkfile(int size)
 {
 	char template[] = "/tmp/ashfileXXXXXX";
@@ -354,7 +340,7 @@ int main(int argc, char **argv)
 		         "Number of mmap/write/read:  %d",
 		         file_size, exec_time, num_iter);
 
-	set_timer(exec_time);
+	alarm(exec_time * 3600);
 
 	/* Do not mask SIGSEGV, as we are interested in handling it. */
 	sigptr.sa_sigaction = sig_handler;

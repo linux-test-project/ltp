@@ -167,34 +167,6 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
     exit(0);
 }
 
-/******************************************************************************/
-/*                                                                            */
-/* Function:    set_timer                                                     */
-/*                                                                            */
-/* Description: set up a timer to user specified number of hours. SIGALRM is  */
-/*              raised when the timer expires.                                */
-/*                                                                            */
-/* Input:       run_time - number of hours the test is intended to run.       */
-/*                                                                            */
-/* Return:      NONE                                                          */
-/*                                                                            */
-/******************************************************************************/
-static void
-set_timer(float run_time)         /* period for which test is intended to run   */{
-    struct itimerval timer;     /* timer structure, tv_sec is set to run_time */
-    memset(&timer, 0, sizeof(struct itimerval));
-    timer.it_interval.tv_usec = 0;
-    timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = 0;
-    timer.it_value.tv_sec = (time_t)(run_time * 3600.0);
-
-    if (setitimer(ITIMER_REAL, &timer, NULL))
-    {
-        perror("set_timer(): setitimer()");
-        exit(1);
-    }
-}
-
 /******************************************************************************//*								 	      */
 /* Function:	usage							      */
 /*									      */
@@ -379,7 +351,7 @@ main(int  argc,		/* number of input parameters.			      */
     }
     chld_args[0] = num_iter;
     chld_args[1] = map_private;
-    set_timer(exec_time);
+    alarm(exec_time * 3600.00);
 
     fprintf(stdout, "\n\n\nTest is set to run with the following parameters:\n"
 		    "\tDuration of test: [%f]hrs\n"
