@@ -217,7 +217,7 @@ void cleanup()
 
 	TEST_CLEANUP;
 
-	for (i = 3; i <= nfds; i++)
+	for (i = 0; i <= nfds; i++)
 		close(fd[i]);
 
 	tst_rmdir();
