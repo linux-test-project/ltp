@@ -71,24 +71,24 @@ int main(void)
 	/* create AIO req */
 	for (i = 0; i < BUF_NB; i++) {
 		aiocb[i] = malloc(sizeof(struct aiocb));
-		
+
 		if (aiocb[i] == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
-		       		strerror(errno));
+			       strerror(errno));
 			close(fd);
 			return PTS_UNRESOLVED;
 		}
 
 		aiocb[i]->aio_fildes = fd;
 		aiocb[i]->aio_buf = malloc(BUF_SIZE);
-		
+
 		if (aiocb[i]->aio_buf == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
-		       		strerror(errno));
+			       strerror(errno));
 			close(fd);
 			return PTS_UNRESOLVED;
 		}
-		
+
 		aiocb[i]->aio_nbytes = BUF_SIZE;
 		aiocb[i]->aio_offset = 0;
 		aiocb[i]->aio_sigevent.sigev_notify = SIGEV_NONE;
@@ -120,7 +120,7 @@ int main(void)
 			switch (ret) {
 			case -1:
 				printf(TNAME " Error at aio_error(): %s\n",
-		       			strerror(errno));
+				       strerror(errno));
 				close(fd);
 				return PTS_FAIL;
 			break;
@@ -146,7 +146,7 @@ int main(void)
 				 * during the cancel operation
 				 */
 				if (gret == AIO_NOTCANCELED) {
-					printf ("Test PASSED\n");
+					printf("Test PASSED\n");
 					close(fd);
 					return PTS_PASS;
 				}
