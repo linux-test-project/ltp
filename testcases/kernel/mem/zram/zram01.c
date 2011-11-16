@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
 
 		tst_resm(TINFO, "write all the memory.");
-		memset(s, SIZE, 'a');
+		memset(s, 'a', SIZE);
 		close(fd);
 
 		dump_info();
