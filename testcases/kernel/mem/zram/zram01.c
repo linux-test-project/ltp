@@ -43,7 +43,7 @@ int modprobe = 0;
 #define DEVICE		"/dev/zram0"
 
 static void set_disksize(void);
-static void map_device(void);
+static void write_device(void);
 static void reset(void);
 static void setup(void);
 static void cleanup(void);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
 		set_disksize();
 
-		map_device();
+		write_device();
 		dump_info();
 
 		reset();
@@ -93,7 +93,7 @@ static void set_disksize(void)
 	close(fd);
 }
 
-static void map_device(void)
+static void write_device(void)
 {
 	int fd;
 	void *s;
@@ -102,7 +102,7 @@ static void map_device(void)
 	fd = open(DEVICE, O_RDWR);
 	if (fd == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "open %s", DEVICE);
-	s = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+	s = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 	if (s == MAP_FAILED)
 		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
 
