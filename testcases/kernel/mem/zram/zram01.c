@@ -106,16 +106,24 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
+	int retried = 0;
+
 	tst_require_root(NULL);
 
-	if (access(PATH_ZRAM, R_OK|W_OK|X_OK) == -1 && errno == ENOENT) {
-		system("modprobe zram");
-		modprobe = 1;
-		if (access(PATH_ZRAM, R_OK|W_OK|X_OK) == -1 && errno == ENOENT)
-			tst_brkm(TCONF, NULL, "system has no zram device.");
-		else
+retry:
+	if (access(PATH_ZRAM, R_OK|W_OK|X_OK) == -1) {
+		if (errno == ENOENT) {
+			if (retried)
+				tst_brkm(TCONF, NULL,
+					"system has no zram device.");
+			system("modprobe zram");
+			modprobe = 1;
+			retried  = 1;
+			goto retry;
+		} else
 			tst_brkm(TBROK|TERRNO, NULL, "access");
 	}
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 }
