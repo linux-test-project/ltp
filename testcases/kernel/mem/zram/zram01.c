@@ -108,6 +108,10 @@ static void write_device(void)
 
 	tst_resm(TINFO, "write all the memory.");
 	memset(s, 'a', SIZE);
+
+	if (munmap(s, SIZE) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+
 	close(fd);
 }
 
