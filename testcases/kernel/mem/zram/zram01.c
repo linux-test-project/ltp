@@ -42,6 +42,9 @@ int modprobe = 0;
 #define SIZE		(512 * 1024 * 1024)
 #define DEVICE		"/dev/zram0"
 
+static void set_disksize(void);
+static void map_device(void);
+static void reset(void);
 static void setup(void);
 static void cleanup(void);
 static void print(char *string);
@@ -49,10 +52,8 @@ static void dump_info(void);
 
 int main(int argc, char *argv[])
 {
-	int lc, fd;
+	int lc;
 	char *msg;
-	char size[BUFSIZ];
-	void *s;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
@@ -62,49 +63,70 @@ int main(int argc, char *argv[])
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		tst_resm(TINFO, "create a zram device with %d bytes in size.",
-			SIZE);
-		fd = open(PATH_ZRAM "/disksize", O_WRONLY);
-		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s",
-				PATH_ZRAM "/disksize");
-		sprintf(size, "%d", SIZE);
-		if (write(fd, size, strlen(size)) != strlen(size))
-			tst_brkm(TBROK|TERRNO, cleanup, "write %s to %s", size,
-				PATH_ZRAM "/disksize");
-		close(fd);
 
-		tst_resm(TINFO, "map it into memory.");
-		fd = open(DEVICE, O_RDWR);
-		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", DEVICE);
-		s = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
-		if (s == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+		set_disksize();
 
-		tst_resm(TINFO, "write all the memory.");
-		memset(s, 'a', SIZE);
-		close(fd);
-
+		map_device();
 		dump_info();
 
-		tst_resm(TINFO, "reset it.");
-		fd = open(PATH_ZRAM "/reset", O_WRONLY);
-		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s",
-				PATH_ZRAM "/reset");
-		if (write(fd, "1", 1) != 1)
-			tst_brkm(TBROK|TERRNO, cleanup, "write 1 to %s",
-				PATH_ZRAM "/reset");
-		close(fd);
-
+		reset();
 		dump_info();
 	}
 	cleanup();
 	tst_exit();
 }
 
-void setup(void)
+static void set_disksize(void)
+{
+	int fd;
+	char size[BUFSIZ];
+
+	tst_resm(TINFO, "create a zram device with %d bytes in size.", SIZE);
+	fd = open(PATH_ZRAM "/disksize", O_WRONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s",
+				PATH_ZRAM "/disksize");
+	sprintf(size, "%d", SIZE);
+	if (write(fd, size, strlen(size)) != strlen(size))
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s to %s", size,
+				PATH_ZRAM "/disksize");
+	close(fd);
+}
+
+static void map_device(void)
+{
+	int fd;
+	void *s;
+
+	tst_resm(TINFO, "map it into memory.");
+	fd = open(DEVICE, O_RDWR);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", DEVICE);
+	s = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (s == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+
+	tst_resm(TINFO, "write all the memory.");
+	memset(s, 'a', SIZE);
+	close(fd);
+}
+
+static void reset(void)
+{
+	int fd;
+
+	tst_resm(TINFO, "reset it.");
+	fd = open(PATH_ZRAM "/reset", O_WRONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s",
+				PATH_ZRAM "/reset");
+	if (write(fd, "1", 1) != 1)
+		tst_brkm(TBROK|TERRNO, cleanup, "write 1 to %s",
+				PATH_ZRAM "/reset");
+	close(fd);
+}
+
+static void setup(void)
 {
 	int retried = 0;
 
@@ -128,7 +150,7 @@ retry:
 	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	if (modprobe == 1)
 		system("rmmod zram");
@@ -136,7 +158,7 @@ void cleanup(void)
 	TEST_CLEANUP;
 }
 
-void print(char *string)
+static void print(char *string)
 {
 	FILE *fp;
 	char buf[BUFSIZ], value[BUFSIZ];
@@ -154,7 +176,7 @@ void print(char *string)
 	tst_resm(TINFO, "%s is %s", buf, value);
 }
 
-void dump_info(void)
+static void dump_info(void)
 {
 	print("initstate");
 	print("compr_data_size");
