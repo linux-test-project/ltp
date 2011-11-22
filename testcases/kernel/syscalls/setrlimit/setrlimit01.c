@@ -326,6 +326,7 @@ void sighandler(int sig)
 	if (sig != SIGSEGV && sig != SIGXFSZ) {
 		tst_brkm(TBROK, NULL, "caught unexpected signal: %d", sig);
 	}
+	_exit(0);
 }
 
 /*
