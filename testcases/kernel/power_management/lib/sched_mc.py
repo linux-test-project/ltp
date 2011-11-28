@@ -668,7 +668,7 @@ def verify_sched_domain_dmesg(sched_mc_level, sched_smt_level):
                         group_info=group_info.replace\
                             (group_info[openindex:closeindex+1],"")
 
-                    subgroup = group_info.split()
+                    subgroup = group_info.split(",")
                     for j in range(0, len(subgroup)):
                         cpu_group = expand_range(subgroup[j])
                         status = validate_cpugrp_map(cpu_group, sched_mc_level,\
