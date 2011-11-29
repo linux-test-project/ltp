@@ -123,8 +123,11 @@ int main(int ac, char **av)
 		 * Get the group IDs of group1 and group2.
 		 */
 		if ((group = getgrnam("nobody")) == NULL) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-				 "getgrnam(\"nobody\") failed");
+			if ((group = getgrnam("nogroup")) == NULL) {
+				tst_brkm(TBROK|TERRNO, cleanup,
+					"getgrnam(\"nobody\") and "
+					"getgrnam(\"nogroup\") failed");
+			}
 		}
 		group1_gid = group->gr_gid;
 		if ((group = getgrnam("bin")) == NULL) {
