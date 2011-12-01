@@ -524,5 +524,5 @@ static void cleanup(void)
 		unlink(filename1);
 	if (filename2)
 		unlink(filename2);
-
+	tst_exit();
 }
