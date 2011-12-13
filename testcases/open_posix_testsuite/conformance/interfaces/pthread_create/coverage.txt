@@ -10,8 +10,7 @@ Assertion	Tested?
 7		NO - Skipping.
 8		YES
 9 		NO - Skipping. (Floating point environment?)
-10		YES - Peculiar behavior of passing the test and then freezing on the
-			linuxthreads implementation.
+10		NO
 11		YES
 12		YES
 13		YES

@@ -20,9 +20,33 @@
 # 02111-1307, USA.
 
 
-PKGNAME=bonnie++-1.03a
+PKGNAME=bonnie++-1.03e
 TARNAME="$PKGNAME.tgz"
 PROGNAME=bonnie++
+
+# How much RAM do we have?
+RAM=`cat /proc/meminfo | grep MemTotal | awk -F " " '{print $2}'`
+SPACE_REQUIRED=`expr $RAM \* 4`
+
+# Now figure out where we have mounted filesystems
+MOUNTS=`egrep "(ext|reiser)" /proc/mounts | awk -F " " '{print $2}'`
+
+RET=$(
+	echo $MOUNTS | sed -e 's/ /\n/g' | while read f; do
+
+        	# Do we have enough space? (assume 4x RAM is enough)
+        	FREE_SPACE=`df -k -P "$f" | tail -n 1 | awk -F " " '{print $4}'`
+
+        	if [ "$FREE_SPACE" -lt "$SPACE_REQUIRED" ]; then
+			break
+        	fi
+	done
+)
+
+if [ ! -z $RET ]; then
+        echo "[bonnie++] Insufficient space. Free space: $FREE_SPACE kB. Space required: $SPACE_REQUIRED kB. Not building bonnie."
+	exit 1
+fi
 
 # Is it already installed?
 PROG=`which $PROGNAME`

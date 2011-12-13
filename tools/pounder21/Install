@@ -24,7 +24,7 @@ source libpounder.sh
 export USE_CACHE=1
 
 # do we actually _have_ a cache server?
-if [ -z "$POUNDER_CACHE" ]; then
+if [ -z "$POUNDER_CACHE" -o "$POUNDER_CACHE" == "0" ]; then
 	export USE_CACHE=0
 fi
 
@@ -73,7 +73,12 @@ UNPACKED=0
 
 while [ "$UNPACKED" -lt 1 ]; do
 	# Unpack default test configuration?
-	echo -en "Which test scheduler setup do you want to unpack? [$DEFAULT_SCHEDPACK or \"NONE\"] "
+	SCHEDULERS=`ls $POUNDER_HOME/schedulers | awk -F"-tests.tar.gz" '{print $1}'`
+	echo "WHICH TEST SCHEDULER SETUP DO YOU WANT TO UNPACK?"
+	echo "[Choose from:"
+	echo "$SCHEDULERS"
+	echo "[Or simply press ENTER for the default scheduler]"
+	echo -n "Scheduler selection: "
 	read f
 	if [ -z "$f" ]; then
 		SCHEDPACK="$DEFAULT_SCHEDPACK"
@@ -81,21 +86,25 @@ while [ "$UNPACKED" -lt 1 ]; do
 		SCHEDPACK="$f"
 	fi
 
-	if [ "$f" != "NONE" ]; then
-		rm -rf tests/*
+	rm -rf tests/*
 
-		tar -xzvf "$SCHEDPACK-tests.tar.gz"
+	tar -xzvf "$POUNDER_HOME/schedulers/$SCHEDPACK-tests.tar.gz"
 
-		if [ "$?" -ne 0 ]; then
-			echo "Unable to untar $SCHEDPACK-tests.tar.gz; please try again."
-		else
-			echo "Untarred $SCHEDPACK-tests.tar.gz successfully."
-			UNPACKED=1
-		fi
+	if [ "$?" -ne 0 ]; then
+		echo "Unable to untar $SCHEDPACK-tests.tar.gz; please try again."
 	else
+		echo "Untarred $SCHEDPACK-tests.tar.gz successfully."
 		UNPACKED=1
 	fi
 done
+
+echo -en "Would you like to automate skipping of failed subtests? (subtests that failed to build will automatically be removed from test scheduler) [y/n]? "
+read f
+if [ "$f" == "y" -o "$f" == "Y" ]; then
+	AUTO_SKIP=1
+else
+	AUTO_SKIP=0
+fi
 
 # start builds...
 for i in $BUILDS
@@ -104,10 +113,34 @@ do
 		continue
 	fi
 	if [ -x "build_scripts/$i" ]; then
-		echo "Building $i..."
-		"build_scripts/$i" $*
-		if [ "$?" -ne 0 ]; then
-			exit 1
+		FOUND=`find $POUNDER_HOME/tests -name *$i`
+		if [ -n "$FOUND" ]; then	
+			"build_scripts/$i" $*
+			BUILD_ERR=$?
+			if [ "$BUILD_ERR" -ne 0 ]; then
+				if [ $AUTO_SKIP -eq 0 ]; then
+					echo -en "$i build failed with Error $BUILD_ERR. If this is a subtest, would you like to skip it [y/n]? "
+					read f
+					if [ "$f" == "y" -o "$f" == "Y" ]; then
+                        			rm `find $POUNDER_HOME/tests -name *$i` > /dev/null 2>&1
+						if [ "$?" -ne 0 ]; then
+							echo "Failed to remove $i from test scheduler. $i is either not a subtest included in $SCHEDPACK-tests.tar.gz or is incorrectly defined in $POUNDER_HOME/tests (See SCHEDULER for naming rules if this is the case)."
+							echo -en "Skip anyway? [y/n] "
+							read f
+							if [ "$?" == "y" -o "$f" == "Y" ]; then
+								exit 0
+							elif [ "$f" == "n" -o "$f" == "N" -o -z "$f" ]; then
+								exit 1
+							fi
+						fi
+                			elif [ "$f" == "n" -o "$f" == "N" -o -z "$f" ]; then
+						echo "Exiting install ..."
+						exit 1
+					fi
+				else
+					rm `find ./tests -name *$i` > /dev/null 2>&1
+				fi
+			fi
 		fi
 	fi
 done

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Run for two days
+sleep 172800

@@ -22,7 +22,7 @@
 
 CPUS=`grep processor /proc/cpuinfo | wc -l`
 ARCH=`uname -m`
-VERSION=2.6.18
+VERSION=2.6.39
 # WARNING: If you update the kernel version that we use, be sure to
 # update $POUNDER_SRCDIR/memtest.patch, $POUNDER_HOME/test_scripts/memtest,
 # $POUNDER_HOME/test_scripts/build_kernel, and
@@ -32,12 +32,11 @@ VERSION=2.6.18
 
 # Decompress tarball if necessary
 cd "$POUNDER_TMPDIR"
-if [ ! -d linux-$VERSION ]; then
-	tar -xzf "$POUNDER_OPTDIR/linux-$VERSION.tar.gz"
-fi
+tar -xvf "$POUNDER_OPTDIR/linux-$VERSION.tar.bz2"
 
 # Clean up the tree.
 cd linux-$VERSION
+
 make mrproper
 
 # Create a config file

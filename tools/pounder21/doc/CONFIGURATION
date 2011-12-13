@@ -1,0 +1,107 @@
+This document describes the environment variables found in the pounder30 package
+as of 2011-8-09.
+
+Author:
+Lucy Liang <lgliang@us.ibm.com>
+	
+Copyright (C) 2011 IBM.
+
+Contents
+========
+1. The libpounder.sh File
+2. The config File
+
+The libpounder.sh File
+======================
+The "libpounder.sh" file defines most of the environment variables used in the test
+suite and referenced throughout the documentation. These variables are not
+intended to be modified by the user, although they can be if customization is desired.
+Below is a brief description of these variables (see libpounder.sh for details):
+
+	DATE			- the current date, used for logging
+	DEFAULT_SCHEDPACK	- name of the default test scheduler, "default"
+	TESTS			- list of scripts from the test_scripts/ directory
+	BUILDS			- list of scripts from the build_scripts/ directory
+	POUNDER_HOME		- the pounder/ directory
+	POUNDER_PIDFILE		- pid file created when running pounder
+	POUNDER_LOGLOCAL	- the log/ directory where output of ALL pounder runs
+				get logged
+	POUNDER_LOGDIR		- the log/$DATE directory where output of only the
+				current pounder run get logged
+	POUNDER_TMPDIR		- the tmp/ directory used for storing temporary files
+				used for test runs
+	POUNDER_OPTDIR		- the opt/ directory used for storing third party packages
+				used by subtests, which can be fetched from web or from
+				a user-created cache (see $POUNDER_CACHE below)
+	POUNDER_SRCDIR		- the src/ directory containing source files packaged with
+				pounder
+	POUNDER_VERSION		- the pounder version
+	NR_CPUS			- the number of cpus on the system
+
+The config File
+===============
+The "config" file defines a few environment variables that ARE intended to be modified
+by the user for customizing pounder runs. The variables are described below:
+
+	DURATION		- Time in seconds for pounder to run. Setting this variable
+				to 0 will not put an upper bound on pounder run time.
+
+	MAX_FAILURES		- Maximum number of test failures allowed for each subtest
+				using infinite_loop or timed_loop (see the "Running Tests Repeatedly"
+				section in SCHEDULER for more info on these two procedures) before aborting.
+				Setting this variable to 0 will not put an upper bound on any
+				subtest failures.
+
+
+	NFS_LOGGING             - Enables/disables NFS logging. Setting this variable to
+				1 will enable NFS logging of pounder output; pounder will
+                             	log output to remote directory on NFS server specified
+                                by $NFS_LOGDIR and  $NFS_LOGSERVER (see below), which
+                                will be mounted on $POUNDER_LOGLOCAL (see libpounder.sh).
+                                Setting this variable to 0 will disable this feature; all
+				output for pounder runs will be stored locally directly in
+				$POUNDER_LOGLOCAL instead.
+
+	NFS_LOGSERVER           - IP address of the NFS server to use for logging pounder results.
+				NFS_LOGGING should be enabled to use this feature.
+
+	NFS_LOGDIR		- Path to the log directory on $NFS_LOGSERVER; If $NFS_LOGGING
+				is enabled, pounder will attempt to mount $NFS_LOGSERVER:$NFS_LOGDIR/
+				on $POUNDER_LOGLOCAL (see libpounder.sh).
+
+	POUNDER_CACHE  		- Address of the cache to use for fetching outside packages,
+                        	The cache is a user-created web-accessible directory
+                        	containing cached tarballs/scripts/etc. used for
+                        	the various tests you intend to build. This is optional
+                        	but useful for saving download time and keeping everything in one place.
+
+				For instance, the build_kernel subtest requires downloading a
+				linux kernel tarball during build time (see build_scripts/build_kernel).
+				Instead of calling "wget http://www.kernel.org/pub/linux/kernel/v2.6/$TARNAME"
+				to retrieve the tarball, we can pre-download and store it in a user-created online
+				directory, then call "wget ${POUNDER_CACHE}${TARNAME}," where POUNDER_CACHE
+				is the address of the directory. Other provided subtests: bonnie++, lame, ipmitool,
+				and memtest also make use of this cache.
+
+				Examples of some things you may want to include in your cache for building
+				the provided tests:
+					bonnie++-1.03e.tgz	(for the bonnie++ subtest)
+					linux-2.6.39.tar.gz	(for the build_kernel subtest)
+					ipmitool-1.8.9.tar.gz	(for the ipmitool subtest)
+					...
+
+				These can be found in $POUNDER_OPTDIR after you run "make install" on the
+				default package.
+
+	[These variables below are used by specific subtests contained in the provided default
+	test scheduler, but they can be incorporated into other user-defined subtests as well.]
+
+	DO_X_TESTS		- 0 disables X system testing, 1 enables X system testing.
+				Used by the xterm_stress subtest.
+
+
+	NFS_SERVER=0		- IP address of the NFS server to use for nfs and ping_nfs
+				subtests. Setting this variable to 0 disables nfs testing.
+
+	NTP_SERVER		The NTP server to use. By default, it's set to pool.ntp.org.
+				Used by the time_drift subtest.

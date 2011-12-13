@@ -55,7 +55,7 @@
 char *TCID = "sysctl01";
 int TST_TOTAL = 3;
 
-int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
+static int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
 	   void *newval, size_t newlen)
 {
 	struct __sysctl_args args =
@@ -133,8 +133,13 @@ int main(int ac, char **av)
 				    TC[i].oldlen, TC[i].newval, TC[i].newlen));
 
 			if (TEST_RETURN != 0) {
-				tst_resm(TFAIL, "sysctl(2) failed unexpectedly "
-					 "errno:%d", errno);
+				if (TEST_ERRNO == ENOSYS) {
+					tst_resm(TCONF, "You may need to make CONFIG_SYSCTL_SYSCALL=y"
+							" to your kernel config.");
+				} else {
+					tst_resm(TFAIL, "sysctl(2) failed unexpectedly "
+							"errno:%d", TEST_ERRNO);
+				}
 				continue;
 			}
 

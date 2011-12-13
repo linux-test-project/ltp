@@ -21,12 +21,12 @@
 
 
 # Do any CPU support cpufreq?
-CPUFREQ_ENABLED_CPUS=`/bin/ls -lad /sys/devices/system/cpu/cpu*/cpufreq 2> /dev/null | wc -l`
+#CPUFREQ_ENABLED_CPUS=`/bin/ls -lad /sys/devices/system/cpu/cpu*/cpufreq 2> /dev/null | wc -l`
 
-if [ "$CPUFREQ_ENABLED_CPUS" -lt 1 ]; then
-	echo "None of your CPUs support cpufreq.  Bye."
-	exit 255
-fi
+#if [ "$CPUFREQ_ENABLED_CPUS" -lt 1 ]; then
+#	echo "None of your CPUs support cpufreq.  Bye."
+#	exit 255
+#fi
 
 # Turn on acpi_pstate_strict to ensure that state transitions actually happen...
 if [ -f /sys/module/acpi_cpufreq/parameters/acpi_pstate_strict ]; then

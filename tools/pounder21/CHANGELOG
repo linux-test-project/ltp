@@ -1,5 +1,64 @@
 This is a log of changes to pounder21.
 
+pounder30-2011-08-09
+- Created new documentation CONFIGURATION and moved it and SCHEDULER
+  into a newly created doc/ directory
+- Deleted the test-all test scheduler
+- Created /schedulers directory and moved the remaining test schedulers there
+- Removed option to specify "NONE" when asked to unpack test scheduler during build
+- Removed check for existing kernel directory in /tmp in test_scripts/build_kernel
+  since it appears that some files get lost after running build_kernel once; Instead
+  just untar the kernel each time we run the test script to be on the safe side
+- ltp test script would pass even if it didn't build currently, fixed this in
+  test_scripts/ltp
+- changed ltp build_script to install ltp to $POUNDER_TMPDIR
+- removed QUICKSTART and included it in README instead
+- removed trailing "/" from POUNDER_LOGLOCAL export in libpounder.sh
+- Added functionality for automatic skipping of subtests (see README)
+- Created xterm_stress build script and merged 00xbonkers with it
+- Created ide_cdrom_copy build script and merged 00check_cdrom_presence with it
+- Merged nasm and schedutils build scripts with the lame build script
+- Merged time_test build script with the time_consistency and time_drift build
+  scripts
+- Created test_repo/ directory
+- Uncommented a piece of code in time_drift that allowed it to always pass
+- Added pounder -c option for creating new test schedulers
+- Modified POUNDER_VERSION in libpounder.sh
+
+pounder30-2011-07-21
+- Updated bonnie++, ipmitool, kernel (used in build_kernel), and memtest script to latest versions
+- Updated memtest build scripts and $POUNDER_HOME/src/memtest.patch
+- Added functionality for skipping of subtests
+  - Added functionality for automating the skipping of subtests (see README)
+- Removed unnecessary 00checklatest test
+- Moved checking for system requirements from test run to build phase
+  - Affects bonnie++, memtest, cpufreq, and ide_cdrom_copy
+- Added environment variable MAX_FAILURES that, if defined, sets
+  an upper bound on the number of failures a looped test will allow
+  before aborting the test altogether (see SCHEDULER)
+- Added functionality for removing and re-adding subtests to the test scheduler (see SCHEDULER)
+- Updated README, SCHEDULER, and config files
+
+pounder21-2011-04-08:
+- LTP: Updated to LTP 20101031 release.
+- Build kernel testcase - Updated kernel from 2.6.18 to 2.6.38.
+- Updated 2.6.38 kernel source tar in pounder cache.
+- Did corresponding kernel changes i.e for 2.6.38 in "memtest" testcase too.
+- Files modified are:-
+  -$POUNDER_HOME/test_scripts/memtest.
+  -$POUNDER_HOME/test_scripts/build_kernel .
+  -$POUNDER_HOME/build_scripts/memtest.
+  -$POUNDER_HOME/build_scripts/build_kernel.
+  -$POUNDER_HOME/opt/memtest.sh. [Actually this file need to get changed in tux1 cache].
+
+pounder21-2011-04-12
+-Integrated bash-memory testcase in pounder21
+-Files added/modified are:-
+ -Copied bash-memory test case tar to pounder cache.
+ -Added file $POUNDER_HOME/build_scripts/bash-memory
+ -Added file $POUNDER_HOME/test_scripts/bash_memory
+ -Added file $POUNDER_HOME/tests/T10single/T03bashmemory
+
 pounder21-2006-11-07:
 - Fix a bug in randasys on x86-64 where we had insufficient random bits and
   would truncate whatever we got, leading to all 0 arguments by simply

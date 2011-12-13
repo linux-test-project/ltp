@@ -1,0 +1,6 @@
+#!/bin/bash 
+
+trap 'exit 0' 15
+
+$POUNDER_HOME/test_scripts/ipmitool
+exit $?

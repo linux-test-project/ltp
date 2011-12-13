@@ -56,10 +56,30 @@ int main(int argc, char *argv[]) {
 	struct sigaction zig;
 	uid_t uid;
 	gid_t gid;
+	int use_max_failures = 0;
+	int max_failures = 0;
+	int fail_counter = 1;
 
 	if (argc < 5) {
-		printf("Usage: %s time_in_sec uid gid signal command [args]\n", argv[0]);
+		printf("Usage: %s [-m max_failures] time_in_sec uid gid signal command [args]\n", argv[0]);
 		exit(1);
+	}
+
+	//by default, set max_failures to whatever the env variable $MAX_FAILURES is
+        char *max_failures_env = getenv("MAX_FAILURES");
+        max_failures = atoi(max_failures_env);
+
+	//if the -m option is used when calling fancy_timed_loop, override max_failures
+	//specified by $MAX_FAILURES with the given argument instead
+	if (argc > 6 && strcmp(argv[1], "-m") == 0) {
+		if ((max_failures = atoi(argv[2])) >= 0) {
+			use_max_failures = 1;
+		}
+		else {
+			printf("Usage: %s [-m max_failures] time_in_sec uid gid signal command [args]\n", argv[0]);
+			printf("max_failures should be a nonnegative integer\n");
+			exit(1);
+		}
 	}
 
 	tty_fp = fdopen(3, "w+");
@@ -71,11 +91,21 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	progname = rindex(argv[5], '/');
-	if (progname == NULL) {
-		progname = argv[5];
-	} else {
-		progname++;
+	if (use_max_failures) {
+		progname = rindex(argv[7], '/');
+		if (progname == NULL) {
+			progname = argv[7];
+		} else {
+			progname++;
+		}
+	}
+	else {
+		progname = rindex(argv[5], '/');
+		if (progname == NULL) {
+			progname = argv[5];
+		} else {
+			progname++;
+		}
 	}
 
 	/* Set up signals */
@@ -89,12 +119,22 @@ int main(int argc, char *argv[]) {
 	/* set up process groups so that we can kill the
 	 * loop test and descendants easily */
 
-	secs = atoi(argv[1]);
-	alarm(secs);
+	if (use_max_failures) {
+		secs = atoi(argv[3]);
+		alarm(secs);
 
-	the_signal = atoi(argv[4]);
-	uid = atoi(argv[2]);
-	gid = atoi(argv[3]);
+		the_signal = atoi(argv[6]);
+		uid = atoi(argv[4]);
+		gid = atoi(argv[5]);
+	}
+	else {
+		secs = atoi(argv[1]);
+		alarm(secs);
+
+		the_signal = atoi(argv[4]);
+		uid = atoi(argv[2]);
+		gid = atoi(argv[3]);
+	}
 
 	pounder_fprintf(tty_fp, "%s: uid = %d, gid = %d, sig = %d\n",
 		progname, uid, gid, the_signal);
@@ -121,13 +161,24 @@ int main(int argc, char *argv[]) {
 			}
 
 			// run the program
-			if (argc > 3) {
-				stat = execvp(argv[5], &argv[5]);
-			} else {
-				stat = execvp(argv[5], &argv[5]);
+			if (use_max_failures) {
+				if (argc > 5) {
+					stat = execvp(argv[7], &argv[7]);
+				} else {
+					stat = execvp(argv[7], &argv[7]);
+				}
+				
+				perror(argv[7]);
 			}
+			else {	
+				if (argc > 3) {
+					stat = execvp(argv[5], &argv[5]);
+				} else {
+					stat = execvp(argv[5], &argv[5]);
+				}
 
-			perror(argv[5]);
+				perror(argv[5]);
+			}
 
 			exit(-1);
 		}
@@ -158,6 +209,11 @@ int main(int argc, char *argv[]) {
 			} else {
 				pounder_fprintf(tty_fp, "%s: %s with code %d.\n",
 					progname, fail_msg, res);
+				if (max_failures > 0) {
+					if (++fail_counter > max_failures) {
+						exit(-1);
+					}
+				}
 			}
 		}
 	}

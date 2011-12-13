@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2004, Bull SA. All rights reserved.
+ * Copyright (c) 2011, Wanlong Gao <gaowanlong@cn.fujitsu.com>
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
@@ -27,6 +28,7 @@ int main()
 #define BUF_SIZE 111
 	char buf[BUF_SIZE];
 	int fd;
+	int ret = 0;
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
 
@@ -34,12 +36,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_fsync_4_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -52,8 +53,7 @@ int main()
 	aiocb_write.aio_buf = buf;
 	aiocb_write.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb_write) == -1)
-	{
+	if (aio_write(&aiocb_write) == -1) {
 		printf(TNAME " Error at aio_write(): %s\n",
 		       strerror(errno));
 		exit(PTS_FAIL);
@@ -62,19 +62,27 @@ int main()
 	memset(&aiocb_fsync, 0, sizeof(aiocb_fsync));
 	aiocb_fsync.aio_fildes = fd;
 
-	if (aio_fsync(O_SYNC, &aiocb_fsync) != 0)
-	{
+	if (aio_fsync(O_SYNC, &aiocb_fsync) != 0) {
 		printf(TNAME " Error at aio_fsync()\n");
 		exit(PTS_FAIL);
 	}
 
-	if (aio_error(&aiocb_fsync) < 0)
-	{
-		printf(TNAME " Error at aio_error() : %s\n", strerror(errno));
+	while ((ret = aio_error(&aiocb_fsync) == EINPROGRESS))
+		usleep(10000);
+	if (ret < 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
+		exit(PTS_FAIL);
+	}
+
+	/* Upon successful completion, fsync() shall return 0.
+	 * Otherwise, -1 shall be returned and errno set to indicate the error.
+	 */
+	if (aio_return(&aiocb_fsync)) {
+		printf(TNAME " Error at aio_return() \n");
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

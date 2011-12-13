@@ -17,6 +17,7 @@
 #define __SAFE_MACROS_H__
 
 #include <sys/types.h>
+#include <sys/resource.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libgen.h>

@@ -55,23 +55,24 @@ fi
 
 # NAK the setregid EPERM -> EINVAL patch, because it's
 # broken on 2.6!  May be fixed some time after 20050804 release.
-if [ ! -e "testcases/kernel/syscalls/setregid/setregid02.c.pounder" ]; then
-	echo "Patching some holes in ltp..."
-	cp -pRdu testcases/kernel/syscalls/setregid/setregid02.c testcases/kernel/syscalls/setregid/setregid02.c.pounder
-	patch -p1 < $POUNDER_SRCDIR/ltp-setregid-fix.patch
-	RESULT=$?
-	if [ $RESULT -ne 0 ]; then
-		echo Patching failed.
-		exit 1
-	fi
-fi
+#if [ ! -e "testcases/kernel/syscalls/setregid/setregid02.c.pounder" ]; then
+#	echo "Patching some holes in ltp..."
+#	cp -pRdu testcases/kernel/syscalls/setregid/setregid02.c testcases/kernel/syscalls/setregid/setregid02.c.pounder
+#	patch -p1 < $POUNDER_SRCDIR/ltp-setregid-fix.patch
+#	RESULT=$?
+#	if [ $RESULT -ne 0 ]; then
+#		echo Patching failed.
+#		exit 1
+#	fi
+#fi
 
 # Build
+./configure
 make -j$NR_CPUS
 MK_RET=$?
 
 if [ $MK_RET -eq 0 ]; then
-	make install
+	make DESTDIR=$POUNDER_TMPDIR install
 	MK_RET=$?
 fi
 

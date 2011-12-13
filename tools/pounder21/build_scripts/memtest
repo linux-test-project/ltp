@@ -20,24 +20,38 @@
 # 02111-1307, USA.
 
 
+# How much RAM do we have?
+RAM=`cat /proc/meminfo | grep MemTotal | awk -F " " '{print $2}'`
+SPACE_REQUIRED=`expr $RAM \* 2`
+
+# Do we have enough space?
+MEMTESTDIR="$POUNDER_TMPDIR/memtest/"
+rm -rf "$MEMTESTDIR"
+mkdir -p "$MEMTESTDIR"
+FREE_SPACE=`df -k -P "$MEMTESTDIR" | tail -n 1 | awk -F " " '{print $4}'`
+if [ "$FREE_SPACE" -lt "$SPACE_REQUIRED" ]; then
+        echo "[memtest] Insufficient space. Free space: $FREE_SPACE kB. Space required: $SPACE_REQUIRED kB. Not building memtest."
+        exit -1
+fi
+
 cd "$POUNDER_OPTDIR"
 
 # Download a script and parse out the junk we don't want.
 if [ ! -f "memtest.sh" ]; then
 	if [ $USE_CACHE -eq 1 ]; then
-		wget "${POUNDER_CACHE}memtest.html"
+		wget "${POUNDER_CACHE}memtest.shtml"
 	fi
-	if [ ! -f "memtest.html" ]; then
-		wget "http://people.redhat.com/dledford/memtest.html"
+	if [ ! -f "memtest.shtml" ]; then
+		wget "http://people.redhat.com/dledford/memtest.shtml"
 	fi
 	IN_BLOCK=0
-
-	if [ ! -f "memtest.html" ]; then
-		echo "Could not download memtest.html.  Aborting!"
+	
+	if [ ! -f "memtest.shtml" ]; then
+		echo "[memtest] Could not download memtest.shtml.  Aborting!"
 		exit -1
 	fi
-	
-	(cat memtest.html | while read f; do
+
+	(cat memtest.shtml | while read f; do
 		echo "$f" | grep -q BLOCKQUOTE
 		if [ "$?" -eq 0 ]; then
 			if [ "$IN_BLOCK" -eq 0 ]; then
@@ -53,5 +67,5 @@ if [ ! -f "memtest.sh" ]; then
 	done) | sed -e 's/\/bin\/bash2/\/bin\/bash/g' > memtest.sh
 	chmod a+x memtest.sh
 	patch -p0 < "$POUNDER_SRCDIR/memtest.patch"
-	rm -rf memtest.html
+	rm -rf memtest.shtml
 fi

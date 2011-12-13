@@ -19,13 +19,17 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-LTPRUNALL=`ls $POUNDER_HOME/../../runltp`
+LTPRUNALL=`ls $POUNDER_TMPDIR/opt/ltp/runltp`
 
 # Catch errors
 LOGFILE=/proc/$$/fd/1
 OLD_ERRORS=`egrep -c "FAIL  :" $LOGFILE`
 
 "$LTPRUNALL"
+
+if [ $? -ne 0 ]; then
+	exit 255
+fi
 
 # Catch errors
 NEW_ERRORS=`egrep -c "FAIL  :" $LOGFILE`

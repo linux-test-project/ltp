@@ -20,7 +20,7 @@
 # 02111-1307, USA.
 
 
-TARNAME=linux-2.6.18.tar.gz
+TARNAME=linux-2.6.39.tar.bz2
 # WARNING: If you update the kernel version that we use, be sure to
 # update $POUNDER_SRCDIR/memtest.patch, $POUNDER_HOME/test_scripts/memtest,
 # $POUNDER_HOME/test_scripts/build_kernel, and

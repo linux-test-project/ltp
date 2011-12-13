@@ -124,8 +124,11 @@ void *threaded(void *arg)
 	rc = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
 	if (rc) {
 		printf("Failed: pthread_setschedparam(SCHED_FIFO), root?\n");
-		ready = 1;
-		return (void *) PTS_UNRESOLVED;
+		
+		if (rc == EPERM)
+			exit(PTS_UNTESTED);
+		else
+			exit(PTS_UNRESOLVED);
 	}
 
 	ready = 1;
@@ -159,8 +162,8 @@ int test_sig(struct sig_info *s)
 	ready = 0;
 
 	label = "pthread_create()";
-	rc = pthread_create(&child, NULL, threaded, s);
-	if (rc)
+	errno = pthread_create(&child, NULL, threaded, s);
+	if (errno)
 		goto done;
 
 	/*
@@ -175,8 +178,8 @@ int test_sig(struct sig_info *s)
 	sched_yield();
 
 	label = "pthread_kill()";
-	rc = pthread_kill(child, s->sig);
-	if (rc)
+	errno = pthread_kill(child, s->sig);
+	if (errno)
 		goto done;
 
 	while (!s->caught)
@@ -188,14 +191,14 @@ int test_sig(struct sig_info *s)
 		goto done;
 
 	label = "pthread_join()";
-	rc = pthread_join(child, &thread_status);
-	if (rc)
+	errno = pthread_join(child, &thread_status);
+	if (errno)
 		goto done;
 
 	sem_destroy(&sem);
 
-	status = ((long) thread_status) && 0xFFFFFFFF;
-
+	status = ((long) thread_status) & 0xFFFFFFFF;
+	
 	return status;
 
 done:

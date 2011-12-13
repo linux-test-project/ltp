@@ -137,15 +137,17 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			if (TEST_ERRNO != testcases[i].exp_errno) {
+			if (TEST_ERRNO == ENOSYS) {
+				tst_resm(TCONF, "You may need to make CONFIG_SYSCTL_SYSCALL=y"
+						" to your kernel config.");
+			} else if (TEST_ERRNO != testcases[i].exp_errno) {
 				tst_resm(TFAIL, "sysctl(2) returned unexpected "
 					 "errno, expected: %d, got: %d",
 					 testcases[i].exp_errno, errno);
-				continue;
+			} else {
+				tst_resm(TPASS, "sysctl(2) set errno correctly "
+						"to %d", testcases[i].exp_errno);
 			}
-
-			tst_resm(TPASS, "sysctl(2) set errno correctly "
-				 "to %d", testcases[i].exp_errno);
 
 			if (testcases[i].cleanup) {
 				(void)testcases[i].cleanup();

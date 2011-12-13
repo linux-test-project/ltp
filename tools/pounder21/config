@@ -1,0 +1,42 @@
+#Set the following variables as needed
+
+export DURATION=0			#Time in seconds for pounder to run. Setting this variable
+					#to 0 will not put an upper bound on pounder run time.
+
+export MAX_FAILURES=5			#Maximum number of test failures allowed for each subtest
+					#before aborting. Setting this variable to 0 will not put
+					#an upper bound on any subtest failures.
+
+export NFS_LOGGING=0			#1 to enable NFS logging of pounder output, pounder will
+					#log output to remote directory on NFS server  specified
+					#by $NFS_LOGDIR and  $NFS_LOGSERVER (see below), which
+					#will be mounted on $POUNDER_LOGLOCAL (see libpounder.sh).
+					#0 to disable this feature, all output for pounder runs
+					#will be stored locally directly in $POUNDER_LOGLOCAL instead.
+
+export NFS_LOGSERVER=0			#IP address of the NFS server to use for logging pounder results.
+					#NFS_LOGGING should be enabled to use this feature.
+
+export NFS_LOGDIR=/path/to/log		#path to the log directory on $NFS_LOGSERVER; If $NFS_LOGGING
+					#is enabled, pounder will attempt to mount $NFS_LOGSERVER:$NFS_LOGDIR/
+					#on $POUNDER_LOGLOCAL (see libpounder.sh).
+
+export POUNDER_CACHE=0  		#address of the cache to use for fetching outside packages,
+                        		#The cache is a user-created web-accessible directory
+                        		#containing cached tarballs/scripts/etc. used for
+                        		#the various tests you intend to build. This is optional
+                        		#but useful for saving download time.
+
+#These variables below are used by specific subtests contained in the provided default test scheduler,
+#but they can be incorporated into user-defined subtests as well.
+
+export DO_X_TESTS=0			#0 disables X system testing, 1 enables X system testing.
+					#Used by the xterm_stress subtest.
+
+export NFS_SERVER=0			#IP address of the NFS server to use for nfs and ping_nfs
+					#subtests. Setting this variable to 0 disables nfs testing.
+
+export NTP_SERVER=pool.ntp.org		#Or use another NTP server of your choice.
+					#Used by the time_drift subtest.
+
+#Feel free to add more variables as you see fit.

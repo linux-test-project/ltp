@@ -58,10 +58,30 @@ int main(int argc, char *argv[]) {
 	pid_t pid;
 	unsigned int revs = 0;
 	struct sigaction zig;
+	int use_max_failures = 0;
+	int max_failures = 0;
+	int fail_counter = 1;
 
 	if (argc < 3) {
-		printf("Usage: %s time_in_sec command [args]\n", argv[0]);
+		printf("Usage: %s [-m max_failures] time_in_sec command [args]\n", argv[0]);
 		exit(1);
+	}
+
+	//by default, set max_failures to whatever the env variable $MAX_FAILURES is
+        char *max_failures_env = getenv("MAX_FAILURES");
+        max_failures = atoi(max_failures_env);
+
+	//if the -m option is used when calling timed_loop, override max_failures
+	//specified by $MAX_FAILURES with the given argument instead
+	if (argc > 4 && strcmp(argv[1], "-m") == 0) {
+		if ((max_failures = atoi(argv[2])) >= 0) {	
+			use_max_failures = 1;
+		}
+		else {
+			printf("Usage: %s [-m max_failures] time_in_sec command [args]\n", argv[0]);
+			printf("max_failures should be a nonnegative integer\n");
+			exit(1);
+		}
 	}
 
 	tty_fp = fdopen(3, "w+");
@@ -73,11 +93,21 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	progname = rindex(argv[2], '/');
-	if (progname == NULL) {
-		progname = argv[2];
-	} else {
-		progname++;
+	if (use_max_failures) {
+		progname = rindex(argv[4], '/');
+		if (progname == NULL) {
+			progname = argv[4];
+		} else {
+			progname++;
+		}
+	}
+	else {
+		progname = rindex(argv[2], '/');
+		if (progname == NULL) {
+			progname = argv[2];
+		} else {
+			progname++;
+		}
 	}
 
 	/* Set up signals */
@@ -91,7 +121,12 @@ int main(int argc, char *argv[]) {
 	/* set up process groups so that we can kill the
 	 * loop test and descendants easily */
 
-	secs = atoi(argv[1]);
+	if (use_max_failures) {
+		secs = atoi(argv[3]);
+	}
+	else {
+		secs = atoi(argv[1]);
+	}
 	alarm(secs);
 
 	while (1) {
@@ -103,13 +138,24 @@ int main(int argc, char *argv[]) {
 			}
 
 			// run the program
-			if (argc > 3) {
-				stat = execvp(argv[2], &argv[2]);
-			} else {
-				stat = execvp(argv[2], &argv[2]);
-			}
+			if (use_max_failures) {
+				if (argc > 5) {
+					stat = execvp(argv[4], &argv[4]);
+				} else {
+					stat = execvp(argv[4], &argv[4]);
+				}
 
-			perror(argv[2]);
+				perror(argv[4]);
+			}
+			else {
+				if (argc > 3) {
+					stat = execvp(argv[2], &argv[2]);
+				} else {
+					stat = execvp(argv[2], &argv[2]);
+				}
+
+				perror(argv[2]);
+			}
 
 			exit(-1);
 		}
@@ -133,13 +179,18 @@ int main(int argc, char *argv[]) {
 			if (res == 0) {
 				pounder_fprintf(tty_fp, "%s: %s.\n", progname, pass_msg);
 			} else if (res < 0 || res == 255) {
-				pounder_fprintf(tty_fp, "%s: %s with code %d.\n",
+				pounder_fprintf(tty_fp, "CHECK %s: %s with code %d.\n",
 					progname, abort_msg, res);
 				exit(-1);
 				// FIXME: add test to blacklist
 			} else {
 				pounder_fprintf(tty_fp, "%s: %s with code %d.\n",
 					progname, fail_msg, res);
+				if (max_failures > 0) {
+					if (++fail_counter > max_failures) {
+						exit(-1);
+					}
+				}
 			}
 		}
 	}

@@ -139,6 +139,9 @@ int main(int ac, char **av)
 
 			if (TEST_ERRNO == exp_eno) {
 				tst_resm(TPASS|TTERRNO, "Got expected error");
+			} else if (errno == ENOSYS) {
+				tst_resm(TCONF, "You may need to make CONFIG_SYSCTL_SYSCALL=y"
+						" to your kernel config.");
 			} else {
 				tst_resm(TFAIL|TTERRNO, "Got unexpected error");
 			}
@@ -170,6 +173,9 @@ int main(int ac, char **av)
 				if (TEST_ERRNO == exp_eno) {
 					tst_resm(TPASS|TTERRNO,
 						"Got expected error");
+				} else if (TEST_ERRNO == ENOSYS) {
+					tst_resm(TCONF, "You may need to make CONFIG_SYSCTL_SYSCALL=y"
+							" to your kernel config.");
 				} else {
 					tst_resm(TFAIL|TTERRNO,
 						"Got unexpected error");

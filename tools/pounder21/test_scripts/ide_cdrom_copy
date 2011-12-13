@@ -40,6 +40,7 @@ trap 'exit 255' SIGABRT
 
 # Now, mount each disc and do the test.
 find_discs_with_media | while read DEV USE_FSTAB; do
+
 	# Are there no CDs at all?
 	if [ "$DEV" == "NONE" ]; then
 		echo "No CD/DVD drives found.  Aborting."
@@ -76,6 +77,7 @@ find_discs_with_media | while read DEV USE_FSTAB; do
 	rm -rf "$DESTINATION"
 done
 
+
 # Look for new errors.
 NEW_ERRORS=`egrep -ic "(err|fail|invalid|cannot|denied)" $LOGFILE`
 NEW_DIFFS=`egrep -ic "^---" $LOGFILE`
@@ -86,5 +88,4 @@ WRONG=$(( ERRORS + DIFFS ))
 if [ $WRONG -eq 255 ]; then
 	WRONG=254
 fi
-
 exit $WRONG

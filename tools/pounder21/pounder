@@ -19,29 +19,6 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-# By default, pounder runs forever.  Howver, the -k option can be used to stop
-# all the tests.  Our process ID (which is the process-group ID of all our
-# children) is saved in a file called pounder_pgrp in the POUNDER_HOME
-# directory.  A negative sign is prepended to the PID so that a simple
-# "kill -TERM `cat $POUNDER_HOME/pounder_pgrp`" will stop all the tests.
-#
-# Howver, if a test starts an xterm, then all its sub-processes will run under
-# a new process-group, which requires that the test regester its own PID (with
-# a negative sign prepended) to the pounder_pgrp file.  See the testtime script
-# for an example of this.
-#
-# To schedule pounder to run for a limited length of time, use the -d option
-# to set a duration in hours for the run.  A process will be spawned that will
-# sleep the allotted time and then kill the process group(s) in pounder_pgrp.
-# If you decide to stop the tests, pounder -k will kill the sleeping process as
-# well.
-#
-# It should also be noted that in order to clean up completly, some tests may
-# need to trap interrupts and do some cleanup.  See the testnet script for an
-# example of this.
-#
-# Author: Darrick Wong <djwong@us.ibm.com> and John Stultz <johnstul@us.ibm.com>
-
 source libpounder.sh
 
 # This function kills off pounder and related subprocesses.
@@ -56,34 +33,158 @@ function dokill() {
 
 function help() {
 	cat << ENDL
-Usage: $0 [-l logdir] [-x] [-d duration] [-n ipaddr] [-f] [-u|-r|-k] [-s]
+Usage: ./pounder [-g logdir] [-x] [-d duration] [-n ipaddr] [-m max_failures] [-f] [-h|-u|-r|-k|-l|-e subtests|-i subtests|-c scheduler] [-s]
 
--x	Enable X stress tests.
--d	Run pounder for duration seconds.
--n	Use ipaddr for NFS tests.
--f	Remove pounder pid file before running.
--u	Unmount NFS log storage.
--r	Remount NFS log storage.
--l	Use logdir as the log directory. (You probably want -s too.)
--s	Store logs locally.
--k	Kill pounder.
+-h      	Brings up this menu
+-c scheduler	Creates a new test scheduler called scheduler-tests.tar.gz in the pounder/schedulers folder.
+		All subtests to be packaged with this scheduler must first be placed in the pounder/tests folder. 
+-x      	Enable X stress tests.
+-d duration	Run pounder for duration seconds.
+-n ipaddr	Use ipaddr for NFS tests.
+-f		Remove pounder pid file before running.
+-u      	Unmount NFS log storage.
+-r      	Remount NFS log storage.
+-g logdir      	Use logdir as the log directory. (You probably want -s too.)
+-s      	Store logs locally.
+-l      	List (both included and excluded) subtests that came with the test scheduler
+-e subtests     Exclude subtests from next pounder run
+-i subtests     Include previously excluded subtests in the next pounder run
+-k      	Kill pounder.
+
+run "./pounder" to run all subtests
+run "./pounder subtest" to run just one particular subtest
+        (example: ./pounder tests/T90ramp/D02build_kernel)
 ENDL
 }
 
+function exclude() {
+	echo "excluding from tests $@..."
+
+	POUNDER_TESTS=$POUNDER_HOME/tests
+	SUBTESTS_INC=`find $POUNDER_TESTS -name excluded -prune -o -type f -print -o -type l -print`
+
+	for i in $@
+	do
+		BASENAME=`basename "$i"`
+
+		ORIG_DIR=`pwd`
+		cd `dirname $i`
+		FULL_PATH=`pwd`/"$BASENAME"
+		cd $ORIG_DIR 
+
+		FOUND=`echo "$SUBTESTS_INC" | grep -x "$FULL_PATH"`
+
+		if [ -n "$FOUND" -a -x "$i" ]; then
+
+			ALREADY_EXCLUDED=`grep -w "$BASENAME" $POUNDER_TESTS/excluded/testlist | cut -d " " -f1`
+			if [ $ALREADY_EXCLUDED ]; then
+				echo $ALREADY_EXCLUDED
+				echo "$BASENAME has already been excluded from the test scheduler. Make sure the test names in the test scheduler are unique."
+				exit 1
+			fi
+
+			echo "$BASENAME" "$FULL_PATH" >> "$POUNDER_TESTS"/excluded/testlist
+			mv "$i" "$POUNDER_TESTS"/excluded/"$BASENAME"
+
+			if [ $? -eq 0 ]; then
+				echo "Successfully removed $i from test scheduler."
+			else
+				echo "Removal of $i from tests UNSUCCESSFUL."
+			fi
+		else
+			echo "$i is not a subtest included in the current scheduler. Use ./pounder -l for list of valid, excludable subtests."
+		fi
+	done
+}
+
+function include() {
+	echo "including in tests $@..."
+
+        POUNDER_EXCLUDED=$POUNDER_HOME/tests/excluded
+
+        for i in $@
+        do
+		ORIG_FILE=`grep -w "$i" $POUNDER_EXCLUDED/testlist | cut -d " " -f2`
+
+		if [ -n "$ORIG_FILE" ]; then
+			mv $POUNDER_EXCLUDED/$i $ORIG_FILE
+			if [ $? -eq 0 ]; then
+				sed "/$i /d" $POUNDER_EXCLUDED/testlist > $POUNDER_EXCLUDED/tempfile
+				mv $POUNDER_EXCLUDED/tempfile $POUNDER_EXCLUDED/testlist
+				echo "Successfully added $i back to test scheduler."
+			else
+				echo "Addition of $i to tests UNSUCCESSFUL."
+			fi
+		else
+			echo "$i is not an excluded subtest. It may already be included in the current scheduler. Use ./pounder -l for list of valid, includable subtests."
+		fi
+        done
+}
+
+function list_tests() {
+
+	if [ ! -d $POUNDER_HOME/tests ]; then
+		echo "Error: No test schedule found. Did you run make install?"
+		exit 1
+	fi
+
+	echo "Included subtests:"
+	INCLUDED_TESTS=`find $POUNDER_HOME/tests -name excluded -prune -o -type f -print -o -type l -print`
+	if [ -z "$INCLUDED_TESTS" ]; then
+		echo "[NONE]"
+	else
+		echo "$INCLUDED_TESTS"
+	fi
+	echo
+
+	echo "Excluded subtests:"
+
+	if [ ! -d $POUNDER_HOME/tests/excluded ]; then
+		echo "Error: $POUNDER_HOME/tests/excluded folder does not exist. Make sure your test scheduler was created or unpackaged correctly. Did you run make install?"
+		exit 1
+	fi
+
+	EXCLUDED_TESTS=`grep -v "#" $POUNDER_HOME/tests/excluded/testlist`
+	if [ -z "$EXCLUDED_TESTS" ]; then
+		echo "[NONE]"
+	else
+		echo "$EXCLUDED_TESTS" | cut -d " " -f1
+	fi
+
+}
+
+function create_scheduler() {
+	TESTS_EXCLUDED=$POUNDER_HOME/tests/excluded
+	REPO_EXCLUDED=$POUNDER_HOME/test_repo/excluded
+
+	if [ ! -d $TESTS_EXCLUDED ]; then
+		cp -r $REPO_EXCLUDED $TESTS_EXCLUDED
+	elif [ ! -e $TESTS_EXCLUDED/testlist ]; then
+		cp $REPO_EXCLUDED/testlist $TESTS_EXCLUDED/testlist
+	fi
+
+	tar -czf $POUNDER_HOME/schedulers/$@-tests.tar.gz tests
+}
 # process options: -x to run in xterms, -k to kill tests, -d to set duration,
 # -f to remove bogus pounder.pid files.
-while getopts d:kn:l:xurs? o
+while getopts d:kn:g:xure:i:m:c:shl? o
 do
 	case "$o" in
 	   d) export DURATION="$OPTARG";;
 	   k) dokill; exit;;
 	   n) export NFS_SERVER="$OPTARG";;
-	   l) export POUNDER_LOGDIR="$OPTARG";;
+	   g) export POUNDER_LOGDIR="$OPTARG";;
 	   x) export DO_X_TESTS=1;;
 	   f) rm -rf "$POUNDER_PIDFILE";;
 	   u) umount $POUNDER_HOME/log 2> /dev/null; exit 0;;
 	   s) export NFS_LOGGING=0;;
 	   r) ./nfs_logging; exit;;
+	   e) exclude $OPTARG; exit;;
+	   i) include $OPTARG; exit;;
+	   l) list_tests; exit;;
+	   m) export MAX_FAILURES="$OPTARG";;
+	   c) create_scheduler $OPTARG; exit;;
+	   h) help $0; exit;;
 	   '?') help $0; exit 1;;
 	esac
 done
@@ -157,6 +258,7 @@ fi
 # Dump environment variables...
 export > "$POUNDER_LOGDIR/environment"
 
+echo "Starting $POUNDER_VERSION"
 echo "STARTING TESTS." > /dev/tty
 echo "To kill all tests, run 'pounder -k' or press ^C."> /dev/tty
 

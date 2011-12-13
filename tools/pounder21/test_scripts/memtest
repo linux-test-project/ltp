@@ -26,19 +26,9 @@ if [ ! -f "$POUNDER_OPTDIR/memtest.sh" ]; then
 	exit -1
 fi
 
-# How much RAM do we have?
-RAM=`cat /proc/meminfo | grep MemTotal | awk -F " " '{print $2}'`
-SPACE_REQUIRED=`expr $RAM \* 2`
-
-# Do we have enough space?
 MEMTESTDIR="$POUNDER_TMPDIR/memtest/"
 rm -rf "$MEMTESTDIR"
 mkdir -p "$MEMTESTDIR"
-FREE_SPACE=`df -k -P "$MEMTESTDIR" | tail -n 1 | awk -F " " '{print $4}'`
-if [ "$FREE_SPACE" -lt "$SPACE_REQUIRED" ]; then
-	echo "Insufficient space; not running memtest."
-	exit -1
-fi
 
 # Did we see any failures?
 LOGFILE=/proc/$$/fd/1
@@ -46,7 +36,9 @@ OLD_ERRORS=`egrep -ic "(err|fail|invalid|cannot|denied|diff)" $LOGFILE`
 
 # Run the test
 cd "$POUNDER_OPTDIR"
-NR_PASSES=2 TEST_DIR="$MEMTESTDIR" SOURCE_FILE="$POUNDER_OPTDIR/linux-2.6.18.tar.gz" ./memtest.sh
+cp "$POUNDER_OPTDIR/linux-2.6.39.tar.bz2" "$MEMTESTDIR/linux-2.6.39.tar.bz2"
+#NR_PASSES=2 TEST_DIR="$MEMTESTDIR" SOURCE_FILE="$POUNDER_OPTDIR/linux-2.6.39.tar.gz" 
+./memtest.sh
 
 # Now clean up
 rm -rf "$POUNDER_TMPDIR/memtest/"

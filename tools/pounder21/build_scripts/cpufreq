@@ -20,6 +20,13 @@
 # 02111-1307, USA.
 
 
+# Do any CPU support cpufreq?
+CPUFREQ_ENABLED_CPUS=`/bin/ls -lad /sys/devices/system/cpu/cpu*/cpufreq 2> /dev/null | wc -l`
+if [ "$CPUFREQ_ENABLED_CPUS" -lt 1 ]; then
+        echo "[cpufreq] None of your CPUs support cpufreq. Not building cpufreq."
+        exit 255
+fi
+
 cd "$POUNDER_SRCDIR/cpufreq/"
 
 make $*

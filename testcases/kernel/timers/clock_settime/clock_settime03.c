@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2003.  All Rights Reserved.
+ * Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -14,61 +15,6 @@
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
  */
-/**************************************************************************
- *
- *	TEST IDENTIFIER	: clock_settime03
- *
- *	EXECUTED BY	: root / superuser
- *
- *	TEST TITLE	: Test checking for basic error conditions for
- *				  clock_settime(2)
- *
- *	TEST CASE TOTAL	: 6
- *
- *	AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *	SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *	DESCRIPTION
- *		This test case check whether clock_settime(2) returns appropriate error
- *		value for invalid parameter
- *
- * 	Setup:
- *	 Setup signal handling.
- *	 Pause for SIGUSR1 if option specified.
- *	 Setup the value for struct timespec variable
- *
- * 	Test:
- *	 Loop if the proper options are given.
- *	 If it is the first test case
- *	 	make temp a bad pointer
- *	 If it is the last test case
- *	 	change the UID to non-previleged one.
- *	 Otherwise pass defined struct timespec variable to temp
- *	 Execute system call with invalid parameter
- *	 Check return code, if system call fails with errno == expected errno
- * 	 	Issue syscall passed with expected errno
- *	 Otherwise, Issue syscall failed to produce expected errno
- *
- * 	Cleanup:
- * 	 Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- * clock_settime03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- * 	-c n : run n copies simultaneously
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- * RESTRICTIONS:
- * None
- *****************************************************************************/
 
 #include <errno.h>
 #include <time.h>
@@ -79,15 +25,9 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-void setup(void);
+static void setup(void);
+static void cleanup(void);
 static int setup_test(int option);
-
-char *TCID = "clock_settime03"; /* Test program identifier.	*/
-int TST_TOTAL;			/* Total number of test cases. */
-static int exp_enos[] = { EINVAL, EFAULT, EPERM, 0 };
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-static struct timespec spec, *temp, saved;
 
 clockid_t clocks[] = {
 	CLOCK_REALTIME,
@@ -101,37 +41,44 @@ clockid_t clocks[] = {
 	CLOCK_THREAD_CPUTIME_ID
 };
 
-int testcase[9] = {
+int testcases[] = {
 	EFAULT,	/* tp bad		*/
 	EINVAL,	/* CLOCK_MONOTONIC	*/
 	EINVAL,	/* MAX_CLOCKS		*/
 	EINVAL,	/* MAX_CLOCKS + 1	*/
 	EINVAL,	/* Invalid timespec	*/
 	EINVAL,	/* NSEC_PER_SEC + 1	*/
-	EPERM	/* non-root user	*/
+	EPERM,	/* non-root user	*/
+	0,
+	0,
 };
 
-int
-main(int ac, char **av)
-{
-	int lc, i;	/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+char *TCID = "clock_settime03";
+int TST_TOTAL = sizeof(testcases) / sizeof(*testcases);
 
-	/* parse standard options */
+static int exp_enos[] = { EINVAL, EFAULT, EPERM, 0 };
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+static struct timespec spec, *temp, saved;
+
+int main(int ac, char **av)
+{
+	int lc, i;
+	char *msg;
+
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
 	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
-	 * kernel versions lower than 2.6.12
+	 * kernel versions lower than 2.6.12 and changed back in 2.6.38
 	 */
-	if ((tst_kvercmp(2, 6, 12)) < 0) {
-		testcase[7] = EINVAL;
-		testcase[8] = EINVAL;
+	if ((tst_kvercmp(2, 6, 12)) < 0 || (tst_kvercmp(2, 6, 38)) >= 0) {
+		testcases[7] = EINVAL;
+		testcases[8] = EINVAL;
 	} else {
-		testcase[7] = EFAULT;
-		testcase[8] = EFAULT;
+		testcases[7] = EFAULT;
+		testcases[8] = EFAULT;
 	}
 
 	setup();
@@ -142,9 +89,8 @@ main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			if (setup_test(i) < 0) {
+			if (setup_test(i) < 0)
 				continue;
-			}
 
 			TEST(syscall(__NR_clock_settime, clocks[i], temp));
 
@@ -158,7 +104,7 @@ main(int ac, char **av)
 			}
 
 			/* check return code */
-			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
+			if (TEST_RETURN == -1 && TEST_ERRNO == testcases[i]) {
 				tst_resm(TPASS | TTERRNO,
 					"clock_settime(2) got expected "
 					"failure.");
@@ -176,7 +122,7 @@ main(int ac, char **av)
 							"the clock!");
 					}
 				}
-			} /* end of else */
+			}
 
 		}
 
@@ -186,9 +132,7 @@ main(int ac, char **av)
 	tst_exit();
 }
 
-/* This function sets up the individual test */
-static int
-setup_test(int option)
+static int setup_test(int option)
 {
 	/* valid timespec */
 	spec = saved;
@@ -233,21 +177,15 @@ setup_test(int option)
 	return 0;
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
-	if (geteuid() != 0)
-		tst_brkm(TBROK, NULL, "Test must be run as root");
+	tst_require_root(NULL);
 
 	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, NULL, "Clock gettime failed");
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 	spec.tv_sec = 1;
 	spec.tv_nsec = 0;
@@ -255,17 +193,7 @@ setup(void)
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-
-void
-cleanup(void)
+static void cleanup(void)
 {
-	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
 	TEST_CLEANUP;
 }
