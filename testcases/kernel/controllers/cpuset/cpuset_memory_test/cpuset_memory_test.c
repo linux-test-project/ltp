@@ -196,7 +196,7 @@ void mmap_file(int flag_allocated)
 		}
 		touch_memory_and_echo_node(p, memsize);
 	} else {
-		if (!munmap(p, memsize) == -1)
+		if (munmap(p, memsize) == -1)
 			err(1, "munmap(file) failed");
 
 		if (opt_hugepage) {
@@ -236,7 +236,7 @@ void mmap_lock2(int flag_allocated)
 			err(1, "mlock failed");
 		touch_memory_and_echo_node(p, memsize);
 	} else {
-		if (!munmap(p, memsize) == -1)
+		if (munmap(p, memsize) == -1)
 			err(1, "munmap failed");
 	}
 }
