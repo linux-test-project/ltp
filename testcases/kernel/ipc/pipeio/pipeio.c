@@ -158,6 +158,8 @@ char *av[];
 	  struct semid_ds *buf;
 	  unsigned short int *array;
 	} u;
+	unsigned int uwait_iter = 1000;
+	unsigned int uwait_total = 5000000;
 
 	u.val = 0;
 	format = HEX;
@@ -443,12 +445,16 @@ char *av[];
 
 	writebuf[size-1] = 'A';	/* to detect partial read/write problem */
 
-	if ((sem_id = semget(IPC_PRIVATE, 1, IPC_CREAT|S_IRWXU)) == -1) {
+	if ((sem_id = semget(IPC_PRIVATE, 2, IPC_CREAT|S_IRWXU)) == -1) {
 		tst_brkm(TBROK|TERRNO, NULL, "Couldn't allocate semaphore");
 	}
 
 	if (semctl(sem_id, 0, SETVAL, u) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "Couldn't initialize semaphore value");
+		tst_brkm(TBROK|TERRNO, NULL, "Couldn't initialize semaphore 0 value");
+
+	/* semaphore to hold off children from exiting until open() completes */
+	if (semctl(sem_id, 1, SETVAL, u) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "Couldn't initialize semaphore 1 value");
 
 	if (background) {
 	    if ((n=fork()) == -1) {
@@ -539,7 +545,7 @@ printf("child after fork pid = %d\n", getpid());
 		};
 
 		if (semop(sem_id, &sem_op, 1) == -1)
-			tst_brkm(TBROK|TERRNO, NULL, "Couldn't raise the semaphore");
+			tst_brkm(TBROK|TERRNO, NULL, "Couldn't raise the semaphore 0");
 
 		pid_word = (int *)&writebuf[0];
 		count_word = (int *)&writebuf[NBPW];
@@ -586,6 +592,15 @@ printf("child after fork pid = %d\n", getpid());
 			}
 			fflush(stderr);
 		}
+
+		/* child waits until parent completes open() */
+		sem_op = (struct sembuf) {
+			.sem_num = 1,
+			.sem_op = -1,
+			.sem_flg = 0
+		};
+		if (semop(sem_id, &sem_op, 1) == -1)
+			tst_brkm(TBROK|TERRNO, NULL, "Couldn't lower the semaphore 1");
 	}
 	if (c > 0) {	/***** if parent *****/
 
@@ -602,6 +617,15 @@ printf("child after fork pid = %d\n", getpid());
 			close(write_fd);
 		}
 
+		/* raise semaphore so children can exit */
+		sem_op = (struct sembuf) {
+			.sem_num = 1,
+			.sem_op = num_wrters,
+			.sem_flg = 0
+		};
+		if (semop(sem_id, &sem_op, 1) == -1)
+			tst_brkm(TBROK|TERRNO, NULL, "Couldn't raise the semaphore 1");
+
 		sem_op = (struct sembuf) {
 			.sem_num = 0,
 			.sem_op = -num_wrters,
@@ -612,7 +636,7 @@ printf("child after fork pid = %d\n", getpid());
 			if (errno == EINTR) {
 				continue;
 			}
-			tst_brkm(TBROK|TERRNO, NULL, "Couldn't wait on semaphore");
+			tst_brkm(TBROK|TERRNO, NULL, "Couldn't wait on semaphore 0");
 		}
 
 		for (i=num_wrters*num_writes; i > 0 || loop; --i) {
@@ -693,6 +717,19 @@ output:
 			if (!quiet)
 				tst_resm(TPASS, "1 PASS %d pipe reads complete, read size = %d, %s %s",
 				          count+1,size,pipe_type,blk_type);
+
+		/* wait for all children to finish, timeout after uwait_total
+		   semtimedop might not be available everywhere */
+		for (i=0; i<uwait_total; i+=uwait_iter) {
+			if (semctl(sem_id, 1, GETVAL) == 0) {
+				break;
+			}
+			usleep(uwait_iter);
+		}
+
+		if (i > uwait_total) {
+			tst_resm(TWARN, "Timed out waiting for child processes to exit");
+		}
 
 		semctl(sem_id, 0, IPC_RMID);
 
