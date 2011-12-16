@@ -96,6 +96,7 @@ sem_t semsig2;
 unsigned long count_sig=0;
 #endif
 sem_t semsync;
+sem_t semsync2;
 
 typedef struct
 {
@@ -164,6 +165,9 @@ void * threaded(void * arg)
 	sa.sa_handler = sighdl2;
 	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
 	{ UNRESOLVED(ret, "Unable to register signal handler2"); }
+
+	if ((sem_post(&semsync2)))
+	{ UNRESOLVED(errno, "could not post semsync2"); }
 
 	/* Initialize the different mutex */
 	pma[4]=NULL;
@@ -301,11 +305,18 @@ int main (int argc, char * argv[])
 	if ((sem_init(&semsync, 0, 0)))
 	{ UNRESOLVED(errno, "semsync init"); }
 
+	if ((sem_init(&semsync2, 0, 0)))
+	{ UNRESOLVED(errno, "semsync2 init"); }
+
 	#if VERBOSE >1
 	output("Starting the worker thread\n");
 	#endif
 	if ((ret = pthread_create(&th_work, NULL, threaded, NULL)))
 	{ UNRESOLVED(ret, "Worker thread creation failed"); }
+
+	do {
+		ret = sem_wait(&semsync2);
+	} while (ret && (errno ==  EINTR));
 
 	arg1.thr = &th_work;
 	arg2.thr = &th_work;
