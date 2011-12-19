@@ -8,6 +8,8 @@
 
 #define _GNU_SOURCE
 
+#include <config.h>
+
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -15,8 +17,7 @@
 #include <unistd.h>
 #include <sys/ptrace.h>
 #include <sys/syscall.h>
-#include <linux/ptrace.h>
-#include <asm/ptrace.h>
+#include "ptrace.h"
 
 #include "test.h"
 #include "usctest.h"
