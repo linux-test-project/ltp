@@ -98,12 +98,10 @@ char **errmsg;
 {
     int cnt;
     unsigned char *chr;
-    int total;
     long expbits;
     long actbits;
 
 	chr = (unsigned char *) buffer;
-	total=bsize;
 
 	if (errmsg != NULL) {
 	    *errmsg = Errmsg;
