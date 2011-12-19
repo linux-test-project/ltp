@@ -27,24 +27,6 @@
 #include "usctest.h"
 
 static pid_t pid;
-static bool child_stopped = false;
-
-static void child_signal(int sig)
-{
-	int status;
-	if (sig != SIGCHLD) {
- die:
-		tst_brkm(TBROK, NULL, "child signal %i: %s\n", sig, strsignal(sig));
-		kill(pid, SIGKILL);
-		exit(1);
-	}
-	if (wait(&status) == -1)
-		goto die;
-	if (!WIFSTOPPED(status))
-		goto die;
-
-	child_stopped = true;
-}
 
 #ifdef __sparc__
 /* sparce swaps addr/data for get/set regs */
@@ -84,16 +66,26 @@ static void make_a_baby(int argc, char *argv[])
 		exit(1);
 	}
 
-	signal(SIGCHLD, child_signal);
+	signal(SIGCHLD, SIG_IGN);
 
 	pid = vfork();
 	if (pid == -1) {
 		tst_resm(TFAIL, "vfork() failed");
 		tst_exit();
 	} else if (pid) {
-		while (!child_stopped)
-			continue;
-		signal(SIGCHLD, SIG_IGN);
+		int status;
+
+		if (wait(&status) != pid) {
+			tst_brkm(TBROK | TERRNO, NULL, "wait(%i) failed: %#x", pid, status);
+			kill(pid, SIGKILL);
+			exit(1);
+		}
+		if (!WIFSTOPPED(status)) {
+			tst_brkm(TBROK, NULL, "child status not stopped: %#x", status);
+			kill(pid, SIGKILL);
+			exit(1);
+		}
+
 		return;
 	}
 
