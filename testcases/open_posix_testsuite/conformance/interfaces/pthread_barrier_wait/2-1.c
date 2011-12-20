@@ -38,6 +38,7 @@
 static pthread_barrier_t barrier;
 static int serial;
 static int normal_rt;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void* fn_chld(void *arg)
 {
@@ -59,7 +60,9 @@ static void* fn_chld(void *arg)
 	}
 	else
 	{
+		pthread_mutex_lock(&mutex);
 		normal_rt++;
+		pthread_mutex_unlock(&mutex);
 	}
 
 	pthread_exit(0);
