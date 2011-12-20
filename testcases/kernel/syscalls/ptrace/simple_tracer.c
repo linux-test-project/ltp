@@ -66,6 +66,17 @@ static void decode_regs(struct pt_regs *pt)
 	decode(ebp);
 	decode_sysnum(nr);
 	puts("");
+#elif defined(__x86_64__)
+	long nr = decode_user("orig_rax", 8 * ORIG_RAX);
+	decode(rax);
+	decode(rbx);
+	decode(rcx);
+	decode(rdx);
+	decode(rsi);
+	decode(rdi);
+	decode(rbp);
+	decode_sysnum(nr);
+	puts("");
 #elif defined(__sparc__)
 	#define G1 u_regs[0]
 	#define G2 u_regs[1]
