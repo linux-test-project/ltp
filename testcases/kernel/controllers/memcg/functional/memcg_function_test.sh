@@ -148,7 +148,7 @@ test_mem_stat()
 	/bin/kill -s SIGUSR1 $! 2> /dev/null
 	sleep 1
 	if [ $4 -eq 1 ]; then
-		check_mem_stat 0 0
+		check_mem_stat 0
 	fi
 	/bin/kill -s SIGINT $! 2> /dev/null
 }
@@ -228,7 +228,7 @@ test_hugepage()
 	/bin/kill -s SIGUSR1 $! 2> /dev/null
 	sleep 1
 
-	check_mem_stat 0 0
+	check_mem_stat 0
 
 	echo "TMP_FILE:"
 	cat $TMP_FILE
@@ -282,11 +282,11 @@ test_subgroup()
 	echo $! > tasks
 	/bin/kill -s SIGUSR1 $! 2> /dev/null
 	sleep 1
-	check_mem_stat $PAGESIZE 0
+	check_mem_stat $PAGESIZE
 
 	cd subgroup
 	echo $! > tasks
-	check_mem_stat 0 0
+	check_mem_stat 0
 
 	# cleanup
 	cd ..
