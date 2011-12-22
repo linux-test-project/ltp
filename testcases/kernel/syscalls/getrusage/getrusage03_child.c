@@ -49,7 +49,8 @@ option_t child_options[] = {
 	{ "g:", &opt_grand,   &grand_consume_str },
 	{ "v",  &opt_show,    NULL },
 	{ "s:", &opt_self,    &self_str },
-	{ "l:", &opt_child,   &child_str }
+	{ "l:", &opt_child,   &child_str },
+	{ NULL, NULL,         NULL }
 };
 
 static void usage(void);
