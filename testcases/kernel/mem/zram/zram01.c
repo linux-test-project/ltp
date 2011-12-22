@@ -44,6 +44,7 @@ int modprobe = 0;
 
 static void set_disksize(void);
 static void write_device(void);
+static void verify_device(void);
 static void reset(void);
 static void setup(void);
 static void cleanup(void);
@@ -68,6 +69,7 @@ int main(int argc, char *argv[])
 
 		write_device();
 		dump_info();
+		verify_device();
 
 		reset();
 		dump_info();
@@ -96,7 +98,7 @@ static void set_disksize(void)
 static void write_device(void)
 {
 	int fd;
-	void *s;
+	char *s;
 
 	tst_resm(TINFO, "map it into memory.");
 	fd = open(DEVICE, O_RDWR);
@@ -107,10 +109,43 @@ static void write_device(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
 
 	tst_resm(TINFO, "write all the memory.");
-	memset(s, 'a', SIZE);
+	memset(s, 'a', SIZE-1);
+	s[SIZE-1] = '\0';
 
 	if (munmap(s, SIZE) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+
+	close(fd);
+}
+
+static void verify_device(void)
+{
+	int fd, i, fail;
+	char *s;
+
+	tst_resm(TINFO, "verify contents from device.");
+	fd = open(DEVICE, O_RDONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", DEVICE);
+	s = mmap(NULL, SIZE, PROT_READ, MAP_PRIVATE, fd, 0);
+	if (s == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, cleanup, "2nd mmap");
+
+	i = 0;
+	fail = 0;
+	while (s[i] && i < SIZE - 1) {
+		if (s[i] != 'a')
+			fail++;
+		i++;
+	}
+	if (i != SIZE-1)
+		tst_resm(TFAIL, "expect size:%d, actual size:%d", SIZE-1, i);
+	else if (s[i] != '\0')
+		tst_resm(TFAIL, "zram device seems not null terminated");
+	if (fail)
+		tst_resm(TFAIL, "%d failed bytes found.", fail);
+	if (munmap(s, SIZE) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "2nd munmap");
 
 	close(fd);
 }
