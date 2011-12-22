@@ -39,7 +39,7 @@ int TST_TOTAL = 1;
 int modprobe = 0;
 
 #define PATH_ZRAM	"/sys/block/zram0"
-#define SIZE		(512 * 1024 * 1024)
+#define SIZE		(512 * 1024 * 1024L)
 #define DEVICE		"/dev/zram0"
 
 static void set_disksize(void);
@@ -83,12 +83,12 @@ static void set_disksize(void)
 	int fd;
 	char size[BUFSIZ];
 
-	tst_resm(TINFO, "create a zram device with %d bytes in size.", SIZE);
+	tst_resm(TINFO, "create a zram device with %ld bytes in size.", SIZE);
 	fd = open(PATH_ZRAM "/disksize", O_WRONLY);
 	if (fd == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "open %s",
 				PATH_ZRAM "/disksize");
-	sprintf(size, "%d", SIZE);
+	sprintf(size, "%ld", SIZE);
 	if (write(fd, size, strlen(size)) != strlen(size))
 		tst_brkm(TBROK|TERRNO, cleanup, "write %s to %s", size,
 				PATH_ZRAM "/disksize");
@@ -120,7 +120,8 @@ static void write_device(void)
 
 static void verify_device(void)
 {
-	int fd, i, fail;
+	int fd;
+	long i, fail;
 	char *s;
 
 	tst_resm(TINFO, "verify contents from device.");
@@ -139,11 +140,12 @@ static void verify_device(void)
 		i++;
 	}
 	if (i != SIZE-1)
-		tst_resm(TFAIL, "expect size:%d, actual size:%d", SIZE-1, i);
+		tst_resm(TFAIL, "expect size: %ld, actual size: %ld.",
+				SIZE-1, i);
 	else if (s[i] != '\0')
 		tst_resm(TFAIL, "zram device seems not null terminated");
 	if (fail)
-		tst_resm(TFAIL, "%d failed bytes found.", fail);
+		tst_resm(TFAIL, "%ld failed bytes found.", fail);
 	if (munmap(s, SIZE) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "2nd munmap");
 
