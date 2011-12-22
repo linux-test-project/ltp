@@ -82,3 +82,5 @@ thp01 thp01 -I 120
 
 vma01 vma01
 vma02 vma02
+
+zram01 zram01
