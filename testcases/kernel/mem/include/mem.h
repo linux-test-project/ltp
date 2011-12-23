@@ -19,6 +19,7 @@
 #define MB			(1UL<<20)
 #define PATH_SYS_SYSTEM		"/sys/devices/system"
 #define PATH_KSM		"/sys/kernel/mm/ksm/"
+#define PATH_MEMINFO		"/proc/meminfo"
 
 char overcommit[BUFSIZ];
 int opt_num, opt_size, opt_unit;
@@ -48,4 +49,5 @@ void create_same_memory(int size, int num, int unit);
 void check_ksm_options(int *size, int *num, int *unit);
 void write_cpusets(void);
 void write_memcg(void);
+long read_meminfo(char *item);
 #endif

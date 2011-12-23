@@ -77,7 +77,7 @@ void write_memcg(void)
 	snprintf(buf, BUFSIZ, "%d", getpid());
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
 		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-	close(fd);	
+	close(fd);
 }
 
 void write_cpusets(void)
@@ -714,4 +714,28 @@ void check_ksm_options(int *size, int *num, int *unit)
 			tst_brkm(TBROK, cleanup,
 				"process number cannot be less 3.");
 	}
+}
+
+long read_meminfo(char *item)
+{
+	FILE *fp;
+	char line[BUFSIZ], buf[BUFSIZ];
+	long val;
+
+	fp = fopen(PATH_MEMINFO, "r");
+	if (fp == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "fopen %s", PATH_MEMINFO);
+
+	while (fgets(line, BUFSIZ, fp) != NULL) {
+		if (sscanf(line, "%64s %ld", buf, &val) == 2)
+			if (strcmp(buf, item) == 0) {
+				fclose(fp);
+				return val;
+			}
+		continue;
+	}
+	fclose(fp);
+
+	tst_brkm(TBROK, cleanup, "cannot find \"%s\" in %s",
+			item, PATH_MEMINFO);
 }
