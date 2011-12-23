@@ -12,7 +12,11 @@
 #define KSM			4
 #define CPATH			"/dev/cpuset"
 #define CPATH_NEW		CPATH "/1"
+#if defined(__powerpc__) || defined(__powerpc64__)
+#define MAXNODES		256
+#else
 #define MAXNODES		512
+#endif
 #define MEMCG_PATH		"/dev/cgroup"
 #define MEMCG_PATH_NEW		MEMCG_PATH "/1"
 #define TESTMEM			(1UL<<30)
