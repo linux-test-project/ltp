@@ -324,6 +324,7 @@ main(int argc, char *argv[])
 		else
 			tst_resm (TPASS, "Out of range file descriptor");
 	}
+	close(newfd);
 	total++;
 
 	/* Test-7: Closed file descriptor */
@@ -360,6 +361,7 @@ main(int argc, char *argv[])
 		else
 			tst_resm (TPASS, "character device read, write");
 	}
+	close(newfd);
 	total++;
 
 	/* Test-10: read, write to a mmaped file */
@@ -400,6 +402,7 @@ main(int argc, char *argv[])
 	}
 	else
 		tst_resm (TPASS, "read, write to an unmapped file");
+	close(fd);
 	total++;
 
 	/* Test-12: read from file not open for reading */
@@ -610,6 +613,7 @@ static void setup(void)
 	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0) {
 		tst_brkm(TCONF, cleanup, "O_DIRECT is not supported by this filesystem. %s", strerror(errno));
 	}
+	close(fd1);
 }
 
 static void cleanup(void)
