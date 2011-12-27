@@ -67,7 +67,11 @@ unsigned long huge_pages_shm_to_be_allocated;
 #define CASE1		20		/* memory location.		   */
 
 #if __WORDSIZE==64
+#if defined(__mips__)
+#define UNALIGNED      0x1000000eee
+#else
 #define UNALIGNED      0x10000000eee
+#endif
 #else
 #define UNALIGNED      0x60000eee
 #endif
