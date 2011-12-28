@@ -744,17 +744,18 @@ void set_sys_tune(char *sys_file, long tune, int check)
 {
 	int fd;
 	long val;
-	char buf[BUFSIZ];
+	char buf[BUFSIZ], path[BUFSIZ];
 
 	tst_resm(TINFO, "set %s to %ld", sys_file, tune);
 
-	fd = open(sys_file, O_WRONLY);
+	snprintf(path, BUFSIZ, "%s%s", PATH_SYSVM, sys_file);
+	fd = open(path, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open '%s'", sys_file);
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", sys_file);
 	if (snprintf(buf, BUFSIZ, "%ld", tune) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "snprintf");
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write '%s'", sys_file);
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", sys_file);
 	close(fd);
 
 	if (check) {
@@ -769,13 +770,14 @@ long get_sys_tune(char *sys_file)
 {
 	int fd;
 	long tune;
-	char buf[BUFSIZ], *endptr;
+	char buf[BUFSIZ], path[BUFSIZ], *endptr;
 
-	fd = open(sys_file, O_RDONLY);
+	snprintf(path, BUFSIZ, "%s%s", PATH_SYSVM, sys_file);
+	fd = open(path, O_RDONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open '%s'", sys_file);
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", sys_file);
 	if (read(fd, buf, BUFSIZ) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "read '%s'", sys_file);
+		tst_brkm(TBROK|TERRNO, cleanup, "read %s", sys_file);
 	close(fd);
 
 	tune = strtol(buf, &endptr, 10);
