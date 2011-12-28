@@ -310,3 +310,31 @@ safe_write(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	return (rval);
 }
+
+int safe_ftruncate(const char *file, const int lineno,
+	    void (cleanup_fn)(void), int fd, off_t length)
+{
+	int rval;
+	
+	rval = ftruncate(fd, length);
+	if (rval == -1) {
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "ftruncate failed at %s:%d",
+		         file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_truncate(const char *file, const int lineno,
+	    void (cleanup_fn)(void), const char *path, off_t length)
+{
+	int rval;
+
+	rval = truncate(path, length);
+	if (rval == -1) {
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "truncate failed at %s:%d",
+		         file, lineno);
+	}
+
+	return rval;
+}
