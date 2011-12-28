@@ -51,24 +51,24 @@ static void setup(void);
 static void cleanup(void);
 
 #define barrier() __asm__ __volatile__("": : :"memory")
-#define WITH_SIGNALS_BLOCKED(code) {											\
-		sigset_t held_sigs_;																	\
-		sigfillset(&held_sigs_);															\
-		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_);	\
+#define WITH_SIGNALS_BLOCKED(code) { \
+		sigset_t held_sigs_; \
+		sigfillset(&held_sigs_); \
+		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_); \
 		barrier(); \
-		code;																									\
+		code; \
 		barrier(); \
-		sigprocmask(SIG_SETMASK, &held_sigs_, NULL);					\
+		sigprocmask(SIG_SETMASK, &held_sigs_, NULL); \
 	}
 
-char *TCID="dio_sparse";	/* Test program identifier.    */
-int TST_TOTAL=1;	/* Total number of test cases. */
+char *TCID="dio_sparse";
+int TST_TOTAL=1;
+
 /*
  * dio_sparse - issue O_DIRECT writes to holes is a file while concurrently
  *	reading the file and checking that the read never reads uninitailized
  *	data.
  */
-
 char *check_zero(unsigned char *buf, int size)
 {
 	unsigned char *p;
@@ -276,7 +276,6 @@ long long scale_by_kmg(long long value, char scale)
 /*
  *	usage: dio_sparse [-r readsize] [-w writesize] [-n chilren] [-a align]
  */
-
 int main(int argc, char **argv)
 {
 	char filename[PATH_MAX];
@@ -357,7 +356,6 @@ int main(int argc, char **argv)
 	/*
 	 * Parent write to a hole in a file using direct i/o
 	 */
-
 	dio_sparse(filename, alignment, writesize, filesize);
 
 	if (debug)

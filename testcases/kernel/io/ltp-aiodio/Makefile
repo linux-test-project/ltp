@@ -23,7 +23,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -DAIO -D_GNU_SOURCE
+CPPFLAGS		+= -DAIO
 
 LDLIBS			+= -lpthread $(AIO_LIBS)
 

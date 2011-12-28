@@ -51,18 +51,19 @@ const char* filename2=NULL;
 static void setup(void);
 static void cleanup(void);
 
-char *TCID="aiodio_sparse";	/* Test program identifier.    */
-int TST_TOTAL=1;	/* Total number of test cases. */
+char *TCID="aiodio_sparse";
+int TST_TOTAL=1;
 
 #define barrier() __asm__ __volatile__("": : :"memory")
-#define WITH_SIGNALS_BLOCKED(code) {											\
-		sigset_t held_sigs_;																	\
-		sigfillset(&held_sigs_);															\
-		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_);	\
+
+#define WITH_SIGNALS_BLOCKED(code) { \
+		sigset_t held_sigs_; \
+		sigfillset(&held_sigs_); \
+		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_); \
 		barrier(); \
-		code;																									\
+		code; \
 		barrier(); \
-		sigprocmask(SIG_SETMASK, &held_sigs_, NULL);					\
+		sigprocmask(SIG_SETMASK, &held_sigs_, NULL); \
 	}
 
 /*
@@ -70,7 +71,6 @@ int TST_TOTAL=1;	/* Total number of test cases. */
  *	concurrently reading the file and checking that the read never reads
  *	uninitailized data.
  */
-
 char *check_zero(unsigned char *buf, int size)
 {
 	unsigned char *p;
@@ -133,8 +133,7 @@ int read_sparse(char *filename, int filesize)
 
 volatile int got_signal;
 
-void
-sig_term_func(int i, siginfo_t *si, void *p)
+void sig_term_func(int i, siginfo_t *si, void *p)
 {
 	if (debug)
 		fprintf(stderr, "sig(%d, %p, %p)\n", i, si, p);
@@ -160,9 +159,9 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 	s.sa_flags = SA_SIGINFO;
 	sigaction(SIGTERM, &s, 0);
 
-	if ((num_aio * writesize) > filesize) {
+	if ((num_aio * writesize) > filesize)
 		num_aio = filesize / writesize;
-	}
+	
 	memset(&myctx, 0, sizeof(myctx));
 	io_queue_init(num_aio, &myctx);
 
@@ -354,7 +353,7 @@ void dirty_freeblocks(int size)
 	);
 }
 
-int usage()
+int usage(void)
 {
 	fprintf(stderr, "usage: dio_sparse [-n children] [-s filesize]"
 		" [-w writesize] [-r readsize] \n");
@@ -390,7 +389,6 @@ long long scale_by_kmg(long long value, char scale)
  *	usage:
  * aiodio_sparse [-r readsize] [-w writesize] [-n chilren] [-a align] [-i num_aio]
  */
-
 int main(int argc, char **argv)
 {
 	char filename[PATH_MAX];

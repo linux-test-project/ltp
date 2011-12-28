@@ -33,7 +33,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-int main()
+int main(void)
 {
 	int fd;
 	int i;

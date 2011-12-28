@@ -45,6 +45,7 @@
 #define PROG_VERSION "0.21"
 #define NEW_GETEVENTS
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
