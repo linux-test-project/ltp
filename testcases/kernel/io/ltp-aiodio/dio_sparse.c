@@ -203,7 +203,7 @@ long long scale_by_kmg(long long value, char scale)
  */
 int main(int argc, char **argv)
 {
-	char filename[PATH_MAX];
+	char *filename = "dio_sparse";
 	int pid[NUM_CHILDREN];
 	int num_children = 1;
 	int i;
@@ -213,9 +213,6 @@ int main(int argc, char **argv)
 	int filesize = 100*1024*1024;
 	int c;
 	int children_errors = 0;
-
-	snprintf(filename, sizeof(filename), "%s/aiodio/file",
-		getenv("TMP") ? getenv("TMP") : "/tmp");
 
 	while ((c = getopt(argc, argv, "dr:w:n:a:s:")) != -1) {
 		char *endp;
@@ -311,10 +308,12 @@ static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	signal(SIGTERM, SIG_DFL);
+	tst_tmpdir();
 }
 
 static void cleanup(void)
 {
 	if (filename1)
 		unlink(filename1);
+	tst_rmdir();
 }
