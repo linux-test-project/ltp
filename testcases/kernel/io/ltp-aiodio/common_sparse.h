@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
  *
@@ -32,50 +31,37 @@
 		sigprocmask(SIG_SETMASK, &held_sigs_, NULL); \
 	}
 
+/*
+ * This code tries to create dirty free blocks on 
+ * the HDD so there is a chance that blocks to be allocated
+ * for a file are filled with something else than zeroes.
+ *
+ * The usefulness of this is IMHO questionable.
+ */
 static void dirty_freeblocks(int size)
 {
 	int fd;
 	void *p;
 	int pg;
-	char filename[1024];
+	char *filename = "dirty_freeblocks";
 
 	pg = getpagesize();
 	size = ((size + pg - 1) / pg) * pg;
-	//TODO: Shouldn't this be in same directory as testing file?
-	sprintf(filename, "file.xx.%d", getpid());
 
-	WITH_SIGNALS_BLOCKED(
-		fd = open(filename, O_CREAT|O_RDWR|O_EXCL, 0600);
-		if (fd != -1)
-			filename2 = filename;
-	);
+	fd = open(filename, O_CREAT|O_RDWR|O_EXCL, 0600);
 	
-	if (fd < 0) {
-		perror("cannot open file");
-		exit(2);
-	}
+	if (fd < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "failed to open '%s'", filename); 
 	
-	ftruncate(fd, size);
-	p = mmap(0, size, PROT_WRITE|PROT_READ, MAP_SHARED|MAP_FILE, fd, 0);
-	if (p == MAP_FAILED) {
-		perror("cannot mmap");
-		close(fd);
-
-		WITH_SIGNALS_BLOCKED(
-			filename2 = NULL;
-			unlink(filename);
-		);
-		exit(2);
-	}
+	SAFE_FTRUNCATE(cleanup, fd, size);
+	
+	p = SAFE_MMAP(cleanup, NULL, size, PROT_WRITE|PROT_READ, MAP_SHARED|MAP_FILE, fd, 0);
 	
 	memset(p, 0xaa, size);
 	msync(p, size, MS_SYNC);
 	munmap(p, size);
 	close(fd);
-	WITH_SIGNALS_BLOCKED(
-		filename2=NULL;
-		unlink(filename);
-	);
+	unlink(filename);
 }
 
 char *check_zero(char *buf, int size)

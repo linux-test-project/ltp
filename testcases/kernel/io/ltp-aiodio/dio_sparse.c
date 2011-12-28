@@ -40,21 +40,21 @@
 #include <getopt.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define NUM_CHILDREN 1000
 
 int debug;
 
-const char* filename1=NULL;
-const char* filename2=NULL;
-
-#include "common_sparse.h"
+const char *filename1=NULL;
 
 static void setup(void);
 static void cleanup(void);
 
 char *TCID="dio_sparse";
 int TST_TOTAL=1;
+
+#include "common_sparse.h"
 
 int read_sparse(char *filename, int filesize)
 {
@@ -128,7 +128,7 @@ void dio_sparse(char *filename, int align, int writesize, int filesize)
 		return;
 	}
 
-	ftruncate(fd, filesize);
+	SAFE_FTRUNCATE(cleanup, fd, filesize);
 
 	if (posix_memalign(&bufptr, align, writesize)) {
 		perror("cannot malloc aligned memory");
@@ -256,10 +256,6 @@ int main(int argc, char **argv)
 	}
 
 	setup();
-	/*
-	 * Create some dirty free blocks by allocating, writing, syncing,
-	 * and then unlinking and freeing.
-	 */
 	dirty_freeblocks(filesize);
 
 	for (i = 0; i < num_children; i++) {
@@ -321,6 +317,4 @@ static void cleanup(void)
 {
 	if (filename1)
 		unlink(filename1);
-	if (filename2)
-		unlink(filename2);
 }

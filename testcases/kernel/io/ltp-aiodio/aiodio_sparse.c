@@ -42,20 +42,20 @@
 #include <libaio.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define NUM_CHILDREN 1000
 
 int debug;
-const char* filename1=NULL;
-const char* filename2=NULL;
-
-#include "common_sparse.h"
+const char *filename1=NULL;
 
 static void setup(void);
 static void cleanup(void);
 
 char *TCID="aiodio_sparse";
 int TST_TOTAL=1;
+
+#include "common_sparse.h"
 
 int read_sparse(char *filename, int filesize)
 {
@@ -147,7 +147,7 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		return;
 	}
 
-	ftruncate(fd, filesize);
+	SAFE_FTRUNCATE(cleanup, fd, filesize);
 
 	/*
 	 * allocate the iocbs array and iocbs with buffers
@@ -370,11 +370,6 @@ int main(int argc, char **argv)
 	}
 
 	setup();
-
-	/*
-	 * Create some dirty free blocks by allocating, writing, syncing,
-	 * and then unlinking and freeing.
-	 */
 	dirty_freeblocks(filesize);
 
 	for (i = 0; i < num_children; i++) {
@@ -438,7 +433,5 @@ static void cleanup(void)
 {
 	if (filename1)
 		unlink(filename1);
-	if (filename2)
-		unlink(filename2);
 	tst_exit();
 }
