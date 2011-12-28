@@ -37,6 +37,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <getopt.h>
 
 #include "test.h"
 
@@ -47,48 +48,13 @@ int debug;
 const char* filename1=NULL;
 const char* filename2=NULL;
 
+#include "common_sparse.h"
+
 static void setup(void);
 static void cleanup(void);
 
-#define barrier() __asm__ __volatile__("": : :"memory")
-#define WITH_SIGNALS_BLOCKED(code) { \
-		sigset_t held_sigs_; \
-		sigfillset(&held_sigs_); \
-		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_); \
-		barrier(); \
-		code; \
-		barrier(); \
-		sigprocmask(SIG_SETMASK, &held_sigs_, NULL); \
-	}
-
 char *TCID="dio_sparse";
 int TST_TOTAL=1;
-
-/*
- * dio_sparse - issue O_DIRECT writes to holes is a file while concurrently
- *	reading the file and checking that the read never reads uninitailized
- *	data.
- */
-char *check_zero(unsigned char *buf, int size)
-{
-	unsigned char *p;
-
-	p = buf;
-
-	while (size > 0) {
-		if (*buf != 0) {
-			fprintf(stderr, "non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
-				buf - p, (unsigned int)buf[0],
-				size > 1 ? (unsigned int)buf[1] : 0,
-				size > 2 ? (unsigned int)buf[2] : 0,
-				size > 3 ? (unsigned int)buf[3] : 0);
-			return buf;
-		}
-		buf++;
-		size--;
-	}
-	return 0;	/* all zeros */
-}
 
 int read_sparse(char *filename, int filesize)
 {
@@ -129,8 +95,7 @@ int read_sparse(char *filename, int filesize)
 
 volatile int got_signal;
 
-void
-sig_term_func(int i, siginfo_t *si, void *p)
+void sig_term_func(int i, siginfo_t *si, void *p)
 {
 	if (debug)
 		fprintf(stderr, "sig(%d, %p, %p)\n", i, si, p);
@@ -200,48 +165,8 @@ void dio_sparse(char *filename, int align, int writesize, int filesize)
 	);
 }
 
-void dirty_freeblocks(int size)
-{
-	int fd;
-	void *p;
-	int pg;
-	char filename[1024];
 
-	pg = getpagesize();
-	size = ((size + pg - 1) / pg) * pg;
-	sprintf(filename, "file.xx.%d", getpid());
-
-	WITH_SIGNALS_BLOCKED(
-		fd = open(filename, O_CREAT|O_RDWR|O_EXCL, 0600);
-		if (fd >= 0)
-			filename2=filename;
-	);
-	if (fd < 0) {
-		perror("cannot open file");
-		exit(2);
-	}
-	ftruncate(fd, size);
-	p = mmap(0, size, PROT_WRITE|PROT_READ, MAP_SHARED|MAP_FILE, fd, 0);
-	if (p == MAP_FAILED) {
-		perror("cannot mmap");
-		close(fd);
-		WITH_SIGNALS_BLOCKED(
-			filename2=NULL;
-			unlink(filename);
-		);
-		exit(2);
-	}
-	memset(p, 0xaa, size);
-	msync(p, size, MS_SYNC);
-	munmap(p, size);
-	close(fd);
-	WITH_SIGNALS_BLOCKED(
-		filename2=NULL;
-		unlink(filename);
-	);
-}
-
-int usage()
+int usage(void)
 {
 	fprintf(stderr, "usage: dio_sparse [-n children] [-s filesize]"
 		" [-w writesize] [-r readsize] \n");
@@ -288,8 +213,6 @@ int main(int argc, char **argv)
 	int filesize = 100*1024*1024;
 	int c;
 	int children_errors = 0;
-	extern char *optarg;
-	extern int optind, optopt, opterr;
 
 	snprintf(filename, sizeof(filename), "%s/aiodio/file",
 		getenv("TMP") ? getenv("TMP") : "/tmp");
