@@ -21,8 +21,10 @@
 #define MEMCG_PATH_NEW		MEMCG_PATH "/1"
 #define TESTMEM			(1UL<<30)
 #define MB			(1UL<<20)
+#define KB			(1UL<<10)
 #define PATH_SYS_SYSTEM		"/sys/devices/system"
 #define PATH_KSM		"/sys/kernel/mm/ksm/"
+#define PATH_SYSVM		"/proc/sys/vm/"
 #define PATH_MEMINFO		"/proc/meminfo"
 
 char overcommit[BUFSIZ];
@@ -53,5 +55,7 @@ void create_same_memory(int size, int num, int unit);
 void check_ksm_options(int *size, int *num, int *unit);
 void write_cpusets(void);
 void write_memcg(void);
+void set_sys_tune(char *sys_file, long tune, int check);
+long get_sys_tune(char *sys_file);
 long read_meminfo(char *item);
 #endif

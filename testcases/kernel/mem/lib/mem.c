@@ -739,3 +739,50 @@ long read_meminfo(char *item)
 	tst_brkm(TBROK, cleanup, "cannot find \"%s\" in %s",
 			item, PATH_MEMINFO);
 }
+
+void set_sys_tune(char *sys_file, long tune, int check)
+{
+	int fd;
+	long val;
+	char buf[BUFSIZ];
+
+	tst_resm(TINFO, "set %s to %ld", sys_file, tune);
+
+	fd = open(sys_file, O_WRONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open '%s'", sys_file);
+	if (snprintf(buf, BUFSIZ, "%ld", tune) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "snprintf");
+	if (write(fd, buf, strlen(buf)) != strlen(buf))
+		tst_brkm(TBROK|TERRNO, cleanup, "write '%s'", sys_file);
+	close(fd);
+
+	if (check) {
+		val = get_sys_tune(sys_file);
+		if (val != tune)
+			tst_brkm(TBROK, cleanup, "%s = %ld, but expect %ld",
+					sys_file, val, tune);
+	}
+}
+
+long get_sys_tune(char *sys_file)
+{
+	int fd;
+	long tune;
+	char buf[BUFSIZ], *endptr;
+
+	fd = open(sys_file, O_RDONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open '%s'", sys_file);
+	if (read(fd, buf, BUFSIZ) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "read '%s'", sys_file);
+	close(fd);
+
+	tune = strtol(buf, &endptr, 10);
+	if (tune == LONG_MAX || tune == LONG_MIN)
+		tst_brkm(TBROK|TERRNO, cleanup, "strtol");
+	if (endptr == buf || (*endptr != '\0' && *endptr != '\n'))
+		tst_brkm(TBROK, cleanup, "Invalid value: %s", buf);
+
+	return tune;
+}
