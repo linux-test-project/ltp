@@ -156,7 +156,7 @@ int dio_sparse(char *filename, int align, int writesize, int filesize)
 void usage(void)
 {
 	fprintf(stderr, "usage: dio_sparse [-d] [-n children] [-s filesize]"
-		" [-w writesize] [-r readsize] \n");
+		" [-w writesize]\n");
 	exit(1);
 }
 
@@ -167,35 +167,30 @@ int main(int argc, char **argv)
 	int num_children = 1;
 	int i;
 	long alignment = 512;
-	int readsize = 65536;
 	int writesize = 65536;
 	int filesize = 100*1024*1024;
 	int c;
 	int children_errors = 0;
 	int ret;
 
-	while ((c = getopt(argc, argv, "dr:w:n:a:s:")) != -1) {
+	while ((c = getopt(argc, argv, "dw:n:a:s:")) != -1) {
 		char *endp;
 		switch (c) {
 		case 'd':
 			debug++;
-			break;
+		break;
 		case 'a':
 			alignment = strtol(optarg, &endp, 0);
 			alignment = scale_by_kmg(alignment, *endp);
-			break;
-		case 'r':
-			readsize = strtol(optarg, &endp, 0);
-			readsize = scale_by_kmg(readsize, *endp);
-			break;
+		break;
 		case 'w':
 			writesize = strtol(optarg, &endp, 0);
 			writesize = scale_by_kmg(writesize, *endp);
-			break;
+		break;
 		case 's':
 			filesize = strtol(optarg, &endp, 0);
 			filesize = scale_by_kmg(filesize, *endp);
-			break;
+		break;
 		case 'n':
 			num_children = atoi(optarg);
 			if (num_children > NUM_CHILDREN) {
@@ -204,10 +199,10 @@ int main(int argc, char **argv)
 					NUM_CHILDREN);
 				num_children = NUM_CHILDREN;
 			}
-			break;
+		break;
 		case '?':
 			usage();
-			break;
+		break;
 		}
 	}
 

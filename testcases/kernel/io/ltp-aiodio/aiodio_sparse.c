@@ -277,14 +277,10 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 static void usage(void)
 {
 	fprintf(stderr, "usage: dio_sparse [-n children] [-s filesize]"
-		" [-w writesize] [-r readsize] \n");
+		" [-w writesize]\n");
 	exit(1);
 }
 
-/*
- *	usage:
- * aiodio_sparse [-r readsize] [-w writesize] [-n chilren] [-a align] [-i num_aio]
- */
 int main(int argc, char **argv)
 {
 	char *filename = "aiodio_sparse";
@@ -292,14 +288,13 @@ int main(int argc, char **argv)
 	int num_children = 1;
 	int i;
 	long alignment = 512;
-	int readsize = 65536;
 	int writesize = 65536;
 	int filesize = 100*1024*1024;
 	int num_aio = 16;
 	int children_errors = 0;
 	int c;
 
-	while ((c = getopt(argc, argv, "dr:w:n:a:s:i:")) != -1) {
+	while ((c = getopt(argc, argv, "dw:n:a:s:i:")) != -1) {
 		char *endp;
 		switch (c) {
 		case 'd':
@@ -312,10 +307,6 @@ int main(int argc, char **argv)
 			alignment = strtol(optarg, &endp, 0);
 			alignment = (int)scale_by_kmg((long long)alignment,
                                                         *endp);
-			break;
-		case 'r':
-			readsize = strtol(optarg, &endp, 0);
-			readsize = (int)scale_by_kmg((long long)readsize, *endp);
 			break;
 		case 'w':
 			writesize = strtol(optarg, &endp, 0);
