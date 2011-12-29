@@ -1,7 +1,11 @@
-
 /*
- * Copyright (c) 2004 Daniel McNeil <daniel@osdl.org>
- *               2004 Open Source Development Lab
+ *   Copyright (c) 2004 Daniel McNeil <daniel@osdl.org>
+ *                 2004 Open Source Development Lab
+ *   
+ *   Copyright (c) 2004 Marty Ridgeway <mridge@us.ibm.com>
+ *   
+ *   Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
+ *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -15,16 +19,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Module: .c
  */
 
-/*
- * Change History:
- *
- * 2/2004  Marty Ridgeway (mridge@us.ibm.com) Changes to adapt to LTP
- *
- */
 #define _GNU_SOURCE
 
 #include <stdlib.h>
@@ -44,38 +40,61 @@
 
 #define NUM_CHILDREN 1000
 
-int debug;
-
-const char *filename1=NULL;
-
 static void setup(void);
 static void cleanup(void);
+static void usage(void);
+static int debug = 0;
 
 char *TCID="dio_sparse";
 int TST_TOTAL=1;
 
 #include "common_sparse.h"
 
-int read_sparse(char *filename, int filesize)
+/*
+ * Make sure we read only zeroes, 
+ * either there is a hole in the file,
+ * or zeroes were actually written by parent.
+ */
+static void read_sparse(char *filename, int filesize)
 {
 	int fd;
-	int i;
-	int j;
-	int r;
+	int  i, j, r;
 	char buf[4096];
 
-	while ((fd = open(filename, O_RDONLY)) < 0) {
-		sleep(1);	/* wait for file to be created */
+	/*
+	 * Wait for the file to appear.
+	 */
+	for (i = 0; i < 10000; i++) {
+		fd = open(filename, O_RDONLY);
+
+		if (fd != -1)
+			break;
+
+		if (debug)
+			fprintf(stderr, "Child %i waits for '%s' to appear\n",
+			        getpid(), filename);
+		
+		usleep(100000);
 	}
 
-	for (i = 0 ; i < 100000000; i++) {
+	if (fd == -1) {
+		if (debug)
+			fprintf(stderr, "Child %i failed to open '%s'\n",
+			        getpid(), filename);
+		exit(10);
+	}
+
+	if (debug)
+		fprintf(stderr, "Child %i has opened '%s' for reading\n",
+		        getpid(), filename);
+
+	for (i = 0; i < 100000000; i++) {
 		off_t offset = 0;
 		char *badbuf;
 
-		if (debug > 1 && (i % 10) == 0) {
-			fprintf(stderr, "child %d, read loop count %d\n",
-				getpid(), i);
-		}
+		if (debug)
+			fprintf(stderr, "Child %i loop %i\n", getpid(), i);
+
 		lseek(fd, SEEK_SET, 0);
 		for (j = 0; j < filesize+1; j += sizeof(buf)) {
 			r = read(fd, buf, sizeof(buf));
@@ -83,124 +102,64 @@ int read_sparse(char *filename, int filesize)
 				if ((badbuf = check_zero(buf, r))) {
 					fprintf(stderr, "non-zero read at offset %d\n",
 						offset + badbuf - buf);
-					kill(getppid(), SIGTERM);
 					exit(10);
 				}
 			}
 			offset += r;
 		}
 	}
-  return 0;
-}
 
-volatile int got_signal;
-
-void sig_term_func(int i, siginfo_t *si, void *p)
-{
-	if (debug)
-		fprintf(stderr, "sig(%d, %p, %p)\n", i, si, p);
-	got_signal++;
+	exit(0);
 }
 
 /*
- * do DIO writes to a sparse file
+ * Write zeroes using O_DIRECT into sparse file.
  */
-void dio_sparse(char *filename, int align, int writesize, int filesize)
+int dio_sparse(char *filename, int align, int writesize, int filesize)
 {
 	int fd;
 	void *bufptr;
-	int i;
-	int w;
-	static struct sigaction s;
+	int i, w;
 
-	s.sa_sigaction = sig_term_func;
-	s.sa_flags = SA_SIGINFO;
-	sigaction(SIGTERM, &s, 0);
-
-	WITH_SIGNALS_BLOCKED(
-		fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT|O_EXCL, 0600);
-		if (fd >= 0)
-			filename1 = filename;
-	);
+	fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT|O_EXCL, 0600);
 
 	if (fd < 0) {
-		perror("cannot create file");
-		return;
+		tst_resm(TBROK|TERRNO, "open()");
+		return 1;
 	}
 
 	SAFE_FTRUNCATE(cleanup, fd, filesize);
 
 	if (posix_memalign(&bufptr, align, writesize)) {
-		perror("cannot malloc aligned memory");
 		close(fd);
-		WITH_SIGNALS_BLOCKED(
-			filename1=NULL;
-			unlink(filename);
-		);
-		return;
+		tst_resm(TBROK|TERRNO, "posix_memalign()");
+		return 1;
 	}
 
 	memset(bufptr, 0, writesize);
 	for (i = 0; i < filesize;)  {
-		if (debug > 1 && ((i % writesize) % 100)) {
-			fprintf(stderr, "DIO write # %d\n", i);
-		}
 		if ((w = write(fd, bufptr, writesize)) != writesize) {
-			fprintf(stderr, "write %d returned %d\n", i, w);
-			break;
+			tst_resm(TBROK|TERRNO, "write() returned %d", w);
+			close(fd);
+			return 1;
 		}
+		
 		i += w;
-		if (got_signal) {
-			if (debug)
-				fprintf(stderr, "signal -- stop at %d\n", i);
-			break;
-		}
 	}
-	if (debug)
-		fprintf(stderr, "DIO write done unlinking file\n");
+
 	close(fd);
-	WITH_SIGNALS_BLOCKED(
-		filename1=NULL;
-		unlink(filename);
-	);
+	unlink(filename);
+
+	return 0;
 }
 
-
-int usage(void)
+void usage(void)
 {
-	fprintf(stderr, "usage: dio_sparse [-n children] [-s filesize]"
+	fprintf(stderr, "usage: dio_sparse [-d] [-n children] [-s filesize]"
 		" [-w writesize] [-r readsize] \n");
 	exit(1);
 }
 
-/*
- * Scale value by kilo, mega, or giga.
- */
-long long scale_by_kmg(long long value, char scale)
-{
-	switch (scale) {
-	case 'g':
-	case 'G':
-		value *= 1024;
-	case 'm':
-	case 'M':
-		value *= 1024;
-	case 'k':
-	case 'K':
-		value *= 1024;
-		break;
-	case '\0':
-		break;
-	default:
-		usage();
-		break;
-	}
-	return value;
-}
-
-/*
- *	usage: dio_sparse [-r readsize] [-w writesize] [-n chilren] [-a align]
- */
 int main(int argc, char **argv)
 {
 	char *filename = "dio_sparse";
@@ -213,6 +172,7 @@ int main(int argc, char **argv)
 	int filesize = 100*1024*1024;
 	int c;
 	int children_errors = 0;
+	int ret;
 
 	while ((c = getopt(argc, argv, "dr:w:n:a:s:")) != -1) {
 		char *endp;
@@ -222,20 +182,19 @@ int main(int argc, char **argv)
 			break;
 		case 'a':
 			alignment = strtol(optarg, &endp, 0);
-			alignment = (int)scale_by_kmg((long long)alignment,
-                                                        *endp);
+			alignment = scale_by_kmg(alignment, *endp);
 			break;
 		case 'r':
 			readsize = strtol(optarg, &endp, 0);
-			readsize = (int)scale_by_kmg((long long)readsize, *endp);
+			readsize = scale_by_kmg(readsize, *endp);
 			break;
 		case 'w':
 			writesize = strtol(optarg, &endp, 0);
-			writesize = (int)scale_by_kmg((long long)writesize, *endp);
+			writesize = scale_by_kmg(writesize, *endp);
 			break;
 		case 's':
 			filesize = strtol(optarg, &endp, 0);
-			filesize = (int)scale_by_kmg((long long)filesize, *endp);
+			filesize = scale_by_kmg(filesize, *endp);
 			break;
 		case 'n':
 			num_children = atoi(optarg);
@@ -253,32 +212,33 @@ int main(int argc, char **argv)
 	}
 
 	setup();
+	tst_resm(TINFO, "Dirtying free blocks");
 	dirty_freeblocks(filesize);
 
+	tst_resm(TINFO, "Starting I/O tests");
 	for (i = 0; i < num_children; i++) {
-		if ((pid[i] = fork()) == 0) {
-			/* child */
-			return read_sparse(filename, filesize);
-		} else if (pid[i] < 0) {
-			/* error */
-			perror("fork error");
-			break;
-		} else {
-			/* Parent */
+		switch (pid[i] = fork()) {
+		case 0:
+			signal(SIGTERM, SIG_DFL);
+			read_sparse(filename, filesize);
+		break;
+		case -1:
+			while (i-- > 0)
+				kill(pid[i], SIGTERM);
+
+			tst_brkm(TBROK|TERRNO, cleanup, "fork()");
+		default:
 			continue;
 		}
 	}
+	
+	ret = dio_sparse(filename, alignment, writesize, filesize);
 
-	/*
-	 * Parent write to a hole in a file using direct i/o
-	 */
-	dio_sparse(filename, alignment, writesize, filesize);
-
-	if (debug)
-		fprintf(stderr, "dio_sparse done writing, kill children\n");
-	for (i = 0; i < num_children; i++) {
+	tst_resm(TINFO, "Killing childrens(s)");
+	
+	for (i = 0; i < num_children; i++)
 		kill(pid[i], SIGTERM);
-	}
+
 
 	for (i = 0; i < num_children; i++) {
 		int status;
@@ -286,34 +246,31 @@ int main(int argc, char **argv)
 
 		p = waitpid(pid[i], &status, 0);
 		if (p < 0) {
-			perror("waitpid");
+			tst_resm(TBROK|TERRNO, "waitpid()");
 		} else {
-			if (WIFEXITED(status) && WEXITSTATUS(status) == 10) {
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 10)
 				children_errors++;
-				if (debug) {
-					fprintf(stderr, "child %d bad exit\n", p);
-				}
-			}
 		}
 	}
-	if (debug)
-		fprintf(stderr, "dio_sparse %d children had errors\n",
-			children_errors);
+
 	if (children_errors)
-		exit(10);
+		tst_resm(TFAIL, "%i children(s) exited abnormally",
+		         children_errors);
+		
+	if (!children_errors && !ret)
+		tst_resm(TPASS, "Test passed");
+	
+	cleanup();
 	tst_exit();
 }
 
 static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	signal(SIGTERM, SIG_DFL);
 	tst_tmpdir();
 }
 
 static void cleanup(void)
 {
-	if (filename1)
-		unlink(filename1);
 	tst_rmdir();
 }

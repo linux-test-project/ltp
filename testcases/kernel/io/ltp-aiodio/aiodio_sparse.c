@@ -51,6 +51,7 @@ const char *filename1=NULL;
 
 static void setup(void);
 static void cleanup(void);
+static void usage(void);
 
 char *TCID="aiodio_sparse";
 int TST_TOTAL=1;
@@ -273,36 +274,11 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 	);
 }
 
-int usage(void)
+static void usage(void)
 {
 	fprintf(stderr, "usage: dio_sparse [-n children] [-s filesize]"
 		" [-w writesize] [-r readsize] \n");
 	exit(1);
-}
-
-/*
- * Scale value by kilo, mega, or giga.
- */
-long long scale_by_kmg(long long value, char scale)
-{
-	switch (scale) {
-	case 'g':
-	case 'G':
-		value *= 1024;
-	case 'm':
-	case 'M':
-		value *= 1024;
-	case 'k':
-	case 'K':
-		value *= 1024;
-		break;
-	case '\0':
-		break;
-	default:
-		usage();
-		break;
-	}
-	return value;
 }
 
 /*

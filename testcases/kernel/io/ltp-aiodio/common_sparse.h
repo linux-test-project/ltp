@@ -64,6 +64,31 @@ static void dirty_freeblocks(int size)
 	unlink(filename);
 }
 
+/*
+ * Scale value by kilo, mega, or giga.
+ */
+long long scale_by_kmg(long long value, char scale)
+{
+	switch (scale) {
+	case 'g':
+	case 'G':
+		value *= 1024;
+	case 'm':
+	case 'M':
+		value *= 1024;
+	case 'k':
+	case 'K':
+		value *= 1024;
+		break;
+	case '\0':
+		break;
+	default:
+		usage();
+		break;
+	}
+	return value;
+}
+
 char *check_zero(char *buf, int size)
 {
 	char *p;
@@ -82,7 +107,8 @@ char *check_zero(char *buf, int size)
 		buf++;
 		size--;
 	}
-	return 0;
+	
+	return NULL;
 }
 
 #endif /* LTP_AIODIO_COMMON_SPARSE */
