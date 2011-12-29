@@ -172,7 +172,6 @@ int main(int argc, char **argv)
 	for (i = 0; i < num_children; i++)
 		kill(pid[i], SIGTERM);
 
-
 	for (i = 0; i < num_children; i++) {
 		int status;
 		pid_t p;

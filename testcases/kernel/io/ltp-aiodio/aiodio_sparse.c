@@ -1,7 +1,11 @@
-
 /*
  * Copyright (c) 2004 Daniel McNeil <daniel@osdl.org>
  *               2004 Open Source Development Lab
+ *
+ * Copyright (c) 2004 Marty Ridgeway <mridge@us.ibm.com>
+ *
+ * Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
+ *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -15,16 +19,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Module: .c
  */
 
-/*
- * Change History:
- *
- * 2/2004  Marty Ridgeway (mridge@us.ibm.com) Changes to adapt to LTP
- *
-*/
 #define _GNU_SOURCE
 
 #include <stdlib.h>
@@ -47,7 +43,6 @@
 #define NUM_CHILDREN 1000
 
 int debug;
-const char *filename1=NULL;
 
 static void setup(void);
 static void cleanup(void);
@@ -58,33 +53,18 @@ int TST_TOTAL=1;
 
 #include "common_sparse.h"
 
-volatile int got_signal;
-
-void sig_term_func(int i, siginfo_t *si, void *p)
-{
-	if (debug)
-		fprintf(stderr, "sig(%d, %p, %p)\n", i, si, p);
-	got_signal++;
-}
-
 /*
  * do async DIO writes to a sparse file
  */
-void aiodio_sparse(char *filename, int align, int writesize, int filesize, int num_aio)
+int aiodio_sparse(char *filename, int align, int writesize, int filesize, int num_aio)
 {
 	int fd;
-	int i;
-	int w;
-	static struct sigaction s;
+	int i, w;
 	struct iocb **iocbs;
 	off_t offset;
 	io_context_t myctx;
 	struct io_event event;
 	int aio_inflight;
-
-	s.sa_sigaction = sig_term_func;
-	s.sa_flags = SA_SIGINFO;
-	sigaction(SIGTERM, &s, 0);
 
 	if ((num_aio * writesize) > filesize)
 		num_aio = filesize / writesize;
@@ -92,23 +72,19 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 	memset(&myctx, 0, sizeof(myctx));
 	io_queue_init(num_aio, &myctx);
 
-	iocbs = (struct iocb **)malloc(sizeof(struct iocb *) * num_aio);
+	iocbs = malloc(sizeof(struct iocb *) * num_aio);
 	for (i = 0; i < num_aio; i++) {
-		if ((iocbs[i] = (struct iocb *)malloc(sizeof(struct iocb))) == 0) {
-			perror("cannot malloc iocb");
-			return;
+		if ((iocbs[i] = malloc(sizeof(struct iocb))) == 0) {
+			tst_resm(TBROK|TERRNO, "malloc()");
+			return 1;
 		}
 	}
 
-	WITH_SIGNALS_BLOCKED(
-		fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT|O_EXCL, 0600);
-		if (fd > 0)
-			filename1=filename;
-	);
+	fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT|O_EXCL, 0600);
 
 	if (fd < 0) {
-		perror("cannot create file");
-		return;
+		tst_resm(TBROK|TERRNO, "open()");
+		return 1;
 	}
 
 	SAFE_FTRUNCATE(cleanup, fd, filesize);
@@ -121,14 +97,10 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		void *bufptr;
 
 		if (posix_memalign(&bufptr, align, writesize)) {
-			perror("cannot malloc aligned memory");
+			tst_resm(TBROK|TERRNO, "posix_memalign()");
 			close(fd);
-
-			WITH_SIGNALS_BLOCKED(
-				filename1=NULL;
-				unlink(filename);
-			);
-			return;
+			unlink(filename);
+			return 1;
 		}
 		memset(bufptr, 0, writesize);
 		io_prep_pwrite(iocbs[i], fd, bufptr, writesize, offset);
@@ -139,68 +111,67 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 	 * start the 1st num_aio write requests
 	 */
 	if ((w = io_submit(myctx, num_aio, iocbs)) < 0) {
-		printf("io_submit failed error=%d\n", w);
+		tst_resm(TBROK, "io_submit() returned %i", w);
 		close(fd);
-
-		WITH_SIGNALS_BLOCKED(
-			filename1=NULL;
-			unlink(filename);
-		);
-		return;
+		unlink(filename);
+		return 1;
 	}
+
 	if (debug)
-		fprintf(stderr, "io_submit() return %d\n", w);
+		tst_resm(TINFO, "io_submit() returned %d", w);
 
 	/*
 	 * As AIO requests finish, keep issuing more AIO until done.
 	 */
 	aio_inflight = num_aio;
-	if (debug)
-		fprintf(stderr, "aiodio_sparse: %d i/o in flight\n", aio_inflight);
+	
 	while (offset < filesize)  {
 		int n;
 		struct iocb *iocbp;
 
 		if (debug)
-			fprintf(stderr, "aiodio_sparse: offset %p filesize %d inflight %d\n",
+			tst_resm(TINFO, "aiodio_sparse: offset %p filesize %d inflight %d",
 				&offset, filesize, aio_inflight);
 
 		if ((n = io_getevents(myctx, 1, 1, &event, 0)) != 1) {
 			if (-n != EINTR)
-				fprintf(stderr, "io_getevents() returned %d\n", n);
+				tst_resm(TBROK, "io_getevents() returned %d", n);
 			break;
 		}
+		
 		if (debug)
-			fprintf(stderr, "aiodio_sparse: io_getevent() returned %d\n", n);
+			tst_resm(TINFO, "aiodio_sparse: io_getevent() returned %d", n);
+		
 		aio_inflight--;
-		if (got_signal)
-			break;		/* told to stop */
+		
 		/*
 		 * check if write succeeded.
 		 */
 		iocbp = (struct iocb *)event.obj;
 		if (event.res2 != 0 || event.res != iocbp->u.c.nbytes) {
-			fprintf(stderr,
-				"AIO write offset %lld expected %ld got %ld\n",
-				iocbp->u.c.offset, iocbp->u.c.nbytes,
-				event.res);
+			tst_resm(TBROK,
+			         "AIO write offset %lld expected %ld got %ld",
+			         iocbp->u.c.offset, iocbp->u.c.nbytes,
+			         event.res);
 			break;
 		}
+
 		if (debug)
-			fprintf(stderr, "aiodio_sparse: io_getevent() res %ld res2 %ld\n",
-				event.res, event.res2);
+			tst_resm(TINFO, "aiodio_sparse: io_getevent() res %ld res2 %ld",
+				        event.res, event.res2);
 
 		/* start next write */
 		io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, writesize, offset);
 		offset += writesize;
 		if ((w = io_submit(myctx, 1, &iocbp)) < 0) {
-			fprintf(stderr, "io_submit failed at offset %ld\n",
-				offset);
-			perror("");
+			tst_resm(TBROK, "io_submit failed at offset %ld",
+				 offset);
 			break;
 		}
+		
 		if (debug)
-			fprintf(stderr, "io_submit() return %d\n", w);
+			tst_resm(TINFO, "io_submit() return %d", w);
+		
 		aio_inflight++;
 	}
 
@@ -212,7 +183,7 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		struct iocb *iocbp;
 
 		if ((n = io_getevents(myctx, 1, 1, &event, 0)) != 1) {
-			perror("io_getevents failed");
+			tst_resm(TBROK, "io_getevents failed");
 			break;
 		}
 		aio_inflight--;
@@ -221,20 +192,17 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		 */
 		iocbp = (struct iocb *)event.obj;
 		if (event.res2 != 0 || event.res != iocbp->u.c.nbytes) {
-			fprintf(stderr,
-				"AIO write offset %lld expected %ld got %ld\n",
-				iocbp->u.c.offset, iocbp->u.c.nbytes,
-				event.res);
+			tst_resm(TBROK,
+			         "AIO write offset %lld expected %ld got %ld",
+			         iocbp->u.c.offset, iocbp->u.c.nbytes,
+			         event.res);
 		}
 	}
-	if (debug)
-		fprintf(stderr, "AIO DIO write done unlinking file\n");
+	
 	close(fd);
-
-	WITH_SIGNALS_BLOCKED(
-		filename1=NULL;
-		unlink(filename);
-	);
+	unlink(filename);
+	
+	return 0;
 }
 
 static void usage(void)
@@ -256,6 +224,7 @@ int main(int argc, char **argv)
 	int num_aio = 16;
 	int children_errors = 0;
 	int c;
+	int ret;
 
 	while ((c = getopt(argc, argv, "dw:n:a:s:i:")) != -1) {
 		char *endp;
@@ -295,34 +264,32 @@ int main(int argc, char **argv)
 	}
 
 	setup();
+	tst_resm(TINFO, "Dirtying free blocks");
 	dirty_freeblocks(filesize);
 
+	tst_resm(TINFO, "Starting I/O tests");
 	for (i = 0; i < num_children; i++) {
-		if ((pid[i] = fork()) == 0) {
-			/* child */
+		switch (pid[i] = fork()) {
+		case 0:
+			signal(SIGTERM, SIG_DFL);
 			read_sparse(filename, filesize);
-		} else if (pid[i] < 0) {
-			/* error */
-			perror("fork error");
-			break;
-		} else {
-			/* Parent */
+		break;
+		case -1:
+			while (i-- > 0)
+				kill(pid[i], SIGTERM);
+
+			tst_brkm(TBROK|TERRNO, cleanup, "fork()");
+		default:
 			continue;
 		}
 	}
+	
+	ret = aiodio_sparse(filename, alignment, writesize, filesize, num_aio);
+	
+	tst_resm(TINFO, "Killing childrens(s)");
 
-	/*
-	 * Parent write to a hole in a file using async direct i/o
-	 */
-
-	aiodio_sparse(filename, alignment, writesize, filesize, num_aio);
-
-	if (debug)
-		fprintf(stderr, "dio_sparse done writing, kill children\n");
-
-	for (i = 0; i < num_children; i++) {
+	for (i = 0; i < num_children; i++)
 		kill(pid[i], SIGTERM);
-	}
 
 	for (i = 0; i < num_children; i++) {
 		int status;
@@ -330,35 +297,32 @@ int main(int argc, char **argv)
 
 		p = waitpid(pid[i], &status, 0);
 		if (p < 0) {
-			perror("waitpid");
+			tst_resm(TBROK|TERRNO, "waitpid()");
 		} else {
-			if (WIFEXITED(status) && WEXITSTATUS(status) == 10) {
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 10)
 				children_errors++;
-				if (debug) {
-					fprintf(stderr, "child %d bad exit\n", p);
-				}
-			}
 		}
 	}
-	if (debug)
-		fprintf(stderr, "aiodio_sparse %d children had errors\n",
-			children_errors);
+
 	if (children_errors)
-		exit(10);
+		tst_resm(TFAIL, "%i children(s) exited abnormally",
+		         children_errors);
+		
+	if (!children_errors && !ret)
+		tst_resm(TPASS, "Test passed");
+	
+	cleanup();
 	tst_exit();
 }
 
 static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	signal(SIGTERM, cleanup);
 	tst_tmpdir();
 }
 
 static void cleanup(void)
 {
-	if (filename1)
-		unlink(filename1);
 	tst_rmdir();
 	tst_exit();
 }
