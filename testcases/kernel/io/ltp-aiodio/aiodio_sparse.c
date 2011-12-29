@@ -58,43 +58,6 @@ int TST_TOTAL=1;
 
 #include "common_sparse.h"
 
-int read_sparse(char *filename, int filesize)
-{
-	int fd;
-	int i;
-	int j;
-	int r;
-	char buf[4096];
-
-	while ((fd = open(filename, O_RDONLY)) < 0) {
-		sleep(1);	/* wait for file to be created */
-	}
-
-	for (i = 0 ; i < 100000000; i++) {
-		off_t offset = 0;
-		char *badbuf;
-
-		if (debug > 1 && (i % 10) == 0) {
-			fprintf(stderr, "child %d, read loop count %d\n",
-				getpid(), i);
-		}
-		lseek(fd, SEEK_SET, 0);
-		for (j = 0; j < filesize+1; j += sizeof(buf)) {
-			r = read(fd, buf, sizeof(buf));
-			if (r > 0) {
-				if ((badbuf = check_zero(buf, r))) {
-					fprintf(stderr, "non-zero read at offset %ld\n",
-						offset + badbuf - buf);
-					kill(getppid(), SIGTERM);
-					exit(10);
-				}
-			}
-			offset += r;
-		}
-	}
-  return 0;
-}
-
 volatile int got_signal;
 
 void sig_term_func(int i, siginfo_t *si, void *p)
@@ -337,7 +300,7 @@ int main(int argc, char **argv)
 	for (i = 0; i < num_children; i++) {
 		if ((pid[i] = fork()) == 0) {
 			/* child */
-			return read_sparse(filename, filesize);
+			read_sparse(filename, filesize);
 		} else if (pid[i] < 0) {
 			/* error */
 			perror("fork error");

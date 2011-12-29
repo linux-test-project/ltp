@@ -51,68 +51,6 @@ int TST_TOTAL=1;
 #include "common_sparse.h"
 
 /*
- * Make sure we read only zeroes, 
- * either there is a hole in the file,
- * or zeroes were actually written by parent.
- */
-static void read_sparse(char *filename, int filesize)
-{
-	int fd;
-	int  i, j, r;
-	char buf[4096];
-
-	/*
-	 * Wait for the file to appear.
-	 */
-	for (i = 0; i < 10000; i++) {
-		fd = open(filename, O_RDONLY);
-
-		if (fd != -1)
-			break;
-
-		if (debug)
-			fprintf(stderr, "Child %i waits for '%s' to appear\n",
-			        getpid(), filename);
-		
-		usleep(100000);
-	}
-
-	if (fd == -1) {
-		if (debug)
-			fprintf(stderr, "Child %i failed to open '%s'\n",
-			        getpid(), filename);
-		exit(10);
-	}
-
-	if (debug)
-		fprintf(stderr, "Child %i has opened '%s' for reading\n",
-		        getpid(), filename);
-
-	for (i = 0; i < 100000000; i++) {
-		off_t offset = 0;
-		char *badbuf;
-
-		if (debug)
-			fprintf(stderr, "Child %i loop %i\n", getpid(), i);
-
-		lseek(fd, SEEK_SET, 0);
-		for (j = 0; j < filesize+1; j += sizeof(buf)) {
-			r = read(fd, buf, sizeof(buf));
-			if (r > 0) {
-				if ((badbuf = check_zero(buf, r))) {
-					fprintf(stderr, "non-zero read at offset %d\n",
-						offset + badbuf - buf);
-					exit(10);
-				}
-			}
-			offset += r;
-		}
-	}
-
-	exit(0);
-}
-
-/*
  * Write zeroes using O_DIRECT into sparse file.
  */
 int dio_sparse(char *filename, int align, int writesize, int filesize)
