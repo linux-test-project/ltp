@@ -29,6 +29,7 @@
  *
  */
 
+#define _GNU_SOURCE
 #include <sched.h>
 #include <stdio.h>
 #include <signal.h>
@@ -47,6 +48,8 @@
 # include <sys/param.h>
 # include <sys/pstat.h>
 #endif
+
+#include <affinity.h>
 
 #define NB_LOOP         20000000
 #define NB_LOOP_CHILD  200000000 /* shall be much greater than NB_LOOP */
@@ -119,11 +122,24 @@ int main() {
 	int *child_pid;
 	float ratio;
 
-	nb_child = get_ncpu();
-	if (nb_child == -1) {
-		printf("Can not get the number of CPUs of your machine.\n");
-		return PTS_UNRESOLVED;
+	/* Only use a single CPU and one child process
+	when set_affinity is availaible.It's because
+	no matter what value of the counter is set to,
+	There is no guarantee that the LOOP of the child
+	can be certainly big enough on any device at any time.
+	*/
+	int rc = set_affinity(0);
+	if (rc) {
+		nb_child = get_ncpu();
+		if (nb_child == -1) {
+			printf("Can not get the number of"
+				"CPUs of your machine.\n");
+			return PTS_UNRESOLVED;
+		}
+	} else {
+		nb_child = 1;
 	}
+
 	child_pid = malloc(nb_child);
 
 	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
