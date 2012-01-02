@@ -33,8 +33,6 @@ autom4te.cache
 /pan/ltp-bump
 /pan/ltp-pan
 /pan/ltp-scanner
-/tools/gethost
-/tools/rand_lines
 
 .gitattributes
 .pc/
@@ -47,28 +45,5 @@ patches/
 *.run-test
 *.test
 logfile.*
-/testcases/open_posix_testsuite/conformance/interfaces/*/Makefile
-/testcases/open_posix_testsuite/conformance/interfaces/*/*/Makefile
-/testcases/open_posix_testsuite/conformance/interfaces/*/*-core
-/testcases/open_posix_testsuite/conformance/behavior/*/Makefile
-/testcases/open_posix_testsuite/conformance/definitions/*/Makefile
-/testcases/open_posix_testsuite/conformance/definitions/*/*/Makefile
 
-/testcases/open_posix_testsuite/functional/*/Makefile
-/testcases/open_posix_testsuite/functional/*/*/Makefile
-
-/testcases/open_posix_testsuite/stress/*/Makefile
-/testcases/open_posix_testsuite/stress/*/*/Makefile
-
-/testcases/open_posix_testsuite/bin/t0
-
-/tools/apicmds/tst_brk
-/tools/apicmds/tst_brkm
-/tools/apicmds/tst_exit
-/tools/apicmds/tst_flush
-/tools/apicmds/tst_kvercmp
-/tools/apicmds/tst_res
-/tools/apicmds/tst_resm
-/tools/genload/genload
-/tools/genload/stress
 /utils/benchmark/ebizzy-0.3/ebizzy

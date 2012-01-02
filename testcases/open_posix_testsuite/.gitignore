@@ -1,0 +1,14 @@
+/conformance/interfaces/*/Makefile
+/conformance/interfaces/*/*/Makefile
+/conformance/interfaces/*/*-core
+/conformance/behavior/*/Makefile
+/conformance/definitions/*/Makefile
+/conformance/definitions/*/*/Makefile
+
+/functional/*/Makefile
+/functional/*/*/Makefile
+
+/stress/*/Makefile
+/stress/*/*/Makefile
+
+/bin/t0

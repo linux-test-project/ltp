@@ -1,0 +1,7 @@
+tst_brk
+tst_brkm
+tst_exit
+tst_flush
+tst_kvercmp
+tst_res
+tst_resm
