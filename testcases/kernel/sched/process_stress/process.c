@@ -68,7 +68,7 @@
 #if defined _LINUX && defined DEBUG
 #define prtln()	printf("At line number: %d\n", __LINE__); \
 		fflush(NULL)
-#define dprt(fmt, args...) printf(fmt, args...)
+#define dprt(fmt, args...) printf(fmt, ## args)
 #else
 #define prtln()
 #define dprt(fmt, args...)
