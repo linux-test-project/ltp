@@ -181,7 +181,7 @@ int main(int ac, char **av) {
 				tst_brkm(TFAIL|TTERRNO, cleanup,
 					"fork() failed.");
 			} else if (TEST_RETURN == 0) {
-				TEST_RETURN = unshare((int)NULL);
+				TEST_RETURN = unshare(0);
 				if (TEST_RETURN == 0) {
 					tst_resm(TPASS, "Call succeeded");
 					rval = 0;
