@@ -184,7 +184,12 @@ test_proc_kill()
 	sleep 1
 	ps -p $pid > /dev/null 2> /dev/null
 	if [ $? -ne 0 ]; then
-		result $PASS "process $pid is killed"
+		wait $pid
+		if [ $? -eq 1 ]; then
+			result $FAIL "process $pid is killed by error"
+		else
+			result $PASS "process $pid is killed"
+		fi
 	else
 		/bin/kill -s SIGINT $pid 2> /dev/null
 		result $FAIL "process $pid is not killed"
