@@ -86,8 +86,7 @@ maybe_run_child(void (*child)(), char *fmt, ...)
 
 	child_dir = strtok(args, ",");
 	if (strlen(child_dir) == 0) {
-	    tst_resm(TBROK, NULL, "Could not get directory from -C option");
-	    tst_exit();
+	    tst_brkm(TBROK, NULL, "Could not get directory from -C option");
 	}
 
 	va_start(ap, fmt);
@@ -95,8 +94,7 @@ maybe_run_child(void (*child)(), char *fmt, ...)
 	for (p = fmt; *p; p++) {
 	    tok = strtok(NULL, ",");
 	    if (!tok || strlen(tok) == 0) {
-		tst_resm(TBROK, "Invalid argument to -C option");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Invalid argument to -C option");
 	    }
 
 	    switch (*p) {
@@ -104,8 +102,7 @@ maybe_run_child(void (*child)(), char *fmt, ...)
 		iptr = va_arg(ap, int *);
 		i = strtol(tok, &endptr, 10);
 		if (*endptr != '\0') {
-		    tst_resm(TBROK, "Invalid argument to -C option");
-		    tst_exit();
+		    tst_brkm(TBROK, NULL, "Invalid argument to -C option");
 		}
 		*iptr = i;
 		break;
@@ -113,8 +110,7 @@ maybe_run_child(void (*child)(), char *fmt, ...)
 		j = va_arg(ap, int);
 		i = strtol(tok, &endptr, 10);
 		if (*endptr != '\0') {
-		    tst_resm(TBROK, "Invalid argument to -C option");
-		    tst_exit();
+		    tst_brkm(TBROK, NULL, "Invalid argument to -C option");
 		}
 		if (j != i) {
 		    va_end(ap);
@@ -124,31 +120,26 @@ maybe_run_child(void (*child)(), char *fmt, ...)
 	    case 's':
 		s = va_arg(ap, char *);
 		if (!strncpy(s, tok, strlen(tok)+1)) {
-		    tst_resm(TBROK, "Could not strncpy for -C option");
-		    tst_exit();
+		    tst_brkm(TBROK, NULL, "Could not strncpy for -C option");
 		}
 		break;
 	    case 'S':
 		sptr = va_arg(ap, char **);
 		*sptr = strdup(tok);
 		if (!*sptr) {
-		    tst_resm(TBROK, "Could not strdup for -C option");
-		    tst_exit();
+		    tst_brkm(TBROK, NULL, "Could not strdup for -C option");
 		}
 		break;
 	    default:
-		tst_resm(TBROK, "Format string option %c not implemented", *p);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Format string option %c not implemented", *p);
 		break;
 	    }
 	}
 
 	va_end(ap);
 
-	if (chdir(child_dir) < 0) {
-	    tst_resm(TBROK, "Could not change to %s for child", child_dir);
-	    tst_exit();
-	}
+	if (chdir(child_dir) < 0)
+	    tst_brkm(TBROK, NULL, "Could not change to %s for child", child_dir);
 
 	(*child)();
 	tst_resm(TWARN, "Child function returned unexpectedly");
