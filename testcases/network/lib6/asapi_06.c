@@ -413,7 +413,7 @@ so_test(struct soent *psoe)
 				break;
 			else if (psoe->so_clear) {
 				tst_resm(TFAIL, "%s receive: extraneous data "
-					"in control: level %d type %d len %d",
+					"in control: level %d type %d len %zu",
 					psoe->so_tname, pcmsg->cmsg_level,
 					pcmsg->cmsg_type, pcmsg->cmsg_len);
 				return;
