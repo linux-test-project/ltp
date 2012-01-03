@@ -299,7 +299,7 @@ main(int argc, char *argv[])
 	bigmalloc = p = (char*)malloc(memsize);
 
 	if (!p) {
-	    tst_resm(TFAIL, "malloc - alloc of %dMB failed", memsize/1024/1024);
+	    tst_resm(TFAIL, "malloc - alloc of %zuMB failed", memsize/1024/1024);
     	    cleanup();
 	}
 
@@ -308,7 +308,7 @@ main(int argc, char *argv[])
 	 * Dirty all the pages, to force physical RAM allocation
 	 * and exercise eventually the swapper
 	 */
-      tst_resm(TINFO,"touching %uMB of malloc'ed memory (%s)",
+      tst_resm(TINFO,"touching %zuMB of malloc'ed memory (%s)",
       			memsize/1024/1024, r_opt?"random":"linear");
 
 	loop_count = memsize/pagesize;
@@ -348,7 +348,7 @@ main(int argc, char *argv[])
        * seems that if the malloc'ed area was bad, we'd get SEGV (or kicked
        * somehow by the OOM killer?), hence we can indicate a PASS.
        */
-	tst_resm(TPASS, "malloc - alloc of %dMB succeeded", memsize/1024/1024);
+	tst_resm(TPASS, "malloc - alloc of %zuMB succeeded", memsize/1024/1024);
 
     }
 

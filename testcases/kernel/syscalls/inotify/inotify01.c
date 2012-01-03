@@ -177,7 +177,7 @@ int main(int ac, char **av)
 		int len, i = 0, test_num = 0;
 		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
 			tst_brkm(TBROK, cleanup,
-			    "read(%d, buf, %d) failed",
+			    "read(%d, buf, %zu) failed",
 			    fd_notify, EVENT_BUF_LEN);
 
 		}

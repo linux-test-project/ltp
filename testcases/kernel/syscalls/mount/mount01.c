@@ -124,7 +124,7 @@ int main(int ac, char **av)
 	} else {
 		Fstype = malloc(strlen(DEFAULT_FSTYPE) + 1);
 		if (Fstype == NULL) {
-			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d",
+			tst_brkm(TBROK, NULL, "malloc - failed to alloc %zu",
 			    strlen(DEFAULT_FSTYPE));
 		}
 		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);

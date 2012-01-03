@@ -47,13 +47,13 @@ GETGROUPS(int size16, GID_T *list16)
 
 	list32 = malloc(size16 * sizeof(gid_t));
 	if (list32 == NULL)
-	  tst_brkm(TBROK, NULL, "malloc failed to alloc %d errno "
+	  tst_brkm(TBROK, NULL, "malloc failed to alloc %zu errno "
 		   " %d ", size16 * sizeof(gid_t), errno);
 
 	r = getgroups(size16, list32);
 	if (r < 0)
 	  goto out;
-  
+
 	for (i = 0; i < r; i++) {
 		if (!GID_SIZE_CHECK(list32[i]))
 		  tst_brkm(TBROK,

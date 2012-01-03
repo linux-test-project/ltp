@@ -128,7 +128,7 @@ int main(int ac, char **av)
 			 */
 			if (TEST_RETURN != file_size) {
 				tst_resm(TFAIL, "lseek() returned incorrect "
-					 "value %ld, expected %d",
+					 "value %ld, expected %zu",
 					 TEST_RETURN, file_size);
 				continue;
 			}

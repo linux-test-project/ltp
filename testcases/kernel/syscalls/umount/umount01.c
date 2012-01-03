@@ -121,14 +121,14 @@ int main(int ac, char **av)
 	if (Tflag == 1) {
 		Fstype = strdup(fstype);
 		if (Fstype == NULL) {
-			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
+			tst_brkm(TBROK, NULL, "malloc - failed to alloc %zu"
 				 "errno %d", strlen(fstype), errno);
 			tst_exit();
 		}
 	} else {
 		Fstype = strdup(DEFAULT_FSTYPE);
 		if (Fstype == NULL) {
-			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
+			tst_brkm(TBROK, NULL, "malloc - failed to alloc %zu"
 				 "errno %d", strlen(DEFAULT_FSTYPE), errno);
 			tst_exit();
 		}

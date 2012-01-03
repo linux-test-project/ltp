@@ -120,7 +120,7 @@ int main(int ac, char **av)
 
 	groups_list = malloc(ngroups_max * sizeof(GID_T));
 	if (groups_list == NULL) {
-		tst_brkm(TBROK, NULL, "malloc failed to alloc %d errno "
+		tst_brkm(TBROK, NULL, "malloc failed to alloc %zu errno "
 			 " %d ", ngroups_max * sizeof(GID_T), errno);
 	}
 

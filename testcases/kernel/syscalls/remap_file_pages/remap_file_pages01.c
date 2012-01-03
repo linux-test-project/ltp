@@ -163,7 +163,7 @@ static void test_nonlinear(int fd)
 
 	if (write(fd, cache_contents, cache_sz) != cache_sz) {
 		tst_resm(TFAIL,
-			 "Write Error for \"cache_contents\" to \"cache_sz\" of %d (errno=%d : %s)",
+			 "Write Error for \"cache_contents\" to \"cache_sz\" of %zu (errno=%d : %s)",
 			 cache_sz, errno, strerror(errno));
 		cleanup(NULL);
 	}
@@ -185,7 +185,7 @@ static void test_nonlinear(int fd)
 		if (remap_file_pages(page, page_sz * 2, 0,
 				     (window_pages - i - 2), 0) == -1) {
 			tst_resm(TFAIL|TERRNO,
-				 "remap_file_pages error for page=%p, page_sz=%d, window_pages=%d",
+				 "remap_file_pages error for page=%p, page_sz=%zu, window_pages=%zu",
 				 page, (page_sz * 2), (window_pages - i - 2));
 			cleanup(data);
 		}
@@ -198,7 +198,7 @@ static void test_nonlinear(int fd)
 		if (i & 1) {
 			if (data[i * page_sz] != window_pages - i) {
 				tst_resm(TFAIL,
-					 "hm, mapped incorrect data, data[%d]=%d, (window_pages-%d)=%d",
+					 "hm, mapped incorrect data, data[%zu]=%d, (window_pages-%d)=%zu",
 					 (i * page_sz), data[i * page_sz], i,
 					 (window_pages - i));
 				cleanup(data);
@@ -206,7 +206,7 @@ static void test_nonlinear(int fd)
 		} else {
 			if (data[i * page_sz] != window_pages - i - 2) {
 				tst_resm(TFAIL,
-					 "hm, mapped incorrect data, data[%d]=%d, (window_pages-%d-2)=%d",
+					 "hm, mapped incorrect data, data[%zu]=%d, (window_pages-%d-2)=%zu",
 					 (i * page_sz), data[i * page_sz], i,
 					 (window_pages - i - 2));
 				cleanup(data);

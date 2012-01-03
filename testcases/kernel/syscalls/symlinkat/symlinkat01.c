@@ -212,12 +212,12 @@ static void mysymlinkat_test(struct test_struct* desc)
 				int len;
 				fd = SUCCEED_OR_DIE(open, "open(%s, 0x%x) failed: %s", desc->referencefn1, O_RDWR);
 				if ((len=write(fd, &tnum, sizeof(tnum))) != sizeof(tnum))
-					tst_brkm(TBROK, cleanup, "write() failed: expected %d, returned %d; error: %s", sizeof(tnum), len, strerror(errno));
+					tst_brkm(TBROK, cleanup, "write() failed: expected %zu, returned %d; error: %s", sizeof(tnum), len, strerror(errno));
 				SUCCEED_OR_DIE(close, "close(%d) failed: %s", fd);
 
 				fd = SUCCEED_OR_DIE(open, "open(%s, 0x%x) failed: %s", desc->referencefn2, O_RDONLY);
 				if ((len=read(fd, &vnum, sizeof(vnum))) != sizeof(tnum))
-					tst_brkm(TBROK, cleanup, "read() failed: expected %d, returned %d; error: %s", sizeof(vnum), len, strerror(errno));
+					tst_brkm(TBROK, cleanup, "read() failed: expected %zu, returned %d; error: %s", sizeof(vnum), len, strerror(errno));
 				SUCCEED_OR_DIE(close, "close(%d) failed: %s", fd);
 
 				if (tnum == vnum)

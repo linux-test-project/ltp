@@ -308,7 +308,7 @@ void setup()
 
 	if (write(fd, cache_contents, cache_sz) != cache_sz) {
 		tst_resm(TFAIL,
-			 "Write Error for \"cache_contents\" to \"cache_sz\" of %d (errno=%d : %s)",
+			 "Write Error for \"cache_contents\" to \"cache_sz\" of %zu (errno=%d : %s)",
 			 cache_sz, errno, strerror(errno));
 		cleanup();
 	}
