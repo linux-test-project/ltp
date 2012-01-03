@@ -832,14 +832,13 @@ char *ptr;
 
 struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 
-int TEST_RETURN;
+long TEST_RETURN;
 int TEST_ERRNO;
 
 /* for test specific parse_opts options */
 option_t Options[] = {
         { "help",  &Help2, NULL },      /* -help option */
         { "h",  &Help, NULL },          /* -h option */
- 	{ TIMING, NULL, NULL},		/* disable -timing option */
 
 #if INVALID_TEST_CASES
  	{ "missingflag", NULL, &ptr },  /* error */
@@ -856,7 +855,7 @@ int main(int argc, char **argv)
     struct timeval t;
     int cnt;
 
-    if ((msg = parse_opts(argc, argv, Options)) != NULL) {
+    if ((msg = parse_opts(argc, argv, Options, NULL)) != NULL) {
 	printf("ERROR: %s\n", msg);
 	exit(1);
     }
