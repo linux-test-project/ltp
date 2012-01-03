@@ -771,7 +771,7 @@ main(int	argc,		/* number of input parameters		      */
         switch(c)
         {
             case 'd':		/* specify how deep the tree needs to grow    */
-	        if ((num_dirs = atoi(optarg)) == (int)NULL)
+	        if ((num_dirs = atoi(optarg)) == 0)
 		    OPT_MISSING(argv[0], optopt);
                 else
                 if (num_dirs < 0)
@@ -782,7 +782,7 @@ main(int	argc,		/* number of input parameters		      */
                 }
 		break;
             case 'f':		/* how many ".c" files in each directory.     */
-		if ((num_files = atoi(optarg)) == (int)NULL)
+		if ((num_files = atoi(optarg)) == 0)
                     OPT_MISSING(argv[0], optopt);
                 else
 	        if (num_files < 0)
@@ -796,7 +796,7 @@ main(int	argc,		/* number of input parameters		      */
                 usage(argv[0]);
                 break;
             case 't':
-		if ((num_thrd = atoi(optarg)) == (int)NULL)
+		if ((num_thrd = atoi(optarg)) == 0)
 	            OPT_MISSING(argv[0], optopt);
                 else
                 if (num_thrd < 0)
