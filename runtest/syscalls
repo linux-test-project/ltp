@@ -1019,6 +1019,8 @@ setuid03_16 setuid03_16
 setuid04 setuid04
 setuid04_16 setuid04_16
 
+setxattr01 setxattr01
+
 shmat01 shmat01
 shmat02 shmat02
 shmat03 shmat03
