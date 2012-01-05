@@ -421,6 +421,8 @@ getuid02_16 getuid02_16
 getuid03 getuid03
 getuid03_16 getuid03_16
 
+getxattr01 getxattr01
+
 #Needs tty device.
 #ioctl01 ioctl01 -D /dev/tty0
 #ioctl02 ioctl02 -D /dev/tty0
