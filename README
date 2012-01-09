@@ -62,9 +62,8 @@ CREDITS
 COPYING
 	GNU General Public License
 
-ChangeLog
-	An incomplete list of changes to the project.  We will try harder to
-	keep this up to date.
+VERSION
+	LTP Version.
 
 Makefile
 	Top level make file for LTP.

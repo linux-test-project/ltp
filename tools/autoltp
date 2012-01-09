@@ -87,7 +87,7 @@ for($i=0; $i <= $#hosts; $i++) {
       }
 
       #this looks lame, but ltp_check needs ltprun.out to grab the ltp version      
-      $ssh->cmd('echo version: $(head -n1 ltp/ChangeLog) > ltprun.out');
+      $ssh->cmd('echo version: $(cat VERSION) > ltprun.out');
 
       #stop sar on client(s)
       if($ssh->cmd("killall sar && killall sadc")) {

@@ -67,7 +67,7 @@ untar_ltp()
 build_ltp()
 {
    cd ~/ltp
-   echo "Building LTP Testsuite version: `head -n1 ChangeLog`";
+   echo "Building LTP Testsuite version: `cat VERSION`";
    make clean install &> /dev/null
    if [ $? != "0" ]; then
       echo "FAILED   LTP Testsuite compilation"; return 0;

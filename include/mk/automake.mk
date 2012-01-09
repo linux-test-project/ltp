@@ -57,7 +57,7 @@ autoheader: configure.ac $(wildcard m4/*.m4) m4/ltp-version.m4 aclocal.m4
 include:
 	mkdir -p "$@"
 
-m4/ltp-version.m4: ChangeLog
+m4/ltp-version.m4: VERSION
 	sed -n '1{s:LTP-:m4_define([LTP_VERSION],[:;s:$$:]):;p;q}' $< > $@
 
 .PHONY: automake
