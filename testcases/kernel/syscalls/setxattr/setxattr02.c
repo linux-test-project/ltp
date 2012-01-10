@@ -42,10 +42,10 @@
  *    return -1 and set errno to EPERM
  */
 
+#include "config.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <attr/xattr.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -53,10 +53,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#ifdef HAVE_ATTR_XATTR_H
+#include <attr/xattr.h>
+#endif
 #include "test.h"
 #include "usctest.h"
 
+char *TCID = "setxattr02";
+
+#ifdef HAVE_ATTR_XATTR_H
 #define XATTR_TEST_KEY "user.testkey"
 #define XATTR_TEST_VALUE "this is a test value"
 #define XATTR_TEST_VALUE_SIZE 20
@@ -71,8 +76,6 @@
 
 static void setup(void);
 static void cleanup(void);
-
-char *TCID = "setxattr02";
 
 struct test_case {
 	char *fname;
@@ -233,3 +236,9 @@ static void cleanup(void)
 	TEST_CLEANUP;
 	tst_rmdir();
 }
+#else /* HAVE_ATTR_XATTR_H */
+int main(int argc, char *argv[])
+{
+	tst_brkm(TCONF, NULL, "<attr/xattr.h> does not exist.");
+}
+#endif

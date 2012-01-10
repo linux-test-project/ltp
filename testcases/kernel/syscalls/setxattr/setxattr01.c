@@ -43,10 +43,10 @@
  *    setxattr(2) should succeed
  */
 
+#include "config.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <attr/xattr.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -54,10 +54,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#ifdef HAVE_ATTR_XATTR_H
+#include <attr/xattr.h>
+#endif
 #include "test.h"
 #include "usctest.h"
 
+char *TCID = "setxattr01";
+
+#ifdef HAVE_ATTR_XATTR_H
 #define XATTR_NAME_MAX 255
 #define XATTR_NAME_LEN (XATTR_NAME_MAX + 2)
 #define XATTR_SIZE_MAX 65536
@@ -68,7 +73,6 @@
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "setxattr01";
 char filename[BUFSIZ];
 char long_key[XATTR_NAME_LEN];
 char *long_value;
@@ -221,3 +225,9 @@ static void cleanup(void)
 	TEST_CLEANUP;
 	tst_rmdir();
 }
+#else /* HAVE_ATTR_XATTR_H */
+int main(int argc, char *argv[])
+{
+	tst_brkm(TCONF, NULL, "<attr/xattr.h> does not exist.");
+}
+#endif
