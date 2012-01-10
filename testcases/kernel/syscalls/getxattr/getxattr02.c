@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
 {
 	int lc;
 	int i;
+	int exp_eno;
 	char *msg;
 	char buf[BUFSIZ];
 
@@ -90,15 +91,24 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
+		/*
+		 * Before kernel 3.0.0, getxattr(2) will set errno with 'EPERM'
+		 * when the file is not a regular file and directory, refer to
+		 * commitid 55b23bd
+		 */
+		if (tst_kvercmp(3, 0, 0) >= 0)
+			exp_eno = ENODATA;
+		else
+			exp_eno = EPERM;
+
 		for (i = 0; i < TST_TOTAL; i++)	{
 			TEST(getxattr(tc[0], XATTR_TEST_KEY, buf, BUFSIZ));
 
-			if (TEST_RETURN == -1 && TEST_ERRNO == ENODATA) {
+			if (TEST_RETURN == -1 && TEST_ERRNO == exp_eno)
 				tst_resm(TPASS | TTERRNO, "expected behavior");
-			} else {
+			else
 				tst_resm(TFAIL | TTERRNO, "unexpected behavior"
-				    " - expected errno %d - Got", ENODATA);
-			}
+				    " - expected errno %d - Got", exp_eno);
 		}
 	}
 
