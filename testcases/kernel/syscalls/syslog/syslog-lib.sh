@@ -29,11 +29,15 @@ CONFIG_FILE=""
 # rsyslogd .conf specific args.
 RSYSLOG_CONFIG=
 
-# Command for syslog daemon.
-SYSLOG_COMMAND=
+# Command to restart syslog daemon.
+SYSLOG_RESTART_COMMAND=
 
-# Args to pass to $SYSLOG_COMMAND when restarting the daemon.
-SYSLOG_RESTART_COMMAND_ARGS=
+# running under systemd?
+if command -v systemctl >/dev/null 2>&1; then
+	HAVE_SYSTEMCTL=1
+else
+	HAVE_SYSTEMCTL=0
+fi
 
 # number of seconds to wait for another syslog test to complete
 WAIT_COUNT=60
@@ -82,31 +86,33 @@ setup()
 		CONFIG_FILE="/etc/rsyslog.conf"
 		SYSLOG_INIT_SCRIPT="/etc/init.d/rsyslog"
 		RSYSLOG_CONFIG='$ModLoad imuxsock.so'
-	#elif <detect-upstart-jobfile-here>; then
-		# TODO: upstart
 	else
 		tst_resm TCONF "couldn't find syslogd, syslog-ng, or rsyslogd"
 		cleanup	0
 	fi
 
-	if [ -z "$SYSLOG_INIT_SCRIPT" ]; then
-		# TODO: upstart
-		:
+	SVCNAME=$(basename $SYSLOG_INIT_SCRIPT)
+	if [ $HAVE_SYSTEMCTL == 1 ]; then
+		for svc in "$SVCNAME" "syslog"; do
+			if systemctl is-enabled $svc.service >/dev/null 2>&1; then
+				SYSLOG_RESTART_COMMAND="systemctl restart $svc.service"
+				break
+			fi
+		done
 	else
 		# Fallback to /etc/init.d/syslog if $SYSLOG_INIT_SCRIPT
 		# doesn't exist.
 		for SYSLOG_INIT_SCRIPT in "$SYSLOG_INIT_SCRIPT" "/etc/init.d/syslog"; do 
 			if [ -x "$SYSLOG_INIT_SCRIPT" ]; then
+				SYSLOG_RESTART_COMMAND="$SYSLOG_INIT_SCRIPT restart"
 				break
 			fi
 		done
-		if [ ! -x "$SYSLOG_INIT_SCRIPT" ]; then
-			tst_resm TBROK "$SYSLOG_INIT_SCRIPT - no such script"
-			cleanup 1
-		fi
+	fi
 
-		SYSLOG_COMMAND=$SYSLOG_INIT_SCRIPT
-		SYSLOG_RESTART_COMMAND_ARGS=restart
+	if [ -z "$SYSLOG_RESTART_COMMAND" ]; then
+		tst_resm TBROK "Don't know how to restart $SVCNAME"
+		cleanup 1
 	fi
 
 	# Back up configuration file
@@ -146,9 +152,9 @@ restart_syslog_daemon()
 		cleanup_command=$1
 	fi
 
-	tst_resm TINFO "restarting syslog daemon via $SYSLOG_COMMAND $SYSLOG_RESTART_COMMAND_ARGS"
+	tst_resm TINFO "restarting syslog daemon via $SYSLOG_RESTART_COMMAND"
 
-	if $SYSLOG_COMMAND $SYSLOG_RESTART_COMMAND_ARGS >/dev/null 2>&1; then
+	if $SYSLOG_RESTART_COMMAND >/dev/null 2>&1; then
 		# XXX: this really shouldn't exist; if *syslogd isn't ready
 		# once the restart directive has been issued, then it needs to
 		# be fixed.
