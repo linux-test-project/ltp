@@ -44,9 +44,16 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/* cacheflush man page states that cacheflush() is only applicable to
- * MIPS architecture -- regardless, it's a good negative test.. */
+/* Harness Specific Include Files. */
+#include "test.h"
+#include "usctest.h"
+#include "linux_syscall_numbers.h"
 
+#if defined __NR_cacheflush && __NR_cacheflush > 0
+#include <asm/cachectl.h>
+#else
+/* Fake linux_syscall_numbers.h */
+#define __NR_cacheflush		0
 #ifndef   ICACHE
 #define   ICACHE   (1<<0)		/* flush instruction cache        */
 #endif
@@ -56,22 +63,6 @@
 #ifndef   BCACHE
 #define   BCACHE   (ICACHE|DCACHE)	/* flush both caches              */
 #endif
-
-/* Harness Specific Incnude Files. */
-#include "test.h"
-#include "usctest.h"
-#include "linux_syscall_numbers.h"
-
-/* cacheflush man page states that cacheflush() is only applicable to
- * MIPS architecture -- regardless, it's a good negative test.. */
-#if defined __mips__
-#include <asm/cachectl.h>
-#ifndef __NR_cacheflush
-#define __NR_cacheflush		0
-#endif
-#else
-/* Fake linux_syscall_numbers.h */
-#define __NR_cacheflush		0
 #endif
 
 /* Extern Global Variables */
