@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * Copyright (c) 2009 Cyril Hrubis chrubis@suse.cz
+ * Copyright (c) 2009, 2012 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -417,6 +417,8 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 	int err = errno;
 	const char *type;
 	int ttype_result = TTYPE_RESULT(ttype);
+	char message[USERMESG];
+	int size;
 
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD
 	/* Don't execute these APIs unless you have the same pid as main! */
@@ -469,21 +471,47 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 	 */
 	type = strttype(ttype);
 	if (T_mode == VERBOSE) {
-		fprintf(T_out, "%-8s %4d  %s  :  %s", tcid, tnum, type, tmesg);
+		size = snprintf(message, sizeof(message),
+		                "%-8s %4d  %s  :  %s",
+				tcid, tnum, type, tmesg);
 	} else {
-		fprintf(T_out, "%-8s %4d       %s  :  %s",
-			tcid, tnum, type, tmesg);
+		size = snprintf(message, sizeof(message),
+		                "%-8s %4d       %s  :  %s",
+			        tcid, tnum, type, tmesg);
 	}
+
+	if (size >= sizeof(message)) {
+		printf("%s: %i: line too long\n", __func__, __LINE__);
+		abort();
+	}
+
 	if (ttype & TERRNO) {
-		fprintf(T_out, ": errno=%s(%i): %s", strerrnodef(err),
-			err, strerror(err));
+		size += snprintf(message + size, sizeof(message) - size,
+		                 ": errno=%s(%i): %s", strerrnodef(err),
+		                 err, strerror(err));
 	}
+	
+	if (size >= sizeof(message)) {
+		printf("%s: %i: line too long\n", __func__, __LINE__);
+		abort();
+	}
+	
 	if (ttype & TTERRNO) {
-		fprintf(T_out, ": TEST_ERRNO=%s(%i): %s",
-			strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
-			strerror(TEST_ERRNO));
+		size += snprintf(message + size, sizeof(message) - size,
+		                 ": TEST_ERRNO=%s(%i): %s",
+		                 strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
+		                 strerror(TEST_ERRNO));
 	}
-	fprintf(T_out, "\n");
+	
+	if (size + 1 >= sizeof(message)) {
+		printf("%s: %i: line too long\n", __func__, __LINE__);
+		abort();
+	}
+	
+	message[size]   = '\n';
+	message[size+1] = '\0';
+
+	fputs(message, T_out); 
 
 	/*
 	 * If tst_res() was called with a file, append file contents to the
