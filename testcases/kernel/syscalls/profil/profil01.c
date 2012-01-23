@@ -41,6 +41,19 @@
 #endif
 
 #include <features.h>
+#include <stdio.h>
+#include <signal.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include "test.h"
+#include "usctest.h"
+
+char *TCID = "profil01";
+
 #ifndef __UCLIBC__
 
 #ifdef __arm__
@@ -49,20 +62,8 @@
 #define ADDRESS_OFFSET 0
 #endif
 
-#include <stdio.h>
-#include <signal.h>
-#include <limits.h>
-/*****	LTP Port	*****/
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include "test.h"
-#include "usctest.h"
 #define FAILED 0
 #define PASSED 1
-/*****	**	**	*****/
 
 #define P_TIME		10	/* profile for this many  seconds */
 
@@ -73,7 +74,6 @@ volatile int t_flag;
 //char progname[]= "profil1()";
 
 /*****	LTP Port	*****/
-char *TCID = "profil01";
 int local_flag = PASSED;
 int block_number;
 FILE *temp;
