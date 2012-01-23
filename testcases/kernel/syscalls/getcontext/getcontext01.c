@@ -34,7 +34,6 @@
  **********************************************************/
 
 #include <features.h>
-#if !defined(__UCLIBC__)
 
 #include <stdio.h>
 #include <unistd.h>
@@ -44,10 +43,13 @@
 #include "test.h"
 #include "usctest.h"
 
+char *TCID = "getcontext01";	/* Test program identifier.    */
+
+#if !defined(__UCLIBC__)
+
 void setup();
 void cleanup();
 
-char *TCID = "getcontext01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { 0 };		/* must be a 0 terminated list */
