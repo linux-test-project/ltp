@@ -576,8 +576,6 @@ mount02 mount02 -D DEVICE -T DEVICE_FS_TYPE
 mount03 mount03 -D DEVICE -T DEVICE_FS_TYPE
 mount04 mount04 -D DEVICE -T DEVICE_FS_TYPE
 
-mount1234 test_mount
-
 move_pages01 move_pages.sh 01
 move_pages02 move_pages.sh 02
 move_pages03 cd $LTPROOT/testcases/bin && chown root move_pages03 && chmod 04755 move_pages03 && move_pages.sh 03
@@ -1243,8 +1241,6 @@ unshare02 unshare02
 umount01 umount01 -D DEVICE -T DEVICE_FS_TYPE
 umount02 umount02 -D DEVICE -T DEVICE_FS_TYPE
 umount03 umount03 -D DEVICE -T DEVICE_FS_TYPE
-
-umount123 test_umount
 
 ustat01 ustat01
 ustat02 ustat02
