@@ -89,7 +89,7 @@ static char *opt_allocstr;
 static int hugepagesize; /* in Bytes */
 static int opt_sysfs, opt_alloc;
 static int shmid = -1;
-static int restore_shmmax = 0;
+static int restore_shmmax;
 static size_t size = 128, length = 384;
 static option_t options[] = {
 	{ "s", &opt_sysfs,	NULL},
@@ -102,7 +102,7 @@ static void cleanup(void);
 static void overcommit(void);
 static void write_bytes(void *addr);
 static void read_bytes(void *addr);
-static int lookup (char *line, char *pattern);
+static int lookup(char *line, char *pattern);
 static void usage(void);
 static int checkproc(FILE *fp, char *string, int value);
 static int checksys(char *path, char *pattern, int value);
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 		overcommit();
-	}	
+	}
 	cleanup();
 	tst_exit();
 }
@@ -194,7 +194,7 @@ static void overcommit(void)
 			tst_brkm(TBROK|TERRNO, cleanup, "fopen");
 		if (checkproc(fp, "HugePages_Total", length / 2) != 0)
 			return;
-		if (checkproc(fp, "HugePages_Free", length / 2 ) != 0)
+		if (checkproc(fp, "HugePages_Free", length / 2) != 0)
 			return;
 		if (checkproc(fp, "HugePages_Surp", length / 2 - size) != 0)
 			return;
@@ -209,7 +209,7 @@ static void overcommit(void)
 			tst_brkm(TBROK|TERRNO, cleanup, "shmat");
 		write_bytes(shmaddr);
 		read_bytes(shmaddr);
-        } else {
+	} else {
 		write_bytes(addr);
 		read_bytes(addr);
 	}
@@ -326,7 +326,8 @@ static void setup(void)
 			fd = open(PATH_SHMMAX, O_RDWR);
 			if (fd == -1)
 				tst_brkm(TBROK|TERRNO, cleanup, "open");
-			snprintf(buf, BUFSIZ, "%ld", (long)(length / 2 * hugepagesize));
+			snprintf(buf, BUFSIZ, "%ld",
+				 (long)(length / 2 * hugepagesize));
 			if (write(fd, buf, strlen(buf)) != strlen(buf))
 				tst_brkm(TBROK|TERRNO, cleanup,
 					"failed to change shmmax.");
@@ -409,8 +410,8 @@ static void read_bytes(void *addr)
 	}
 }
 
-/* Lookup a pattern and get the value from file*/
-static int lookup (char *line, char *pattern)
+/* Lookup a pattern and get the value from file */
+static int lookup(char *line, char *pattern)
 {
 	char buf2[BUFSIZ];
 
@@ -473,7 +474,8 @@ static void init_hugepagesize(void)
 	FILE *fp;
 
 	memset(buf, -1, BUFSIZ);
-	if ((fp = fopen(PATH_MEMINFO, "r")) == NULL)
+	fp = fopen(PATH_MEMINFO, "r");
+	if (fp == NULL)
 		tst_brkm(TBROK, NULL, "can't open %s", PATH_MEMINFO);
 	while (fgets(line, BUFSIZ, fp) != NULL) {
 		if (lookup(line, "Hugepagesize")) {
@@ -485,7 +487,7 @@ static void init_hugepagesize(void)
 	tst_brkm(TBROK, NULL, "get Hugepagesize failed.");
 }
 
-/* 
+/*
  * It's not easy to #define tunable file paths via sysfs,
  * use function init_hugepagesize and global variable instead.
  */
