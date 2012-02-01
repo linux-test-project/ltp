@@ -90,8 +90,9 @@ int main(int ac, char **av)
 			tst_brkm(TBROK|TERRNO, cleanup, "fork #1 failed");
 
 		if (pid == 0) {
-			char *av[1];
+			char *av[2];
 			av[0] = basename(test_app);
+			av[1] = NULL;
 			(void)execve(test_app, av, NULL);
 			perror("execve failed");
 			exit(1);
@@ -138,8 +139,9 @@ void setup(char *app)
 	char *cmd, *pwd = NULL;
 	char test_path[MAXPATHLEN];
 
-	if (test_app[0] == '/')
-		strncpy(test_path, test_app, sizeof(test_app));
+	if (app[0] == '/')
+		snprintf(test_path, sizeof(test_path), "%s/%s",
+				dirname(app), test_app);
 	else {
 		if ((pwd = get_current_dir_name()) == NULL)
 			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
