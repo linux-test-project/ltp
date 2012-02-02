@@ -67,7 +67,9 @@ static struct sig_info sigs[] = {
 	{SIGPIPE, "SIGPIPE", 0},
 	{SIGALRM, "SIGALRM", 0},
 	{SIGTERM, "SIGTERM", 0},
+#ifdef SIGSTKFLT
 	{SIGSTKFLT, "SIGSTKFLT", 0},
+#endif
 	{SIGCHLD, "SIGCHLD", 0},
 	{SIGCONT, "SIGCONT", 0},
 	{SIGTSTP, "SIGTSTP", 0},
