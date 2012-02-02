@@ -294,6 +294,16 @@ parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
 			if (STD_LOOP_DURATION == 0.0) STD_INFINITE=1;
 			break;
 		case 'c': /* Copies */
+			fprintf(stderr,
+			        "WARNING * WARNING * WARNING * WARNING * "
+			        "WARNING * WARNING * WARNING * WARNING\n\n"
+			        "The -c option is broken by desing. See:\n\n"
+			        "http://www.mail-archive.com/"
+			        "ltp-list@lists.sourceforge.net/msg13418.html\n"
+			        "\nIn short don't use it in runtest files "
+			        "as the option will be removed.\n\n"
+				"WARNING * WARNING * WARNING * WARNING * "
+				"WARNING * WARNING * WARNING * WARNING\n\n");
 			options |= OPT_copies;
 			STD_COPIES = atoi(optarg);
 			break;
