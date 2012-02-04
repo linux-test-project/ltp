@@ -29,7 +29,7 @@ AH_TEMPLATE(HAVE_LIBCAP,
 AC_CHECK_HEADERS([sys/capability.h],[capability_header_prefix="sys"])
 if test "x$capability_header_prefix" != x; then
 	AC_CHECK_LIB(cap,cap_compare,[cap_libs="-lcap"])
-	AC_CHECK_PROG(CAPSET,capset,capset)
+	AC_CHECK_PROG(SETCAP,setcap,setcap)
 fi
 if test "x$cap_libs" != x; then
 	AC_DEFINE(HAVE_LIBCAP)

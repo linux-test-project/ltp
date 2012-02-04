@@ -20,8 +20,8 @@
 # Garrett Cooper, October 2010
 #
 
-# Path to capset program
-CAPSET				:= @CAPSET@
+# Path to setcap program
+SETCAP				:= @SETCAP@
 
 # Tools enable knobs
 WITH_EXPECT			:= @WITH_EXPECT@
