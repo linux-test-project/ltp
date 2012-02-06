@@ -33,29 +33,17 @@
  *   Pause for SIGUSR1 if option specified.
  *   Create temporary directory.
  *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
- *  Cleanup:
- *   Print timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  hugemmap01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
+ * Test:
+ *  Loop if the proper options are given.
+ *  Execute system call
+ *  Check return code, if system call failed (return=-1)
+ *  Log the errno and Issue a FAIL message.
+ * Cleanup:
+ *  Print timing stats if options given
+ *  Delete the temporary directory created.
  *
  * HISTORY
- *	04/2004 Written by Robbie Williamson
- *
- * RESTRICTIONS:
- *  None.
+ *  04/2004 Written by Robbie Williamson
  */
 
 #include <stdio.h>
@@ -74,64 +62,53 @@
 #include "usctest.h"
 #include "system_specific_hugepages_info.h"
 
-#define BUFFER_SIZE  256
+static char *TEMPFILE = "mmapfile";
 
-char* TEMPFILE="mmapfile";
+char *TCID = "hugemmap01";
+int TST_TOTAL = 1;
+static long *addr;
+static int fildes;
+static char *Hopt;
+static int beforetest;
+static int aftertest;
+static int hugepagesmapped;
 
-char *TCID="hugemmap01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
-long *addr;			/* addr of memory mapped region */
-int fildes;			/* file descriptor for tempfile */
-char *Hopt;                     /* location of hugetlbfs */
-int beforetest=0;		/* Amount of free huge pages before testing */
-int aftertest=0;		/* Amount of free huge pages after testing */
-int hugepagesmapped=0;		/* Amount of huge pages mapped after testing */
+static void setup(void);
+static void cleanup(void);
+static void help(void);
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-
-void help()
+int main(int ac, char **av)
 {
-	printf("  -H /..  Location of hugetlbfs, i.e. -H /var/hugetlbfs \n");
-}
+	int lc;
+	char *msg;
+	int Hflag = 0;
+	int page_sz = 0;
 
-int
-main(int ac, char **av)
-{
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-        int Hflag=0;              /* binary flag: opt or not */
-	int page_sz=0;
+	option_t options[] = {
+		{ "H:",   &Hflag, &Hopt },
+		{ NULL, NULL, NULL }
+	};
 
-       	option_t options[] = {
-        	{ "H:",   &Hflag, &Hopt },    /* Required for location of hugetlbfs */
-            	{ NULL, NULL, NULL }          /* NULL required to end array */
-       	};
-
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, options, &help);
-	if (msg != (char *) NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s, use -help", msg);
-		tst_exit();
-	}
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s,"
+			 "use -help", msg);
 
-	if (Hflag == 0) {
-		tst_brkm(TBROK, NULL, "-H option is REQUIRED for this test, use -h for options help");
-		tst_exit();
-	}
+	if (!Hflag)
+		tst_brkm(TBROK, NULL, "-H option is REQUIRED for this test, "
+			 "use -h for options help");
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	        /* Creat a temporary file used for mapping */
-		if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
-			tst_brkm(TFAIL, cleanup,
-				 "open() on %s Failed, errno=%d : %s",
-				 TEMPFILE, errno, strerror(errno));
-		}
+		/* Creat a temporary file used for mapping */
+		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
+		if (fildes < 0)
+			tst_brkm(TFAIL|TERRNO, cleanup, "open %s failed",
+				 TEMPFILE);
 
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Note the number of free huge pages BEFORE testing */
 		beforetest = get_no_of_free_hugepages();
@@ -139,38 +116,33 @@ main(int ac, char **av)
 		/* Note the size of huge page size BEFORE testing */
 		page_sz = hugepages_size();
 
-		/*
-		 * Call mmap
-		 */
-		errno = 0;
-                addr = mmap(NULL, page_sz*1024, PROT_READ | PROT_WRITE,
+		addr = mmap(NULL, page_sz*1024, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
-		TEST_ERRNO = errno;
-
-		/* Check for the return value of mmap() */
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL, "mmap() Failed on %s, errno=%d : %s",
-				 TEMPFILE, errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO, "mmap() Failed on %s", TEMPFILE);
 			continue;
 		} else {
 			tst_resm(TPASS, "call succeeded");
 			/* force to allocate page and change HugePages_Free */
-			*(int*)addr = 0;
+			*(int *)addr = 0;
 		}
 
-		/* Make sure the number of free huge pages AFTER testing decreased */
+		/*
+		 * Make sure the number of free huge pages
+		 * AFTER testing decreased
+		 */
 		aftertest = get_no_of_free_hugepages();
 		hugepagesmapped = beforetest - aftertest;
-		if (hugepagesmapped < 1) {
-			tst_resm(TWARN,"Number of HUGEPAGES_FREE stayed the same. Okay if");
-			tst_resm(TWARN,"multiple copies running due to test collision.");
-		}
+		if (hugepagesmapped < 1)
+			tst_resm(TWARN, "Number of HUGEPAGES_FREE stayed the"
+				 " same. Okay if multiple copies running due"
+				 " to test collision.");
+
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
-                if (munmap(addr, page_sz*1024) != 0) {
-			tst_brkm(TFAIL, NULL, "munmap() fails to unmap the "
-				 "memory, errno=%d", errno);
-		}
+		if (munmap(addr, page_sz*1024) != 0)
+			tst_brkm(TFAIL|TERRNO, NULL, "munmap failed");
+
 		close(fildes);
 	}
 
@@ -178,24 +150,13 @@ main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- * 	     Get system page size, allocate and initialize the string dummy.
- * 	     Initialize addr such that it is more than one page below the break
- * 	     address of the process, and initialize one page region from addr
- * 	     with char 'A'.
- * 	     Creat a temporary directory and a file under it.
- * 	     Write some known data into file and get the size of the file.
- */
-void
-setup()
+static void setup(void)
 {
 	char mypid[40];
 
-	sprintf(mypid,"/%d",getpid());
-	TEMPFILE=strcat(mypid,TEMPFILE);
-	TEMPFILE=strcat(Hopt,TEMPFILE);
+	sprintf(mypid, "/%d", getpid());
+	TEMPFILE = strcat(mypid, TEMPFILE);
+	TEMPFILE = strcat(Hopt, TEMPFILE);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -203,19 +164,15 @@ setup()
 
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- * 	       Remove the temporary directory created.
- */
-void
-cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	unlink(TEMPFILE);
 
+}
+
+static void help(void)
+{
+	printf("    -H /..  Location of hugetlbfs, i.e. -H /var/hugetlbfs\n");
 }
