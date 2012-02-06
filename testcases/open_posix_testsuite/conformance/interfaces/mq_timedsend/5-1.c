@@ -82,6 +82,9 @@ int main()
 		sleep(1);  // give parent time to set up handler
 		for (i=0; i<MAXMSG+1; i++) {
         		mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts);
+			/* make sure parent enter the final sleep */
+			if (i == MAXMSG)
+				sleep(1);
 			/* send signal to parent each time message is sent */
 			kill(getppid(), SIGABRT);
 		}
