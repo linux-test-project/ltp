@@ -137,7 +137,7 @@ int main(int ac, char **av)
 			    MAP_SHARED, fildes, 0);
 		sleep(2);
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "mmap() Failed on %s, TEMPFILE");
+			tst_resm(TFAIL|TERRNO, "mmap() Failed on %s", TEMPFILE);
 			continue;
 		} else {
 			tst_resm(TPASS, "Succeeded mapping file using %d pages",

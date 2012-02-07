@@ -106,7 +106,7 @@ int main(int ac, char **av)
 			    MAP_SHARED | MAP_FIXED, fildes, 0);
 		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL|TERRNO, "Normal mmap() into high region"
-				 " unexpectedly succeeded on %s, TEMPFILE");
+				 " unexpectedly succeeded on %s", TEMPFILE);
 			continue;
 		} else {
 			tst_resm(TPASS, "Normal mmap() into high region"
