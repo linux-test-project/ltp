@@ -92,7 +92,7 @@ export TCID=tar02
 export TST_COUNT=2
 
 $LTPBIN/tst_resm TINFO \
-    "TEST #1: tar command with tvf options lists all files in an archive file"
+    "TEST #2: tar command with tvf options lists all files in an archive file"
 
 if [ -f $LTPTMP/tar_tstf.tar ]; then
     echo "$LTPTMP/tar_tstf.tar exists" > /dev/null 2>&1
@@ -105,7 +105,7 @@ else
 	if [ -f $LTPTMP/tar_tstf.tar ]; then
 	    echo "tar file created" > /dev/null 2>&1
 	else
-	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
+	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 		"tar: cvf option failed to create archive.  Reason"
 	    TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
@@ -161,7 +161,7 @@ if [ $RC -eq 0 ]; then
 	    TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
     else
-	$LTPBIN/tst_brok TBROK $LTPTMP/tar_tst.out \
+	$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 	    "tar: cvf option failed to create compressed archive.  Reason"
 	TFAILCNT=$(( $TFAILCNT+1 ))
     fi
@@ -193,7 +193,7 @@ else
 	if [ -f $LTPTMP/tar_tstf.tar ];	then
 	    $LTPBIN/tst_resm TINFO "tar: cvf option created a tar file."
 	else
-	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
+	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 		"tar: cvf option failed to create archive.  Reason"
 	    TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
@@ -215,7 +215,7 @@ if [ $? -eq 0 ]; then
        TFAILCNT=$(( $TFAILCNT+1 ))
    fi
 else
-    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
+    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 	"tar: command failed while extracting files. Reason"
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
@@ -248,12 +248,12 @@ else
 		    $LTPBIN/tst_resm TINFO  \
 			"tar: zcvf option created a compressed tar file."
 		else
-		    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
+		    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 			"tar: zcvf option failed to create a compressed tar file. Reason:"
 		    TFAILCNT=$(( $TFAILCNT+1 ))
 		fi
 	    else
-		$LTPBIN/tst_brok TBROK $LTPTMP/tar_tst.out \
+		$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 		    "tar: cvf option failed to create compressed archive.  Reason"
 		TFAILCNT=$(( $TFAILCNT+1 ))
 	    fi
@@ -276,7 +276,7 @@ if [ $? -eq 0 ]; then
 	TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 else
-    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
+    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 	"tar: command failed while extracting compressed archive files. Reason"
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
