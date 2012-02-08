@@ -41,23 +41,26 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+#include <sys/mount.h>
 
 #include "test.h"
 #include "usctest.h"
 #include "system_specific_hugepages_info.h"
+#include "../../include/mem.h"
 
 #define HIGH_ADDR      (void *)(0x1000000000000)
 
-static char *TEMPFILE = "mmapfile";
+static char TEMPFILE[MAXPATHLEN];
 
 char *TCID = "hugemmap03";
 int TST_TOTAL = 1;
 static unsigned long *addr;
 static int fildes;
 static char *Hopt;
+static char *nr_opt;
+static long hugepages = 128;
+static long orig_hugepages;
 
-static void setup(void);
-static void cleanup(void);
 static void help(void);
 
 int main(int ac, char **av)
@@ -65,6 +68,7 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 	int Hflag = 0;
+	int sflag = 0;
 	int page_sz;
 
 #if __WORDSIZE == 32  /* 32-bit compiled */
@@ -72,18 +76,26 @@ int main(int ac, char **av)
 #endif
 
 	option_t options[] = {
-		{ "H:",   &Hflag, &Hopt },
+		{ "H:", &Hflag, &Hopt },
+		{ "s:", &sflag, &nr_opt },
 		{ NULL, NULL, NULL }
 	};
 
 	msg = parse_opts(ac, av, options, &help);
-	if (msg != NULL)
+	if (msg)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s, use -help",
 			 msg);
 
-	if (!Hflag)
-		tst_brkm(TBROK, NULL, "-H option is REQUIRED for this test, "
-			 "use -h for options help");
+	if (!Hflag) {
+		tst_tmpdir();
+		Hopt = get_tst_tmpdir();
+	}
+	if (sflag) {
+		hugepages = strtol(nr_opt, NULL, 10);
+		if (((hugepages == LONG_MAX || hugepages == LONG_MIN) &&
+		     errno == ERANGE) || (errno != 0 && hugepages == 0))
+			tst_brkm(TBROK|TERRNO, NULL, "strtol");
+	}
 
 	page_sz = getpagesize();
 
@@ -107,10 +119,12 @@ int main(int ac, char **av)
 		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL|TERRNO, "Normal mmap() into high region"
 				 " unexpectedly succeeded on %s", TEMPFILE);
+			close(fildes);
 			continue;
 		} else {
 			tst_resm(TPASS, "Normal mmap() into high region"
 				 " failed correctly");
+			close(fildes);
 			break;
 		}
 
@@ -122,29 +136,32 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setup(void)
+void setup(void)
 {
-	char mypid[40];
-
-	sprintf(mypid, "/%d", getpid());
-	TEMPFILE = strcat(mypid, TEMPFILE);
-	TEMPFILE = strcat(Hopt, TEMPFILE);
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
+	tst_require_root(NULL);
+	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
+		tst_brkm(TBROK|TERRNO, NULL,
+			 "mount failed on %s", Hopt);
+	orig_hugepages = get_sys_tune("nr_hugepages");
+	set_sys_tune("nr_hugepages", hugepages, 1);
+	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d",
+		 Hopt, getpid());
 }
 
-static void cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
 	unlink(TEMPFILE);
+	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 
+	umount(Hopt);
+	tst_rmdir();
 }
 
 static void help(void)
 {
 	printf("  -H /..  Location of hugetlbfs, i.e. -H /var/hugetlbfs\n");
+	printf("  -s num  Set the number of the been allocated hugepages\n");
 }

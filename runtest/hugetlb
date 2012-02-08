@@ -1,6 +1,6 @@
 hugemmap01 hugemmap01
 hugemmap02 hugemmap02
-hugemmap03 hugemmap03 -H/tmp -I2 -c10
+hugemmap03 hugemmap03 -I2
 hugemmap04 hugemmap04 -H/tmp
 hugemmap05 hugemmap05
 hugemmap05_1 hugemmap05 -m
