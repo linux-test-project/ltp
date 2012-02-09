@@ -188,8 +188,11 @@ fi
 
 # sched_domain test
 if ! type python > /dev/null ; then
-	tst_resm TCONF "Python is not installed, CPU Consoldation\
+	tst_resm TCONF "Python is not installed, CPU Consolidation\
 test cannot run"
+elif ! grep sched_debug -qw /proc/cmdline ; then
+	tst_resm TCONF "Kernel cmdline parameter 'sched_debug' needed,\
+CPU Consolidation test cannot run" 
 else
 	if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
     		echo "max sched mc $max_sched_mc"
