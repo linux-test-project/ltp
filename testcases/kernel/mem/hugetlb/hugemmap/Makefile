@@ -24,4 +24,15 @@ top_srcdir              ?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 include $(abs_srcdir)/../Makefile.inc
+
+LIBMEMDIR		:= ../../lib
+LIBMEM			:= $(LIBMEMDIR)/libmem.a
+$(LIBMEM): $(LIBMEMDIR)
+	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
+
+CPPFLAGS		+= -I$(abs_srcdir)/$(LIBMEMDIR)
+LDFLAGS			+= -L$(abs_builddir)/$(LIBMEMDIR)
+LDLIBS			+= $(NUMA_LIBS) -lmem
+MAKE_DEPS		+= $(LIBMEM)
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

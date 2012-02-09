@@ -1,4 +1,4 @@
-hugemmap01 hugemmap01 -H/tmp
+hugemmap01 hugemmap01
 hugemmap02 hugemmap02 -H/tmp -c10
 hugemmap03 hugemmap03 -H/tmp -I2 -c10
 hugemmap04 hugemmap04 -H/tmp
