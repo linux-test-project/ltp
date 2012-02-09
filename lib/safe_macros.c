@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <limits.h>
 #include <pwd.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -315,7 +316,7 @@ int safe_ftruncate(const char *file, const int lineno,
 	    void (cleanup_fn)(void), int fd, off_t length)
 {
 	int rval;
-	
+
 	rval = ftruncate(fd, length);
 	if (rval == -1) {
 		tst_brkm(TBROK|TERRNO, cleanup_fn, "ftruncate failed at %s:%d",
@@ -335,6 +336,29 @@ int safe_truncate(const char *file, const int lineno,
 		tst_brkm(TBROK|TERRNO, cleanup_fn, "truncate failed at %s:%d",
 		         file, lineno);
 	}
+
+	return rval;
+}
+
+long safe_strtol(const char *file, const int lineno,
+	    void (cleanup_fn)(void), char *str, long min, long max)
+{
+	long rval;
+	char *endptr;
+
+	errno = 0;
+	rval = strtol(str, &endptr, 10);
+	if ((errno == ERANGE && (rval == LONG_MAX || rval == LONG_MIN))
+		    || (errno != 0 && rval == 0))
+		tst_brkm(TBROK|TERRNO, cleanup_fn,
+			 "strtol failed at %s:%d", file, lineno);
+	if (rval > max || rval < min)
+		tst_brkm(TBROK, cleanup_fn,
+			 "converted value out of range (%ld - %ld) at %s:%d",
+			 min, max, file, lineno);
+	if (endptr == str || (*endptr != '\0' && *endptr != '\n'))
+		tst_brkm(TBROK, cleanup_fn,
+			 "Invalid value: '%s' at %s:%d", str, file, lineno);
 
 	return rval;
 }
