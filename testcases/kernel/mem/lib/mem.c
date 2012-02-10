@@ -13,6 +13,7 @@
 #include "usctest.h"
 #include "../include/mem.h"
 #include "config.h"
+#include "safe_macros.h"
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
 #include <numaif.h>
@@ -769,8 +770,7 @@ void set_sys_tune(char *sys_file, long tune, int check)
 long get_sys_tune(char *sys_file)
 {
 	int fd;
-	long tune;
-	char buf[BUFSIZ], path[BUFSIZ], *endptr;
+	char buf[BUFSIZ], path[BUFSIZ];
 
 	snprintf(path, BUFSIZ, "%s%s", PATH_SYSVM, sys_file);
 	fd = open(path, O_RDONLY);
@@ -780,11 +780,5 @@ long get_sys_tune(char *sys_file)
 		tst_brkm(TBROK|TERRNO, cleanup, "read %s", sys_file);
 	close(fd);
 
-	tune = strtol(buf, &endptr, 10);
-	if (tune == LONG_MAX || tune == LONG_MIN)
-		tst_brkm(TBROK|TERRNO, cleanup, "strtol");
-	if (endptr == buf || (*endptr != '\0' && *endptr != '\n'))
-		tst_brkm(TBROK, cleanup, "Invalid value: %s", buf);
-
-	return tune;
+	return SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
 }
