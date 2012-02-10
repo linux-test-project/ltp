@@ -19,13 +19,14 @@ dnl Author: Cyril Hrubis <chrubis@suse.cz>
 dnl
 
 dnl
-dnl LTP_CHECK_FS_IOC_FLAGS 
+dnl LTP_CHECK_MREMAP_FIXED 
 dnl ----------------------------
 dnl
-AC_DEFUN([LTP_CHECK_FS_IOC_FLAGS],[
-AH_TEMPLATE(HAVE_FS_IOC_FLAGS,
-[Define to 1 if you have FS_IOC_GETFLAGS and FS_IOC_SETFLAGS in <linux/fs.h>.])
-AC_MSG_CHECKING([for FS_IOC_GETFLAGS and FS_IOC_SETFLAGS in <linux/fs.h>])
-AC_TRY_COMPILE([#include <linux/fs.h>], [int flags = FS_IOC_GETFLAGS;],
-               AC_DEFINE(HAVE_FS_IOC_FLAGS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+AC_DEFUN([LTP_CHECK_MREMAP_FIXED],[
+AH_TEMPLATE(HAVE_MREMAP_FIXED,
+[Define to 1 if you have MREMAP_FIXED in <sys/mman.h>.])
+AC_MSG_CHECKING([for MREMAP_FIXED in <sys/mman.h>])
+AC_TRY_COMPILE([#define _GNU_SOURCE
+                #include <sys/mman.h>], [int flags = MREMAP_FIXED;],
+               AC_DEFINE(HAVE_MREMAP_FIXED) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 ])

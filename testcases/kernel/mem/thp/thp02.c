@@ -43,6 +43,7 @@
  */
 
 #define _GNU_SOURCE
+#include "config.h"
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -54,6 +55,7 @@
 char *TCID = "thp02";
 int TST_TOTAL = 1;
 
+#ifdef HAVE_MREMAP_FIXED
 static int ps;
 static long hps, size;
 static void *p, *p2, *p3, *p4;
@@ -134,3 +136,10 @@ void cleanup(void)
 {
 	TEST_CLEANUP;
 }
+
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "MREMAP_FIXED not present in <sys/mman.h>");
+}
+#endif /* HAVE_MREMAP_FIXED */

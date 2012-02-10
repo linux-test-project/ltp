@@ -215,7 +215,7 @@ static void cleanup(void)
 	tst_rmdir();
 }
 #else
-int main(int argc, char *argv[])
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "<attr/xattr.h> not present or FS_IOC_FLAGS "
 	                      "missing in <linux/fs.h>");
