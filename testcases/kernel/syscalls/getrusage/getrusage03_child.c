@@ -55,7 +55,6 @@ option_t child_options[] = {
 
 static void usage(void);
 static void consume(int mega);
-static long get_long(const char *str);
 static void setup(void);
 static void cleanup(void);
 
@@ -78,13 +77,15 @@ int main(int argc, char *argv[])
 		Tst_count = 0;
 
 		if (opt_consume) {
-			consume_nr = get_long(consume_str);
+			consume_nr = SAFE_STRTOL(cleanup,
+				    consume_str, 0, LONG_MAX);
 			tst_resm(TINFO, "child allocate %ldMB", consume_nr);
 			consume(consume_nr);
 		}
 
 		if (opt_grand) {
-			grand_consume_nr = get_long(grand_consume_str);
+			grand_consume_nr = SAFE_STRTOL(cleanup,
+				    grand_consume_str, 0, LONG_MAX);
 			tst_resm(TINFO, "grandchild allocate %ldMB",
 				    grand_consume_nr);
 			switch (pid = fork()) {
@@ -110,7 +111,8 @@ int main(int argc, char *argv[])
 			tst_resm(TINFO, "exec.self = %ld, exec.children = %ld",
 				    maxrss_self, maxrss_children);
 			if (opt_self) {
-				self_nr = get_long(self_str);
+				self_nr = SAFE_STRTOL(cleanup,
+					    self_str, 0, LONG_MAX);
 				delta = maxrss_self - self_nr;
 				if (delta >= -DELTA_MAX && delta <= DELTA_MAX)
 					tst_resm(TPASS,
@@ -120,7 +122,8 @@ int main(int argc, char *argv[])
 						"initial.self !~= exec.self");
 			}
 			if (opt_child) {
-				child_nr = get_long(child_str);
+				child_nr = SAFE_STRTOL(cleanup,
+					    child_str, 0, LONG_MAX);
 				delta = maxrss_children - child_nr;
 				if (delta >= -DELTA_MAX && delta <= DELTA_MAX)
 					tst_resm(TPASS,
@@ -153,21 +156,6 @@ static void consume(int mega)
 	sz  = mega * 1024 * 1024;
 	ptr = SAFE_MALLOC(cleanup, sz);
 	memset(ptr, 0, sz);
-}
-
-static long get_long(const char *str)
-{
-	long val;
-	char *endptr;
-
-	val = strtol(str, &endptr, 10);
-	if (((val == LONG_MAX || val == LONG_MIN) && errno == ERANGE) ||
-		    (errno != 0 && val == 0))
-		tst_brkm(TBROK|TERRNO, cleanup, "strtol");
-	if (endptr == str || *endptr != '\0')
-		tst_brkm(TBROK, cleanup, "Invalid number parameter: %s", str);
-
-	return val;
 }
 
 static void setup(void)
