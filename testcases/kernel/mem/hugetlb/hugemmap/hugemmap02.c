@@ -56,6 +56,7 @@
 #include "usctest.h"
 #include "system_specific_hugepages_info.h"
 #include "../../include/mem.h"
+#include "safe_macros.h"
 
 #define LOW_ADDR       (void *)(0x80000000)
 #define LOW_ADDR2      (void *)(0x90000000)
@@ -100,12 +101,8 @@ int main(int ac, char **av)
 		tst_tmpdir();
 		Hopt = get_tst_tmpdir();
 	}
-	if (sflag) {
-		hugepages = strtol(nr_opt, NULL, 10);
-		if (((hugepages == LONG_MAX || hugepages == LONG_MIN) &&
-		     errno == ERANGE) || (errno != 0 && hugepages == 0))
-			tst_brkm(TBROK|TERRNO, NULL, "strtol");
-	}
+	if (sflag)
+		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
 	page_sz = getpagesize();
 	map_sz = 2 * 1024 * hugepages_size();

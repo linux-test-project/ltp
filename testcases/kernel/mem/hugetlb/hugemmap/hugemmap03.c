@@ -47,6 +47,7 @@
 #include "usctest.h"
 #include "system_specific_hugepages_info.h"
 #include "../../include/mem.h"
+#include "safe_macros.h"
 
 #define HIGH_ADDR      (void *)(0x1000000000000)
 
@@ -90,12 +91,8 @@ int main(int ac, char **av)
 		tst_tmpdir();
 		Hopt = get_tst_tmpdir();
 	}
-	if (sflag) {
-		hugepages = strtol(nr_opt, NULL, 10);
-		if (((hugepages == LONG_MAX || hugepages == LONG_MIN) &&
-		     errno == ERANGE) || (errno != 0 && hugepages == 0))
-			tst_brkm(TBROK|TERRNO, NULL, "strtol");
-	}
+	if (sflag)
+		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
 	page_sz = getpagesize();
 

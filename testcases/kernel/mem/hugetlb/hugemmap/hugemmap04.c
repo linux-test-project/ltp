@@ -64,6 +64,7 @@
 #include "usctest.h"
 #include "system_specific_hugepages_info.h"
 #include "../../include/mem.h"
+#include "safe_macros.h"
 
 static char TEMPFILE[MAXPATHLEN];
 
@@ -106,12 +107,8 @@ int main(int ac, char **av)
 		tst_tmpdir();
 		Hopt = get_tst_tmpdir();
 	}
-	if (sflag) {
-		hugepages = strtol(nr_opt, NULL, 10);
-		if (((hugepages == LONG_MAX || hugepages == LONG_MIN) &&
-		     errno == ERANGE) || (errno != 0 && hugepages == 0))
-			tst_brkm(TBROK|TERRNO, NULL, "strtol");
-	}
+	if (sflag)
+		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
 	/* Check number of hugepages */
 	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
