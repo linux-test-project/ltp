@@ -32,7 +32,7 @@ $(LIBMEM): $(LIBMEMDIR)
 
 CPPFLAGS		+= -I$(abs_srcdir)/$(LIBMEMDIR)
 LDFLAGS			+= -L$(abs_builddir)/$(LIBMEMDIR)
-LDLIBS			+= $(NUMA_LIBS) -lmem
+LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
 MAKE_DEPS		+= $(LIBMEM)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
