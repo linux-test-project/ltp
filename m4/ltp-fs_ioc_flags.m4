@@ -19,7 +19,7 @@ dnl Author: Cyril Hrubis <chrubis@suse.cz>
 dnl
 
 dnl
-dnl LTP_CHECK_FS_IOC_MACROS 
+dnl LTP_CHECK_FS_IOC_FLAGS 
 dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_FS_IOC_FLAGS],[
@@ -28,5 +28,4 @@ AH_TEMPLATE(HAVE_FS_IOC_FLAGS,
 AC_MSG_CHECKING([for FS_IOC_GETFLAGS and FS_IOC_SETFLAGS in include/linux/fs.h])
 AC_TRY_COMPILE([#include <linux/fs.h>], [int flags = FS_IOC_GETFLAGS;],
                AC_DEFINE(HAVE_FS_IOC_FLAGS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
-AC_SUBST([ACL_LIBS], [$acl_libs])
 ])
