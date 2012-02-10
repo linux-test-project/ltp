@@ -54,7 +54,7 @@
 
 char *TCID = "setxattr03";
 
-#ifdef HAVE_ATTR_XATTR_H
+#if defined HAVE_ATTR_XATTR_H && defined HAVE_FS_IOC_FLAGS
 #define XATTR_TEST_KEY "user.testkey"
 #define XATTR_TEST_VALUE "this is a test value"
 #define XATTR_TEST_VALUE_SIZE (sizeof(XATTR_TEST_VALUE) - 1)
@@ -214,9 +214,10 @@ static void cleanup(void)
 	TEST_CLEANUP;
 	tst_rmdir();
 }
-#else /* HAVE_ATTR_XATTR_H */
+#else
 int main(int argc, char *argv[])
 {
-	tst_brkm(TCONF, NULL, "<attr/xattr.h> does not exist.");
+	tst_brkm(TCONF, NULL, "<attr/xattr.h> not present or FS_IOC_FLAGS "
+	                      "missing in <linux/fs.h>");
 }
-#endif /* HAVE_ATTR_XATTR_H */
+#endif /* defined HAVE_ATTR_XATTR_H && defined HAVE_FS_IOC_FLAGS */
