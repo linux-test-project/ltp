@@ -93,3 +93,5 @@ overcommit_memory overcommit_memory -R 30
 overcommit_memory overcommit_memory -R 80
 overcommit_memory overcommit_memory -R 100
 overcommit_memory overcommit_memory -R 200
+
+max_map_count max_map_count -i 10
