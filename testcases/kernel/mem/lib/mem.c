@@ -16,6 +16,7 @@
 #include "safe_macros.h"
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
+#include <numa.h>
 #include <numaif.h>
 #endif
 
@@ -150,9 +151,13 @@ void testoom(int mempolicy, int lite, int numa)
 long count_numa(void)
 {
 	int nnodes = 0;
+	int max_node;
+	int i;
 
-	while(path_exist(PATH_SYS_SYSTEM "/node/node%d", nnodes))
-		nnodes++;
+	max_node = numa_max_node();
+	for(i = 0; i <= max_node; i++)
+		if(path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
+			nnodes++;
 
 	return nnodes;
 }
