@@ -38,26 +38,23 @@
 #define TNAME "aio_suspend/4-1.c"
 
 #define NUM_AIOCBS	10
-#define BUF_SIZE	1024*1024
+#define BUF_SIZE	(1024*1024)
 #define WAIT_FOR_AIOCB	6
 
-int received_selected	= 0;
-int received_all	= 0;
+static int received_selected;
+static int received_all;
 
-void
-sigrt1_handler(int signum, siginfo_t *info, void *context)
+static void sigrt1_handler(int signum, siginfo_t *info, void *context)
 {
 	received_selected = 1;
 }
 
-void
-sigrt2_handler(int signum, siginfo_t *info, void *context)
+static void sigrt2_handler(int signum, siginfo_t *info, void *context)
 {
 	received_all = 1;
 }
 
-int
-main ()
+int main()
 {
 	char tmpfname[256];
 	int fd;
@@ -90,27 +87,27 @@ main ()
 
 	unlink(tmpfname);
 
-	bufs = (char *) malloc (NUM_AIOCBS*BUF_SIZE);
+	bufs = malloc(NUM_AIOCBS*BUF_SIZE);
 
 	if (bufs == NULL) {
-		printf (TNAME " Error at malloc(): %s\n", strerror (errno));
-		close (fd);
+		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (write (fd, bufs, NUM_AIOCBS*BUF_SIZE) != (NUM_AIOCBS*BUF_SIZE)) {
+	if (write(fd, bufs, NUM_AIOCBS*BUF_SIZE) != (NUM_AIOCBS*BUF_SIZE)) {
 		printf(TNAME " Error at write(): %s\n", strerror(errno));
-		free (bufs);
-		close (fd);
+		free(bufs);
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	aiocbs = (struct aiocb**)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
+	aiocbs = malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
 
 	/* Queue up a bunch of aio reads */
 	for (i = 0; i < NUM_AIOCBS; i++) {
 
-		aiocbs[i] = (struct aiocb*)malloc(sizeof(struct aiocb));
+		aiocbs[i] = malloc(sizeof(struct aiocb));
 		memset(aiocbs[i], 0, sizeof(struct aiocb));
 
 		aiocbs[i]->aio_fildes = fd;
@@ -152,25 +149,26 @@ main ()
 	ret = lio_listio(LIO_NOWAIT, aiocbs, NUM_AIOCBS, &event);
 
 	if (ret) {
-		printf(TNAME " Error at lio_listio() %d: %s\n", errno, strerror(errno));
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_UNRESOLVED);
+		printf(TNAME " Error at lio_listio() %d: %s\n",
+		       errno, strerror(errno));
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_UNRESOLVED);
 	}
 
 	/* Check selected request has not completed yet */
 	if (received_selected) {
-		printf (TNAME " Error : AIOCB %d already completed before suspend\n",
-			WAIT_FOR_AIOCB);
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		printf(TNAME " Error : AIOCB %d already completed"
+		       " before suspend\n", WAIT_FOR_AIOCB);
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* Suspend on selected request */
@@ -178,64 +176,65 @@ main ()
 
 	/* Check selected request has not completed */
 	if (received_selected) {
-		printf (TNAME " Error : AIOCB %d should not have completed after timed out suspend\n",
-			WAIT_FOR_AIOCB);
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		printf(TNAME " Error : AIOCB %d should not have completed"
+		       " after timed out suspend\n", WAIT_FOR_AIOCB);
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* timed out aio_suspend should return -1 and set errno to EAGAIN */
 	if (ret != -1) {
-		printf (TNAME " aio_suspend() should return -1\n");
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		printf(TNAME " aio_suspend() should return -1\n");
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	if (errno != EAGAIN) {
-		printf (TNAME " aio_suspend() should set errno to EAGAIN: %d (%s)\n",
-			errno, strerror (errno));
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		printf(TNAME " aio_suspend() should set errno to EAGAIN:"
+		       " %d (%s)\n", errno, strerror(errno));
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* Wait for list processing completion */
 	while (!received_all)
-		sleep (1);
+		sleep(1);
 
 	/* Check return code and free things */
 	for (i = 0; i < NUM_AIOCBS; i++) {
-	  	err = aio_error(aiocbs[i]);
+		err = aio_error(aiocbs[i]);
 		ret = aio_return(aiocbs[i]);
 
 		if ((err != 0) && (ret != BUF_SIZE)) {
-			printf(TNAME " req %d: error = %d - return = %d\n", i, err, ret);
+			printf(TNAME " req %d: error = %d - return = %d\n",
+			       i, err, ret);
 			errors++;
 		}
 
-		free (aiocbs[i]);
+		free(aiocbs[i]);
 	}
 
-	free (bufs);
-	free (aiocbs);
+	free(bufs);
+	free(aiocbs);
 
 	close(fd);
 
 	if (errors != 0)
-		exit (PTS_FAIL);
+		exit(PTS_FAIL);
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }

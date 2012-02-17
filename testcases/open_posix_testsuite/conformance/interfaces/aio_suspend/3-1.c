@@ -55,8 +55,7 @@ int main()
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -64,18 +63,16 @@ int main()
 
 	unlink(tmpfname);
 
-	for (i = 0; i < NAIOCB; i++)
-	{
+	for (i = 0; i < NAIOCB; i++) {
 		memset(&aiocb[i], 0, sizeof(struct aiocb));
 		aiocb[i].aio_fildes = fd;
 		aiocb[i].aio_buf = buf;
 		aiocb[i].aio_offset = i * BUF_SIZE;
 		aiocb[i].aio_nbytes = BUF_SIZE;
 
-		if (aio_write(&aiocb[i]) == -1)
-		{
+		if (aio_write(&aiocb[i]) == -1) {
 			printf(TNAME " Error at aio_write(): %s\n",
-		       		strerror(errno));
+			       strerror(errno));
 			exit(PTS_FAIL);
 		}
 	}
@@ -85,13 +82,12 @@ int main()
 	list[5] = &aiocb[1];
 	list[6] = &aiocb[2];
 
-	if (aio_suspend(list, NENT, NULL) != 0)
-	{
+	if (aio_suspend(list, NENT, NULL) != 0) {
 		printf(TNAME " Error at aio_suspend(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

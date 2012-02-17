@@ -42,20 +42,18 @@
 #define TNAME "aio_suspend/8-1.c"
 
 #define NUM_AIOCBS	10
-#define BUF_SIZE	1024*1024
+#define BUF_SIZE	(1024*1024)
 #define WAIT_FOR_AIOCB	6
 
-int received_selected	= 0;
-int received_all	= 0;
+static int received_selected;
+static int received_all;
 
-void
-sigrt1_handler(int signum, siginfo_t *info, void *context)
+static void sigrt1_handler(int signum, siginfo_t *info, void *context)
 {
 	received_all = 1;
 }
 
-int
-main ()
+int main()
 {
 	char tmpfname[256];
 	int fd;
@@ -135,7 +133,8 @@ main ()
 	ret = lio_listio(LIO_NOWAIT, aiocbs, NUM_AIOCBS, &event);
 
 	if (ret) {
-		printf(TNAME " Error at lio_listio() %d: %s\n", errno, strerror(errno));
+		printf(TNAME " Error at lio_listio() %d: %s\n",
+		       errno, strerror(errno));
 		for (i = 0; i < NUM_AIOCBS; i++)
 			free(aiocbs[i]);
 		free(bufs);
@@ -147,8 +146,9 @@ main ()
 	/* Suspend on selected request */
 	ret = aio_suspend((const struct aiocb **)plist, 2, NULL);
 	if (ret) {
-		printf(TNAME " Error at aio_suspend() %d: %s\n", errno, strerror(errno));
-		for (i=0; i<NUM_AIOCBS; i++)
+		printf(TNAME " Error at aio_suspend() %d: %s\n",
+		       errno, strerror(errno));
+		for (i = 0; i < NUM_AIOCBS; i++)
 			free(aiocbs[i]);
 		free(bufs);
 		free(aiocbs);
@@ -161,8 +161,8 @@ main ()
 	ret = aio_return(aiocbs[WAIT_FOR_AIOCB]);
 
 	if ((err != 0) && (ret != BUF_SIZE)) {
-		printf(TNAME " Error : AIOCB %d should have completed after suspend\n",
-			WAIT_FOR_AIOCB);
+		printf(TNAME " Error : AIOCB %d should have completed"
+		       " after suspend\n", WAIT_FOR_AIOCB);
 		for (i = 0; i < NUM_AIOCBS; i++)
 			free(aiocbs[i]);
 		free(bufs);
@@ -184,7 +184,8 @@ main ()
 		ret = aio_return(aiocbs[i]);
 
 		if ((err != 0) && (ret != BUF_SIZE)) {
-			printf(TNAME " req %d: error = %d - return = %d\n", i, err, ret);
+			printf(TNAME " req %d: error = %d - return = %d\n",
+			       i, err, ret);
 			errors++;
 		}
 

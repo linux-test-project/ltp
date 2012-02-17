@@ -41,27 +41,24 @@
 #define TNAME "aio_suspend/1-1.c"
 
 #define NUM_AIOCBS	10
-#define BUF_SIZE	1024*1024
+#define BUF_SIZE	(1024*1024)
 #define WAIT_FOR_AIOCB	6
 
-int received_selected	= 0;
-int received_all	= 0;
+static int received_selected;
+static int received_all;
 
-void
-sigrt1_handler(int signum, siginfo_t *info, void *context)
+static void sigrt1_handler(int signum, siginfo_t *info, void *context)
 {
 	if (info->si_value.sival_int == WAIT_FOR_AIOCB)
 		received_selected = 1;
 }
 
-void
-sigrt2_handler(int signum, siginfo_t *info, void *context)
+static void sigrt2_handler(int signum, siginfo_t *info, void *context)
 {
 	received_all = 1;
 }
 
-int
-main(void)
+int main(void)
 {
 	char tmpfname[256];
 	int fd;
@@ -93,7 +90,7 @@ main(void)
 
 	unlink(tmpfname);
 
-	bufs = (char *)malloc(NUM_AIOCBS*BUF_SIZE);
+	bufs = malloc(NUM_AIOCBS*BUF_SIZE);
 
 	if (bufs == NULL) {
 		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
@@ -108,12 +105,12 @@ main(void)
 		exit(PTS_UNRESOLVED);
 	}
 
-	aiocbs = (struct aiocb**)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
+	aiocbs = malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
 
 	/* Queue up a bunch of aio reads */
 	for (i = 0; i < NUM_AIOCBS; i++) {
 
-		aiocbs[i] = (struct aiocb*)malloc(sizeof(struct aiocb));
+		aiocbs[i] = malloc(sizeof(struct aiocb));
 		memset(aiocbs[i], 0, sizeof(struct aiocb));
 
 		aiocbs[i]->aio_fildes = fd;
@@ -182,7 +179,7 @@ main(void)
 	if (!received_selected) {
 		printf(TNAME " Error : AIOCB %d should have completed after "
 		    "suspend\n", WAIT_FOR_AIOCB);
-		for (i=0; i<NUM_AIOCBS; i++)
+		for (i = 0; i < NUM_AIOCBS; i++)
 			free(aiocbs[i]);
 		free(bufs);
 		free(aiocbs);
@@ -208,7 +205,7 @@ main(void)
 	/* Check return code and free things */
 	for (i = 0; i < NUM_AIOCBS; i++) {
 		do {
-		  	err = aio_error(aiocbs[i]);
+			err = aio_error(aiocbs[i]);
 		} while (err == EINPROGRESS);
 		ret = aio_return(aiocbs[i]);
 
