@@ -41,19 +41,19 @@ void oom(int testcase, int mempolicy, int lite);
 void testoom(int mempolicy, int lite, int numa);
 
 /* For mm/ksm* tests */
-void _gather_cpus(char *cpus);
 void _check(char *path, long int value);
 void _group_check(int run, int pages_shared, int pages_sharing,
 		int pages_volatile, int pages_unshared, int sleep_millisecs,
 		int pages_to_scan);
 void _verify(char value, int proc, int start, int end, int start2, int end2);
-void write_cpusets(void);
 void write_memcg(void);
 void create_same_memory(int size, int num, int unit);
 void check_ksm_options(int *size, int *num, int *unit);
 void ksm_usage(void);
 
 /* For mm/oom* and mm/ksm* tests*/
+void _gather_cpus(char *cpus);
+void write_cpusets(void);
 void umount_mem(char *path, char *path_new);
 void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
 

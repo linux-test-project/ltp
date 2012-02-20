@@ -119,25 +119,6 @@ void testoom(int mempolicy, int lite, int numa)
 
 /* For mm/ksm* tests */
 
-void _gather_cpus(char *cpus)
-{
-	int ncpus = 0;
-	int i;
-	char buf[BUFSIZ];
-
-	while (path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
-		ncpus++;
-
-	for (i = 0; i < ncpus; i++)
-		/* FIXME: possible non-existed node1 */
-		if (path_exist(PATH_SYS_SYSTEM "/node/node1/cpu%d", i)) {
-			sprintf(buf, "%d,", i);
-			strcat(cpus, buf);
-		}
-	/* Remove the trailing comma. */
-	cpus[strlen(cpus) - 1] = '\0';
-}
-
 void _check(char *path, long int value)
 {
 	FILE *fp;
@@ -219,58 +200,6 @@ void _verify(char value, int proc, int start, int end, int start2, int end2)
 						proc, memory[proc][j][i], proc,
 						j, i);
 	free(s);
-}
-
-void write_cpusets(void)
-{
-	char cpus[BUFSIZ] = "";
-	char buf[BUFSIZ] = "";
-	int fd;
-
-	_gather_cpus(cpus);
-	tst_resm(TINFO, "CPU list for 2nd node is %s.", cpus);
-
-	/* try either '/dev/cpuset/mems' or '/dev/cpuset/cpuset.mems'
-	 * please see Documentation/cgroups/cpusets.txt from kernel src
-	 * for details
-	 */
-	fd = open(CPATH_NEW "/mems", O_WRONLY);
-	if (fd == -1) {
-		if (errno == ENOENT) {
-			fd = open(CPATH_NEW "/cpuset.mems", O_WRONLY);
-			if (fd == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-		} else
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-	}
-	if (write(fd, "1", 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-	close(fd);
-
-	/* try either '/dev/cpuset/cpus' or '/dev/cpuset/cpuset.cpus'
-	 * please see Documentation/cgroups/cpusets.txt from kernel src
-	 * for details
-	 */
-	fd = open(CPATH_NEW "/cpus", O_WRONLY);
-	if (fd == -1) {
-		if (errno == ENOENT) {
-			fd = open(CPATH_NEW "/cpuset.cpus", O_WRONLY);
-			if (fd == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-		} else
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-	}
-	if (write(fd, cpus, strlen(cpus)) != strlen(cpus))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-	close(fd);
-
-	fd = open(CPATH_NEW "/tasks", O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-	snprintf(buf, BUFSIZ, "%d", getpid());
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-	close(fd);
 }
 
 void write_memcg(void)
@@ -656,6 +585,79 @@ void ksm_usage(void)
 }
 
 /* For mm/oom* and mm/ksm* tests */
+
+void _gather_cpus(char *cpus)
+{
+	int ncpus = 0;
+	int i;
+	char buf[BUFSIZ];
+
+	while (path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
+		ncpus++;
+
+	for (i = 0; i < ncpus; i++)
+		/* FIXME: possible non-existed node1 */
+		if (path_exist(PATH_SYS_SYSTEM "/node/node1/cpu%d", i)) {
+			sprintf(buf, "%d,", i);
+			strcat(cpus, buf);
+		}
+	/* Remove the trailing comma. */
+	cpus[strlen(cpus) - 1] = '\0';
+}
+
+void write_cpusets(void)
+{
+	char cpus[BUFSIZ] = "";
+	char buf[BUFSIZ] = "";
+	int fd;
+
+	_gather_cpus(cpus);
+	tst_resm(TINFO, "CPU list for 2nd node is %s.", cpus);
+
+	/*
+	 * try either '/dev/cpuset/mems' or '/dev/cpuset/cpuset.mems'
+	 * please see Documentation/cgroups/cpusets.txt from kernel src
+	 * for details
+	 */
+	fd = open(CPATH_NEW "/mems", O_WRONLY);
+	if (fd == -1) {
+		if (errno == ENOENT) {
+			fd = open(CPATH_NEW "/cpuset.mems", O_WRONLY);
+			if (fd == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+		} else
+			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	}
+	if (write(fd, "1", 1) != 1)
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+	close(fd);
+
+	/*
+	 * try either '/dev/cpuset/cpus' or '/dev/cpuset/cpuset.cpus'
+	 * please see Documentation/cgroups/cpusets.txt from kernel src
+	 * for details
+	 */
+	fd = open(CPATH_NEW "/cpus", O_WRONLY);
+	if (fd == -1) {
+		if (errno == ENOENT) {
+			fd = open(CPATH_NEW "/cpuset.cpus", O_WRONLY);
+			if (fd == -1)
+				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+		} else
+			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	}
+	if (write(fd, cpus, strlen(cpus)) != strlen(cpus))
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+	close(fd);
+
+	fd = open(CPATH_NEW "/tasks", O_WRONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	snprintf(buf, BUFSIZ, "%d", getpid());
+	if (write(fd, buf, strlen(buf)) != strlen(buf))
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+	close(fd);
+}
 
 void umount_mem(char *path, char *path_new)
 {
