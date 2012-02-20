@@ -58,7 +58,7 @@ void umount_mem(char *path, char *path_new);
 void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
 
 /* general function */
-long count_numa(void);
+long count_numa(long nodes[]);
 int  path_exist(const char *path, ...);
 long read_meminfo(char *item);
 void set_sys_tune(char *sys_file, long tune, int check);

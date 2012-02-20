@@ -713,16 +713,14 @@ void mount_mem(char *name, char *fs, char *options, char *path, char *path_new)
 
 /* general functions */
 
-long count_numa(void)
+long count_numa(long nodes[])
 {
-	int nnodes = 0;
-	int max_node;
-	int i;
+	long nnodes, i;
 
-	max_node = numa_max_node();
-	for(i = 0; i <= max_node; i++)
+	nnodes = 0;
+	for (i = 0; i <= MAXNODES; i++)
 		if(path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
-			nnodes++;
+			nodes[nnodes++] = i;
 
 	return nnodes;
 }
