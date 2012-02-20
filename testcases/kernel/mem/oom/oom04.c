@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 {
 	char *msg;
 	int lc, fd;
-	unsigned long nnodes = 1;
+	long nodes[MAXNODES];
 	char buf[BUFSIZ], mem[BUFSIZ];
 
 	msg = parse_opts(argc, argv, NULL, NULL);
@@ -59,8 +59,7 @@ int main(int argc, char *argv[])
 	tst_brkm(TCONF, NULL, "test is not designed for 32-bit system.");
 #endif
 
-	nnodes = count_numa();
-	if (count_numa() <= 1)
+	if (count_numa(nodes) <= 1)
 		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();

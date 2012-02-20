@@ -85,15 +85,14 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 	int size = 128, num = 3, unit = 1;
-	unsigned long nnodes = 1;
 	unsigned long nmask = 2;
+	long nodes[MAXNODES];
 
 	msg = parse_opts(argc, argv, ksm_options, ksm_usage);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	nnodes = count_numa();
-	if (count_numa() <= 1)
+	if (count_numa(nodes) <= 1)
 		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();
