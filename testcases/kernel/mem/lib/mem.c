@@ -1,24 +1,63 @@
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <sys/mount.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include "test.h"
-#include "usctest.h"
-#include "../include/mem.h"
 #include "config.h"
-#include "safe_macros.h"
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
+#if HAVE_NUMA_H
 #include <numa.h>
+#endif
+#if HAVE_NUMAIF_H
 #include <numaif.h>
 #endif
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "test.h"
+#include "usctest.h"
+#include "safe_macros.h"
+#include "../include/mem.h"
+
+/* For mm/oom tests */
+
+int _alloc_mem(long int length, int testcase)
+{
+	void *s;
+
+	tst_resm(TINFO, "allocating %ld bytes.", length);
+	s = mmap(NULL, length, PROT_READ|PROT_WRITE,
+		MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	if (s == MAP_FAILED) {
+		if (testcase == OVERCOMMIT && errno == ENOMEM)
+			return 1;
+		else
+			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+	}
+	if (testcase == MLOCK && mlock(s, length) == -1)
+		tst_brkm(TINFO|TERRNO, cleanup, "mlock");
+#ifdef HAVE_MADV_MERGEABLE
+	if (testcase == KSM
+		&& madvise(s, length, MADV_MERGEABLE) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "madvise");
+#endif
+	memset(s, '\a', length);
+
+	return 0;
+}
+
+void _test_alloc(int testcase, int lite)
+{
+	if (lite)
+		_alloc_mem(TESTMEM + MB, testcase);
+	else
+		while(1)
+			if (_alloc_mem(LENGTH, testcase))
+				return;
+}
 
 void oom(int testcase, int mempolicy, int lite)
 {
@@ -40,7 +79,7 @@ void oom(int testcase, int mempolicy, int lite)
 				tst_brkm(TBROK|TERRNO, cleanup,
 					"set_mempolicy");
 #endif
-		test_alloc(testcase, lite);
+		_test_alloc(testcase, lite);
 		exit(0);
 	default:
 		break;
@@ -60,26 +99,126 @@ void oom(int testcase, int mempolicy, int lite)
 	}
 }
 
-void write_memcg(void)
+void testoom(int mempolicy, int lite, int numa)
+{
+	if (numa && !mempolicy)
+		write_cpusets();
+
+	tst_resm(TINFO, "start normal OOM testing.");
+	oom(NORMAL, mempolicy, lite);
+
+	tst_resm(TINFO, "start OOM testing for mlocked pages.");
+	oom(MLOCK, mempolicy, lite);
+
+	if (access(PATH_KSM, F_OK) == -1)
+		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
+
+	tst_resm(TINFO, "start OOM testing for KSM pages.");
+	oom(KSM, mempolicy, lite);
+}
+
+/* For mm/ksm* tests */
+
+void _gather_cpus(char *cpus)
+{
+	int ncpus = 0;
+	int i;
+	char buf[BUFSIZ];
+
+	while(path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
+		ncpus++;
+
+	for (i = 0; i < ncpus; i++)
+		/* FIXME: possible non-existed node1 */
+		if (path_exist(PATH_SYS_SYSTEM "/node/node1/cpu%d", i)) {
+			sprintf(buf, "%d,", i);
+			strcat(cpus, buf);
+		}
+	/* Remove the trailing comma. */
+	cpus[strlen(cpus) - 1] = '\0';
+}
+
+void _check(char *path, long int value)
+{
+	FILE *fp;
+	char buf[BUFSIZ];
+
+	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, path);
+	fp = fopen(buf, "r");
+	if (fp == NULL)
+		tst_brkm(TBROK|TERRNO, tst_exit, "fopen");
+	if (fgets(buf, BUFSIZ, fp) == NULL)
+		tst_brkm(TBROK|TERRNO, tst_exit, "fgets");
+	fclose(fp);
+
+	tst_resm(TINFO, "%s is %ld.", path, atol(buf));
+	if (atol(buf) != value)
+		tst_resm(TFAIL, "%s is not %ld.", path, value);
+}
+
+void _group_check(int run, int pages_shared, int pages_sharing,
+		int pages_volatile, int pages_unshared,
+		int sleep_millisecs, int pages_to_scan)
 {
 	int fd;
-	char buf[BUFSIZ], mem[BUFSIZ];
+	char buf[BUFSIZ];
+	int old_num, new_num;
 
-	fd = open(MEMCG_PATH_NEW "/memory.limit_in_bytes", O_WRONLY);
+	/* 1 seconds for ksm to scan pages. */
+	while (sleep(1) == 1)
+	    continue;
+
+	fd = open("/sys/kernel/mm/ksm/full_scans", O_RDONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-	sprintf(mem, "%ld", TESTMEM);
-	if (write(fd, mem, strlen(mem)) != strlen(mem))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "open");
+
+	/* wait 3 increments of full_scans */
+	if (read(fd, buf, BUFSIZ) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "read");
+	old_num = new_num = atoi(buf);
+	if (lseek(fd, 0, SEEK_SET) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "lseek");
+	while (new_num < old_num * 3) {
+		sleep(1);
+		if (read(fd, buf, BUFSIZ) < 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "read");
+		new_num = atoi(buf);
+		if (lseek(fd, 0, SEEK_SET) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "lseek");
+	}
 	close(fd);
 
-	fd = open(MEMCG_PATH_NEW "/tasks", O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-	snprintf(buf, BUFSIZ, "%d", getpid());
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-	close(fd);
+	tst_resm(TINFO, "check!");
+	_check("run", run);
+	_check("pages_shared", pages_shared);
+	_check("pages_sharing", pages_sharing);
+	_check("pages_volatile", pages_volatile);
+	_check("pages_unshared", pages_unshared);
+	_check("sleep_millisecs", sleep_millisecs);
+	_check("pages_to_scan", pages_to_scan);
+}
+
+void _verify(char value, int proc, int start, int end, int start2, int end2)
+{
+	int i, j;
+	void *s = NULL;
+
+	s = malloc((end - start) * (end2 - start2));
+	if (s == NULL)
+		tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
+
+	tst_resm(TINFO, "child %d verifies memory content.", proc);
+	memset(s, value, (end - start) * (end2 - start2));
+	if (memcmp(memory[proc][start], s, (end - start) * (end2 - start2))
+		!= 0)
+		for (j = start; j < end; j++)
+			for (i = start2; i < end2; i++)
+				if (memory[proc][j][i] != value)
+					tst_resm(TFAIL, "child %d has %c at "
+						"%d,%d,%d.",
+						proc, memory[proc][j][i], proc,
+						j, i);
+	free(s);
 }
 
 void write_cpusets(void)
@@ -88,7 +227,7 @@ void write_cpusets(void)
 	char buf[BUFSIZ] = "";
 	int fd;
 
-	gather_cpus(cpus);
+	_gather_cpus(cpus);
 	tst_resm(TINFO, "CPU list for 2nd node is %s.", cpus);
 
 	/* try either '/dev/cpuset/mems' or '/dev/cpuset/cpuset.mems'
@@ -130,243 +269,26 @@ void write_cpusets(void)
 	close(fd);
 }
 
-void testoom(int mempolicy, int lite, int numa)
-{
-	if (numa && !mempolicy)
-		write_cpusets();
-
-	tst_resm(TINFO, "start normal OOM testing.");
-	oom(NORMAL, mempolicy, lite);
-
-	tst_resm(TINFO, "start OOM testing for mlocked pages.");
-	oom(MLOCK, mempolicy, lite);
-
-	if (access(PATH_KSM, F_OK) == -1)
-		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
-
-	tst_resm(TINFO, "start OOM testing for KSM pages.");
-	oom(KSM, mempolicy, lite);
-}
-
-long count_numa(void)
-{
-	int nnodes = 0;
-	int max_node;
-	int i;
-
-	max_node = numa_max_node();
-	for(i = 0; i <= max_node; i++)
-		if(path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
-			nnodes++;
-
-	return nnodes;
-}
-
-int path_exist(const char *path, ...)
-{
-	va_list ap;
-	char pathbuf[PATH_MAX];
-
-	va_start(ap, path);
-	vsnprintf(pathbuf, sizeof(pathbuf), path, ap);
-	va_end(ap);
-
-	return access(pathbuf, F_OK) == 0;
-}
-
-void gather_cpus(char *cpus)
-{
-	int ncpus = 0;
-	int i;
-	char buf[BUFSIZ];
-
-	while(path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
-		ncpus++;
-
-	for (i = 0; i < ncpus; i++)
-		if (path_exist(PATH_SYS_SYSTEM "/node/node1/cpu%d", i)) {
-			sprintf(buf, "%d,", i);
-			strcat(cpus, buf);
-		}
-	/* Remove the trailing comma. */
-	cpus[strlen(cpus) - 1] = '\0';
-}
-
-int alloc_mem(long int length, int testcase)
-{
-	void *s;
-
-	tst_resm(TINFO, "allocating %ld bytes.", length);
-	s = mmap(NULL, length, PROT_READ|PROT_WRITE,
-		MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-	if (s == MAP_FAILED) {
-		if (testcase == OVERCOMMIT && errno == ENOMEM)
-			return 1;
-		else
-			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
-	}
-	if (testcase == MLOCK && mlock(s, length) == -1)
-		tst_brkm(TINFO|TERRNO, cleanup, "mlock");
-#ifdef HAVE_MADV_MERGEABLE
-	if (testcase == KSM
-		&& madvise(s, length, MADV_MERGEABLE) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "madvise");
-#endif
-	memset(s, '\a', length);
-
-	return 0;
-}
-
-void test_alloc(int testcase, int lite)
-{
-	if (lite)
-		alloc_mem(TESTMEM + MB, testcase);
-	else
-		while(1)
-			if (alloc_mem(LENGTH, testcase))
-				return;
-}
-
-void umount_mem(char *path, char *path_new)
-{
-	FILE *fp;
-	int fd;
-	char s_new[BUFSIZ], s[BUFSIZ], value[BUFSIZ];
-
-	/* Move all processes in task to its parent node. */
-	sprintf(s, "%s/tasks", path);
-	fd = open(s, O_WRONLY);
-	if (fd == -1)
-		tst_resm(TWARN|TERRNO, "open %s", s);
-
-	snprintf(s_new, BUFSIZ, "%s/tasks", path_new);
-	fp = fopen(s_new, "r");
-	if (fp == NULL)
-		tst_resm(TWARN|TERRNO, "fopen %s", s_new);
-	if ((fd != -1) && (fp != NULL)) {
-		while (fgets(value, BUFSIZ, fp) != NULL)
-			if (write(fd, value, strlen(value) - 1)
-				!= strlen(value) - 1)
-				tst_resm(TWARN|TERRNO, "write %s", s);
-	}
-	if (fd != -1)
-		close(fd);
-	if (fp != NULL)
-		fclose(fp);
-	if (rmdir(path_new) == -1)
-		tst_resm(TWARN|TERRNO, "rmdir %s", path_new);
-	if (umount(path) == -1)
-		tst_resm(TWARN|TERRNO, "umount %s", path);
-	if (rmdir(path) == -1)
-		tst_resm(TWARN|TERRNO, "rmdir %s", path);
-}
-
-void mount_mem(char *name, char *fs, char *options, char *path, char *path_new)
-{
-	if (mkdir(path, 0777) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir %s", path);
-	if (mount(name, path, fs, 0, options) == -1) {
-		if (errno == ENODEV) {
-			if (rmdir(path) == -1)
-				tst_resm(TWARN|TERRNO, "rmdir %s failed",
-				    path);
-			tst_brkm(TCONF, NULL,
-			    "file system %s is not configured in kernel", fs);
-		}
-		tst_brkm(TBROK|TERRNO, cleanup, "mount %s", path);
-	}
-	if (mkdir(path_new, 0777) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir %s", path_new);
-}
-
-void ksm_usage(void)
-{
-	printf("  -n      Number of processes\n");
-	printf("  -s      Memory allocation size in MB\n");
-	printf("  -u      Memory allocation unit in MB\n");
-}
-
-void check(char *path, long int value)
-{
-	FILE *fp;
-	char buf[BUFSIZ];
-
-	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, path);
-	fp = fopen(buf, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "fopen");
-	if (fgets(buf, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "fgets");
-	fclose(fp);
-
-	tst_resm(TINFO, "%s is %ld.", path, atol(buf));
-	if (atol(buf) != value)
-		tst_resm(TFAIL, "%s is not %ld.", path, value);
-}
-
-void verify(char value, int proc, int start, int end, int start2, int end2)
-{
-	int i, j;
-	void *s = NULL;
-
-	s = malloc((end - start) * (end2 - start2));
-	if (s == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "malloc");
-
-	tst_resm(TINFO, "child %d verifies memory content.", proc);
-	memset(s, value, (end - start) * (end2 - start2));
-	if (memcmp(memory[proc][start], s, (end - start) * (end2 - start2))
-		!= 0)
-		for (j = start; j < end; j++)
-			for (i = start2; i < end2; i++)
-				if (memory[proc][j][i] != value)
-					tst_resm(TFAIL, "child %d has %c at "
-						"%d,%d,%d.",
-						proc, memory[proc][j][i], proc,
-						j, i);
-	free(s);
-}
-
-void group_check(int run, int pages_shared, int pages_sharing,
-		int pages_volatile, int pages_unshared,
-		int sleep_millisecs, int pages_to_scan)
+void write_memcg(void)
 {
 	int fd;
-	char buf[BUFSIZ];
-	int old_num, new_num;
+	char buf[BUFSIZ], mem[BUFSIZ];
 
-	/* 1 seconds for ksm to scan pages. */
-	while (sleep(1) == 1)
-	    continue;
-
-	fd = open("/sys/kernel/mm/ksm/full_scans", O_RDONLY);
+	fd = open(MEMCG_PATH_NEW "/memory.limit_in_bytes", O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-
-	/* wait 3 increments of full_scans */
-	if (read(fd, buf, BUFSIZ) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "read");
-	old_num = new_num = atoi(buf);
-	if (lseek(fd, 0, SEEK_SET) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "lseek");
-	while (new_num < old_num * 3) {
-		sleep(1);
-		if (read(fd, buf, BUFSIZ) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "read");
-		new_num = atoi(buf);
-		if (lseek(fd, 0, SEEK_SET) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "lseek");
-	}
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	sprintf(mem, "%ld", TESTMEM);
+	if (write(fd, mem, strlen(mem)) != strlen(mem))
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
 	close(fd);
 
-	tst_resm(TINFO, "check!");
-	check("run", run);
-	check("pages_shared", pages_shared);
-	check("pages_sharing", pages_sharing);
-	check("pages_volatile", pages_volatile);
-	check("pages_unshared", pages_unshared);
-	check("sleep_millisecs", sleep_millisecs);
-	check("pages_to_scan", pages_to_scan);
+	fd = open(MEMCG_PATH_NEW "/tasks", O_WRONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+	snprintf(buf, BUFSIZ, "%d", getpid());
+	if (write(fd, buf, strlen(buf)) != strlen(buf))
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+	close(fd);
 }
 
 void create_same_memory(int size, int num, int unit)
@@ -424,7 +346,7 @@ void create_same_memory(int size, int num, int unit)
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 
 		tst_resm(TINFO, "child 0 continues...");
-		verify('c', 0, 0, size / unit, 0, unit * MB);
+		_verify('c', 0, 0, size / unit, 0, unit * MB);
 		tst_resm(TINFO, "child 0 changes memory content to 'd'.");
 		for (j = 0; j < size / unit; j++) {
 			for (i = 0; i < unit * MB; i++)
@@ -436,7 +358,7 @@ void create_same_memory(int size, int num, int unit)
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 
 		tst_resm(TINFO, "child 0 continues...");
-		verify('d', 0, 0, size / unit, 0, unit * MB);
+		_verify('d', 0, 0, size / unit, 0, unit * MB);
 		/* Stop. */
 		tst_resm(TINFO, "child 0 stops.");
 		if (raise(SIGSTOP) == -1)
@@ -475,7 +397,7 @@ void create_same_memory(int size, int num, int unit)
 		if (raise(SIGSTOP) == -1)
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 		tst_resm(TINFO, "child 1 continues...");
-		verify('a', 1, 0, size / unit, 0, unit * MB);
+		_verify('a', 1, 0, size / unit, 0, unit * MB);
 		tst_resm(TINFO, "child 1 changes memory content to 'b'.");
 		for (j = 0; j < size / unit; j++) {
 			for (i = 0; i < unit * MB; i++)
@@ -485,7 +407,7 @@ void create_same_memory(int size, int num, int unit)
 		if (raise(SIGSTOP) == -1)
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 		tst_resm(TINFO, "child 1 continues...");
-		verify('b', 1, 0, size / unit, 0, unit * MB);
+		_verify('b', 1, 0, size / unit, 0, unit * MB);
 		tst_resm(TINFO, "child 1 changes memory content to 'd'");
 		for (j = 0; j < size / unit; j++) {
 			for (i = 0; i < unit * MB; i++)
@@ -495,7 +417,7 @@ void create_same_memory(int size, int num, int unit)
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 
 		tst_resm(TINFO, "child 1 continues...");
-		verify('d', 1, 0, size / unit, 0, unit * MB);
+		_verify('d', 1, 0, size / unit, 0, unit * MB);
 		tst_resm(TINFO, "child 1 changes one page to 'e'.");
 		memory[1][size / unit - 1][unit * MB - 1] = 'e';
 
@@ -504,9 +426,9 @@ void create_same_memory(int size, int num, int unit)
 		if (raise(SIGSTOP) == -1)
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 		tst_resm(TINFO, "child 1 continues...");
-		verify('e', 1, size / unit - 1, size / unit,
+		_verify('e', 1, size / unit - 1, size / unit,
 			unit * MB - 1, unit * MB);
-		verify('d', 1, 0, size / unit - 1, 0, unit * MB - 1);
+		_verify('d', 1, 0, size / unit - 1, 0, unit * MB - 1);
 
 		/* Stop. */
 		tst_resm(TINFO, "child 1 stops.");
@@ -608,7 +530,7 @@ void create_same_memory(int size, int num, int unit)
 		if (kill(child[k], SIGCONT) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "kill child[%d]", k);
 	}
-	group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
+	_group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
@@ -620,7 +542,7 @@ void create_same_memory(int size, int num, int unit)
 	tst_resm(TINFO, "resume child 1.");
 	if (kill(child[1], SIGCONT) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "kill");
-	group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
+	_group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
@@ -634,7 +556,7 @@ void create_same_memory(int size, int num, int unit)
 		if (kill(child[k], SIGCONT) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "kill child[%d]", k);
 	}
-	group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
+	_group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
@@ -648,7 +570,7 @@ void create_same_memory(int size, int num, int unit)
 	tst_resm(TINFO, "resume child 1.");
 	if (kill(child[1], SIGCONT) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "kill");
-	group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
+	_group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for child 1 to stop.");
 	if (waitpid(child[1], &status, WUNTRACED) == -1)
@@ -668,7 +590,7 @@ void create_same_memory(int size, int num, int unit)
 		tst_brkm(TBROK|TERRNO, cleanup, "open");
 	if (write(fd, "2", 1) != 1)
 		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	group_check(2, 0, 0, 0, 0, 0, size * pages * num);
+	_group_check(2, 0, 0, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
@@ -689,7 +611,7 @@ void create_same_memory(int size, int num, int unit)
 	if (write(fd, "0", 1) != 1)
 		tst_brkm(TBROK|TERRNO, cleanup, "write");
 	close(fd);
-	group_check(0, 0, 0, 0, 0, 0, size * pages * num);
+	_group_check(0, 0, 0, 0, 0, 0, size * pages * num);
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0)
 		if (WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child exit status is %d",
@@ -720,6 +642,95 @@ void check_ksm_options(int *size, int *num, int *unit)
 			tst_brkm(TBROK, cleanup,
 				"process number cannot be less 3.");
 	}
+}
+
+void ksm_usage(void)
+{
+	printf("  -n      Number of processes\n");
+	printf("  -s      Memory allocation size in MB\n");
+	printf("  -u      Memory allocation unit in MB\n");
+}
+
+/* For mm/oom* and mm/ksm* tests */
+
+void umount_mem(char *path, char *path_new)
+{
+	FILE *fp;
+	int fd;
+	char s_new[BUFSIZ], s[BUFSIZ], value[BUFSIZ];
+
+	/* Move all processes in task to its parent node. */
+	sprintf(s, "%s/tasks", path);
+	fd = open(s, O_WRONLY);
+	if (fd == -1)
+		tst_resm(TWARN|TERRNO, "open %s", s);
+
+	snprintf(s_new, BUFSIZ, "%s/tasks", path_new);
+	fp = fopen(s_new, "r");
+	if (fp == NULL)
+		tst_resm(TWARN|TERRNO, "fopen %s", s_new);
+	if ((fd != -1) && (fp != NULL)) {
+		while (fgets(value, BUFSIZ, fp) != NULL)
+			if (write(fd, value, strlen(value) - 1)
+				!= strlen(value) - 1)
+				tst_resm(TWARN|TERRNO, "write %s", s);
+	}
+	if (fd != -1)
+		close(fd);
+	if (fp != NULL)
+		fclose(fp);
+	if (rmdir(path_new) == -1)
+		tst_resm(TWARN|TERRNO, "rmdir %s", path_new);
+	if (umount(path) == -1)
+		tst_resm(TWARN|TERRNO, "umount %s", path);
+	if (rmdir(path) == -1)
+		tst_resm(TWARN|TERRNO, "rmdir %s", path);
+}
+
+void mount_mem(char *name, char *fs, char *options, char *path, char *path_new)
+{
+	if (mkdir(path, 0777) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir %s", path);
+	if (mount(name, path, fs, 0, options) == -1) {
+		if (errno == ENODEV) {
+			if (rmdir(path) == -1)
+				tst_resm(TWARN|TERRNO, "rmdir %s failed",
+				    path);
+			tst_brkm(TCONF, NULL,
+			    "file system %s is not configured in kernel", fs);
+		}
+		tst_brkm(TBROK|TERRNO, cleanup, "mount %s", path);
+	}
+	if (mkdir(path_new, 0777) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir %s", path_new);
+}
+
+/* general functions */
+
+long count_numa(void)
+{
+	int nnodes = 0;
+	int max_node;
+	int i;
+
+	max_node = numa_max_node();
+	for(i = 0; i <= max_node; i++)
+		if(path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
+			nnodes++;
+
+	return nnodes;
+}
+
+int path_exist(const char *path, ...)
+{
+	va_list ap;
+	char pathbuf[PATH_MAX];
+
+	va_start(ap, path);
+	vsnprintf(pathbuf, sizeof(pathbuf), path, ap);
+	va_end(ap);
+
+	return access(pathbuf, F_OK) == 0;
 }
 
 long read_meminfo(char *item)

@@ -34,28 +34,36 @@ char *opt_numstr, *opt_sizestr, *opt_unitstr;
    memory[process No.][MB unit No.][byte No.]. */
 char ***memory;
 
+/* For mm/oom* tests */
+int  _alloc_mem(long int length, int testcase);
+void _test_alloc(int testcase, int lite);
 void oom(int testcase, int mempolicy, int lite);
 void testoom(int mempolicy, int lite, int numa);
-long count_numa(void);
-int path_exist(const char *path, ...);
-int alloc_mem(long int length, int testcase);
-void test_alloc(int testcase, int lite);
-void gather_cpus(char *cpus);
-void umount_mem(char *path, char *path_new);
-void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
-void cleanup(void);
-void setup(void);
-void ksm_usage(void);
-void check(char *path, long int value);
-void verify(char value, int proc, int start, int end, int start2, int end2);
-void group_check(int run, int pages_shared, int pages_sharing,
+
+/* For mm/ksm* tests */
+void _gather_cpus(char *cpus);
+void _check(char *path, long int value);
+void _group_check(int run, int pages_shared, int pages_sharing,
 		int pages_volatile, int pages_unshared, int sleep_millisecs,
 		int pages_to_scan);
-void create_same_memory(int size, int num, int unit);
-void check_ksm_options(int *size, int *num, int *unit);
+void _verify(char value, int proc, int start, int end, int start2, int end2);
 void write_cpusets(void);
 void write_memcg(void);
+void create_same_memory(int size, int num, int unit);
+void check_ksm_options(int *size, int *num, int *unit);
+void ksm_usage(void);
+
+/* For mm/oom* and mm/ksm* tests*/
+void umount_mem(char *path, char *path_new);
+void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
+
+/* general function */
+long count_numa(void);
+int  path_exist(const char *path, ...);
+long read_meminfo(char *item);
 void set_sys_tune(char *sys_file, long tune, int check);
 long get_sys_tune(char *sys_file);
-long read_meminfo(char *item);
+void cleanup(void);
+void setup(void);
+
 #endif
