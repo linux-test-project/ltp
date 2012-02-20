@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 		}
 		create_same_memory(size, num, unit);
 
-		write_cpusets();
+		write_cpusets(nodes[1]);
 		create_same_memory(size, num, unit);
 	}
 	cleanup();

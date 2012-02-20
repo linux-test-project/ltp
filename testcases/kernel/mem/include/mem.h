@@ -52,8 +52,8 @@ void check_ksm_options(int *size, int *num, int *unit);
 void ksm_usage(void);
 
 /* For mm/oom* and mm/ksm* tests*/
-void _gather_cpus(char *cpus);
-void write_cpusets(void);
+void _gather_cpus(char *cpus, long nd);
+void write_cpusets(long nd);
 void umount_mem(char *path, char *path_new);
 void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
 

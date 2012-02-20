@@ -101,8 +101,14 @@ void oom(int testcase, int mempolicy, int lite)
 
 void testoom(int mempolicy, int lite, int numa)
 {
-	if (numa && !mempolicy)
-		write_cpusets();
+	long nodes[MAXNODES];
+
+	if (numa && !mempolicy) {
+		if (count_numa(nodes) <= 1)
+			tst_brkm(TCONF, cleanup, "required a NUMA system.");
+		/* write cpusets to 2nd node */
+		write_cpusets(nodes[1]);
+	}
 
 	tst_resm(TINFO, "start normal OOM testing.");
 	oom(NORMAL, mempolicy, lite);
@@ -586,7 +592,7 @@ void ksm_usage(void)
 
 /* For mm/oom* and mm/ksm* tests */
 
-void _gather_cpus(char *cpus)
+void _gather_cpus(char *cpus, long nd)
 {
 	int ncpus = 0;
 	int i;
@@ -596,8 +602,7 @@ void _gather_cpus(char *cpus)
 		ncpus++;
 
 	for (i = 0; i < ncpus; i++)
-		/* FIXME: possible non-existed node1 */
-		if (path_exist(PATH_SYS_SYSTEM "/node/node1/cpu%d", i)) {
+		if (path_exist(PATH_SYS_SYSTEM "/node/node%ld/cpu%d", nd, i)) {
 			sprintf(buf, "%d,", i);
 			strcat(cpus, buf);
 		}
@@ -605,14 +610,14 @@ void _gather_cpus(char *cpus)
 	cpus[strlen(cpus) - 1] = '\0';
 }
 
-void write_cpusets(void)
+void write_cpusets(long nd)
 {
 	char cpus[BUFSIZ] = "";
 	char buf[BUFSIZ] = "";
 	int fd;
 
-	_gather_cpus(cpus);
-	tst_resm(TINFO, "CPU list for 2nd node is %s.", cpus);
+	_gather_cpus(cpus, nd);
+	tst_resm(TINFO, "CPU list for node%ld is: %s.", nd, cpus);
 
 	/*
 	 * try either '/dev/cpuset/mems' or '/dev/cpuset/cpuset.mems'
@@ -628,7 +633,8 @@ void write_cpusets(void)
 		} else
 			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
 	}
-	if (write(fd, "1", 1) != 1)
+	snprintf(buf, BUFSIZ, "%ld", nd);
+	if (write(fd, buf, strlen(buf)) != strlen(buf))
 		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
 	close(fd);
 
