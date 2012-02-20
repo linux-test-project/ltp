@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
 	int lc, fd;
 	unsigned long nnodes = 1;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 #if __WORDSIZE == 32
@@ -121,6 +122,5 @@ void cleanup(void)
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
-	tst_exit();
 }
 #endif

@@ -74,10 +74,10 @@ int TST_TOTAL = 1;
 #include "../include/mem.h"
 
 option_t ksm_options[] = {
-        { "n:", &opt_num,       &opt_numstr},
-        { "s:", &opt_size,      &opt_sizestr},
-        { "u:", &opt_unit,      &opt_unitstr},
-        { NULL, NULL,           NULL}
+	{ "n:", &opt_num,       &opt_numstr},
+	{ "s:", &opt_size,      &opt_sizestr},
+	{ "u:", &opt_unit,      &opt_unitstr},
+	{ NULL, NULL,           NULL}
 };
 
 int main(int argc, char *argv[])
@@ -104,10 +104,12 @@ int main(int argc, char *argv[])
 
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1) {
 			if (errno != ENOSYS)
-				tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
+				tst_brkm(TBROK|TERRNO, cleanup,
+					    "set_mempolicy");
 			else
 				tst_brkm(TCONF, cleanup,
-					"set_mempolicy syscall is not implemented on your system.");
+					    "set_mempolicy syscall is not "
+					    "implemented on your system.");
 		}
 		create_same_memory(size, num, unit);
 
@@ -141,7 +143,6 @@ void setup(void)
 #else /* no NUMA */
 int main(void)
 {
-	tst_resm(TCONF, "no NUMA development packages installed.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
 }
 #endif

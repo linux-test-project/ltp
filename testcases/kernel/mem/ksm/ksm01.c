@@ -75,10 +75,10 @@ char *TCID = "ksm01";
 int TST_TOTAL = 1;
 
 option_t ksm_options[] = {
-        { "n:", &opt_num,       &opt_numstr},
-        { "s:", &opt_size,      &opt_sizestr},
-        { "u:", &opt_unit,      &opt_unitstr},
-        { NULL, NULL,           NULL}
+	{ "n:", &opt_num,       &opt_numstr},
+	{ "s:", &opt_size,      &opt_sizestr},
+	{ "u:", &opt_unit,      &opt_unitstr},
+	{ NULL, NULL,           NULL}
 };
 
 int main(int argc, char *argv[])

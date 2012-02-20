@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 	int lc, fd;
 	char buf[BUFSIZ], mem[BUFSIZ];
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 #if __WORDSIZE == 32
@@ -125,6 +126,6 @@ void cleanup(void)
 	close(fd);
 
 	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
-	
+
 	TEST_CLEANUP;
 }

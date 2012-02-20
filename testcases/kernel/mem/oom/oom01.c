@@ -30,7 +30,6 @@
  */
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <asm/types.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
@@ -48,7 +47,8 @@ int main(int argc, char *argv[])
 	char *msg;
 	int lc, fd;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 #if __WORDSIZE == 32

@@ -143,9 +143,9 @@ void testcpuset(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "malloc");
 
 	switch (child = fork()) {
-        case -1:
+	case -1:
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
-        case 0:
+	case 0:
 		for (i = 0; i < nnodes; i++)
 			nmask += exp2f(i);
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
@@ -298,7 +298,7 @@ long count_numa(void)
 {
 	int nnodes = 0;
 
-	while(path_exist(PATH_SYS_SYSTEM "/node/node%d", nnodes))
+	while (path_exist(PATH_SYS_SYSTEM "/node/node%d", nnodes))
 		nnodes++;
 
 	return nnodes;
@@ -308,7 +308,7 @@ long count_cpu(void)
 {
 	int ncpus = 0;
 
-	while(path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
+	while (path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
 		ncpus++;
 
 	return ncpus;
@@ -327,8 +327,8 @@ static int path_exist(const char *path, ...)
 }
 
 #else /* no NUMA */
-int main(void) {
-	tst_resm(TCONF, "no NUMA development packages installed.");
-	tst_exit();
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
 }
 #endif

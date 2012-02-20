@@ -54,7 +54,7 @@ void _test_alloc(int testcase, int lite)
 	if (lite)
 		_alloc_mem(TESTMEM + MB, testcase);
 	else
-		while(1)
+		while (1)
 			if (_alloc_mem(LENGTH, testcase))
 				return;
 }
@@ -68,7 +68,7 @@ void oom(int testcase, int mempolicy, int lite)
 	unsigned long nmask = 2;
 #endif
 
-	switch(pid = fork()) {
+	switch (pid = fork()) {
 	case -1:
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
 	case 0:
@@ -125,7 +125,7 @@ void _gather_cpus(char *cpus)
 	int i;
 	char buf[BUFSIZ];
 
-	while(path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
+	while (path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
 		ncpus++;
 
 	for (i = 0; i < ncpus; i++)
@@ -166,7 +166,7 @@ void _group_check(int run, int pages_shared, int pages_sharing,
 
 	/* 1 seconds for ksm to scan pages. */
 	while (sleep(1) == 1)
-	    continue;
+		continue;
 
 	fd = open("/sys/kernel/mm/ksm/full_scans", O_RDONLY);
 	if (fd == -1)
@@ -231,7 +231,9 @@ void write_cpusets(void)
 	tst_resm(TINFO, "CPU list for 2nd node is %s.", cpus);
 
 	/* try either '/dev/cpuset/mems' or '/dev/cpuset/cpuset.mems'
-	 * please see Documentation/cgroups/cpusets.txt of kernel src for detail */
+	 * please see Documentation/cgroups/cpusets.txt from kernel src
+	 * for details
+	 */
 	fd = open(CPATH_NEW "/mems", O_WRONLY);
 	if (fd == -1) {
 		if (errno == ENOENT) {
@@ -246,7 +248,9 @@ void write_cpusets(void)
 	close(fd);
 
 	/* try either '/dev/cpuset/cpus' or '/dev/cpuset/cpuset.cpus'
-	 * please see Documentation/cgroups/cpusets.txt of kernel src for detail */
+	 * please see Documentation/cgroups/cpusets.txt from kernel src
+	 * for details
+	 */
 	fd = open(CPATH_NEW "/cpus", O_WRONLY);
 	if (fd == -1) {
 		if (errno == ENOENT) {
@@ -477,7 +481,7 @@ void create_same_memory(int size, int num, int unit)
 			for (j = 0; j < size / unit; j++) {
 				for (i = 0; i < unit * MB; i++)
 					memory[k][j][i] = 'd';
-		        }
+			}
 			/* Unmerge. */
 			tst_resm(TINFO, "child %d stops.", k);
 			if (raise(SIGSTOP) == -1)
