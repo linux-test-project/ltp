@@ -185,6 +185,15 @@ static void usage(void)
 
 static void overcommit_memory_test(void)
 {
+	/* start to test overcommit_memory=2 */
+	set_sys_tune("overcommit_memory", 2, 1);
+
+	update_mem();
+	alloc_and_check(commit_left * 2, EXPECT_FAIL);
+	alloc_and_check(commit_limit, EXPECT_FAIL);
+	update_mem();
+	alloc_and_check(commit_left / 2, EXPECT_PASS);
+
 	/* start to test overcommit_memory=0 */
 	set_sys_tune("overcommit_memory", 0, 1);
 
@@ -201,14 +210,6 @@ static void overcommit_memory_test(void)
 	alloc_and_check(sum_total, EXPECT_PASS);
 	alloc_and_check(sum_total * 2, EXPECT_PASS);
 
-	/* start to test overcommit_memory=2 */
-	set_sys_tune("overcommit_memory", 2, 1);
-
-	update_mem();
-	alloc_and_check(commit_left / 2, EXPECT_PASS);
-	update_mem();
-	alloc_and_check(commit_left * 2, EXPECT_FAIL);
-	alloc_and_check(commit_limit, EXPECT_FAIL);
 }
 
 static int heavy_malloc(long size)
@@ -260,6 +261,7 @@ static void update_mem(void)
 	mem_free = read_meminfo("MemFree:");
 	swap_free = read_meminfo("SwapFree:");
 	free_total = mem_free + swap_free;
+	commit_limit = read_meminfo("CommitLimit:");
 
 	if (get_sys_tune("overcommit_memory") == 2) {
 		committed = read_meminfo("Committed_AS:");
