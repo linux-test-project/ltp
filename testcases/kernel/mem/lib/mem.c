@@ -211,22 +211,25 @@ void _verify(char value, int proc, int start, int end, int start2, int end2)
 void write_memcg(void)
 {
 	int fd;
-	char buf[BUFSIZ], mem[BUFSIZ];
+	char buf[BUFSIZ], mem[BUFSIZ], path[BUFSIZ];
 
-	fd = open(MEMCG_PATH_NEW "/memory.limit_in_bytes", O_WRONLY);
+	snprintf(path, BUFSIZ, "%s%s",
+		    MEMCG_PATH_NEW, "/memory.limit_in_bytes");
+	fd = open(path, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
 	sprintf(mem, "%ld", TESTMEM);
 	if (write(fd, mem, strlen(mem)) != strlen(mem))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
 	close(fd);
 
-	fd = open(MEMCG_PATH_NEW "/tasks", O_WRONLY);
+	snprintf(path, BUFSIZ, "%s%s", MEMCG_PATH_NEW, "/tasks");
+	fd = open(path, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
 	snprintf(buf, BUFSIZ, "%d", getpid());
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
 	close(fd);
 }
 
@@ -613,7 +616,7 @@ void _gather_cpus(char *cpus, long nd)
 void write_cpusets(long nd)
 {
 	char cpus[BUFSIZ] = "";
-	char buf[BUFSIZ] = "";
+	char buf[BUFSIZ], path[BUFSIZ];
 	int fd;
 
 	_gather_cpus(cpus, nd);
@@ -624,18 +627,22 @@ void write_cpusets(long nd)
 	 * please see Documentation/cgroups/cpusets.txt from kernel src
 	 * for details
 	 */
-	fd = open(CPATH_NEW "/mems", O_WRONLY);
+	snprintf(path, BUFSIZ, "%s%s", CPATH_NEW, "/mems");
+	fd = open(path, O_WRONLY);
 	if (fd == -1) {
 		if (errno == ENOENT) {
-			fd = open(CPATH_NEW "/cpuset.mems", O_WRONLY);
+			snprintf(path, BUFSIZ, "%s%s",
+				    CPATH_NEW, "/cpuset.mems");
+			fd = open(path, O_WRONLY);
 			if (fd == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+				tst_brkm(TBROK|TERRNO, cleanup,
+					    "open %s", path);
 		} else
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+			tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
 	}
 	snprintf(buf, BUFSIZ, "%ld", nd);
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
 	close(fd);
 
 	/*
@@ -643,25 +650,30 @@ void write_cpusets(long nd)
 	 * please see Documentation/cgroups/cpusets.txt from kernel src
 	 * for details
 	 */
-	fd = open(CPATH_NEW "/cpus", O_WRONLY);
+	snprintf(path, BUFSIZ, "%s%s", CPATH_NEW, "/cpus");
+	fd = open(path, O_WRONLY);
 	if (fd == -1) {
 		if (errno == ENOENT) {
+			snprintf(path, BUFSIZ, "%s%s",
+				    CPATH_NEW, "/cpuset.cpus");
 			fd = open(CPATH_NEW "/cpuset.cpus", O_WRONLY);
 			if (fd == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+				tst_brkm(TBROK|TERRNO, cleanup,
+					    "open %s", path);
 		} else
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+			tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
 	}
 	if (write(fd, cpus, strlen(cpus)) != strlen(cpus))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
 	close(fd);
 
-	fd = open(CPATH_NEW "/tasks", O_WRONLY);
+	snprintf(path, BUFSIZ, "%s%s", CPATH_NEW, "/tasks");
+	fd = open(path, O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
 	snprintf(buf, BUFSIZ, "%d", getpid());
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
 	close(fd);
 }
 
