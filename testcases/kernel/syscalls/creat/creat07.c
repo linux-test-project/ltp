@@ -91,7 +91,7 @@ int main(int ac, char **av)
 
 		if (pid == 0) {
 			char *av[2];
-			av[0] = basename(test_app);
+			av[0] = test_app;
 			av[1] = NULL;
 			(void)execve(test_app, av, NULL);
 			perror("execve failed");
@@ -147,7 +147,7 @@ void setup(char *app)
 			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
 
 		snprintf(test_path, sizeof(test_path), "%s/%s",
-		    pwd, basename(test_app));
+		    pwd, test_app);
 
 		free(pwd);
 	}
