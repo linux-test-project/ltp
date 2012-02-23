@@ -2,6 +2,7 @@
 cgroup		cgroup_regression_test.sh
 memcg_regression	memcg_regression_test.sh
 memcg_function		memcg_function_test.sh
+memcg_max_usage_in_bytes	memcg_max_usage_in_bytes_test.sh
 memcg_stress		memcg_stress_test.sh
 memcg_control		PAGESIZE=$(mem_process -p);memcg_control_test.sh $PAGESIZE $PAGESIZE $((PAGESIZE * 2))
 cgroup_fj	run_cgroup_test_fj.sh
