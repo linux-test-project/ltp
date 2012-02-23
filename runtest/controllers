@@ -6,6 +6,7 @@ memcg_max_usage_in_bytes	memcg_max_usage_in_bytes_test.sh
 memcg_move_charge_at_immigrate	memcg_move_charge_at_immigrate_test.sh
 memcg_memsw_limit_in_bytes	memcg_memsw_limit_in_bytes_test.sh
 memcg_stat	memcg_stat_test.sh
+memcg_use_hierarchy	memcg_use_hierarchy_test.sh
 memcg_stress		memcg_stress_test.sh
 memcg_control		PAGESIZE=$(mem_process -p);memcg_control_test.sh $PAGESIZE $PAGESIZE $((PAGESIZE * 2))
 cgroup_fj	run_cgroup_test_fj.sh
