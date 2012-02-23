@@ -100,12 +100,12 @@ ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
 /***********************************************************************
  * ltp_clone_quick: calls ltp_clone_malloc with predetermined stack size.
  * Experience thus far suggests that one page is often insufficient,
- * while 4*getpagesize() seems adequate.
+ * while 6*getpagesize() seems adequate.
  ***********************************************************************/
 int
 ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg), void *arg)
 {
-	size_t stack_size = getpagesize() * 4;
+	size_t stack_size = getpagesize() * 6;
 
 	return ltp_clone_malloc(clone_flags, fn, arg, stack_size);
 }
