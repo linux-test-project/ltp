@@ -54,11 +54,22 @@ int TST_TOTAL = 1;
 
 #define BIAS_MAX      1000
 #define RECORD_MAX    20
+#define FACTOR_MAX    10
 
 #ifndef RUSAGE_THREAD
 #define RUSAGE_THREAD 1
 #endif
 
+static int opt_factor;
+static char *factor_str;
+static long factor_nr = 1;
+
+option_t child_options[] = {
+	{ "m:", &opt_factor, &factor_str },
+	{ NULL, NULL,         NULL }
+};
+
+static void fusage(void);
 static void busyloop(long wait);
 static void setup(void);
 static void cleanup(void);
@@ -69,8 +80,9 @@ int main(int argc, char *argv[])
 	unsigned long ulast, udelta, slast, sdelta;
 	int i, lc;
 	char *msg;
+	char msg_string[BUFSIZ];
 
-	msg = parse_opts(argc, argv, NULL, NULL);
+	msg = parse_opts(argc, argv, child_options, fusage);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -79,6 +91,12 @@ int main(int argc, char *argv[])
 #endif
 
 	setup();
+
+	if (opt_factor)
+		factor_nr = SAFE_STRTOL(cleanup, factor_str, 0, FACTOR_MAX);
+
+	tst_resm(TINFO, "Using %ld as multiply factor for max [us]time "
+		 "increment (1000+%ldus)!", factor_nr, BIAS_MAX * factor_nr);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0; i = 0;
@@ -95,14 +113,20 @@ int main(int argc, char *argv[])
 				tst_resm(TINFO, "utime:%12luus; stime:%12luus",
 					    usage.ru_utime.tv_usec,
 					    usage.ru_stime.tv_usec);
-				if (udelta > 1000+BIAS_MAX)
-					tst_brkm(TFAIL, cleanup,
-						    "utime increased > 1000us:"
+				if (udelta > 1000+(BIAS_MAX * factor_nr)) {
+					sprintf(msg_string,
+						"utime increased > %ldus:",
+						1000 + BIAS_MAX * factor_nr);
+					tst_brkm(TFAIL, cleanup, msg_string,
 						    " delta = %luus", udelta);
-				if (sdelta > 1000+BIAS_MAX)
-					tst_brkm(TFAIL, cleanup,
-						    "stime increased > 1000us:"
+				}
+				if (sdelta > 1000+(BIAS_MAX * factor_nr)) {
+					sprintf(msg_string,
+						"stime increased > %ldus:",
+						1000 + BIAS_MAX * factor_nr);
+					tst_brkm(TFAIL, cleanup, msg_string,
 						    " delta = %luus", sdelta);
+				}
 			}
 			ulast = usage.ru_utime.tv_usec;
 			slast = usage.ru_stime.tv_usec;
@@ -111,6 +135,12 @@ int main(int argc, char *argv[])
 	}
 	cleanup();
 	tst_exit();
+}
+
+static void fusage(void)
+{
+	printf("  -m n    use n as multiply factor for max [us]time "
+	       "increment (1000+(1000*n)us),\n          default value is 1\n");
 }
 
 static void busyloop(long wait)
