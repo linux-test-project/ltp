@@ -17,7 +17,7 @@
 *  Foundation,
 *
 *  FILE        : aio_tio
-*  USAGE       : runfstest case/aio_tio
+*  USAGE       : ./aio_tio
 *
 *  DESCRIPTION : This program will test Asynchronous I/O for 2.5 Kernel infrastructure
 *  REQUIREMENTS:
@@ -213,7 +213,7 @@ int test_main(void)
 	int	status = 0 ;
 
 	tst_resm(TINFO, "Running test 1\n");
-	status = io_tio("testdir/file1",
+	status = io_tio("file1",
 			O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE,
 			AIO_MAXIO, IO_CMD_PWRITE);
 	if (status) {
@@ -221,42 +221,42 @@ int test_main(void)
 	}
 
 	tst_resm(TINFO, "Running test 2\n");
-	status = io_tio("testdir/file1", O_RDONLY | O_DIRECT | O_LARGEFILE,
+	status = io_tio("file1", O_RDONLY | O_DIRECT | O_LARGEFILE,
 			AIO_MAXIO, IO_CMD_PREAD);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 3\n");
-	status = io_tio("testdir/file1", O_TRUNC | O_RDWR,
+	status = io_tio("file1", O_TRUNC | O_RDWR,
 			AIO_MAXIO, IO_CMD_PWRITE);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 4\n");
-	status = io_tio("testdir/file1", O_RDWR,
+	status = io_tio("file1", O_RDWR,
 			AIO_MAXIO, IO_CMD_PREAD);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 5\n");
-	status = io_tio("testdir/file1", O_TRUNC | O_WRONLY,
+	status = io_tio("file1", O_TRUNC | O_WRONLY,
 			AIO_MAXIO, IO_CMD_PWRITE);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 6 \n");
-	status = io_tio("testdir/file1", O_RDONLY,
+	status = io_tio("file1", O_RDONLY,
 			AIO_MAXIO, IO_CMD_PREAD);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 7 \n");
-	status = io_tio("testdir/file2",
+	status = io_tio("file2",
 			O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE,
 			AIO_MAXIO, IO_CMD_FSYNC);
 	if (status) {
@@ -264,7 +264,7 @@ int test_main(void)
 	}
 
 	tst_resm(TINFO, "Running test 8 \n");
-	status = io_tio("testdir/file2",
+	status = io_tio("file2",
 			O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE,
 			AIO_MAXIO, IO_CMD_FDSYNC);
 	if (status) {

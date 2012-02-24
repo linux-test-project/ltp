@@ -1,3 +1,3 @@
 #AIO01 & AIO02 tests to be run
 aio01 aio01
-aio02 runfstests.sh -a aio_tio
+aio02 aio_tio

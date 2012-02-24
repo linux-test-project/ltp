@@ -27,8 +27,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 # Needed for common.h...
 CPPFLAGS		+= -D_GNU_SOURCE
 
-INSTALL_TARGETS		:= runfstests.sh
-
 LDLIBS			+= $(AIO_LIBS)
 
 FILTER_OUT_MAKE_TARGETS	:= main

@@ -23,14 +23,16 @@ int test_main(void);
 
 int main(void)
 {
+	tst_tmpdir();
+
 	test_main();
+
+	tst_rmdir();
 	tst_exit();
 }
 #else
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "libaio missing");
-
-	tst_exit();
 }
 #endif

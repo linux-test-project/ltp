@@ -2,7 +2,7 @@ This program will test Asynchronous I/O support by kernel 2.5 .
 make the program
 	make
 execute the test
-	./runfstests.sh cases/aio_tio
+	./aio_tio
 
 
 NOTE:
