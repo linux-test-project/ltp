@@ -63,6 +63,8 @@ int  path_exist(const char *path, ...);
 long read_meminfo(char *item);
 void set_sys_tune(char *sys_file, long tune, int check);
 long get_sys_tune(char *sys_file);
+void write_file(char *filename, char *buf);
+void read_file(char *filename, char *retbuf);
 void cleanup(void);
 void setup(void);
 

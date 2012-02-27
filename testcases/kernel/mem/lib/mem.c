@@ -781,21 +781,14 @@ long read_meminfo(char *item)
 
 void set_sys_tune(char *sys_file, long tune, int check)
 {
-	int fd;
 	long val;
 	char buf[BUFSIZ], path[BUFSIZ];
 
 	tst_resm(TINFO, "set %s to %ld", sys_file, tune);
 
 	snprintf(path, BUFSIZ, "%s%s", PATH_SYSVM, sys_file);
-	fd = open(path, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", sys_file);
-	if (snprintf(buf, BUFSIZ, "%ld", tune) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "snprintf");
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", sys_file);
-	close(fd);
+	snprintf(buf, BUFSIZ, "%ld", tune);
+	write_file(path, buf);
 
 	if (check) {
 		val = get_sys_tune(sys_file);
@@ -807,16 +800,33 @@ void set_sys_tune(char *sys_file, long tune, int check)
 
 long get_sys_tune(char *sys_file)
 {
-	int fd;
 	char buf[BUFSIZ], path[BUFSIZ];
 
 	snprintf(path, BUFSIZ, "%s%s", PATH_SYSVM, sys_file);
-	fd = open(path, O_RDONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", sys_file);
-	if (read(fd, buf, BUFSIZ) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "read %s", sys_file);
-	close(fd);
-
+	read_file(path, buf);
 	return SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
+}
+
+void write_file(char *filename, char *buf)
+{
+	int fd;
+
+	fd = open(filename, O_WRONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", filename);
+	if (write(fd, buf, strlen(buf)) != strlen(buf))
+		tst_brkm(TBROK|TERRNO, cleanup, "write %s", filename);
+	close(fd);
+}
+
+void read_file(char *filename, char *retbuf)
+{
+	int fd;
+
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open %s", filename);
+	if (read(fd, retbuf, BUFSIZ) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "read %s", filename);
+	close(fd);
 }
