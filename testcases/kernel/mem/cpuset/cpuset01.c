@@ -31,6 +31,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
+#include "../include/mem.h"
 
 char *TCID = "cpuset01";
 int TST_TOTAL = 1;
@@ -54,23 +55,17 @@ int TST_TOTAL = 1;
 #include <signal.h>
 #include <stdarg.h>
 
-#define MAXNODES		512
-#define CPATH			"/dev/cpuset"
-#define CPATH_NEW		"/dev/cpuset/1"
-#define PATH_SYS_SYSTEM		"/sys/devices/system"
-
 static pid_t *pids;
 volatile int end;
+static long nodes[MAXNODES];
+static long nnodes;
+static long ncpus;
 
-static void setup(void);
-static void cleanup(void) LTP_ATTRIBUTE_NORETURN;
 static void testcpuset(void);
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED);
-static int mem_hog(void);
-static long count_numa(void);
+static int  mem_hog(void);
+static int  mem_hog_cpuset(int ntasks);
 static long count_cpu(void);
-static int path_exist(const char *path, ...);
-static int mem_hog_cpuset(int ntasks);
 
 int main(int argc, char *argv[])
 {
@@ -79,64 +74,26 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	ncpus = count_cpu();
+	nnodes = count_numa(nodes);
+	tst_resm(TINFO, "The system has %ld CPUs, %ld NUMA nodes",
+			ncpus, nnodes);
+	if (nnodes <= 1)
+		tst_brkm(TCONF, NULL, "required a NUMA system.");
+
 	setup();
 	testcpuset();
 	cleanup();
 }
 
-void testcpuset(void)
+static void testcpuset(void)
 {
 	int lc;
-	FILE *fp;
-	char buf[BUFSIZ], value[BUFSIZ];
-	int fd, child, i, status;
-	unsigned long nnodes = 1, nmask = 0, ncpus = 1;
+	int child, i, status;
+	unsigned long nmask = 0;
 
-	nnodes = count_numa();
-	ncpus = count_cpu();
-
-	snprintf(buf, BUFSIZ, "%s/cpus", CPATH);
-	fp = fopen(buf, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fopen");
-	if (fgets(value, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fgets");
-	fclose(fp);
-
-	/* Remove the trailing newline. */
-	value[strlen(value) - 1] = '\0';
-	snprintf(buf, BUFSIZ, "%s/cpus", CPATH_NEW);
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	if (write(fd, value, strlen(value)) != strlen(value))
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
-
-	snprintf(buf, BUFSIZ, "%s/mems", CPATH);
-	fp = fopen(buf, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fopen");
-	if (fgets(value, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fgets");
-	fclose(fp);
-
-	snprintf(buf, BUFSIZ, "%s/mems", CPATH_NEW);
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	if (write(fd, value, strlen(value)) != strlen(value))
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
-
-	snprintf(buf, BUFSIZ, "%s/tasks", CPATH_NEW);
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	snprintf(buf, BUFSIZ, "%d", getpid());
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
+	write_cpusets(nodes[0]);
 
 	pids = malloc(nnodes * sizeof(pid_t));
 	if (!pids)
@@ -153,21 +110,13 @@ void testcpuset(void)
 		mem_hog_cpuset(ncpus > 1 ? ncpus : 1);
 		exit(0);
 	}
-	snprintf(buf, BUFSIZ, "%s/mems", CPATH_NEW);
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		if (write(fd, "0", 1) != 1)
-			tst_brkm(TBROK|TERRNO, cleanup, "write");
-		if (lseek(fd, 0, SEEK_SET) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "lseek");
-		if (write(fd, "1", 1) != 1)
-			tst_brkm(TBROK|TERRNO, cleanup, "write");
+		write_cpuset_mems(nodes[1]);
+		write_cpuset_cpus(nodes[1], 1);
+		write_cpuset_mems(nodes[0]);
+		write_cpuset_cpus(nodes[0], 1);
 	}
-	close(fd);
 
 	if (waitpid(child, &status, WUNTRACED | WCONTINUED) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
@@ -179,60 +128,25 @@ void setup(void)
 {
 	tst_require_root(NULL);
 
-	if (count_numa() <= 1)
-		tst_brkm(TCONF, NULL, "required a NUMA system.");
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
-	if (mkdir(CPATH, 0777) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir");
-	if (mount("cpuset", CPATH, "cpuset", 0, NULL) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mount");
-	if (mkdir(CPATH_NEW, 0777) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir");
+
+	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
 }
+
 void cleanup(void)
 {
-	FILE *fp;
-	int fd;
-	char s_new[BUFSIZ], s[BUFSIZ], value[BUFSIZ];
-
-	/* Move all processes in task to its parent cpuset node. */
-	snprintf(s, BUFSIZ, "%s/tasks", CPATH);
-	fd = open(s, O_WRONLY);
-	if (fd == -1)
-		tst_resm(TWARN|TERRNO, "open");
-
-	snprintf(s_new, BUFSIZ, "%s/tasks", CPATH_NEW);
-	fp = fopen(s_new, "r");
-	if (fp == NULL)
-		tst_resm(TWARN|TERRNO, "fopen");
-
-	if ((fd != -1) && (fp != NULL)) {
-		while (fgets(value, BUFSIZ, fp) != NULL)
-			if (write(fd, value, strlen(value) - 1)
-				!= strlen(value) - 1)
-				tst_resm(TWARN|TERRNO, "write");
-	}
-	if (fd != -1)
-		close(fd);
-	if (fp != NULL)
-		fclose(fp);
-	if (rmdir(CPATH_NEW) == -1)
-		tst_resm(TWARN|TERRNO, "rmdir");
-	if (umount(CPATH) == -1)
-		tst_resm(TWARN|TERRNO, "umount");
-	if (rmdir(CPATH) == -1)
-		tst_resm(TWARN|TERRNO, "rmdir");
+	umount_mem(CPATH, CPATH_NEW);
 
 	TEST_CLEANUP;
 }
 
-void sighandler(int signo LTP_ATTRIBUTE_UNUSED)
+static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	end = 1;
 }
 
-int mem_hog(void)
+static int mem_hog(void)
 {
 	long pagesize;
 	unsigned long *addr;
@@ -253,7 +167,7 @@ int mem_hog(void)
 	return ret;
 }
 
-int mem_hog_cpuset(int ntasks)
+static int mem_hog_cpuset(int ntasks)
 {
 	int i, pid, status, ret = 0;
 	struct sigaction sa;
@@ -294,17 +208,7 @@ int mem_hog_cpuset(int ntasks)
 	return ret;
 }
 
-long count_numa(void)
-{
-	int nnodes = 0;
-
-	while (path_exist(PATH_SYS_SYSTEM "/node/node%d", nnodes))
-		nnodes++;
-
-	return nnodes;
-}
-
-long count_cpu(void)
+static long count_cpu(void)
 {
 	int ncpus = 0;
 
@@ -312,18 +216,6 @@ long count_cpu(void)
 		ncpus++;
 
 	return ncpus;
-}
-
-static int path_exist(const char *path, ...)
-{
-	va_list ap;
-	char pathbuf[PATH_MAX];
-
-	va_start(ap, path);
-	vsnprintf(pathbuf, sizeof(pathbuf), path, ap);
-	va_end(ap);
-
-	return access(pathbuf, F_OK) == 0;
 }
 
 #else /* no NUMA */

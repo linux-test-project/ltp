@@ -19,8 +19,26 @@
 
 top_srcdir              ?= ../../../..
 
-include $(top_srcdir)/include/mk/testcases.mk
+include $(top_srcdir)/include/mk/env_pre.mk
 
-LDLIBS 			+= $(NUMA_LIBS) -lm
+LDLIBS 			+= $(NUMA_LIBS) -lmem -lm
+LIBDIR			:= ../lib
+LIB			:= $(LIBDIR)/libmem.a
+FILTER_OUT_DIRS         := $(LIBDIR)
+LDFLAGS                 += -L$(LIBDIR)
+
+$(LIBDIR):
+	mkdir -p "$@"
+
+$(LIB): $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
+
+MAKE_DEPS               := $(LIB)
+
+trunk-clean:: | lib-clean
+
+lib-clean:: $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+include $(top_srcdir)/include/mk/testcases.mk
