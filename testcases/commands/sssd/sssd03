@@ -1,0 +1,217 @@
+#! /bin/sh
+
+#  Copyright (c) 2012 FUJITSU LIMITED
+#
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# Description:  Test allowed_shells, vetoed_shells and shell_fallback
+#               in the configuration file.
+# Author:       Peng Haitao <penght@cn.fujitsu.com>
+# History:      2012/02/09 - Created.
+#
+
+. ./sssd-lib.sh || exit 1
+
+sssd_case1()
+{
+	export TST_COUNT=1
+
+	tst_resm TINFO "test allowed_shells with the shell in \"/etc/shells\"."
+
+	sss_usermod -s $line_shell $username
+	getent passwd $username@LOCAL | grep "$line_shell" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user login shell is $line_shell."
+	else
+		tst_resm TFAIL "sssd: user login shell should be $line_shell."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+sssd_case2()
+{
+	export TST_COUNT=2
+
+	tst_resm TINFO "test not set allowed_shells"
+
+	make_config_file
+	sleep 1
+
+	restart_sssd_daemon
+
+	# When not set allowed_shells, the user shell is used even if is wrong
+	sss_usermod -s $LTPTMP/noshell $username
+	getent passwd $username@LOCAL | grep "$LTPTMP/noshell" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is $LTPTMP/noshell."
+	else
+		tst_resm TFAIL "sssd: user home dir should be $LTPTMP/noshell."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+sssd_case3()
+{
+	export TST_COUNT=3
+
+	tst_resm TINFO "test use shell_fallback when set allowed_shells"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	sed -i -e "/\[nss\]/ a\allowed_shells = $LTPTMP/noshell" $CONFIG_FILE
+	sleep 1
+
+	sss_usermod -s $LTPTMP/noshell $username
+
+	restart_sssd_daemon
+
+	# When the shell is in the allowed_shells list but not in "/etc/shells"
+	# use the value of the shell_fallback parameter.
+	# shell_fallback's default value is /bin/sh.
+	getent passwd $username@LOCAL | grep "/bin/sh" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is /bin/sh."
+	else
+		tst_resm TFAIL "sssd: user home dir should be /bin/sh."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+sssd_case4()
+{
+	export TST_COUNT=4
+
+	tst_resm TINFO "test use shell_fallback when set allowed_shells"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	sed -i -e "/\[nss\]/ a\allowed_shells = $LTPTMP/noshell" $CONFIG_FILE
+	sed -i -e "/\[nss\]/ a\shell_fallback = $line_shell" $CONFIG_FILE
+	sleep 1
+
+	sss_usermod -s $LTPTMP/noshell $username
+
+	restart_sssd_daemon
+
+	# When the shell is in the allowed_shells list but not in "/etc/shells"
+	# use the value of the shell_fallback parameter.
+	# shell_fallback's value is set $line_shell.
+	getent passwd $username@LOCAL | grep "$line_shell" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is $line_shell."
+	else
+		tst_resm TFAIL "sssd: user home dir should be $line_shell."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+sssd_case5()
+{
+	export TST_COUNT=5
+
+	tst_resm TINFO "test use shell_fallback when set vetoed_shells"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	sed -i -e "/\[nss\]/ a\vetoed_shells = $line_shell" $CONFIG_FILE
+	sleep 1
+
+	sss_usermod -s $line_shell $username
+
+	restart_sssd_daemon
+
+	# When the shell is in the vetoed_shells list,
+	# use the value of the shell_fallback parameter.
+	# shell_fallback's default value is /bin/sh.
+	getent passwd $username@LOCAL | grep "/bin/sh" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is /bin/sh."
+	else
+		tst_resm TFAIL "sssd: user home dir should be /bin/sh."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+sssd_case6()
+{
+	export TST_COUNT=6
+
+	tst_resm TINFO "test use nologin when not in allowed_shells"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	sed -i -e "/\[nss\]/ a\allowed_shells = $line_shell" $CONFIG_FILE
+	sleep 1
+
+	sss_usermod -s $LTPTMP/noshell $username
+
+	restart_sssd_daemon
+
+	# When the shell is not in the allowed_shells list, and not in
+	# "/etc/shells", a nologin shell is used.
+	getent passwd $username@LOCAL | grep "/sbin/nologin" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is /sbin/nologin."
+	else
+		tst_resm TFAIL "sssd: user home dir should be /sbin/nologin."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+export TST_TOTAL=6
+export TCID=sssd03
+
+grep -v -w -E "nologin|sh|bash" /etc/shells > $LTPTMP/all_shells
+line_shell=`sed -n '1p' $LTPTMP/all_shells`
+if [ -z "$line_shell" ]; then
+	rm -f $LTPTMP/all_shells
+	tst_brkm TCONF NULL "Please install another shell."
+	return 0
+fi
+rm -f $LTPTMP/all_shells
+
+TFAILCNT=0
+username="sssd_test_user"
+
+make_config_file
+# make sure config file is OK
+sleep 1
+restart_sssd_daemon
+sss_useradd $username
+
+for i in $(seq 1 $TST_TOTAL); do
+	sssd_case$i
+done
+
+sss_userdel $username
+cleanup ${TFAILCNT:=0}
