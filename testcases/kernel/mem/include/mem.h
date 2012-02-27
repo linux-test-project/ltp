@@ -5,7 +5,6 @@
 #include "usctest.h"
 
 #define LENGTH			(3UL<<30)
-#define SYSFS_OVER		"/proc/sys/vm/overcommit_memory"
 #define OVERCOMMIT		1
 #define NORMAL			2
 #define MLOCK			3
@@ -27,7 +26,6 @@
 #define PATH_SYSVM		"/proc/sys/vm/"
 #define PATH_MEMINFO		"/proc/meminfo"
 
-char overcommit[BUFSIZ];
 int opt_num, opt_size, opt_unit;
 char *opt_numstr, *opt_sizestr, *opt_unitstr;
 /* memory pointer to identify per process, MB unit, and byte like
@@ -35,6 +33,8 @@ char *opt_numstr, *opt_sizestr, *opt_unitstr;
 char ***memory;
 
 /* For mm/oom* tests */
+
+long overcommit;
 int  _alloc_mem(long int length, int testcase);
 void _test_alloc(int testcase, int lite);
 void oom(int testcase, int mempolicy, int lite);

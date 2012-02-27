@@ -47,7 +47,7 @@ int TST_TOTAL = 1;
 int main(int argc, char *argv[])
 {
 	char *msg;
-	int lc, fd;
+	int lc;
 	long nodes[MAXNODES];
 
 	msg = parse_opts(argc, argv, NULL, NULL);
@@ -65,12 +65,6 @@ int main(int argc, char *argv[])
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		fd = open(SYSFS_OVER, O_WRONLY);
-		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open");
-		if (write(fd, "1", 1) != 1)
-			tst_brkm(TBROK|TERRNO, cleanup, "write");
-		close(fd);
 
 		tst_resm(TINFO, "process mempolicy.");
 		testoom(1, 0, 1);
@@ -84,34 +78,18 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
-	int fd;
-
 	tst_require_root(NULL);
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
-	fd = open(SYSFS_OVER, O_RDONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "open");
-	if (read(fd, &overcommit, 1) != 1)
-		tst_brkm(TBROK|TERRNO, NULL, "read");
-	close(fd);
-
+	overcommit = get_sys_tune("overcommit_memory");
+	set_sys_tune("overcommit_memory", 1, 1);
 	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
 }
 
 void cleanup(void)
 {
-	int fd;
-
-	fd = open(SYSFS_OVER, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	if (write(fd, &overcommit, 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
-
+	set_sys_tune("overcommit_memory", overcommit, 0);
 	umount_mem(CPATH, CPATH_NEW);
 
 	TEST_CLEANUP;
