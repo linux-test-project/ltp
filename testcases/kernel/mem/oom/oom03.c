@@ -43,7 +43,7 @@ int TST_TOTAL = 1;
 int main(int argc, char *argv[])
 {
 	char *msg;
-	int lc, fd;
+	int lc;
 	char buf[BUFSIZ], mem[BUFSIZ];
 
 	msg = parse_opts(argc, argv, NULL, NULL);
@@ -59,30 +59,14 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		fd = open(MEMCG_PATH_NEW "/memory.limit_in_bytes", O_WRONLY);
-		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-		sprintf(mem, "%ld", TESTMEM);
-		if (write(fd, mem, strlen(mem)) != strlen(mem))
-			tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-		close(fd);
-
-		fd = open(MEMCG_PATH_NEW "/tasks", O_WRONLY);
-		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
 		snprintf(buf, BUFSIZ, "%d", getpid());
-		if (write(fd, buf, strlen(buf)) != strlen(buf))
-			tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-		close(fd);
+		write_file(MEMCG_PATH_NEW "/tasks", buf);
+
+		snprintf(mem, BUFSIZ, "%ld", TESTMEM);
+		write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
 		testoom(0, 0, 0);
 
-		fd = open(MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes",
-			O_WRONLY);
-		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", buf);
-		if (write(fd, mem, strlen(mem)) != strlen(mem))
-			tst_brkm(TBROK|TERRNO, cleanup, "write %s", buf);
-		close(fd);
+		write_file(MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes", mem);
 		testoom(0, 1, 0);
 	}
 	cleanup();
