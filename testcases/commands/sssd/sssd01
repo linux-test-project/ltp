@@ -1,0 +1,143 @@
+#! /bin/sh
+
+#  Copyright (c) 2012 FUJITSU LIMITED
+#
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# Description:  Test override_homedir in the configuration file.
+# Author:       Peng Haitao <penght@cn.fujitsu.com>
+# History:      2012/02/17 - Created.
+#
+
+. ./sssd-lib.sh || exit 1
+
+sssd_case1()
+{
+	export TST_COUNT=1
+
+	tst_resm TINFO "test override_homedir with absolute path in [nss]"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	sed -i -e "/\[nss\]/ a\override_homedir = $LTPTMP" $CONFIG_FILE
+	sleep 1
+
+	getent passwd $username@LOCAL | grep "$LTPTMP" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TFAIL "sssd: user home dir should be not $LTPTMP."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	restart_sssd_daemon
+
+	getent passwd $username@LOCAL | grep "$LTPTMP" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is $LTPTMP."
+	else
+		tst_resm TFAIL "sssd: user home dir should be $LTPTMP."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+sssd_case2()
+{
+	export TST_COUNT=2
+
+	tst_resm TINFO "test override_homedir with template in [domain/LOCAL]"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	sed -i -e "/\[domain\/LOCAL\]/ a\override_homedir = $LTPTMP/%u_%U@%d" \
+		   $CONFIG_FILE
+	sleep 1
+
+	uid=`id -u $username`
+	home_dir="$LTPTMP/${username}_$uid@LOCAL"
+	getent passwd $username@LOCAL | grep "$home_dir" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TFAIL "sssd: user home dir should be not $home_dir."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	restart_sssd_daemon
+
+	getent passwd $username@LOCAL | grep "$home_dir" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is $home_dir."
+	else
+		tst_resm TFAIL "sssd: user home dir should be $home_dir."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+sssd_case3()
+{
+	export TST_COUNT=3
+
+	tst_resm TINFO "test override_homedir with absolute path in [nss]"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	sed -i -e "/\[nss\]/ a\override_homedir = $LTPTMP/%f" $CONFIG_FILE
+	sleep 1
+
+	home_dir="$LTPTMP/$username@LOCAL"
+	getent passwd $username@LOCAL | grep "$home_dir" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TFAIL "sssd: user home dir should be not $home_dir."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	restart_sssd_daemon
+
+	getent passwd $username@LOCAL | grep "$home_dir" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user home dir is $home_dir."
+	else
+		tst_resm TFAIL "sssd: user home dir should be $home_dir."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+export TST_TOTAL=3
+export TCID=sssd01
+
+TFAILCNT=0
+username="sssd_test_user"
+
+make_config_file
+# make sure config file is OK
+sleep 1
+restart_sssd_daemon
+sss_useradd $username
+
+for i in $(seq 1 $TST_TOTAL); do
+	sssd_case$i
+done
+
+sss_userdel $username
+cleanup ${TFAILCNT:=0}
