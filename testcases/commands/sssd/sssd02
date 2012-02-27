@@ -1,0 +1,75 @@
+#! /bin/sh
+
+#  Copyright (c) 2012 FUJITSU LIMITED
+#
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# Description:  Test override_gid in the configuration file.
+# Author:       Peng Haitao <penght@cn.fujitsu.com>
+# History:      2012/02/08 - Created.
+#
+
+. ./sssd-lib.sh || exit 1
+
+sssd_case1()
+{
+	tst_resm TINFO "test override_gid with gid+1 in [domain/LOCAL]"
+
+	# Create the configuration file specific to this test case.
+	make_config_file
+	gid=`id -g $username`
+	gid_add_one=$(( gid+1 ))
+	sed -i -e "/\[domain\/LOCAL\]/ a\override_gid = $gid_add_one" \
+		$CONFIG_FILE
+	sleep 1
+
+	getent passwd $username@LOCAL | grep "$gid_add_one" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TFAIL "sssd: user GID should be not $gid_add_one."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	restart_sssd_daemon
+
+	getent passwd $username@LOCAL | grep "$gid_add_one" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "sssd: user GID is $gid_add_one."
+	else
+		tst_resm TFAIL "sssd: user GID should be $gid_add_one."
+		: $(( TFAILCNT += 1 ))
+		return $TFAILCNT
+	fi
+
+	return 0
+}
+
+export TST_TOTAL=1
+export TST_COUNT=1
+export TCID=sssd02
+
+TFAILCNT=0
+username="sssd_test_user"
+
+make_config_file
+# make sure config file is OK
+sleep 1
+restart_sssd_daemon
+sss_useradd $username
+
+sssd_case1
+
+sss_userdel $username
+cleanup ${TFAILCNT:=0}

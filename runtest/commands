@@ -18,3 +18,4 @@ mkdir_tests01 mkdir_tests.sh
 mv_tests01 mv_tests.sh
 size01 size01
 sssd01 sssd01
+sssd02 sssd02
