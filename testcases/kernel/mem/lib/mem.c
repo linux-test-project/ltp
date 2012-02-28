@@ -148,33 +148,22 @@ static void _group_check(int run, int pages_shared, int pages_sharing,
 		int pages_volatile, int pages_unshared,
 		int sleep_millisecs, int pages_to_scan)
 {
-	int fd;
 	char buf[BUFSIZ];
-	int old_num, new_num;
+	long old_num, new_num;
 
 	/* 1 seconds for ksm to scan pages. */
 	while (sleep(1) == 1)
 		continue;
 
-	fd = open("/sys/kernel/mm/ksm/full_scans", O_RDONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-
+	read_file(PATH_KSM "full_scans", buf);
 	/* wait 3 increments of full_scans */
-	if (read(fd, buf, BUFSIZ) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "read");
-	old_num = new_num = atoi(buf);
-	if (lseek(fd, 0, SEEK_SET) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "lseek");
+	old_num = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+	new_num = old_num;
 	while (new_num < old_num * 3) {
 		sleep(1);
-		if (read(fd, buf, BUFSIZ) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "read");
-		new_num = atoi(buf);
-		if (lseek(fd, 0, SEEK_SET) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "lseek");
+		read_file(PATH_KSM "full_scans", buf);
+		new_num = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
 	}
-	close(fd);
 
 	tst_resm(TINFO, "check!");
 	_check("run", run);
@@ -212,34 +201,20 @@ static void _verify(char value, int proc, int start, int end,
 
 void write_memcg(void)
 {
-	int fd;
-	char buf[BUFSIZ], mem[BUFSIZ], path[BUFSIZ];
+	char buf[BUFSIZ], mem[BUFSIZ];
 
-	snprintf(path, BUFSIZ, "%s%s",
-		    MEMCG_PATH_NEW, "/memory.limit_in_bytes");
-	fd = open(path, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
-	sprintf(mem, "%ld", TESTMEM);
-	if (write(fd, mem, strlen(mem)) != strlen(mem))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
-	close(fd);
+	snprintf(mem, BUFSIZ, "%ld", TESTMEM);
+	write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
 
-	snprintf(path, BUFSIZ, "%s%s", MEMCG_PATH_NEW, "/tasks");
-	fd = open(path, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
 	snprintf(buf, BUFSIZ, "%d", getpid());
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
-	close(fd);
+	write_file(MEMCG_PATH_NEW "/tasks", buf);
 }
 
 void create_same_memory(int size, int num, int unit)
 {
-	char buf[BUFSIZ], buf2[BUFSIZ];
+	char buf[BUFSIZ];
 	int i, j, k;
-	int status, fd;
+	int status;
 	int *child;
 	long ps, pages;
 
@@ -437,29 +412,10 @@ void create_same_memory(int size, int num, int unit)
 		}
 	}
 	tst_resm(TINFO, "KSM merging...");
-	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, "run");
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	if (write(fd, "1", 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
-	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, "pages_to_scan");
-	snprintf(buf2, BUFSIZ, "%ld", size * pages * num);
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	if (write(fd, buf2, strlen(buf2)) != strlen(buf2))
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
-
-	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, "sleep_millisecs");
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	if (write(fd, "0", 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
+	write_file(PATH_KSM "run", "1");
+	snprintf(buf, BUFSIZ, "%ld", size * pages * num);
+	write_file(PATH_KSM "pages_to_scan", buf);
+	write_file(PATH_KSM "sleep_millisecs", "0");
 
 	tst_resm(TINFO, "wait for all children to stop.");
 	for (k = 0; k < num; k++) {
@@ -528,12 +484,7 @@ void create_same_memory(int size, int num, int unit)
 			tst_brkm(TBROK|TERRNO, cleanup, "kill child[%d]", k);
 	}
 	tst_resm(TINFO, "KSM unmerging...");
-	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, "run");
-	fd = open(buf, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
-	if (write(fd, "2", 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
+	write_file(PATH_KSM "run", "2");
 	_group_check(2, 0, 0, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "wait for all children to stop.");
@@ -550,11 +501,7 @@ void create_same_memory(int size, int num, int unit)
 			tst_brkm(TBROK|TERRNO, cleanup, "kill child[%d]", k);
 	}
 	tst_resm(TINFO, "stop KSM.");
-	if (lseek(fd, 0, SEEK_SET) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "lseek");
-	if (write(fd, "0", 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
-	close(fd);
+	write_file(PATH_KSM "run", "0");
 	_group_check(0, 0, 0, 0, 0, 0, size * pages * num);
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0)
 		if (WEXITSTATUS(status) != 0)
