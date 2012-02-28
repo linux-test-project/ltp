@@ -140,7 +140,7 @@ int main() {
 		nb_child = 1;
 	}
 
-	child_pid = malloc(nb_child);
+	child_pid = malloc(nb_child * sizeof(int));
 
 	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
 				 sched_get_priority_max(SCHED_FIFO)) / 2;

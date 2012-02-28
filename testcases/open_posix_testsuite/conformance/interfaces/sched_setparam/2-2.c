@@ -140,7 +140,7 @@ int main() {
 		nb_child = 1;
 	}
 
-	child_pid = malloc(nb_child);
+	child_pid = malloc(nb_child * sizeof(int));
 	if (child_pid == NULL) {
 		printf("malloc failed\n");
 		return PTS_UNRESOLVED;
