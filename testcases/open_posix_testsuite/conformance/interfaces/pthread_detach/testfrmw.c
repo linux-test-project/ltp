@@ -32,38 +32,33 @@
 /* We use a mutex to avoid conflicts in traces */
 static pthread_mutex_t m_trace = PTHREAD_MUTEX_INITIALIZER;
 
-/*****************************************************************************************/
-/******************************* stdout module *****************************************/
-/*****************************************************************************************/
-/* The following functions will output to stdout */
-#if (1)
-void output_init()
+void output_init(void)
 {
-	/* do nothing */
 	return;
 }
-void output(char * string, ...)
-{
-   va_list ap;
-   char *ts="[??:??:??]";
-   struct tm * now;
-   time_t nw;
 
-   pthread_mutex_lock(&m_trace);
-   nw = time(NULL);
-   now = localtime(&nw);
-   if (now == NULL)
-      printf(ts);
-   else
-      printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
-   va_start(ap, string);
-   vprintf(string, ap);
-   va_end(ap);
-   pthread_mutex_unlock(&m_trace);
-}
-void output_fini()
+void output(char *string, ...)
 {
-	/*do nothing */
+	va_list ap;
+	char *ts = "[??:??:??]";
+	struct tm *now;
+	time_t nw;
+
+	pthread_mutex_lock(&m_trace);
+	nw = time(NULL);
+	now = localtime(&nw);
+	if (now == NULL)
+		printf(ts);
+	else
+		printf("[%2.2d:%2.2d:%2.2d]",
+		       now->tm_hour, now->tm_min, now->tm_sec);
+	va_start(ap, string);
+	vprintf(string, ap);
+	va_end(ap);
+	pthread_mutex_unlock(&m_trace);
+}
+
+void output_fini(void)
+{
 	return;
 }
-#endif
