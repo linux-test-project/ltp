@@ -20,11 +20,12 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "../include/_private.h"
 #include "../include/mem.h"
 
-/* For mm/oom tests */
+/* OOM */
 
-int _alloc_mem(long int length, int testcase)
+static int _alloc_mem(long int length, int testcase)
 {
 	void *s;
 
@@ -49,7 +50,7 @@ int _alloc_mem(long int length, int testcase)
 	return 0;
 }
 
-void _test_alloc(int testcase, int lite)
+static void _test_alloc(int testcase, int lite)
 {
 	if (lite)
 		_alloc_mem(TESTMEM + MB, testcase);
@@ -123,9 +124,9 @@ void testoom(int mempolicy, int lite, int numa)
 	oom(KSM, mempolicy, lite);
 }
 
-/* For mm/ksm* tests */
+/* KSM */
 
-void _check(char *path, long int value)
+static void _check(char *path, long int value)
 {
 	FILE *fp;
 	char buf[BUFSIZ];
@@ -143,7 +144,7 @@ void _check(char *path, long int value)
 		tst_resm(TFAIL, "%s is not %ld.", path, value);
 }
 
-void _group_check(int run, int pages_shared, int pages_sharing,
+static void _group_check(int run, int pages_shared, int pages_sharing,
 		int pages_volatile, int pages_unshared,
 		int sleep_millisecs, int pages_to_scan)
 {
@@ -185,7 +186,8 @@ void _group_check(int run, int pages_shared, int pages_sharing,
 	_check("pages_to_scan", pages_to_scan);
 }
 
-void _verify(char value, int proc, int start, int end, int start2, int end2)
+static void _verify(char value, int proc, int start, int end,
+		int start2, int end2)
 {
 	int i, j;
 	void *s = NULL;
@@ -593,9 +595,9 @@ void ksm_usage(void)
 	printf("  -u      Memory allocation unit in MB\n");
 }
 
-/* For mm/oom* and mm/ksm* tests */
+/* cpuset/memcg */
 
-void _gather_cpus(char *cpus, long nd)
+static void _gather_cpus(char *cpus, long nd)
 {
 	int ncpus = 0;
 	int i;
@@ -729,7 +731,7 @@ void mount_mem(char *name, char *fs, char *options, char *path, char *path_new)
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir %s", path_new);
 }
 
-/* general functions */
+/* shared */
 
 long count_numa(long nodes[])
 {
