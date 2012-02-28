@@ -5,6 +5,10 @@
 	argument has completed, until a signal interrupts the function, or,
 	if timeout is not NULL, until the time interval specified by timeout
 	has passed.
+	The application may determine which AIO completed by scanning operations
+	using aio_error() and aio_return().
+	aio_supend() shall return zero after one or more AIO operations have
+	completed.
 	</assertion>
 	<assertion id="2" tag="ref:XSH6TC2:4266:4269">
 	If any of the aiocb structures in the list correspond to a completed
@@ -20,17 +24,9 @@
 	If the monotonic clock option is supported, the clock that shall be
 	used to measure this time interval shall be CLOCK_MONOTONIC clock.
 	</assertion>
-	<assertion id="6" tag="ref:XSH6TC2:4280:4281">
-	aio_supend() shall return zero after one or more AIO operations have 
-	completed.
-	</assertion>
 	<assertion id="7" tag="ref:XSH6TC2:4281:4282">
 	aio_suspend() shall return the value -1 and set errno to indicate error
 	if it returns before at least one AIO operation have completed.
-	</assertion>
-	<assertion id="8" tag="ref:XSH6TC2:4283:4284">
-	The application may determine which AIO completed by scanning operations
-	using aio_error() and aio_return().
 	</assertion>
 	<assertion id="9" tag="ref:XSH6TC2:4287:4288">
 	aio_suspend() shall fail if:
