@@ -45,6 +45,7 @@ void check_ksm_options(int *size, int *num, int *unit);
 void ksm_usage(void);
 
 /* cpuset/memcg */
+
 #define CPATH			"/dev/cpuset"
 #define CPATH_NEW		CPATH "/1"
 #define MEMCG_PATH		"/dev/cgroup"
@@ -54,6 +55,8 @@ void ksm_usage(void);
 #define PATH_EVTCTRL		MEMCG_PATH_NEW "/cgroup.event_control"
 #endif
 
+void write_cpuset_mems(long nd);
+void write_cpuset_cpus(long nd, int quiet);
 void write_cpusets(long nd);
 void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
 void umount_mem(char *path, char *path_new);

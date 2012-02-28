@@ -615,14 +615,10 @@ static void _gather_cpus(char *cpus, long nd)
 	cpus[strlen(cpus) - 1] = '\0';
 }
 
-void write_cpusets(long nd)
+void write_cpuset_mems(long nd)
 {
-	char cpus[BUFSIZ] = "";
 	char buf[BUFSIZ], path[BUFSIZ];
 	int fd;
-
-	_gather_cpus(cpus, nd);
-	tst_resm(TINFO, "CPU list for node%ld is: %s.", nd, cpus);
 
 	/*
 	 * try either '/dev/cpuset/mems' or '/dev/cpuset/cpuset.mems'
@@ -646,6 +642,17 @@ void write_cpusets(long nd)
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
 		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
 	close(fd);
+}
+
+void write_cpuset_cpus(long nd, int quiet)
+{
+	char cpus[BUFSIZ] = "";
+	char path[BUFSIZ];
+	int fd;
+
+	_gather_cpus(cpus, nd);
+	if (!quiet)
+		tst_resm(TINFO, "CPU list for node%ld is: %s.", nd, cpus);
 
 	/*
 	 * try either '/dev/cpuset/cpus' or '/dev/cpuset/cpuset.cpus'
@@ -668,15 +675,16 @@ void write_cpusets(long nd)
 	if (write(fd, cpus, strlen(cpus)) != strlen(cpus))
 		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
 	close(fd);
+}
 
-	snprintf(path, BUFSIZ, "%s%s", CPATH_NEW, "/tasks");
-	fd = open(path, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open %s", path);
+void write_cpusets(long nd)
+{
+	char buf[BUFSIZ];
+
+	write_cpuset_mems(nd);
+	write_cpuset_cpus(nd, 0);
 	snprintf(buf, BUFSIZ, "%d", getpid());
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write %s", path);
-	close(fd);
+	write_file(CPATH_NEW "/tasks", buf);
 }
 
 void umount_mem(char *path, char *path_new)
