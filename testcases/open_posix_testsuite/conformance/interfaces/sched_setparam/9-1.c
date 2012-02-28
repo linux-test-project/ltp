@@ -30,7 +30,7 @@
  *   5. Check if the shared value has been changed by the child process. If
  *      not, the test fail.
  */
-
+#define _GNU_SOURCE
 #include <sched.h>
 #include <stdio.h>
 #include <signal.h>
@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "posixtest.h"
+#include "affinity.h"
 
 #ifdef BSD
 # include <sys/types.h>
@@ -120,12 +121,16 @@ int main(void)
 	int *child_pid, oldcount, newcount, shm_id, i, j;
 	struct sched_param param;
 	key_t key;
-
-	nb_cpu = get_ncpu();
-
-	if (nb_cpu == -1) {
-		printf("Can not get the number of CPUs of your machines.\n");
-		return PTS_UNRESOLVED;
+	int rc = set_affinity(0);
+	if (rc) {
+		nb_cpu = get_ncpu();
+		if (nb_cpu == -1) {
+			printf("Can not get the number of"
+			       " CPUs of the machine.\n");
+			return PTS_UNRESOLVED;
+		}
+	} else {
+		nb_cpu = 1;
 	}
 
 	child_pid = malloc(nb_cpu * sizeof(int));
