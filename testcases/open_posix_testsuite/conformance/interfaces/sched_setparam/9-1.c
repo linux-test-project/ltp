@@ -63,19 +63,19 @@ static int get_ncpu(void)
 #ifdef _SC_NPROCESSORS_ONLN
 	ncpu = sysconf(_SC_NPROCESSORS_ONLN);
 #else
-# ifdef BSD
+#ifdef BSD
 	int mib[2];
 	size_t len = sizeof(ncpu);
 	mib[0] = CTL_HW;
 	mib[1] = HW_NCPU;
 	sysctl(mib, 2, &ncpu, &len, NULL, 0);
-# else
-#  ifdef HPUX
+#else /* !BSD */
+#ifdef HPUX
 	struct pst_dynamic psd;
 	pstat_getdynamic(&psd, sizeof(psd), 1, 0);
 	ncpu = (int)psd.psd_proc_cnt;
-#  endif /* HPUX */
-# endif /* BSD */
+#endif /* HPUX */
+#endif /* BSD */
 #endif /* _SC_NPROCESSORS_ONLN */
 
 	return ncpu;
@@ -130,7 +130,7 @@ int main(void)
 
 	child_pid = malloc(nb_cpu * sizeof(int));
 
-	key = ftok("conformance/interfaces/sched_setparam/9-1.c",1234);
+	key = ftok("conformance/interfaces/sched_setparam/9-1.c", 1234);
 	shm_id = shmget(key, sizeof(int), IPC_CREAT|0600);
 	if (shm_id < 0) {
 		perror("An error occurs when calling shmget()");
@@ -138,7 +138,7 @@ int main(void)
 	}
 
 	shmptr = shmat(shm_id, 0, 0);
-	if (shmptr == (void*)-1) {
+	if (shmptr == (void *)-1) {
 		perror("An error occurs when calling shmat()");
 		return PTS_UNRESOLVED;
 	}
@@ -147,10 +147,12 @@ int main(void)
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO);
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
 		if (errno == EPERM) {
-			printf("This process does not have the permission to set its own scheduling "
-			       "parameter.\nTry to launch this test as root\n");
+			printf("This process does not have the permission"
+			       " to set its own scheduling parameter.\n"
+			       "Try to launch this test as root\n");
 		} else {
-			perror("An error occurs when calling sched_setscheduler()");
+			perror("An error occurs when calling"
+			       " sched_setscheduler()");
 		}
 		return PTS_UNRESOLVED;
 	}
@@ -159,9 +161,9 @@ int main(void)
 		child_pid[i] = fork();
 		if (child_pid[i] == -1) {
 			perror("An error occurs when calling fork()");
-			for (j = 0; j < i; j++) {
+			for (j = 0; j < i; j++)
 				kill(child_pid[j], SIGTERM);
-			}
+
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
 
@@ -175,9 +177,9 @@ int main(void)
 	child_pid[i] = fork();
 	if (child_pid[i] == -1) {
 		perror("An error occurs when calling fork()");
-		for (j = 0; j < i; j++) {
+		for (j = 0; j < i; j++)
 			kill(child_pid[j], SIGTERM);
-		}
+
 		return PTS_UNRESOLVED;
 	} else if (child_pid[i] == 0) {
 
@@ -201,7 +203,8 @@ int main(void)
 	newcount = *shmptr;
 
 	if (newcount == oldcount) {
-		printf("The target process does not preempt the calling process\n");
+		printf("The target process does not preempt"
+		       " the calling process\n");
 		kill_children(child_pid);
 		return PTS_FAIL;
 	}
