@@ -48,7 +48,6 @@
 #include "testfrmw.h"
 #include "testfrmw.c"
 
-#define VERBOSE 6
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
@@ -57,7 +56,8 @@
 
 #include "threads_scenarii.c"
 
-static char do_it = 1;
+static char do_it1 = 1;
+static char do_it2 = 1;
 static unsigned long count_ope;
 #ifdef WITH_SYNCHRO
 static sem_t semsig1;
@@ -89,7 +89,7 @@ static void *sendsig(void *arg)
 		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2"
 			   " in signal thread");
 
-	while (do_it) {
+	while (do_it1) {
 #ifdef WITH_SYNCHRO
 		ret = sem_wait(thearg->sem);
 		if (ret)
@@ -156,7 +156,7 @@ static void *test(void *arg)
 
 	sc = 0;
 
-	while (do_it) {
+	while (do_it2) {
 #if VERBOSE > 5
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n",
@@ -274,8 +274,14 @@ int main(int argc, char *argv[])
 
 	/* Now stop the threads and join them */
 	do {
-		do_it = 0;
-	} while (do_it);
+		do_it1 = 0;
+	} while (do_it1);
+
+	sleep(1);
+
+	do {
+		do_it2 = 0;
+	} while (do_it2 = 0);
 
 	ret = pthread_join(th_sig1, NULL);
 	if (ret)
