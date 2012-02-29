@@ -199,7 +199,7 @@ int child_environ(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "close(pfd[0]) failed");
 	}
 
-	if ((sprintf(var, "%s", getenv("TERM") ? : "")) <= 0) {
+	if ((sprintf(var, "%s", getenv("TERM") ? : "")) < 0) {
 		tst_resm(TWARN|TERRNO, "sprintf() failed");
 	}
 
