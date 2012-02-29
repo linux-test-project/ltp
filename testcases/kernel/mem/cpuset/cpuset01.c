@@ -55,7 +55,6 @@ int TST_TOTAL = 1;
 #include <signal.h>
 #include <stdarg.h>
 
-static pid_t *pids;
 volatile int end;
 static long nodes[MAXNODES];
 static long nnodes;
@@ -85,6 +84,7 @@ int main(int argc, char *argv[])
 	setup();
 	testcpuset();
 	cleanup();
+	tst_exit();
 }
 
 static void testcpuset(void)
@@ -101,10 +101,6 @@ static void testcpuset(void)
 	snprintf(buf, BUFSIZ, "%d", getpid());
 	write_file(CPATH_NEW "/tasks", buf);
 
-	pids = malloc(nnodes * sizeof(pid_t));
-	if (!pids)
-		tst_brkm(TBROK|TERRNO, cleanup, "malloc");
-
 	switch (child = fork()) {
 	case -1:
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
@@ -113,8 +109,7 @@ static void testcpuset(void)
 			nmask += exp2f(i);
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
-		mem_hog_cpuset(ncpus > 1 ? ncpus : 1);
-		exit(0);
+		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
@@ -178,7 +173,7 @@ static int mem_hog(void)
 
 static int mem_hog_cpuset(int ntasks)
 {
-	int i, pid, status, ret = 0;
+	int i, lc, pid, status, ret = 0;
 	struct sigaction sa;
 
 	if (ntasks <= 0)
@@ -201,16 +196,21 @@ static int mem_hog_cpuset(int ntasks)
 			exit(ret);
 		default:
 			if (kill(pid, SIGUSR1) == -1) {
-				tst_resm(TINFO|TERRNO, "kill");
+				tst_resm(TFAIL|TERRNO, "kill %d", pid);
 				ret = 1;
 			}
 			break;
 		}
 	}
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0) {
-		if (WEXITSTATUS(status) != 0) {
-			tst_resm(TFAIL, "child exit status is %d",
-				WEXITSTATUS(status));
+		if (WIFEXITED(status)) {
+			if (WEXITSTATUS(status) != 0)
+				tst_resm(TFAIL, "child exit status is %d",
+						WEXITSTATUS(status));
+			ret = 1;
+		} else if (WIFSIGNALED(status)) {
+			tst_resm(TFAIL, "child caught signal %d",
+					WTERMSIG(status));
 			ret = 1;
 		}
 	}
