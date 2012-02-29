@@ -206,10 +206,11 @@ static int mem_hog_cpuset(int ntasks)
 	}
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0) {
 		if (WIFEXITED(status)) {
-			if (WEXITSTATUS(status) != 0)
+			if (WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "child exit status is %d",
 						WEXITSTATUS(status));
-			ret = 1;
+				ret = 1;
+			}
 		} else if (WIFSIGNALED(status)) {
 			tst_resm(TFAIL, "child caught signal %d",
 					WTERMSIG(status));
