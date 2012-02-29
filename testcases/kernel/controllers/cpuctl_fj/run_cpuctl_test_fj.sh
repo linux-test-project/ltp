@@ -95,7 +95,8 @@ get_cpu_usage()
 	# gcooper@optimus ~ $ expr 0.0 \< 42.0 \& 42.0 \< 100.0
 	# 0
 	# ... so we have to lop off the fractional piece.
-	ps -p $1 pcpu | awk -F. '{ print $1 }'
+	# ps -p $1 pcpu | awk -F. '{ print $1 }'
+	top -bn1 -p $1 | sed -n "8p" | awk '{ print $9 }' | awk -F. '{ print $1 }'
 }
 
 kill_all_pid()
@@ -674,7 +675,7 @@ case22()
 		ret=$?
 		: $(( top_times+=1 ))
 	done
-	
+
 	kill -s KILL $pid $loop_pid > /dev/null 2>&1
 	wait $pid $loop_pid >/dev/null 2>&1
 	return $ret
@@ -702,7 +703,7 @@ do_test ()
 		cleanup || {
 			tst_resm TFAIL "case$i    FAIL"
 		}
-		
+
 		tst_resm TPASS "case$i    PASS"
 	done
 }
