@@ -173,8 +173,9 @@ static int mem_hog(void)
 
 static int mem_hog_cpuset(int ntasks)
 {
-	int i, lc, pid, status, ret = 0;
+	int i, lc, status, ret = 0;
 	struct sigaction sa;
+	pid_t *pids;
 
 	if (ntasks <= 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "ntasks is small.");
@@ -185,23 +186,28 @@ static int mem_hog_cpuset(int ntasks)
 	if (sigaction(SIGUSR1, &sa, NULL) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "sigaction");
 
+	pids = malloc(sizeof(pid_t) * ntasks);
+	if (pids == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup, "malloc");
 	for (i = 0; i < ntasks; i++) {
-		switch (pid = fork()) {
+		switch (pids[i] = fork()) {
 		case -1:
-			tst_resm(TFAIL|TERRNO, "fork");
+			tst_resm(TFAIL|TERRNO, "fork %d", pids[i]);
 			ret = 1;
 			break;
 		case 0:
 			ret = mem_hog();
 			exit(ret);
 		default:
-			for (lc = 0; TEST_LOOPING(lc); lc++)
-				;
-			if (kill(pid, SIGUSR1) == -1) {
-				tst_resm(TFAIL|TERRNO, "kill %d", pid);
-				ret = 1;
-			}
 			break;
+		}
+	}
+	for (lc = 0; TEST_LOOPING(lc); lc++)
+		;
+	while (i--) {
+		if (kill(pids[i], SIGUSR1) == -1) {
+			tst_resm(TFAIL|TERRNO, "kill %d", pids[i]);
+			ret = 1;
 		}
 	}
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0) {
