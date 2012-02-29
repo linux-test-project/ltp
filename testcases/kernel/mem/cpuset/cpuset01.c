@@ -92,8 +92,14 @@ static void testcpuset(void)
 	int lc;
 	int child, i, status;
 	unsigned long nmask = 0;
+	char mems[BUFSIZ], buf[BUFSIZ];
 
-	write_cpusets(nodes[0]);
+	read_cpuset_files(CPATH, "cpus", buf);
+	write_cpuset_files(CPATH_NEW, "cpus", buf);
+	read_cpuset_files(CPATH, "mems", mems);
+	write_cpuset_files(CPATH_NEW, "mems", mems);
+	snprintf(buf, BUFSIZ, "%d", getpid());
+	write_file(CPATH_NEW "/tasks", buf);
 
 	pids = malloc(nnodes * sizeof(pid_t));
 	if (!pids)
@@ -112,10 +118,10 @@ static void testcpuset(void)
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		write_cpuset_mems(nodes[1]);
-		write_cpuset_cpus(nodes[1], 1);
-		write_cpuset_mems(nodes[0]);
-		write_cpuset_cpus(nodes[0], 1);
+		snprintf(buf, BUFSIZ, "%ld", nodes[0]);
+		write_cpuset_files(CPATH_NEW, "mems", buf);
+		snprintf(buf, BUFSIZ, "%ld", nodes[1]);
+		write_cpuset_files(CPATH_NEW, "mems", buf);
 	}
 
 	if (waitpid(child, &status, WUNTRACED | WCONTINUED) == -1)

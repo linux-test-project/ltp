@@ -55,8 +55,8 @@ void ksm_usage(void);
 #define PATH_EVTCTRL		MEMCG_PATH_NEW "/cgroup.event_control"
 #endif
 
-void write_cpuset_mems(long nd);
-void write_cpuset_cpus(long nd, int quiet);
+void read_cpuset_files(char *prefix, char *filename, char *retbuf);
+void write_cpuset_files(char *prefix, char *filename, char *buf);
 void write_cpusets(long nd);
 void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
 void umount_mem(char *path, char *path_new);
