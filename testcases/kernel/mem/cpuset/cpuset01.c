@@ -195,6 +195,8 @@ static int mem_hog_cpuset(int ntasks)
 			ret = mem_hog();
 			exit(ret);
 		default:
+			for (lc = 0; TEST_LOOPING(lc); lc++)
+				;
 			if (kill(pid, SIGUSR1) == -1) {
 				tst_resm(TFAIL|TERRNO, "kill %d", pid);
 				ret = 1;
