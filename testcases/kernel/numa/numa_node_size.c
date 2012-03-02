@@ -31,9 +31,10 @@
 /*                                                                            */
 /******************************************************************************/
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
-#if HAS_NUMA_H
+#if HAVE_NUMA_H
 #include <numa.h>
 #endif
 
@@ -48,7 +49,7 @@ char *fmt_mem(unsigned long long mem, char *buf)
 }
 void hardware(void)
 {
-#if HAS_NUMA_H
+#if HAVE_NUMA_H
         int i;
         int maxnode = numa_max_node();
         printf("available: %d nodes (0-%d)\n", 1+maxnode, maxnode);
@@ -64,7 +65,7 @@ void hardware(void)
 }
 int main()
 {
-#if HAS_NUMA_H
+#if HAVE_NUMA_H
         nodemask_t nodemask;
         void hardware();
         if (numa_available() < 0)
