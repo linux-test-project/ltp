@@ -77,7 +77,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/time.h>
-
+#include <stdint.h>
 
 #if UNIT_TEST
 #include <time.h>
@@ -669,27 +669,15 @@ int usc_global_setup_hook()
 #define USECS_PER_SEC	1000000  /* microseconds per second */
 
 /***********************************************************************
- * This function returns the number of get_current_time()'s return
- * per second.
+ * Returns current time in microseconds since 1970.
  ***********************************************************************/
-
-static int get_timepersec()
-{
-    return  USECS_PER_SEC;   /* microseconds per second */
-
-}
-
-/***********************************************************************
- * this function will get current time in microseconds since 1970.
- ***********************************************************************/
-static int get_current_time()
+static uint64_t get_current_time(void)
 {
     struct timeval curtime;
 
     gettimeofday(&curtime, NULL);
 
-    /* microseconds since 1970 */
-    return (curtime.tv_sec*USECS_PER_SEC) + curtime.tv_usec;
+    return (((uint64_t)curtime.tv_sec)*USECS_PER_SEC) + curtime.tv_usec;
 }
 
 /***********************************************************************
@@ -708,11 +696,10 @@ static int get_current_time()
 int usc_test_looping(int counter)
 {
     static int first_time = 1;
-    static int stop_time = 0;	/* stop time in rtc or usecs */
-    static int delay;		/* delay in clocks or usecs  */
-    int hertz = 0;		/* clocks per second or usecs per second */
-    int ct, end;		/* current time, end delay time */
-    int keepgoing = 0;		/* used to determine return value */
+    static uint64_t stop_time = 0;
+    static uint64_t delay;
+    uint64_t ct, end;
+    int keepgoing = 0;
 
     /*
      * If this is the first iteration and we are looping for
@@ -720,30 +707,23 @@ int usc_test_looping(int counter)
      * doing loop delays, get the clocks per second.
      */
     if (first_time) {
-
 	first_time = 0;
-	if (STD_LOOP_DELAY || STD_LOOP_DURATION) {
-	    hertz = get_timepersec();
-	}
 
 	/*
 	 * If looping for duration, calculate stop time in
 	 * clocks.
 	 */
-
 	if (STD_LOOP_DURATION) {
-	    ct=get_current_time();
-	    stop_time = (int)((float)hertz * STD_LOOP_DURATION) + ct;
+	    stop_time = (uint64_t)(USECS_PER_SEC * STD_LOOP_DURATION)
+	                + get_current_time();
 	}
 
 	/*
 	 * If doing delay each iteration, calcuate the number
 	 * of clocks for each delay.
 	 */
-	if (STD_LOOP_DELAY) {
-	    delay = (int)((float)hertz * STD_LOOP_DELAY);
-	}
-
+	if (STD_LOOP_DELAY)
+	    delay = USECS_PER_SEC * STD_LOOP_DELAY;
     }
 
     /*
@@ -770,17 +750,14 @@ int usc_test_looping(int counter)
 	}
     }
 
-    if (STD_INFINITE) {
+    if (STD_INFINITE)
 	keepgoing++;
-    }
 
-    if (STD_LOOP_COUNT && counter < STD_LOOP_COUNT) {
+    if (STD_LOOP_COUNT && counter < STD_LOOP_COUNT)
 	keepgoing++;
-    }
 
-    if (STD_LOOP_DURATION != 0.0 && get_current_time() < stop_time) {
+    if (STD_LOOP_DURATION != 0.0 && get_current_time() < stop_time)
 	keepgoing++;
-    }
 
     if (keepgoing == 0)
 	return 0;
@@ -797,7 +774,6 @@ int usc_test_looping(int counter)
     }
 
 #if !defined(UCLINUX)
-
     if (STD_LP_sbrk) {
 	if (Debug)
 	    printf("about to do sbrk(%d)\n", STD_LP_sbrk);
