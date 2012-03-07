@@ -100,10 +100,12 @@ int main(int argc, char *argv[])
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0; i = 0;
-		ulast = 0, slast = 0;
 		SAFE_GETRUSAGE(cleanup, RUSAGE_THREAD, &usage);
 		tst_resm(TINFO, "utime:%12luus; stime:%12luus",
 			usage.ru_utime.tv_usec, usage.ru_stime.tv_usec);
+		ulast = usage.ru_utime.tv_usec;
+		slast = usage.ru_stime.tv_usec;
+
 		while (i < RECORD_MAX) {
 			SAFE_GETRUSAGE(cleanup, RUSAGE_THREAD, &usage);
 			udelta = usage.ru_utime.tv_usec - ulast;
