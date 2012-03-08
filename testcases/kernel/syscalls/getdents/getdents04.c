@@ -73,20 +73,11 @@ int TST_TOTAL = 1;
 
 int exp_enos[] = { ENOTDIR, 0 };	/* 0 terminated list of expected errnos */
 
-#ifndef __i386__
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "this test will only run on i386");
-	tst_exit();
-}
-#else
-
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 	int count, rval, fd;
-	const int cnum = 141;
 	size_t size = 0;
 	char *dir_name = NULL;
 	struct dirent *dirp;
@@ -131,15 +122,7 @@ int main(int ac, char **av)
 		if (S_ISDIR(sbuf->st_mode))
 			tst_brkm(TBROK, cleanup, "fd is a directory");
 
-		/*
-		 * here's a case where invoking the system call directly
-		 * doesn't seem to work.  getdents.h has an assembly
-		 * macro to do the job.
-		 *
-		 * equivalent to getdents(fd, dirp, count);
-		 */
-
-		rval = GETDENTS_ASM();
+		rval = getdents(fd, dirp, count);
 
 		/*
 		 * Calling with a non directory file descriptor should give
@@ -147,10 +130,9 @@ int main(int ac, char **av)
 		 */
 
 		if (rval < 0) {
-			rval *= -1;
-			TEST_ERROR_LOG(rval);
+			TEST_ERROR_LOG(errno);
 
-			switch (rval) {
+			switch (errno) {
 			case ENOTDIR:
 				tst_resm(TPASS,
 				    "getdents failed as expected with ENOTDIR");
@@ -198,5 +180,3 @@ void cleanup(void)
 
 	tst_rmdir();
 }
-
-#endif /* __i386__ */

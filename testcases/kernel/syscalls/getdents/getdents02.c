@@ -69,21 +69,12 @@ int TST_TOTAL = 1;
 
 int exp_enos[] = { EBADF, 0 };	/* 0 terminated list of expected errnos */
 
-#ifndef __i386__
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "this test will only run on i386");
-	tst_exit();
-}
-#else
-
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 	int rval, fd;
 	int count;
-	const int cnum = __NR_getdents;
 	size_t size = 0;
 	char *dir_name = NULL;
 	struct dirent *dirp;
@@ -109,25 +100,15 @@ int main(int ac, char **av)
 
 		fd = -5;
 
-		/*
-		 * here's a case where invoking the system call directly
-		 * doesn't seem to work.  getdents.h has an assembly
-		 * macro to do the job.
-		 *
-		 * equivalent to  - getdents(fd, dirp, count);
-		 * if we could call getdents that way.
-		 */
-
-		rval = GETDENTS_ASM();
+		rval = getdents(fd, dirp, count);
 
 		/*
 		 * Hopefully we get an error due to the bad file descriptor.
 		 */
 		if (rval < 0) {
-			rval *= -1;
-			TEST_ERROR_LOG(rval);
+			TEST_ERROR_LOG(errno);
 
-			switch (rval) {
+			switch (errno) {
 			case EBADF:
 				tst_resm(TPASS,
 				    "failed as expected with EBADF");
@@ -170,5 +151,3 @@ void cleanup(void)
 
 	tst_rmdir();
 }
-
-#endif /* __i386__ */
