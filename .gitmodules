@@ -1,0 +1,3 @@
+[submodule "testcases/kernel/mce-test"]
+	path = testcases/kernel/mce-test
+	url = git://github.com/andikleen/mce-test.git

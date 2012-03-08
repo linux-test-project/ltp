@@ -1,9 +1,0 @@
-# WARNING
-# this will panic your machine!
-# don't try casually
-CPU 0 BANK 4
-MCGSTATUS MCIP RIPV
-STATUS FATAL S
-RIP 0x10:0x12343434
-MISC 0xb
-NOBROADCAST

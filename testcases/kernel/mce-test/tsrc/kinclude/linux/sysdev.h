@@ -1,2 +1,0 @@
-
-struct sysdev_attribute {};

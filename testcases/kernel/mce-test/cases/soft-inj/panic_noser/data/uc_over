@@ -1,6 +1,0 @@
-# this should just kill the process
-CPU 0 BANK 2
-STATUS UNCORRECTED OVER
-MCGSTATUS RIPV EIPV MCIP
-ADDR 0x1234
-RIP 0x10:0xdeadbabe
