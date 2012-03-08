@@ -6,6 +6,7 @@
 #include <alloca.h>
 #include <string.h>
 #include <linux/unistd.h>
+#include "ltp_cpuid.h"
 
 #define PROC_PATH	"/proc"
 #define BUFF_SIZE	8192
@@ -58,27 +59,13 @@ int is_ht_kernel()
 	return 0;
 }
 
-inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
-{
-#if (!defined __i386__ && !defined __x86_64__)
-	return;
-#else
-	__asm__("cpuid"
-		: "=a" (*eax),
-		  "=b" (*ebx),
-		  "=c" (*ecx),
-		  "=d" (*edx)
-		: "0" (op));
-#endif
-}
-
 int is_ht_cpu()
 {
 	/*Number of logic processor in a physical processor*/
 	int smp_num_siblings = -1;
 	/*ht flag*/
 	int ht = -1;
-	int eax,ebx,ecx,edx;
+	unsigned int eax,ebx,ecx,edx;
 	cpuid(1,&eax,&ebx,&ecx,&edx);
 	smp_num_siblings = (ebx&0xff0000) >> 16;
 	ht = (edx&0x10000000) >> 28;
