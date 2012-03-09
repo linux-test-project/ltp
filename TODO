@@ -1,13 +1,4 @@
-The following things need to be rewritten // fixed
-
-get_mempolicy01 // mbind01: They're using numa v1 calls which means that all
-versions of Linux / numa as of a few years ago aren't compatible with the API
-calls and thus you aren't truly testing the calls via libnuma properly.
-
-This was implemented via ad hoc static v1 code previously, but this isn't what
-we want as all consumers outside of LTP will be using either v1 or v2 code,
-depending on what libraries, APIs, etc are packaged with their copy of
-libnuma // kernel.
+The following things need to be rewritten/fixed
 
 quotactl01:
 
@@ -51,7 +42,7 @@ gethostbyname*: Host name lookup failure
 install: cannot stat `/tests/ltp/opts': No such file or directory
 install: cannot stat `/tests/ltp/opts_e': No such file or directory
 mc_opts: doing /tests/ltp/testcases/bin/mc_opts.
-Running mc_opts opts_e on 
+Running mc_opts opts_e on
 /tests/ltp/testcases/bin/mc_opts: line 86: /tests/ltp/bin/mc_opts13780/opts: No such file or directory
 mc_opts: doing /tests/ltp/testcases/bin/mc_opts.
 mc_opts: doing /tests/ltp/testcases/bin/mc_opts
