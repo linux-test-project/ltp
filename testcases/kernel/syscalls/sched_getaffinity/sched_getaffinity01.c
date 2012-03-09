@@ -156,7 +156,6 @@ realloc:
 	/* negative tests */
 	QUICK_TEST(sched_getaffinity(0, len, (cpu_set_t *)-1));
 	QUICK_TEST(sched_getaffinity(0, 0, mask));
-	QUICK_TEST(sched_getaffinity(getpid() + 1, len, mask));
 	/*
 	 * pid_t -> int -- the actual kernel limit is lower
 	 * though, but this is a negative test, not a positive
