@@ -63,20 +63,13 @@
 #include "linux_syscall_numbers.h"
 #include "include_j_h.h"
 #include "common_j_h.c"
-#include "numa_helpers.h"
 
 char *TCID = "get_mempolicy01";  /* Test program identifier.*/
 int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 
 #if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MPOL_CONSTANTS
 
-#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
-
 #define MEM_LENGTH	(4 * 1024 * 1024)
-
-static int  do_test(struct test_case *tc);
-static void setup(void);
-static void cleanup(void);
 
 static int  testno;
 
@@ -198,6 +191,10 @@ static struct test_case tcase[] = {
 	},
 };
 
+static int  do_test(struct test_case *tc);
+static void setup(void);
+static void cleanup(void);
+
 int main(int argc, char **argv)
 {
 	int i, ret, lc;
@@ -225,16 +222,25 @@ static int do_test(struct test_case *tc)
 {
 	int ret, err, result, cmp_ok;
 	int policy, flags;
-	nodemask_t nodemask, getnodemask;
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+	nodemask_t *nodemask, *getnodemask;
 	unsigned long maxnode = NUMA_NUM_NODES;
+#else
+	struct bitmask *nodemask = numa_allocate_nodemask();
+	struct bitmask *getnodemask = numa_allocate_nodemask();
+#endif
 	char *p = NULL;
 	unsigned long len = MEM_LENGTH;
 
-	/* We assume that there is only one node(node0). */
-	nodemask_zero(&nodemask); /* Segfaults here with libnuma v2. */
-	nodemask_set(&nodemask, 0);
-	nodemask_zero(&getnodemask);
-
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+	nodemask = malloc(sizeof(nodemask_t));
+	nodemask_zero(nodemask);
+	nodemask_set(nodemask, 0);
+	getnodemask = malloc(sizeof(nodemask_t));
+	nodemask_zero(getnodemask);
+#else
+	numa_bitmask_setbit(nodemask, 0);
+#endif
 	switch (tc->ttype) {
 	case DEFAULT:
 		flags = 0;
@@ -243,49 +249,72 @@ static int do_test(struct test_case *tc)
 			TEST(syscall(__NR_set_mempolicy, tc->policy,
 					    NULL, 0));
 		else
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 			TEST(syscall(__NR_set_mempolicy, tc->policy,
-					    &nodemask, maxnode));
-		if (TESET_RETURN < 0) {
+					    nodemask, maxnode));
+#else
+			TEST(syscall(__NR_set_mempolicy, tc->policy,
+					    nodemask->maskp, nodemask->size));
+#endif
+		if (TEST_RETURN < 0) {
 			tst_resm(TBROK|TERRNO, "set_mempolicy");
 			return -1;
 		}
+
 		break;
 	default:
 		flags = MPOL_F_ADDR;
 		p = mmap(NULL, len, PROT_READ|PROT_WRITE,
 			    MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
 		if (p == MAP_FAILED)
-			tst_brkm(TFAIL|TERRNO, cleanup, "mmap");
+			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
 		if (tc->from_node == NONE)
 			TEST(syscall(__NR_mbind, p, len, tc->policy,
 					    NULL, 0, 0));
 		else
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 			TEST(syscall(__NR_mbind, p, len, tc->policy,
-					    &nodemask, maxnode, 0));
+					    nodemask, maxnode, 0));
+#else
+			TEST(syscall(__NR_mbind, p, len, tc->policy,
+					    nodemask->maskp, nodemask->size,
+					    0));
+#endif
 		if (TEST_RETURN < 0) {
-			tst_brkm(TBROK|TERRNO, cleanup, "mbind");
+			tst_resm(TBROK|TERRNO, "mbind");
 			return -1;
 		}
 
 		if (tc->ttype == INVALID_POINTER)
-			p = NULL;
+			p = 0;
 
 		if (tc->ttype == INVALID_FLAGS)
 			flags = -1;
 	}
 	errno  = 0;
 	cmp_ok = 1;
-	TEST(ret = syscall(__NR_get_mempolicy, &policy, &getnodemask,
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+	TEST(ret = syscall(__NR_get_mempolicy, &policy, getnodemask,
 			    maxnode, p, flags));
-	err = errno;
+#else
+	TEST(ret = syscall(__NR_get_mempolicy, &policy, getnodemask->maskp,
+			    getnodemask->size, p, flags));
+#endif
+	err = TEST_ERRNO;
 	if (ret < 0)
 		goto TEST_END;
 
 	/* if policy == MPOL_DEFAULT, get_mempolicy doesn't return nodemask */
 	if (tc->policy == MPOL_DEFAULT)
-		nodemask_zero(&nodemask);
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+		nodemask_zero(nodemask);
 	cmp_ok = (tc->policy == policy && (tc->from_node == NONE ||
-			    nodemask_equal(&nodemask, &getnodemask)));
+			    nodemask_equal(nodemask, getnodemask)));
+#else
+		numa_bitmask_clearall(nodemask);
+	cmp_ok = (tc->policy == policy && (tc->from_node == NONE ||
+			    numa_bitmask_equal(nodemask, getnodemask)));
+#endif
 TEST_END:
 	result = (err != tc->err) || !cmp_ok;
 	PRINT_RESULT_CMP(0, tc->ret, tc->err, ret, err, cmp_ok);
@@ -304,13 +333,6 @@ static void setup(void)
 	TEST_PAUSE;
 	tst_tmpdir();
 }
-#else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "XXX: test is broken on libnuma v2 "
-			"(read numa_helpers.h for more details).");
-}
-#endif
 #else
 int main(void)
 {
