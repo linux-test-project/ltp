@@ -41,8 +41,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "testfrmw.h"
-#include "testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
 
 #ifndef VERBOSE
 #define VERBOSE 1

@@ -59,8 +59,8 @@
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "testfrmw.h"
- #include "testfrmw.c"
+ #include "../testfrmw/testfrmw.h"
+ #include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -90,7 +90,7 @@
 /***********************************    Test cases  *****************************************/
 /********************************************************************************************/
 #define STD_MAIN /* This allows main() to be defined in the included file */
-#include "threads_scenarii.c"
+#include "../testfrmw/threads_scenarii.c"
 
 /* This file will define the following objects:
  * scenarii: array of struct __scenario type.

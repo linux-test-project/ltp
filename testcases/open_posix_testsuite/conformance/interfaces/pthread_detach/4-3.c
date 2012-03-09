@@ -45,8 +45,8 @@
 #include <time.h>
 #include <signal.h>
 
-#include "testfrmw.h"
-#include "testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
 
 #ifndef VERBOSE
 #define VERBOSE 1
@@ -54,7 +54,7 @@
 
 #define WITH_SYNCHRO
 
-#include "threads_scenarii.c"
+#include "../testfrmw/threads_scenarii.c"
 
 static char do_it1 = 1;
 static char do_it2 = 1;

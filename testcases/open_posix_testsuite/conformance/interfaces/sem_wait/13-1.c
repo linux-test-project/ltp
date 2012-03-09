@@ -46,8 +46,8 @@
 
 #include <timespec.h>
 
-#include "testfrmw.h"
-#include "testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
 
 static sem_t sem;
 

@@ -43,8 +43,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "testfrmw.h"
-#include "testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
 
  /* 
   * This header is responsible for defining the following macros:

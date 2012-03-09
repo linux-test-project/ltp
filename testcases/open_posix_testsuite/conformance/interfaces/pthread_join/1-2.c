@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 #include <time.h>
 #include <errno.h>
@@ -46,8 +47,8 @@
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
-#include "testfrmw.h"
- #include "testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+ #include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -76,7 +77,7 @@
 /********************************************************************************************/
 /***********************************     Helper     *****************************************/
 /********************************************************************************************/
-#include "threads_scenarii.c"
+#include "../testfrmw/threads_scenarii.c"
 /* this file defines:
 * scenarii: array of struct __scenario type.
 * NSCENAR : macro giving the total # of scenarii
