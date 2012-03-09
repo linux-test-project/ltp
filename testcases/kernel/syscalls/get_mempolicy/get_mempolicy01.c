@@ -286,7 +286,11 @@ static int do_test(struct test_case *tc)
 		}
 
 		if (tc->ttype == INVALID_POINTER)
+#ifdef __ia64__
+			p = (char *)0x8000000000000000UL;
+#else
 			p = 0;
+#endif
 
 		if (tc->ttype == INVALID_FLAGS)
 			flags = -1;
