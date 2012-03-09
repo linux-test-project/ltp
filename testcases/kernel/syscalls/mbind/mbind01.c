@@ -48,6 +48,9 @@
 #include <errno.h>
 #include <getopt.h>
 #include <libgen.h>
+#if HAVE_NUMA_H
+#include <numa.h>
+#endif
 #if HAVE_NUMAIF_H
 #include <numaif.h>
 #endif
@@ -58,16 +61,14 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 #include "include_j_h.h"
-#include "numa_helpers.h"
 
 char *TCID = "mbind01";
 int  TST_TOTAL = 2;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H && \
 	HAVE_MPOL_CONSTANTS
-
-#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 
 #define MEM_LENGTH	      (4 * 1024 * 1024)
 
@@ -207,16 +208,25 @@ static int do_test(struct test_case *tc)
 	int ret, err, result, cmp_ok = 1;
 	int policy;
 	char *p = NULL;
-	nodemask_t nodemask, getnodemask;
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+	nodemask_t *nodemask, *getnodemask;
+#else
+	struct bitmask *nodemask = numa_allocate_nodemask();
+	struct bitmask *getnodemask = numa_allocate_nodemask();
+#endif
 	unsigned long maxnode = NUMA_NUM_NODES;
 	unsigned long len = MEM_LENGTH;
 	unsigned long *invalid_nodemask;
 
-	/* We assume that there is only one node(node0). */
-	nodemask_zero(&nodemask);
-	nodemask_set(&nodemask, 0);
-	nodemask_zero(&getnodemask);
-
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+	nodemask = malloc(sizeof(nodemask_t));
+	nodemask_zero(nodemask);
+	nodemask_set(nodemask, 0);
+	getnodemask = malloc(sizeof(nodemask_t));
+	nodemask_zero(getnodemask);
+#else
+	numa_bitmask_setbit(nodemask, 0);
+#endif
 	p = mmap(NULL, len, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS,
 		    0, 0);
 	if (p == MAP_FAILED)
@@ -233,28 +243,49 @@ static int do_test(struct test_case *tc)
 		TEST(ret = syscall(__NR_mbind, p, len, tc->policy,
 				    invalid_nodemask, maxnode, tc->flags));
 	else
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 		TEST(ret = syscall(__NR_mbind, p, len, tc->policy,
-				    &nodemask, maxnode, tc->flags));
-	err = errno;
+				    nodemask, maxnode, tc->flags));
+#else
+		TEST(ret = syscall(__NR_mbind, p, len, tc->policy,
+				    nodemask->maskp, nodemask->size,
+				    tc->flags));
+#endif
+
+	err = TEST_ERRNO;
 	if (ret < 0)
 		goto TEST_END;
 
 	/* Check policy of the allocated memory */
-	TEST(syscall(__NR_get_mempolicy, &policy, &getnodemask,
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+	TEST(syscall(__NR_get_mempolicy, &policy, getnodemask,
 			    maxnode, p, MPOL_F_ADDR));
+#else
+	TEST(syscall(__NR_get_mempolicy, &policy, getnodemask->maskp,
+			    getnodemask->size, p, MPOL_F_ADDR));
+#endif
 	if (TEST_RETURN < 0) {
-		tst_resm(TFAIL | TERRNO, "get_mempolicy failed");
+		tst_resm(TFAIL|TERRNO, "get_mempolicy failed");
 		return -1;
 	}
 
 	/* If policy == MPOL_DEFAULT, get_mempolicy doesn't return nodemask */
 	if (tc->policy == MPOL_DEFAULT)
-		nodemask_zero(&nodemask);
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+		nodemask_zero(nodemask);
+#else
+		numa_bitmask_clearall(nodemask);
+#endif
+
 	if ((tc->policy == MPOL_PREFERRED) && (tc->from_node == NONE))
 		cmp_ok = (tc->policy == policy);
 	else
 		cmp_ok = ((tc->policy == policy) &&
-			    nodemask_equal(&nodemask, &getnodemask));
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+			    nodemask_equal(nodemask, getnodemask));
+#else
+			    numa_bitmask_equal(nodemask, getnodemask));
+#endif
 TEST_END:
 	result = ((err != tc->err) || (!cmp_ok));
 	PRINT_RESULT_CMP(0, tc->ret, tc->err, ret, err, cmp_ok);
@@ -272,14 +303,6 @@ static void cleanup(void)
 	TEST_CLEANUP;
 	tst_rmdir();
 }
-
-#else /* libnuma v2 */
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "XXX: test is broken on libnuma v2 "
-			"(read numa_helpers.h for more details).");
-}
-#endif
 #else /* no NUMA */
 int main(void)
 {
