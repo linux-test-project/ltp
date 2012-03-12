@@ -22,7 +22,8 @@
  *	hugeshmget01.c
  *
  * DESCRIPTION
- *	hugeshmget01 - test that shmget() correctly creates a large shared memory segment
+ *	hugeshmget01 - test that shmget() correctly creates a large
+ *			shared memory segment
  *
  * ALGORITHM
  *	loop if that option was specified
@@ -33,7 +34,7 @@
  *	  if doing functionality testing
  *		stat the shared memory resource
  *		check the size, creator pid and mode
- *	  	if correct,
+ *		if correct,
  *			issue a PASS message
  *		otherwise
  *			issue a FAIL message
@@ -63,61 +64,53 @@
 char *TCID = "hugeshmget01";
 int TST_TOTAL = 1;
 
-int shm_id_1 = -1;
+static int shm_id_1 = -1;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	struct shmid_ds buf;
-        unsigned long huge_pages_shm_to_be_allocated;
+	size_t shm_size;
 
-	huge_pages_shm_to_be_allocated = 0;
+	shm_size = 0;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* The following loop checks looping state if -i option given */
-        if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-             tst_brkm(TCONF, NULL, "Not enough available Hugepages");
-        else
-              huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
+	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
+		tst_brkm(TCONF, NULL, "Not enough available Hugepages");
+	else
+		shm_size = (get_no_of_hugepages()*hugepages_size()*1024) / 2;
 
-	setup();			/* global setup */
+	setup();
 
-        for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		/*
-		 * Use TEST macro to make the call
-		 */
-
-                TEST(shmget(shmkey, huge_pages_shm_to_be_allocated, (SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW)));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
-				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+		shm_id_1 = shmget(shmkey, shm_size,
+			    SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW);
+		if (shm_id_1 == -1) {
+			tst_resm(TFAIL|TERRNO, "shmget");
 		} else {
-			shm_id_1 = TEST_RETURN;
 			if (STD_FUNCTIONAL_TEST) {
 				/* do a STAT and check some info */
 				if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-					tst_resm(TBROK, "shmctl failed in "
-						 "functional test");
+					tst_resm(TBROK|TERRNO,
+						    "shmctl(IPC_STAT)");
 					continue;
 				}
 				/* check the seqment size */
-				if (buf.shm_segsz != huge_pages_shm_to_be_allocated) {
+				if (buf.shm_segsz != shm_size) {
 					tst_resm(TFAIL, "seqment size is not "
-						 "correct");
+							"correct");
 					continue;
 				}
 				/* check the pid of the creator */
 				if (buf.shm_cpid != getpid()) {
 					tst_resm(TFAIL, "creator pid is not "
-						 "correct");
+							"correct");
 					continue;
 				}
 				/*
@@ -125,9 +118,9 @@ int main(int ac, char **av)
 				 * mask out all but the lower 9 bits
 				 */
 				if ((buf.shm_perm.mode & MODE_MASK) !=
-				    ((SHM_RW) & MODE_MASK)) {
+					    ((SHM_RW) & MODE_MASK)) {
 					tst_resm(TFAIL, "segment mode is not "
-						 "correct");
+							"correct");
 					continue;
 				}
 				/* if we get here, everything looks good */
@@ -140,56 +133,30 @@ int main(int ac, char **av)
 		/*
 		 * clean up things in case we are looping
 		 */
-		if (shmctl(shm_id_1, IPC_RMID, NULL) == -1) {
-			tst_resm(TBROK, "couldn't remove shared memory");
-		} else {
+		if (shmctl(shm_id_1, IPC_RMID, NULL) == -1)
+			tst_resm(TBROK|TERRNO, "shmctl(IPC_RMID)");
+		else
 			shm_id_1 = -1;
-		}
 	}
-
 	cleanup();
-
-      tst_exit();
+	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void
-setup(void)
+void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
 	tst_tmpdir();
 
-	/* get an IPC resource key */
 	shmkey = getipckey();
+
+	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void
-cleanup(void)
+void cleanup(void)
 {
-	/* if it exists, remove the shared memory resource */
+	TEST_CLEANUP;
+
 	rm_shm(shm_id_1);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
-
 }
