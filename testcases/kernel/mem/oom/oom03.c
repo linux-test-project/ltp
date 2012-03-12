@@ -30,12 +30,12 @@
  */
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <errno.h>
 #include "test.h"
 #include "usctest.h"
-#include "../include/mem.h"
+#include "mem.h"
 
 char *TCID = "oom03";
 int TST_TOTAL = 1;

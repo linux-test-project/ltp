@@ -16,14 +16,15 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-top_srcdir              ?= ../../../..
+top_srcdir		?= ../../../..
 
-include $(top_srcdir)/include/mk/env_pre.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
-LDLIBS			+= $(NUMA_LIBS) -lmem
+LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
 LIBDIR			:= ../lib
 LIB			:= $(LIBDIR)/libmem.a
 FILTER_OUT_DIRS		:= $(LIBDIR)
+CFLAGS			+= -I../include
 LDFLAGS			+= -L$(LIBDIR)
 
 $(LIBDIR):
@@ -40,4 +41,3 @@ lib-clean:: $(LIBDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
-include $(top_srcdir)/include/mk/testcases.mk

@@ -73,7 +73,7 @@
 #include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
-#include "../include/mem.h"
+#include "mem.h"
 
 #define MAX_MAP_COUNT_DEFAULT 65530L
 

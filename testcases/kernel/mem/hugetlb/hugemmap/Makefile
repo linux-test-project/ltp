@@ -20,7 +20,7 @@
 # Garrett Cooper, July 2009
 #
 
-top_srcdir              ?= ../../../../..
+top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 include $(abs_srcdir)/../Makefile.inc
@@ -30,7 +30,7 @@ LIBMEM			:= $(LIBMEMDIR)/libmem.a
 $(LIBMEM): $(LIBMEMDIR)
 	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
 
-CPPFLAGS		+= -I$(abs_srcdir)/$(LIBMEMDIR)
+CPPFLAGS		+= -I$(abs_srcdir)/$(LIBMEMDIR) -I$(abs_srcdir)/../../include
 LDFLAGS			+= -L$(abs_builddir)/$(LIBMEMDIR)
 LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
 MAKE_DEPS		+= $(LIBMEM)

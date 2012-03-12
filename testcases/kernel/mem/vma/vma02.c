@@ -27,26 +27,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+#include "config.h"
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <errno.h>
+#if HAVE_NUMA_H
+#include <numa.h>
+#endif
+#if HAVE_NUMAIF_H
+#include <numaif.h>
+#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
-#include "config.h"
 
 char *TCID = "vma02";
 int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
-#include <numaif.h>
-#include <numa.h>
-#include <sys/mman.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-
 #if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
-
 static unsigned long pagesize;
 static int opt_node;
 static char *opt_nodestr;
@@ -57,7 +60,7 @@ static option_t options[] = {
 
 static void usage(void);
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	FILE *fp;
 	void *addr, *start, *end, *lastend;
@@ -159,12 +162,14 @@ void usage(void)
 	printf("  -n      Number of NUMA nodes\n");
 }
 #else /* libnuma v1 */
-int main(void) {
+int main(void)
+{
 	tst_brkm(TCONF, NULL, "XXX: test is only supported on libnuma v2.");
 }
 #endif
 #else /* no NUMA */
-int main(void) {
+int main(void)
+{
 	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
 }
 #endif

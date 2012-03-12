@@ -82,7 +82,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "usctest.h"
-#include "../include/mem.h"
+#include "mem.h"
 
 #define DEFAULT_OVER_RATIO	50L
 #define EXPECT_PASS		0

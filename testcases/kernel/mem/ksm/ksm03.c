@@ -54,22 +54,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
-#include <sys/stat.h>
+
+#include <sys/types.h>
 #include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <errno.h>
 #include "test.h"
 #include "usctest.h"
-#include "../include/mem.h"
+#include "mem.h"
 
 char *TCID = "ksm03";
 int TST_TOTAL = 1;

@@ -23,8 +23,8 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "../include/_private.h"
-#include "../include/mem.h"
+#include "_private.h"
+#include "mem.h"
 
 /* OOM */
 

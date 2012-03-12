@@ -54,25 +54,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+
+#include "config.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
+#if HAVE_NUMAIF_H
+#include <numaif.h>
+#endif
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
-#include "config.h"
+#include "mem.h"
 
 char *TCID = "ksm02";
 int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <errno.h>
-#include <numaif.h>
-#include "../include/mem.h"
-
 option_t ksm_options[] = {
 	{ "n:", &opt_num,       &opt_numstr},
 	{ "s:", &opt_size,      &opt_sizestr},

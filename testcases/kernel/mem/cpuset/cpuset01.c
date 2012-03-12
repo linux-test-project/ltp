@@ -28,33 +28,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+#include "config.h"
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <ctype.h>
+#include <err.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <math.h>
+#if HAVE_NUMAIF_H
+#include <numaif.h>
+#endif
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 #include "test.h"
 #include "usctest.h"
-#include "config.h"
-#include "../include/mem.h"
+#include "mem.h"
 
 char *TCID = "cpuset01";
 int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <sys/mount.h>
-#include <numaif.h>
-#include <errno.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <ctype.h>
-#include <err.h>
-#include <math.h>
-#include <signal.h>
-#include <stdarg.h>
-
 volatile int end;
 static long nodes[MAXNODES];
 static long nnodes;

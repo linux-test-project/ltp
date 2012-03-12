@@ -46,16 +46,16 @@
  * and calculate the used swap size. The used swap size should be small
  * enough, else it indicates that heavy swapping is occured unexpectedly.
  */
+
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
-#include "../include/mem.h"
+#include "mem.h"
 
 char *TCID = "swapping01";
 int TST_TOTAL = 1;

@@ -16,10 +16,11 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-top_srcdir              ?= ../../../..
+top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+CFLAGS			:= -I../include
 LIB			:= libmem.a
 
 include $(top_srcdir)/include/mk/lib.mk

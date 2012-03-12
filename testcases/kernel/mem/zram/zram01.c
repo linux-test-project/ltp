@@ -26,21 +26,22 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <errno.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
 char *TCID = "zram01";
 int TST_TOTAL = 1;
-int modprobe = 0;
 
 #define PATH_ZRAM	"/sys/block/zram0"
 #define SIZE		(512 * 1024 * 1024L)
 #define DEVICE		"/dev/zram0"
+
+static int modprobe;
 
 static void set_disksize(void);
 static void write_device(void);

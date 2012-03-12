@@ -17,7 +17,7 @@
 #  02110-1301, USA.
 #
 
-top_srcdir              ?= ../../../..
+top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
@@ -25,6 +25,7 @@ LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
 LIBDIR			:= ../lib
 LIB			:= $(LIBDIR)/libmem.a
 FILTER_OUT_DIRS		:= $(LIBDIR)
+CFLAGS			+= -I../include
 LDFLAGS			+= -L$(LIBDIR)
 
 $(LIBDIR):

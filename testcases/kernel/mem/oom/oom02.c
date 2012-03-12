@@ -28,22 +28,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+
+#include "config.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include "test.h"
 #include "usctest.h"
-#include "config.h"
+#include "mem.h"
 
 char *TCID = "oom02";
 int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
-#include "../include/mem.h"
-
 int main(int argc, char *argv[])
 {
 	char *msg;
