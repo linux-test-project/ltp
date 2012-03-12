@@ -1,0 +1,7 @@
+/cpuset_hotplug_test/cpuset_list_compute
+/cpuset_load_balance_test/cpuset_cpu_hog
+/cpuset_load_balance_test/cpuset_sched_domains_check
+/cpuset_memory_pressure_test/cpuset_memory_pressure
+/cpuset_memory_spread_test/cpuset_mem_hog
+/cpuset_memory_test/cpuset_memory_test
+/cpuset_syscall_test/cpuset_syscall_test

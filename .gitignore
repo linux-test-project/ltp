@@ -4,6 +4,7 @@ CVS
 *.o.d
 *.obj
 *.gdb
+core
 lib*.a
 
 /aclocal.m4

@@ -336,6 +336,9 @@
 /getuid/getuid02_16
 /getuid/getuid03
 /getuid/getuid03_16
+/getxattr/getxattr01
+/getxattr/getxattr02
+/getxattr/getxattr03
 /inotify/inotify01
 /inotify/inotify02
 /inotify/inotify03
@@ -703,6 +706,8 @@
 /sendfile/sendfile06_64
 /sendfile/sendfile07
 /sendfile/sendfile07_64
+/sendfile/sendfile08
+/sendfile/sendfile08_64
 /sendmsg/sendmsg01
 /sendto/sendto01
 /set_robust_list/set_robust_list01
@@ -808,6 +813,9 @@
 /setuid/setuid03_16
 /setuid/setuid04
 /setuid/setuid04_16
+/setxattr/setxattr01
+/setxattr/setxattr02
+/setxattr/setxattr03
 /sgetmask/sgetmask01
 /sigaction/sigaction01
 /sigaction/sigaction02

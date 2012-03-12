@@ -1,0 +1,7 @@
+/control/mem_process
+/functional/memcg_getpagesize
+/functional/memcg_process
+/regression/memcg_test_1
+/regression/memcg_test_2
+/regression/memcg_test_4
+/stress/memcg_process_stress
