@@ -50,158 +50,96 @@
  *	Must be ran as root
  */
 
-#include "ipcshm.h"
 #include <pwd.h>
+#include "ipcshm.h"
 #include "system_specific_hugepages_info.h"
 
 char *TCID = "hugeshmat02";
 int TST_TOTAL = 2;
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-unsigned long huge_pages_shm_to_be_allocated;
 
-int exp_enos[] = {EINVAL, EACCES, 0};	/* 0 terminated list of */
-					/* expected errnos      */
-
-int shm_id_1 = -1;
-int shm_id_2 = -1;
-int shm_id_3 = -1;
-
-void	*addr;				/* for result of shmat-call */
-
-#if __WORDSIZE==64
-#define NADDR   0x10000000eef           /* a 64bit non alligned address value */
+#if __WORDSIZE == 64
+#define NADDR	0x10000000eef	/* a 64bit non alligned address value */
 #else
-#define NADDR	0x60000eef		/* a non alligned address value */
+#define NADDR	0x60000eef	/* a non alligned address value */
 #endif
 
+static size_t shm_size;
+static int    shm_id_1 = -1;
+static int    shm_id_2 = -1;
+static void   *addr;
+
 struct test_case_t {
-	int *shmid;
+	int  *shmid;
 	void *addr;
-	int error;
+	int  error;
 } TC[] = {
 	/* EINVAL - the shared memory ID is not valid */
-	{&shm_id_1, 0, EINVAL},
+	{ &shm_id_1,	NULL,		EINVAL },
 
 	/* EINVAL - the address is not page aligned and SHM_RND is not given */
-	{&shm_id_2, (void *)NADDR, EINVAL},
-
+	{ &shm_id_2,	(void *)NADDR,	EINVAL },
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int i;
+	int lc, i;
+	char *msg;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-        if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-             tst_brkm(TCONF, NULL, "Not enough available Hugepages");
-        else
-             huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
+	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
+		tst_brkm(TCONF, NULL, "Not enough available Hugepages");
+	else
+		shm_size = (get_no_of_hugepages()*hugepages_size()*1024) / 2;
 
-	setup();			/* global setup */
-
-	/* The following loop checks looping state if -i option given */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
-			/*
-			 * make the call using the TEST() macro - attempt
-			 * various invalid shared memory attaches
-			 */
- 			errno = 0;
-                       	addr = shmat(*(TC[i].shmid), (const void *)TC[i].addr, 0);
-                       	TEST_ERRNO = errno;
-
-                      	if (addr != (void *)-1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
+		for (i = 0; i < TST_TOTAL; i++) {
+			addr = shmat(*(TC[i].shmid), TC[i].addr, 0);
+			if (addr != (void *)-1) {
+				tst_resm(TFAIL, "shmat suceeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - errno = "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "call failed with an "
-					 "unexpected error - %d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-
-			}
+			if (errno == TC[i].error)
+				tst_resm(TPASS|TERRNO, "shmat failed as "
+					    "expected");
+			else
+				tst_resm(TFAIL|TERRNO, "shmat failed "
+					    "unexpectedly - expect errno=%d, "
+					    "got", TC[i].error);
 		}
 	}
-
 	cleanup();
-
 	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void
-setup(void)
+void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
 	tst_tmpdir();
 
-	/* get an IPC resource key */
 	shmkey = getipckey();
 
 	/* create a shared memory resource with read and write permissions */
 	/* also post increment the shmkey for the next shmget call */
-	if ((shm_id_2 = shmget(shmkey++, huge_pages_shm_to_be_allocated, SHM_HUGETLB | SHM_RW | IPC_CREAT |
-	     IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
-			 "resource #1 in setup()");
-	}
+	shm_id_2 = shmget(shmkey++, shm_size,
+		    SHM_HUGETLB|SHM_RW|IPC_CREAT|IPC_EXCL);
+	if (shm_id_2 == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "shmget");
 
-	/* create a shared memory resource without read and write permissions */
-	if ((shm_id_3 = shmget(shmkey, huge_pages_shm_to_be_allocated, SHM_HUGETLB | IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
-			 "resource #2 in setup()");
-	}
+	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void
-cleanup(void)
+void cleanup(void)
 {
-	/* if they exist, remove the shared memory resources */
-	rm_shm(shm_id_2);
-	rm_shm(shm_id_3);
-
-	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
+	rm_shm(shm_id_2);
+
+	tst_rmdir();
 }

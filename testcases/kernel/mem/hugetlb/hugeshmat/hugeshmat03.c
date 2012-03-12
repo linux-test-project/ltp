@@ -62,153 +62,90 @@
 
 char *TCID = "hugeshmat03";
 int TST_TOTAL = 1;
-unsigned long huge_pages_shm_to_be_allocated;
 
-int exp_enos[] = {EACCES, 0};	/* 0 terminated list of expected errnos */
+static size_t shm_size;
+static int    shm_id_1 = -1;
+static void   *addr;
+static uid_t  ltp_uid;
+static char   *ltp_user = "nobody";
 
-int shm_id_1 = -1;
-
-void	*addr;			/* for result of shmat-call */
-
-uid_t ltp_uid;
-char *ltp_user = "nobody";
+static void do_child(void);
 
 int main(int ac, char **av)
 {
-	char *msg;			/* message returned from parse_opts */
-	int pid;
-	void do_child(void);
+	char *msg;
+	int status;
+	pid_t pid;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-        if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-             tst_brkm(TCONF, cleanup, "Not enough available Hugepages");
-        else
-             huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
+	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
+		tst_brkm(TCONF, cleanup, "Not enough available Hugepages");
+	else
+		shm_size = (get_no_of_hugepages()*hugepages_size()*1024) / 2;
 
-	setup();			/* global setup */
+	setup();
 
-	if ((pid = fork()) == -1) {
-		tst_brkm(TBROK, cleanup, "could not fork");
-	}
-
-	if (pid == 0) {		/* child */
-		/* set the user ID of the child to the non root user */
-		if (setuid(ltp_uid) == -1) {
-			tst_resm(TBROK, "setuid() failed");
-			exit(1);
-		}
-
+	switch (pid = fork()) {
+	case -1:
+		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+	case 0:
+		if (setuid(ltp_uid) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "setuid");
 		do_child();
-
-	} else {		/* parent */
-		/* wait for the child to return */
-		if (waitpid(pid, NULL, 0) == -1) {
-			tst_brkm(TBROK, cleanup, "waitpid failed");
-		}
-
-		/* if it exists, remove the shared memory resource */
-		rm_shm(shm_id_1);
-
-		tst_rmdir();
+		tst_exit();
+	default:
+		if (waitpid(pid, &status, 0) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
 	}
-
 	cleanup();
 	tst_exit();
 }
 
-/*
- * do_child - make the TEST call as the child process
- */
-void
-do_child()
+static void do_child(void)
 {
 	int lc;
 
-	/* The following loop checks looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/*
-		 * use TEST macro to make the call
-		 */
-		errno = 0;
-		addr = shmat(shm_id_1, (const void *)0, 0);
-		TEST_ERRNO = errno;
-
-		if (addr != (char *)-1) {
-			tst_resm(TFAIL, "call succeeded when error expected");
+		addr = shmat(shm_id_1, NULL, 0);
+		if (addr != (void *)-1) {
+			tst_resm(TFAIL, "shmat succeeded unexpectedly");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		switch(TEST_ERRNO) {
-		case EACCES:
-			tst_resm(TPASS, "expected failure - errno = "
-				 "%d : %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
-			break;
-		default:
-			tst_resm(TFAIL, "call failed with an "
-				 "unexpected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		}
+		if (errno == EACCES)
+			tst_resm(TPASS|TERRNO, "shmat failed as expected");
+		else
+			tst_resm(TFAIL|TERRNO, "shmat failed unexpectedly "
+				    "- expect errno=EACCES, got");
 	}
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void
-setup(void)
+void setup(void)
 {
-	/* check for root as process owner */
-	check_root();
-
+	tst_require_root(NULL);
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
 	tst_tmpdir();
 
-	/* get an IPC resource key */
 	shmkey = getipckey();
+	shm_id_1 = shmget(shmkey, shm_size,
+		    SHM_HUGETLB|SHM_RW|IPC_CREAT|IPC_EXCL);
+	if (shm_id_1 == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "shmget");
 
-	/* create a shared memory segment with read and write permissions */
-	if ((shm_id_1 = shmget(shmkey, huge_pages_shm_to_be_allocated, SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
-			 "segment in setup");
-	}
-
-	/* get the userid for a non root user */
 	ltp_uid = getuserid(ltp_user);
+
+	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void
-cleanup(void)
+void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
+	rm_shm(shm_id_1);
+
+	tst_rmdir();
 }
