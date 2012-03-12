@@ -110,11 +110,11 @@ int main(int ac, char **av)
 	if (sflag)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
+	setup();
+
 	/* Check number of hugepages */
 	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
 		tst_brkm(TCONF, cleanup, "Not enough available Hugepages");
-
-	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Creat a temporary file used for huge mapping */
