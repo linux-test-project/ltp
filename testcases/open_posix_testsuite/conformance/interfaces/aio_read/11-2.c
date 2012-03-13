@@ -10,8 +10,8 @@
  * assertion:
  *
  * aio_read() shall fail with [EINVAL] or the error status of the operation
- * shall be [EINVAL] if aio_offset would be invalid, or aio_reqprio is not a valid
- * value, or aio_nbytes is an invalid value.
+ * shall be [EINVAL] if aio_offset would be invalid, or aio_reqprio is not
+ * a valid value, or aio_nbytes is an invalid value.
  *
  * Testing invalid reqprio
  *
@@ -52,8 +52,7 @@ int main()
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -67,19 +66,17 @@ int main()
 	aiocb.aio_reqprio = -1;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_read(&aiocb) != -1)
-	{
+	if (aio_read(&aiocb) != -1) {
 		printf(TNAME " bad aio_read return value()\n");
 		exit(PTS_FAIL);
 	}
 
-	if (errno != EINVAL)
-	{
+	if (errno != EINVAL) {
 		printf(TNAME " errno is not EINVAL %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

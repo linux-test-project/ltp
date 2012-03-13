@@ -50,8 +50,7 @@ int main()
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -65,14 +64,13 @@ int main()
 	aiocb.aio_buf = check;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_read(&aiocb) == -1)
-	{
+	if (aio_read(&aiocb) == -1) {
 		printf(TNAME " Error at aio_read(): %s\n",
 		       strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

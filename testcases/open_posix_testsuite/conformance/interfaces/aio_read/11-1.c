@@ -10,8 +10,8 @@
  * assertion:
  *
  * aio_read() shall fail with [EINVAL] or the error status of the operation
- * shall be [EINVAL] if aio_offset would be invalid, or aio_reqprio is not a valid
- * value, or aio_nbytes is an invalid value.
+ * shall be [EINVAL] if aio_offset would be invalid, or aio_reqprio is not
+ * a valid value, or aio_nbytes is an invalid value.
  *
  * Testing invalid offset
  *
@@ -52,8 +52,7 @@ int main()
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -61,8 +60,7 @@ int main()
 
 	unlink(tmpfname);
 
-	if (write(fd, buf, BUF_SIZE) != BUF_SIZE)
-	{
+	if (write(fd, buf, BUF_SIZE) != BUF_SIZE) {
 		printf(TNAME " Error at write(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -74,33 +72,33 @@ int main()
 	aiocb.aio_offset = -1;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_read(&aiocb) != -1)
-	{
-		while (aio_error (&aiocb) == EINPROGRESS);
+	if (aio_read(&aiocb) != -1) {
+		while (aio_error(&aiocb) == EINPROGRESS);
 
-		int err = aio_error (&aiocb);
-		int ret = aio_return (&aiocb);
+		int err = aio_error(&aiocb);
+		int ret = aio_return(&aiocb);
 
 		if (ret != -1) {
 			printf(TNAME " bad aio_read return value\n");
-			close (fd);
+			close(fd);
 			exit(PTS_FAIL);
 		} else if (err != EINVAL) {
-			printf(TNAME " error code is not EINVAL %s\n", strerror(errno));
-			close (fd);
+			printf(TNAME " error code is not EINVAL %s\n",
+			       strerror(errno));
+			close(fd);
 			exit(PTS_FAIL);
 		}
 	} else {
 
-		if (errno != EINVAL)
-		{
-			printf(TNAME " errno is not EINVAL %s\n", strerror(errno));
+		if (errno != EINVAL) {
+			printf(TNAME " errno is not EINVAL %s\n",
+			       strerror(errno));
 			close(fd);
 			exit(PTS_FAIL);
 		}
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

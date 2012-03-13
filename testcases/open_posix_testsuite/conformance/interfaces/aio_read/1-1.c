@@ -54,8 +54,7 @@ int main()
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -63,11 +62,10 @@ int main()
 
 	unlink(tmpfname);
 
-	for (i=0; i<WBUF_SIZE/256; i++)
-		memset (&buf[i*256], i+1, 256);
+	for (i = 0; i < WBUF_SIZE/256; i++)
+		memset(&buf[i*256], i+1, 256);
 
-	if (write(fd, buf, WBUF_SIZE) != WBUF_SIZE)
-	{
+	if (write(fd, buf, WBUF_SIZE) != WBUF_SIZE) {
 		printf(TNAME " Error at write(): %s\n",
 		       strerror(errno));
 		close(fd);
@@ -80,41 +78,38 @@ int main()
 	aiocb.aio_nbytes = RBUF_SIZE;
 	aiocb.aio_offset = 512;
 
-	if (aio_read(&aiocb) == -1)
-	{
+	if (aio_read(&aiocb) == -1) {
 		printf(TNAME " Error at aio_read(): %s\n",
 		       strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	/* Wait until end of transaction */
-	while ((err = aio_error (&aiocb)) == EINPROGRESS);
+	while ((err = aio_error(&aiocb)) == EINPROGRESS);
 
 	err = aio_error(&aiocb);
 	ret = aio_return(&aiocb);
 
-	if (err != 0)
-	{
-		printf(TNAME " Error at aio_error() : %s\n", strerror (err));
+	if (err != 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(err));
 		close(fd);
 		exit(PTS_FAIL);
 	}
 
-	if (ret != RBUF_SIZE)
-	{
+	if (ret != RBUF_SIZE) {
 		printf(TNAME " Error at aio_return()\n");
 		close(fd);
 		exit(PTS_FAIL);
 	}
 
 	/* check it */
-	if (memcmp (&buf[512], check, RBUF_SIZE) != 0) {
+	if (memcmp(&buf[512], check, RBUF_SIZE) != 0) {
 		printf(TNAME " read values are corrupted\n");
 		close(fd);
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

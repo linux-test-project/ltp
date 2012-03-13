@@ -58,8 +58,7 @@ int main()
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -67,15 +66,14 @@ int main()
 
 	unlink(tmpfname);
 
-	if (write(fd, buf, BUF_SIZE) != BUF_SIZE)
-	{
+	if (write(fd, buf, BUF_SIZE) != BUF_SIZE) {
 		printf(TNAME " Error at write(): %s\n",
 		       strerror(errno));
 		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	for (i=0; i<NUM_AIOCBS;i++) {
+	for (i = 0; i < NUM_AIOCBS; i++) {
 		memset(&aiocbs[i], 0, sizeof(struct aiocb));
 		aiocbs[i].aio_fildes = fd;
 		aiocbs[i].aio_buf = buf;
@@ -83,35 +81,34 @@ int main()
 
 		last_req = i+1;
 
-		if ((ret = aio_read(&aiocbs[i])) == -1)
-		{
+		ret = aio_read(&aiocbs[i]);
+		if (ret == -1)
 			break;
-		}
 	}
 
-	for (i=0; i<last_req-1; i++)
-	{
+	for (i = 0; i < last_req - 1; i++) {
 		err = aio_error(&aiocbs[i]);
 		ret = aio_return(&aiocbs[i]);
 
 	}
 
-	if (last_req == NUM_AIOCBS)
-	{
-		printf(TNAME " Could not fail queuing %d request\n", NUM_AIOCBS);
-		close (fd);
+	if (last_req == NUM_AIOCBS) {
+		printf(TNAME " Could not fail queuing %d request\n",
+		       NUM_AIOCBS);
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	printf ("Failed at %d\n", last_req);
+	printf("Failed at %d\n", last_req);
 
 	if ((ret != -1) && (errno != EAGAIN)) {
-		printf(TNAME " failed with code %d: %s\n", errno, strerror (errno));
-		close (fd);
+		printf(TNAME " failed with code %d: %s\n",
+		       errno, strerror(errno));
+		close(fd);
 		exit(PTS_FAIL);
 	}
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }
