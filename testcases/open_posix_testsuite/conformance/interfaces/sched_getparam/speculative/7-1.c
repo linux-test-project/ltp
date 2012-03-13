@@ -26,11 +26,13 @@ int main(int argc, char **argv)
 	result = sched_getparam(0, NULL);
 
 	if (result == -1 && errno == EFAULT) {
-		printf("sched_getparam() sets errno == EFAULT when param argument points to NULL\n");
+		printf("sched_getparam() sets errno == EFAULT "
+		       "when param argument points to NULL\n");
 		return PTS_PASS;
 	}
 	if (result == -1 && errno == EINVAL) {
-		printf("sched_getparam() sets errno == EINVAL when param argument points to NULL\n");
+		printf("sched_getparam() sets errno == EINVAL "
+		       "when param argument points to NULL\n");
 		return PTS_PASS;
 	}
 

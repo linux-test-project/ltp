@@ -46,5 +46,5 @@ int main(int argc, char **argv)
 	}
 
 	printf("This code should not be executed.\n");
-        return PTS_UNRESOLVED;
+	return PTS_UNRESOLVED;
 }

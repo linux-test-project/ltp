@@ -37,10 +37,11 @@ int main(int argc, char **argv)
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
-		printf("Different results between pid == 0 and pid == getpid().\n");
+		printf("Different results between pid == 0 "
+		       "and pid == getpid().\n");
 		return PTS_FAIL;
 	}
 
 	printf("This code should not be executed.\n");
-        return PTS_UNRESOLVED;
+	return PTS_UNRESOLVED;
 }
