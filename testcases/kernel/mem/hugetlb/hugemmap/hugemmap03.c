@@ -42,24 +42,30 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
 #include "mem.h"
 
-#define HIGH_ADDR      (void *)(0x1000000000000)
-
-static char TEMPFILE[MAXPATHLEN];
-
 char *TCID = "hugemmap03";
 int TST_TOTAL = 1;
+
+#define HIGH_ADDR	(void *)(0x1000000000000)
+
 static unsigned long *addr;
-static int fildes;
-static char *Hopt;
-static char *nr_opt;
+static int  fildes;
 static long hugepages = 128;
 static long orig_hugepages;
+static long map_sz;
+static char TEMPFILE[MAXPATHLEN];
+
+static char *Hopt, *nr_opt;
+static int  Hflag, sflag;
+static option_t options[] = {
+	{ "H:",	&Hflag,	&Hopt },
+	{ "s:",	&sflag,	&nr_opt },
+	{ NULL,	NULL,	NULL }
+};
 
 static void help(void);
 
@@ -67,24 +73,14 @@ int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	int Hflag = 0;
-	int sflag = 0;
-	int page_sz;
 
-#if __WORDSIZE == 32  /* 32-bit compiled */
+#if __WORDSIZE == 32
 	tst_brkm(TCONF, NULL, "This test is only for 64bit");
 #endif
 
-	option_t options[] = {
-		{ "H:", &Hflag, &Hopt },
-		{ "s:", &sflag, &nr_opt },
-		{ NULL, NULL, NULL }
-	};
-
 	msg = parse_opts(ac, av, options, &help);
 	if (msg)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s, use -help",
-			 msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	if (!Hflag) {
 		tst_tmpdir();
@@ -93,56 +89,54 @@ int main(int ac, char **av)
 	if (sflag)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
-	page_sz = getpagesize();
-
 	setup();
 
+	map_sz = read_meminfo("Hugepagesize:") * 1024;
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Creat a temporary file used for huge mapping */
 		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
 		if (fildes < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
-				 "opening %s failed", TEMPFILE);
+			tst_brkm(TBROK|TERRNO, cleanup, "open %s", TEMPFILE);
 
 		Tst_count = 0;
 
-		/*
-		 * Attempt to mmap using normal pages and
-		 * a high memory address
-		 */
-		addr = mmap(HIGH_ADDR, page_sz, PROT_READ,
+		/* Attempt to mmap into highmem addr, should get ENOMEM */
+		addr = mmap(HIGH_ADDR, map_sz, PROT_READ,
 			    MAP_SHARED | MAP_FIXED, fildes, 0);
 		if (addr != MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "Normal mmap() into high region"
-				 " unexpectedly succeeded on %s", TEMPFILE);
-			close(fildes);
-			continue;
-		} else {
-			tst_resm(TPASS, "Normal mmap() into high region"
-				 " failed correctly");
-			close(fildes);
-			break;
+			tst_resm(TFAIL, "mmap into high region "
+					"succeeded unexpectedly");
+			goto fail;
 		}
-
+		if (errno != ENOMEM)
+			tst_resm(TFAIL|TERRNO, "mmap into high region "
+					"failed unexpectedly - expect "
+					"errno=ENOMEM, got");
+		else
+			tst_resm(TPASS|TERRNO, "mmap into high region "
+					"failed as expected");
+fail:
 		close(fildes);
 	}
-
 	cleanup();
-
 	tst_exit();
 }
 
 void setup(void)
 {
-	TEST_PAUSE;
 	tst_require_root(NULL);
+
 	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
 		tst_brkm(TBROK|TERRNO, NULL,
 			 "mount failed on %s", Hopt);
+
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
+
 	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d",
 		 Hopt, getpid());
+
+	TEST_PAUSE;
 }
 
 void cleanup(void)
@@ -151,9 +145,10 @@ void cleanup(void)
 
 	unlink(TEMPFILE);
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
-
 	umount(Hopt);
-	tst_rmdir();
+
+	if (!Hflag)
+		tst_rmdir();
 }
 
 static void help(void)
