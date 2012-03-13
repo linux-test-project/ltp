@@ -64,6 +64,7 @@ int TST_TOTAL = 1;
  * depending on the system being tested.
  */
 #define MAXIDS	8192
+#define PATH_SHMMNI	"/proc/sys/kernel/shmmni"
 
 static size_t shm_size;
 static int shm_id_1 = -1;
@@ -71,6 +72,7 @@ static int num_shms;
 static int shm_id_arr[MAXIDS];
 
 static long hugepages = 128;
+static long orig_shmmni;
 static option_t options[] = {
 	{ "s:",	&sflag,	&nr_opt	},
 	{ NULL,	NULL,	NULL	}
@@ -111,6 +113,7 @@ int main(int ac, char **av)
 void setup(void)
 {
 	long hpage_size;
+	char buf[BUFSIZ];
 
 	tst_require_root(NULL);
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -120,8 +123,12 @@ void setup(void)
 	set_sys_tune("nr_hugepages", hugepages, 1);
 	hpage_size = read_meminfo("Hugepagesize:") * 1024;
 
-	shm_size = hpage_size * hugepages / 2;
-	shmkey = getipckey();
+	shm_size = hpage_size;
+
+	read_file(PATH_SHMMNI, buf);
+	orig_shmmni = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+	snprintf(buf, BUFSIZ, "%ld", hugepages / 2);
+	write_file(PATH_SHMMNI, buf);
 
 	/*
 	 * Use a while loop to create the maximum number of memory segments.
@@ -149,12 +156,15 @@ void setup(void)
 void cleanup(void)
 {
 	int i;
+	char buf[BUFSIZ];
 
 	TEST_CLEANUP;
 
 	for (i = 0; i < num_shms; i++)
 		rm_shm(shm_id_arr[i]);
 
+	snprintf(buf, BUFSIZ, "%ld", orig_shmmni);
+	write_file(PATH_SHMMNI, buf);
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 
 	tst_rmdir();
