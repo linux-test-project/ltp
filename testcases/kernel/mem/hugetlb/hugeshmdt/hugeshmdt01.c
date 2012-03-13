@@ -59,7 +59,8 @@
 
 #include <setjmp.h>
 #include "ipcshm.h"
-#include "system_specific_hugepages_info.h"
+#include "safe_macros.h"
+#include "mem.h"
 
 char *TCID = "hugeshmdt01";
 int TST_TOTAL = 1;
@@ -71,6 +72,12 @@ static int *shared;
 static int pass;
 static sigjmp_buf env;
 
+static long hugepages = 128;
+static option_t options[] = {
+	{ "s:",	&sflag,	&nr_opt	},
+	{ NULL,	NULL,	NULL	}
+};
+
 static void check_functionality(void);
 static void sighandler(int sig);
 
@@ -79,14 +86,11 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	msg = parse_opts(ac, av, NULL, NULL);
+	msg = parse_opts(ac, av, options, &help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-		tst_brkm(TCONF, NULL, "Not enough available Hugepages");
-	else
-		shm_size = (get_no_of_hugepages()*hugepages_size()*1024) / 2;
+	if (sflag)
+		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
 	setup();
 
@@ -164,9 +168,17 @@ static void sighandler(int sig)
 
 void setup(void)
 {
+	long hpage_size;
+
+	tst_require_root(NULL);
 	tst_sig(NOFORK, sighandler, cleanup);
 	tst_tmpdir();
 
+	orig_hugepages = get_sys_tune("nr_hugepages");
+	set_sys_tune("nr_hugepages", hugepages, 1);
+	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+
+	shm_size = hpage_size * hugepages / 2;
 	shmkey = getipckey();
 
 	/* create a shared memory resource with read and write permissions */
@@ -191,6 +203,8 @@ void cleanup(void)
 	TEST_CLEANUP;
 
 	rm_shm(shm_id_1);
+
+	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 
 	tst_rmdir();
 }
