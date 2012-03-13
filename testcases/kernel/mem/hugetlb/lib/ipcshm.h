@@ -54,4 +54,9 @@ void check_root();
 int getipckey();
 int getuserid(char*);
 
+char *nr_opt;
+int sflag;
+long orig_hugepages;
+void help(void);
+
 #endif /* ipcshm.h */

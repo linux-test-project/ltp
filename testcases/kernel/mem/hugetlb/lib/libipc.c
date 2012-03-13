@@ -199,3 +199,8 @@ rm_shm(int shm_id)
 		tst_resm(TINFO, "id = %d", shm_id);
 	}
 }
+
+void help(void)
+{
+	printf("    -s NUM  Set the number of hugepages to be allocated\n");
+}

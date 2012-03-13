@@ -23,19 +23,19 @@
 # DO NOT USE THIS FILE FOR hugetlb / lib!!!
 LIBIPCDIR		:= ../lib
 LIBIPC			:= $(LIBIPCDIR)/libipc_hugetlb.a
-
 $(LIBIPCDIR):
 	mkdir -p "$@"
-
 $(LIBIPC): $(LIBIPCDIR)
 	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
 
-CPPFLAGS		+= -I$(abs_srcdir)/$(LIBIPCDIR)
+LIBMEMDIR		:= ../../lib
+LIBMEM			:= $(LIBMEMDIR)/libmem.a
+$(LIBMEM): $(LIBMEMDIR)
+	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
 
-LDFLAGS			+= -L$(abs_builddir)/$(LIBIPCDIR)
-
-LDLIBS			+= -lipc_hugetlb
-
-MAKE_DEPS		:= $(LIBIPC)
+CPPFLAGS		+= -I$(abs_srcdir)/$(LIBIPCDIR) -I$(abs_srcdir)/../../include
+LDFLAGS			+= -L$(abs_builddir)/$(LIBIPCDIR) -L$(abs_builddir)/$(LIBMEMDIR)
+LDLIBS			+= $(NUMA_LIBS) -lmem -lltp -lipc_hugetlb
+MAKE_DEPS		+= $(LIBMEM) $(LIBIPC)
 
 # vim: syntax=make
