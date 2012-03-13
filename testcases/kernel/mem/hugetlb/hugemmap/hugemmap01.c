@@ -62,7 +62,6 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "system_specific_hugepages_info.h"
 #include "mem.h"
 
 static char TEMPFILE[MAXPATHLEN];
@@ -73,9 +72,9 @@ static long *addr;
 static int fildes;
 static char *Hopt;
 static char *nr_opt;
-static int beforetest;
-static int aftertest;
-static int hugepagesmapped;
+static long beforetest;
+static long aftertest;
+static long hugepagesmapped;
 static long hugepages = 128;
 static long orig_hugepages;
 
@@ -86,7 +85,7 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 	int Hflag = 0;
-	int page_sz = 0;
+	long page_sz = 0;
 	int sflag = 0;
 
 	option_t options[] = {
@@ -119,12 +118,12 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Note the number of free huge pages BEFORE testing */
-		beforetest = get_no_of_free_hugepages();
+		beforetest = read_meminfo("HugePages_Free:");
 
 		/* Note the size of huge page size BEFORE testing */
-		page_sz = hugepages_size();
+		page_sz = read_meminfo("Hugepagesize:") * 1024;
 
-		addr = mmap(NULL, page_sz*1024, PROT_READ | PROT_WRITE,
+		addr = mmap(NULL, page_sz, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
 		if (addr == MAP_FAILED) {
 			tst_resm(TFAIL|TERRNO, "mmap() Failed on %s", TEMPFILE);
@@ -141,7 +140,7 @@ int main(int ac, char **av)
 		 * Make sure the number of free huge pages
 		 * AFTER testing decreased
 		 */
-		aftertest = get_no_of_free_hugepages();
+		aftertest = read_meminfo("HugePages_Free:");
 		hugepagesmapped = beforetest - aftertest;
 		if (hugepagesmapped < 1)
 			tst_resm(TWARN, "Number of HUGEPAGES_FREE stayed the"
@@ -150,7 +149,7 @@ int main(int ac, char **av)
 
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
-		if (munmap(addr, page_sz*1024) != 0)
+		if (munmap(addr, page_sz) != 0)
 			tst_brkm(TFAIL|TERRNO, NULL, "munmap failed");
 
 		close(fildes);

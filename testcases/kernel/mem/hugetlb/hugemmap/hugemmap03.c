@@ -46,7 +46,6 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "system_specific_hugepages_info.h"
 #include "mem.h"
 
 #define HIGH_ADDR      (void *)(0x1000000000000)

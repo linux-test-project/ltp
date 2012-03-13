@@ -55,7 +55,6 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "system_specific_hugepages_info.h"
 #include "mem.h"
 
 #define LOW_ADDR       (void *)(0x80000000)
@@ -83,7 +82,7 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 	int Hflag = 0;
-	int page_sz, map_sz;
+	long page_sz, map_sz;
 	int sflag = 0;
 
 	option_t options[] = {
@@ -105,7 +104,7 @@ int main(int ac, char **av)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
 	page_sz = getpagesize();
-	map_sz = 2 * 1024 * hugepages_size();
+	map_sz = read_meminfo("Hugepagesize:") * 1024 * 2;
 
 	setup();
 

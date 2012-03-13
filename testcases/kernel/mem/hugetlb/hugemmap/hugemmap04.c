@@ -63,7 +63,6 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "system_specific_hugepages_info.h"
 #include "mem.h"
 
 static char TEMPFILE[MAXPATHLEN];
@@ -73,10 +72,10 @@ int TST_TOTAL = 1;
 static long *addr;
 static long long mapsize;
 static int fildes;
-static int freepages;
-static int beforetest;
-static int aftertest;
-static int hugepagesmapped;
+static long freepages;
+static long beforetest;
+static long aftertest;
+static long hugepagesmapped;
 static long hugepages = 128;
 static long orig_hugepages;
 static char *Hopt;
@@ -112,10 +111,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* Check number of hugepages */
-	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-		tst_brkm(TCONF, cleanup, "Not enough available Hugepages");
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Creat a temporary file used for huge mapping */
 		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
@@ -126,11 +121,11 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Note the number of free huge pages BEFORE testing */
-		freepages = get_no_of_free_hugepages();
+		freepages = read_meminfo("HugePages_Free:");
 		beforetest = freepages;
 
 		/* Note the size of huge page size BEFORE testing */
-		huge_pagesize = hugepages_size();
+		huge_pagesize = read_meminfo("Hugepagesize:");
 		tst_resm(TINFO, "Size of huge pages is %d KB", huge_pagesize);
 
 #if __WORDSIZE == 32
@@ -150,8 +145,9 @@ int main(int ac, char **av)
 			close(fildes);
 			continue;
 		} else {
-			tst_resm(TPASS, "Succeeded mapping file using %d pages",
-				 freepages);
+			tst_resm(TPASS,
+				"Succeeded mapping file using %ld pages",
+				freepages);
 			/* force to allocate page and change HugePages_Free */
 			*(int *)addr = 0;
 		}
@@ -160,7 +156,7 @@ int main(int ac, char **av)
 		 * Make sure the number of free huge pages
 		 * AFTER testing decreased
 		 */
-		aftertest = get_no_of_free_hugepages();
+		aftertest = read_meminfo("HugePages_Free:");
 		hugepagesmapped = beforetest - aftertest;
 		if (hugepagesmapped < 1)
 			tst_resm(TWARN, "Number of HUGEPAGES_FREE stayed the"
