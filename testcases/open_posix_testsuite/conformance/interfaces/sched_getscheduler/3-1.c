@@ -32,7 +32,7 @@ struct unique {
 #endif
 #ifdef SCHED_SPORADIC
 	{
-	  SCHED_SPORADIC,"SCHED_SPORADIC"
+	  SCHED_SPORADIC, "SCHED_SPORADIC"
 	},
 #endif
 #ifdef SCHED_OTHER
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 		printf("Returned code is -1.\n");
 		return PTS_FAIL;
 	}
-	if (errno != 0 ) {
+	if (errno != 0) {
 		perror("Unexpected error");
 		return PTS_FAIL;
 	}
@@ -70,6 +70,7 @@ int main(int argc, char **argv)
 		tst++;
 	}
 
-	printf("The resulting scheduling policy is not one of standard policy.\nIt could be an implementation defined policy.");
+	printf("The resulting scheduling policy is not one of standard "
+	       "policy.\nIt could be an implementation defined policy.");
 	return PTS_UNRESOLVED;
 }

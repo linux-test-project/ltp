@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test the behavior of sched_getscheduler() when pid is negative\n because it is unspecified.\n");
-        return PTS_UNTESTED;
+	printf("Will not test the behavior of sched_getscheduler() "
+	       "when pid is negative\n because it is unspecified.\n");
+	return PTS_UNTESTED;
 }

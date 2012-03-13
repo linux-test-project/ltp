@@ -38,7 +38,8 @@ int set_nonroot()
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf("You don't have permission to change "
+			       "your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -58,12 +59,12 @@ int main(int argc, char **argv)
 	/* We assume process Number 1 is created by root */
 	/* and can only be accessed by root */
 	/* This test should be run under standard user permissions */
-        if (getuid() == 0) {
-                if (set_nonroot() != 0) {
+	if (getuid() == 0) {
+		if (set_nonroot() != 0) {
 			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
-        }
+	}
 
 	result = sched_getscheduler(1);
 
