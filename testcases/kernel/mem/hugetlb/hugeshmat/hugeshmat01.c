@@ -66,16 +66,6 @@ int TST_TOTAL = 3;
 #define CASE0		10		/* values to write into the shared */
 #define CASE1		20		/* memory location.		   */
 
-#if __WORDSIZE == 64
-#if defined(__mips__)
-#define UNALIGNED      0x1000000eee
-#else
-#define UNALIGNED      0x10000000eee
-#endif
-#else
-#define UNALIGNED      0x60000eee
-#endif
-
 static size_t shm_size;
 static int    shm_id_1 = -1;
 static void   *addr;
@@ -92,13 +82,16 @@ struct test_case_t {
 	int  flags;
 } TC[] = {
 	/* a straight forward read/write attach */
-	{ &shm_id_1,	0,			0 },
+	{ &shm_id_1,	0,		0 },
 
-	/* an attach using non aligned memory */
-	{ &shm_id_1,	(void *)UNALIGNED,	SHM_RND },
+	/*
+	 * an attach using non aligned memory
+	 * -1 will be replaced with an unaligned addr
+	 */
+	{ &shm_id_1,	(void *)-1,	SHM_RND },
 
 	/* a read only attach */
-	{ &shm_id_1,	0,			SHM_RDONLY }
+	{ &shm_id_1,	0,		SHM_RDONLY }
 };
 
 static void check_functionality(int i);
@@ -130,6 +123,13 @@ int main(int ac, char **av)
 					tst_resm(TPASS, "shmat call succeeded");
 			}
 
+			/*
+			 * addr in TC[0] will be used to generate an unaligned
+			 * address for TC[1]
+			 */
+			if (i == 0 && addr != (void *)-1)
+				TC[1].addr = (void *)((unsigned long)addr &
+					    ~(SHMLBA-1) + SHMLBA - 1);
 			if (shmdt(addr) == -1)
 				tst_brkm(TBROK|TERRNO, cleanup, "shmdt");
 		}
