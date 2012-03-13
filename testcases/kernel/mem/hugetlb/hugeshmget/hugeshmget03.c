@@ -53,7 +53,8 @@
  */
 
 #include "ipcshm.h"
-#include "system_specific_hugepages_info.h"
+#include "safe_macros.h"
+#include "mem.h"
 
 char *TCID = "hugeshmget03";
 int TST_TOTAL = 1;
@@ -64,30 +65,29 @@ int TST_TOTAL = 1;
  */
 #define MAXIDS	8192
 
+static size_t shm_size;
 static int shm_id_1 = -1;
 static int num_shms;
 static int shm_id_arr[MAXIDS];
 
-static void setup2(size_t shm_size);
+static long hugepages = 128;
+static option_t options[] = {
+	{ "s:",	&sflag,	&nr_opt	},
+	{ NULL,	NULL,	NULL	}
+};
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	size_t shm_size;
 
-	shm_size = 0;
-
-	msg = parse_opts(ac, av, NULL, NULL);
+	msg = parse_opts(ac, av, options, &help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	if (sflag)
+		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
-	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-		tst_brkm(TCONF, NULL, "Not enough available Hugepages");
-	else
-		shm_size = (get_no_of_hugepages()*hugepages_size()*1024) / 2;
-
-	setup2(shm_size);
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
@@ -108,11 +108,19 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setup2(size_t shm_size)
+void setup(void)
 {
+	long hpage_size;
+
+	tst_require_root(NULL);
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 	tst_tmpdir();
 
+	orig_hugepages = get_sys_tune("nr_hugepages");
+	set_sys_tune("nr_hugepages", hugepages, 1);
+	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+
+	shm_size = hpage_size * hugepages / 2;
 	shmkey = getipckey();
 
 	/*
@@ -146,6 +154,8 @@ void cleanup(void)
 
 	for (i = 0; i < num_shms; i++)
 		rm_shm(shm_id_arr[i]);
+
+	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 
 	tst_rmdir();
 }
