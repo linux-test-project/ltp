@@ -140,8 +140,8 @@ typedef struct {      /* structure returned by map_and_thread()               */
     caddr_t mapaddr;  /* address at which the file is mapped                  */
 } RETINFO_t;
 
-static   int  wait_thread = 0;       /* used to wake up sleeping threads      */
-static   int  thread_begin = 0;      /* used to coordinate threads            */
+static volatile int  wait_thread = 0;  /* used to wake up sleeping threads    */
+static volatile int  thread_begin = 0; /* used to coordinate threads          */
 static   int  verbose_print = FALSE; /* print more test information           */
 
 static   int    pages_num = NUMPAGES; /* number of pages to use for tests     */
