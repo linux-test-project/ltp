@@ -1,5 +1,6 @@
 hugemmap01 hugemmap01
-hugemmap02 hugemmap02
+# test is broken in design
+#hugemmap02 hugemmap02
 hugemmap03 hugemmap03 -I2
 hugemmap04 hugemmap04
 hugemmap05 hugemmap05
@@ -21,4 +22,3 @@ hugeshmget01 hugeshmget01 -i 10
 hugeshmget02 hugeshmget02 -i 10
 hugeshmget03 hugeshmget03 -i 10
 hugeshmget05 hugeshmget05 -i 10
-
