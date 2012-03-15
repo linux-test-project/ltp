@@ -66,12 +66,14 @@
 #include "usctest.h"
 #include "mem.h"
 
-#define MAX_MAP_COUNT_DEFAULT 64
+#define MAP_COUNT_DEFAULT	64
+#define MAX_MAP_COUNT		65536L
 
 char *TCID = "max_map_count";
 int TST_TOTAL = 1;
 
 static long old_max_map_count;
+static long old_overcommit;
 
 static long count_maps(pid_t pid);
 static void max_map_count_test(void);
@@ -107,10 +109,13 @@ void setup(void)
 			 "Can't support to test max_map_count");
 
 	old_max_map_count = get_sys_tune("max_map_count");
+	old_overcommit = get_sys_tune("overcommit_memory");
+	set_sys_tune("overcommit_memory", 2, 1);
 }
 
 void cleanup(void)
 {
+	set_sys_tune("overcommit_memory", old_overcommit, 0);
 	set_sys_tune("max_map_count", old_max_map_count, 0);
 
 	TEST_CLEANUP;
@@ -143,28 +148,38 @@ static long count_maps(pid_t pid)
 
 static void max_map_count_test(void)
 {
-	int i;
 	int status;
 	pid_t pid;
 	long max_maps;
 	long map_count;
 	long max_iters;
+	long memfree;
 
 	/*
 	 * XXX Due to a possible kernel bug, oom-killer can be easily
 	 * triggered when doing small piece mmaps in huge amount even if
-	 * many swap is available and/or overcommit_memory set to 2.
-	 * Also oom-killer would kill wrong victims in this situation,
-	 * we only test with all free physical memory for now. After
-	 * oom-killer becomes more stable (which is unlikely to be), we
-	 * can consider to test all available physical mem + swap.
+	 * enough free memory available. Also it has been observed that
+	 * oom-killer often kill wrong victims in this situation, we
+	 * decided to do following steps to make sure no oom happen:
+	 * 1) use a safe maximum max_map_count value as upper-bound,
+	 *    we set it 65536 in this case, i.e., we don't test too big
+	 *    value;
+	 * 2) make sure total mapping isn't larger tha
+	 *        CommitLimit - Committed_AS
+	 *    and set overcommit_memory to 2, this could help mapping
+	 *    returns ENOMEM instead of triggering oom-killer when
+	 *    memory is tight. (When there are enough free memory,
+	 *    step 1) will be used first.
+	 * Hope OOM-killer can be more stable oneday.
 	 */
-	max_iters = read_meminfo("MemFree:") / sysconf(_SC_PAGESIZE) * 1024;
+	memfree = read_meminfo("CommitLimit:") - read_meminfo("Committed_AS:");
+	/* 64 used as a bias to make sure no overflow happen */
+	max_iters = memfree / sysconf(_SC_PAGESIZE) * 1024 - 64;
+	if (max_iters > MAX_MAP_COUNT)
+		max_iters = MAX_MAP_COUNT;
 
-	max_maps = MAX_MAP_COUNT_DEFAULT;
-	for (i = 0; i < 5; i++) {
-		if (max_maps > max_iters)
-			max_maps = max_iters;
+	max_maps = MAP_COUNT_DEFAULT;
+	while (max_maps <= max_iters) {
 		set_sys_tune("max_map_count", max_maps, 1);
 
 		switch (pid = fork()) {
@@ -202,6 +217,6 @@ static void max_map_count_test(void)
 		if (waitpid(pid, &status, 0) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
 
-		max_maps *= 10;
+		max_maps = max_maps << 2;
 	}
 }
