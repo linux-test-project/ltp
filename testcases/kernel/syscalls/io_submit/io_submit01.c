@@ -126,7 +126,20 @@ int main(int argc, char *argv[])
 		/* 1.3 - EINVAL: uninitialized iocb */
 		iocbs[0] = &iocb;
 		TEST(io_submit(ctx, 1, iocbs));
-		check_result(-EINVAL, TEST_RETURN);
+		switch(TEST_RETURN) {
+		case -EINVAL:
+		case -EBADF:
+		case -EFAULT:
+			tst_resm(TPASS, "expected failure - "
+					"returned value = %ld : %s",
+					TEST_RETURN, strerror(-1 * TEST_RETURN));
+			break;
+		default:
+			tst_resm(TFAIL, "unexpected failure - "
+					"returned value = %ld : %s, "
+					"expected one of -EINVAL, -EBADF, -EFAULT",
+					TEST_RETURN, strerror(-1 * TEST_RETURN));
+		}
 
 		/* 2 - EFAULT: iocb points to invalid data */
 		TEST(io_submit(ctx, 1, (struct iocb **)-1));
