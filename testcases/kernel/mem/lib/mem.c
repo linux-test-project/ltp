@@ -1,8 +1,5 @@
 #include "config.h"
 #include <sys/types.h>
-#if HAVE_SYS_EVENTFD_H
-#include <sys/eventfd.h>
-#endif
 #include <sys/mman.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
@@ -71,28 +68,6 @@ void oom(int testcase, int mempolicy, int lite)
 	&& HAVE_MPOL_CONSTANTS
 	unsigned long nmask = 2;
 #endif
-#if HAVE_SYS_EVENTFD_H
-	int efd = 0, ofd = 0;
-	char buf[BUFSIZ];
-	uint64_t u;
-#endif
-
-#if HAVE_SYS_EVENTFD_H
-	if (path_exist(PATH_OOMCTRL) && path_exist(PATH_EVTCTRL)) {
-		efd = eventfd(0, 0);
-		if (efd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "eventfd");
-		ofd = open(PATH_OOMCTRL, O_RDWR);
-		if (ofd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-				"open %s", PATH_OOMCTRL);
-		if (write(ofd, "0", 1) != 1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-				"write %s", PATH_OOMCTRL);
-		snprintf(buf, BUFSIZ, "%d %d", efd, ofd);
-		write_file(PATH_EVTCTRL, buf);
-	}
-#endif
 
 	switch (pid = fork()) {
 	case -1:
@@ -123,19 +98,6 @@ void oom(int testcase, int mempolicy, int lite)
 			tst_resm(TFAIL, "the victim unexpectedly failed: %d",
 				status);
 	}
-#if HAVE_SYS_EVENTFD_H
-	if (path_exist(PATH_OOMCTRL) && path_exist(PATH_EVTCTRL)) {
-		if (read(efd, &u, sizeof(uint64_t)) != sizeof(uint64_t))
-			tst_resm(TFAIL|TERRNO, "fail to receive oom event.");
-		else
-			tst_resm(TINFO, "memcg oom event received %lu.", u);
-
-		if (efd > 0)
-			close(efd);
-		if (ofd > 0)
-			close(ofd);
-	}
-#endif
 }
 
 void testoom(int mempolicy, int lite, int numa)
@@ -731,7 +693,7 @@ long count_numa(long nodes[])
 
 	nnodes = 0;
 	for (i = 0; i <= MAXNODES; i++)
-		if (path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
+		if(path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
 			nodes[nnodes++] = i;
 
 	return nnodes;
