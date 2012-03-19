@@ -50,6 +50,7 @@ void ksm_usage(void);
 #define CPATH_NEW		CPATH "/1"
 #define MEMCG_PATH		"/dev/cgroup"
 #define MEMCG_PATH_NEW		MEMCG_PATH "/1"
+#define MEMCG_SW_LIMIT		MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes"
 #if HAVE_SYS_EVENTFD_H
 #define PATH_OOMCTRL		MEMCG_PATH_NEW "/memory.oom_control"
 #define PATH_EVTCTRL		MEMCG_PATH_NEW "/cgroup.event_control"

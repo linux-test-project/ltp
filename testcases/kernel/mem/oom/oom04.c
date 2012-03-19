@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 {
 	char *msg;
 	int lc;
+	int swap_acc_on = 1;
 	long nodes[MAXNODES];
 	char buf[BUFSIZ], mem[BUFSIZ];
 
@@ -73,19 +74,33 @@ int main(int argc, char *argv[])
 		snprintf(mem, BUFSIZ, "%ld", TESTMEM);
 		write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
 
+		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
+			if (errno == ENOENT) {
+				tst_resm(TCONF,
+				    "memcg swap accounting is disabled");
+				swap_acc_on = 0;
+			} else
+				tst_brkm(TBROK|TERRNO, cleanup, "access");
+		}
+
 		tst_resm(TINFO, "process mempolicy.");
 		testoom(1, 0, 1);
 
-		write_file(MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes", mem);
-		testoom(1, 1, 1);
+		if (swap_acc_on) {
+			write_file(MEMCG_SW_LIMIT, mem);
+			testoom(1, 1, 1);
+		}
 
 		tst_resm(TINFO, "process cpuset.");
 
-		write_file(MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes", "-1");
+		if (swap_acc_on)
+			write_file(MEMCG_SW_LIMIT, "-1");
 		testoom(0, 0, 1);
 
-		write_file(MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes", mem);
-		testoom(0, 1, 1);
+		if (swap_acc_on) {
+			write_file(MEMCG_SW_LIMIT, mem);
+			testoom(0, 1, 1);
+		}
 	}
 	cleanup();
 	tst_exit();

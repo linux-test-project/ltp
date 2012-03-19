@@ -66,8 +66,16 @@ int main(int argc, char *argv[])
 		write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
 		testoom(0, 0, 0);
 
-		write_file(MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes", mem);
-		testoom(0, 1, 0);
+		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
+			if (errno == ENOENT)
+				tst_resm(TCONF,
+				    "memcg swap accounting is disabled");
+			else
+				tst_brkm(TBROK|TERRNO, cleanup, "access");
+		} else {
+			write_file(MEMCG_SW_LIMIT, mem);
+			testoom(0, 1, 0);
+		}
 	}
 	cleanup();
 	tst_exit();
