@@ -60,8 +60,8 @@
 char *TCID = "swapping01";
 int TST_TOTAL = 1;
 
-/* allow swapping 0.5 * phy_mem in maximum */
-#define COE_DELTA       0.5
+/* allow swapping 1 * phy_mem in maximum */
+#define COE_DELTA       1
 /* will try to alloc 1.3 * phy_mem */
 #define COE_SLIGHT_OVER 0.3
 
