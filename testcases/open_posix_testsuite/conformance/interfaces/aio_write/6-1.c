@@ -14,7 +14,8 @@
  *
  * method:
  *
- *	- fill in an aiocb with a NULL aio_buf
+ *	- if Prioritized Input and Output option is supported, fill in an
+ *	  aiocb with invalid aio_reqprio
  *	- call aio_write
  *	- check aio_write return value
  *
@@ -42,11 +43,11 @@ int main()
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	/* submit a request with a NULL buffer */
-	aiocb.aio_fildes = 0;
-	aiocb.aio_buf = NULL;
-	aiocb.aio_nbytes = 0;
-	aiocb.aio_offset = 0;
+	if (sysconf(_SC_PRIORITIZED_IO) < 200112L)
+		return PTS_UNTESTED;
+
+	memset(&aiocb, 0, sizeof(struct aiocb));
+	aiocb.aio_reqprio = -1;
 
 	if (aio_write(&aiocb) != -1)
 	{
