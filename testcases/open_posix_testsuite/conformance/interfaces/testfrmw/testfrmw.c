@@ -28,6 +28,7 @@
 
 #include <time.h>
 #include <sys/types.h>
+#include <pthread.h>
 
 /* We use a mutex to avoid conflicts in traces */
 static pthread_mutex_t m_trace = PTHREAD_MUTEX_INITIALIZER;
@@ -43,7 +44,9 @@ void output(char *string, ...)
 	char *ts = "[??:??:??]";
 	struct tm *now;
 	time_t nw;
+	int oldstate;
 
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldstate);
 	pthread_mutex_lock(&m_trace);
 	nw = time(NULL);
 	now = localtime(&nw);
@@ -56,6 +59,7 @@ void output(char *string, ...)
 	vprintf(string, ap);
 	va_end(ap);
 	pthread_mutex_unlock(&m_trace);
+	pthread_setcancelstate(oldstate, NULL);
 }
 
 void output_fini(void)
