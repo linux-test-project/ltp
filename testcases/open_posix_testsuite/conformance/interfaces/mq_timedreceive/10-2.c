@@ -8,12 +8,11 @@
 
 /*
  * If the message can be removed from the message queue immedietely,
- * the operation will never fail and the validity of abs_timeout
- * need not be checked.
+ * the operation will not fail even if abs_timeout is the past time.
  * Test Steps:
- * 1. Set the abs_timeout to be invalid, when there is message
+ * 1. Set the abs_timeout to be a past time, when there is message
  *    than can be removed from the message queue immediately.
- * 2. The validity of abs_timeout will not be checked.
+ * 2. Timeout error is not occured.
  */
 
 #include <stdio.h>
@@ -27,7 +26,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TEST "10-1"
+#define TEST "10-2"
 #define FUNCTION "mq_timedreceive"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
@@ -61,12 +60,11 @@ int main()
         }
 
 	sleep(1); /* wait for a while */
-	ts.tv_sec = time(NULL) -1; /* No wait */
-	ts.tv_nsec = -1; /* Invalid */
+	ts.tv_sec = time(NULL) -1; /* Past time */
+	ts.tv_nsec = 0;
         if (mq_timedreceive(mqdes, msgrv, BUFFER, &rvprio, &ts) == -1) {
-		if (errno == EINVAL)
-			printf("FAIL: the validity of abs_timeout "
-				"is checked\n");
+		if (errno == ETIMEDOUT)
+			printf("FAIL: mq_timedreceive returned timeout error\n");
 		else
 			perror("Unexpected error at mq_timedreceive");
 		failure = 1;
