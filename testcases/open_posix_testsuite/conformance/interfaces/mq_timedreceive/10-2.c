@@ -35,9 +35,9 @@
 
 int main()
 {
-        char mqname[NAMESIZE], msgrv[BUFFER];
-        const char *msgptr = "test message";
-        mqd_t mqdes;
+	char mqname[NAMESIZE], msgrv[BUFFER];
+	const char *msgptr = "test message";
+	mqd_t mqdes;
 	unsigned int rvprio;
 	int sdprio = 1;
 	struct timespec	ts;
@@ -49,47 +49,48 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (mqdes == (mqd_t)-1) {
-                perror(ERROR_PREFIX "mq_open");
+	if (mqdes == (mqd_t)-1) {
+		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
-        }
+	}
 
-        if (mq_send(mqdes, msgptr, strlen(msgptr), sdprio) != 0) {
-                perror(ERROR_PREFIX "mq_send");
+	if (mq_send(mqdes, msgptr, strlen(msgptr), sdprio) != 0) {
+		perror(ERROR_PREFIX "mq_send");
 		unresolved = 1;
-        }
+	}
 
 	sleep(1); /* wait for a while */
-	ts.tv_sec = time(NULL) -1; /* Past time */
+	ts.tv_sec = time(NULL) - 1; /* Past time */
 	ts.tv_nsec = 0;
-        if (mq_timedreceive(mqdes, msgrv, BUFFER, &rvprio, &ts) == -1) {
+	if (mq_timedreceive(mqdes, msgrv, BUFFER, &rvprio, &ts) == -1) {
 		if (errno == ETIMEDOUT)
-			printf("FAIL: mq_timedreceive returned timeout error\n");
+			printf("FAIL: mq_timedreceive returned "
+			       "timeout error\n");
 		else
 			perror("Unexpected error at mq_timedreceive");
 		failure = 1;
 	}
 
-        if (mq_close(mqdes) != 0) {
+	if (mq_close(mqdes) != 0) {
 		perror(ERROR_PREFIX "mq_close");
 		unresolved = 1;
-        }
+	}
 
-        if (mq_unlink(mqname) != 0) {
+	if (mq_unlink(mqname) != 0) {
 		perror(ERROR_PREFIX "mq_unlink");
 		unresolved = 1;
-        }
+	}
 
-	if (failure==1) {
-                printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
+	if (failure == 1) {
+		printf("Test FAILED\n");
+		return PTS_FAIL;
+	}
 
-        if (unresolved==1) {
-                printf("Test UNRESOLVED\n");
-                return PTS_UNRESOLVED;
-        }
+	if (unresolved == 1) {
+		printf("Test UNRESOLVED\n");
+		return PTS_UNRESOLVED;
+	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

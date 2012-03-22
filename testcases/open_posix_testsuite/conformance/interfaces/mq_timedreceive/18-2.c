@@ -36,17 +36,17 @@
 #define BUFFER 40
 #define TIMEOUT	3
 
-int blocking = 0;
+int blocking;
 void exit_handler(int signo)
 {
-	printf("FAIL: the case is blocking, exit anyway \n");
+	printf("FAIL: the case is blocking, exit anyway\n");
 	blocking = 1;
 	return;
 }
 int main()
 {
-        char mqname[NAMESIZE], msgrv[BUFFER];
-        mqd_t mqdes;
+	char mqname[NAMESIZE], msgrv[BUFFER];
+	mqd_t mqdes;
 	struct timespec ts;
 	struct mq_attr attr;
 	pid_t pid;
@@ -57,26 +57,26 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (mqdes == (mqd_t)-1) {
-                perror(ERROR_PREFIX "mq_open");
+	if (mqdes == (mqd_t)-1) {
+		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
-        }
+	}
 
-	if ((pid = fork()) != 0) {
+	pid = fork();
+	if (pid != 0) {
 		/* Parent process */
 		struct sigaction act;
-		act.sa_handler=exit_handler;
-	        act.sa_flags=0;
-	        sigemptyset(&act.sa_mask);
-       		sigaction(SIGABRT, &act, 0);
+		act.sa_handler = exit_handler;
+		act.sa_flags = 0;
+		sigemptyset(&act.sa_mask);
+		sigaction(SIGABRT, &act, 0);
 
 		ts.tv_sec = time(NULL) - TIMEOUT;
 		ts.tv_nsec = 0;
 		if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) != -1) {
 			printf("FAIL: mq_timedreceive succeed unexpectely\n");
 			failure = 1;
-		}
-		else {
+		} else {
 			if (errno != ETIMEDOUT) {
 				printf("errno != ETIMEDOUT\n");
 				failure = 1;
@@ -84,31 +84,30 @@ int main()
 		}
 		/* Parent is not blocking, let child abort */
 		kill(pid, SIGABRT);
-	       	if (mq_close(mqdes) != 0) {
+		if (mq_close(mqdes) != 0) {
 			perror(ERROR_PREFIX "mq_close");
 			unresolved = 1;
-       		}
-       		if (mq_unlink(mqname) != 0) {
+		}
+		if (mq_unlink(mqname) != 0) {
 			perror(ERROR_PREFIX "mq_unlink");
 			unresolved = 1;
 		}
-		if (failure==1 || blocking==1) {
-       		  	printf("Test FAILED\n");
-       			return PTS_FAIL;
-    		}
-       		if (unresolved==1) {
-       	       		printf("Test UNRESOLVED\n");
-	               	return PTS_UNRESOLVED;
-   		}
-	        printf("Test PASSED\n");
-      		return PTS_PASS;
-	}
-	else {
+		if (failure == 1 || blocking == 1) {
+			printf("Test FAILED\n");
+			return PTS_FAIL;
+		}
+		if (unresolved == 1) {
+			printf("Test UNRESOLVED\n");
+			return PTS_UNRESOLVED;
+		}
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	} else {
 		sleep(TIMEOUT + 3); /* Parent is probably blocking
 				       send a signal to let it abort */
 		kill(getppid(), SIGABRT);
 		return 0;
 	}
-        printf("Test PASSED\n");
-      	return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

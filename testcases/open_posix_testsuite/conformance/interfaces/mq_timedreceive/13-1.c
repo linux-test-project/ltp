@@ -33,8 +33,8 @@
 
 int main()
 {
-        char mqname[NAMESIZE], msgrv[BUFFER];
-        mqd_t mqdes;
+	char mqname[NAMESIZE], msgrv[BUFFER];
+	mqd_t mqdes;
 	struct timespec ts;
 	struct mq_attr attr;
 	int unresolved = 0, failure = 0;
@@ -43,39 +43,39 @@ int main()
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
-	mqdes = mq_open(mqname, O_CREAT | O_NONBLOCK | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (mqdes == (mqd_t)-1) {
-                perror(ERROR_PREFIX "mq_open");
+	mqdes = mq_open(mqname, O_CREAT | O_NONBLOCK | O_RDWR,
+			S_IRUSR | S_IWUSR, &attr);
+	if (mqdes == (mqd_t)-1) {
+		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
-        }
+	}
 	ts.tv_sec = time(NULL) + 1;
 	ts.tv_nsec = 0;
-       	if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) == -1) {
+	if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) == -1) {
 		if (EAGAIN != errno) {
-			printf("errno != EAGAIN \n");
+			printf("errno != EAGAIN\n");
 			failure = 1;
 		}
-	}
-	else {
+	} else {
 		printf("mq_timedreceive() succeed unexpectly\n");
 		failure = 1;
 	}
-        if (mq_close(mqdes) != 0) {
+	if (mq_close(mqdes) != 0) {
 		perror(ERROR_PREFIX "mq_close");
 		unresolved = 1;
-        }
-        if (mq_unlink(mqname) != 0) {
+	}
+	if (mq_unlink(mqname) != 0) {
 		perror(ERROR_PREFIX "mq_unlink");
 		unresolved = 1;
-        }
-	if (failure==1) {
-                printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
-        if (unresolved==1) {
-                printf("Test UNRESOLVED\n");
-                return PTS_UNRESOLVED;
-        }
-        printf("Test PASSED\n");
+	}
+	if (failure == 1) {
+		printf("Test FAILED\n");
+		return PTS_FAIL;
+	}
+	if (unresolved == 1) {
+		printf("Test UNRESOLVED\n");
+		return PTS_UNRESOLVED;
+	}
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
