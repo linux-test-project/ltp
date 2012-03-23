@@ -98,3 +98,5 @@ overcommit_memory overcommit_memory -R 100
 overcommit_memory overcommit_memory -R 200
 
 max_map_count max_map_count -i 10
+
+min_free_kbytes min_free_kbytes
