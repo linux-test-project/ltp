@@ -91,6 +91,9 @@ int main(int argc, char *argv[])
 	scenar_init();
 
 	for (sc = 0; sc < NSCENAR; sc++) {
+		if (scenarii[sc].detached == 1)
+			continue;
+
 #if VERBOSE > 0
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n",
