@@ -92,7 +92,6 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
@@ -100,7 +99,6 @@ int main(int argc, char *argv[])
 		test_tune(0);
 		test_tune(1);
 	}
-
 
 	if (kill(pid, SIGUSR1) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "kill %d", pid);
@@ -150,10 +148,21 @@ static void test_tune(unsigned long overcommit_policy)
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL,
 				    "child unexpectedly failed: %d", status);
-		} else {
+		} else if (overcommit_policy == 1) {
 			if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
 				tst_resm(TFAIL,
 				    "child unexpectedly failed: %d", status);
+		} else {
+			if (WIFEXITED(status)) {
+				if (WEXITSTATUS(status) != 0) {
+					tst_resm(TFAIL, "child unexpectedly "
+					    "failed: %d", status);
+				}
+			} else if (!WIFSIGNALED(status) ||
+				    WTERMSIG(status) != SIGKILL) {
+				tst_resm(TFAIL,
+				    "child unexpectedly failed: %d", status);
+			}
 		}
 	}
 }
@@ -178,7 +187,7 @@ static int eatup_mem(unsigned long overcommit_policy)
 		addrs[i] = mmap(NULL, MAP_SIZE, PROT_READ|PROT_WRITE,
 		    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 		if (addrs[i] == MAP_FAILED) {
-			if (overcommit_policy != 2 || errno != ENOMEM) {
+			if (overcommit_policy != 1 && errno != ENOMEM) {
 				perror("mmap");
 				ret = -1;
 			}
