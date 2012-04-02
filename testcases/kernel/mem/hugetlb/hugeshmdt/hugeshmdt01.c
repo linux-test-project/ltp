@@ -179,6 +179,7 @@ void setup(void)
 	hpage_size = read_meminfo("Hugepagesize:") * 1024;
 
 	shm_size = hpage_size * hugepages / 2;
+	update_shm_size(&shm_size);
 	shmkey = getipckey();
 
 	/* create a shared memory resource with read and write permissions */
