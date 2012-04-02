@@ -58,8 +58,6 @@
 char *TCID = "hugeshmget02";
 int TST_TOTAL = 4;
 
-#define PATH_SHMMAX	"/proc/sys/kernel/shmmax"
-
 static size_t shm_size;
 static int shm_id_1 = -1;
 static int shm_id_2 = -1;
@@ -128,8 +126,6 @@ int main(int ac, char **av)
 void setup(void)
 {
 	long hpage_size;
-	char buf[BUFSIZ];
-	long shmmax;
 
 	tst_require_root(NULL);
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -140,10 +136,8 @@ void setup(void)
 	hpage_size = read_meminfo("Hugepagesize:") * 1024;
 
 	shm_size = hpage_size * hugepages / 2;
-	read_file(PATH_SHMMAX, buf);
-	shmmax = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
-	if (shm_size > shmmax)
-		shm_size = shmmax;
+	update_shm_size(&shm_size);
+
 	shmkey = getipckey();
 	shmkey2 = shmkey + 1;
 	shm_id_1 = shmget(shmkey, shm_size, IPC_CREAT|IPC_EXCL|SHM_RW);
