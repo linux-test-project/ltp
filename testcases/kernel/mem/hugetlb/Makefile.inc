@@ -38,4 +38,7 @@ LDFLAGS			+= -L$(abs_builddir)/$(LIBIPCDIR) -L$(abs_builddir)/$(LIBMEMDIR)
 LDLIBS			+= $(NUMA_LIBS) -lmem -lltp -lipc_hugetlb
 MAKE_DEPS		+= $(LIBMEM) $(LIBIPC)
 
+lib-clean:: $(LIBMEMDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
+
 # vim: syntax=make
