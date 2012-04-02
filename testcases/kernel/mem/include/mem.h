@@ -32,6 +32,10 @@ void testoom(int mempolicy, int lite, int numa);
 
 #define PATH_KSM		"/sys/kernel/mm/ksm/"
 
+/* HUGETLB */
+
+#define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
+
 /*
  * memory pointer to identify per process, MB unit, and byte like
  * memory[process No.][MB unit No.][byte No.].
@@ -72,5 +76,7 @@ void write_file(char *filename, char *buf);
 void read_file(char *filename, char *retbuf);
 void cleanup(void);
 void setup(void);
+
+void update_shm_size(size_t *shm_size);
 
 #endif

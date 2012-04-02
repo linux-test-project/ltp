@@ -786,3 +786,16 @@ void read_file(char *filename, char *retbuf)
 		tst_brkm(TBROK|TERRNO, cleanup, "read %s", filename);
 	close(fd);
 }
+
+void update_shm_size(size_t *shm_size)
+{
+	char buf[BUFSIZ];
+	size_t shmmax;
+
+	read_file(PATH_SHMMAX, buf);
+	shmmax = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+	if (*shm_size > shmmax) {
+		tst_resm(TINFO, "Set shm_size to shmmax: %ld", shmmax);
+		*shm_size = shmmax;
+	}
+}
