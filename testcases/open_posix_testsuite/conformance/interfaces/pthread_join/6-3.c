@@ -46,7 +46,8 @@
 
 #include "../testfrmw/threads_scenarii.c"
 
-static char do_it = 1;
+static char do_it1 = 1;
+static char do_it2 = 1;
 static unsigned long count_ope;
 
 #ifdef WITH_SYNCHRO
@@ -78,7 +79,7 @@ static void *sendsig(void *arg)
 		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 "
 				"in signal thread");
 
-	while (do_it) {
+	while (do_it1) {
 #ifdef WITH_SYNCHRO
 		ret = sem_wait(thearg->sem);
 		if (ret)
@@ -130,7 +131,7 @@ static void *test(void *arg)
 		UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 "
 				"in worker thread");
 
-	while (do_it) {
+	while (do_it2) {
 		for (sc = 0; sc < NSCENAR; sc++) {
 			ret = pthread_create(&child, &scenarii[sc].ta,
 					     threaded, NULL);
@@ -229,13 +230,16 @@ int main(int argc, char *argv[])
 	if (ret)
 		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
 
-	/* Let's wait for a while now */
-	sleep(10);
-
 	/* Now stop the threads and join them */
 	do {
-		do_it = 0;
-	} while (do_it);
+		do_it1 = 0;
+	} while (do_it1);
+
+	sleep(1);
+
+	do {
+		do_it2 = 0;
+	} while (do_it2);
 
 	ret = pthread_join(th_sig1, NULL);
 	if (ret)
