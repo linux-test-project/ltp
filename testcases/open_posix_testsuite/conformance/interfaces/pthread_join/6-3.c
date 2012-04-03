@@ -133,6 +133,8 @@ static void *test(void *arg)
 
 	while (do_it2) {
 		for (sc = 0; sc < NSCENAR; sc++) {
+			if (scenarii[sc].detached == 1)
+				continue;
 			ret = pthread_create(&child, &scenarii[sc].ta,
 					     threaded, NULL);
 
