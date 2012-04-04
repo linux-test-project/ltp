@@ -28,7 +28,7 @@ include $(top_srcdir)/include/mk/testcases.mk
 # reorganization..
 FILTER_OUT_DIRS		:= netpipe% pounder21 top-LTP
 
-INSTALL_TARGETS		:= *.pl *.sh html_report_header.txt
+INSTALL_TARGETS		:= *.awk *.pl *.sh html_report_header.txt
 
 INSTALL_DIR		:= bin
 
