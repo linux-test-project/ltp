@@ -771,16 +771,28 @@ main()
 	if [ $INJECT_KERNEL_FAULT ] ; then
 		#See if Debugfs is mounted, and
 		#Fault Injection Framework available through Debugfs
-		if [ -d "/sys/kernel/debug/fail_io_timeout" -o \
-			-d "/sys/kernel/debug/fail_make_request" -o \
-			-d "/sys/kernel/debug/fail_page_alloc" -o \
-			-d "/sys/kernel/debug/failslab" ]; then
+		use_faultinjection=true
+		for debug_subdir in \
+			fail_io_timeout \
+			fail_make_request \
+			fail_page_alloc \
+			failslab \
+		; do
+			if [ -d "/sys/kernel/debug/$debug_subdir" ]
+			then
+				use_faultinjection=true
+				break
+			fi
+		done
+		if $use_faultinjection; then
 			#If atleast one of the Framework is available
 			#Go ahead to Inject Fault & Create required
 			#Command Files for LTP run
 			echo Running tests with Fault Injection Enabled in the Kernel...
-			${LTPROOT}/bin/create_kernel_faults_in_loops_and_probability.pl\
-				${TMP}/alltests $INJECT_FAULT_LOOPS_PER_TEST $INJECT_KERNEL_FAULT_PERCENTAGE > ${TMP}/alltests.tmp
+			awk -v LOOPS=$INJECT_FAULT_LOOPS_PER_TEST \
+				-v PERCENTAGE=$INJECT_KERNEL_FAULT_PERCENTAGE \
+				-f ${LTPROOT}/bin/create_kernel_faults_in_loops_and_probability.awk \
+				${TMP}/alltests > ${TMP}/alltests.tmp
 			cp ${TMP}/alltests.tmp ${TMP}/alltests
 			rm -rf ${TMP}/alltests.tmp
 		else
