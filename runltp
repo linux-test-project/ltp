@@ -795,19 +795,17 @@ main()
 		if [ ! $INJECT_KERNEL_FAULT ]; then
 			which valgrind || VALGRIND_CHECK_TYPE=XYZ
 			case $VALGRIND_CHECK_TYPE in
-				1)
-				${LTPROOT}/bin/create_valgrind_check.pl ${TMP}/alltests 1 > ${TMP}/alltests.tmp
+			[1-3])
+				awk -v CHECK_LEVEL=$VALGRIND_CHECK_TYPE \
+					-f ${LTPROOT}/bin/create_valgrind_check.awk \
+					${TMP}/alltests $VALGRIND_CHECK_TYPE > \
+					${TMP}/alltests.tmp
 				cp ${TMP}/alltests.tmp ${TMP}/alltests
-				rm -rf ${TMP}/alltests.tmp;;
-				2)
-				${LTPROOT}/bin/create_valgrind_check.pl ${TMP}/alltests 2 > ${TMP}/alltests.tmp
-				cp ${TMP}/alltests.tmp ${TMP}/alltests
-				rm -rf ${TMP}/alltests.tmp;;
-				3)
-				${LTPROOT}/bin/create_valgrind_check.pl ${TMP}/alltests 3 > ${TMP}/alltests.tmp
-				cp ${TMP}/alltests.tmp ${TMP}/alltests
-				rm -rf ${TMP}/alltests.tmp;;
-				*) echo "Invalid Memory Check Type, or, Valgrind is not available";;
+				rm -rf ${TMP}/alltests.tmp
+				;;
+			*)
+				echo "Invalid Memory Check Type, or, Valgrind is not available"
+				;;
 			esac
 		fi
 	fi
