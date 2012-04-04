@@ -813,7 +813,9 @@ main()
 	if [ $ALT_DMESG_OUT -eq 1 ] ; then
 		#We want to print dmesg output for each test,lets do the trick inside the script
 		echo Enabling dmesg output logging for each test...
-		${LTPROOT}/bin/create_dmesg_entries_for_each_test.pl ${TMP}/alltests $DMESG_DIR > ${TMP}/alltests.tmp
+		awk -v DMESG_DIR=$DMESG_DIR \
+			-f ${LTPROOT}/bin/create_dmesg_entries_for_each_test.awk \
+			${TMP}/alltests > ${TMP}/alltests.tmp
 		cp ${TMP}/alltests.tmp ${TMP}/alltests
 		rm -rf ${TMP}/alltests.tmp
 	fi
