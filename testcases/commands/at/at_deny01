@@ -86,8 +86,19 @@ do_setup()
 		exit 1
 	fi
 
+	# running under systemd?
+	if command -v systemctl >/dev/null 2>&1; then
+		HAVE_SYSTEMCTL=true
+	else
+		HAVE_SYSTEMCTL=false
+	fi
+
 	# Restart atd daemon.
-	/etc/init.d/atd restart
+	if $HAVE_SYSTEMCTL; then
+		systemctl restart atd.service
+	else
+		/etc/init.d/atd restart
+	fi
 }
 
 #-----------------------------------------------------------------------
