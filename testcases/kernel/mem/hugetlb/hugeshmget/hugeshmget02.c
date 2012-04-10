@@ -60,7 +60,7 @@ int TST_TOTAL = 4;
 
 static size_t shm_size;
 static int shm_id_1 = -1;
-static int shm_id_2 = -1;
+static int shm_nonexistent_key = -1;
 static key_t shmkey2;
 
 static long hugepages = 128;
@@ -82,14 +82,15 @@ struct test_case_t {
 	/* EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given */
 	{ &shmkey,   1, SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW,	EEXIST },
 	/* ENOENT - no segment exists for the key and IPC_CREAT is not given */
-	/* use shm_id_2 (-1) as the key */
-	{ &shm_id_2, 1, SHM_HUGETLB|SHM_RW,			ENOENT }
+	/* use shm_nonexistend_key (-1) as the key */
+	{ &shm_nonexistent_key, 1, SHM_HUGETLB|SHM_RW,		ENOENT }
 };
 
 int main(int ac, char **av)
 {
 	int lc, i;
 	char *msg;
+	int shm_id_2 = -1;
 
 	msg = parse_opts(ac, av, options, &help);
 	if (msg != NULL)
@@ -103,6 +104,13 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
+			/* If this key is existent, just remove it */
+			if (*TC[i].skey == -1) {
+				shm_id_2 = shmget(*(TC[i].skey), 0, 0);
+				if (shm_id_2 != -1)
+					shmctl(shm_id_2, IPC_RMID, NULL);
+			}
+
 			TEST(shmget(*(TC[i].skey), TC[i].size_coe*shm_size,
 				    TC[i].flags));
 			if (TEST_RETURN != -1) {
