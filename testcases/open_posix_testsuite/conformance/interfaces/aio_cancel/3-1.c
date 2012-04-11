@@ -44,7 +44,7 @@
 #define TNAME "aio_cancel/3-1.c"
 
 #define BUF_NB		128
-#define BUF_SIZE	1024
+#define BUF_SIZE	(1024 * 1024)
 
 static volatile int countdown = BUF_NB;
 static volatile int canceled = 0;
