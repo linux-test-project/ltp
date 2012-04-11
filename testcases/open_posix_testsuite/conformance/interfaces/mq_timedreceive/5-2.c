@@ -33,6 +33,7 @@
 #define NAMESIZE 50
 #define BUFFER 40
 #define TIMEOUT	3
+#define THRESHOLD (TIMEOUT - 1)
 
 int blocking;
 void exit_handler(int signo)
@@ -75,7 +76,7 @@ int main()
 		oldtime = time(NULL);
 		mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts);
 		newtime = time(NULL);
-		if ((newtime - oldtime) < TIMEOUT) {
+		if ((newtime - oldtime) < THRESHOLD) {
 			printf("FAIL: mq_timedreceive didn't block until "
 			       "timout expires\n");
 			failure = 1;
