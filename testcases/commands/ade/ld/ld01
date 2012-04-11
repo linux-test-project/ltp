@@ -92,15 +92,25 @@ $CC: x.obj: No such file or directory
 $CC: y.obj: No such file or directory
 $CC: No input files
 EOF
+cat <<EOF > $TCtmp/errmsg.exp2
+$CC: error: x.obj: No such file or directory
+$CC: error: y.obj: No such file or directory
+$CC: fatal error: No input files
+compilation terminated.
+EOF
 
 diff -iw $TCtmp/errmsg.out $TCtmp/errmsg.exp
-if [ $? -eq 0 ]
-then
+if [ $? -eq 0 ]; then
 	echo  "-)"
 else
-	echo "FAIL -  ld failed to give expected error msg"
-	do_cleanup
-	exit 1
+	diff -iw $TCtmp/errmsg.out $TCtmp/errmsg.exp2
+	if [ $? -eq 0 ]; then
+		echo "-)"
+	else
+		echo "FAIL -  ld failed to give expected error msg"
+		do_cleanup
+		exit 1
+	fi
 fi
 
 
@@ -138,15 +148,24 @@ cat <<EOF > $TCtmp/errmsg.exp
 $CC: bad/x.obj: No such file or directory
 $CC: No input files
 EOF
+cat <<EOF > $TCtmp/errmsg.exp2
+$CC: error: bad/x.obj: No such file or directory
+$CC: fatal error: No input files
+compilation terminated.
+EOF
 
 diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
-if [ $? -eq 0 ]
-then
+if [ $? -eq 0 ]; then
 	echo  "-)"
 else
-	echo "FAIL -  ld failed to give expected error msg"
-	do_cleanup
-	exit 1
+	diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp2
+	if [ $? -eq 0 ]; then
+		echo "-)"
+	else
+		echo "FAIL -  ld failed to give expected error msg"
+		do_cleanup
+		exit 1
+	fi
 fi
 
 ## ASSERTION 5
