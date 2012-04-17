@@ -40,50 +40,22 @@
  *     mark b as true then broadcast c until all threads are terminated.
  */
 
- /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
- /* We need the XSI extention for the mutex attributes */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
- /********************************************************************************************/
-/****************************** standard includes *****************************************/
-/********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <unistd.h>
 
- #include <time.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
 
-/********************************************************************************************/
-/******************************   Test framework   *****************************************/
-/********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
- /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);
-  *    where descr is a description of the error and ret is an int (error code for example)
-  * FAILED(descr);
-  *    where descr is a short text saying why the test has failed.
-  * PASSED();
-  *    No parameter.
-  *
-  * Both three macros shall terminate the calling process.
-  * The testcase shall not terminate in any other maneer.
-  *
-  * The other file defines the functions
-  * void output_init()
-  * void output(char * string, ...)
-  *
-  * Those may be used to output information.
-  */
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
 
-/********************************************************************************************/
-/********************************** Configuration ******************************************/
-/********************************************************************************************/
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
@@ -94,13 +66,9 @@
 #define USE_ALTCLK  /* make tests with MONOTONIC CLOCK if supported */
 #endif
 
-/********************************************************************************************/
-/***********************************    Test case   *****************************************/
-/********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 
-struct _td
-{
+struct _td {
 	pthread_mutex_t mtx1, mtx2; /* The two mutex m1 and m2 */
 	pthread_cond_t cnd;         /* The cond var c */
 	char boolcnd;               /* The boolean predicate b associated with c */
@@ -110,7 +78,7 @@ struct _td
 	int stopped;                /* # of threads which are terminated */
 } data;
 
-void * threaded (void * arg)
+void *threaded(void *arg)
 {
 	int ret;
 
@@ -118,73 +86,86 @@ void * threaded (void * arg)
 
 	/* Prepare the timeout parameter */
 	ret = clock_gettime(data.cid, &ts);
-	if (ret != 0)  {  UNRESOLVED(ret, "Unable to get time from clock");  }
+	if (ret != 0)
+		UNRESOLVED(ret, "Unable to get time from clock");
 	ts.tv_sec += 30;
 
 	/* Lock m1 */
 	ret = pthread_mutex_lock(&(data.mtx1));
-	if (ret != 0)  {  UNRESOLVED(ret, "Unable tu lock m1 in thread");  }
+	if (ret != 0)
+		UNRESOLVED(ret, "Unable tu lock m1 in thread");
 
 	/* Tell the parent this thread is started */
 	data.started++;
 
 	/* wait for the cond - bind the cond to the mutex m1 */
-	do
-	{
+	do {
 		if (arg == (void *)0)
 			ret = pthread_cond_wait(&(data.cnd), &(data.mtx1));
 		else
-			ret = pthread_cond_timedwait(&(data.cnd), &(data.mtx1), &ts);
+			ret = pthread_cond_timedwait(&(data.cnd), &(data.mtx1),
+						     &ts);
 	} while ((ret == 0) && (data.boolcnd == 0));
-	if (ret != 0) {  UNRESOLVED(ret, "First wait failed in thread");  }
+	if (ret != 0)
+		UNRESOLVED(ret, "First wait failed in thread");
 
 	/* Test ownership and unlock m1 */
-	if (data.type == PTHREAD_MUTEX_RECURSIVE)
-	{
+	if (data.type == PTHREAD_MUTEX_RECURSIVE) {
 		ret = pthread_mutex_trylock(&(data.mtx1));
-		if (ret != 0)  {  FAILED("Unable to re-lock recursive mutex after cond wait");  }
+		if (ret != 0)
+			FAILED("Unable to re-lock recursive mutex after cond wait");
 		ret = pthread_mutex_unlock(&(data.mtx1));
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Mutex unlock failed");
 	}
+
 	ret = pthread_mutex_unlock(&(data.mtx1));
-	if (ret != 0) {  FAILED("Unable to unlock m1 in thread - not owner?");  }
+	if (ret != 0)
+		FAILED("Unable to unlock m1 in thread - not owner?");
+
 	ret = pthread_mutex_unlock(&(data.mtx1));
-	if (ret == 0) {  FAILED("Unlocking an unlocked mutex succeeded");  }  /* Failed while this is not a default mutex */
+	if (ret == 0)
+		FAILED("Unlocking an unlocked mutex succeeded");
 
 	/* Lock m2 */
 	ret = pthread_mutex_lock(&(data.mtx2));
-	if (ret != 0)  {  UNRESOLVED(ret, "Unable tu lock m2 in thread");  }
+	if (ret != 0)
+		UNRESOLVED(ret, "Unable tu lock m2 in thread");
 
 	/* wait for the cond - bind the cond to the mutex m2 */
-	do
-	{
+	do {
 		if (arg == (void *)0)
 			ret = pthread_cond_wait(&(data.cnd), &(data.mtx2));
 		else
-			ret = pthread_cond_timedwait(&(data.cnd), &(data.mtx2), &ts);
+			ret = pthread_cond_timedwait(&(data.cnd), &(data.mtx2),
+						     &ts);
 	} while ((ret == 0) && (data.boolcnd == 0));
-	if (ret != 0) {  UNRESOLVED(ret, "Second wait failed in thread");  }
+	if (ret != 0)
+		UNRESOLVED(ret, "Second wait failed in thread");
 
 	/* Mark the thread as terminated while we are protected by m2 */
 	data.stopped++;
 
 	/* Test ownership and unlock m2*/
-	if (data.type == PTHREAD_MUTEX_RECURSIVE)
-	{
+	if (data.type == PTHREAD_MUTEX_RECURSIVE) {
 		ret = pthread_mutex_trylock(&(data.mtx2));
-		if (ret != 0)  {  FAILED("Unable to re-lock recursive mutex after cond wait");  }
+		if (ret != 0)
+			FAILED("Unable to re-lock recursive mutex after cond wait");
 		ret = pthread_mutex_unlock(&(data.mtx2));
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Mutex unlock failed");
 	}
 	ret = pthread_mutex_unlock(&(data.mtx2));
-	if (ret != 0) {  FAILED("Unable to unlock m2 in thread - not owner?");  }
+	if (ret != 0)
+		FAILED("Unable to unlock m2 in thread - not owner?");
 	ret = pthread_mutex_unlock(&(data.mtx2));
-	if (ret == 0) {  FAILED("Unlocking an unlocked mutex succeeded");  }  /* Failed while this is not a default mutex */
+	if (ret == 0)
+		FAILED("Unlocking an unlocked mutex succeeded");
 
 	return NULL;
 }
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, i, j;
 	pthread_mutexattr_t ma;
@@ -194,24 +175,23 @@ int main(int argc, char * argv[])
 
 	long altclk_ok, pshared_ok;
 
-	struct
-	{
-		char altclk;  /* Want to use alternative clock */
-		char pshared; /* Want to use process-shared primitives */
-		int type;     /* mutex type */
-		char * descr; /* Description of the case */
+	struct {
+		char altclk;	/* Want to use alternative clock */
+		char pshared;	/* Want to use process-shared primitives */
+		int type;	/* mutex type */
+		char *descr;	/* Description of the case */
 
-	} scenar[] =
-	{ {0, 0, PTHREAD_MUTEX_RECURSIVE , "Recursive mutex"  }
-	 ,{0, 0, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck mutex" }
+	} scenar[] = {
+	{0, 0, PTHREAD_MUTEX_RECURSIVE , "Recursive mutex"},
+	{0, 0, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck mutex"},
 	#ifdef USE_ALTCLK
-	 ,{1, 0, PTHREAD_MUTEX_RECURSIVE , "Recursive mutex + altclock cond" }
-	 ,{1, 0, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck mutex + altclock cond" }
-	 ,{1, 1, PTHREAD_MUTEX_RECURSIVE , "Recursive pshared mutex + altclock cond" }
-	 ,{1, 1, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck pshared mutex + altclock cond" }
+	{1, 0, PTHREAD_MUTEX_RECURSIVE , "Recursive mutex + altclock cond"},
+	{1, 0, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck mutex + altclock cond"},
+	{1, 1, PTHREAD_MUTEX_RECURSIVE , "Recursive pshared mutex + altclock cond"},
+	{1, 1, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck pshared mutex + altclock cond"},
 	#endif
-	 ,{0, 1, PTHREAD_MUTEX_RECURSIVE , "Recursive pshared mutex" }
-	 ,{0, 1, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck pshared mutex" }
+	{0, 1, PTHREAD_MUTEX_RECURSIVE , "Recursive pshared mutex"},
+	{0, 1, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck pshared mutex"},
 	};
 
 	output_init();
@@ -223,70 +203,80 @@ int main(int argc, char * argv[])
 
 #ifndef USE_ALTCLK
 	if (altclk_ok > 0)
-		output("Implementation supports the MONOTONIC CLOCK but option is disabled in test.\n");
+		output("Implementation supports the MONOTONIC CLOCK "
+		       "but option is disabled in test.\n");
 #endif
 
 	pshared_ok = sysconf(_SC_THREAD_PROCESS_SHARED);
 
 	#if VERBOSE > 0
 	output("Test starting\n");
-	output(" Process-shared primitive %s be tested\n", (pshared_ok>0)?"will":"won't");
-	output(" Alternative clock for cond %s be tested\n", (altclk_ok>0)?"will":"won't");
+	output(" Process-shared primitive %s be tested\n",
+	       (pshared_ok > 0) ? "will" : "won't");
+	output(" Alternative clock for cond %s be tested\n",
+	       (altclk_ok > 0) ? "will" : "won't");
 	#endif
 
-	for (i=0; i< (sizeof(scenar) / sizeof(scenar[0])); i++)
-	{
+	for (i = 0; i < (sizeof(scenar) / sizeof(scenar[0])); i++) {
 		#if VERBOSE > 1
 		output("Starting test for %s\n", scenar[i].descr);
 		#endif
 
 		/* Initialize the data structure */
 		ret = pthread_mutexattr_init(&ma);
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex attribute object init failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Mutex attribute object init failed");
 
 		ret = pthread_mutexattr_settype(&ma, scenar[i].type);
-		if (ret != 0)  {  UNRESOLVED(ret, "Unable to set mutex type");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Unable to set mutex type");
 
-		if ((pshared_ok > 0) && (scenar[i].pshared != 0))
-		{
+		if ((pshared_ok > 0) && (scenar[i].pshared != 0)) {
 			ret = pthread_mutexattr_setpshared(&ma, PTHREAD_PROCESS_SHARED);
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to set mutex process-shared");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to set mutex process-shared");
 		}
 
 		ret = pthread_condattr_init(&ca);
-		if (ret != 0)  {  UNRESOLVED(ret, "Cond attribute object init failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Cond attribute object init failed");
 
-		if ((pshared_ok > 0) && (scenar[i].pshared != 0))
-		{
+		if ((pshared_ok > 0) && (scenar[i].pshared != 0)) {
 			ret = pthread_condattr_setpshared(&ca, PTHREAD_PROCESS_SHARED);
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to set cond process-shared");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to set cond process-shared");
 		}
 
 		#ifdef USE_ALTCLK
-		if ((altclk_ok > 0) && (scenar[i].altclk != 0))
-		{
+		if ((altclk_ok > 0) && (scenar[i].altclk != 0)) {
 			ret = pthread_condattr_setclock(&ca, CLOCK_MONOTONIC);
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to set alternative (monotonic) clock for cond");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to set alternative (monotonic) clock for cond");
 		}
 		#endif
 
 		ret = pthread_mutex_init(&(data.mtx1), &ma);
-		if (ret != 0)  {  UNRESOLVED(ret, "Unable to init mutex 1");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Unable to init mutex 1");
 
 		ret = pthread_mutex_init(&(data.mtx2), &ma);
-		if (ret != 0)  {  UNRESOLVED(ret, "Unable to init mutex 2");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Unable to init mutex 2");
 
 		ret = pthread_cond_init(&(data.cnd), &ca);
-		if (ret != 0)  {  UNRESOLVED(ret, "Unable to initialize condvar");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Unable to initialize condvar");
 
 		data.boolcnd = 0;
 
 		ret = pthread_mutexattr_gettype(&ma, &(data.type));
-		if (ret != 0)  {  UNRESOLVED(ret, "Unable to get type from mutex attr");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Unable to get type from mutex attr");
 
 		#ifdef USE_ALTCLK
 		ret = pthread_condattr_getclock(&ca, &(data.cid));
-		if (ret != 0)  {  UNRESOLVED(ret, "Unable to get clock ID from cond attr");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Unable to get clock ID from cond attr");
 		#else
 		data.cid = CLOCK_REALTIME;
 		#endif
@@ -298,39 +288,44 @@ int main(int argc, char * argv[])
 		#if VERBOSE > 1
 		output("Initialization OK, starting threads\n");
 		#endif
-		for (j = 0; j < NTHREADS; j++)
-		{
+		for (j = 0; j < NTHREADS; j++) {
 			ret = pthread_create(&th[j], NULL, threaded, (void *)(long)(j & 1));
-			if (ret != 0)  {  UNRESOLVED(ret, "Thread creation failed");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Thread creation failed");
 		}
 
 		/* Wait for the threads to be started */
 		do {
 			ret = pthread_mutex_lock(&(data.mtx1));
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to lock m1 in parent");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to lock m1 in parent");
 			loc_started = data.started;
 			ret = pthread_mutex_unlock(&(data.mtx1));
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to unlock m1 in parent");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to unlock m1 in parent");
 		} while (loc_started < NTHREADS);
 
 		/* Broadcast the condition until all threads are terminated */
 		data.boolcnd = 1;
 		do {
 			ret = pthread_cond_broadcast(&(data.cnd));
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to broadcast cnd");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to broadcast cnd");
 			sched_yield();
 			ret = pthread_mutex_lock(&(data.mtx2));
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to lock m2 in parent");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to lock m2 in parent");
 			loc_stopped = data.stopped;
 			ret = pthread_mutex_unlock(&(data.mtx2));
-			if (ret != 0)  {  UNRESOLVED(ret, "Unable to unlock m2 in parent");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Unable to unlock m2 in parent");
 		} while (loc_stopped < NTHREADS);
 
 		/* Join the threads */
-		for (j = 0; j < NTHREADS; j++)
-		{
+		for (j = 0; j < NTHREADS; j++) {
 			ret = pthread_join(th[j], NULL);
-			if (ret != 0)  {  UNRESOLVED(ret, "Thread join failed");  }
+			if (ret != 0)
+				UNRESOLVED(ret, "Thread join failed");
 		}
 
 		#if VERBOSE > 1
@@ -339,26 +334,31 @@ int main(int argc, char * argv[])
 
 		/* Destroy data */
 		ret = pthread_cond_destroy(&(data.cnd));
-		if (ret != 0)  {  UNRESOLVED(ret, "Cond destroy failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Cond destroy failed");
 
 		ret = pthread_mutex_destroy(&(data.mtx1));
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex 1 destroy failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Mutex 1 destroy failed");
 
 		ret = pthread_mutex_destroy(&(data.mtx2));
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex 2 destroy failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Mutex 2 destroy failed");
 
 		ret = pthread_condattr_destroy(&ca);
-		if (ret != 0)  {  UNRESOLVED(ret, "Cond attribute destroy failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Cond attribute destroy failed");
 
 		ret = pthread_mutexattr_destroy(&ma);
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex attr destroy failed");  }
+		if (ret != 0)
+			UNRESOLVED(ret, "Mutex attr destroy failed");
 	} /* Proceed to next case */
 
 	PASSED;
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	output_init();
 	UNTESTED("This test requires XSI features");
