@@ -69,13 +69,13 @@ struct thread_param
 	volatile unsigned progress;
 } tp[] = {
 	{ 0,   0,   0, 1, SCHED_FIFO, "TL",  0, 0, 0, 0 },
-	{ 1,   0, 100, 3, SCHED_FIFO, "TP",  0, 0, 0, 0 },
-	{ 2,   0,   0, 4, SCHED_FIFO, "TF",  1, 0, 0, 0 },
-	{ 3,   0,   0, 4, SCHED_FIFO, "TF",  2, 0, 0, 0 },
-	{ 4,   0,   0, 4, SCHED_FIFO, "TF",  3, 0, 0, 0 },
-	{ 5,   0,   0, 4, SCHED_FIFO, "TF",  4, 0, 0, 0 },
-	{ 6,   0,   0, 4, SCHED_FIFO, "TF",  5, 0, 0, 0 },
-	{ 7,   0,   0, 4, SCHED_FIFO, "TF",  6, 0, 0, 0 }
+	{ 1,   0, 100, 4, SCHED_FIFO, "TP",  0, 0, 0, 0 },
+	{ 2,   0,   0, 2, SCHED_FIFO, "TF",  1, 0, 0, 0 },
+	{ 3,   0,   0, 2, SCHED_FIFO, "TF",  2, 0, 0, 0 },
+	{ 4,   0,   0, 2, SCHED_FIFO, "TF",  3, 0, 0, 0 },
+	{ 5,   0,   0, 2, SCHED_FIFO, "TF",  4, 0, 0, 0 },
+	{ 6,   0,   0, 2, SCHED_FIFO, "TF",  5, 0, 0, 0 },
+	{ 7,   0,   0, 2, SCHED_FIFO, "TF",  6, 0, 0, 0 }
 };
 
 volatile unsigned do_work_dummy;
@@ -180,7 +180,7 @@ void *thread_tb1(void *arg)
 	double t0, t1;
 	int rc;
 
-	test_set_priority(pthread_self(),SCHED_FIFO, 2);
+	test_set_priority(pthread_self(), SCHED_FIFO, 3);
 	DPRINTF(stderr,"Thread TB1: started\n");
 	DPRINTF(stdout, "#EVENT %f Thread TB1 Started\n",
 		seconds_read() - base_time);
@@ -212,7 +212,7 @@ void *thread_tb2(void *arg)
 	double t0, t1;
 	int rc;
 
-	test_set_priority(pthread_self(),SCHED_FIFO, 5);
+	test_set_priority(pthread_self(), SCHED_FIFO, 5);
 	DPRINTF(stderr,"Thread TB2: started\n");
 	DPRINTF(stdout, "#EVENT %f Thread TB2 Started\n",
 		seconds_read() - base_time);
