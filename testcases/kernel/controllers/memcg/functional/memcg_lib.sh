@@ -380,9 +380,11 @@ test_move_charge()
 	echo $! > subgroup_b/tasks
 
 	cd subgroup_b
-	check_mem_stat memory.usage_in_bytes $4
+	check_mem_stat "rss" $4
+	check_mem_stat "cache" $5
 	cd ../subgroup_a
-	check_mem_stat memory.usage_in_bytes $5
+	check_mem_stat "rss" $6
+	check_mem_stat "cache" $7
 
 	cd ..
 	echo $! > tasks

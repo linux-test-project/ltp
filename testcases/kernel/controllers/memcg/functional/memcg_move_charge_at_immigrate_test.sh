@@ -35,27 +35,27 @@ export TST_COUNT=0
 # Test disable moving charges
 testcase_1()
 {
-	test_move_charge "--mmap-anon" $PAGESIZE  0 0 $PAGESIZE
+	test_move_charge "--mmap-anon" $PAGESIZE  0 0 0 $PAGESIZE 0
 }
 
 # Test move anon
 testcase_2()
 {
 	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZE 1 \
-		$PAGESIZE $((PAGESIZE*2))
+		$PAGESIZE 0 0 $((PAGESIZE*2))
 }
 
 # Test move file
 testcase_3()
 {
 	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZE 2 \
-		$((PAGESIZE*2)) $PAGESIZE
+		0 $((PAGESIZE*2)) $PAGESIZE 0
 }
 
 # Test move anon and file
 testcase_4()
 {
-	test_move_charge "--mmap-anon --shm" $PAGESIZE 3 $((PAGESIZE*2)) 0
+	test_move_charge "--mmap-anon --shm" $PAGESIZE 3 $PAGESIZE $PAGESIZE 0 0
 }
 
 # Run all the test cases
