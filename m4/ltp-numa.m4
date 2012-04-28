@@ -26,7 +26,14 @@ AC_DEFUN([LTP_CHECK_SYSCALL_NUMA],
 [dnl
 AC_CHECK_HEADERS([linux/mempolicy.h numa.h numaif.h],[
 	LTP_SYSCALL_NUMA_HEADERS=yes
-	AC_CHECK_FUNCS(numa_alloc_onnode,numa_move_pages)
+	AC_CHECK_LIB(numa,numa_alloc_onnode,[have_numa_alloc_onnode="yes"])
+	if  test "x$have_numa_alloc_onnode" = "xyes"; then
+		AC_DEFINE(HAVE_NUMA_ALLOC_ONNODE,1,[define to 1 if you have 'numa_alloc_onnode' function])
+	fi
+	AC_CHECK_LIB(numa,numa_move_pages,[have_numa_move_pages="yes"])
+	if  test "x$have_numa_move_pages" = "xyes"; then
+		AC_DEFINE(HAVE_NUMA_MOVE_PAGES,1,[define to 1 if you have 'numa_move_pages' function])
+	fi
 ]
 	AC_CHECK_LIB(numa,numa_available,[
 NUMA_CPPFLAGS="-DNUMA_VERSION1_COMPATIBILITY"
