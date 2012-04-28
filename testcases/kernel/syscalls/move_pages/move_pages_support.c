@@ -37,7 +37,7 @@ long get_page_size()
 void free_pages(void **pages, unsigned int num)
 {
 
-#if HAS_NUMA_H
+#if HAVE_NUMA_H
 	int i;
 	size_t onepage = get_page_size();
 
@@ -112,7 +112,7 @@ int alloc_pages_linear(void **pages, unsigned int num)
 {
 	int nodes[num];
 
-#if HAS_NUMA_H
+#if HAVE_NUMA_H
 	unsigned int i;
 	unsigned int n;
 
@@ -208,7 +208,7 @@ verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
  */
 void verify_pages_linear(void **pages, int *status, unsigned int num)
 {
-#if HAS_NUMA_H
+#if HAVE_NUMA_H
 	unsigned int i;
 	unsigned int n;
 	int nodes[num];
@@ -257,7 +257,7 @@ void verify_pages_on_node(void **pages, int *status, unsigned int num, int node)
  */
 int alloc_shared_pages_on_node(void **pages, unsigned int num, int node)
 {
-#if HAS_NUMA_H
+#if HAVE_NUMA_H
 	char *shared;
 	unsigned int i;
 	int nodes[num];
@@ -380,7 +380,7 @@ void free_sem(sem_t * sem, int num)
  */
 void check_config(unsigned int min_nodes)
 {
-#if HAS_NUMA_H
+#if HAVE_NUMA_H && HAVE_NUMAIF_H
 	if (numa_available() < 0) {
 		tst_resm(TCONF, "NUMA support is not available");
 	} else if (numa_max_node() < (min_nodes - 1)) {
