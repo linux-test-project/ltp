@@ -382,14 +382,13 @@ void check_config(unsigned int min_nodes)
 {
 #if HAVE_NUMA_H && HAVE_NUMAIF_H
 	if (numa_available() < 0) {
-		tst_resm(TCONF, "NUMA support is not available");
+		tst_brkm(TCONF, NULL, "NUMA support is not available");
 	} else if (numa_max_node() < (min_nodes - 1)) {
-		tst_resm(TCONF, "atleast 2 NUMA nodes are required");
+		tst_brkm(TCONF, NULL, "atleast 2 NUMA nodes are required");
 	} else if (tst_kvercmp(2, 6, 18) < 0) {
-		tst_resm(TCONF, "2.6.18 or greater kernel required");
+		tst_brkm(TCONF, NULL, "2.6.18 or greater kernel required");
 	}
 #else
-	tst_resm(TCONF, "NUMA support not provided");
+	tst_brkm(TCONF, NULL, "NUMA support not provided");
 #endif
-	tst_exit();
 }
