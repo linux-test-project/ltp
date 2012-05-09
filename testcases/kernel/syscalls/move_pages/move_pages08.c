@@ -61,8 +61,8 @@
 #define TEST_PAGES 2
 #define TEST_NODES 2
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "move_pages08";
 int TST_TOTAL = 1;
@@ -73,10 +73,8 @@ int main(int argc, char **argv)
 
 	/* parse standard options */
 	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
@@ -127,7 +125,7 @@ int main(int argc, char **argv)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void setup(void)
+static void setup(void)
 {
 	/*
 	 * commit 3140a2273009c01c27d316f35ab76a37e105fdd8
@@ -154,7 +152,7 @@ void setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at completion
  */
-void cleanup(void)
+static void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -162,4 +160,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}
