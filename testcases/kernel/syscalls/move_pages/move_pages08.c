@@ -46,7 +46,7 @@
  *		Initial Version.
  *
  * Restrictions
- *	None
+ *	kernel < 2.6.29
  */
 
 #include <sys/mman.h>
@@ -129,6 +129,17 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
+	/*
+	 * commit 3140a2273009c01c27d316f35ab76a37e105fdd8
+	 * Author: Brice Goglin <Brice.Goglin@inria.fr>
+	 * Date:   Tue Jan 6 14:38:57 2009 -0800
+	 *     mm: rework do_pages_move() to work on page_sized chunks
+	 *
+	 * reworked do_pages_move() to work by page-sized chunks and removed E2BIG
+	 */
+	if ((tst_kvercmp(2, 6, 29)) >= 0)
+		tst_brkm(TCONF, NULL, "move_pages: E2BIG was removed in "
+			 "commit 3140a227");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
