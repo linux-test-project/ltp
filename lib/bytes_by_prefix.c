@@ -108,7 +108,7 @@ int bytes_by_prefix(char *s)
 long lbytes_by_prefix(char *s)
 {
 	char mult, junk;
-	long nconv;
+	int nconv;
 	float num;
 
 	nconv = sscanf(s, "%f%c%c", &num, &mult, &junk);
@@ -145,7 +145,7 @@ long lbytes_by_prefix(char *s)
 long long llbytes_by_prefix(char *s)
 {
 	char mult, junk;
-	long nconv;
+	int nconv;
 	double num;
 
 	nconv = sscanf(s, "%lf%c%c", &num, &mult, &junk);
@@ -179,23 +179,23 @@ long long llbytes_by_prefix(char *s)
 
 main(int argc, char **argv)
 {
-	int ind;
+	int i;
 
 	if (argc == 1) {
 		fprintf(stderr, "missing bytes_by_prefix() parameteres\n");
 		exit(1);
 	}
 
-	for (ind = 1; ind < argc; ind++) {
+	for (i = 1; i < argc; i++) {
 
 		printf("bytes_by_prefix(%s) returned %d\n",
-		       argv[ind], bytes_by_prefix(argv[ind]));
+		       argv[i], bytes_by_prefix(argv[i]));
 
 		printf("lbytes_by_prefix(%s) returned %ld\n",
-		       argv[ind], lbytes_by_prefix(argv[ind]));
+		       argv[i], lbytes_by_prefix(argv[i]));
 
 		printf("llbytes_by_prefix(%s) returned %lld\n",
-		       argv[ind], llbytes_by_prefix(argv[ind]));
+		       argv[i], llbytes_by_prefix(argv[i]));
 	}
 }
 
