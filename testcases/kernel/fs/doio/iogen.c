@@ -61,7 +61,7 @@
 #include "libkern.h"
 #endif
 #include "doio.h"
-#include "str_to_bytes.h"
+#include "bytes_by_prefix.h"
 #include "string_to_tokens.h"
 #include "open_flags.h"
 #include "random_range.h"
@@ -1555,7 +1555,7 @@ parse_cmdline(int argc, char **argv, char *opts)
 	    break;
 
 	case 'r':
-	    if ((Rawmult = str_to_bytes(optarg)) == -1 ||
+	    if ((Rawmult = bytes_by_prefix(optarg)) == -1 ||
 		          Rawmult < 11 || Rawmult % BSIZE) {
 		fprintf(stderr, "iogen%s:  Illegal -r arg (%s).  Must be > 0 and multipe of BSIZE (%d)\n",
 			TagName, optarg, BSIZE);
@@ -1587,7 +1587,7 @@ parse_cmdline(int argc, char **argv, char *opts)
 	    break;
 
 	case 't':
-	    if ((Mintrans = str_to_bytes(optarg)) == -1) {
+	    if ((Mintrans = bytes_by_prefix(optarg)) == -1) {
 		fprintf(stderr, "iogen%s:  Illegal -t arg (%s):  Must have the form num[bkm]\n", TagName, optarg);
 		exit(1);
 	    }
@@ -1595,7 +1595,7 @@ parse_cmdline(int argc, char **argv, char *opts)
 	    break;
 
 	case 'T':
-	    if ((Maxtrans = str_to_bytes(optarg)) == -1) {
+	    if ((Maxtrans = bytes_by_prefix(optarg)) == -1) {
 		fprintf(stderr, "iogen%s:  Illegal -T arg (%s):  Must have the form num[bkm]\n", TagName, optarg);
 		exit(1);
 	    }
@@ -1740,7 +1740,7 @@ parse_cmdline(int argc, char **argv, char *opts)
 
 	    if ((cp = strchr(argv[optind], ':')) != NULL) {
 	        *cp = '\0';
-	        if ((len = str_to_bytes(argv[optind])) == -1) {
+	        if ((len = bytes_by_prefix(argv[optind])) == -1) {
 		    fprintf(stderr,
 			    "iogen%s:  illegal file length (%s) for file %s\n",
 			    TagName, argv[optind], cp+1);

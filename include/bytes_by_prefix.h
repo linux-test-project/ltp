@@ -29,11 +29,11 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-#ifndef _STR_TO_BYTES_
-#define _STR_TO_BYTES_
+#ifndef _BYTES_BY_PREFIX_
+#define _BYTES_BY_PREFIX_
 
-int str_to_bytes(char *);
-long str_to_lbytes(char *);
-long long str_to_llbytes(char *);
+int bytes_by_prefix(char *);
+long lbytes_by_prefix(char *);
+long long llbytes_by_prefix(char *);
 
 #endif

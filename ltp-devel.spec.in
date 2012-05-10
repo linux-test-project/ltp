@@ -28,7 +28,7 @@ It is intended to be used to build testcases using the provided API.
 @prefix@/include/libtestsuite.h
 @prefix@/include/usctest.h
 @prefix@/include/string_to_tokens.h
-@prefix@/include/str_to_bytes.h
+@prefix@/include/bytes_by_prefix.h
 @prefix@/include/databin.h
 @prefix@/include/open_flags.h
 @prefix@/include/write_log.h
@@ -53,7 +53,7 @@ It is intended to be used to build testcases using the provided API.
 @mandir@/man3/parse_open_flags.3
 @mandir@/man3/tst_res.3
 @mandir@/man3/write_log.3
-@mandir@/man3/str_to_bytes.3
+@mandir@/man3/bytes_by_prefix.3
 @mandir@/man3/tst_set_error.3
 @mandir@/man3/parse_opts.3
 @mandir@/man3/string_to_tokens.3

@@ -31,10 +31,10 @@
  */
 #include <stdio.h>
 #include <sys/param.h>
-#include "str_to_bytes.h"
+#include "bytes_by_prefix.h"
 
 /****************************************************************************
- * str_to_bytes(s)
+ * bytes_by_prefix(s)
  *
  * Computes the number of bytes described by string s.  s is assumed to be
  * a base 10 positive (ie. >= 0) number followed by an optional single
@@ -50,7 +50,7 @@
  *              g       2^30 (1073741824)
  *              G       2^30 (1073741824) * sizeof(long)
  *
- * for instance, "1k" and "1024" would both cause str_to_bytes to return 1024.
+ * for instance, "1k" and "1024" would both cause bytes_by_prefix to return 1024
  *
  * Returns -1 if mult is an invalid character, or if the integer portion of
  * s is not a positive integer.
@@ -72,7 +72,7 @@
 #define G_MULT	1073741824	/* Giga or 2^30 */
 #define T_MULT	1099511627776	/* tera or 2^40 */
 
-int str_to_bytes(char *s)
+int bytes_by_prefix(char *s)
 {
 	char mult, junk;
 	int nconv;
@@ -105,7 +105,7 @@ int str_to_bytes(char *s)
 	}
 }
 
-long str_to_lbytes(char *s)
+long lbytes_by_prefix(char *s)
 {
 	char mult, junk;
 	long nconv;
@@ -142,7 +142,7 @@ long str_to_lbytes(char *s)
  * Force 64 bits number when compiled as 32 IRIX binary.
  * This allows for a number bigger than 2G.
  */
-long long str_to_llbytes(char *s)
+long long llbytes_by_prefix(char *s)
 {
 	char mult, junk;
 	long nconv;
@@ -182,20 +182,20 @@ main(int argc, char **argv)
 	int ind;
 
 	if (argc == 1) {
-		fprintf(stderr, "missing str_to_bytes() parameteres\n");
+		fprintf(stderr, "missing bytes_by_prefix() parameteres\n");
 		exit(1);
 	}
 
 	for (ind = 1; ind < argc; ind++) {
 
-		printf("str_to_bytes(%s) returned %d\n",
-		       argv[ind], str_to_bytes(argv[ind]));
+		printf("bytes_by_prefix(%s) returned %d\n",
+		       argv[ind], bytes_by_prefix(argv[ind]));
 
-		printf("str_to_lbytes(%s) returned %ld\n",
-		       argv[ind], str_to_lbytes(argv[ind]));
+		printf("lbytes_by_prefix(%s) returned %ld\n",
+		       argv[ind], lbytes_by_prefix(argv[ind]));
 
-		printf("str_to_llbytes(%s) returned %lld\n",
-		       argv[ind], str_to_llbytes(argv[ind]));
+		printf("llbytes_by_prefix(%s) returned %lld\n",
+		       argv[ind], llbytes_by_prefix(argv[ind]));
 	}
 }
 

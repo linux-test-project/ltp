@@ -44,5 +44,5 @@ To read manual pages, then the developer would type:
 	man parse_ranges
 	man random_range
 	man rmobj
-	man str_to_bytes
+	man bytes_by_prefix
 	man write_log
