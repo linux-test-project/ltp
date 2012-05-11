@@ -192,6 +192,7 @@ test01()
 		rm -f $files > /dev/null 2>&1
 	done
 
+	chmod 644 $LTPTMP/tst_logrotate.conf
 	logrotate -fv $LTPTMP/tst_logrotate.conf > $LTPTMP/tst_logrotate.out 2>&1 \
 		|| RC=$?
 	if [ $RC -eq 0 ]
