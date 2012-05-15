@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 	int size = 128, num = 3, unit = 1;
-	unsigned long nmask = 2;
+	unsigned long nmask = 0;
 	long nodes[MAXNODES];
 
 	msg = parse_opts(argc, argv, ksm_options, ksm_usage);
@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
 
 		write_memcg();
 
+		nmask = 1 << nodes[1];
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1) {
 			if (errno != ENOSYS)
 				tst_brkm(TBROK|TERRNO, cleanup,

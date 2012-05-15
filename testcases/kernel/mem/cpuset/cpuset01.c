@@ -108,7 +108,7 @@ static void testcpuset(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
 	case 0:
 		for (i = 0; i < nnodes; i++)
-			nmask += exp2f(i);
+			nmask += 1 << nodes[i];
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
 		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));

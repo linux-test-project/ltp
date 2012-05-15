@@ -66,7 +66,8 @@ void oom(int testcase, int mempolicy, int lite)
 	int status;
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
-	unsigned long nmask = 2;
+	unsigned long nmask = 0;
+	long nodes[MAXNODES];
 #endif
 
 	switch (pid = fork()) {
@@ -75,6 +76,8 @@ void oom(int testcase, int mempolicy, int lite)
 	case 0:
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
+		count_numa(nodes);
+		nmask += 1 << nodes[1];
 		if (mempolicy)
 			if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
 				tst_brkm(TBROK|TERRNO, cleanup,
