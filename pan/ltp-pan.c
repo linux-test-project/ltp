@@ -99,7 +99,8 @@ struct orphan_pgrp
 };
 
 static pid_t run_child(struct coll_entry *colle, struct tag_pgrp *active,
-				int quiet_mode);
+		       int quiet_mode, int *failcnt, int fmt_print,
+		       FILE * logfile);
 static char *slurp(char *file);
 static struct collection *get_collection(char *file, int optind, int argc,
 					 char **argv);
@@ -322,6 +323,7 @@ main(int argc, char **argv)
 		fprintf(logfile, "%-30.20s %-10.10s %-10.10s\n",
 			   	"--------", "------", "------------");
 	}
+	fflush(logfile);
     }
 
     coll = get_collection(filename, optind, argc, argv);
@@ -493,7 +495,8 @@ main(int argc, char **argv)
 		break;
 	    }
 
-	    cpid = run_child(coll->ary[c], running + i, quiet_mode);
+	    cpid = run_child(coll->ary[c], running + i, quiet_mode, &failcnt,
+			     fmt_print, logfile);
 	    if (cpid != -1)
 		++num_active;
 	    if ((cpid != -1 || sequential) && starts > 0)
@@ -804,7 +807,8 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 
 
 static pid_t
-run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
+run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode,
+	  int *failcnt, int fmt_print, FILE * logfile)
 {
     ssize_t errlen;
     int cpid;
@@ -978,6 +982,26 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 	    termtype = "unknown";
 	}
 	time(&end_time);
+	if (logfile != NULL) {
+		if (!fmt_print) {
+			fprintf(logfile,
+				"tag=%s stime=%d dur=%d exit=%s "
+				"stat=%d core=%s cu=%d cs=%d\n",
+				colle->name, (int)(active->mystime),
+				(int) (end_time - active->mystime), termtype,
+				termid, (status & 0200) ? "yes" : "no",
+				0, 0);
+		} else {
+			if (termid != 0)
+				++*failcnt;
+
+			fprintf(logfile, "%-30.30s %-10.10s %-5d\n",
+				colle->name, ((termid != 0) ? "FAIL" : "PASS"),
+				termid);
+		}
+		fflush(logfile);
+	}
+
 	if (!quiet_mode)
 	{
 		//write_test_start(active, errbuf);
