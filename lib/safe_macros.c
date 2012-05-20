@@ -222,7 +222,7 @@ safe_read(const char *file, const int lineno, void (*cleanup_fn)(void),
 	ssize_t rval;
 
 	rval = read(fildes, buf, nbyte);
-	if ((len_strict == 0 && rval == -1) || rval != nbyte)
+	if (rval == -1 || (len_strict && rval != nbyte))
 		tst_brkm(TBROK|TERRNO, cleanup_fn, "read failed at %s:%d",
 		    file, lineno);
 
