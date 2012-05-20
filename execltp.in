@@ -6,7 +6,7 @@
     complain about complexity involved with trying to use LTP in my
     organization -_-.
 
-    Copyright (C) 2009, Garrett Cooper
+    Copyright (C) 2009-2012, Garrett Cooper
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,14 +23,19 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
 
+
 from optparse import OptionGroup, OptionParser
-import os, re, sys
+import os
+import re
+import sys
+
 
 class ResultsParseException(Exception):
     """ Extended class for parsing LTP results. """
 
+
 def parse_ltp_results(exec_log, output_log, verbose=0):
-    """ Function for parsing LTP results.
+    """Function for parsing LTP results.
 
     1. The exec log is the log with the results in summary form.
 
@@ -69,17 +74,17 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
     elif 1 < verbose and not os.access(output_log, os.R_OK):
         # Need the output log for context to the end user.
         raise ResultsParseException("Output log - %s - specified doesn't exist"
-                                    % output_log )
+                                    % output_log)
 
     context = None
 
-    failed = [ ] 
+    failed = []
     passed = 0
 
     if 2 <= verbose:
-        passed = [ ]
+        passed = []
 
-    target_vals = ( 'exited', '0', 'no' )
+    target_vals = ('exited', '0', 'no')
 
     fd = open(exec_log, 'r')
 
@@ -93,7 +98,7 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
 
     if not matches:
         raise ResultsParseException("No parseable results were found in the "
-                                    "exec log - `%s'."% exec_log)
+                                    "exec log - `%s'." % exec_log)
 
     for match in matches:
 
@@ -111,7 +116,7 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
 
     if 1 <= verbose:
 
-        context = { }
+        context = {}
 
         search_tags = failed[:]
 
@@ -187,8 +192,9 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
 
     return failed, passed, context
 
+
 def determine_context(output_log, testsuite, test_set, context):
-    """ Return a set of context values mapping test_set -> context. """
+    """Return a set of context values mapping test_set -> context."""
 
     test_set_context = {}
 
@@ -201,23 +207,25 @@ def determine_context(output_log, testsuite, test_set, context):
             test_context = ('Could not determine context for %s; please see '
                             'output log - %s' % (test, output_log))
 
-
         test_set_context['%s : %s' % (testsuite, test)] = test_context
 
     return test_set_context
 
+
 def print_context(output_dest, header, testsuite_context):
-    """ Print out testsuite_context to output_dest, heading it up with
-        header.
+    """Print out testsuite_context to output_dest, heading it up with
+       header.
     """
+
     output_dest.write('\n'.join(['', '=' * 40, header, '-' * 40, '']))
 
     for test, context in testsuite_context.items():
         output_dest.write('<output test="%s">\n%s\n</output>\n' %
                           (test, context.strip()))
 
+
 def main():
-    """ main. """
+    """main"""
 
     parser = OptionParser(prog=os.path.basename(sys.argv[0]),
                           usage='usage: %prog [options] test ...',
@@ -270,9 +278,9 @@ def main():
     parser.add_option_group(group)
 
     group = OptionGroup(parser, 'Copyright',
-                        '%(prog)s version %(version)s, Copyright (C) 2009, '
-                        'Garrett Cooper %(prog)s comes with ABSOLUTELY NO '
-                        'WARRANTY; '
+                        '%(prog)s version %(version)s, Copyright (C) '
+                        '2009-2012, Garrett Cooper %(prog)s comes with '
+                        'ABSOLUTELY NO WARRANTY; '
                         'This is free software, and you are welcome to '
                         'redistribute it under certain conditions (See the '
                         'license tort in %(file)s for more details).'
@@ -284,12 +292,12 @@ def main():
 
     opts, args = parser.parse_args()
 
-    # Remove -q from the opts string, as long as it's a standalone option. 
+    # Remove -q from the opts string, as long as it's a standalone option.
     runltp_opts = re.sub('^((?<!\S)+\-q\s+|\-q|\s+\-q(?!\S))$', '',
                          opts.runltp_opts)
 
     if not opts.log_dir:
-        opts.log_dir = os.path.join(opts.ltp_dir, 'output')    
+        opts.log_dir = os.path.join(opts.ltp_dir, 'output')
 
     if not opts.summary_mode and not opts.verbose:
         parser.error('You cannot suppress summary output and disable '
@@ -357,7 +365,7 @@ def main():
 
             if not opts.postprocess_only:
 
-                for log in [ exec_log, output_log ]:
+                for log in [exec_log, output_log]:
                     if os.path.isfile(log):
                         os.remove(log)
 
@@ -366,9 +374,9 @@ def main():
                                       "test\n" % runtest_file)
                     continue
 
-                os.system(' '.join([ os.path.join(opts.ltp_dir, 'runltp'),
-                                     runltp_opts, '-f', testsuite,
-                                     '-l', exec_log, '-o', output_log ]))
+                os.system(' '.join([os.path.join(opts.ltp_dir, 'runltp'),
+                                    runltp_opts, '-f', testsuite,
+                                    '-l', exec_log, '-o', output_log]))
 
             try:
 
