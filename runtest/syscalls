@@ -439,6 +439,7 @@ inotify_init1_02 inotify_init1_02
 inotify01 inotify01
 inotify02 inotify02
 inotify03 inotify03 -D DEVICE -T DEVICE_FS_TYPE
+inotify04 inotify04
 
 ioperm01 ioperm01
 ioperm02 ioperm02
