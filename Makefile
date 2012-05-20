@@ -173,7 +173,7 @@ SRCDIR_INSTALL_TARGETS	:= $(SRCDIR_INSTALL_SCRIPTS) $(SRCDIR_INSTALL_READONLY)
 #
 .PHONY: Version
 Version:
-	if git describe &> /dev/null; then \
+	if git describe >/dev/null 2>&1; then \
 		git describe > "$@"; \
 	else \
 		cp VERSION "$@"; \
