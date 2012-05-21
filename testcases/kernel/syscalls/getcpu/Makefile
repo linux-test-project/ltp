@@ -19,18 +19,4 @@
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
-
-ifneq ($(shell uname -r | grep -c "^2\.6\.*"), 1)
-
-MAKE_TARGETS		:=
-
-.PHONY: no-all-install
-
-all install: no-all-install
-
-no-all-install:
-	@echo "Warning: Kernel doesn't support this test case"
-
-endif
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
