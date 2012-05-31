@@ -31,6 +31,7 @@
  */
 #include <stdio.h>
 #include <sys/param.h>
+
 #include "bytes_by_prefix.h"
 
 /****************************************************************************
@@ -77,32 +78,47 @@ int bytes_by_prefix(char *s)
 	char mult, junk;
 	int nconv;
 	float num;
+	int result;
 
 	nconv = sscanf(s, "%f%c%c", &num, &mult, &junk);
 	if (nconv == 0 || nconv == 3)
 		return -1;
 
-	if (nconv == 1)
-		return num;
+	if (nconv == 1) {
+		result = num;
+		return result < 0 ? -1 : result;
+	}
 
 	switch (mult) {
 	case 'b':
-		return (int)(num * (float)B_MULT);
+		result = (int)(num * (float)B_MULT);
+		break;
 	case 'k':
-		return (int)(num * (float)K_MULT);
+		result = (int)(num * (float)K_MULT);
+		break;
 	case 'K':
-		return (int)((num * (float)K_MULT) * sizeof(long));
+		result = (int)((num * (float)K_MULT) * sizeof(long));
+		break;
 	case 'm':
-		return (int)(num * (float)M_MULT);
+		result = (int)(num * (float)M_MULT);
+		break;
 	case 'M':
-		return (int)((num * (float)M_MULT) * sizeof(long));
+		result = (int)((num * (float)M_MULT) * sizeof(long));
+		break;
 	case 'g':
-		return (int)(num * (float)G_MULT);
+		result = (int)(num * (float)G_MULT);
+		break;
 	case 'G':
-		return (int)((num * (float)G_MULT) * sizeof(long));
+		result = (int)((num * (float)G_MULT) * sizeof(long));
+		break;
 	default:
 		return -1;
 	}
+
+	if (result < 0)
+		return -1;
+
+	return result;
 }
 
 long lbytes_by_prefix(char *s)
@@ -110,32 +126,47 @@ long lbytes_by_prefix(char *s)
 	char mult, junk;
 	int nconv;
 	float num;
+	long result;
 
 	nconv = sscanf(s, "%f%c%c", &num, &mult, &junk);
 	if (nconv == 0 || nconv == 3)
 		return -1;
 
-	if (nconv == 1)
-		return (long)num;
+	if (nconv == 1) {
+		result = (long)num;
+		return result < 0 ? -1 : result;
+	}
 
 	switch (mult) {
 	case 'b':
-		return (long)(num * (float)B_MULT);
+		result = (long)(num * (float)B_MULT);
+		break;
 	case 'k':
-		return (long)(num * (float)K_MULT);
+		result = (long)(num * (float)K_MULT);
+		break;
 	case 'K':
-		return (long)((num * (float)K_MULT) * sizeof(long));
+		result = (long)((num * (float)K_MULT) * sizeof(long));
+		break;
 	case 'm':
-		return (long)(num * (float)M_MULT);
+		result = (long)(num * (float)M_MULT);
+		break;
 	case 'M':
-		return (long)((num * (float)M_MULT) * sizeof(long));
+		result = (long)((num * (float)M_MULT) * sizeof(long));
+		break;
 	case 'g':
-		return (long)(num * (float)G_MULT);
+		result = (long)(num * (float)G_MULT);
+		break;
 	case 'G':
-		return (long)((num * (float)G_MULT) * sizeof(long));
+		result = (long)((num * (float)G_MULT) * sizeof(long));
+		break;
 	default:
 		return -1;
 	}
+
+	if (result < 0)
+		return -1;
+
+	return result;
 }
 
 /*
@@ -147,32 +178,46 @@ long long llbytes_by_prefix(char *s)
 	char mult, junk;
 	int nconv;
 	double num;
+	long long result;
 
 	nconv = sscanf(s, "%lf%c%c", &num, &mult, &junk);
 	if (nconv == 0 || nconv == 3)
 		return -1;
-
-	if (nconv == 1)
-		return (long long)num;
+	if (nconv == 1) {
+		result = (long long)num;
+		return result < 0 ? -1 : result;
+	}
 
 	switch (mult) {
 	case 'b':
-		return (long long)(num * (float)B_MULT);
+		result = (long long)(num * (float)B_MULT);
+		break;
 	case 'k':
-		return (long long)(num * (float)K_MULT);
+		result = (long long)(num * (float)K_MULT);
+		break;
 	case 'K':
-		return (long long)((num * (float)K_MULT) * sizeof(long long));
+		result = (long long)((num * (float)K_MULT) * sizeof(long long));
+		break;
 	case 'm':
-		return (long long)(num * (float)M_MULT);
+		result = (long long)(num * (float)M_MULT);
+		break;
 	case 'M':
-		return (long long)((num * (float)M_MULT) * sizeof(long long));
+		result = (long long)((num * (float)M_MULT) * sizeof(long long));
+		break;
 	case 'g':
-		return (long long)(num * (float)G_MULT);
+		result = (long long)(num * (float)G_MULT);
+		break;
 	case 'G':
-		return (long long)((num * (float)G_MULT) * sizeof(long long));
+		result = (long long)((num * (float)G_MULT) * sizeof(long long));
+		break;
 	default:
 		return -1;
 	}
+
+	if (result < 0)
+		return -1;
+
+	return result;
 }
 
 #ifdef UNIT_TEST
