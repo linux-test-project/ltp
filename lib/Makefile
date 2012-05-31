@@ -43,3 +43,4 @@ $(pc_file):
 	install -m $(INSTALL_MODE) "$(builddir)/$(@F)" "$@"
 
 include $(top_srcdir)/include/mk/lib.mk
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

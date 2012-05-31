@@ -219,29 +219,3 @@ long long llbytes_by_prefix(char *s)
 
 	return result;
 }
-
-#ifdef UNIT_TEST
-
-main(int argc, char **argv)
-{
-	int i;
-
-	if (argc == 1) {
-		fprintf(stderr, "missing bytes_by_prefix() parameteres\n");
-		exit(1);
-	}
-
-	for (i = 1; i < argc; i++) {
-
-		printf("bytes_by_prefix(%s) returned %d\n",
-		       argv[i], bytes_by_prefix(argv[i]));
-
-		printf("lbytes_by_prefix(%s) returned %ld\n",
-		       argv[i], lbytes_by_prefix(argv[i]));
-
-		printf("llbytes_by_prefix(%s) returned %lld\n",
-		       argv[i], llbytes_by_prefix(argv[i]));
-	}
-}
-
-#endif
