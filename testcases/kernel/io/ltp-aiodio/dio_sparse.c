@@ -149,10 +149,10 @@ int main(int argc, char **argv)
 	dirty_freeblocks(filesize);
 
 	tst_resm(TINFO, "Starting I/O tests");
+	signal(SIGTERM, SIG_DFL);
 	for (i = 0; i < num_children; i++) {
 		switch (pid[i] = fork()) {
 		case 0:
-			signal(SIGTERM, SIG_DFL);
 			read_sparse(filename, filesize);
 		break;
 		case -1:
@@ -164,6 +164,7 @@ int main(int argc, char **argv)
 			continue;
 		}
 	}
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 	
 	ret = dio_sparse(filename, alignment, writesize, filesize);
 
