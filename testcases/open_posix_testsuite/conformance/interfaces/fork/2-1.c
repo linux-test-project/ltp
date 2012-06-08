@@ -54,6 +54,7 @@
 #include <signal.h>
 
 #include "posixtest.h"
+#include "mem_pattern.h"
 
 struct test_struct {
 	char one;
@@ -74,15 +75,16 @@ int main(int argc, char *argv[])
 	void *malloced;
 	struct sigaction sa_ori, sa_child;
 	struct test_struct mystruct = {1, 2, 3, (void *) 4};
+	size_t page_size = sysconf(_SC_PAGESIZE);
 
-	malloced = malloc(sysconf(_SC_PAGESIZE));
+	malloced = malloc(page_size);
 
 	if (malloced == NULL) {
 		perror("malloc() failed");
 		return PTS_UNRESOLVED;
 	}
 
-	*(double *)malloced = 2.3;
+	fill_mem(malloced, page_size);
 
 	/* Initialize an environment variable */
 	ret = setenv("OPTS_FORK_TC", "2-1.c", 1);
@@ -135,7 +137,7 @@ int main(int argc, char *argv[])
 		}
 
 		/* Check the malloc'ed memory is copied */
-		if (*(double *) malloced != 2.3) {
+		if (check_mem(malloced, page_size)) {
 			printf("Allocated page not copied correctly\n");
 			return PTS_FAIL;
 		}
