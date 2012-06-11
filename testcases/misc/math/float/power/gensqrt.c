@@ -23,52 +23,46 @@
 /*              These tests are adapted from AIX float PVT tests.             */
 /*                                                                            */
 /******************************************************************************/
-#include 	<float.h>
-#include 	<stdio.h>
-#include 	<stdlib.h>
-#include 	<string.h>
-#include 	<errno.h>
-#include        <limits.h>
-#include        <unistd.h>
-#include        <fcntl.h>
-#include        <errno.h>
-#include        <sys/signal.h>
-#include        <math.h>
+#include <float.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <limits.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/signal.h>
+#include <math.h>
 
-int create_Result_file()
+int create_Result_file(void)
 {
-
 	int i, nbVal;
-	double	tabR[20000],Inc;
+	double tabR[20000], Inc;
 	char *F_name;
 	int fp;
 
 	F_name = "sqrt_out.ref";
 	nbVal = 20000;
 
-	for (i=0; i<nbVal; i++) {
+	for (i = 0; i < nbVal; i++) {
 		Inc = exp(2);
-   		tabR[i] = sqrt(Inc*i+Inc);
+		tabR[i] = sqrt(Inc * i + Inc);
 	}
 
-	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
-       	if (!fp)
-       	{
-       	    	printf("error opening file");
+	fp = open(F_name, O_RDWR | O_CREAT | O_TRUNC, 0777);
+	if (!fp) {
+		printf("error opening file");
 		close(fp);
 		return -1;
-	}
-	else
-	{
-		for (i = 0; i<nbVal; i++)
-		{
-		    write(fp,&tabR[i],sizeof(double));
+	} else {
+		for (i = 0; i < nbVal; i++) {
+			write(fp, &tabR[i], sizeof(double));
 		}
 
 		close(fp);
 		return 0;
 	}
-
 }
 
 /*********************************************************************
@@ -77,10 +71,10 @@ int create_Result_file()
  *
  */
 
-int create_Data_file()
+int create_Data_file(void)
 {
 	int i, nbVal;
-	double	tabD[20000], Inc;
+	double tabD[20000], Inc;
 	char *F_name;
 	int fp;
 
@@ -89,35 +83,28 @@ int create_Data_file()
 
 	Inc = exp(2);
 
-	for (i=0; i<(nbVal); i++) {
+	for (i = 0; i < nbVal; i++) {
 		tabD[i] = (Inc * i) + Inc;
 	}
 
-	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
-        if (!fp)
-        {
-            	printf("error opening file");
-	    	close(fp);
-	    	return -1;
-        }
-        else
-        {
-		for (i = 0; i<nbVal; i++)
-		{
-			write(fp,&tabD[i],sizeof(double));
+	fp = open(F_name, O_RDWR | O_CREAT | O_TRUNC, 0777);
+	if (!fp) {
+		printf("error opening file");
+		close(fp);
+		return -1;
+	} else {
+		for (i = 0; i < nbVal; i++) {
+			write(fp, &tabD[i], sizeof(double));
 		}
 		close(fp);
 		return 0;
 	}
 }
 
-int main(int argc, char  *argv[])
+int main(int argc, char *argv[])
 {
-
-	if (argc > 1)
-	{
-		switch ( atoi(argv[1]) )
-		{
+	if (argc > 1) {
+		switch (atoi(argv[1])) {
 		case 1:
 			if (create_Data_file() == 0)
 				printf("Data file created\n");
@@ -136,15 +123,12 @@ int main(int argc, char  *argv[])
 			return -1;
 			break;
 		}
-	}
-	else
-	{
+	} else {
 		if (create_Data_file() != 0)
 			printf("problem during %s data file creation\n", argv[0]);
 		if (create_Result_file() != 0)
 			printf("problem during %s result file creation\n", argv[0]);
 	}
 
-  return(0);
-
+	return 0;
 }
