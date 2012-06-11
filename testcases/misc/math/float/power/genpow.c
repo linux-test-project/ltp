@@ -104,7 +104,7 @@ int create_Data_file()
 
 	for (i=0; i<nbVal; i++)
 	{
-		tabD_pow[nbVal-i] = Inc_pow*i +Inc_pow;
+		tabD_pow[nbVal-(i+1)] = Inc_pow*i +Inc_pow;
 		tabD[i] = (Inc * i) + Inc;
 	}
 
