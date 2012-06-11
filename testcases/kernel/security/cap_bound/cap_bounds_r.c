@@ -37,7 +37,7 @@ int TST_TOTAL=1;
 
 int main(int argc, char *argv[])
 {
-#if HAVE_SYS_CAPABILITY_H
+#ifdef HAVE_LIBCAP
 	int ret = 1;
 	int i;
 

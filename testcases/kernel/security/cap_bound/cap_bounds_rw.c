@@ -55,6 +55,7 @@ int check_remaining_caps(int lastdropped)
 			return i;
 		}
 	}
+#ifdef HAVE_LIBCAP
 	for (; i <= CAP_LAST_CAP; i++) {
 #if HAVE_DECL_PR_CAPBSET_READ
 		ret = prctl(PR_CAPBSET_READ, i);
@@ -71,6 +72,7 @@ int check_remaining_caps(int lastdropped)
 			return -i;
 		}
 	}
+#endif
 	return 0;
 }
 
@@ -79,6 +81,7 @@ int main(int argc, char *argv[])
 	int ret = 1;
 	int i;
 
+#ifdef HAVE_LIBCAP
 #if HAVE_DECL_PR_CAPBSET_DROP
 	ret = prctl(PR_CAPBSET_READ, -1);
 #else
@@ -131,5 +134,8 @@ int main(int argc, char *argv[])
 		}
 	}
 	tst_resm(TPASS, "PR_CAPBSET_DROP tests passed\n");
+#else
+	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
+#endif
 	tst_exit();
 }
