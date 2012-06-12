@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	int seqno = 0;
 	char buf[2000];
 
-	if (argc>1)
+	if (argc > 1)
 		seqno = atoi(argv[1]);
 
 	if (!cap) {

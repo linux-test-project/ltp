@@ -45,7 +45,7 @@
 
 #define TSTPATH "print_caps"
 char *TCID = "filecaps";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int errno;
 
@@ -156,11 +156,11 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 	char buf[200], *p;
 	char *capstxt;
 	cap_t actual_caps;
-	static int seqno = 0;
+	static int seqno;
 
 	pid = fork();
 	if (pid < 0)
-		tst_brkm(TFAIL | TERRNO, NULL, "%s: failed fork\n", __FUNCTION__);
+		tst_brkm(TFAIL | TERRNO, NULL, "%s: failed fork\n", __func__);
 	if (pid == 0) {
 		drop_root(keepperms);
 		print_my_caps();
@@ -170,17 +170,17 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 		snprintf(buf, 200, "failed to run as %s\n", capstxt);
 		cap_free(capstxt);
 		write_to_fifo(buf);
-		tst_brkm(TFAIL, NULL, "%s: exec failed\n", __FUNCTION__);
+		tst_brkm(TFAIL, NULL, "%s: exec failed\n", __func__);
 	} else {
 		p = buf;
 		while (1) {
 			int c, s;
 			read_from_fifo(buf);
 			c = sscanf(buf, "%d", &s);
-			if (c==1 && s==seqno)
+			if (c == 1 && s == seqno)
 				break;
 			tst_resm(TINFO, "got a bad seqno (c=%d, s=%d, seqno=%d)",
-				c, s, seqno);
+				 c, s, seqno);
 		}
 		p = index(buf, '.');
 		if (!p)
@@ -219,7 +219,7 @@ int caps_actually_set_test(void)
 
 	int num_caps;
 
-	for (num_caps=0; ; num_caps++) {
+	for (num_caps = 0; ; num_caps++) {
 		ret = prctl(PR_CAPBSET_READ, num_caps);
 		/*
 		 * Break from the loop in this manner to avoid incrementing,
@@ -230,7 +230,7 @@ int caps_actually_set_test(void)
 	}
 
 	/* first, try each bit in fP (forced) with fE on and off. */
-	for (whichcap=0; whichcap < num_caps; whichcap++) {
+	for (whichcap = 0; whichcap < num_caps; whichcap++) {
 		/*
 		 * fP=whichcap, fE=fI=0
 		 * pP'=whichcap, pI'=pE'=0
@@ -247,7 +247,8 @@ int caps_actually_set_test(void)
 		if (ret) {
 			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=0\n",
 					whichcap);
-			if (!finalret) finalret = ret;
+			if (!finalret)
+				finalret = ret;
 		}
 
 /* SERGE here */
@@ -267,14 +268,15 @@ int caps_actually_set_test(void)
 		if (ret) {
 			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=1\n",
 				whichcap);
-			if (!finalret) finalret = ret;
+			if (!finalret)
+				finalret = ret;
 		}
 	}
 
 	cap_free(pcap);
 	cap_free(fcap);
 	cap_fullpi = cap_init();
-	for (i=0; i<num_caps; i++) {
+	for (i = 0; i < num_caps; i++) {
 		capvalue[0] = i;
 		cap_set_flag(cap_fullpi, CAP_INHERITABLE, 1, capvalue, CAP_SET);
 	}
@@ -296,7 +298,7 @@ int caps_actually_set_test(void)
 	 *     This should result in empty capability, as there were
 	 *     no bits to be inherited from the original process.
 	 */
-	for (whichcap=0; whichcap < num_caps; whichcap++) {
+	for (whichcap = 0; whichcap < num_caps; whichcap++) {
 		cap_t cmpcap;
 		capvalue[0] = whichcap;
 
@@ -322,7 +324,8 @@ int caps_actually_set_test(void)
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
 					"CAP_EFFECTIVE=0\n", whichcap);
-			if (!finalret) finalret = ret;
+			if (!finalret)
+				finalret = ret;
 		}
 
 		/*
@@ -387,18 +390,19 @@ int main(int argc, char *argv[])
 
 	int ret = 0;
 
-	switch(atoi(argv[1])) {
-		case 0:
-			ret = perms_test();
-			break;
-		case 1:
-			ret = caps_actually_set_test();
-			if (ret)
-				tst_resm(TFAIL, "Some tests failed\n");
-			else
-				tst_resm(TPASS, "All tests passed\n");
-			break;
-		default: usage(argv[0]);
+	switch (atoi(argv[1])) {
+	case 0:
+		ret = perms_test();
+		break;
+	case 1:
+		ret = caps_actually_set_test();
+		if (ret)
+			tst_resm(TFAIL, "Some tests failed\n");
+		else
+			tst_resm(TPASS, "All tests passed\n");
+		break;
+	default:
+		usage(argv[0]);
 	}
 #else
 	tst_resm(TCONF, "System doesn't have POSIX capabilities support.");
