@@ -132,18 +132,16 @@ void testoom(int mempolicy, int lite, int numa)
 static void _check(char *path, long int value)
 {
 	FILE *fp;
-	char buf[BUFSIZ];
+	char buf[BUFSIZ], fullpath[BUFSIZ];
+	long tmp;
 
-	snprintf(buf, BUFSIZ, "%s%s", PATH_KSM, path);
-	fp = fopen(buf, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "fopen");
-	if (fgets(buf, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK|TERRNO, tst_exit, "fgets");
-	fclose(fp);
 
-	tst_resm(TINFO, "%s is %ld.", path, atol(buf));
-	if (atol(buf) != value)
+	snprintf(fullpath, BUFSIZ, "%s%s", PATH_KSM, path);
+	read_file(fullpath, buf);
+	tmp = SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
+
+	tst_resm(TINFO, "%s is %ld.", path, tmp);
+	if (tmp != value)
 		tst_resm(TFAIL, "%s is not %ld.", path, value);
 }
 
