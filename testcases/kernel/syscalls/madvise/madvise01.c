@@ -23,41 +23,22 @@
  */
 
 /**********************************************************
- *
- *    OS Test - International Business Machines Corp. 2004.
- *
- *    TEST IDENTIFIER	: madvise01
- *
- *    EXECUTED BY		: anyone
- *
- *    TEST TITLE		: Basic test for madvise(2)
- *
- *    TEST CASE TOTAL	: 5
- *
- *    CPU TYPES			: Intel(R) XEON(TM)
- *
- *    AUTHOR			: Sumit Sharma
- *
- *    CO-PILOT			:
- *
- *    DATE STARTED		: 13/05/2004
- *
  *    TEST CASES
  *
- * 	1.) madvise(2) advices...(See Description)
+ *	1.) madvise(2) advices...(See Description)
  *
  *	INPUT SPECIFICATIONS
- * 		The standard options for system call tests are accepted.
+ *		The standard options for system call tests are accepted.
  *		(See the parse_opts(3) man page).
  *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
- *$
+ *
  *	ENVIRONMENTAL NEEDS
  *		None
  *
  *	SPECIAL PROCEDURAL REQUIREMENTS
- * 		None
+ *		None
  *
  *	DETAILED DESCRIPTION
  *		This is a test case for madvise(2) system call.
@@ -103,27 +84,27 @@
 /* Uncomment the following line in DEBUG mode */
 //#define MM_DEBUG 1
 
-void setup(void);
-void cleanup(void);
-void check_and_print(char *advice);
+static void setup(void);
+static void cleanup(void);
+static void check_and_print(char *advice);
 
-char *TCID = "madvise01";	/* Test program modifier */
-int TST_TOTAL = 5;		/* Total no of test cases */
-
-int i = 0;			/* Loop Counters */
+char *TCID = "madvise01";
+int TST_TOTAL = 5;
 
 int main(int argc, char *argv[])
 {
 	int lc, fd;
+	int i = 0;
 	char *file = NULL;
 	struct stat stat;
 
 	char *msg = NULL;
 	char filename[64];
 	char *progname = NULL;
-	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";	/* 32-byte string */
+	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
@@ -134,7 +115,8 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		if ((fd = open(filename, O_RDWR|O_CREAT, 0664)) < 0)
+		fd = open(filename, O_RDWR|O_CREAT, 0664);
+		if (fd < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "open failed");
 #ifdef MM_DEBUG
 		tst_resm(TINFO, "filename = %s opened successfully", filename);
@@ -150,8 +132,8 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup, "fstat failed");
 
 		/* Map the input file into memory */
-		if ((file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd,
-		    0)) == MAP_FAILED)
+		file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
+		if (file == MAP_FAILED)
 			tst_brkm(TBROK, cleanup, "mmap failed");
 
 		/* (1) Test case for MADV_NORMAL */
@@ -184,7 +166,7 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-void setup(void)
+static void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -194,7 +176,7 @@ void setup(void)
 	tst_tmpdir();
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -202,7 +184,7 @@ void cleanup(void)
 
 }
 
-void check_and_print(char *advice)
+static void check_and_print(char *advice)
 {
 	if (TEST_RETURN == -1)
 		tst_resm(TFAIL|TTERRNO, "madvise test for %s failed", advice);
