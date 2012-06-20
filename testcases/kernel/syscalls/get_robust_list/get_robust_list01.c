@@ -152,8 +152,18 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL,
 			    "get_robust_list succeeded unexpectedly");
 
-		if (seteuid(1) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "seteuid(1) failed");
+		TEST(retval = syscall(__NR_get_robust_list, 0,
+				      (struct robust_list_head **)&head,
+				      &len_ptr));
+
+		if (TEST_RETURN == 0)
+			tst_resm(TPASS, "get_robust_list succeeded");
+		else
+			tst_resm(TFAIL|TTERRNO,
+				 "get_robust_list failed unexpectedly");
+
+		if (setuid(1) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "setuid(1) failed");
 
 		TEST(retval = syscall(__NR_get_robust_list, 1,
 				      (struct robust_list_head *)&head,
@@ -170,20 +180,6 @@ int main(int argc, char **argv)
 		} else
 			tst_resm(TFAIL,
 			    "get_robust_list succeeded unexpectedly");
-
-		if (seteuid(0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "seteuid(0) failed");
-
-		TEST(retval = syscall(__NR_get_robust_list, 0,
-				      (struct robust_list_head **)&head,
-				      &len_ptr));
-
-		if (TEST_RETURN == 0)
-			tst_resm(TPASS, "get_robust_list succeeded");
-		else
-			tst_resm(TFAIL|TTERRNO,
-				 "get_robust_list failed unexpectedly");
-
 	}
 
 	cleanup();
