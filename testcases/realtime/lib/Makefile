@@ -2,6 +2,7 @@
 #    realtime/lib Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2012  Cyril Hrubis <chrubis@suse.cz>
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -22,9 +23,9 @@
 
 top_srcdir		?= ../../..
 
-include $(top_srcdir)/../config.mk
+include $(top_srcdir)/include/mk/env_pre.mk
 
-CFLAGS			+= -D_GNU_SOURCE
+CFLAGS			+= -D_GNU_SOURCE -I../include/
 
 LDLIBS			+= -lpthread -lrt -lm
 
