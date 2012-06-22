@@ -683,7 +683,7 @@ main()
         sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
     else
         echo "remove test cases which require the block device."
-    echo "You can specify it with option -b"
+        echo "You can specify it with option -b"
         sed -i "/DEVICE/d"  ${TMP}/alltests
     fi
 
@@ -719,7 +719,7 @@ main()
     fi
 
     if [ -n "$DEVICE" ]; then
-        sed -i "" -e "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
+        sed -i "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
     fi
 
     if [ $? -ne 0 ]; then
