@@ -59,12 +59,14 @@ char *TCID = "vma01";
 int TST_TOTAL = 1;
 
 static void check_vma(void);
+static void create_bighole(void);
 static void *get_end_addr(void *addr_s);
 static void check_status(int status);
 static void setup(void);
 static void cleanup(void);
 
 static unsigned long ps;
+static void *p;
 
 int main(int argc, char **argv)
 {
@@ -93,7 +95,8 @@ static void check_vma(void)
 	int topdown;
 	void *t, *u, *x;
 
-	t = mmap(NULL, 3*ps, PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	create_bighole();
+	t = mmap(p, 3*ps, PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 	if (t == MAP_FAILED)
 		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
 	memset(t, 1, ps);
@@ -138,6 +141,26 @@ static void check_vma(void)
 		check_status(WEXITSTATUS(status));
 		break;
 	}
+}
+
+static void create_bighole(void)
+{
+	void *t;
+
+	/*
+	 * |-3*ps-|
+	 * |------|------|------| hole
+	 * t      p
+	 * |======|------|        top-down alloc
+	 *        |------|======| bottom-up alloc
+	 */
+	t = mmap(NULL, 9*ps, PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	if (t == MAP_FAILED)
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+	memset(t, 'a', ps);
+	p = t + 3*ps;
+	if (munmap(t, 9*ps) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "munmap");
 }
 
 static void *get_end_addr(void *addr_s)
