@@ -686,6 +686,7 @@ mincore02 mincore02
 madvise01 madvise01
 madvise02 madvise02
 madvise03 madvise03
+madvise04 madvise04
 
 newuname01 newuname01
 
