@@ -42,7 +42,7 @@
 #define TNAME "aio_cancel/4-1.c"
 
 #define BUF_NB		128
-#define BUF_SIZE	1024
+#define BUF_SIZE	(1024*1024)
 
 int main()
 {
@@ -80,6 +80,7 @@ int main()
 		       		strerror(errno));
 			return PTS_UNRESOLVED;
 		}
+		memset(aiocb[i], 0, sizeof(struct aiocb));
 		aiocb[i]->aio_fildes = fd;
 		aiocb[i]->aio_buf = malloc(BUF_SIZE);
 		if (aiocb[i]->aio_buf == NULL)
