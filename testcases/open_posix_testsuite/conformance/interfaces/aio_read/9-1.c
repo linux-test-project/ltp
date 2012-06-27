@@ -50,7 +50,7 @@ int main()
 	int err;
 	int ret;
 
-	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L || sysconf(_SC_AIO_MAX) == -1)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_write_4_1_%d",
