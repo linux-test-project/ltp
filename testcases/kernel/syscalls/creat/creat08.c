@@ -431,14 +431,13 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void
-setup(void)
+static void setup(void)
 {
 	tst_require_root(NULL);
+	tst_tmpdir();
 }
 
-static void
-cleanup(void)
+static void cleanup(void)
 {
 	if (unlink(setgid_A) == -1) {
 		tst_resm(TBROK, "%s failed", setgid_A);
@@ -461,4 +460,6 @@ cleanup(void)
 	if (rmdir(DIR_B) == -1) {
 		tst_brkm(TBROK|TERRNO, NULL, "rmdir %s failed", DIR_B);
 	}
+
+	tst_rmdir();
 }
