@@ -63,6 +63,7 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "include_j_h.h"
+#include "numa_helper.h"
 
 char *TCID = "mbind01";
 int  TST_TOTAL = 2;
@@ -217,15 +218,19 @@ static int do_test(struct test_case *tc)
 	unsigned long maxnode = NUMA_NUM_NODES;
 	unsigned long len = MEM_LENGTH;
 	unsigned long *invalid_nodemask;
+	int test_node = -1;
+
+	if ((ret = get_allowed_nodes(1, &test_node)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes(): %d", ret);
 
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 	nodemask = malloc(sizeof(nodemask_t));
 	nodemask_zero(nodemask);
-	nodemask_set(nodemask, 0);
+	nodemask_set(nodemask, test_node);
 	getnodemask = malloc(sizeof(nodemask_t));
 	nodemask_zero(getnodemask);
 #else
-	numa_bitmask_setbit(nodemask, 0);
+	numa_bitmask_setbit(nodemask, test_node);
 #endif
 	p = mmap(NULL, len, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS,
 		    0, 0);
