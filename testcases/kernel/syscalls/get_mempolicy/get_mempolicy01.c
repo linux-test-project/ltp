@@ -63,6 +63,7 @@
 #include "linux_syscall_numbers.h"
 #include "include_j_h.h"
 #include "common_j_h.c"
+#include "numa_helper.h"
 
 char *TCID = "get_mempolicy01";  /* Test program identifier.*/
 int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
@@ -231,15 +232,18 @@ static int do_test(struct test_case *tc)
 #endif
 	char *p = NULL;
 	unsigned long len = MEM_LENGTH;
+	int test_node = -1;
 
+	if ((ret = get_allowed_nodes(1, &test_node)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes(): %d", ret);
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 	nodemask = malloc(sizeof(nodemask_t));
 	nodemask_zero(nodemask);
-	nodemask_set(nodemask, 0);
+	nodemask_set(nodemask, test_node);
 	getnodemask = malloc(sizeof(nodemask_t));
 	nodemask_zero(getnodemask);
 #else
-	numa_bitmask_setbit(nodemask, 0);
+	numa_bitmask_setbit(nodemask, test_node);
 #endif
 	switch (tc->ttype) {
 	case DEFAULT:

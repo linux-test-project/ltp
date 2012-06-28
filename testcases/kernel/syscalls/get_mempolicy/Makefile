@@ -20,10 +20,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -g
+CPPFLAGS		+= -I$(abs_srcdir)/../utils
 
-CPPFLAGS		+= -I$(abs_srcdir)/../utils $(NUMA_CPPFLAGS)
-
-LDLIBS			+= $(NUMA_LIBS)
-
+include $(abs_srcdir)/../numa/Makefile.inc
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
