@@ -81,14 +81,17 @@ int main(int argc, char **argv)
 #if HAVE_NUMA_MOVE_PAGES
 	unsigned int i;
 	int lc;			/* loop counter */
-	unsigned int from_node = 0;
+	unsigned int from_node;
+	int ret;
+
+	if ((ret = get_allowed_nodes(1, &from_node)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes(): %d", ret);
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		void *pages[TEST_PAGES] = { 0 };
 		int nodes[TEST_PAGES];
 		int status[TEST_PAGES];
-		int ret;
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;

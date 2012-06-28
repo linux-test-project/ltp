@@ -123,15 +123,18 @@ int main(int argc, char **argv)
 #if HAVE_NUMA_MOVE_PAGES
 	unsigned int i;
 	int lc;			/* loop counter */
-	unsigned int from_node = 0;
-	unsigned int to_node = 1;
+	unsigned int from_node;
+	unsigned int to_node;
+	int ret;
+
+	if ((ret = get_allowed_nodes(2, &from_node, &to_node)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes(): %d", ret);
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		void *pages[N_TEST_PAGES] = { 0 };
 		int nodes[N_TEST_PAGES];
 		int status[N_TEST_PAGES];
-		int ret;
 		pid_t cpid;
 		sem_t *sem;
 

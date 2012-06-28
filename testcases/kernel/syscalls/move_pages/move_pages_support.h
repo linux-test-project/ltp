@@ -27,6 +27,7 @@
 #include <numaif.h>
 #endif
 #include <semaphore.h>
+#include "numa_helper.h"
 
 long get_page_size();
 

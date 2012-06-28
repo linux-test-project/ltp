@@ -22,8 +22,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -I$(abs_srcdir)/../utils
 
-LDLIBS			+= $(NUMA_LIBS)
-
 INSTALL_TARGETS		:= move_pages.sh
 
 MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*[0-9].c))
@@ -35,6 +33,7 @@ move_pages_support.o: CFLAGS += -Wno-unused-function
 
 $(MAKE_TARGETS): %: %.o move_pages_support.o
 
-LDLIBS			+= $(NUMA_LIBS) -lpthread -lrt
+LDLIBS			+= -lpthread -lrt
 
+include $(abs_srcdir)/../numa/Makefile.inc
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
