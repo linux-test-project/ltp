@@ -106,8 +106,8 @@ int expected_errno = EPERM;	/* Expected errno when doing the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -319,40 +319,39 @@ int setup_swap()
  ***************************************************************/
 int create_swapfile(char *swapfile, int bs, int count)
 {
-	char *cmd_buffer;
-	int rc = -1;
+	char cmd_buffer[256];
 
-	/* prepare the buffer. */
-	if ((cmd_buffer = calloc(sysconf(_SC_ARG_MAX)+1, sizeof(char))) == NULL) {
-		tst_resm(TWARN,
-			"failed to allocate enough memory for the command "
-			"buffer");
 	/* prepare the path string for dd command */
-	} else if (snprintf(cmd_buffer, sysconf(_SC_ARG_MAX),
+	if (snprintf(cmd_buffer, sizeof(cmd_buffer),
 		    "dd if=/dev/zero of=%s bs=%d "
 		    "count=%d > tmpfile 2>&1", swapfile, bs, count) < 0) {
 		tst_resm(TWARN,
 			 "sprintf() failed to create the command string");
+	
+		return -1;
 	}
-	else if (system(cmd_buffer) != 0) {
+
+	if (system(cmd_buffer) != 0) {
 		tst_resm(TWARN, "dd command failed to create file via "
 				"command: %s", cmd_buffer);
+		return -1;
 	}
+	
 	/* make the file swapfile */
-	else if (snprintf(cmd_buffer, sysconf(_SC_ARG_MAX),
+	if (snprintf(cmd_buffer, sizeof(cmd_buffer),
 		    "mkswap %s > tmpfile 2>&1", swapfile) < 0) {
 		tst_resm(TWARN,
 			 "snprintf() failed to create mkswap command string");
-	} else if (system(cmd_buffer) != 0) {
+		return -1;
+	}
+	
+	if (system(cmd_buffer) != 0) {
 		tst_resm(TWARN, "failed to make swap file %s via command %s",
 			 swapfile, cmd_buffer);
-	} else {
-		rc = 0;
+		return -1;
 	}
 
-	free(cmd_buffer);
-
-	return rc;
+	return 0;
 }
 
 /***************************************************************
@@ -360,7 +359,7 @@ int create_swapfile(char *swapfile, int bs, int count)
  ***************************************************************/
 int clean_swap()
 {
-	int j;			/* loop counter */
+	int j;
 	char filename[FILENAME_MAX];
 
 	for (j = 0; j < swapfiles; j++) {
@@ -396,15 +395,10 @@ int clean_swap()
  ***************************************************************/
 int check_and_swapoff(char *filename)
 {
-	char *cmd_buffer;	/* temp buffer for commands */
+	char cmd_buffer[256];
 	int rc = -1;
 
-	if ((cmd_buffer = calloc(sysconf(_SC_ARG_MAX)+1, sizeof(char))) == NULL) {
-		/* prepare the cmd string for grep command */
-		tst_resm(TWARN,
-			"failed to allocate enough memory for the command "
-			"buffer");
-	} else if (snprintf(cmd_buffer, sysconf(_SC_ARG_MAX),
+	if (snprintf(cmd_buffer, sizeof(cmd_buffer),
 		    "grep -q '%s.*file' /proc/swaps", filename) < 0) {
 		tst_resm(TWARN,
 			 "sprintf() failed to create the command string");
@@ -425,10 +419,8 @@ int check_and_swapoff(char *filename)
 
 			}
 
-		} /* else nothing to clean up. */
-
+		}
 	}
-	free(cmd_buffer);
 
 	return rc;
 
