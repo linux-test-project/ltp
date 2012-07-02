@@ -202,10 +202,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (set_immutable_off(immu_fd))
+	if ((immu_fd > 0) && set_immutable_off(immu_fd))
 		tst_resm(TWARN | TERRNO, "Unset %s immutable failed",
 		    IMMU_FILE);
-	if (set_append_off(append_fd))
+	if ((append_fd > 0) && set_append_off(append_fd))
 		tst_resm(TWARN | TERRNO, "Unset %s append-only failed",
 		    APPEND_FILE);
 	close(immu_fd);
