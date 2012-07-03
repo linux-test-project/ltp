@@ -189,9 +189,13 @@ static void *child(void *arg)
 			timed, td->predicate, ret);
 		#endif
 	} while ((ret == 0) && (td->predicate == 0));
-	if (ret == ETIMEDOUT)
+	if (ret == ETIMEDOUT) {
+		ret = pthread_mutex_unlock(&td->mtx);
+		if (ret != 0)
+			UNRESOLVED(ret, "Failed to unlock the mutex.");
 		FAILED("Timeout occured. This means a cond signal was lost -- "
 		       "or parent died");
+	}
 	if (ret != 0)
 		UNRESOLVED(ret, "Failed to wait for the cond");
 
