@@ -11,6 +11,6 @@ echo "LOOPS:      $LOOPS"
 echo "LHCS_PATH:  $LHCS_PATH"
 
 
-for case in functional/hotplug??.sh; do
+for case in $LHCS_PATH/functional/hotplug??.sh; do
 	$case $CPU_TO_TEST
 done
