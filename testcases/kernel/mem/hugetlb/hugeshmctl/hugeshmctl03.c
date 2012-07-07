@@ -162,6 +162,8 @@ void setup(void)
 	tst_tmpdir();
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
+
+	hugepages = get_available_hugepages(hugepages);
 	set_sys_tune("nr_hugepages", hugepages, 1);
 	hpage_size = read_meminfo("Hugepagesize:") * 1024;
 

@@ -842,3 +842,16 @@ void update_shm_size(size_t *shm_size)
 		*shm_size = shmmax;
 	}
 }
+
+long get_available_hugepages(long hugepages)
+{
+	long available_hugepages = 0;
+
+	set_sys_tune("nr_hugepages", hugepages, 0);
+	available_hugepages = get_sys_tune("nr_hugepages");
+	if (available_hugepages != hugepages)
+		tst_resm(TINFO, "There're %ld available hugepages",
+			    available_hugepages);
+
+	return available_hugepages;
+}
