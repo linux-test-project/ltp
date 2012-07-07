@@ -836,7 +836,7 @@ void update_shm_size(size_t *shm_size)
 	size_t shmmax;
 
 	read_file(PATH_SHMMAX, buf);
-	shmmax = SAFE_STRTOL(cleanup, buf, 0, ULONG_MAX);
+	shmmax = SAFE_STRTOUL(cleanup, buf, 0, ULONG_MAX);
 	if (*shm_size > shmmax) {
 		tst_resm(TINFO, "Set shm_size to shmmax: %ld", shmmax);
 		*shm_size = shmmax;

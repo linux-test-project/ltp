@@ -151,5 +151,10 @@ long safe_strtol(const char *file, const int lineno,
 #define SAFE_STRTOL(cleanup_fn, str, min, max) \
 	safe_strtol(__FILE__, __LINE__, cleanup_fn, (str), (min), (max))
 
+unsigned long safe_strtoul(const char *file, const int lineno, void (cleanup_fn)(void),
+            char *str, unsigned long min, unsigned long max);
+#define SAFE_STRTOUL(cleanup_fn, str, min, max) \
+	safe_strtoul(__FILE__, __LINE__, cleanup_fn, (str), (min), (max))
+
 #endif
 #endif

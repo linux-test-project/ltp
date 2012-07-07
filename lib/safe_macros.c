@@ -363,3 +363,26 @@ long safe_strtol(const char *file, const int lineno,
 
 	return rval;
 }
+
+unsigned long safe_strtoul(const char *file, const int lineno, void (cleanup_fn)(void),
+	    char *str, unsigned long min, unsigned long max)
+{
+	unsigned long rval;
+	char *endptr;
+
+	errno = 0;
+	rval = strtoul(str, &endptr, 10);
+	if ((errno == ERANGE && rval == ULONG_MAX)
+		    || (errno != 0 && rval == 0))
+		tst_brkm(TBROK|TERRNO, cleanup_fn,
+			"strtol failed at %s:%d", file, lineno);
+	if (rval > max || rval < min)
+		tst_brkm(TBROK, cleanup_fn,
+			"converted value out of range (%lu - %lu at %s:%d",
+			min, max, file, lineno);
+	if (endptr == str || (*endptr != '\0' && *endptr != '\n'))
+		tst_brkm(TBROK, cleanup_fn,
+			"Invalid value: '%s' at %s:%d", str, file, lineno);
+
+	return rval;
+}
