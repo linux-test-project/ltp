@@ -10,3 +10,4 @@ timer_delete02 timer_delete02
 timer_delete03 timer_delete03
 timer_settime02 timer_settime02
 timer_settime03 timer_settime03
+leapsec_timer leapsec_timer
