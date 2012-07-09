@@ -133,72 +133,57 @@ static void _check(char *path, long int value)
 {
 	FILE *fp;
 	char buf[BUFSIZ], fullpath[BUFSIZ];
-	long tmp;
+	long actual_val;
 
 
 	snprintf(fullpath, BUFSIZ, "%s%s", PATH_KSM, path);
 	read_file(fullpath, buf);
-	tmp = SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
+	actual_val = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
 
-	tst_resm(TINFO, "%s is %ld.", path, tmp);
-	if (tmp != value)
+	tst_resm(TINFO, "%s is %ld.", path, actual_val);
+	if (actual_val != value)
 		tst_resm(TFAIL, "%s is not %ld.", path, value);
 }
 
 static void _wait_ksmd_done(void)
 {
 	char buf[BUFSIZ];
-	long run, pages_shared, pages_sharing, pages_volatile, pages_unshared;
-	long old_run = 0, old_pages_shared = 0, old_pages_sharing = 0,
-	     old_pages_volatile = 0, old_pages_unshared = 0;
-	long tmp;
-	int changed = 1, count = 0;
+	long pages_shared, pages_sharing, pages_volatile, pages_unshared;
+	long old_pages_shared = 0, old_pages_sharing = 0;
+	long old_pages_volatile = 0, old_pages_unshared = 0;
+	int changing = 1, count = 0;
 
-	while(changed) {
-		while(sleep(5))
-			continue;
-
-		changed = 0;
+	while (changing) {
+		sleep(5);
 		count++;
 
-		read_file(PATH_KSM "run", buf);
-		run = SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
-		if (run != old_run) {
-			old_run = run;
-			changed = 1;
-		}
-
 		read_file(PATH_KSM "pages_shared", buf);
-		pages_shared = SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
-		if (pages_shared != old_pages_shared) {
-			old_pages_shared = pages_shared;
-			changed = 1;
-		}
+		pages_shared = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
 
 		read_file(PATH_KSM "pages_sharing", buf);
-		pages_sharing = SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
-		if (pages_sharing != old_pages_sharing) {
-			old_pages_sharing = pages_sharing;
-			changed = 1;
-		}
+		pages_sharing = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
 
 		read_file(PATH_KSM "pages_volatile", buf);
-		pages_volatile = SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
-		if (pages_volatile != old_pages_volatile) {
-			old_pages_volatile = pages_volatile;
-			changed = 1;
-		}
+		pages_volatile = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
 
 		read_file(PATH_KSM "pages_unshared", buf);
-		pages_unshared = SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
-		if (pages_unshared != old_pages_unshared) {
+		pages_unshared = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+
+		if (pages_shared != old_pages_shared ||
+		    pages_sharing != old_pages_sharing ||
+		    pages_volatile != old_pages_volatile ||
+		    pages_unshared != old_pages_unshared) {
+			old_pages_shared   = pages_shared;
+			old_pages_sharing  = pages_sharing;
+			old_pages_volatile = pages_volatile;
 			old_pages_unshared = pages_unshared;
-			changed = 1;
+		} else {
+			changing = 0;
 		}
 	}
 
-	tst_resm(TINFO, "ksm daemon takes %ds to scan all "
-		    "mergeable pages", count * 5);
+	tst_resm(TINFO, "ksm daemon takes %ds to scan all mergeable pages",
+		    count * 5);
 }
 
 static void _group_check(int run, int pages_shared, int pages_sharing,
@@ -736,7 +721,7 @@ long count_numa(long nodes[])
 
 	nnodes = 0;
 	for (i = 0; i <= MAXNODES; i++)
-		if(path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
+		if (path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
 			nodes[nnodes++] = i;
 
 	return nnodes;
