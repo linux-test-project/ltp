@@ -154,7 +154,7 @@ static void _wait_ksmd_done(void)
 	int changing = 1, count = 0;
 
 	while (changing) {
-		sleep(5);
+		sleep(10);
 		count++;
 
 		read_file(PATH_KSM "pages_shared", buf);
