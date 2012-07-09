@@ -128,8 +128,8 @@ int main(int ac, char **av)
 			 * address for TC[1]
 			 */
 			if (i == 0 && addr != (void *)-1)
-				TC[1].addr = (void *)((unsigned long)addr &
-					    ~(SHMLBA-1) + SHMLBA - 1);
+				TC[1].addr = (void *)(((unsigned long)addr &
+					     ~(SHMLBA-1)) + SHMLBA - 1);
 			if (shmdt(addr) == -1)
 				tst_brkm(TBROK|TERRNO, cleanup, "shmdt");
 		}
