@@ -193,8 +193,6 @@ void setup(void)
 		tst_brkm(TBROK|TERRNO, NULL,
 			 "mount failed on %s", Hopt);
 	orig_hugepages = get_sys_tune("nr_hugepages");
-
-	hugepages = get_available_hugepages(hugepages);
 	set_sys_tune("nr_hugepages", hugepages, 1);
 	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d",
 		 Hopt, getpid());
