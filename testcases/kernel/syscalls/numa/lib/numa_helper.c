@@ -53,46 +53,74 @@ int get_allowed_nodes_arr(int *num_allowed_nodes, int **allowed_nodes)
 {
 #if HAVE_NUMA_H
 	int i;
-	struct bitmask *allowed_nodemask = NULL;
+	nodemask_t *allowed_nodemask = NULL;
+	unsigned long max_node;
+
+#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
+	max_node = NUMA_NUM_NODES;
+	/*
+	 * NUMA_NUM_NODES is not reliable, libnuma >=2 is looking
+	 * at /proc/self/status to figure out correct number.
+	 * If buffer is not large enough get_mempolicy will fail with EINVAL.
+	 */
+	if (max_node < 1024)
+		max_node = 1024;
+#else
+	max_node = numa_max_possible_node() + 1;
 #endif
+#endif /* HAVE_NUMA_H */
+
 	*num_allowed_nodes = 0;
 	if (allowed_nodes)
 		*allowed_nodes = NULL;
 
-#if HAVE_NUMA_H && HAVE_MPOL_CONSTANTS
-	if ((allowed_nodemask = numa_allocate_nodemask()) == NULL)
+#if HAVE_NUMA_H
+	if ((allowed_nodemask = malloc(max_node/8+1)) == NULL)
 		return -1;
+	nodemask_zero(allowed_nodemask);
 
 	if (allowed_nodes) {
-		*allowed_nodes = malloc(sizeof(int)*allowed_nodemask->size);
-		if (*allowed_nodes == NULL)
+		*allowed_nodes = malloc(sizeof(int)*max_node);
+		if (*allowed_nodes == NULL) {
+			free(allowed_nodemask);
 			return -1;
+		}
 	}
 
+#if MPOL_F_MEMS_ALLOWED
 	/*
 	 * avoid numa_get_mems_allowed(), because of bug in getpol()
 	 * utility function in older versions:
 	 * http://www.spinics.net/lists/linux-numa/msg00849.html
 	 */
-	if (syscall(__NR_get_mempolicy, NULL, allowed_nodemask->maskp,
-		allowed_nodemask->size, 0, MPOL_F_MEMS_ALLOWED) < 0) {
-		numa_bitmask_free(allowed_nodemask);
+	if (syscall(__NR_get_mempolicy, NULL, allowed_nodemask->n,
+		max_node, 0, MPOL_F_MEMS_ALLOWED) < 0) {
+		free(allowed_nodemask);
 		if (allowed_nodes) {
 			free(*allowed_nodes);
 			*allowed_nodes = NULL;
 		}
 		return -2;
 	}
+#else
+	/*
+	 * old libnuma/kernel don't have MPOL_F_MEMS_ALLOWED, so let's assume
+	 * that we can use any node with memory > 0
+	 */
+	for (i = 0; i < max_node; i++)
+		if (numa_node_size64(i, NULL) > 0)
+			nodemask_set(allowed_nodemask, i);
 
-	for (i = 0; i <	allowed_nodemask->size; i++) {
-		if (numa_bitmask_isbitset(allowed_nodemask, i)) {
+#endif /* MPOL_F_MEMS_ALLOWED */
+	for (i = 0; i < max_node; i++) {
+		if (nodemask_isset(allowed_nodemask, i)) {
 			if (allowed_nodes)
 				(*allowed_nodes)[*num_allowed_nodes] = i;
 			(*num_allowed_nodes)++;
 		}
 	}
-	numa_bitmask_free(allowed_nodemask);
-#endif
+	free(allowed_nodemask);
+#endif /* HAVE_NUMA_H */
 	return 0;
 }
 

@@ -20,7 +20,7 @@ top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CPPFLAGS		+= -I../../../include
+CPPFLAGS		+= -I../../../include $(NUMA_CPPFLAGS)
 LIB			:= libnuma_helper.a
 
 include $(top_srcdir)/include/mk/lib.mk
