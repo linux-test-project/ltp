@@ -25,9 +25,18 @@
 #ifndef _PROCESS_VM_H_
 #define _PROCESS_VM_H_
 
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
 #include <sys/syscall.h>
 #include <sys/uio.h>
 #include <unistd.h>
+
+union semun {
+	int val;
+	struct semid_ds *buf;
+	unsigned short int *array;
+};
 
 static inline ssize_t test_process_vm_readv(pid_t pid,
 		const struct iovec *lvec, unsigned long liovcnt,
@@ -53,6 +62,44 @@ static inline ssize_t test_process_vm_writev(pid_t pid,
 #else
 	return syscall(-1);
 #endif
+}
+
+void safe_semop(int id, unsigned short num, short op)
+{
+	int ret;
+	struct sembuf sem_op;
+	sem_op.sem_num = num,
+	sem_op.sem_op = op,
+	sem_op.sem_flg = 0;
+
+	do {
+		ret = semop(id, &sem_op, 1);
+	} while (ret == -1 && errno == EINTR);
+	if (ret == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "semop(%d, (%d, %d)) failed",
+			id, num, op);
+}
+
+int init_sem(int num)
+{
+	int id, i;
+	union semun u;
+	if ((id = semget(IPC_PRIVATE, num, IPC_CREAT|S_IRWXU)) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "Couldn't allocate semaphore");
+
+	for (i = 0; i < num; i++) {
+		u.val = 0;
+		if (semctl(id, 0, SETVAL, u) == -1)
+			tst_brkm(TBROK|TERRNO, NULL,
+				"Couldn't initialize sem %d value", i);
+	}
+	return id;
+}
+
+void clean_sem(int id)
+{
+	if (semctl(id, 0, IPC_RMID) == -1)
+		tst_brkm(TBROK|TERRNO, NULL, "Couldn't remove sem");
 }
 
 #endif /* _PROCESS_VM_H_ */
