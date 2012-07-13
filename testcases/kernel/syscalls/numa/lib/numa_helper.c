@@ -76,7 +76,7 @@ int get_allowed_nodes_arr(int *num_allowed_nodes, int **allowed_nodes)
 
 #if HAVE_NUMA_H
 	allowed_nodemask = malloc(max_node/8+1);
-	if (allowd_nodemask == NULL)
+	if (allowed_nodemask == NULL)
 		return -1;
 	nodemask_zero(allowed_nodemask);
 
