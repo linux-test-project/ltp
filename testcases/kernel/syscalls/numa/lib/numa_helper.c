@@ -75,7 +75,8 @@ int get_allowed_nodes_arr(int *num_allowed_nodes, int **allowed_nodes)
 		*allowed_nodes = NULL;
 
 #if HAVE_NUMA_H
-	if ((allowed_nodemask = malloc(max_node/8+1)) == NULL)
+	allowed_nodemask = malloc(max_node/8+1);
+	if (allowd_nodemask == NULL)
 		return -1;
 	nodemask_zero(allowed_nodemask);
 
@@ -142,7 +143,8 @@ int get_allowed_nodes(int count, ...)
 	int num_nodes = 0;
 	int *nodes = NULL;
 
-	if ((ret = get_allowed_nodes_arr(&num_nodes, &nodes)) < 0)
+	ret = get_allowed_nodes_arr(&num_nodes, &nodes);
+	if (ret < 0)
 		return ret;
 
 	va_start(ap, count);
