@@ -248,9 +248,7 @@ run_test()
 
 cleanup_test()
 {
-	if test $sudoers_clean; then
-		sudo rm -f $sudoers
-	fi
+	sudo rm -f $sudoers
 }
 
 #=====================================================================
@@ -297,7 +295,6 @@ fi
 if test ! -f $sudoers
 then
 	echo "root    ALL=(ALL)    ALL" > $sudoers || exit
-	sudoers_clean=false
 	chmod 440 $sudoers
 	trap 'trap "" EXIT; cleanup_test' EXIT
 fi
