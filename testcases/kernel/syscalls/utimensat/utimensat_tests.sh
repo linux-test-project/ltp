@@ -246,11 +246,6 @@ run_test()
     sudo $s_arg rm -f $FILE
 }
 
-cleanup_test()
-{
-	sudo rm -f $sudoers
-}
-
 #=====================================================================
 
 # Since some automated testing systems have no tty while testing,
@@ -269,10 +264,10 @@ if grep -q "^${pattern}" $sudoers; then
 		tst_resm TBROK "failed to mangle $sudoers properly"
 		exit 1
 	fi
-	trap 'trap "" EXIT; teardown' EXIT
+	trap 'trap "" EXIT; restore_sudoers' EXIT
 fi
 
-teardown()
+restore_sudoers()
 {
 	tst_resm TINFO "Restore requiretty in $sudoers"
 	mv /etc/sudoers.$$ /etc/sudoers
@@ -296,8 +291,13 @@ if test ! -f $sudoers
 then
 	echo "root    ALL=(ALL)    ALL" > $sudoers || exit
 	chmod 440 $sudoers
-	trap 'trap "" EXIT; cleanup_test' EXIT
+	trap 'trap "" EXIT; nuke_sudoers' EXIT
 fi
+
+nuke_sudoers()
+{
+	sudo rm -f $sudoers
+}
 
 sudo $s_arg -u $test_user mkdir -p $TEST_DIR
 cd $TEST_DIR
