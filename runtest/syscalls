@@ -734,7 +734,10 @@ pread03_64 pread03_64
 profil01 profil01
 
 process_vm_readv01 process_vm01 -r
+process_vm_readv02 process_vm_readv02
+process_vm_readv03 process_vm_readv03
 process_vm_writev01 process_vm01 -w
+process_vm_writev02 process_vm_writev02
 
 pselect01 pselect01
 pselect01_64 pselect01_64
