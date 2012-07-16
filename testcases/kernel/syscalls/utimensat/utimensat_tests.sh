@@ -39,26 +39,9 @@ FILE=$TEST_DIR/utimensat.test_file
 TEST_PROG=utimensat01
 
 if [ ! -f $LTPROOT/testcases/bin/$TEST_PROG ]; then
-     echo "${TEST_PROG} 1 WARN : Build/Install was not proper,"
-     exit 1;
+	tst_resm TWARN "$LTPROOT/testcases/bin/$TEST_PROG is missing (please check install)"
+	exit 1
 fi
-
-# Since some automated testing systems have no tty while testing,
-# comment this line in /etc/sudoers to avoid the error message:
-# `sudo: sorry, you must have a tty to run sudo'
-# Use trap to restore this line after program terminates.
-pattern="[[:space:]]*Defaults[[:space:]]*requiretty.*"
-if grep -q "^${pattern}" /etc/sudoers; then
-	echo "${TEST_PROG} 0 INFO : Comment requiretty in /etc/sudoers for automated testing systems"
-	sed -E -i"" -e "s/^($pattern)/#\1/" /etc/sudoers
-	trap 'trap "" EXIT; teardown' EXIT
-fi
-
-teardown()
-{
-	echo "${TEST_PROG} 0 INFO : Restore requiretty in /etc/sudoers"
-	sed -E -i"" -e "s/^#($pattern)/\1/" /etc/sudoers
-}
 
 # Summary counters of all test results
 
@@ -87,7 +70,7 @@ setup_file()
 
     # Create file and make atime and mtime zero.
 
-    sudo $s_arg -u $user_tester touch $FILE || return $?
+    sudo $s_arg -u $test_user touch $FILE || return $?
     if ! $TEST_PROG -q $FILE 0 0 0 0 > $RESULT_FILE; then
         echo "Failed to set up test file $FILE" 1>&2
         exit 1
@@ -232,7 +215,7 @@ run_test()
     cp $LTPROOT/testcases/bin/$TEST_PROG ./
     CMD="./$TEST_PROG -q $FILE $4"
     echo "$CMD"
-    sudo $s_arg -u $user_tester $CMD > $RESULT_FILE
+    sudo $s_arg -u $test_user $CMD > $RESULT_FILE
     check_result $? $5 $6 $7
     echo
 
@@ -241,7 +224,7 @@ run_test()
         setup_file $FILE "$1" "$2" "$3"
         CMD="./$TEST_PROG -q -d $FILE NULL $4"
         echo "$CMD"
-        sudo $s_arg -u $user_tester $CMD > $RESULT_FILE
+        sudo $s_arg -u $test_user $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
@@ -254,7 +237,7 @@ run_test()
         setup_file $FILE "$1" "$2" "$3"
         CMD="./$TEST_PROG -q -w -d $FILE NULL $4"
         echo "$CMD"
-        sudo $s_arg -u $user_tester $CMD > $RESULT_FILE
+        sudo $s_arg -u $test_user $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
@@ -269,28 +252,57 @@ cleanup_test()
 		sudo rm -f $sudoers
 	fi
 }
+
 #=====================================================================
 
-user_tester=nobody
+# Since some automated testing systems have no tty while testing,
+# comment this line in /etc/sudoers to avoid the error message:
+# `sudo: sorry, you must have a tty to run sudo'
+# Use trap to restore this line after program terminates.
+sudoers=/etc/sudoers
+if [ ! -r $sudoers ]; then
+	tst_resm TBROK "can't read $sudoers"
+	exit 1
+fi
+pattern="[[:space:]]*Defaults[[:space:]]*requiretty.*"
+if grep -q "^${pattern}" $sudoers; then
+	tst_resm TINFO "Comment requiretty in $sudoers for automated testing systems"
+	if ! sed -E -i.$$ -e "s/^($pattern)/#\1/" $sudoers; then
+		tst_resm TBROK "failed to mangle $sudoers properly"
+		exit 1
+	fi
+	trap 'trap "" EXIT; teardown' EXIT
+fi
+
+teardown()
+{
+	tst_resm TINFO "Restore requiretty in $sudoers"
+	mv /etc/sudoers.$$ /etc/sudoers
+}
+
+test_user=nobody
 echo "test sudo for -n option, non-interactive"
-sudo -n true
-if test $? -eq 0; then
+if sudo -h | grep -q -- -n; then
 	s_arg="-n"
 	echo "sudo supports -n"
 else
 	s_arg=
 	echo "sudo does not support -n"
 fi
-sudoers=/etc/sudoers
-if test ! -e $sudoers
+
+if ! sudo $s_arg true; then
+	tst_resm TBROK "sudo cannot be run by user non-interactively"
+	exit 1
+fi
+if test ! -f $sudoers
 then
-	echo "root    ALL=(ALL)    ALL" > $sudoers
-	sudoers_clean=1
+	echo "root    ALL=(ALL)    ALL" > $sudoers || exit
+	sudoers_clean=false
 	chmod 440 $sudoers
 	trap 'trap "" EXIT; cleanup_test' EXIT
 fi
 
-sudo $s_arg -u $user_tester mkdir -p $TEST_DIR
+sudo $s_arg -u $test_user mkdir -p $TEST_DIR
 cd $TEST_DIR
 chown root $LTPROOT/testcases/bin/$TEST_PROG
 chmod ugo+x,u+s $LTPROOT/testcases/bin/$TEST_PROG
