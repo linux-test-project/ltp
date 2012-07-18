@@ -183,7 +183,7 @@ static void _wait_ksmd_done(void)
 	}
 
 	tst_resm(TINFO, "ksm daemon takes %ds to scan all mergeable pages",
-		    count * 5);
+		    count * 10);
 }
 
 static void _group_check(int run, int pages_shared, int pages_sharing,
