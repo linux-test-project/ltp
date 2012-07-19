@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 		shm_size = get_shmmax();
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
-		shmid1 = shmget(IPC_PRIVATE, min(1024*1024*1024, shm_size),
+		shmid1 = shmget(IPC_PRIVATE, min(1024*1024, shm_size),
 				IPC_CREAT|IPC_EXCL|0701);
 		if (shmid1 == -1)
 			tst_brkm(TBROK, cleanup, "shmget failed");
