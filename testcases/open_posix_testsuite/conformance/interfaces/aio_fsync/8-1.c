@@ -27,6 +27,7 @@ int main()
 #define BUF_SIZE 111
 	char buf[BUF_SIZE];
 	int fd;
+	int ret;
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
 
@@ -54,6 +55,15 @@ int main()
 	if (aio_write(&aiocb_write) == -1) {
 		printf(TNAME " Error at aio_write(): %s\n",
 		       strerror(errno));
+		exit(PTS_FAIL);
+	}
+
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb_write);
+	} while (ret == EINPROGRESS);
+	if (ret < 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
 		exit(PTS_FAIL);
 	}
 
