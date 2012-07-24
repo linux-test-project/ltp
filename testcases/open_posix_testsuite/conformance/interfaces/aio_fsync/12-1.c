@@ -31,18 +31,16 @@ int main()
 	memset(&aiocb, 0, sizeof(struct aiocb));
 	aiocb.aio_fildes = -1;
 
-	if (aio_fsync(O_SYNC, &aiocb) != -1)
-	{
+	if (aio_fsync(O_SYNC, &aiocb) != -1) {
 		printf(TNAME " aio_fsync() accepts bad filedes\n");
 		exit(PTS_FAIL);
 	}
 
-	if (errno != EBADF)
-	{
+	if (errno != EBADF) {
 		printf(TNAME " errno is not EBADF (%d)\n", errno);
 		exit(PTS_FAIL);
 	}
 
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
