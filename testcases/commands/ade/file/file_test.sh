@@ -314,10 +314,16 @@ then
         $LTPBIN/tst_resm TPASS "file: Recognised C program text correctly"
         rm -f $LTPTMP/cprog.c
     else
-        $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
-             "file: Failed to Recognize C program text correctly. Reason:"
-        TFAILCNT=$(( $TFAILCNT+1 ))
-        
+        grep "C source, ASCII text" $LTPTMP/file.out > /dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            $LTPBIN/tst_resm TPASS "file: Recognised C program text correctly"
+            rm -f $LTPTMP/cprog.c
+        else
+            $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
+                 "file: Failed to Recognize C program text correctly. Reason:"
+            TFAILCNT=$(( $TFAILCNT+1 ))
+        fi
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize C programi text"
