@@ -163,7 +163,7 @@ file $LTPTMP/test_file.txt > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "ASCII text" $LTPTMP/file.out > /dev/null 2>&1
+    grep -q "ASCII text" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised ASCII file correctly"
@@ -199,7 +199,7 @@ file $LTPTMP/bash_script.sh > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "Bourne-Again shell script" $LTPTMP/file.out > /dev/null 2>&1
+    grep -q "Bourne-Again shell script" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised bash shell script correctly"
@@ -234,7 +234,7 @@ file $LTPTMP/ksh_script.sh > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "Korn shell script" $LTPTMP/file.out 2>&1 1>/dev/null
+    grep -q "Korn shell script" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: recognised korn shell script"
@@ -270,7 +270,7 @@ file $LTPTMP/C_script.sh > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "C shell script" $LTPTMP/file.out > /dev/null 2>&1
+    grep -q "C shell script" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised C shell script correctly"
@@ -308,13 +308,13 @@ file $LTPTMP/cprog.c > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "ASCII C program text" $LTPTMP/file.out > /dev/null 2>&1
+    grep -q "ASCII C program text" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised C program text correctly"
         rm -f $LTPTMP/cprog.c
     else
-        grep "C source, ASCII text" $LTPTMP/file.out > /dev/null 2>&1
+        grep -q "C source, ASCII text" $LTPTMP/file.out
         if [ $? -eq 0 ]
         then
             $LTPBIN/tst_resm TPASS "file: Recognised C program text correctly"
@@ -366,7 +366,7 @@ file $LTPTMP/cprog > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "ELF .*-bit $TEST_ARCH executable, .*" $LTPTMP/file.out > /dev/null 2>&1
+    grep -q "ELF .*-bit $TEST_ARCH executable, .*" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognized ELF binary executable"
@@ -408,7 +408,7 @@ file $LTPTMP/files.tar > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "tar archive" $LTPTMP/file.out > /dev/null 2>&1
+    grep -q "tar archive" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised tar files"
@@ -562,7 +562,7 @@ file $bDIR/SRPMS/cprog-0.0.7-3.src.rpm > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep -E "RPM v3(\.0)? src" $LTPTMP/file.out > /dev/null 2>&1
+    grep -qE "RPM v3(\.0)? src" $LTPTMP/file.out
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised RPM file correctly"
