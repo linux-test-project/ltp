@@ -58,10 +58,13 @@ static char	*opt_procpathstr;
 static int	 opt_buffsize = 0;
 static int	 opt_readirq = 0;
 static char	*opt_buffsizestr;
+static int	 opt_maxmbytes;
+static char	*opt_maxmbytesstr;
 
 static char	*procpath = "/proc";
 static char	 selfpath[] = "/proc/self";
 size_t		 buffsize = 1024;
+static long long maxbytes;
 
 unsigned long long total_read = 0;
 unsigned int total_obj = 0;
@@ -197,6 +200,7 @@ void setup()
 void help()
 {
 	printf("  -b x    read byte count\n");
+	printf("  -m x    max megabytes to read from single file\n");
 	printf("  -q      read .../irq/... entries\n");
 	printf("  -r x    proc pathname\n");
 	printf("  -v      verbose mode\n");
@@ -208,6 +212,7 @@ void help()
  */
 option_t options[] = {
 	{ "b:", &opt_buffsize,	&opt_buffsizestr},
+	{ "m:", &opt_maxmbytes,	&opt_maxmbytesstr},
 	{ "q",	&opt_readirq,	NULL },
 	{ "r:", &opt_procpath,	&opt_procpathstr},
 	{ "v",  &opt_verbose,	NULL },
@@ -243,6 +248,7 @@ long readproc(const char *obj)
 	int fd, tmperr, i;
 	ssize_t nread;
 	static char buf[MAX_BUFF_SIZE];	/* static kills reentrancy, but we don't care about the contents */
+	unsigned long long file_total_read = 0;
 
 	/* Determine the file type */
 	if (lstat(obj, &statbuf) < 0) {
@@ -373,6 +379,7 @@ long readproc(const char *obj)
 			}
 		}
 
+		file_total_read = 0;
 		do {
 
 			nread = read(fd, buf, buffsize);
@@ -400,7 +407,8 @@ long readproc(const char *obj)
 
                 		}
 
-			}
+			} else
+				file_total_read += nread;
 
 			if (opt_verbose) {
 #ifdef DEBUG
@@ -409,9 +417,13 @@ long readproc(const char *obj)
 				fprintf(stderr, ".");
 			}
 
-			total_read += nread;
-
+			if ((maxbytes > 0) && (file_total_read > maxbytes)) {
+				tst_resm(TINFO, "%s: reached maxmbytes (-m)",
+					obj);
+				break;
+			}
 		} while (0 < nread);
+		total_read += file_total_read;
 
 		if (opt_verbose)
 			fprintf(stderr, "\n");
@@ -444,6 +456,8 @@ int main(int argc, char *argv[])
 				 "Invalid arg for -b (max: %u): %s",
 				 MAX_BUFF_SIZE, opt_buffsizestr);
 	}
+	if (opt_maxmbytes)
+		maxbytes = atoi(opt_maxmbytesstr) * 1024 * 1024;
 
 	if (opt_procpath)
 		procpath = opt_procpathstr;
