@@ -171,7 +171,7 @@ $trace_logic
         cd $HOME
     	echo "Unmounting $TCtmp"
 	sleep 2
-        umount $TCtmp || error "Cannot umount $TCtmp"
+        umount $TCtmp || { echo "Cannot umount $TCtmp"; exit 1; } 
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
         rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR"
  rsh -n $RHOST "rm -rf $TESTDIR"
