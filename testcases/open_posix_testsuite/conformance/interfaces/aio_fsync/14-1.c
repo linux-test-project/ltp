@@ -27,6 +27,7 @@ int main()
 #define BUF_SIZE 111
 	char buf[BUF_SIZE];
 	int fd;
+	int ret;
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
 
@@ -38,8 +39,7 @@ int main()
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n",
 		       strerror(errno));
 		exit(PTS_UNRESOLVED);
@@ -52,29 +52,35 @@ int main()
 	aiocb_write.aio_buf = buf;
 	aiocb_write.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb_write) == -1)
-	{
+	if (aio_write(&aiocb_write) == -1) {
 		printf(TNAME " Error at aio_write(): %s\n",
 		       strerror(errno));
+		exit(PTS_FAIL);
+	}
+
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb_write);
+	} while (ret == EINPROGRESS);
+	if (ret < 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
 		exit(PTS_FAIL);
 	}
 
 	memset(&aiocb_fsync, 0, sizeof(aiocb_fsync));
 	aiocb_fsync.aio_fildes = fd;
 
-	if (aio_fsync(-1, &aiocb_fsync) != -1)
-	{
+	if (aio_fsync(-1, &aiocb_fsync) != -1) {
 		printf(TNAME " aio_fsync() accepts bad op\n");
 		exit(PTS_FAIL);
 	}
 
-	if (errno != EINVAL)
-	{
+	if (errno != EINVAL) {
 		printf(TNAME " errno is not EINVAL (%d)\n", errno);
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

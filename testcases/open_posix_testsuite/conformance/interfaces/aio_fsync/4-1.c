@@ -67,8 +67,10 @@ int main()
 		exit(PTS_FAIL);
 	}
 
-	while ((ret = aio_error(&aiocb_fsync) == EINPROGRESS))
+	do {
 		usleep(10000);
+		ret = aio_error(&aiocb_fsync);
+	} while (ret == EINPROGRESS);
 	if (ret < 0) {
 		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
 		exit(PTS_FAIL);
@@ -78,7 +80,7 @@ int main()
 	 * Otherwise, -1 shall be returned and errno set to indicate the error.
 	 */
 	if (aio_return(&aiocb_fsync)) {
-		printf(TNAME " Error at aio_return() \n");
+		printf(TNAME " Error at aio_return()\n");
 		exit(PTS_FAIL);
 	}
 
