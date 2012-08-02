@@ -154,13 +154,13 @@ int main(int argc, char *argv[])
 		if (shmid1 == -1)
 			tst_brkm(TBROK, cleanup, "shmget failed");
 
-		/* Attach shared memory segment to 0x22000000 address */
-		addr1 = shmat(shmid1, (void *)0x22000000, 0);
+		/* Attach shared memory segment to an address selected by the system */
+		addr1 = shmat(shmid1, NULL, 0);
 		if (addr1 == (void *) -1)
 			tst_brkm(TBROK, cleanup, "shmat error");
 
 		/* (1) Test case for MADV_REMOVE */
-		TEST(madvise((void *)0x22000000, 4096, MADV_REMOVE));
+		TEST(madvise(addr1, 4096, MADV_REMOVE));
 		check_and_print("MADV_REMOVE");
 
 		/* (2) Test case for MADV_DONTFORK */
