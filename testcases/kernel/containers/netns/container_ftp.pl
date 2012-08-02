@@ -23,6 +23,7 @@
 
 use File::Temp 'tempdir';
 use Net::FTP;
+use File::Path;
 
 if ($#ARGV == -1) {
 	print "usage: $0 host\n";
@@ -35,7 +36,7 @@ my $i = 0;
 my $kount = 51;
 my $file="junkfile";
 
-my $tmpdir = defined($ENV{TMPDIR}) ? $ENV{TMPDIR} : "/tmp";
+my $tmpdir = "/var/ftp";
 
 my $dir;
 $dir = tempdir("container_ftp.XXXXXXX", DIR => $tmpdir);
@@ -47,8 +48,7 @@ if (chmod(0777, $dir) == 0) {
 	push @ERRORS, "Failed to change mode for temporary directory: $!\n";
 	printerr();
 }
-chdir $dir;
-system("dd if=/dev/zero of=$file bs=512 count=10 > /dev/null 2>&1 ");
+system("dd if=/dev/zero of=$dir/$file bs=512 count=10 > /dev/null 2>&1 ");
 
 while ( $i < $kount )
 {
@@ -61,13 +61,15 @@ while ( $i < $kount )
         $ftp->quit if $newerr;
         printerr() if $newerr; 
 
-        $ftp->cwd($dir) or $newerr=1; 
+        $basedir = `basename "$dir"`;
+        chomp $basedir;
+        $ftp->cwd($basedir) or $newerr=1;
         push @ERRORS, "Can't cd  $!\n" if $newerr;
         $ftp->quit if $newerr;
         printerr() if $newerr; 
 
         $newname = $file . "_" . $i ;
-        $ftp->put($file,$newname) or $newerr=1;
+        $ftp->get($file,$newname) or $newerr=1;
         push @ERRORS, "Can't get file $file $!\n" if $newerr;
         printerr() if $newerr;
 
@@ -82,6 +84,5 @@ sub printerr {
 }
 
 END {
-	unlink("$dir/$file");
-	rmdir("$dir");
+	rmtree("$dir");
 }
