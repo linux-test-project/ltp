@@ -693,7 +693,7 @@ main()
     fi
 
     if [ -n "$DEVICE" ]; then
-        mnt_pnt=`mktemp -d --tmpdir=${TMP} mnt_pnt.XXXXXX`
+        mnt_pnt=`mktemp -d "${TMP}/mnt_pnt.XXXXXX"`
         if [ -n "$DEVICE_FS_TYPE" ]; then
             mount -t $DEVICE_FS_TYPE $DEVICE $mnt_pnt
         else
