@@ -3,6 +3,7 @@
 #include "test.h"
 
 #if HAVE_SYS_CAPABILITY_H
+#include <linux/types.h>
 #include <sys/capability.h>
 #endif
 
