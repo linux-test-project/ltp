@@ -202,6 +202,13 @@ void setup0(void)
 		if ((s = open("test", O_RDWR)) == -1)
 			tst_brkm(TBROK, cleanup, "Could not open test - "
 				 "errno: %s", strerror(errno));
+		/*
+		 * kernel commit 46ce341b2f176c2611f12ac390adf862e932eb02
+		 * changed -EINVAL to -ENOIOCTLCMD, so vfs_ioctl now
+		 * returns -ENOTTY.
+		 */
+		if ((tst_kvercmp(3, 5, 0)) >= 0)
+			tdat[testno].experrno = ENOTTY;
 	}
 }
 
