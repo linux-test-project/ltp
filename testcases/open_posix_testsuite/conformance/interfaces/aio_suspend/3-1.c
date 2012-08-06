@@ -46,6 +46,7 @@ int main()
 	struct aiocb aiocb[NAIOCB];
 	const struct aiocb *list[NENT];
 	int i;
+	int ret;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
@@ -85,6 +86,17 @@ int main()
 	if (aio_suspend(list, NENT, NULL) != 0) {
 		printf(TNAME " Error at aio_suspend(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
+	}
+
+	for (i = 0; i < NAIOCB; ++i) {
+		do {
+			usleep(10000);
+			ret = aio_error(&aiocb[i]);
+		} while (ret == EINPROGRESS);
+		if (aio_return(&aiocb[i]) == -1) {
+			printf(TNAME " Error at aio_return(): %s\n", strerror(errno));
+			exit(PTS_FAIL);
+		}
 	}
 
 	close(fd);
