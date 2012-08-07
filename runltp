@@ -235,7 +235,7 @@ main()
             esac ;;
                    
         d)  # convert the user path to absolute path.
-            export TMPBASE=`cd \`dirname ${OPTARG}\`; pwd`/`basename ${OPTARG}` ;;
+            export TMPBASE=$(readlink -f ${OPTARG}) ;;
 
         D)  NUM_PROCS=1; NUM_FILES=1; NUM_BYTES=$((1024 * 1024 * 1024)); CLEAN_FLAG=0
             ARGUMENT_LIST=$OPTARG
