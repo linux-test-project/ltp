@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2010  Red Hat, Inc.
+#  Copyright (C) 2012  Red Hat, Inc.
 #
 #  This program is free software;  you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,8 +16,25 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-top_srcdir		?= ../../../..
+MEM_DIR			:= $(top_srcdir)/testcases/kernel/mem
+LIBMEM_DIR		:= $(MEM_DIR)/lib
+LIBMEM			:= $(LIBMEM_DIR)/libmem.a
+FILTER_OUT_DIRS		:= $(LIBMEM_DIR)
+CFLAGS			+= -I$(MEM_DIR)/include
+LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
+LDFLAGS			+= -L$(LIBMEM_DIR)
 
-include $(top_srcdir)/include/mk/testcases.mk
-include $(top_srcdir)/testcases/kernel/mem/include/libmem.mk
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+$(LIBMEM_DIR):
+	mkdir -p "$@"
+
+$(LIBMEM): $(LIBMEM_DIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
+
+MAKE_DEPS		+= $(LIBMEM)
+
+trunk-clean:: | lib-clean
+
+lib-clean:: $(LIBMEM_DIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
+
+include $(top_srcdir)/testcases/kernel/include/lib.mk
