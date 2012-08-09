@@ -194,8 +194,6 @@ void tst_tmpdir(void)
 
 void tst_rmdir(void)
 {
-	struct stat buf1;
-	struct stat buf2;
 	char current_dir[PATH_MAX];
 	char *errmsg;
 	char *parent_dir;
@@ -226,21 +224,6 @@ void tst_rmdir(void)
 		/* Make sure that we exit quickly and noisily. */
 		tst_brkm(TBROK|TERRNO, NULL,
 			"%s: malloc(%d) failed", __func__, PATH_MAX);
-	}
-
-	/*
-	 * Check that the value of TESTDIR is not "*" or "/".  These could
-	 * have disastrous effects in a test run by root.
-	 */
-	if (stat(TESTDIR, &buf1) == 0 && stat("/", &buf2) == 0 &&
-		buf1.st_ino == buf2.st_ino) {
-		tst_resm(TWARN, "%s: will not remove /", __func__);
-		return;
-	}
-
-	if (strchr(TESTDIR, '*') != NULL) {
-		tst_resm(TWARN, "%s: will not remove *", __func__);
-		return;
 	}
 
 	/*
