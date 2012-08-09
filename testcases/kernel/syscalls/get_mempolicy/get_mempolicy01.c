@@ -339,6 +339,9 @@ static void cleanup(void)
 
 static void setup(void)
 {
+	/* check syscall availability */
+	syscall(__NR_get_mempolicy, NULL, NULL, 0, NULL, 0);
+
 	TEST_PAUSE;
 	tst_tmpdir();
 }

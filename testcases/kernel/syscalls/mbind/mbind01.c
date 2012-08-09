@@ -300,6 +300,9 @@ TEST_END:
 
 static void setup(void)
 {
+	/* check syscall availability */
+	syscall(__NR_mbind, NULL, 0, 0, NULL, 0, 0);
+
 	TEST_PAUSE;
 	tst_tmpdir();
 }
