@@ -27,7 +27,7 @@
 
 #define SIGTOTEST SIGALRM
 
-#define LONGSLEEPTIME 10
+#define LONGSLEEPTIME 5
 
 #define NUMTESTS 30
 
