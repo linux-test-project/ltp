@@ -234,8 +234,9 @@ static int do_test(struct test_case *tc)
 	unsigned long len = MEM_LENGTH;
 	int test_node = -1;
 
-	if ((ret = get_allowed_nodes(1, &test_node)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes(): %d", ret);
+	ret = get_allowed_nodes(NH_MEMS, 1, &test_node);
+	if (ret < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes: %d", ret);
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 	nodemask = malloc(sizeof(nodemask_t));
 	nodemask_zero(nodemask);

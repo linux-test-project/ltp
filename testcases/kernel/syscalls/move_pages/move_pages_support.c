@@ -120,7 +120,8 @@ int alloc_pages_linear(void **pages, unsigned int num)
 	int *allowed_nodes;
 	int ret;
 
-	ret = get_allowed_nodes_arr(&num_allowed_nodes, &allowed_nodes);
+	ret = get_allowed_nodes_arr(NH_MEMS, &num_allowed_nodes,
+		&allowed_nodes);
 	if (ret < 0)
 		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
@@ -223,7 +224,8 @@ void verify_pages_linear(void **pages, int *status, unsigned int num)
 	int *allowed_nodes;
 	int ret;
 
-	ret = get_allowed_nodes_arr(&num_allowed_nodes, &allowed_nodes);
+	ret = get_allowed_nodes_arr(NH_MEMS, &num_allowed_nodes,
+		&allowed_nodes);
 	if (ret < 0)
 		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
@@ -396,7 +398,7 @@ void check_config(unsigned int min_nodes)
 	int num_allowed_nodes;
 	int ret;
 
-	ret = get_allowed_nodes_arr(&num_allowed_nodes, NULL);
+	ret = get_allowed_nodes_arr(NH_MEMS, &num_allowed_nodes, NULL);
 	if (ret < 0)
 		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
