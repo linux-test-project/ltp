@@ -110,58 +110,35 @@ char *get_tst_tmpdir(void)
 void tst_tmpdir(void)
 {
 	char template[PATH_MAX];
-	int  no_cleanup = 0;	/* !0 means TDIRECTORY env var was set */
 	char *env_tmpdir;	/* temporary storage for TMPDIR env var */
+	char *errmsg;
 
 	/*
-	 * If the TDIRECTORY env variable is not set, a temp dir will be
-	 * created.
+	 * Create a template for the temporary directory.  Use the
+	 * environment variable TMPDIR if it is available, otherwise
+	 * use our default TEMPDIR.
 	 */
-	if ((TESTDIR = getenv(TDIRECTORY)) != NULL) {
-		/*
-		 * The TDIRECTORY env. variable is set, so no temp dir is created.
-		 */
-		if (mkdir(TESTDIR, DIR_MODE) == -1 && errno != EEXIST) {
-			tst_brkm(TBROK, NULL, "mkdir(%s, %o) failed",
-				TESTDIR, DIR_MODE);
-		}
-		/*
-		 * Try to create the directory if it does not exist already;
-		 * user might forget to create one before exporting TDIRECTORY.
-		 */
-		no_cleanup++;
-#if UNIT_TEST
-		printf("TDIRECTORY env var is set\n");
-#endif
-	} else {
-		/*
-		 * Create a template for the temporary directory.  Use the
-		 * environment variable TMPDIR if it is available, otherwise
-		 * use our default TEMPDIR.
-		 */
-		if ((env_tmpdir = getenv("TMPDIR")))
-			snprintf(template, PATH_MAX, "%s/%.3sXXXXXX",
-				env_tmpdir, TCID);
-		else
-			snprintf(template, PATH_MAX, "%s/%.3sXXXXXX",
-				TEMPDIR, TCID);
+	if ((env_tmpdir = getenv("TMPDIR")))
+		snprintf(template, PATH_MAX, "%s/%.3sXXXXXX",
+			env_tmpdir, TCID);
+	else
+		snprintf(template, PATH_MAX, "%s/%.3sXXXXXX",
+			TEMPDIR, TCID);
 
-		/* Make the temporary directory in one shot using mkdtemp. */
-		if (mkdtemp(template) == NULL)
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: mkdtemp(%s) failed", __func__, template);
-		if ((TESTDIR = strdup(template)) == NULL) {
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: strdup(%s) failed", __func__, template);
-		}
+	/* Make the temporary directory in one shot using mkdtemp. */
+	if (mkdtemp(template) == NULL)
+		tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
+			"%s: mkdtemp(%s) failed", __func__, template);
+	if ((TESTDIR = strdup(template)) == NULL)
+		tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
+			"%s: strdup(%s) failed", __func__, template);
 
-		if (chown(TESTDIR, -1, getgid()) == -1)
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"chown(%s, -1, %d) failed", TESTDIR, getgid());
-		if (chmod(TESTDIR, DIR_MODE) == -1)
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
-	}
+	if (chown(TESTDIR, -1, getgid()) == -1)
+		tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
+			"chown(%s, -1, %d) failed", TESTDIR, getgid());
+	if (chmod(TESTDIR, DIR_MODE) == -1)
+		tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
+			"chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
 
 #if UNIT_TEST
 	printf("TESTDIR = %s\n", TESTDIR);
@@ -178,10 +155,9 @@ void tst_tmpdir(void)
 			__func__, TESTDIR);
 
 		/* Try to remove the directory */
-		if (!no_cleanup && rmdir(TESTDIR) == -1) {
-			tst_resm(TWARN|TERRNO, "%s: rmdir(%s) failed",
-				__func__, TESTDIR);
-		}
+		if (rmobj(TESTDIR, &errmsg) == -1)
+			tst_resm(TWARN, "%s: rmobj(%s) failed: %s",
+			__func__, TESTDIR, errmsg);
 
 		tmpdir_cleanup();
 	}
@@ -197,19 +173,6 @@ void tst_rmdir(void)
 	char current_dir[PATH_MAX];
 	char *errmsg;
 	char *parent_dir;
-	char *tdirectory;
-
-	/*
-	 * If the TDIRECTORY env variable is set, this indicates that no
-	 * temp dir was created by tst_tmpdir().  Thus no cleanup will be
-	 * necessary.
-	 */
-	if ((tdirectory = getenv(TDIRECTORY)) != NULL) {
-#if UNIT_TEST
-		printf("\"TDIRECORY\" env variable is set; no cleanup was performed\n");
-#endif
-		return;
-	}
 
 	/*
 	 * Check that TESTDIR is not NULL.
