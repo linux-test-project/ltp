@@ -41,4 +41,5 @@ MAKE_DEPS		+= $(LIBMEM) $(LIBIPC)
 lib-clean:: $(LIBMEMDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
+include $(top_srcdir)/testcases/kernel/include/lib.mk
 # vim: syntax=make

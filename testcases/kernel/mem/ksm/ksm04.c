@@ -88,14 +88,14 @@ int main(int argc, char *argv[])
 	char *msg;
 	int size = 128, num = 3, unit = 1;
 	unsigned long nmask = 0;
-	long nodes[MAXNODES];
+	unsigned int node;
 
 	msg = parse_opts(argc, argv, ksm_options, ksm_usage);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	if (count_numa(nodes) <= 1)
-		tst_brkm(TCONF, NULL, "required a NUMA system.");
+	node  = get_a_numa_node(tst_exit);
+	nmask = 1 << node;
 
 	setup();
 
@@ -105,7 +105,6 @@ int main(int argc, char *argv[])
 
 		write_memcg();
 
-		nmask = 1 << nodes[1];
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1) {
 			if (errno != ENOSYS)
 				tst_brkm(TBROK|TERRNO, cleanup,
@@ -117,7 +116,7 @@ int main(int argc, char *argv[])
 		}
 		create_same_memory(size, num, unit);
 
-		write_cpusets(nodes[1]);
+		write_cpusets(node);
 		create_same_memory(size, num, unit);
 	}
 	cleanup();

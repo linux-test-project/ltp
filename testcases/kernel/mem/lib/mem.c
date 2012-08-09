@@ -22,6 +22,7 @@
 #include "safe_macros.h"
 #include "_private.h"
 #include "mem.h"
+#include "numa_helper.h"
 
 /* OOM */
 
@@ -67,7 +68,11 @@ void oom(int testcase, int mempolicy, int lite)
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
 	unsigned long nmask = 0;
-	long nodes[MAXNODES];
+	unsigned int node;
+
+	if (mempolicy)
+		node = get_a_numa_node(cleanup);
+	nmask += 1 << node;
 #endif
 
 	switch (pid = fork()) {
@@ -76,8 +81,6 @@ void oom(int testcase, int mempolicy, int lite)
 	case 0:
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
-		count_numa(nodes);
-		nmask += 1 << nodes[1];
 		if (mempolicy)
 			if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
 				tst_brkm(TBROK|TERRNO, cleanup,
@@ -107,12 +110,8 @@ void testoom(int mempolicy, int lite, int numa)
 {
 	long nodes[MAXNODES];
 
-	if (numa && !mempolicy) {
-		if (count_numa(nodes) <= 1)
-			tst_brkm(TCONF, cleanup, "required a NUMA system.");
-		/* write cpusets to 2nd node */
-		write_cpusets(nodes[1]);
-	}
+	if (numa && !mempolicy)
+		write_cpusets(get_a_numa_node(cleanup));
 
 	tst_resm(TINFO, "start normal OOM testing.");
 	oom(NORMAL, mempolicy, lite);
@@ -715,16 +714,35 @@ void mount_mem(char *name, char *fs, char *options, char *path, char *path_new)
 
 /* shared */
 
-long count_numa(long nodes[])
+/* Warning: *DO NOT* use this function in child */
+unsigned int get_a_numa_node(void (*cleanup_fn)(void))
 {
-	long nnodes, i;
+	unsigned int nd1, nd2;
+	int ret;
 
-	nnodes = 0;
-	for (i = 0; i <= MAXNODES; i++)
-		if (path_exist(PATH_SYS_SYSTEM "/node/node%d", i))
-			nodes[nnodes++] = i;
+	ret = get_allowed_nodes(0, 2, &nd1, &nd2);
+	switch (ret) {
+	case 0:
+		break;
+	case -3:
+		tst_brkm(TCONF, cleanup_fn, "requires a NUMA system.");
+	default:
+		tst_brkm(TBROK|TERRNO, cleanup_fn, "1st get_allowed_nodes");
+	}
 
-	return nnodes;
+	ret = get_allowed_nodes(NH_MEMS|NH_CPUS, 1, &nd1);
+	switch (ret) {
+	case 0:
+		tst_resm(TINFO, "get node%lu.", nd1);
+		return nd1;
+	case -3:
+		tst_brkm(TCONF, cleanup_fn, "requires a NUMA system that has "
+				"at least one node with both memory and CPU "
+				"available.");
+	default:
+		break;
+	}
+	tst_brkm(TBROK|TERRNO, cleanup_fn, "2nd get_allowed_nodes");
 }
 
 int path_exist(const char *path, ...)

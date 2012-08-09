@@ -48,6 +48,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "numa_helper.h"
 
 char *TCID = "vma04";
 int TST_TOTAL = 5;
@@ -85,7 +86,7 @@ static void usage(void);
 
 int main(int argc, char **argv)
 {
-	int lc, node;
+	int lc, node, err;
 	char *msg;
 
 	msg = parse_opts(argc, argv, options, usage);
@@ -95,10 +96,14 @@ int main(int argc, char **argv)
 	nmask = numa_allocate_nodemask();
 	if (opt_node) {
 		node = SAFE_STRTOL(NULL, opt_nodestr, 1, LONG_MAX);
-		numa_bitmask_setbit(nmask, node);
 	} else {
-		numa_bitmask_setbit(nmask, 0);
+		err = get_allowed_nodes(NH_MEMS|NH_MEMS, 1, &node);
+		if (err == -3)
+			tst_brkm(TCONF, NULL, "requires at least one node.");
+		else if (err < 0)
+			tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes");
 	}
+	numa_bitmask_setbit(nmask, node);
 
 	setup();
 

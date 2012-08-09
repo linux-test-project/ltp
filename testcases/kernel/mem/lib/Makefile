@@ -23,4 +23,5 @@ include $(top_srcdir)/include/mk/env_pre.mk
 CFLAGS			:= -I../include
 LIB			:= libmem.a
 
+include $(top_srcdir)/testcases/kernel/include/lib.mk
 include $(top_srcdir)/include/mk/lib.mk

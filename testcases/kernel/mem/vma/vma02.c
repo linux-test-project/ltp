@@ -43,6 +43,8 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
+#include "numa_helper.h"
 
 char *TCID = "vma02";
 int TST_TOTAL = 1;
@@ -73,14 +75,17 @@ int main(int argc, char **argv)
 	msg = parse_opts(argc, argv, options, usage);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
 	if (opt_node) {
-		node = atoi(optarg);
-		if (node < 1)
-			tst_brkm(TBROK, NULL,
-				"Number of NUMA nodes cannot be less that 1.");
-		numa_bitmask_setbit(nmask, node);
-	} else
-		numa_bitmask_setbit(nmask, 0);
+		node = SAFE_STRTOL(NULL, opt_nodestr, 1, LONG_MAX);
+	} else {
+		err = get_allowed_nodes(NH_MEMS|NH_MEMS, 1, &node);
+		if (err == -3)
+			tst_brkm(TCONF, NULL, "requires at least one node.");
+		else if (err < 0)
+			tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes");
+	}
+	numa_bitmask_setbit(nmask, node);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;

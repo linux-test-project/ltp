@@ -34,4 +34,5 @@ LDFLAGS			+= -L$(abs_builddir)/$(LIBMEMDIR)
 LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
 MAKE_DEPS		+= $(LIBMEM)
 
+include $(top_srcdir)/testcases/kernel/include/lib.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

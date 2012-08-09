@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
 {
 	char *msg;
 	int lc;
-	long nodes[MAXNODES];
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
@@ -57,9 +56,6 @@ int main(int argc, char *argv[])
 #if __WORDSIZE == 32
 	tst_brkm(TCONF, NULL, "test is not designed for 32-bit system.");
 #endif
-
-	if (count_numa(nodes) <= 1)
-		tst_brkm(TCONF, NULL, "required a NUMA system.");
 
 	setup();
 
