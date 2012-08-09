@@ -27,7 +27,11 @@
 #include <numaif.h>
 #endif
 
-int get_allowed_nodes_arr(int *num_allowed_nodes, int **allowed_nodes);
-int get_allowed_nodes(int count, ...);
+#define NH_MEMS (1 << 0)
+#define NH_CPUS (1 << 1)
+
+int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes);
+int get_allowed_nodes(int flag, int count, ...);
+void nh_dump_nodes();
 
 #endif
