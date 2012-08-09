@@ -112,10 +112,6 @@ void tst_tmpdir(void)
 	char template[PATH_MAX];
 	int  no_cleanup = 0;	/* !0 means TDIRECTORY env var was set */
 	char *env_tmpdir;	/* temporary storage for TMPDIR env var */
-	/* This is an AWFUL hack to figure out if mkdtemp() is available */
-#if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 2)
-#define HAVE_MKDTEMP
-#endif
 
 	/*
 	 * If the TDIRECTORY env variable is not set, a temp dir will be
@@ -150,7 +146,6 @@ void tst_tmpdir(void)
 			snprintf(template, PATH_MAX, "%s/%.3sXXXXXX",
 				TEMPDIR, TCID);
 
-#ifdef HAVE_MKDTEMP
 		/* Make the temporary directory in one shot using mkdtemp. */
 		if (mkdtemp(template) == NULL)
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
@@ -159,38 +154,6 @@ void tst_tmpdir(void)
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
 				"%s: strdup(%s) failed", __func__, template);
 		}
-#else
-		int tfd;
-
-		/* Make the template name, then the directory */
-		if ((tfd = mkstemp(template)) == -1)
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: mkstemp(%s) failed", __func__, template);
-		if (close(tfd) == -1) {
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: close() failed", __func__);
-		}
-		if (unlink(template) == -1) {
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: unlink(%s) failed", __func__, template);
-		}
-		if ((TESTDIR = strdup(template)) == NULL) {
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: strdup(%s) failed", __func__, template);
-		}
-		if (mkdir(TESTDIR, DIR_MODE)) {
-			/*
-			 * If we start failing with EEXIST, wrap this section in
-			 * a loop so we can try again.
-			 *
-			 * XXX (garrcoop): why? Hacking around broken
-			 * filesystems should not be done.
-			 */
-			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
-				"%s: mkdir(%s, %#o) failed",
-					__func__, TESTDIR, DIR_MODE);
-		}
-#endif
 
 		if (chown(TESTDIR, -1, getgid()) == -1)
 			tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
