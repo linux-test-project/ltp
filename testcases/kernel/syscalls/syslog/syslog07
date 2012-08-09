@@ -116,7 +116,7 @@ syslog_case7()
 	notice=$(( $notice_new - $notice_old ))
 	info=$(( $info_new - $info_old ))
 
-	if [ $emerg -ne 1 -o $alert -ne 1 -o $crit -ne 1 -o $err -ne 1 \
+	if [ $emerg -ne 1 -o $alert -ne 1 -o $crit -ne 1 -o $err -ne 1 -o \
 	     $warning -ne 1 -o $notice -ne 1 -o $info -ne 1 -o \
 	     $info -ne 1 ]; then
 		status_flag=1
