@@ -140,10 +140,6 @@ void tst_tmpdir(void)
 		tst_brkm(TBROK|TERRNO, tmpdir_cleanup,
 			"chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
 
-#if UNIT_TEST
-	printf("TESTDIR = %s\n", TESTDIR);
-#endif
-
 	/*
 	 * Change to the temporary directory.  If the chdir() fails, issue
 	 * TBROK messages for all test cases, attempt to remove the
@@ -161,10 +157,6 @@ void tst_tmpdir(void)
 
 		tmpdir_cleanup();
 	}
-
-#if UNIT_TEST
-	printf("CWD is %s\n", getcwd(NULL, PATH_MAX));
-#endif
 
 }
 
@@ -222,7 +214,6 @@ void tst_rmdir(void)
 	if (rmobj(TESTDIR, &errmsg) == -1)
 		tst_resm(TWARN, "%s: rmobj(%s) failed: %s",
 			__func__, TESTDIR, errmsg);
-
 }
 
 
@@ -238,44 +229,3 @@ static void tmpdir_cleanup(void)
 	    "%s: no user cleanup function called before exiting", __func__);
 }
 
-
-#ifdef UNIT_TEST
-/****************************************************************************
- * Unit test code: Takes input from stdin and can make the following
- *		 calls: tst_tmpdir(), tst_rmdir().
- ****************************************************************************/
-extern int  TST_TOTAL;		/* defined/initialized in main() */
-
-int  TST_TOTAL = 10;
-char *TCID = "TESTTCID";
-
-main()
-{
-	int  option;
-	char *chrptr;
-
-	printf("UNIT TEST of tst_tmpdir.c.  Options to try:\n\
-		-1 : call tst_exit()\n\
-		0 : call tst_tmpdir()\n\
-		1 : call tst_rmdir()\n\n");
-
-	while (1) {
-		printf("Enter options (-1, 0, 1): ");
-		(void)scanf("%d%c", &option, &chrptr);
-
-		switch (option) {
-		case -1:
-			tst_exit();
-			break;
-
-		case 0:
-			tst_tmpdir();
-			break;
-
-		case 1:
-			tst_rmdir();
-			break;
-		}  /* switch() */
-	}  /* while () */
-}
-#endif  /* UNIT_TEST */
