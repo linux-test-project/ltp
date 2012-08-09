@@ -201,8 +201,34 @@ extern int Tst_count;
 void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
 
 /* lib/tst_tmpdir.c */
+
+/* tst_tmpdir()
+ *
+ * Create a unique temporary directory and chdir() to it. It expects the caller
+ * to have defined/initialized the TCID/TST_TOTAL global variables.
+ * The TESTDIR global variable will be set to the directory that gets used
+ * as the testing directory.
+ *
+ * NOTE: This function must be called BEFORE any activity that would require
+ * CLEANUP.  If tst_tmpdir() fails, it cleans up afer itself and calls
+ * tst_exit() (i.e. does not return).
+ */
 void tst_tmpdir(void);
+/* tst_rmdir()
+ *
+ * Recursively remove the temporary directory created by tst_tmpdir().
+ * This function is intended ONLY as a companion to tst_tmpdir().
+ * If the TDIRECTORY environment variable is set, no cleanup will be
+ * attempted.
+ */
 void tst_rmdir(void);
+/* get_tst_tmpdir()
+ *
+ * Return a copy of the test temp directory as seen by LTP. This is for
+ * path-oriented tests like chroot, etc, that may munge the path a bit.
+ *
+ * FREE VARIABLE AFTER USE IF IT IS REUSED!
+ */
 char *get_tst_tmpdir(void);
 
 /* lib/get_high_address.c */
