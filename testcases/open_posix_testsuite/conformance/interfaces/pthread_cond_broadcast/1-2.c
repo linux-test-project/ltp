@@ -48,6 +48,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <semaphore.h>
+#include <sys/sysinfo.h>
 
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
@@ -82,8 +83,8 @@
 #endif
 
 /* Do not create more than this amount of children: */
-#define MAX_PROCESS_CHILDREN  (200)
-#define MAX_THREAD_CHILDREN   (1000)
+static int max_process_children  = 200;
+static int max_thread_children = 1000;
 
 #define TIMEOUT  (180)
 
@@ -243,6 +244,42 @@ void *timer(void *arg)
 	return NULL; /* For compiler */
 }
 
+#ifdef __linux__
+static void children_number(void)
+{
+	struct sysinfo sysinformation;
+	int ret;
+	int avail_number;
+	unsigned long per_process;
+	unsigned long min_stack;
+
+	min_stack = sysconf(_SC_THREAD_STACK_MIN);
+
+	ret = sysinfo(&sysinformation);
+	if (ret != 0)
+		UNRESOLVED(ret, "Failed to get system information.");
+
+	per_process = min_stack * max_thread_children;
+	if (per_process > sysinformation.freeram)
+		UNTESTED("Not enough memory.");
+
+	avail_number = sysinformation.freeram / per_process;
+
+	if (avail_number < 10)
+		UNTESTED("Not enough memory.");
+
+	max_process_children = (avail_number < max_process_children ?
+					avail_number : max_process_children);
+
+	return;
+}
+#else
+static void children_number(void)
+{
+	return;
+}
+#endif
+
 int main(int argc, char *argv[])
 {
 	int ret;
@@ -267,6 +304,8 @@ int main(int argc, char *argv[])
 	struct testdata alternativ;
 
 	output_init();
+
+	children_number();
 
 	/* check the system abilities */
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
@@ -476,7 +515,7 @@ int main(int argc, char *argv[])
 				} else {
 					ret = errno;
 				}
-			} while ((ret == 0) && (child_count < MAX_THREAD_CHILDREN));
+			} while ((ret == 0) && (child_count < max_thread_children));
 			#if VERBOSE > 2
 			output("[parent] Created %i children threads\n", child_count);
 			#endif
@@ -504,7 +543,7 @@ int main(int argc, char *argv[])
 				} else {
 					ret = errno;
 				}
-			} while ((ret == 0) && (child_count < MAX_PROCESS_CHILDREN));
+			} while ((ret == 0) && (child_count < max_process_children));
 			#if VERBOSE > 2
 			output("[parent] Created %i children processes\n", child_count);
 			#endif
