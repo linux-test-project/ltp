@@ -16,12 +16,22 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CPPFLAGS		+= $(NUMA_CPPFLAGS) -I../numa/lib/
-LIBDIR			:= ../numa/lib
-LIB			:= $(LIBDIR)/libnuma_helper.a
-MAKE_DEPS		+= $(LIB)
-LDLIBS			+= $(NUMA_LIBS) -lnuma_helper -lltp
-LDFLAGS			+= -L$(LIBDIR)
+KERNEL_DIR		:= $(top_srcdir)/testcases/kernel
+LIBKERNTEST_DIR		:= $(KERNEL_DIR)/lib
+LIBKERNTEST		:= $(KERNEL_DIR)/libkerntest.a
+CPPFLAGS		+= $(NUMA_CPPFLAGS) -I$(KERNEL_DIR)/include
+LDLIBS			+= $(NUMA_LIBS) -lkerntest -lltp
+LDFLAGS			+= -L$(LIBKERNTEST_DIR)
 
-$(LIB): $(LIBDIR)
-		$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
+$(LIBKERNTEST_DIR):
+	mkdir -p "$@"
+
+$(LIBKERNTEST): $(LIBKERNTEST_DIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
+
+MAKE_DEPS		+= $(LIBKERNTEST)
+
+trunk-clean:: | lib-clean
+
+lib-clean:: $(LIBKERNTEST_DIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean

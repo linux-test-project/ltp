@@ -35,5 +35,5 @@ $(MAKE_TARGETS): %: %.o move_pages_support.o
 
 LDLIBS			+= -lpthread -lrt
 
-include $(abs_srcdir)/../numa/Makefile.inc
+include $(top_srcdir)/testcases/kernel/include/lib.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

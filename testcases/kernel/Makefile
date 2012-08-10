@@ -29,6 +29,10 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 # Build syscalls in all scenarios.
 SUBDIRS			:= syscalls
+
+# Build lib
+SUBDIRS			+= lib
+
 ifneq ($(UCLINUX),1)
 # KEEP THIS LIST ALPHABETIZED PLEASE!
 SUBDIRS			+= connectors \

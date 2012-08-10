@@ -31,5 +31,5 @@ endif
 
 CPPFLAGS		+= -I$(abs_srcdir)/../utils/
 
-include $(abs_srcdir)/../numa/Makefile.inc
+include $(top_srcdir)/testcases/kernel/include/lib.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
