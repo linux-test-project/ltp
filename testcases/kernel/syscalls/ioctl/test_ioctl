@@ -23,11 +23,27 @@ export TCID=ioctl01_02
 export TST_TOTAL=2
 export TST_COUNT=0
 
+has_tty()
+{
+    if command -v stty >/dev/null 2>&1; then
+        stty --file=$1 > /dev/null
+        if [ $? -ne 0 ]; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
 for tttype in `ls /dev/tty*`
 do
 device_no=${tttype#/dev/tty}
 case "$device_no" in
 [0-9]|[0-9][0-9])
+    has_tty $tttype
+    if [ $? -eq 0 ]; then
+        tst_resm TINFO "Skipping ioctl01 with $tttype"
+        continue
+    fi
     tst_resm TINFO "Testing ioctl01 with $tttype"
     ioctl01 -D $tttype
     RC=$?
@@ -46,6 +62,11 @@ do
 device_no=${tttype#/dev/tty}
 case "$device_no" in
 [0-9]|[0-9][0-9])
+    has_tty $tttype
+    if [ $? -eq 0 ]; then
+        tst_resm TINFO "Skipping ioctl02 with $tttype"
+        continue
+    fi
     tst_resm TINFO "Testing ioctl02 with $tttype"
     ioctl02 -D $tttype
     RC=$?
