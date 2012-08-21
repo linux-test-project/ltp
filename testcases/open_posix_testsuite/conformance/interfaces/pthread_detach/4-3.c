@@ -281,7 +281,7 @@ int main(int argc, char *argv[])
 
 	do {
 		do_it2 = 0;
-	} while (do_it2 = 0);
+	} while (do_it2);
 
 	ret = pthread_join(th_sig1, NULL);
 	if (ret)
