@@ -134,21 +134,13 @@ int main()
 	alarm(5);
 
 	/* loop to wake up the rest threads */
-	i=0;
-	while (waken_num < THREAD_NUM) {
-		++i;
+	for (i=1; i<THREAD_NUM; i++) {
 		fprintf(stderr,"[Main thread] signals to wake up the next thread\n");
 		if (pthread_cond_signal(&td.cond) != 0) {
 			fprintf(stderr,"Main failed to signal the condition\n");
 			exit(PTS_UNRESOLVED);
 		}
 		usleep(100);
-	}
-
-	if (i >= THREAD_NUM) {
-		fprintf(stderr,"[Main thread] had to signal the condition %i times\n", i+1);
-		fprintf(stderr,"[Main thread] to wake up %i threads\n. Test FAILED.\n", THREAD_NUM);
-		exit(PTS_FAIL);
 	}
 
 	/* join all secondary threads */
