@@ -30,7 +30,7 @@
 #define INMAIN 1
 
 int result = 2;
-int sem = INMAIN;
+int sem = INTHREAD;
 
 void handler()
 {
@@ -86,7 +86,6 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	sem = INTHREAD;
 	while (sem == INTHREAD)
 		sleep(1);
 
