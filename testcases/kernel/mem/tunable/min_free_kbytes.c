@@ -10,7 +10,8 @@
  * the current free memory with the tunable value repeatedly.
  *
  * a) default min_free_kbytes with all overcommit memory policy
- * b) half of mem_free with all overcommit memory policy
+ * b) 2x default value with all overcommit memory policy
+ * c) 5% of MemFree or %2 MemTotal with all overcommit memory policy
  *
  ********************************************************************
  * Copyright (C) 2012 Red Hat, Inc.
@@ -115,20 +116,27 @@ int main(int argc, char *argv[])
 static void test_tune(unsigned long overcommit_policy)
 {
 	int status;
-	int pid[2];
+	int pid[3];
 	int ret, i;
-	unsigned long tune, memfree;
+	unsigned long tune, memfree, memtotal;
 
 	set_sys_tune("overcommit_memory", overcommit_policy, 1);
 
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 3; i++) {
 		/* case1 */
 		if (i == 0)
 			set_sys_tune("min_free_kbytes", default_tune, 1);
 		/* case2 */
-		else {
+		else if (i == 1) {
+			set_sys_tune("min_free_kbytes", 2 * default_tune, 1);
+		/* case3 */
+		} else {
 			memfree = read_meminfo("MemFree:");
-			tune = memfree / 2;
+			memtotal = read_meminfo("MemTotal:");
+			tune = memfree / 20;
+			if (tune > (memtotal / 50))
+				tune = memtotal / 50;
+
 			set_sys_tune("min_free_kbytes", tune, 1);
 		}
 
