@@ -15,10 +15,12 @@
  2. Have main() send the signal indicated by SIGTOTEST to the new thread,
     using pthread_kill(), and using the concept of semaphores, have the main()
  3. Once the new thread returns from sigpause, have the new thread raise
-    SIGTOTEST. At this point, SIGTOTEST should be restored to the signal mask, so the
-    signal handler should not be called yet, and the signal should be pending.
+    SIGTOTEST. At this point, SIGTOTEST should be restored to the signal mask,
+    so the signal handler should not be called yet, and the signal should be
+    pending.
     If it is not, set the variable return_value to 1, indicating a test failure.
- 4. Now, from the new thread, set sem back to INMAIN to allow main to continue running.
+ 4. Now, from the new thread, set sem back to INMAIN to allow main to continue
+    running.
  5. The PTS exit code that main() will return with will depend on the value of
     return_value:
 	PTS_UNRESOLVED if return value is 2
@@ -39,17 +41,18 @@
 #define INMAIN 0
 #define INTHREAD 1
 
-int handler_called = 0;
-int return_value = 2;
-int sem = INMAIN;
+static int handler_called;
+static int return_value = 2;
+static int sem = INMAIN;
 
-void handler() {
+static void handler()
+{
 	printf("signal was called\n");
 	handler_called = 1;
 	return;
 }
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	struct sigaction act;
 	sigset_t pendingset;
@@ -61,17 +64,19 @@ void *a_thread_func()
 	sighold(SIGTOTEST);
 
 	if ((sigpause(SIGTOTEST) != -1) || (errno != EINTR)) {
-		printf ("Test UNRESOLVED: sigpause didn't return -1 and/or didn't set errno correctly.");
+		printf("Test UNRESOLVED: sigpause didn't return -1 "
+		       "and/or didn't set errno correctly.");
 		return_value = 2;
 		return NULL;
 	}
 
 	sleep(1);
 
-	raise (SIGTOTEST);
+	raise(SIGTOTEST);
 	sigpending(&pendingset);
 	if (sigismember(&pendingset, SIGTOTEST) == 1) {
-		printf("Test PASSED: signal mask was restored when sigpause returned.");
+		printf("Test PASSED: signal mask was restored when "
+		       "sigpause returned.");
 		return_value = 0;
 	}
 
@@ -83,16 +88,14 @@ int main()
 {
 	pthread_t new_th;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	sleep(1);
 
-	if (pthread_kill(new_th, SIGTOTEST) != 0)
-	{
+	if (pthread_kill(new_th, SIGTOTEST) != 0) {
 		printf("Test UNRESOLVED: Couldn't send signal to thread\n");
 		return PTS_UNRESOLVED;
 	}
@@ -102,7 +105,8 @@ int main()
 		sleep(1);
 
 	if (handler_called != 1) {
-		printf("Test UNRESOLVED: signal wasn't removed from signal mask\n");
+		printf("Test UNRESOLVED: signal wasn't removed from "
+		       "signal mask\n");
 		return PTS_UNRESOLVED;
 	}
 
