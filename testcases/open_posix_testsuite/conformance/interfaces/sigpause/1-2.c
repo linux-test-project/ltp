@@ -31,14 +31,15 @@
 
 #define SIGTOTEST SIGABRT
 
-int returned = 0;
+static int returned;
 
-void handler() {
+static void handler()
+{
 	printf("signal was called\n");
 	return;
 }
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	struct sigaction act;
 	act.sa_flags = 0;
@@ -55,22 +56,21 @@ int main()
 	pthread_t new_th;
 	int i;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-	for (i=0; i<10; i++) {
+	for (i = 0; i < 10; i++) {
 		sleep(1);
 		if (returned == 1) {
-			printf ("Test FAILED: sigpause returned before it received a signal\n");
+			printf("Test FAILED: sigpause returned before "
+			       "it received a signal\n");
 			return PTS_FAIL;
 		}
 	}
 
-	if (pthread_kill(new_th, SIGTOTEST) != 0)
-	{
+	if (pthread_kill(new_th, SIGTOTEST) != 0) {
 		printf("Test UNRESOLVED: Couldn't send signal to thread\n");
 		return PTS_UNRESOLVED;
 	}
@@ -78,7 +78,8 @@ int main()
 	sleep(1);
 
 	if (returned != 1) {
-		printf("Test FAILED: signal was sent, but sigpause never returned.\n");
+		printf("Test FAILED: signal was sent, but sigpause "
+		       "never returned.\n");
 		return PTS_FAIL;
 	}
 
