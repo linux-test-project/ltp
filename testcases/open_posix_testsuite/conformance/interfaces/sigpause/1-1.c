@@ -29,15 +29,16 @@
 
 #define SIGTOTEST SIGABRT
 
-int handler_called = 0;
+static int handler_called;
 
-void handler() {
+static void handler()
+{
 	printf("signal was called\n");
 	handler_called = 1;
 	return;
 }
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	struct sigaction act;
 	act.sa_flags = 0;
@@ -53,16 +54,14 @@ int main()
 {
 	pthread_t new_th;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	sleep(1);
 
-	if (pthread_kill(new_th, SIGTOTEST) != 0)
-	{
+	if (pthread_kill(new_th, SIGTOTEST) != 0) {
 		printf("Test UNRESOLVED: Couldn't send signal to thread\n");
 		return PTS_UNRESOLVED;
 	}
