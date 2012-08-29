@@ -158,8 +158,19 @@ static void test_tune(unsigned long overcommit_policy)
 				    "child unexpectedly failed: %d", status);
 		} else if (overcommit_policy == 1) {
 			if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
+#if __WORDSIZE == 32
+			{
+				if (total_mem < 3145728UL)
+#endif
 				tst_resm(TFAIL,
 				    "child unexpectedly failed: %d", status);
+#if __WORDSIZE == 32
+	/* in 32-bit system, a process allocate about 3Gb memory at most */
+				else
+					tst_resm(TINFO, "Child can't allocate "
+					    ">3Gb memory in 32bit system");
+			}
+#endif
 		} else {
 			if (WIFEXITED(status)) {
 				if (WEXITSTATUS(status) != 0) {
