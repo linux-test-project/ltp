@@ -24,39 +24,41 @@
 #if 0 && defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 int main(void)
 {
-	printf("Function definition doesn't match POSIX definition and preceded POSIX definition; interface is obsolete\n");
+	printf("Function definition doesn't match POSIX definition "
+	       "and preceded POSIX definition; interface is obsolete\n");
 	return PTS_UNSUPPORTED;
 }
 #else
 int main()
 {
 	int return_value = 0;
-        int result;
+	int result;
 
 	return_value = sigpause(-1);
 	if (return_value == -1) {
 		if (errno == EINVAL) {
-			printf ("Test PASSED: sigpause returned -1 and set errno to EINVAL\n");
+			printf("Test PASSED: sigpause returned -1 and "
+			       "set errno to EINVAL\n");
 			result = 0;
 		} else {
-			printf ("Test FAILED: sigpause did not set errno to EINVAL\n");
+			printf("Test FAILED: sigpause did not set errno "
+			       "to EINVAL\n");
 			result = 1;
 		}
 	} else {
-		printf ("Test FAILED: sigpause did not return -1\n");
+		printf("Test FAILED: sigpause did not return -1\n");
 		if (errno == EINVAL)
-			printf ("Test FAILED: sigpause did not set errno to EINVAL\n");
+			printf("Test FAILED: sigpause did not set errno "
+			       "to EINVAL\n");
 		result = 1;
 	}
 
-        if (result == 2) {
-                return PTS_UNRESOLVED;
-        }
-        if (result == 1) {
-                return PTS_FAIL;
-        }
+	if (result == 2)
+		return PTS_UNRESOLVED;
+	if (result == 1)
+		return PTS_FAIL;
 
-        printf("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
 #endif
