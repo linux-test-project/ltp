@@ -177,31 +177,23 @@ static void test_tune(unsigned long overcommit_policy)
 
 static int eatup_mem(unsigned long overcommit_policy)
 {
-	int map_count, i;
 	int ret = 0;
 	unsigned long memfree;
-	void **addrs;
-
-	map_count = total_mem * KB / MAP_SIZE;
-	addrs = (void **)malloc(map_count * sizeof(void *));
-	if (addrs == NULL) {
-		perror("malloc");
-		return -1;
-	}
+	void *addrs;
 
 	memfree = read_meminfo("MemFree:");
 	printf("memfree is %lu kB before eatup mem\n", memfree);
-	for (i = 0; i < map_count; i++) {
-		addrs[i] = mmap(NULL, MAP_SIZE, PROT_READ|PROT_WRITE,
+	while (1) {
+		addrs = mmap(NULL, MAP_SIZE, PROT_READ|PROT_WRITE,
 		    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-		if (addrs[i] == MAP_FAILED) {
+		if (addrs == MAP_FAILED) {
 			if (overcommit_policy != 1 && errno != ENOMEM) {
 				perror("mmap");
 				ret = -1;
 			}
 			break;
 		}
-		memset(addrs[i], i, MAP_SIZE);
+		memset(addrs, 1, MAP_SIZE);
 	}
 	memfree = read_meminfo("MemFree:");
 	printf("memfree is %lu kB after eatup mem\n", memfree);
