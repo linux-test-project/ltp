@@ -29,16 +29,16 @@
 #define INTHREAD 0
 #define INMAIN 1
 
-int result = 2;
-int sem = INTHREAD;
+static int result = 2;
+static int sem = INTHREAD;
 
-void handler()
+static void handler()
 {
 	printf("signal was called\n");
 	return;
 }
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	int return_value = 0;
 	struct sigaction act;
