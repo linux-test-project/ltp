@@ -41,14 +41,15 @@ void handler(int signo)
 
 int main()
 {
-       	char qname[NAMESIZE];
-        const char *msgptr = MSGSTR;
+	char qname[NAMESIZE];
+	const char *msgptr = MSGSTR;
 	int pid;
 
-       	sprintf(qname, "/mq_open_7-2_%d", getpid());
+	sprintf(qname, "/mq_open_7-2_%d", getpid());
 
-	if ((pid = fork()) == 0) {
-        	mqd_t roqueue;
+	pid = fork();
+	if (pid == 0) {
+		mqd_t roqueue;
 		char msgrcd[BUFFER];
 		sigset_t mask;
 		struct mq_attr attr;
@@ -59,39 +60,38 @@ int main()
 		/* child here */
 
 		/* Set up handler for SIGUSR1 */
-        	act.sa_handler = handler;
+		act.sa_handler = handler;
 		act.sa_flags = 0;
-        	sigaction(SIGUSR1, &act, NULL);
+		sigaction(SIGUSR1, &act, NULL);
 
 		/* wait for parent to finish mq_send */
 		sigemptyset(&mask);
 		sigaddset(&mask, SIGUSR1);
-		sigprocmask(SIG_BLOCK,&mask,NULL);
+		sigprocmask(SIG_BLOCK, &mask, NULL);
 		sigwait(&mask, &sig);
 
 		/* once parent has finished sending, open read-only queue */
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	roqueue = mq_open(qname, O_RDONLY,
-				S_IRUSR | S_IWUSR, &attr);
-        	if (roqueue == (mqd_t)-1) {
-                	perror("mq_open() read only failed");
-                	return CHILDFAIL;
-        	}
+		roqueue = mq_open(qname, O_RDONLY, S_IRUSR | S_IWUSR, &attr);
+		if (roqueue == (mqd_t) -1) {
+			perror("mq_open() read only failed");
+			return CHILDFAIL;
+		}
 #ifdef DEBUG
 		printf("Readonly message queue opened in child\n");
 #endif
 
-        	if (mq_receive(roqueue, msgrcd, BUFFER, &pri) == -1) {
+		if (mq_receive(roqueue, msgrcd, BUFFER, &pri) == -1) {
 			perror("mq_receive() on a read only queue failed");
 			mq_close(roqueue);
-                	return CHILDFAIL;
+			return CHILDFAIL;
 		}
 #ifdef DEBUG
 		printf("Received message %s\n", msgrcd);
 #endif
 
-        	if (mq_send(roqueue, msgptr, strlen(msgptr)+1, 1) == 0) {
+		if (mq_send(roqueue, msgptr, strlen(msgptr) + 1, 1) == 0) {
 			printf("mq_send() on a read only queue succeeded\n");
 			mq_close(roqueue);
 			return CHILDFAIL;
@@ -104,40 +104,40 @@ int main()
 		return CHILDPASS;
 	} else {
 		/* parent here */
-        	mqd_t rdwrqueue;
+		mqd_t rdwrqueue;
 		struct mq_attr attr;
 		int i;
 
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	rdwrqueue = mq_open(qname, O_CREAT |O_RDWR,
-				S_IRUSR | S_IWUSR, &attr);
-        	if (rdwrqueue == (mqd_t)-1) {
-                	perror("mq_open() did not return success");
+		rdwrqueue = mq_open(qname, O_CREAT | O_RDWR,
+				    S_IRUSR | S_IWUSR, &attr);
+		if (rdwrqueue == (mqd_t) -1) {
+			perror("mq_open() did not return success");
 			printf("Test UNRESOLVED\n");
 			/* kill child and exit */
 			kill(pid, SIGABRT);
-                	return PTS_UNRESOLVED;
-        	}
+			return PTS_UNRESOLVED;
+		}
 #ifdef DEBUG
 		printf("Message queue opened in parent\n");
 #endif
 
-        	if (mq_send(rdwrqueue, msgptr, strlen(msgptr)+1, 1) != 0) {
-                	perror("mq_send() did not return success");
+		if (mq_send(rdwrqueue, msgptr, strlen(msgptr) + 1, 1) != 0) {
+			perror("mq_send() did not return success");
 			printf("Test UNRESOLVED\n");
 			/* close queue, kill child and exit */
 			mq_close(rdwrqueue);
 			mq_unlink(qname);
 			kill(pid, SIGABRT);
-                	return PTS_UNRESOLVED;
-        	}
+			return PTS_UNRESOLVED;
+		}
 #ifdef DEBUG
 		printf("Message %s sent\n", msgptr);
 #endif
 
 		sleep(1);
-		kill(pid, SIGUSR1); //tell child mq_open and mq_send finished
+		kill(pid, SIGUSR1);
 
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit");
@@ -154,13 +154,13 @@ int main()
 		mq_close(rdwrqueue);
 		mq_unlink(qname);
 
-                if (!WIFEXITED(i) || !WEXITSTATUS(i)) {
+		if (!WIFEXITED(i) || !WEXITSTATUS(i)) {
 			printf("Test FAILED: exit status %d\n", i);
 			return PTS_FAIL;
 		}
 
-        	printf("Test PASSED\n");
-        	return PTS_PASS;
+		printf("Test PASSED\n");
+		return PTS_PASS;
 	}
 
 	return PTS_UNRESOLVED;
