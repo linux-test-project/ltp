@@ -35,37 +35,37 @@
 
 int main()
 {
-        char qname[NAMESIZE], msgrcd[BUFFER], msgrcd2[BUFFER];
-        const char *msgptr = MSGSTR;
-        mqd_t rdwrqueue, rdwrqueue2;
+	char qname[NAMESIZE], msgrcd[BUFFER], msgrcd2[BUFFER];
+	const char *msgptr = MSGSTR;
+	mqd_t rdwrqueue, rdwrqueue2;
 	struct mq_attr attr;
 	unsigned pri;
 
-        sprintf(qname, "/mq_open_9-1_%d", getpid());
+	sprintf(qname, "/mq_open_9-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
-        rdwrqueue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (rdwrqueue == (mqd_t)-1) {
-                perror("mq_open() did not return success on read-write queue");
+	rdwrqueue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
+	if (rdwrqueue == (mqd_t) -1) {
+		perror("mq_open() did not return success on read-write queue");
 		printf("Test UNRESOLVED\n");
-                return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 
-        if (mq_send(rdwrqueue, msgptr, strlen(msgptr), 1) == -1) {
-                perror("mq_send() did not return success");
+	if (mq_send(rdwrqueue, msgptr, strlen(msgptr), 1) == -1) {
+		perror("mq_send() did not return success");
 		printf("Test FAILED\n");
 		/* close queue and exit */
 		mq_close(rdwrqueue);
 		mq_unlink(qname);
 		return PTS_FAIL;
-        }
+	}
 #ifdef DEBUG
 	printf("Message %s sent\n", msgptr);
 #endif
 
-        if (mq_receive(rdwrqueue, msgrcd, BUFFER, &pri) == -1) {
-                perror("mq_receive() did not return success");
+	if (mq_receive(rdwrqueue, msgrcd, BUFFER, &pri) == -1) {
+		perror("mq_receive() did not return success");
 		printf("Test FAILED\n");
 		/* close queue and exit */
 		mq_close(rdwrqueue);
@@ -76,30 +76,30 @@ int main()
 	printf("Message %s received\n", msgrcd);
 #endif
 
-        rdwrqueue2 = mq_open(qname, O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (rdwrqueue2 == (mqd_t)-1) {
-                perror("mq_open() did not return success on read-write queue");
+	rdwrqueue2 = mq_open(qname, O_RDWR, S_IRUSR | S_IWUSR, &attr);
+	if (rdwrqueue2 == (mqd_t) -1) {
+		perror("mq_open() did not return success on read-write queue");
 		/* close rdwrqueue and exit */
 		mq_close(rdwrqueue);
 		mq_unlink(qname);
-                return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 
-        if (mq_send(rdwrqueue2, msgptr, strlen(msgptr), 1) == -1) {
-                perror("mq_send() did not return success");
+	if (mq_send(rdwrqueue2, msgptr, strlen(msgptr), 1) == -1) {
+		perror("mq_send() did not return success");
 		printf("Test FAILED\n");
 		/* close queues and exit */
 		mq_close(rdwrqueue);
 		mq_close(rdwrqueue2);
 		mq_unlink(qname);
 		return PTS_FAIL;
-        }
+	}
 #ifdef DEBUG
 	printf("Message %s sent to second queue\n", msgptr);
 #endif
 
-        if (mq_receive(rdwrqueue2, msgrcd2, BUFFER, &pri) == -1) {
-                perror("mq_receive() did not return success");
+	if (mq_receive(rdwrqueue2, msgrcd2, BUFFER, &pri) == -1) {
+		perror("mq_receive() did not return success");
 		/* close queues and exit */
 		mq_close(rdwrqueue);
 		mq_close(rdwrqueue2);
@@ -114,6 +114,6 @@ int main()
 	mq_close(rdwrqueue2);
 	mq_unlink(qname);
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
