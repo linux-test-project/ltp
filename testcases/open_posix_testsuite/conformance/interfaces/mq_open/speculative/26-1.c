@@ -42,57 +42,57 @@ int main()
 	printf("_POSIX_MQ_OPEN_MAX not defined as expected\n");
 	return PTS_UNRESOLVED;
 #else
-        char qname[NAMESIZE];
-        mqd_t queue[_POSIX_OPEN_MAX+_POSIX_MQ_OPEN_MAX+1];
-	int i, unresolved=0, failure=0, numqueues=0;
+	char qname[NAMESIZE];
+	mqd_t queue[_POSIX_OPEN_MAX + _POSIX_MQ_OPEN_MAX + 1];
+	int i, unresolved = 0, failure = 0, numqueues = 0;
 
-	for (i=0; (i<_POSIX_OPEN_MAX) && (i<_POSIX_MQ_OPEN_MAX);
-							i++, numqueues++) {
-        	sprintf(qname, "/msgqueue%d_%d", i, getpid());
+	for (i = 0; (i < _POSIX_OPEN_MAX) && (i < _POSIX_MQ_OPEN_MAX);
+	     i++, numqueues++) {
+		sprintf(qname, "/msgqueue%d_%d", i, getpid());
 
-        	queue[i] = mq_open(qname, O_CREAT |O_RDWR,
-						S_IRUSR | S_IWUSR, NULL);
-        	if (queue[i] == (mqd_t)-1) {
+		queue[i] = mq_open(qname, O_CREAT | O_RDWR,
+				   S_IRUSR | S_IWUSR, NULL);
+		if (queue[i] == (mqd_t) -1) {
 			printf("mq_open() failed before expected\n");
-			unresolved=1;
+			unresolved = 1;
 			break;
-        	}
-	}
-
-	queue[numqueues] = mq_open(qname, O_CREAT |O_RDWR,
-			S_IRUSR | S_IWUSR, NULL);
-	if (queue[numqueues] != (mqd_t)-1) {
-		printf("mq_open() did not fail on > ");
-	        printf("_POSIX_OPEN_MAX  or _POSIX_MQ_OPEN_MAX queues\n");
-	} else {
-		if (errno != EMFILE) {
-			printf("errno != EMFILE on > ");
-	       	printf("_POSIX_OPEN_MAX  or _POSIX_MQ_OPEN_MAX queues\n");
-			failure=1;
 		}
 	}
 
-	for (i=0; i<=numqueues;i++) {
-        	mq_close(queue[i]);
+	queue[numqueues] = mq_open(qname, O_CREAT | O_RDWR,
+				   S_IRUSR | S_IWUSR, NULL);
+	if (queue[numqueues] != (mqd_t) -1) {
+		printf("mq_open() did not fail on > ");
+		printf("_POSIX_OPEN_MAX  or _POSIX_MQ_OPEN_MAX queues\n");
+	} else {
+		if (errno != EMFILE) {
+			printf("errno != EMFILE on > ");
+			printf
+			    ("_POSIX_OPEN_MAX  or _POSIX_MQ_OPEN_MAX queues\n");
+			failure = 1;
+		}
 	}
 
-	for (i=0; i<=numqueues;i++) {
-        	sprintf(qname, "/msgqueue%d_%d", i, getpid());
-        	mq_unlink(qname);
+	for (i = 0; i <= numqueues; i++)
+		mq_close(queue[i]);
+
+	for (i = 0; i <= numqueues; i++) {
+		sprintf(qname, "/msgqueue%d_%d", i, getpid());
+		mq_unlink(qname);
 	}
 
-	if (failure==1) {
+	if (failure == 1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (unresolved==1) {
+	if (unresolved == 1) {
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 #endif
 #endif
 }
