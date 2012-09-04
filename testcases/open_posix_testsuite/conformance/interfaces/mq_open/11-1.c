@@ -29,52 +29,52 @@
 
 int main()
 {
-        char qname[NAMESIZE];
-        const char *msgptr = MSGSTR;
-        mqd_t queue, queue2;
+	char qname[NAMESIZE];
+	const char *msgptr = MSGSTR;
+	mqd_t queue, queue2;
 
-        sprintf(qname, "/mq_open_11-1_%d", getpid());
+	sprintf(qname, "/mq_open_11-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue == (mqd_t) -1) {
+		perror("mq_open() did not return success");
 		printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 
-        if (mq_send(queue, msgptr, strlen(msgptr), 1) != 0) {
-                perror("mq_send() first time did not return success");
+	if (mq_send(queue, msgptr, strlen(msgptr), 1) != 0) {
+		perror("mq_send() first time did not return success");
 		printf("Test UNRESOLVED\n");
 		mq_close(queue);
 		mq_unlink(qname);
 		return PTS_UNRESOLVED;
-        }
+	}
 
 	/*
 	 * Second call should have no effect
 	 */
-        queue2 = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue2 == (mqd_t)-1) {
-                perror("mq_open() second time did not return success");
+	queue2 = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue2 == (mqd_t) -1) {
+		perror("mq_open() second time did not return success");
 		printf("Test FAILED\n");
 		mq_close(queue);
 		mq_unlink(qname);
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 
-        if (mq_send(queue2, msgptr, strlen(msgptr), 1) != 0) {
-                perror("mq_send() did not return success second time");
+	if (mq_send(queue2, msgptr, strlen(msgptr), 1) != 0) {
+		perror("mq_send() did not return success second time");
 		printf("Test FAILED\n");
 		mq_close(queue);
 		mq_close(queue2);
 		mq_unlink(qname);
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 
 	mq_close(queue);
 	mq_close(queue2);
 	mq_unlink(qname);
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
