@@ -26,33 +26,33 @@
 
 int main()
 {
-        char qname[NAMESIZE];
-        const char *msgptr = MSGSTR;
-        mqd_t queue;
-	int failure=0;
+	char qname[NAMESIZE];
+	const char *msgptr = MSGSTR;
+	mqd_t queue;
+	int failure = 0;
 
-        sprintf(qname, "/mq_open_1-1_%d", getpid());
+	sprintf(qname, "/mq_open_1-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-		printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
-
-        if (mq_send(queue, msgptr, strlen(msgptr), 1) != 0) {
-                perror("mq_send() did not return success");
-		failure=1;
-        }
-
-	mq_close(queue);
-	mq_unlink(qname);
-
-	if (failure==1) {
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue == (mqd_t) -1) {
+		perror("mq_open() did not return success");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	if (mq_send(queue, msgptr, strlen(msgptr), 1) != 0) {
+		perror("mq_send() did not return success");
+		failure = 1;
+	}
+
+	mq_close(queue);
+	mq_unlink(qname);
+
+	if (failure == 1) {
+		printf("Test FAILED\n");
+		return PTS_FAIL;
+	}
+
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
