@@ -41,14 +41,15 @@ void handler(int signo)
 
 int main()
 {
-       	char qname[NAMESIZE];
-        const char *msgptr = MSGSTR;
+	char qname[NAMESIZE];
+	const char *msgptr = MSGSTR;
 	int pid;
 
-       	sprintf(qname, "/mq_open_8-2_%d", getpid());
+	sprintf(qname, "/mq_open_8-2_%d", getpid());
 
-	if ((pid = fork()) == 0) {
-        	mqd_t woqueue;
+	pid = fork();
+	if (pid == 0) {
+		mqd_t woqueue;
 		sigset_t mask;
 		struct mq_attr attr;
 		struct sigaction act;
@@ -59,39 +60,38 @@ int main()
 		/* child here */
 
 		/* Set up handler for SIGUSR1 */
-        	act.sa_handler = handler;
+		act.sa_handler = handler;
 		act.sa_flags = 0;
-        	sigaction(SIGUSR1, &act, NULL);
+		sigaction(SIGUSR1, &act, NULL);
 
 		/* wait for parent to finish mq_send */
 		sigemptyset(&mask);
 		sigaddset(&mask, SIGUSR1);
-		sigprocmask(SIG_BLOCK,&mask,NULL);
+		sigprocmask(SIG_BLOCK, &mask, NULL);
 		sigwait(&mask, &sig);
 
 		/* once parent has finished mq_send, open new queue */
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	woqueue = mq_open(qname, O_WRONLY,
-				S_IRUSR | S_IWUSR, &attr);
-        	if (woqueue == (mqd_t)-1) {
-                	perror("mq_open() read only failed in child");
-                	return CHILDFAIL;
-        	}
+		woqueue = mq_open(qname, O_WRONLY, S_IRUSR | S_IWUSR, &attr);
+		if (woqueue == (mqd_t) -1) {
+			perror("mq_open() read only failed in child");
+			return CHILDFAIL;
+		}
 #ifdef DEBUG
 		printf("write-only message queue opened in child\n");
 #endif
 
-        	if (mq_receive(woqueue, msgrcd, BUFFER, &pri) != -1) {
-                	printf("mq_receive() ret success w write-only queue\n");
+		if (mq_receive(woqueue, msgrcd, BUFFER, &pri) != -1) {
+			printf("mq_receive() ret success w write-only queue\n");
 			mq_close(woqueue);
-                	return CHILDFAIL;
+			return CHILDFAIL;
 		}
 #ifdef DEBUG
 		printf("Receiving message failed in child, as expected\n");
 #endif
 
-        	if (mq_send(woqueue, msgptr, strlen(msgptr), 1) == -1) {
+		if (mq_send(woqueue, msgptr, strlen(msgptr), 1) == -1) {
 			perror("mq_send() failed on a write-only queue");
 			mq_close(woqueue);
 			return CHILDFAIL;
@@ -104,7 +104,7 @@ int main()
 		return CHILDPASS;
 	} else {
 		/* parent here */
-        	mqd_t woqueue;
+		mqd_t woqueue;
 		char msgrcd[BUFFER];
 		struct mq_attr attr;
 		int i;
@@ -112,21 +112,21 @@ int main()
 
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
-        	woqueue = mq_open(qname, O_CREAT |O_WRONLY,
-				S_IRUSR | S_IWUSR, &attr);
-        	if (woqueue == (mqd_t)-1) {
-                	perror("mq_open() did not return success");
+		woqueue = mq_open(qname, O_CREAT | O_WRONLY,
+				  S_IRUSR | S_IWUSR, &attr);
+		if (woqueue == (mqd_t) -1) {
+			perror("mq_open() did not return success");
 			printf("Test UNRESOLVED\n");
 			/* kill child and exit */
 			kill(pid, SIGABRT);
-                	return PTS_UNRESOLVED;
-        	}
+			return PTS_UNRESOLVED;
+		}
 #ifdef DEBUG
 		printf("write-only message queue opened in parent\n");
 #endif
 
-        	if (mq_send(woqueue, msgptr, strlen(msgptr), 1) != 0) {
-                	perror("mq_send() did not return success");
+		if (mq_send(woqueue, msgptr, strlen(msgptr), 1) != 0) {
+			perror("mq_send() did not return success");
 			printf("Test FAILED\n");
 			/* kill child, close queue and exit */
 			kill(pid, SIGABRT);
@@ -138,8 +138,8 @@ int main()
 		printf("Message %s sent\n", msgptr);
 #endif
 
-        	if (mq_receive(woqueue, msgrcd, BUFFER, &pri) != -1) {
-                	printf("mq_receive() ret success w write only queue\n");
+		if (mq_receive(woqueue, msgrcd, BUFFER, &pri) != -1) {
+			printf("mq_receive() ret success w write only queue\n");
 			printf("Test FAILED\n");
 			/* kill child, close queue and exit */
 			kill(pid, SIGABRT);
@@ -148,11 +148,11 @@ int main()
 			return PTS_FAIL;
 		}
 #ifdef DEBUG
-        	printf("Message receive failed, as expected\n");
+		printf("Message receive failed, as expected\n");
 #endif
 
 		sleep(1);
-		kill(pid, SIGUSR1); //tell child mq_open and mq_send finished
+		kill(pid, SIGUSR1);
 
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit");
@@ -169,13 +169,13 @@ int main()
 		mq_close(woqueue);
 		mq_unlink(qname);
 
-                if (!WIFEXITED(i) || !WEXITSTATUS(i)) {
+		if (!WIFEXITED(i) || !WEXITSTATUS(i)) {
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}
 
-        	printf("Test PASSED\n");
-        	return PTS_PASS;
+		printf("Test PASSED\n");
+		return PTS_PASS;
 	}
 
 	return PTS_UNRESOLVED;
