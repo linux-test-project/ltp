@@ -25,32 +25,32 @@
 
 int main()
 {
-        char qname[NAMESIZE];
-        const char *msgptr = MSGSTR;
-        mqd_t queue;
+	char qname[NAMESIZE];
+	const char *msgptr = MSGSTR;
+	mqd_t queue;
 
-        sprintf(qname, "/mq_open_18-1_%d", getpid());
+	sprintf(qname, "/mq_open_18-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR | O_NONBLOCK,
+	queue = mq_open(qname, O_CREAT | O_RDWR | O_NONBLOCK,
 			S_IRUSR | S_IWUSR, NULL);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success w/O_NONBLOCK set");
+	if (queue == (mqd_t) -1) {
+		perror("mq_open() did not return success w/O_NONBLOCK set");
 		printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 
-        if (mq_send(queue, msgptr, strlen(msgptr), 1) != 0) {
-                perror("mq_send() did not return success");
+	if (mq_send(queue, msgptr, strlen(msgptr), 1) != 0) {
+		perror("mq_send() did not return success");
 		printf("Test FAILED\n");
 		/* close queue and exit */
 		mq_close(queue);
 		mq_unlink(qname);
 		return PTS_FAIL;
-        }
+	}
 
 	mq_close(queue);
 	mq_unlink(qname);
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
