@@ -35,41 +35,41 @@ void handler(int signo)
 
 int main()
 {
-        char qname[NAMESIZE];
-        mqd_t queue;
+	char qname[NAMESIZE];
+	mqd_t queue;
 	struct sigevent ev;
 	struct sigaction act;
-	int failure=0;
+	int failure = 0;
 
-        sprintf(qname, "/mq_open_20-1_%d", getpid());
+	sprintf(qname, "/mq_open_20-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-		printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
-
-	/* set up notification */
-        ev.sigev_notify = SIGEV_SIGNAL;
-        ev.sigev_signo = SIGUSR1;
-        act.sa_handler = handler;
-	act.sa_flags = 0;
-	sigemptyset(&act.sa_mask);
-        sigaction(SIGUSR1, &act, NULL);
-        if (mq_notify(queue, &ev) != 0) {
-                perror("mq_notify() did not return success");
-		failure=1;
-        }
-
-	mq_close(queue);
-	mq_unlink(qname);
-
-	if (failure==1) {
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue == (mqd_t) -1) {
+		perror("mq_open() did not return success");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	/* set up notification */
+	ev.sigev_notify = SIGEV_SIGNAL;
+	ev.sigev_signo = SIGUSR1;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
+	sigemptyset(&act.sa_mask);
+	sigaction(SIGUSR1, &act, NULL);
+	if (mq_notify(queue, &ev) != 0) {
+		perror("mq_notify() did not return success");
+		failure = 1;
+	}
+
+	mq_close(queue);
+	mq_unlink(qname);
+
+	if (failure == 1) {
+		printf("Test FAILED\n");
+		return PTS_FAIL;
+	}
+
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
