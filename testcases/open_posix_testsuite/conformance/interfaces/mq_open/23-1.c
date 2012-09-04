@@ -25,33 +25,32 @@
 
 int main()
 {
-        char qname[NAMESIZE];
-        mqd_t queue, queue2;
+	char qname[NAMESIZE];
+	mqd_t queue, queue2;
 
-        sprintf(qname, "/mq_open_23-1_%d", getpid());
+	sprintf(qname, "/mq_open_23-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue == (mqd_t) -1) {
+		perror("mq_open() did not return success");
 		printf("Test UNRESOLVED\n");
-                return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 
 	/*
 	 * Open queue qname again with O_CREAT and O_EXCL set
 	 */
-	queue2 = mq_open(qname, O_CREAT |O_EXCL|O_RDWR,
-			S_IRUSR | S_IWUSR, NULL);
-        if (queue2 != (mqd_t)-1) {
-                printf("mq_open() should have failed with O_CREAT and \n");
-                printf("O_EXCL on an already opened queue.\n");
+	queue2 = mq_open(qname, O_CREAT | O_EXCL | O_RDWR,
+			 S_IRUSR | S_IWUSR, NULL);
+	if (queue2 != (mqd_t) -1) {
+		printf("mq_open() should have failed with O_CREAT and\n");
+		printf("O_EXCL on an already opened queue.\n");
 		printf("Test FAILED\n");
 		mq_close(queue);
 		mq_close(queue2);
 		mq_unlink(qname);
-                return PTS_FAIL;
-        }
-
+		return PTS_FAIL;
+	}
 #ifdef DEBUG
 	printf("mq_open() failed as expected\n");
 #endif
@@ -63,7 +62,6 @@ int main()
 		mq_unlink(qname);
 		return PTS_FAIL;
 	}
-
 #ifdef DEBUG
 	printf("errno == EEXIST\n");
 #endif
@@ -71,6 +69,6 @@ int main()
 	mq_close(queue);
 	mq_unlink(qname);
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
