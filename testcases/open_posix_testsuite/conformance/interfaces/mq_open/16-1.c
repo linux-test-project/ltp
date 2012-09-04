@@ -35,57 +35,58 @@
 
 int main()
 {
-       	char qname[NAMESIZE];
-	int pid, succeeded=0;
+	char qname[NAMESIZE];
+	int pid, succeeded = 0;
 	mqd_t childqueue, queue;
 
 	/*
 	 * initialize both queues
 	 */
-	childqueue = (mqd_t)-1;
-	queue = (mqd_t)-1;
+	childqueue = (mqd_t) -1;
+	queue = (mqd_t) -1;
 
-       	sprintf(qname, "/mq_open_16-1_%d", getpid());
+	sprintf(qname, "/mq_open_16-1_%d", getpid());
 
-	if ((pid = fork()) == 0) {
+	pid = fork();
+	if (pid == 0) {
 		sigset_t mask;
 		int sig;
 
 		/* child here */
 
-		/* try to sync with parent for mq_open*/
+		/* try to sync with parent for mq_open */
 		sigemptyset(&mask);
 		sigaddset(&mask, SIGUSR1);
-		sigprocmask(SIG_BLOCK,&mask,NULL);
+		sigprocmask(SIG_BLOCK, &mask, NULL);
 		sigwait(&mask, &sig);
 
-        	childqueue = mq_open(qname, O_CREAT|O_EXCL|O_RDWR,
-				S_IRUSR | S_IWUSR, NULL);
-        	if (childqueue != (mqd_t)-1) {
+		childqueue = mq_open(qname, O_CREAT | O_EXCL | O_RDWR,
+				     S_IRUSR | S_IWUSR, NULL);
+		if (childqueue != (mqd_t) -1) {
 			succeeded++;
 #ifdef DEBUG
 			printf("mq_open() in child succeeded\n");
 		} else {
 			printf("mq_open() in child failed\n");
 #endif
-        	}
+		}
 	} else {
 		/* parent here */
 		int i;
 
 		sleep(1);
-		kill(pid, SIGUSR1); //tell child ready to call mq_open
+		kill(pid, SIGUSR1);
 
-        	queue = mq_open(qname, O_CREAT | O_EXCL |O_RDWR,
+		queue = mq_open(qname, O_CREAT | O_EXCL | O_RDWR,
 				S_IRUSR | S_IWUSR, NULL);
-        	if (queue != (mqd_t)-1) {
+		if (queue != (mqd_t) -1) {
 			succeeded++;
 #ifdef DEBUG
 			printf("mq_open() in parent succeeded\n");
 		} else {
 			printf("mq_open() in parent failed\n");
 #endif
-        	}
+		}
 
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit");
@@ -100,18 +101,18 @@ int main()
 		mq_close(childqueue);
 		mq_unlink(qname);
 
-		if (succeeded==0) {
+		if (succeeded == 0) {
 			printf("Test FAILED - mq_open() never succeeded\n");
 			return PTS_FAIL;
 		}
 
-		if (succeeded>1) {
+		if (succeeded > 1) {
 			printf("Test FAILED - mq_open() succeeded twice\n");
 			return PTS_FAIL;
 		}
 
-        	printf("Test PASSED\n");
-        	return PTS_PASS;
+		printf("Test PASSED\n");
+		return PTS_PASS;
 	}
 
 	return PTS_UNRESOLVED;
