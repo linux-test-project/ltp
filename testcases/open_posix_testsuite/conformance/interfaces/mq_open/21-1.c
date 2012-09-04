@@ -28,19 +28,19 @@
 
 int main()
 {
-        char qname[NAMESIZE];
-        mqd_t queue;
+	char qname[NAMESIZE];
+	mqd_t queue;
 
-        sprintf(qname, "/mq_open_21-1_%d", getpid());
+	sprintf(qname, "/mq_open_21-1_%d", getpid());
 
-        queue = mq_open(qname, O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue != (mqd_t)-1) {
-                printf("mq_open() did not return (mqd_t)-1 on error\n");
+	queue = mq_open(qname, O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue != (mqd_t) -1) {
+		printf("mq_open() did not return (mqd_t)-1 on error\n");
 		mq_close(queue);
 		mq_unlink(qname);
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
