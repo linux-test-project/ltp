@@ -27,27 +27,25 @@
 
 int main()
 {
-        char qname[NAME_MAX*2];
-        mqd_t queue;
+	char qname[NAME_MAX * 2];
+	mqd_t queue;
 	int i;
 
-        sprintf(qname, "/mq_open_27-1_%d", getpid());
+	sprintf(qname, "/mq_open_27-1_%d", getpid());
 
-	//Ensures queue name will have > NAME_MAX chars
-	for (i=0;i<NAME_MAX;i++) {
+	/* Ensures queue name will have > NAME_MAX chars */
+	for (i = 0; i < NAME_MAX; i++)
 		strcat(qname, "0");
-	}
 
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue != (mqd_t)-1) {
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue != (mqd_t) -1) {
 		printf("mq_open() should have failed with queue name %s\n",
-				qname);
+		       qname);
 		printf("Test FAILED\n");
 		mq_close(queue);
 		mq_unlink(qname);
-                return PTS_FAIL;
-        }
-
+		return PTS_FAIL;
+	}
 #ifdef DEBUG
 	printf("mq_open() failed as expected\n");
 #endif
@@ -57,11 +55,10 @@ int main()
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
-
 #ifdef DEBUG
 	printf("errno == ENAMETOOLONG\n");
 #endif
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
