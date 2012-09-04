@@ -27,29 +27,29 @@
 
 int main()
 {
-        char qname[NAMESIZE];
-        mqd_t roqueue, roqueue2;
+	char qname[NAMESIZE];
+	mqd_t roqueue, roqueue2;
 
-        sprintf(qname, "/mq_open_7-3_%d", getpid());
+	sprintf(qname, "/mq_open_7-3_%d", getpid());
 
-        roqueue = mq_open(qname, O_CREAT |O_RDONLY, S_IRUSR | S_IWUSR, NULL);
-        if (roqueue == (mqd_t)-1) {
-                perror("mq_open() for read-only queue did not return success");
+	roqueue = mq_open(qname, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR, NULL);
+	if (roqueue == (mqd_t) -1) {
+		perror("mq_open() for read-only queue did not return success");
 		printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 
-        roqueue2 = mq_open(qname, O_RDONLY, S_IRUSR | S_IWUSR, NULL);
-        if (roqueue2 == (mqd_t)-1) {
-                perror("Second mq_open() for rd-only queue didn't ret success");
+	roqueue2 = mq_open(qname, O_RDONLY, S_IRUSR | S_IWUSR, NULL);
+	if (roqueue2 == (mqd_t) -1) {
+		perror("Second mq_open() for rd-only queue didn't ret success");
 		printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 
 	mq_close(roqueue);
 	mq_close(roqueue2);
 	mq_unlink(qname);
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
