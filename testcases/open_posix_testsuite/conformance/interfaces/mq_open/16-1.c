@@ -20,9 +20,11 @@
  * this is fine (will have some false positives, but no false negatives).
  */
 
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <mqueue.h>
 #include <signal.h>
@@ -32,11 +34,15 @@
 #include "posixtest.h"
 
 #define NAMESIZE 50
+#define TNAME "mq_open/16-1.c"
 
 int main()
 {
 	char qname[NAMESIZE];
+	char fname[NAMESIZE];
 	int pid, succeeded = 0;
+	int fd;
+	void *pa = NULL;
 	mqd_t childqueue, queue;
 
 	/*
@@ -46,6 +52,26 @@ int main()
 	queue = (mqd_t) -1;
 
 	sprintf(qname, "/mq_open_16-1_%d", getpid());
+
+	sprintf(fname, "/tmp/pts_mq_open_16_1_%d", getpid());
+	unlink(fname);
+	fd = open(fname, O_CREAT | O_RDWR | O_EXCL,
+		 S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
+		exit(PTS_UNRESOLVED);
+	}
+	/* file is empty now, will cause "Bus error" */
+	write(fd, fname, sizeof(int));
+	unlink(fname);
+
+	pa = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf(TNAME " Error at mmap: %s\n", strerror(errno));
+		close(fd);
+		exit(PTS_FAIL);
+	}
+	*(int *)pa = 0;
 
 	pid = fork();
 	if (pid == 0) {
@@ -63,7 +89,7 @@ int main()
 		childqueue = mq_open(qname, O_CREAT | O_EXCL | O_RDWR,
 				     S_IRUSR | S_IWUSR, NULL);
 		if (childqueue != (mqd_t) -1) {
-			succeeded++;
+			++*(int *)pa;
 #ifdef DEBUG
 			printf("mq_open() in child succeeded\n");
 		} else {
@@ -80,7 +106,7 @@ int main()
 		queue = mq_open(qname, O_CREAT | O_EXCL | O_RDWR,
 				S_IRUSR | S_IWUSR, NULL);
 		if (queue != (mqd_t) -1) {
-			succeeded++;
+			++*(int *)pa;
 #ifdef DEBUG
 			printf("mq_open() in parent succeeded\n");
 		} else {
@@ -94,12 +120,18 @@ int main()
 			mq_close(queue);
 			mq_close(childqueue);
 			mq_unlink(qname);
+			close(fd);
+			munmap(pa, sizeof(int));
 			return PTS_UNRESOLVED;
 		}
 
 		mq_close(queue);
 		mq_close(childqueue);
 		mq_unlink(qname);
+
+		succeeded = *(int *)pa;
+		close(fd);
+		munmap(pa, sizeof(int));
 
 		if (succeeded == 0) {
 			printf("Test FAILED - mq_open() never succeeded\n");
