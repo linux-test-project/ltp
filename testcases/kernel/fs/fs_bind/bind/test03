@@ -98,6 +98,7 @@ trap '' ERR
 	umount share2
 	umount share2
 	umount parent1
+	umount parent2
 	
 	rm -rf parent* share*
 	cleanup

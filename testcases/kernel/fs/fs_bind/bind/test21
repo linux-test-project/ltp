@@ -93,6 +93,7 @@ trap '' ERR
 	umount dir1
 	umount dir2
 	umount dir3
+	umount dir4
 	
 	rm -rf dir*
 	

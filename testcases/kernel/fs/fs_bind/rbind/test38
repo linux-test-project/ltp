@@ -82,11 +82,10 @@ trap '' ERR
 	umount parent1/child1
 	umount parent2/child1
 	umount parent2/child1
-	umount parent2 
+	umount parent2/child2
+	umount parent2
 	umount share1
 	umount share1
-	umount share2
-	umount share2
 	
 	rm -rf parent* share*
 	cleanup
