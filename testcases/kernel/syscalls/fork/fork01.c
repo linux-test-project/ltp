@@ -29,71 +29,44 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
- */
-/* $Id: fork01.c,v 1.6 2009/10/26 14:55:46 subrata_modak Exp $ */
-/**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
- *
  *    TEST IDENTIFIER	: fork01
- *
  *    EXECUTED BY	: anyone
- *
  *    TEST TITLE	: Basic test for fork(2)
- *
  *    PARENT DOCUMENT	: frktds02
- *
  *    TEST CASE TOTAL	: 2
- *
  *    WALL CLOCK TIME	: 1
- *
  *    CPU TYPES		: ALL
- *
  *    AUTHOR		: Kathy Olmsted
- *
  *    CO-PILOT		: Steve Shaw
- *
  *    DATE STARTED	: 06/17/92
- *
  *    INITIAL RELEASE	: UNICOS 7.0
- *
  *    TEST CASES
- *
- * 	1.) fork returns without error
- *      2.) fork returns the pid of the child
- *
+ *	1.) fork returns without error
+ *	2.) fork returns the pid of the child
  *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
+ *	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- *
  *    OUTPUT SPECIFICATIONS
- *$
  *    DURATION
- * 	Terminates - with frequency and infinite modes.
- *
+ *	Terminates - with frequency and infinite modes.
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *    RESOURCES
- * 	None
- *
+ *	None
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- *
  *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
+ *	None
  *    INTERCASE DEPENDENCIES
- * 	None
- *
+ *	None
  *    DETAILED DESCRIPTION
- *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
  *        fork()
  *	  Check return code, if system call failed (return=-1)
@@ -109,11 +82,9 @@
  *           compare child PID to fork() return code and report
  *           results
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+ *	  Cleanup:
+ *           Print errno log and/or timing stats if options given
+ */
 
 #include <errno.h>
 #include <string.h>
@@ -126,20 +97,20 @@
 #include "usctest.h"
 
 #define	KIDEXIT	42
-void setup();
-void cleanup();
+static void setup();
+static void cleanup();
 
-#define LINE_SZ	20		/* size of the line written/read to the file */
-#define FILENAME	"childpid"
+#define LINE_SZ	20
+#define FILENAME "childpid"
 
-char *TCID = "fork01";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "fork01";
+int TST_TOTAL = 2;
 
-/***************************************************************
+/*
  * child_pid - the child side of the test
- *        determine the PID and write to a file
- ***************************************************************/
-void child_pid()
+ *             determine the PID and write to a file
+ */
+static void child_pid()
 {
 
 	int fildes;
@@ -152,19 +123,20 @@ void child_pid()
 
 }
 
-/***************************************************************
+/*
  * parent_pid - the parent side of the test
- *        read the value determined by the child
- *        compare and report results
- ***************************************************************/
-void parent_pid()
+ *              read the value determined by the child
+ *              compare and report results
+ */
+static void parent_pid()
 {
 
 	int fildes;
 	char tmp_line[LINE_SZ];
 	pid_t child_id;
 
-	if ((fildes = open(FILENAME, O_RDWR)) == -1) {
+	fildes = open(FILENAME, O_RDWR);
+	if (fildes == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "parent open failed. errno: %d (%s)\n",
 			 errno, strerror(errno));
@@ -189,44 +161,24 @@ void parent_pid()
 	}
 }
 
-/***************************************************************
- * main() - performs tests
- *
- ***************************************************************/
-
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int fails;
 	int kid_status, wait_status;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		Tst_count = 0;
 		fails = 0;
 
-		/*
-		 * Call fork(2)
-		 */
 		TEST(fork());
-
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (STD_FUNCTIONAL_TEST) {
@@ -237,9 +189,8 @@ int main(int ac, char **av)
 		}
 		if (TEST_RETURN == 0) {
 			/* child */
-			if (STD_FUNCTIONAL_TEST) {
+			if (STD_FUNCTIONAL_TEST)
 				child_pid();
-			}
 			exit(KIDEXIT);
 		} else {
 			/* parent */
@@ -272,18 +223,11 @@ int main(int ac, char **av)
 		}		/* TEST_RETURN */
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup()
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -293,11 +237,7 @@ void setup()
 	tst_tmpdir();
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
