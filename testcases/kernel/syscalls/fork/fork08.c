@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -15,31 +14,30 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-/*
+ *
  * NAME
- * 	fork08.c
+ *	fork08.c
  *
  * DESCRIPTION
  *	Check if the parent's file descriptors are affected by
- * 	actions in the child; they should not be.
+ *	actions in the child; they should not be.
  *
  * ALGORITHM
- * 	Parent opens a file.
- * 	Forks a child which closes a file.
- * 	Parent forks a second child which attempts to read the (closed)
- * 	file.
+ *	Parent opens a file.
+ *	Forks a child which closes a file.
+ *	Parent forks a second child which attempts to read the (closed)
+ *	file.
  *
  * USAGE
- * 	fork08
+ *	fork08
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -50,11 +48,11 @@
 char *TCID = "fork08";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
-char pbuf[10];
-char fnamebuf[40];
+static char pbuf[10];
+static char fnamebuf[40];
 
 int main(int ac, char **av)
 {
@@ -62,33 +60,23 @@ int main(int ac, char **av)
 	int ch_r_stat;
 	FILE *rea, *writ;
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
 
-		if ((writ = fopen(fnamebuf, "w")) == NULL)
+		writ = fopen(fnamebuf, "w");
+		if (writ == NULL)
 			tst_resm(TFAIL, "failed to fopen file for write");
-		if ((rea = fopen(fnamebuf, "r")) == NULL)
+		rea = fopen(fnamebuf, "r");
+		if (rea == NULL)
 			tst_resm(TFAIL, "failed to fopen file for read");
 
 		fprintf(writ, "abcdefghijklmnopqrstuv");
@@ -100,17 +88,17 @@ int main(int ac, char **av)
 
 		forks = 0;
 
-	      forkone:
+forkone:
 		++forks;
 
-		if ((pid1 = fork()) != 0) {	/* parent */
+		pid1 = fork();
+		if (pid1 != 0) {
 			tst_resm(TINFO, "parent forksval: %d", forks);
 
 			if ((pid1 != (-1)) && (forks < 2))
 				goto forkone;
-			else if (pid1 < 0) {
+			else if (pid1 < 0)
 				tst_resm(TINFO, "Fork failed");
-			}
 		} else {	/* child */
 			/*
 			 * If first child close the file descriptor for the
@@ -155,42 +143,26 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "exit status of wait "
 				 " expected 0 got %d", status);
 			status >>= 8;
-			if (status == 0) {
+			if (status == 0)
 				tst_resm(TPASS, "parent test PASSED");
-			} else {
+			else
 				tst_resm(TFAIL, "parent test FAILED");
-			}
 		}
 
 		tst_resm(TINFO, "Number of processes forked is %d", forks);
 		fclose(rea);
 		fclose(writ);
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	umask(0);
-
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
-
-	/*
-	 * make a temp directory and cd to it
-	 */
 	tst_tmpdir();
 
 	strcpy(fnamebuf, "fork07.");
@@ -198,21 +170,8 @@ void setup()
 	strcat(fnamebuf, pbuf);
 }
 
-/*
- * cleanup() -	performs all ONE TIME cleanup for this test at
- * 	        completion or premature exit
- */
-void cleanup()
+static void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
-	/*
-	 * remove tmp dir and all files in it
-	 */
 	tst_rmdir();
-
 }
