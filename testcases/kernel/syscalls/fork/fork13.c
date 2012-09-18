@@ -2,13 +2,13 @@
  * a race in pid generation that causes pids to be reused immediately
  *
  * From the mainline commit 5fdee8c4a5e1800489ce61963208f8cc55e42ea1:
- * 
+ *
  * A program that repeatedly forks and waits is susceptible to having
  * the same pid repeated, especially when it competes with another
  * instance of the same program.  This is really bad for bash
  * implementation.  Furthermore, many shell scripts assume that pid
  * numbers will not be used for some length of time.
- * 
+ *
  * Race Description:
  *
  * A                                B
@@ -45,6 +45,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -70,7 +71,7 @@ static int pid_distance(pid_t first, pid_t second);
 static void cleanup(void);
 static void check(void);
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	/* message returned from parse_opts */
 	char *msg;
@@ -84,7 +85,7 @@ int main(int argc, char* argv[])
 	tst_exit();
 }
 
-void check(void)
+static void check(void)
 {
 	long lc;
 	pid_t last_pid = 0;
@@ -96,7 +97,7 @@ void check(void)
 		child_exit_code = lc % RETURN;
 		switch (pid = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
 			exit(child_exit_code);
 		default:
@@ -104,11 +105,11 @@ void check(void)
 				distance = pid_distance(last_pid, pid);
 				if (distance == 0) {
 					tst_resm(TFAIL,
-						"Unexpected pid sequence: "
-						"previous fork: pid=%d, "
-						"current fork: pid=%d for "
-						"iteration=%ld.", last_pid, pid,
-						lc);
+						 "Unexpected pid sequence: "
+						 "previous fork: pid=%d, "
+						 "current fork: pid=%d for "
+						 "iteration=%ld.", last_pid,
+						 pid, lc);
 					return;
 				}
 			}
@@ -117,15 +118,14 @@ void check(void)
 			reaped = waitpid(pid, &status, 0);
 			if (reaped != pid) {
 				tst_resm(TFAIL,
-					"Wait return value: expected pid=%d, "
-					"got %d, iteration %ld.", pid, reaped,
-					lc);
+					 "Wait return value: expected pid=%d, "
+					 "got %d, iteration %ld.", pid, reaped,
+					 lc);
 				return;
-			}
-			else if (WEXITSTATUS(status) != child_exit_code) {
+			} else if (WEXITSTATUS(status) != child_exit_code) {
 				tst_resm(TFAIL, "Unexpected exit status %x, "
-					"iteration %ld.", WEXITSTATUS(status),
-					lc);
+					 "iteration %ld.", WEXITSTATUS(status),
+					 lc);
 				return;
 			}
 		}
@@ -133,7 +133,7 @@ void check(void)
 	tst_resm(TPASS, "%ld pids forked, all passed", lc);
 }
 
-void setup(void)
+static void setup(void)
 {
 	FILE *fp;
 	int fd;
@@ -146,29 +146,29 @@ void setup(void)
 	/* Backup pid_max value. */
 	fp = fopen(PATH, "r+");
 	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fopen");
+		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
 	if (fgets(pid_max, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fgets");
+		tst_brkm(TBROK | TERRNO, cleanup, "fgets");
 	fclose(fp);
 
 	fd = open(PATH, O_WRONLY);
 	if (fd == -1)
-		tst_resm(TBROK|TERRNO, "open");
+		tst_resm(TBROK | TERRNO, "open");
 	sprintf(buf, "%d", PIDMAX);
 	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_resm(TBROK|TERRNO, "write");
+		tst_resm(TBROK | TERRNO, "write");
 	close(fd);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	int fd;
 
 	fd = open(PATH, O_WRONLY);
 	if (fd == -1)
-		tst_resm(TWARN|TERRNO, "open");
+		tst_resm(TWARN | TERRNO, "open");
 	if (write(fd, pid_max, strlen(pid_max)) != strlen(pid_max))
-		tst_resm(TWARN|TERRNO, "write");
+		tst_resm(TWARN | TERRNO, "write");
 	close(fd);
 
 	TEST_CLEANUP;
@@ -176,7 +176,7 @@ void cleanup(void)
 
 /* The distance mod PIDMAX between two pids, where the first pid is
    expected to be smaller than the second. */
-int pid_distance(pid_t first, pid_t second)
+static int pid_distance(pid_t first, pid_t second)
 {
 	return (second + PIDMAX - first) % PIDMAX;
 }
