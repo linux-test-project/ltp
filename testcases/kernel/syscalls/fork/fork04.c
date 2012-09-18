@@ -29,30 +29,17 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
- */
-/* $Id: fork04.c,v 1.4 2009/03/23 13:35:41 subrata_modak Exp $ */
-/**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
- *
  *    TEST IDENTIFIER	: fork04
- *
  *    TEST TITLE	: Child inheritance of Environment Variables after fork()
- *
  *    PARENT DOCUMENT	: frktds01
- *
  *    TEST CASE TOTAL	: 3
- *
  *    WALL CLOCK TIME	: 1
- *
  *    CPU TYPES		: ALL
- *
  *    AUTHOR		: Kathy Olmsted
- *
  *    CO-PILOT		: Steve Shaw
- *
  *    DATE STARTED	: 06/17/92
- *
  *    INITIAL RELEASE	: UNICOS 7.0
  *
  *    TEST CASES
@@ -104,9 +91,8 @@
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *        Remove the temporary directory and exit.
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+ */
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -114,14 +100,14 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/param.h>
-#include <signal.h>		/*Includes signal information. */
+#include <signal.h>
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "fork04";		/* Test program identifier.    */
+char *TCID = "fork04";
 
-#define	KIDEXIT	42		/* Known value for child exit status */
+#define	KIDEXIT	42
 #define MAX_LINE_LENGTH 256
 #define OUTPUT_FILE  "env.out"
 #define ENV_NOT_SET  "getenv() does not find variable set"
@@ -129,50 +115,27 @@ char *TCID = "fork04";		/* Test program identifier.    */
 /* list of environment variables to test */
 char *environ_list[] = { "TERM", "NoTSetzWq", "TESTPROG" };
 
-#define NUMBER_OF_ENVIRON sizeof(environ_list)/sizeof(char *)
-int TST_TOTAL = NUMBER_OF_ENVIRON;	/* Total number of test cases. */
+#define NUMBER_OF_ENVIRON (sizeof(environ_list)/sizeof(char *))
+int TST_TOTAL = NUMBER_OF_ENVIRON;
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
-	/* remove the temporary directory and exit with
-	   return code appropriate for results */
 	tst_rmdir();
-
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup()
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
-	/* make and change to a temporary directory */
 	tst_tmpdir();
 
 	/* add a variable to the environment */
 	putenv("TESTPROG=FRKTCS04");
-
 }
 
-/***************************************************************
- * child_environment - the child side of the environment tests
- *        determine values for the variables and write to a file
- ***************************************************************/
-void child_environment()
+static void child_environment()
 {
 
 	int fildes;
@@ -185,26 +148,24 @@ void child_environment()
 	for (index = 0; index < NUMBER_OF_ENVIRON; index++) {
 		memset(msg, 0, MAX_LINE_LENGTH);
 
-		if ((var = getenv(environ_list[index])) == NULL)
+		var = getenv(environ_list[index]);
+		if (var == NULL)
 			(void)sprintf(msg, "%s:%s", environ_list[index],
 				      ENV_NOT_SET);
 		else
 			(void)sprintf(msg, "%s:%s", environ_list[index], var);
-
-		write(fildes, msg, sizeof(msg));	/* includes extra null chars */
+		/* includes extra null chars */
+		write(fildes, msg, sizeof(msg));
 	}
 
 	close(fildes);
-
 }
 
-/***********************************************************************
- *
+/*
  * Compare parent env string to child's string.
  * Each string is in the format:  <env var>:<value>
- *
- ***********************************************************************/
-int cmp_env_strings(char *pstring, char *cstring)
+ */
+static int cmp_env_strings(char *pstring, char *cstring)
 {
 	char *penv, *cenv, *pvalue, *cvalue;
 
@@ -212,7 +173,8 @@ int cmp_env_strings(char *pstring, char *cstring)
 	 * Break pstring into env and value
 	 */
 	penv = pstring;
-	if ((pvalue = strchr(pstring, ':')) == NULL) {
+	pvalue = strchr(pstring, ':');
+	if (pvalue == NULL) {
 		tst_resm(TBROK,
 			 "internal error - parent's env string not in correct format:'%s'",
 			 pstring);
@@ -231,7 +193,8 @@ int cmp_env_strings(char *pstring, char *cstring)
 	 * Break cstring into env and value
 	 */
 	cenv = cstring;
-	if ((cvalue = strchr(cstring, ':')) == NULL) {
+	cvalue = strchr(cstring, ':');
+	if (cvalue == NULL) {
 		tst_resm(TBROK,
 			 "internal error - parent's env string not in correct format:'%s'",
 			 cstring);
@@ -280,19 +243,22 @@ void parent_environment()
 	int ret;
 	char *var;
 
-	if ((fildes = open(OUTPUT_FILE, O_RDWR)) == -1) {
+	fildes = open(OUTPUT_FILE, O_RDWR);
+	if (fildes == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "fork() test. Parent open of temporary file failed. errno %d (%s)\n",
 			 errno, strerror(errno));
 	}
 	for (index = 0; index < NUMBER_OF_ENVIRON; index++) {
-		if ((ret = read(fildes, tmp_line, MAX_LINE_LENGTH)) == 0) {
+		ret = read(fildes, tmp_line, MAX_LINE_LENGTH);
+		if (ret == 0) {
 			tst_resm(TBROK,
 				 "fork() test. parent_environment: failed to read from file with %d (%s)",
 				 errno, strerror(errno));
 		} else {
 
-			if ((var = getenv(environ_list[index])) == NULL)
+			var = getenv(environ_list[index]);
+			if (var == NULL)
 				sprintf(parent_value, "%s:%s",
 					environ_list[index], ENV_NOT_SET);
 			else
@@ -303,49 +269,32 @@ void parent_environment()
 
 		}
 	}
+
 	close(fildes);
-
 }
-
-/***************************************************************
- * main() - performs tests
- *
- ***************************************************************/
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	int kid_status;		/* status returned from child */
-	int wait_status;	/* status of wait system call in parent */
-	int fails;		/* indicates whether to continue with tests */
+	int lc;
+	char *msg;
+	int kid_status;
+	int wait_status;
+	int fails;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset Tst_count and fail indicator in case we are looping. */
 		Tst_count = 0;
 		fails = 0;
 
-		/* make the call to fork */
 		TEST(fork());
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			/* fork failed */
 			if (STD_FUNCTIONAL_TEST) {
@@ -355,10 +304,9 @@ int main(int ac, char **av)
 			}
 		} else if (TEST_RETURN == 0) {
 			/* child */
-			if (STD_FUNCTIONAL_TEST) {
+			if (STD_FUNCTIONAL_TEST)
 				/* determine environment variables */
 				child_environment();
-			}
 			/* exit with known value */
 			exit(KIDEXIT);
 		} else {
@@ -391,10 +339,6 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
