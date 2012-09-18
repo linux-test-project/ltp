@@ -19,39 +19,37 @@
 
 /*
  * NAME
- * 	fork03.c
+ *	fork03.c
  *
  * DESCRIPTION
  *	Check that child can use a large text space and do a large
  *	number of operations.
  *
  * ALGORITHM
- * 	Fork one process, check for pid == 0 in child.
- * 	Check for pid > 0 in parent after wait.
+ *	Fork one process, check for pid == 0 in child.
+ *	Check for pid > 0 in parent after wait.
  *
  * USAGE
- * 	fork03
+ *	fork03
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #include "test.h"
 #include "usctest.h"
 
-void setup(void);
-void cleanup(void);
-
 char *TCID = "fork03";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
@@ -59,35 +57,22 @@ int main(int ac, char **av)
 	int i;
 	int pid1, pid2, status;
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
-
-		if ((pid1 = fork()) == -1) {
+		pid1 = fork();
+		if (pid1 == -1)
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
 
-		if (pid1 == 0) {	/* child */
+		if (pid1 == 0) {
 			/* child uses some cpu cycles */
 			for (i = 1; i < 32767; i++) {
 				fl1 = 0.000001;
@@ -99,13 +84,11 @@ int main(int ac, char **av)
 			}
 
 			/* Pid must always be zero in child  */
-
-			if (pid1 != 0) {
+			if (pid1 != 0)
 				exit(1);
-			} else {
+			else
 				exit(0);
-			}
-		} else {	/* parent */
+		} else {
 			tst_resm(TINFO, "process id in parent of child from "
 				 "fork : %d", pid1);
 			pid2 = wait(&status);	/* wait for child */
@@ -124,37 +107,18 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "test 1 PASSED");
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit
- */
-void cleanup()
+static void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
