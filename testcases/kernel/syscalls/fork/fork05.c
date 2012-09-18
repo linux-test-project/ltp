@@ -1,50 +1,42 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * Portions Copyright (c) 2000 Ulrich Drepper
- *$
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- *$
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *$
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- *$
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- *$
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- *$
+ *
  * http://www.sgi.com$
- *$
+ *
  * For further information regarding this notice, see:$
- *$
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- */
-/* $Id: fork05.c,v 1.9 2009/04/16 06:52:49 subrata_modak Exp $ */
-/**********************************************************
+ *
  *
  *    Linux Test Project - Silicon Graphics, Inc.
- *   $
  *    TEST IDENTIFIER	: fork05
- *
  *    EXECUTED BY	: anyone
- *
  *    TEST TITLE	: Make sure LDT is propagated correctly
- *
  *    TEST CASE TOTAL	: 1
- *
  *    CPU TYPES		: i386
- *
  *    AUTHORS		: Ulrich Drepper
  *			  Nate Straz
  *
@@ -105,8 +97,8 @@
  *>
  *> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- *
- *********************************************************/
+ */
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -117,11 +109,9 @@
 
 char *TCID = "fork05";
 
-/* list of environment variables to test */
-char *environ_list[] = { "TERM", "NoTSetzWq", "TESTPROG" };
-
-#define NUMBER_OF_ENVIRON sizeof(environ_list)/sizeof(char*)
-int TST_TOTAL = NUMBER_OF_ENVIRON;	/* Total number of test cases. */
+static char *environ_list[] = { "TERM", "NoTSetzWq", "TESTPROG" };
+#define NUMBER_OF_ENVIRON (sizeof(environ_list)/sizeof(char *))
+int TST_TOTAL = NUMBER_OF_ENVIRON;
 
 #if defined(linux) && defined(__i386__)
 
@@ -138,9 +128,9 @@ struct modify_ldt_ldt_s {
 	unsigned int empty:25;
 };
 
-int a = 42;
+static int a = 42;
 
-void modify_ldt(int, struct modify_ldt_ldt_s *, int);
+static void modify_ldt(int, struct modify_ldt_ldt_s *, int);
 asm("	.text\n\
 	.type modify_ldt,@function \n\
 modify_ldt: \n\
@@ -173,23 +163,23 @@ int main()
 
 	modify_ldt(1, &ldt0, sizeof(ldt0));
 
-      asm volatile ("movw %w0, %%fs" : : "q" (7));
+	asm volatile ("movw %w0, %%fs"::"q" (7));
 
-      asm volatile ("movl %%fs:0, %0" : "=r" (lo));
-      tst_resm(TINFO, "a = %d", lo);
+	asm volatile ("movl %%fs:0, %0":"=r" (lo));
+	tst_resm(TINFO, "a = %d", lo);
 
-      asm volatile ("pushl %%fs; popl %0" : "=q" (lo));
-      tst_resm(TINFO, "%%fs = %#06hx", lo);
+	asm volatile ("pushl %%fs; popl %0":"=q" (lo));
+	tst_resm(TINFO, "%%fs = %#06hx", lo);
 
-      asm volatile ("movl %0, %%fs:0" : : "r" (99));
+	asm volatile ("movl %0, %%fs:0"::"r" (99));
 
-      pid = fork();
+	pid = fork();
 
 	if (pid == 0) {
-                asm volatile ("pushl %%fs; popl %0" : "=q" (lo));
+		asm volatile ("pushl %%fs; popl %0":"=q" (lo));
 		tst_resm(TINFO, "%%fs = %#06hx", lo);
 
-                asm volatile ("movl %%fs:0, %0" : "=r" (lo));
+		asm volatile ("movl %%fs:0, %0":"=r" (lo));
 		tst_resm(TINFO, "a = %d", lo);
 
 		if (lo != 99)
