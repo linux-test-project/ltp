@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -15,11 +14,10 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-/*
+ *
+ *
  * NAME
- * 	fork11.c
+ *	fork11.c
  *
  * DESCRIPTION
  *	Test that parent gets a pid from each child when doing wait
@@ -28,13 +26,13 @@
  *	Fork NUMFORKS children that do nothing.
  *
  * USAGE
- * 	fork11
+ *	fork11
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 
 #include <sys/types.h>
@@ -47,8 +45,8 @@
 char *TCID = "fork11";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 #define NUMFORKS 100
 
@@ -56,83 +54,49 @@ int main(int ac, char **av)
 {
 	int i, pid, cpid, status;
 	int fail = 0;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
 
 		for (i = 0; i < NUMFORKS; i++) {
-			if ((pid = fork()) == 0) {	/* child */
+			pid = fork();
+			if (pid == 0)
 				exit(0);
-			}
 
 			if (pid > 0) {	/* parent */
 				cpid = wait(&status);
-				if (cpid != pid) {
+				if (cpid != pid)
 					fail++;
-				}
 			} else {
 				fail++;
 				break;
 			}
 		}
-		if (fail) {
+		if (fail)
 			tst_resm(TFAIL, "fork failed %d times", fail);
-		} else {
+		else
 			tst_resm(TPASS, "fork test passed, %d processes", i);
-		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit
- */
-void cleanup()
+static void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
