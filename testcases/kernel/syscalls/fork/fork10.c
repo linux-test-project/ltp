@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -15,15 +14,14 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-/*
+ *
+ *
  * NAME
- * 	fork10.c
+ *	fork10.c
  *
  * DESCRIPTION
  *	Check inheritance of file descriptor by children, they
- * 	should all be refering to the same file.
+ *	should all be refering to the same file.
  *
  * ALGORITHM
  *	Child reads several chars and exits.
@@ -31,14 +29,15 @@
  *	that location
  *
  * USAGE
- * 	fork10
+ *	fork10
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -51,11 +50,11 @@
 char *TCID = "fork10";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
-char pidbuf[10];
-char fnamebuf[40];
+static char pidbuf[10];
+static char fnamebuf[40];
 
 int main(int ac, char **av)
 {
@@ -63,12 +62,13 @@ int main(int ac, char **av)
 	char parchar[2];
 	char chilchar[2];
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	fildes = -1;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
@@ -76,21 +76,22 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		if ((fildes = creat(fnamebuf, 0600)) < 0) {
-			tst_brkm(TBROK|TERRNO, cleanup, "Parent: cannot open %s for "
-				 "write", fnamebuf);
-		}
+		fildes = creat(fnamebuf, 0600);
+		if (fildes < 0)
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "Parent: cannot open %s for " "write",
+				 fnamebuf);
 		write(fildes, "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n", 27);
 		close(fildes);
 
-		if ((fildes = open(fnamebuf, 0)) == -1) {
+		fildes = open(fnamebuf, 0);
+		if (fildes == -1)
 			tst_brkm(TBROK, cleanup, "Parent: cannot open %s for "
 				 "reading", fnamebuf);
-		}
 
-		if ((pid = fork()) == -1) {
+		pid = fork();
+		if (pid == -1)
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-		}
 
 		if (pid == 0) {	/* child */
 			tst_resm(TINFO, "fork child A");
@@ -103,9 +104,9 @@ int main(int ac, char **av)
 			wait(&status);
 
 			/* parent starts second child */
-			if ((pid = fork()) == -1) {
+			pid = fork();
+			if (pid == -1)
 				tst_brkm(TBROK, cleanup, "fork() #2 failed");
-			 }
 
 			if (pid == 0) {	/* child */
 				if (read(fildes, chilchar, 1) <= 0) {
@@ -144,32 +145,17 @@ int main(int ac, char **av)
 		}
 		tst_resm(TPASS, "test 1 PASSED");
 	}
+
 	close(fildes);
 	cleanup();
-
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	umask(0);
-
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
-
-	/*
-	 * make a temp directory and cd to it
-	 */
 	tst_tmpdir();
 
 	strcpy(fnamebuf, "fork10.");
@@ -177,21 +163,8 @@ void setup()
 	strcat(fnamebuf, pidbuf);
 }
 
-/*
- * cleanup() -	performs all ONE TIME cleanup for this test at
- *	        completion or premature exit
- */
-void cleanup()
+static void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
-	/*
-	 * remove tmp dir and all files in it
-	 */
 	tst_rmdir();
-
 }
