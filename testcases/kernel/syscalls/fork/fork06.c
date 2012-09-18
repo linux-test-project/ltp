@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -15,11 +14,9 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-/*
+ *
  * NAME
- * 	fork06.c
+ *	fork06.c
  *
  * DESCRIPTION
  *	Test that a process can fork children a large number of
@@ -31,14 +28,15 @@
  *	failures
  *
  * USAGE
- * 	fork06
+ *	fork06
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
@@ -48,8 +46,8 @@
 char *TCID = "fork06";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 #define NUMFORKS 1000
 
@@ -57,48 +55,33 @@ int main(int ac, char **av)
 {
 	int i, pid, status, childpid, succeed, fail;
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
-
 		succeed = 0;
 		fail = 0;
 
 		for (i = 0; i < NUMFORKS; i++) {
-			if ((pid = fork()) == -1) {
+			pid = fork();
+			if (pid == -1) {
 				fail++;
 				continue;
 			}
 
-			if (pid == 0) {	/* child */
+			if (pid == 0)
 				_exit(0);
-			}
 
-			/* parent */
 			childpid = wait(&status);
-			if (pid != childpid) {
+			if (pid != childpid)
 				tst_resm(TFAIL, "pid from wait %d", childpid);
-			}
 			succeed++;
 		}
 
@@ -106,43 +89,23 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "successes %d", succeed);
 		tst_resm(TINFO, "failures %d", fail);
 
-		if ((wait(&status)) == -1) {
+		if ((wait(&status)) == -1)
 			tst_resm(TINFO, "There were no children to wait for");
-		} else {
+		else
 			tst_resm(TINFO, "There were children left");
-		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- * 	       completion or premature exit
- */
-void cleanup()
+static void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
