@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -15,30 +14,29 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-/*
+ *
+ *
  * NAME
- * 	fork12.c
+ *	fork12.c
  *
  * DESCRIPTION
  *	Check that all children inherit parent's file descriptor
  *
  * ALGORITHM
- * 	Parent forks processes until -1 is returned.$
- *$
+ *	Parent forks processes until -1 is returned.$
+ *
  * USAGE
- * 	fork12
- * 	** CAUTION ** Can hang your machine, esp prior to 2.4.19
+ *	fork12
+ *	** CAUTION ** Can hang your machine, esp prior to 2.4.19
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *	07/2002 Split from fork07 as a test case to exhaust available pids.
  *
  * RESTRICTIONS
- * 	Should be run as root to avoid resource limits.$
- * 	Should not be run with other test programs because it tries to
- * 	  use all available pids.
+ *	Should be run as root to avoid resource limits.$
+ *	Should not be run with other test programs because it tries to
+ *	  use all available pids.
  */
 
 #include <stdio.h>
@@ -51,38 +49,24 @@
 char *TCID = "fork12";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
-void fork12_sigs(int signum);
-
-char pbuf[10];
+static void setup(void);
+static void cleanup(void);
+static void fork12_sigs(int signum);
 
 int main(int ac, char **av)
 {
 	int forks, pid1, fork_errno, waitstatus;
 	int ret, status;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
 
 		tst_resm(TINFO, "Forking as many kids as possible");
@@ -114,56 +98,44 @@ int main(int ac, char **av)
 		tst_resm(TPASS, "fork() eventually failed with %d: %s",
 			 fork_errno, strerror(fork_errno));
 		/* collect our kids */
-		sleep(3);	//Introducing a sleep(3) to make sure all children are at pause() when SIGQUIT is sent to them
+		/*
+		 * Introducing a sleep(3) to make sure all children are
+		 * at pause() when SIGQUIT is sent to them
+		 */
+		sleep(3);
 		kill(0, SIGQUIT);
-		while (wait(&waitstatus) > 0) ;
+		while (wait(&waitstatus) > 0)
+			;
 
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, fork12_sigs, cleanup);
-
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit
- */
-void cleanup()
+static void cleanup()
 {
 	int waitstatus;
 
 	/* collect our kids */
 	kill(0, SIGQUIT);
-	while (wait(&waitstatus) > 0) ;
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+	while (wait(&waitstatus) > 0)
+		;
 	TEST_CLEANUP;
-
 }
 
-void fork12_sigs(int signum)
+static void fork12_sigs(int signum)
 {
 	if (signum == SIGQUIT) {
 		/* Children will continue, parent will ignore */
-	} else
+	} else {
 		tst_brkm(TBROK, cleanup,
-		    "Unexpected signal %d received.", signum);
+			 "Unexpected signal %d received.", signum);
+	}
 }
