@@ -15,22 +15,20 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-/*
+ *
  * NAME
- * 	fork07.c
+ *	fork07.c
  *
  * DESCRIPTION
  *	Check that all children inherit parent's file descriptor
  *
  * ALGORITHM
- * 	Parent opens a file, writes to it; forks Nforks children.
- * 	Each child attempts to read the file then returns.
- * 	Parent reports PASS if all children succeed.
+ *	Parent opens a file, writes to it; forks Nforks children.
+ *	Each child attempts to read the file then returns.
+ *	Parent reports PASS if all children succeed.
  *
  * USAGE
- * 	fork07
+ *	fork07
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -38,7 +36,7 @@
  *	        fork12.c by Nate Straz
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 
 #include <stdio.h>
@@ -53,21 +51,21 @@
 char *TCID = "fork07";
 int TST_TOTAL = 1;
 
-void help(void);
-void setup(void);
-void cleanup(void);
+static void help(void);
+static void setup(void);
+static void cleanup(void);
 
-char pbuf[10];
-char fnamebuf[40];
+static char pbuf[10];
+static char fnamebuf[40];
 
-char *Nforkarg;
-int Nflag = 0;
-int Nforks = 0;
-int vflag = 0;
+static char *Nforkarg;
+static int Nflag;
+static int Nforks;
+static int vflag;
 
-option_t options[] = {
-	{"N:", &Nflag, &Nforkarg},	/* -N #forks */
-	{"v", &vflag, NULL},	/* -v (verbose) */
+static option_t options[] = {
+	{"N:", &Nflag, &Nforkarg},
+	{"v", &vflag, NULL},
 	{NULL, NULL, NULL}
 };
 
@@ -78,13 +76,14 @@ int main(int ac, char **av)
 	FILE *rea, *writ;
 	int c_pass, c_fail;
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	rea = NULL;
 	writ = NULL;
 
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
+	msg = parse_opts(ac, av, options, &help);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	if (Nflag) {
@@ -99,10 +98,12 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		if ((writ = fopen(fnamebuf, "w")) == NULL)
-			tst_resm(TFAIL|TERRNO, "fopen(.. \"w\") failed");
-		if ((rea = fopen(fnamebuf, "r")) == NULL)
-			tst_resm(TFAIL|TERRNO, "fopen(.. \"r\") failed");
+		writ = fopen(fnamebuf, "w");
+		if (writ == NULL)
+			tst_resm(TFAIL | TERRNO, "fopen(.. \"w\") failed");
+		rea = fopen(fnamebuf, "r");
+		if (rea == NULL)
+			tst_resm(TFAIL | TERRNO, "fopen(.. \"r\") failed");
 
 		fprintf(writ, "abcdefghijklmnopqrstuv");
 		fflush(writ);
@@ -115,7 +116,8 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Forking %d children", Nforks);
 		tst_flush();
 		for (forks = 0; forks < Nforks; forks++) {
-			if ((pid1 = fork()) == 0) {	/* child */
+			pid1 = fork();
+			if (pid1 == 0) {
 				ch_r_stat = getc(rea);
 #ifdef DEBUG
 				tst_resm(TINFO, "Child got char: %c",
@@ -141,7 +143,8 @@ int main(int ac, char **av)
 					exit(1);
 				}
 			} else if (pid1 == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "fork failed");
 		}
 		tst_resm(TINFO, "Forked all %d children, now collecting",
 			 Nforks);
@@ -183,32 +186,17 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void help()
+static void help()
 {
 	printf("  -N n    Create n children each iteration\n");
 	printf("  -v      Verbose mode\n");
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	umask(0);
-
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
-
-	/*
-	 * make a temp directory and cd to it
-	 */
 	tst_tmpdir();
 
 	strcpy(fnamebuf, "fork07.");
@@ -216,26 +204,15 @@ void setup()
 	strcat(fnamebuf, pbuf);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit
- */
-void cleanup()
+static void cleanup()
 {
 	int waitstatus;
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	/* collect our zombies */
-	while (wait(&waitstatus) > 0) ;
+	while (wait(&waitstatus) > 0)
+		;
 
-	/*
-	 * remove tmp dir and all files in it
-	 */
 	unlink(fnamebuf);
 	tst_rmdir();
-
 }
