@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -15,22 +14,20 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-/*
+ *
  * NAME
- * 	fork09.c
+ *	fork09.c
  *
  * DESCRIPTION
  *	Check that child has access to a full set of files.
  *
  * ALGORITHM
- * 	Parent opens a maximum number of files
- * 	Child closes one and attempts to open another, it should be
- * 	available
+ *	Parent opens a maximum number of files
+ *	Child closes one and attempts to open another, it should be
+ *	available
  *
  * USAGE
- * 	fork09
+ *	fork09
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -39,8 +36,9 @@
  *		Fix maximum number of files open logic.
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -54,13 +52,13 @@
 char *TCID = "fork09";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
-char filname[40], childfile[40];
-int first;
-FILE **fildeses;		/* file streams */
-int mypid, nfiles;
+static char filname[40], childfile[40];
+static int first;
+static FILE **fildeses;		/* file streams */
+static int mypid, nfiles;
 
 #define OPEN_MAX (sysconf(_SC_OPEN_MAX))
 
@@ -68,67 +66,53 @@ int main(int ac, char **av)
 {
 	int pid, status, nf;
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
 	fildeses = (FILE **) malloc((OPEN_MAX + 10) * sizeof(FILE *));
-	if (fildeses == NULL) {
+	if (fildeses == NULL)
 		tst_brkm(TBROK, cleanup, "malloc failed");
-	 }
 
-	/*
-	 * check looping state if -i option is given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/*
-		 * reset Tst_count in case we are looping.
-		 */
 		Tst_count = 0;
-
 		mypid = getpid();
 
 		tst_resm(TINFO, "OPEN_MAX is %ld", OPEN_MAX);
 
 		/* establish first free file */
 		sprintf(filname, "fork09.%d", mypid);
-		if ((first = creat(filname, 0660)) == -1) {
+		first = creat(filname, 0660);
+		if (first == -1)
 			tst_brkm(TBROK, cleanup, "Cannot open first file %s, "
 				 "errno = %d", filname, errno);
-		 }
 		close(first);
 
 		tst_resm(TINFO, "first file descriptor is %d ", first);
 
-		if (unlink(filname) == -1) {
+		if (unlink(filname) == -1)
 			tst_brkm(TBROK, cleanup, "Cannot unlink file %s, "
 				 "errno = %d", filname, errno);
-		 }
 
 		/*
 		 * now open all the files for the test
 		 */
 		for (nfiles = first; nfiles < OPEN_MAX; nfiles++) {
 			sprintf(filname, "file%d.%d", nfiles, mypid);
-			if ((fildeses[nfiles] = fopen(filname, "a")) == NULL) {
+			fildeses[nfiles] = fopen(filname, "a");
+			if (fildeses[nfiles] == NULL) {
 				/* Did we already reach OPEN_MAX ? */
 				if (errno == EMFILE)
 					break;
 				tst_brkm(TBROK, cleanup, "Parent: cannot open "
 					 "file %d %s errno = %d", nfiles,
 					 filname, errno);
-			 }
+			}
 #ifdef DEBUG
 			tst_resm(TINFO, "filname: %s", filname);
 #endif
@@ -136,9 +120,9 @@ int main(int ac, char **av)
 
 		tst_resm(TINFO, "Parent reporting %d files open", nfiles - 1);
 
-		if ((pid = fork()) == -1) {
+		pid = fork();
+		if (pid == -1)
 			tst_brkm(TBROK, cleanup, "Fork failed");
-		 }
 
 		if (pid == 0) {	/* child */
 			nfiles--;
@@ -146,15 +130,15 @@ int main(int ac, char **av)
 				tst_resm(TINFO, "Child could not close file "
 					 "#%d, errno = %d", nfiles, errno);
 				exit(1);
-			 } else {
+			} else {
 				sprintf(childfile, "cfile.%d", getpid());
-				if ((fildeses[nfiles] =
-				     fopen(childfile, "a")) == NULL) {
+				fildeses[nfiles] = fopen(childfile, "a");
+				if (fildeses[nfiles] == NULL) {
 					tst_resm(TINFO, "Child could not open "
 						 "file %s, errno = %d",
 						 childfile, errno);
 					exit(1);
-				 } else {
+				} else {
 					tst_resm(TINFO, "Child opened new "
 						 "file #%d", nfiles);
 					unlink(childfile);
@@ -163,11 +147,10 @@ int main(int ac, char **av)
 			}
 		} else {	/* parent */
 			wait(&status);
-			if (status >> 8 != 0) {
+			if (status >> 8 != 0)
 				tst_resm(TFAIL, "test 1 FAILED");
-			} else {
+			else
 				tst_resm(TPASS, "test 1 PASSED");
-			}
 		}
 
 		/* clean up things in case we are looping */
@@ -177,49 +160,22 @@ int main(int ac, char **av)
 			unlink(filname);
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup()
 {
-	/*
-	 * capture signals
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	umask(0);
 
-	/*
-	 * Pause if that option was specified
-	 */
 	TEST_PAUSE;
-
-	/*
-	 * make a temp directory and cd to it
-	 */
 	tst_tmpdir();
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or at premature exit
- */
-void cleanup()
+static void cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
-	/*
-	 * remove tmp dir and all files in it
-	 */
 	tst_rmdir();
-
 }
