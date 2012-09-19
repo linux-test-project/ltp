@@ -42,12 +42,19 @@
 #include <errno.h>
 #include <assert.h>
 #include <sys/wait.h>
-#include <time.h>
+#include <sys/time.h>
 #include <signal.h>
 
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
 
+#define SAFE(op) \
+	do {\
+		if ((op) == -1) \
+			UNRESOLVED(errno, "unexpected failure"); \
+	} while (0)
+#define RUN_TIME_USEC (2*1000*1000)
+#define SIGNALS_WITHOUT_DELAY 100
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
@@ -56,15 +63,14 @@
 
 #include "../testfrmw/threads_scenarii.c"
 
-static char do_it1 = 1;
-static char do_it2 = 1;
+static volatile int do_it1 = 1;
 static unsigned long count_ope;
 #ifdef WITH_SYNCHRO
 static sem_t semsig1;
-static sem_t semsig2;
-static unsigned long count_sig;
 #endif
 
+static unsigned long count_sig;
+static unsigned long sleep_time;
 static sigset_t usersigs;
 
 struct thestruct {
@@ -73,6 +79,13 @@ struct thestruct {
 	sem_t	*sem;
 #endif
 };
+
+unsigned long current_time_usec()
+{
+	struct timeval now;
+	SAFE(gettimeofday(&now, NULL));
+	return now.tv_sec * 1000000 + now.tv_usec;
+}
 
 /* the following function keeps on sending the signal to the process */
 static void *sendsig(void *arg)
@@ -83,19 +96,29 @@ static void *sendsig(void *arg)
 
 	process = getpid();
 
-	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
+	/* We block the signal SIGUSR1 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
-		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2"
-			   " in signal thread");
+		UNRESOLVED(ret, "Unable to block SIGUSR1 in signal thread");
 
 	while (do_it1) {
 #ifdef WITH_SYNCHRO
 		ret = sem_wait(thearg->sem);
 		if (ret)
 			UNRESOLVED(errno, "Sem_wait in sendsig");
+		if (!do_it1)
+			break;
+
 		count_sig++;
 #endif
+		/* keep increasing sleeptime to make sure we progress
+		 * allow SIGNALS_WITHOUT_DELAY signals without any pause,
+		 * then start increasing sleep_time to make sure all threads
+		 * can progress */
+		sleep_time++;
+		if (sleep_time / SIGNALS_WITHOUT_DELAY > 0)
+			usleep(sleep_time / SIGNALS_WITHOUT_DELAY);
+
 		ret = kill(process, thearg->sig);
 		if (ret != 0)
 			UNRESOLVED(errno, "Kill in sendsig");
@@ -111,23 +134,14 @@ static void sighdl1(int sig)
 #endif
 }
 
-static void sighdl2(int sig)
-{
-#ifdef WITH_SYNCHRO
-	if (sem_post(&semsig2))
-		UNRESOLVED(errno, "Sem_post in signal handler 2");
-#endif
-}
-
 static void *threaded(void *arg)
 {
 	int ret;
 
-	/* We don't block the signals SIGUSR1 and SIGUSR2 for this THREAD */
+	/* We don't block the signal SIGUSR1 for this THREAD */
 	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
 	if (ret != 0)
-		UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2"
-			   " in worker thread");
+		UNRESOLVED(ret, "Unable to unblock SIGUSR1 in worker thread");
 
 	ret = pthread_detach(pthread_self());
 	if (ret == EINTR)
@@ -148,22 +162,24 @@ static void *test(void *arg)
 	int ret = 0;
 	pthread_t child;
 
-	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
+	/* We block the signal SIGUSR1 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
-		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2"
-			   " in signal thread");
+		UNRESOLVED(ret, "Unable to block SIGUSR1 in signal thread");
 
-	sc = 0;
-
-	while (do_it2) {
+	for (sc = 0; sc < NSCENAR; sc++) {
 #if VERBOSE > 5
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n",
 		       sc, scenarii[sc].descr);
 #endif
+		/* reset sleep time for signal thread */
+		sleep_time = 0;
 
-		count_ope++;
+		/* thread which is already detached is not interesting
+		 * for this test, skip it */
+		if (scenarii[sc].detached == 1)
+			continue;
 
 		ret = pthread_create(&child, &scenarii[sc].ta, threaded, NULL);
 		switch (scenarii[sc].result) {
@@ -199,43 +215,27 @@ static void *test(void *arg)
 				UNRESOLVED(errno, "Failed to wait for the"
 					   " semaphore");
 		}
-
-		/* Change thread attribute for the next loop */
-		sc++;
-		sc %= NSCENAR;
 	}
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+void do_child()
 {
 	int ret;
-	pthread_t th_work, th_sig1, th_sig2;
-	struct thestruct arg1, arg2;
+	pthread_t th_work, th_sig1;
+	struct thestruct arg1;
 	struct sigaction sa;
 
-	output_init();
-	scenar_init();
-
-	/* We prepare a signal set which includes SIGUSR1 and SIGUSR2 */
+	/* We prepare a signal set which includes SIGUSR1 */
 	sigemptyset(&usersigs);
 	ret = sigaddset(&usersigs, SIGUSR1);
-	ret |= sigaddset(&usersigs, SIGUSR2);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to add SIGUSR1 or 2 to a signal set");
 
-	/* We now block the signals SIGUSR1 and SIGUSR2 for this THREAD */
+	/* We now block the signal SIGUSR1 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
-		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2"
-			   " in main thread");
-
-#ifdef WITH_SYNCHRO
-	if (sem_init(&semsig1, 0, 1))
-		UNRESOLVED(errno, "Semsig1  init");
-	if (sem_init(&semsig2, 0, 1))
-		UNRESOLVED(errno, "Semsig2  init");
-#endif
+		UNRESOLVED(ret, "Unable to block SIGUSR1 in main thread");
 
 	/* We need to register the signal handlers for the PROCESS */
 	sigemptyset(&sa.sa_mask);
@@ -245,56 +245,101 @@ int main(int argc, char *argv[])
 	ret = sigaction(SIGUSR1, &sa, NULL);
 	if (ret)
 		UNRESOLVED(ret, "Unable to register signal handler1");
-	sa.sa_handler = sighdl2;
-	ret = sigaction(SIGUSR2, &sa, NULL);
+
+	arg1.sig = SIGUSR1;
+#ifdef WITH_SYNCHRO
+	if (sem_init(&semsig1, 0, 1))
+		UNRESOLVED(errno, "Semsig1 init");
+	arg1.sem = &semsig1;
+#endif
+
+	count_sig = 0;
+	ret = pthread_create(&th_sig1, NULL, sendsig, &arg1);
 	if (ret)
-		UNRESOLVED(ret, "Unable to register signal handler2");
+		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
 
 	ret = pthread_create(&th_work, NULL, test, NULL);
 	if (ret)
 		UNRESOLVED(ret, "Worker thread creation failed");
 
-	arg1.sig = SIGUSR1;
-	arg2.sig = SIGUSR2;
-
-#ifdef WITH_SYNCHRO
-	arg1.sem = &semsig1;
-	arg2.sem = &semsig2;
-#endif
-
-	ret = pthread_create(&th_sig1, NULL, sendsig, (void *)&arg1);
-	if (ret)
-		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
-	ret = pthread_create(&th_sig2, NULL, sendsig, (void *)&arg2);
-	if (ret)
-		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
-
-	/* Let's wait for a while now */
-	sleep(1);
-
-	/* Now stop the threads and join them */
-	do {
-		do_it1 = 0;
-	} while (do_it1);
-
-	sleep(1);
-
-	do {
-		do_it2 = 0;
-	} while (do_it2);
-
-	ret = pthread_join(th_sig1, NULL);
-	if (ret)
-		UNRESOLVED(ret, "Signal 1 sender thread join failed");
-
-	ret = pthread_join(th_sig2, NULL);
-	if (ret)
-		UNRESOLVED(ret, "Signal 2 sender thread join failed");
-
 	ret = pthread_join(th_work, NULL);
 	if (ret)
 		UNRESOLVED(ret, "Worker thread join failed");
 
+	/* to be extra safe unblock signals in this thread,
+	 * so signal thread won't get stuck on sem_wait */
+	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
+	if (ret != 0)
+		UNRESOLVED(ret, "Failed to unblock signals");
+	do_it1 = 0;
+#ifdef WITH_SYNCHRO
+	/* if it's already stuck on sem_wait, up the semaphore */
+	if (sem_post(&semsig1))
+		UNRESOLVED(errno, "Sem_post in do_child");
+#endif
+	ret = pthread_join(th_sig1, NULL);
+	if (ret)
+		UNRESOLVED(ret, "Worker thread join failed");
+}
+
+void main_loop()
+{
+	int child_count = 0;
+	int stat_pipe[2];
+	int ret;
+	int status;
+	pid_t child;
+	unsigned long usec_start, usec;
+	unsigned long child_count_sig;
+
+	usec_start = current_time_usec();
+	do {
+		SAFE(pipe(stat_pipe));
+
+		child_count++;
+		count_ope += NSCENAR;
+		fflush(stdout);
+		child = fork();
+		if (child == 0) {
+			close(stat_pipe[0]);
+			do_child();
+			SAFE(write(stat_pipe[1], &count_sig,
+				sizeof(count_sig)));
+			close(stat_pipe[1]);
+			pthread_exit(0);
+			UNRESOLVED(0, "Should not be reached");
+			exit(0);
+		}
+		close(stat_pipe[1]);
+		SAFE(read(stat_pipe[0], &child_count_sig, sizeof(count_sig)));
+		close(stat_pipe[0]);
+		count_sig += child_count_sig;
+
+		ret = waitpid(child, &status, 0);
+		if (ret != child)
+			UNRESOLVED(errno, "Waitpid returned the wrong PID");
+
+		if (!WIFEXITED(status)) {
+			output("status: %d\n", status);
+			FAILED("Child exited abnormally");
+		}
+
+		if (WEXITSTATUS(status) != 0) {
+			output("exit status: %d\n", WEXITSTATUS(status));
+			FAILED("An error occured in child");
+		}
+
+		usec = current_time_usec();
+	} while ((usec - usec_start) < RUN_TIME_USEC);
+	output("Test spawned %d child processes.\n", child_count);
+	output("Test finished after %lu usec.\n", usec - usec_start);
+}
+
+int main(int argc, char *argv[])
+{
+	output_init();
+	scenar_init();
+	main_loop();
 	scenar_fini();
 
 #if VERBOSE > 0
