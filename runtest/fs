@@ -67,7 +67,7 @@ fs_di fs_di -d $TMPDIR
 # Read every file in /proc. Not likely to crash, but does enough
 # to disturb the kernel. A good kernel latency killer too.
 # Was not sure why it should reside in runtest/crashme and won´t get tested ever
-proc01 proc01
+proc01 proc01 -m 128
 
 #Run the File System Race Condition Check tests as well
 fs_racer fs_racer.sh -t 5
