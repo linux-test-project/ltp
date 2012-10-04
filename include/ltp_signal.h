@@ -67,17 +67,15 @@ struct kernel_sigaction {
 	sigset_t sa_mask;
 };
 
-void (*restore_rt) (void);
+void (*restore_rt)(void);
 
-inline void
-handler_h (int signal)
+static void handler_h(int signal)
 {
 	return;
 }
 
 /* Setup an initial signal handler for signal number = sig for x86_64. */
-inline int
-sig_initial(int sig)
+static inline int sig_initial(int sig)
 {
 	int ret_code = -1;
 	struct sigaction act, oact;
