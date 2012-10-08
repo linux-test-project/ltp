@@ -18,10 +18,16 @@ LOOP=200
 # Use up to 10% of free memory
 free_mem=`cat /proc/meminfo | grep '^MemFree' | awk '{ print $2 }'`
 cpus=`cat /proc/cpuinfo | egrep "^processor.*:" | wc -l`
+
+# The Non-SMP ARM Platform could not find the "processor" from the "cpuinfo".
+if [ $cpus -eq 0 ]; then
+        cpus=1
+fi
+
 step=$(( $free_mem / 10 / $LOOP / $cpus ))
 
 if [ $step -eq 0 ]; then
-	$step=1
+	step=1
 	LOOP=50
 fi
 
