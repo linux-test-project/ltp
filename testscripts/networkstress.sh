@@ -59,6 +59,7 @@ usage () {
     echo "---------------------------------------------------------"
     echo -e "\033[31m $0 [options] \033[0m "
     echo "---------------------------------------------------------"
+    echo " -A|a: Stress test for appl"
     echo " -E|e: Stress test for interface"
     echo " -I|i: Stress test for ICMP protocol"
     echo " -T|t: Stress test for TCP/IP"
@@ -76,9 +77,10 @@ usage () {
     exit 1
 }
 
-while getopts EeTtIiUuRrMmSsWwBbVvN:n:D:d: OPTION
+while getopts AaEeTtIiUuRrMmSsWwBbVvN:n:D:d: OPTION
 do
     case $OPTION in
+	A|a) TEST_CASE="network_stress.appl";;
 	E|e) TEST_CASE="network_stress.interface";;
 	B|b) TEST_CASE="network_stress.broken_ip";;
 	I|i) TEST_CASE="network_stress.icmp";;
