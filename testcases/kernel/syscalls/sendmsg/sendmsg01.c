@@ -712,7 +712,7 @@ static void setup7(void)
 {
 	setup1();
 
-	if (tst_kvercmp(3, 6, 0))
+	if (tst_kvercmp(3, 6, 0) >= 0)
 		tdat[testno].retval = -1;
 }
 
