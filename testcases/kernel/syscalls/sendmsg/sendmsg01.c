@@ -87,6 +87,7 @@ static void setup3(void);
 static void setup4(void);
 static void setup5(void);
 static void setup6(void);
+static void setup7(void);
 static void setup8(void);
 
 static void cleanup(void);
@@ -337,7 +338,7 @@ struct test_case_t tdat[] = {
 	 .tolen = sizeof(sin1),
 	 .retval = 0,
 	 .experrno = EOPNOTSUPP,
-	 .setup = setup1,
+	 .setup = setup7,
 	 .cleanup = cleanup1,
 	 .desc = "invalid flags set"},
 	{.domain = PF_UNIX,
@@ -705,6 +706,14 @@ static void setup6(void)
 	controllen = control->cmsg_len = sizeof(struct cmsghdr) - 4;
 */
 	controllen = control->cmsg_len = 0;
+}
+
+static void setup7(void)
+{
+	setup1();
+
+	if (tst_kvercmp(3, 6, 0))
+		tdat[testno].retval = -1;
 }
 
 static void setup8(void)

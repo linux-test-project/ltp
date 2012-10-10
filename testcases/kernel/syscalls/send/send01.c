@@ -72,6 +72,7 @@ static void setup(void);
 static void setup0(void);
 static void setup1(void);
 static void setup2(void);
+static void setup3(void);
 static void cleanup0(void);
 static void cleanup1(void);
 
@@ -144,7 +145,7 @@ static struct test_case_t tdat[] = {
 	 .flags = -1,
 	 .retval = -1,
 	 .experrno = EFAULT,
-	 .setup = setup1,
+	 .setup = setup3,
 	 .cleanup = cleanup1,
 	 .desc = "invalid flags set"}
 #endif
@@ -347,4 +348,12 @@ static void setup2(void)
 	if (shutdown(s, 1) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed connect "
 			 "test %d", testno);
+}
+
+static void setup3(void)
+{
+	setup1();
+
+	if (tst_kvercmp(3, 6, 0))
+		tdat[testno].experrno = ENOTSUP;
 }
