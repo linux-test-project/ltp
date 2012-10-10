@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) Cyril Hrubis <chrubis@suse.cz> 2012
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,20 +24,8 @@
  * Test Description:
  *  Verify that send() returns the proper errno for various failure cases
  *
- * Usage:  <for command-line>
- *  send01 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
  *
  */
 
@@ -55,16 +44,13 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "send01";		/* Test program identifier.    */
+char *TCID = "send01";
 int testno;
 
-char buf[1024], bigbuf[128 * 1024];
-int s;				/* socket descriptor */
-struct sockaddr_in sin1;
-static int sfd;			/* shared between do_child and start_server */
-
-void setup(void), setup0(void), setup1(void), setup2(void),
-do_child(void), cleanup(void), cleanup0(void), cleanup1(void);
+static char buf[1024], bigbuf[128 * 1024];
+static int s;
+static struct sockaddr_in sin1;
+static int sfd; /* shared between do_child and start_server */
 
 struct test_case_t {		/* test case structure */
 	int domain;		/* PF_INET, PF_UNIX, ... */
@@ -73,52 +59,106 @@ struct test_case_t {		/* test case structure */
 	void *buf;		/* send data buffer */
 	int buflen;		/* send's 3rd argument */
 	unsigned flags;		/* send's 4th argument */
-	int retval;		/* syscall return value */
-	int experrno;		/* expected errno */
-	void (*setup) (void);
-	void (*cleanup) (void);
+	int retval;
+	int experrno;
+	void (*setup)(void);
+	void (*cleanup)(void);
 	char *desc;
-} tdat[] = {
-	{
-	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0,
-		    -1, EBADF, setup0, cleanup0, "bad file descriptor"}
-	, {
-	0, 0, 0, buf, sizeof(buf), 0,
-		    -1, ENOTSOCK, setup0, cleanup0, "invalid socket"}
-	,
+};
+
+static void cleanup(void);
+static void do_child(void);
+static void setup(void);
+static void setup0(void);
+static void setup1(void);
+static void setup2(void);
+static void cleanup0(void);
+static void cleanup1(void);
+
+static struct test_case_t tdat[] = {
+	{.domain = PF_INET,
+	 .type = SOCK_STREAM,
+	 .proto = 0,
+	 .buf = buf,
+	 .buflen = sizeof(buf),
+	 .flags = 0,
+	 .retval = -1,
+	 .experrno = EBADF,
+	 .setup = setup0,
+	 .cleanup = cleanup0,
+	 .desc = "bad file descriptor"},
+	{.domain = 0,
+	 .type = 0,
+	 .proto = 0,
+	 .buf = buf,
+	 .buflen = sizeof(buf),
+	 .flags = 0,
+	 .retval = -1,
+	 .experrno = ENOTSOCK,
+	 .setup = setup0,
+	 .cleanup = cleanup0,
+	 .desc = "invalid socket"},
 #ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
-	{
-	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
-		    -1, EFAULT, setup1, cleanup1, "invalid send buffer"}
-	,
+	/* Skip since uClinux does not implement memory protection */
+	{.domain = PF_INET,
+	 .type = SOCK_STREAM,
+	 .proto = 0,
+	 .buf = (void *)-1,
+	 .buflen = sizeof(buf),
+	 .flags = 0,
+	 .retval = -1,
+	 .experrno = EFAULT,
+	 .setup = setup1,
+	 .cleanup = cleanup1,
+	 .desc = "invalid send buffer"},
 #endif
-	{
-	PF_INET, SOCK_DGRAM, 0, bigbuf, sizeof(bigbuf), 0,
-		    -1, EMSGSIZE, setup1, cleanup1, "UDP message too big"}
-	, {
-	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0,
-		    -1, EPIPE, setup2, cleanup1, "local endpoint shutdown"}
-	,
+	{.domain = PF_INET,
+	 .type = SOCK_DGRAM,
+	 .proto = 0,
+	 .buf = bigbuf,
+	 .buflen = sizeof(bigbuf),
+	 .flags = 0,
+	 .retval = -1,
+	 .experrno = EMSGSIZE,
+	 .setup = setup1,
+	 .cleanup = cleanup1,
+	 .desc = "UDP message too big"},
+	{.domain = PF_INET,
+	 .type = SOCK_STREAM,
+	 .proto = 0,
+	 .buf = buf,
+	 .buflen = sizeof(buf),
+	 .flags = 0,
+	 .retval = -1,
+	 .experrno = EPIPE,
+	 .setup = setup2,
+	 .cleanup = cleanup1,
+	 .desc = "local endpoint shutdown"},
 #ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
-	{
-	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), -1,
-		    -1, EFAULT, setup1, cleanup1, "invalid flags set"}
-	,
+	/* Skip since uClinux does not implement memory protection */
+	{.domain = PF_INET,
+	 .type = SOCK_STREAM,
+	 .proto = 0,
+	 .buf = (void *)-1,
+	 .buflen = sizeof(buf),
+	 .flags = -1,
+	 .retval = -1,
+	 .experrno = EFAULT,
+	 .setup = setup1,
+	 .cleanup = cleanup1,
+	 .desc = "invalid flags set"}
 #endif
 };
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EMSGSIZE, EPIPE, EINVAL, 0 };
-
+int exp_enos[] = {EBADF, ENOTSOCK, EFAULT, EMSGSIZE, EPIPE, EINVAL, 0};
 
 #ifdef UCLINUX
 static char *argv0;
 #endif
 
-pid_t start_server(struct sockaddr_in *sin0)
+static pid_t start_server(struct sockaddr_in *sin0)
 {
 	struct sockaddr_in sin1 = *sin0;
 	pid_t pid;
@@ -137,26 +177,26 @@ pid_t start_server(struct sockaddr_in *sin0)
 		return -1;
 	}
 	switch ((pid = FORK_OR_VFORK())) {
-	case 0:		/* child */
+	case 0:
 #ifdef UCLINUX
 		if (self_exec(argv0, "d", sfd) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "server self_exec failed");
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "server self_exec failed");
 #else
 		do_child();
 #endif
 		break;
 	case -1:
 		tst_brkm(TBROK|TERRNO, cleanup, "server fork failed");
-		/* fall through */
-	default:		/* parent */
-		(void)close(sfd);
+	default:
+		close(sfd);
 		return pid;
 	}
 
-	  exit(1);
+	exit(1);
 }
 
-void do_child()
+static void do_child(void)
 {
 	fd_set afds, rfds;
 	int nfds, cc, fd;
@@ -173,8 +213,7 @@ void do_child()
 
 		memcpy(&rfds, &afds, sizeof(rfds));
 
-		if (select(nfds, &rfds, (fd_set *) 0, (fd_set *) 0,
-			   (struct timeval *)0) < 0)
+		if (select(nfds, &rfds, NULL, NULL, NULL) < 0)
 			if (errno != EINTR)
 				exit(1);
 		if (FD_ISSET(sfd, &rfds)) {
@@ -189,7 +228,7 @@ void do_child()
 			if (fd != sfd && FD_ISSET(fd, &rfds)) {
 				cc = read(fd, buf, sizeof(buf));
 				if (cc == 0 || (cc < 0 && errno != EINTR)) {
-					(void)close(fd);
+					close(fd);
 					FD_CLR(fd, &afds);
 				}
 			}
@@ -199,12 +238,12 @@ void do_child()
 
 int main(int ac, char *av[])
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(&do_child, "d", &sfd);
@@ -221,9 +260,8 @@ int main(int ac, char *av[])
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
-			TEST(send
-			     (s, tdat[testno].buf, tdat[testno].buflen,
-			      tdat[testno].flags));
+			TEST(send(s, tdat[testno].buf, tdat[testno].buflen,
+			          tdat[testno].flags));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -250,42 +288,44 @@ int main(int ac, char *av[])
 	tst_exit();
 }
 
-pid_t pid;
+static pid_t server_pid;
 
-void setup(void)
+static void setup(void)
 {
-	TEST_PAUSE;		/* if -P option specified */
+	TEST_PAUSE;
 
 	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;
 	sin1.sin_port = htons((getpid() % 32768) + 11000);
 	sin1.sin_addr.s_addr = INADDR_ANY;
-	pid = start_server(&sin1);
+	server_pid = start_server(&sin1);
 
-	(void)signal(SIGPIPE, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
-	(void)kill(pid, SIGKILL);	/* kill server */
+	kill(server_pid, SIGKILL);
 	TEST_CLEANUP;
 
 }
 
-void setup0(void)
+static void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
-	else if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open(/dev/null) failed");
+	else
+		if ((s = open("/dev/null", O_WRONLY)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "open(/dev/null) failed");
 }
 
-void cleanup0(void)
+static void cleanup0(void)
 {
 	s = -1;
 }
 
-void setup1(void)
+static void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0)
@@ -294,15 +334,16 @@ void setup1(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "connect failed");
 }
 
-void cleanup1(void)
+static void cleanup1(void)
 {
-	(void)close(s);
+	close(s);
 	s = -1;
 }
 
-void setup2(void)
+static void setup2(void)
 {
-	setup1();		/* get a socket in s */
+	setup1();
+
 	if (shutdown(s, 1) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed connect "
 			 "test %d", testno);
