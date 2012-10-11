@@ -23,6 +23,6 @@ top_srcdir		?= ../../..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 CPPFLAGS		+= $(NUMA_CPPFLAGS) -I../include
-LIB			:= libkerntest.a
+INTERNAL_LIB		:= libkerntest.a
 
 include $(top_srcdir)/include/mk/lib.mk
