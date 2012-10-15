@@ -767,6 +767,8 @@ read02 read02
 read03 read03
 read04 read04
 
+readahead01 readahead01
+
 readdir01 readdir01
 readdir02 readdir02
 
