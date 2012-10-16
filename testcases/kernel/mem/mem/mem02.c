@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -119,19 +120,6 @@ int main(int argc, char **argv)
 			tst_exit();
 		}
 
-	pm2 = pm1;
-	free(pm1);
-
-	if ((pm1 = calloc(memsize, 1)) == NULL) {
-		tst_resm(TFAIL, "calloc did not alloc memory ");
-		tst_exit();
-	}
-
-	if (pm1 != pm2) {
-		tst_resm(TINFO, "pm1=%p pm2=%p ", pm1, pm2);
-		tst_resm(TFAIL, "free did not dealloc memory ");
-		tst_exit();
-	}
 	free(pm1);
 
 	tst_resm(TPASS, "calloc - calloc of %uMB of memory succeeded",
@@ -154,18 +142,6 @@ int main(int argc, char **argv)
 			tst_exit();
 		}
 
-	pm2 = pm1;
-	free(pm1);
-
-	if ((pm1 = malloc(memsize)) == NULL) {
-		tst_resm(TFAIL, "malloc did not alloc memory ");
-		tst_exit();
-	}
-
-	if (pm1 != pm2) {
-		tst_resm(TFAIL, "free did not dealloc memory ");
-		tst_exit();
-	}
 	free(pm1);
 
 	tst_resm(TPASS, "malloc - malloc of %uMB of memory succeeded",
