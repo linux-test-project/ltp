@@ -57,9 +57,11 @@
 /shmt/shmt08
 /shmt/shmt09
 /shmt/shmt10
+/swapping/swapping01
 /thp/thp01
 /thp/thp02
 /tunable/max_map_count
+/tunable/min_free_kbytes
 /tunable/overcommit_memory
 /vma/vma01
 /vma/vma02

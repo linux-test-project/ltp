@@ -68,6 +68,10 @@
 /close/close01
 /close/close02
 /close/close08
+/cma/process_vm01
+/cma/process_vm_readv02
+/cma/process_vm_readv03
+/cma/process_vm_writev02
 /confstr/confstr01
 /connect/connect01
 /creat/creat01
@@ -342,6 +346,7 @@
 /inotify/inotify01
 /inotify/inotify02
 /inotify/inotify03
+/inotify/inotify04
 /inotify_init/inotify_init1_01
 /inotify_init/inotify_init1_02
 /io_cancel/io_cancel01
@@ -460,6 +465,7 @@
 /madvise/madvise01
 /madvise/madvise02
 /madvise/madvise03
+/madvise/madvise04
 /mallopt/mallopt01
 /mbind/mbind01
 /memcmp/memcmp01
@@ -623,6 +629,8 @@
 /read/read02
 /read/read03
 /read/read04
+/readahead/readahead01
+/readahead/readahead02
 /readdir/readdir01
 /readdir/readdir02
 /readlink/creat_slink
