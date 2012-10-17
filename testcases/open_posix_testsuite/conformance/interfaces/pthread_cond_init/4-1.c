@@ -50,7 +50,7 @@
 #define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
 			f, strerror(rc), rc);
 
-/* Max memory for child is 81B */
+/* Max memory for child is 1MB */
 #define MAX_MEM	((1<<20))
 
 /*
@@ -59,8 +59,8 @@
  */
 static void child(void)
 {
-	char *curr;
-	char *prev = NULL;
+	void *curr;
+	void *prev = NULL;
 	struct rlimit rl;
 	pthread_cond_t cond;
 	pthread_condattr_t attr;
@@ -76,10 +76,15 @@ static void child(void)
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* Consume all memory we can */
-	do {
-		curr = malloc(1);
-	} while (curr);
+	/*
+	 * Consume all memory we can
+	 * It's importamt to use the malloc() return value in a
+	 * meaningful way to bypass potential compiler optimisations.
+	 */
+	while ((curr = malloc(sizeof(void *)))) {
+		*(void **)curr = prev;
+		prev = curr;
+	}
 	if (errno != ENOMEM) {
 		ERR_MSG("malloc()", errno);
 		exit(PTS_UNRESOLVED);
