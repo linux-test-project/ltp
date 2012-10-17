@@ -6,6 +6,7 @@
 #endif
 #include <sys/prctl.h>
 #include <linux/securebits.h>
+#include "usctest.h"
 #include "test.h"
 
 #ifndef SECBIT_KEEP_CAPS
@@ -29,12 +30,12 @@ int errno;
  */
 
 char *TCID = "keepcaps";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 #ifdef HAVE_LIBCAP
 static int eff_caps_empty(cap_t c)
 {
-	int i, ret, empty=1;
+	int i, ret, empty = 1;
 	cap_flag_value_t v;
 
 	for (i = 0; i < CAP_LAST_CAP; i++) {
@@ -97,27 +98,15 @@ static void do_setuid(int expect_privs)
 	tst_exit();
 }
 
-static int am_root(void)
-{
-	uid_t uid = getuid();
-	if (uid != 0)
-		return 0;
-	if (!am_privileged())
-		return 0;
-	return 1;
-}
-
 int main(int argc, char *argv[])
 {
 	int ret, whichtest;
 
+	tst_require_root(NULL);
+
 	ret = prctl(PR_GET_KEEPCAPS);
 	if (ret) {
 		tst_resm(TBROK, "keepcaps was already set?\n");
-		tst_exit();
-	}
-	if (!am_root()) {
-		tst_resm(TBROK, "Run me as root and privileged\n");
 		tst_exit();
 	}
 
@@ -130,34 +119,36 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "Valid tests are 1-3\n");
 		tst_exit();
 	}
-	switch(whichtest) {
+	switch (whichtest) {
 	case 1:
-		do_setuid(EXPECT_NOPRIVS); /* does not return */
+		do_setuid(EXPECT_NOPRIVS);	/* does not return */
 	case 2:
 		ret = prctl(PR_SET_KEEPCAPS, 1);
 		if (ret == -1) {
-			tst_resm(TFAIL|TERRNO, "PR_SET_KEEPCAPS failed\n");
+			tst_resm(TFAIL | TERRNO, "PR_SET_KEEPCAPS failed\n");
 			tst_exit();
 		}
 		ret = prctl(PR_GET_KEEPCAPS);
 		if (!ret) {
-			tst_resm(TFAIL|TERRNO, "PR_SET_KEEPCAPS did not set keepcaps\n");
+			tst_resm(TFAIL | TERRNO,
+				 "PR_SET_KEEPCAPS did not set keepcaps\n");
 			tst_exit();
 		}
-		do_setuid(EXPECT_PRIVS); /* does not return */
+		do_setuid(EXPECT_PRIVS);	/* does not return */
 	case 3:
 		ret = prctl(PR_GET_SECUREBITS);
 		ret = prctl(PR_SET_SECUREBITS, ret | SECBIT_KEEP_CAPS);
 		if (ret == -1) {
-			tst_resm(TFAIL|TERRNO, "PR_SET_SECUREBITS failed\n");
+			tst_resm(TFAIL | TERRNO, "PR_SET_SECUREBITS failed\n");
 			tst_exit();
 		}
 		ret = prctl(PR_GET_KEEPCAPS);
 		if (!ret) {
-			tst_resm(TFAIL|TERRNO, "PR_SET_SECUREBITS did not set keepcaps\n");
+			tst_resm(TFAIL | TERRNO,
+				 "PR_SET_SECUREBITS did not set keepcaps\n");
 			tst_exit();
 		}
-		do_setuid(EXPECT_PRIVS); /* does not return */
+		do_setuid(EXPECT_PRIVS);	/* does not return */
 	default:
 		tst_resm(TFAIL, "should not reach here\n");
 		tst_exit();
