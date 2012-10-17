@@ -67,7 +67,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -75,8 +74,8 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
-char *TCID;             /* Name of the testcase                               */
-int TST_TOTAL;          /* Total number of testcases                          */
+char *TCID;			/* Name of the testcase */
+int TST_TOTAL;			/* Total number of testcases */
 
 /*
  * Function:    ident_ttype - Return test result type.
@@ -89,33 +88,26 @@ int TST_TOTAL;          /* Total number of testcases                          */
  *              on success
  *              -1 on failure
  */
-int
-ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
+int ident_ttype(char *tstype)
 {
-    if (strcmp(tstype, "TBROK") == 0)
-        return TBROK;
-    else
-        if (strcmp(tstype, "TFAIL") == 0)
-            return TFAIL;
-    else
-        if (strcmp(tstype, "TPASS") == 0)
-            return TPASS;
-    else
-        if (strcmp(tstype, "TCONF") == 0)
-            return TCONF;
-    else
-        if (strcmp(tstype, "TRETR") == 0)
-            return TRETR;
-    else
-        if (strcmp(tstype, "TWARN") == 0)
-            return TWARN;
-    else
-        if (strcmp(tstype, "TINFO") == 0)
-            return TINFO;
-    else
-            return -1;
+	/* test result type one of TPASS, TFAIL, etc */
+	if (strcmp(tstype, "TBROK") == 0)
+		return TBROK;
+	else if (strcmp(tstype, "TFAIL") == 0)
+		return TFAIL;
+	else if (strcmp(tstype, "TPASS") == 0)
+		return TPASS;
+	else if (strcmp(tstype, "TCONF") == 0)
+		return TCONF;
+	else if (strcmp(tstype, "TRETR") == 0)
+		return TRETR;
+	else if (strcmp(tstype, "TWARN") == 0)
+		return TWARN;
+	else if (strcmp(tstype, "TINFO") == 0)
+		return TINFO;
+	else
+		return -1;
 }
-
 
 /*
  * Function:    main - entry point of this program
@@ -142,158 +134,139 @@ ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
  * Exit:        0 on success
  *              -1 on failure
  */
-int main( int argc,
-      char *argv[])
+int main(int argc, char *argv[])
 {
-    int  trestype;      /* test result type TFAIL, TPASS, TINFO etc           */
-    char *arg_fmt;      /* message string printed along with test type        */
-    char *cmd_name;     /* name by which this program is invoked tst_brk etc  */
-    char *tst_total;    /* total number of tests in the file.                 */
-    char *tst_count;    /* sets the value of Tst_count with this value        */
-    char *file_name;    /* contents of this file are printed; see tst_res()   */
+	int trestype;	/* test result type TFAIL, TPASS, TINFO etc */
+	char *arg_fmt;	/* message string printed along with test type */
+	char *cmd_name;	/* name by which this program is invoked tst_brk etc */
+	char *tst_total;/* total number of tests in the file. */
+	char *tst_count;/* sets the value of Tst_count with this value */
+	char *file_name;/* contents of this file are printed; see tst_res() */
 
-    arg_fmt = SAFE_MALLOC(NULL, 1024);
-    cmd_name = SAFE_MALLOC(NULL, 1024);
+	arg_fmt = SAFE_MALLOC(NULL, 1024);
+	cmd_name = SAFE_MALLOC(NULL, 1024);
 
-    strcpy(cmd_name, SAFE_BASENAME(NULL, argv++[0]));
+	strcpy(cmd_name, SAFE_BASENAME(NULL, (argv++)[0]));
 
-    if (((TCID = getenv("TCID")) == NULL) ||
-            ((tst_total = getenv("TST_TOTAL")) == NULL) ||
-            ((tst_count = getenv("TST_COUNT")) == NULL))
-    {
-        if (strcmp(cmd_name, "tst_kvercmp") != 0)
-        {
-            fprintf(stderr, "\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
-                    "export TCID=<test name>\n"
-                    "export TST_TOTAL=<Total Number of Tests >\n"
-                    "export TST_COUNT=<Test case number>\n\n");
-	    /* Make sure the user knows there's an error. */
-	    abort();
-        }
-    }
-    else
-    {
-        TST_TOTAL = atoi(tst_total);
-        if ((Tst_count = atoi(tst_count)) > 0)
+	TCID = getenv("TCID");
+	tst_total = getenv("TST_TOTAL");
+	tst_count = getenv("TST_COUNT");
+	if (TCID == NULL || tst_total == NULL || tst_count == NULL) {
+		if (strcmp(cmd_name, "tst_kvercmp") != 0) {
+			fprintf(stderr,
+				"\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
+				"export TCID=<test name>\n"
+				"export TST_TOTAL=<Total Number of Tests >\n"
+				"export TST_COUNT=<Test case number>\n\n");
+			/* Make sure the user knows there's an error. */
+			abort();
+		}
+	} else {
+		TST_TOTAL = atoi(tst_total);
+		Tst_count = atoi(tst_count);
+		if (Tst_count > 0)
 			Tst_count--;
 
-        if (strcmp(TCID, " ") == 0)
-        {
-            fprintf(stderr, "Variable TCID not set, use: TCID=<test name>\n");
-            exit(1);
-        }
-        if (TST_TOTAL <= 0)
-        {
-            fprintf(stderr, "Variable TST_TOTAL is set to 0, must be "
-                    "greater than zero\n");
-	    exit(1);
-        }
-    }
+		if (strcmp(TCID, " ") == 0) {
+			fprintf(stderr,
+				"Variable TCID not set, use: TCID=<test name>\n");
+			exit(1);
+		}
+		if (TST_TOTAL <= 0) {
+			fprintf(stderr,
+				"Variable TST_TOTAL is set to 0, must be "
+				"greater than zero\n");
+			exit(1);
+		}
+	}
 
+	if (strcmp(cmd_name, "tst_brk") == 0) {
+		if (argc < 5) {
+			fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
+				"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+				"and TRETR.\n"
+				"\tFNAME  - Print contents of this file after the message\n"
+				"\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
+				"\tSTRING - Message explaining the test result\n",
+				cmd_name);
+			exit(1);
+		}
+		trestype = ident_ttype((argv++)[0]);
+		file_name = (argv++)[0];
+		argv++;
+		strcpy(arg_fmt, *argv);
+		tst_brk(trestype, file_name, NULL, arg_fmt);
+	} else if (strcmp(cmd_name, "tst_res") == 0) {
+		if (argc < 4) {
+			fprintf(stderr, "Usage: %s TTYPE FNAME STRING\n"
+				"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+				"and  TRETR.\n"
+				"\tFNAME  - Print contents of this file after the message\n"
+				"\tSTRING - Message explaining the test result\n",
+				cmd_name);
+			exit(1);
+		}
+		trestype = ident_ttype((argv++)[0]);
+		file_name = (argv++)[0];
+		strcpy(arg_fmt, *argv);
+		tst_res(trestype, file_name, arg_fmt);
+	} else if (strcmp(cmd_name, "tst_brkm") == 0) {
+		if (argc < 4) {
+			fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
+				"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+				"and TRETR.\n"
+				"\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
+				"\tSTRING - Message explaining the test result\n",
+				cmd_name);
+			exit(1);
+		}
+		trestype = ident_ttype((argv++)[0]);
+		argv++;
+		strcpy(arg_fmt, *argv);
+		tst_brkm(trestype, NULL, arg_fmt);
+	} else if (strcmp(cmd_name, "tst_resm") == 0) {
+		if (argc < 3) {
+			fprintf(stderr, "Usage: %s TTYPE STRING\n"
+				"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+				"and TRETR.\n"
+				"\tSTRING - Message explaining the test result\n",
+				cmd_name);
+			exit(1);
+		}
+		trestype = ident_ttype((argv++)[0]);
+		strcpy(arg_fmt, *argv);
+		tst_resm(trestype, arg_fmt);
+	} else if (strcmp(cmd_name, "tst_exit") == 0)
+		tst_exit();
+	else if (strcmp(cmd_name, "tst_flush") == 0)
+		tst_flush();
+	else if (strcmp(cmd_name, "tst_kvercmp") == 0) {
+		int exit_value;
 
-    if (strcmp(cmd_name, "tst_brk") == 0)
-    {
-        if (argc < 5)
-        {
-            fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
-            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and TRETR.\n"
-            "\tFNAME  - Print contents of this file after the message\n"
-            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
-            "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit(1);
-        }
-        trestype = ident_ttype(argv++[0]);
-        file_name = argv++[0];
-        argv++;
-        strcpy(arg_fmt, *argv);
-        tst_brk(trestype, file_name, NULL, arg_fmt);
-    }
-    else
-    if (strcmp(cmd_name, "tst_res") == 0)
-    {
-        if (argc < 4)
-        {
-            fprintf(stderr, "Usage: %s TTYPE FNAME STRING\n"
-            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and  TRETR.\n"
-            "\tFNAME  - Print contents of this file after the message\n"
-            "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit(1);
-        }
-        trestype = ident_ttype(argv++[0]);
-        file_name = argv++[0];
-        strcpy(arg_fmt, *argv);
-        tst_res(trestype, file_name, arg_fmt);
-    }
-    else
-    if (strcmp(cmd_name, "tst_brkm") == 0)
-    {
-        if (argc < 4)
-        {
-            fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
-            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and TRETR.\n"
-            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
-            "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit (1);
-        }
-        trestype = ident_ttype(argv++[0]);
-        argv++;
-        strcpy(arg_fmt, *argv);
-        tst_brkm(trestype, NULL, arg_fmt);
-    }
-    else
-    if (strcmp(cmd_name, "tst_resm") == 0)
-    {
-        if (argc < 3)
-        {
-            fprintf(stderr, "Usage: %s TTYPE STRING\n"
-            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and TRETR.\n"
-            "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit(1);
-        }
-        trestype = ident_ttype(argv++[0]);
-        strcpy(arg_fmt, *argv);
-        tst_resm(trestype, arg_fmt);
-    }
-    else
-    if (strcmp(cmd_name, "tst_exit") == 0)
-        tst_exit();
-    else
-    if (strcmp(cmd_name, "tst_flush") == 0)
-        tst_flush();
-    else
-    if (strcmp(cmd_name, "tst_kvercmp") == 0)
-    {
-	int exit_value;
+		if (argc < 4) {
+			fprintf(stderr, "Usage: %s NUM NUM NUM\n"
+				"Compares to the running kernel version.\n\n"
+				"\tNUM - A positive integer.\n"
+				"\tThe first NUM is the kernel VERSION\n"
+				"\tThe second NUM is the kernel PATCHLEVEL\n"
+				"\tThe third NUM is the kernel SUBLEVEL\n\n"
+				"\tExit status is 0 if the running kernel is older than the\n"
+				"\t\tkernel specified by NUM NUM NUM.\n"
+				"\tExit status is 1 for kernels of the same age.\n"
+				"\tExit status is 2 if the running kernel is newer.\n",
+				cmd_name);
+			exit(1);
+		}
+		exit_value = tst_kvercmp(atoi(argv[0]), atoi(argv[1]),
+					 atoi(argv[2]));
+		if (exit_value < 0)
+			exit_value = 0;
+		else if (exit_value == 0)
+			exit_value = 1;
+		else if (exit_value > 0)
+			exit_value = 2;
+		exit(exit_value);
+	}
 
-        if (argc < 4)
-        {
-            fprintf(stderr, "Usage: %s NUM NUM NUM\n"
-            "Compares to the running kernel version.\n\n"
-            "\tNUM - A positive integer.\n"
-	    "\tThe first NUM is the kernel VERSION\n"
-	    "\tThe second NUM is the kernel PATCHLEVEL\n"
-	    "\tThe third NUM is the kernel SUBLEVEL\n\n"
-	    "\tExit status is 0 if the running kernel is older than the\n"
-	    "\t\tkernel specified by NUM NUM NUM.\n"
-	    "\tExit status is 1 for kernels of the same age.\n"
-	    "\tExit status is 2 if the running kernel is newer.\n", cmd_name);
-            exit(1);
-        }
-	exit_value = tst_kvercmp(atoi(argv[0]), atoi(argv[1]), atoi(argv[2]));
-	if (exit_value < 0)
-		exit_value = 0;
-	else
-	if (exit_value == 0)
-		exit_value = 1;
-	else
-	if (exit_value > 0)
-		exit_value = 2;
-	exit (exit_value);
-    }
-
-    exit(0);
+	exit(0);
 }
