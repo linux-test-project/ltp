@@ -119,7 +119,7 @@ int main(int ac, char **av)
 			}
 
 			/* are the strings written and read equal */
-			if ((greater = strcmp(rebuf, wrbuf)) != 0) {
+			if ((greater = strncmp(rebuf, wrbuf, red)) != 0) {
 				tst_resm(TFAIL, "Condition #3 test failed");
 				continue;
 			}
