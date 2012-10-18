@@ -4,10 +4,10 @@
 
    int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *restrict type);
 
-  Gets the mutex 'type' attribute.  This attribute is set in the 'type' parameter to 
+  Gets the mutex 'type' attribute.  This attribute is set in the 'type' parameter to
   these functions.  The default value is PTHREAD_MUTEX_DEFAULT.
 
-  </assertion>  
+  </assertion>
   <assertion id="2" tag="ref:XSH6:34526:34529">
   It returns 0 upon success and stores the value of the type of the attribute object 'attr'
   into the reference of the 'type' parameter.

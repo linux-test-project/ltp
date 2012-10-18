@@ -47,5 +47,5 @@ test_ltp "$("$abspath" "$tmp_destdir/$tmp_prefix")"
 # i.   Is srcdir still there (should be)?
 # ii.  Is builddir there (shouldn't be)?
 # iii. Is $DESTDIR/$prefix there (shouldn't be)?
-clean_is_sane "$srcdir" "$tmp_builddir" "$("$abspath" "$tmp_destdir/$tmp_prefix")" 
+clean_is_sane "$srcdir" "$tmp_builddir" "$("$abspath" "$tmp_destdir/$tmp_prefix")"
 [ -d "$srcdir" -a ! -d "$tmp_builddir" -a ! -d "$tmp_destdir/$tmp_prefix" ]

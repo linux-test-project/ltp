@@ -15,7 +15,7 @@
 # test information
 TESTNAME="RPC_std-call_callrpc.dataint"
 TESTVERS="1.0"
-# test binaries, used to call 
+# test binaries, used to call
 TESTCLIENTPATH="rpc_suite/rpc/rpc_stdcall_callrpc"
 TESTCLIENTBIN="6-dataint.bin"
 TESTCLIENT=$CLIENTTSTPACKDIR/$TESTCLIENTPATH/$TESTCLIENTBIN
@@ -36,13 +36,13 @@ get_test_result()
 {
 	# default : test failed
 	r_value=1
-	
+
 	# if result table is empty last test crashes (segment fault), so return must be "failed"
 	if [ ${#result[*]} -eq 0 ]
 	then
 		return
 	fi
-	
+
 	for ((a=0; a < TESTINSTANCE-1 ; a++))
 	do
 		if [ ${result[$a]} -ne ${result[`expr $a + 1`]} ]
@@ -50,7 +50,7 @@ get_test_result()
 			return
 		fi
 	done
-	
+
 	# if all test instances return same result return the first element, note that test succeeds if value is 0
 	r_value=${result[0]}
 }
@@ -66,7 +66,7 @@ result_to_logFile()
 	4)r_valueTxt="SKIP";;
 	5)r_valueTxt="UNTESTED";;
 	esac
-	
+
 	echo $TESTCLIENTPATH"/"$( echo $TESTCLIENTBIN | cut -d . -f1 )": execution: "$r_valueTxt>>$LOCLOGDIR/$TESTLOGFILE
 }
 
@@ -92,7 +92,7 @@ then
 	then
 		echo " - Mode one server to many client : "$TESTINSTANCE" instance(s)"
 	fi
-	
+
 	for ((a=0; a < TESTINSTANCE ; a++))
 	do
 		$REMOTESHELL $CLIENTUSER@$CLIENTIP "$TESTCLIENT $SERVERIP $PROGNUMBASE" >>$TMPRESULTFILE&
@@ -103,7 +103,7 @@ else
 	then
 		echo " - Mode many couple client/server : "$TESTINSTANCE" instance(s)"
 	fi
-	
+
 	for ((a=0; a < TESTINSTANCE ; a++))
 	do
 		$REMOTESHELL $CLIENTUSER@$CLIENTIP "$TESTCLIENT $SERVERIP `expr $PROGNUMBASE + $a`" >>$TMPRESULTFILE&

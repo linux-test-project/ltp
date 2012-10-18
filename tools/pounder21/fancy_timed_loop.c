@@ -167,10 +167,10 @@ int main(int argc, char *argv[]) {
 				} else {
 					stat = execvp(argv[7], &argv[7]);
 				}
-				
+
 				perror(argv[7]);
 			}
-			else {	
+			else {
 				if (argc > 3) {
 					stat = execvp(argv[5], &argv[5]);
 				} else {

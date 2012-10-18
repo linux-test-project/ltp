@@ -5,6 +5,6 @@ Assertion	Tested?
 2		YES
 3		YES
 4		YES ** Keeping in mind it 'may' fail and not 'shall' fail,
-		       so it will always return PASS, but will return a 
+		       so it will always return PASS, but will return a
 		       PASS and print out a warning if it fails.
-Note: 
+Note:

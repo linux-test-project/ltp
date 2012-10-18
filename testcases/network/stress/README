@@ -4,10 +4,10 @@ NOTE:
 Physical Topology
 =================
 
-These tests require two machines. And each machine needs to have 2 or more 
+These tests require two machines. And each machine needs to have 2 or more
 interfaces. These tests assume that they run on the following topology.
 
-                              Control Link 
+                              Control Link
                 +------------------------------------+
                 |                                    |
         +-------+-------+                    +-------+-------+
@@ -30,7 +30,7 @@ recommended to connect each pair of interfaces with the ether cross cables.
 Currently, different NIC testcases for ICMP/UDP/TCP/Multicast require plural
 test links.  Other testcases uses only 1 test link. (Test Link 0)
 
-  
+
 
 Installation
 ============
@@ -44,7 +44,7 @@ Installation 6.' section in ltp-yyyymmdd/INSTALL.
 Execution
 =========
 
-To run the network stress testcases, networkstress.sh is prepared in 
+To run the network stress testcases, networkstress.sh is prepared in
 ltp-yyyymmdd/testscripts directory. Some envrionment variables have to be
 set for the stress testcases. Please fill the environment variable in
 networkstress.sh.
@@ -68,7 +68,7 @@ Two command lists is prepared in ltp-yyyymmdd/runtest directory.
   network_stress.multicast :  24 kinds  24 tests
   network_stress.appl      :  22 kinds  22 tests
 
-Running the tests using network_stress.whole takes about 20 days. Therefore, 
+Running the tests using network_stress.whole takes about 20 days. Therefore,
 network_stress.selected is prepared. However, it takes 3 days using
 network_stress.selected. If you reduce the time, you should choose the
 testcase and prepare your own command lists. The detail of testcases
@@ -156,7 +156,7 @@ Required environment variables
 
  o FTP_UPLOAD_DIR (for ftp stress test)
    The directory which the ftp server will store the uploaded files.
-  
+
  o FTP_UPLOAD_URLDIR (for ftp stress test)
    The directory part of URL where the client specifys to upload.
    Namely, when the URL to upload is ftp://ltp.sourceforge.net/upload ,
@@ -208,7 +208,7 @@ Optional environment variables
    This value affect interface tests of changing mtu.
 
  o IF_UPDOWN_TIMES	(for interface up/down test)
-   The up/down times of the interface tests. To up/down an interface takes 
+   The up/down times of the interface tests. To up/down an interface takes
    time. If you specify 10,000 into this value, it takes 6 hours.
    This value affect interface tests of upping/down the interface.
 

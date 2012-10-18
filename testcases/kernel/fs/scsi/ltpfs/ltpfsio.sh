@@ -1,9 +1,9 @@
 -#!/bin/sh
 # This script should be run prior to running executing the filesystem tests.
 # valid devices need to be passed for the test to work correctly
-# 10/06/03 mridge@us.ibm.com added instance and time command line options 
-# 
-# 
+# 10/06/03 mridge@us.ibm.com added instance and time command line options
+#
+#
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -16,7 +16,7 @@ fi
 export TMPBASE="/tmp"
 
 
-usage() 
+usage()
 {
 	cat <<-END >&2
 	usage: ${0##*/} [ -a part1 ] [ -n nfsmount ]
@@ -26,7 +26,7 @@ usage()
 	ltproot=$TPROOT
 	tmpdir=$TMPBASE
 
-	example: ${0##*/} -a hdc1 -b hdc2 -c hdc3 -d hdc4 -n mytesthost:/testmountdir 
+	example: ${0##*/} -a hdc1 -b hdc2 -c hdc3 -d hdc4 -n mytesthost:/testmountdir
 
         - This test will ONLY run on a 2.5.66 or higher kernel system.
 
@@ -42,7 +42,7 @@ do      case $arg in
 		a)	part1=$OPTARG;;
                 n)      nfsmount=$OPTARG;;
                 v)      verb=$OPTARG;;
-			
+
                 \?)     echo "************** Help Info: ********************"
                         usage;;
         esac
@@ -63,36 +63,36 @@ fi
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 
-mkdir /test                   >/dev/null 2>&1 
-mkdir /test/growfiles         >/dev/null 2>&1  
-mkdir /test/growfiles/ext2    >/dev/null 2>&1  
-mkdir /test/growfiles/msdos   >/dev/null 2>&1  
-mkdir /test/growfiles/reiser  >/dev/null 2>&1  
-mkdir /test/growfiles/minix   >/dev/null 2>&1  
-mkdir /test/growfiles/xfs     >/dev/null 2>&1  
-mkdir /test/growfiles/nfs     >/dev/null 2>&1  
-mkdir /test/growfiles/jfs     >/dev/null 2>&1  
-mkdir /test/growfiles/ext3 >/dev/null 2>&1  
+mkdir /test                   >/dev/null 2>&1
+mkdir /test/growfiles         >/dev/null 2>&1
+mkdir /test/growfiles/ext2    >/dev/null 2>&1
+mkdir /test/growfiles/msdos   >/dev/null 2>&1
+mkdir /test/growfiles/reiser  >/dev/null 2>&1
+mkdir /test/growfiles/minix   >/dev/null 2>&1
+mkdir /test/growfiles/xfs     >/dev/null 2>&1
+mkdir /test/growfiles/nfs     >/dev/null 2>&1
+mkdir /test/growfiles/jfs     >/dev/null 2>&1
+mkdir /test/growfiles/ext3 >/dev/null 2>&1
 
 
 mkfs -V -t ext2     /dev/$part1
 
 
-mount -v -t nfs $nfsmount               /test/growfiles/nfs                                          
-mount -v /dev/$part1 /test/growfiles/ext2                              
+mount -v -t nfs $nfsmount               /test/growfiles/nfs
+mount -v /dev/$part1 /test/growfiles/ext2
 
 
-echo "************ Running tests " 
+echo "************ Running tests "
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part1 > ${TMPBASE}/ltpfs.part1
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart1 -n ltpfspart1 -l lvmlogfile -f ${TMPBASE}/ltpfs.part1 &
 
 wait $!
 
-umount -v -t nfs $nfsmount            
+umount -v -t nfs $nfsmount
 umount -v /dev/$part1
 mkfs.xfs -f   /dev/$part1
-mount -v /dev/$part1 /test/growfiles/xfs                             
+mount -v /dev/$part1 /test/growfiles/xfs
 
 
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part2 > ${TMPBASE}/ltpfs.part2
@@ -103,7 +103,7 @@ wait $!
 
 mkfs -V -t msdos    /dev/$part1
 umount -v /dev/$part1
-mount -v /dev/$part1 /test/growfiles/msdos                             
+mount -v /dev/$part1 /test/growfiles/msdos
 
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part3 > ${TMPBASE}/ltpfs.part3
 
@@ -113,7 +113,7 @@ wait $!
 
 umount -v /dev/$part1
 mkreiserfs          /dev/$part1 <yesenter.txt
-mount -v /dev/$part1 /test/growfiles/reiser                            
+mount -v /dev/$part1 /test/growfiles/reiser
 
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part4 > ${TMPBASE}/ltpfs.part4
 
@@ -123,7 +123,7 @@ wait $!
 
 umount -v /dev/$part1
 mkfs -V -t minix    /dev/$part1
-mount -v /dev/$part1 /test/growfiles/minix                             
+mount -v /dev/$part1 /test/growfiles/minix
 
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part5 > ${TMPBASE}/ltpfs.part5
 
@@ -133,7 +133,7 @@ wait $!
 
 umount -v /dev/$part1
 mkfs -V -t ext3     /dev/$part1
-mount -v /dev/$part1 /test/growfiles/ext3                              
+mount -v /dev/$part1 /test/growfiles/ext3
 
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part6 > ${TMPBASE}/ltpfs.part6
 

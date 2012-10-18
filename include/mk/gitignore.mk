@@ -32,7 +32,7 @@ IGNORE_DIR_EXPR:=	egrep -v "^$$(echo "$(AUTOCONFED_SUBDIRS)" | tr " " "|")"
 # evaluation in top-level Makefile.
 .PHONY: gitignore_clean
 gitignore_clean:
-	$(RM) -f $(BEFORE) $(AFTER) 
+	$(RM) -f $(BEFORE) $(AFTER)
 
 $(BEFORE):
 	$(MAKE) distclean
@@ -47,5 +47,5 @@ $(AFTER):
 	# Set everything in autoconf land back to a sane state.
 	$(MAKE) distclean
 
-.gitignore: | $(BEFORE) $(AFTER) 
+.gitignore: | $(BEFORE) $(AFTER)
 	diff -u $(BEFORE) $(AFTER) | grep '^+' | sed -e 's,^\+,,g' > $@

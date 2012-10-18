@@ -22,8 +22,8 @@
 # File:			unzip_genfile.sh
 #
 # Description:	This program will generate the zip file that will be used to
-#               test the unzip program. 
-# 
+#               test the unzip program.
+#
 # Author:		Manoj Iyer manjo@mail.utexas.edu
 #
 # History:

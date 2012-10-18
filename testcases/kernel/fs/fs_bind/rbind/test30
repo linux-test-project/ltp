@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -39,21 +39,21 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
-	
+
+
 	"${FS_BIND_ROOT}/bin/makedir" share parent1
 	"${FS_BIND_ROOT}/bin/makedir" priv parent2
 	"${FS_BIND_ROOT}/bin/makedir" share share1
-	
+
 	mount --rbind share1 parent1
-	
+
 	"${FS_BIND_ROOT}/bin/makedir" unclone parent1/child1
 	mount --rbind "$disk1" parent1/child1
-	mount --rbind parent1 parent2 
-	
-	check -n parent1/child1 share1/child1 
-	check -n parent1/child1 parent2/child1 
-	
+	mount --rbind parent1 parent2
+
+	check -n parent1/child1 share1/child1
+	check -n parent1/child1 parent2/child1
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "rbind/test30: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -71,7 +71,7 @@ trap '' ERR
 	umount parent1
 	umount share1
 	umount parent1
-	
+
 	rm -rf parent* share*
 	cleanup
 } >& /dev/null
@@ -81,6 +81,6 @@ then
 	exit 1
 else
 	tst_resm TPASS "rbind/test30: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

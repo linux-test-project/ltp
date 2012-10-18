@@ -1,6 +1,6 @@
 # memtoy test 1la - single 8 page anon segment
 # bind to nodes 1&2 -- migration should not be req'd
-# 
+#
 numa
 anon foo 8p
 map foo

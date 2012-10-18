@@ -20,15 +20,15 @@
 #
 #  FILE   : ftp
 #
-#  PURPOSE: Ftp into a remote hosts successfully as a vaild user (other than root) 
+#  PURPOSE: Ftp into a remote hosts successfully as a vaild user (other than root)
 #
 #  HISTORY:
-#     03/03  Jerone Young (jeroney@us.ibm.com) 
+#     03/03  Jerone Young (jeroney@us.ibm.com)
 #     04/03  Dustin Kirkland (k1rkland@us.ibm.com)
 #     09/05  Kris Wilson (krisw@us.ibm.com) Check if vsftpd.conf was found.
 #
 #  NOTE:
-#	This version is intended for EAL certification, it will need modification 
+#	This version is intended for EAL certification, it will need modification
 #	to conform with LTP standards in the offical LTP tree.
 
 #-----------------------------------------------------------------------
@@ -37,7 +37,7 @@
 
 do_setup()
 {
-	
+
     RHOST="localhost"
     TEST_USER="ftpuser1"
     TCtmp=/home/$TEST_USER
@@ -68,7 +68,7 @@ do_setup()
     userdel $TEST_USER
     sleep 1
 
-    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then 
+    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then
         end_testcase "Could not add test user $TEST_USER on system $RHOST."
     fi
 
@@ -98,7 +98,7 @@ do_cleanup()
 #
 # DESCRIPTION: The test user will ftp in and create a directory in his home directory on the remote host.
 #              The directory is then checked on the remote hosts to see if it is owned
-#	       by the test user. 
+#	       by the test user.
 #-----------------------------------------------------------------------
 
 do_test(){
@@ -131,7 +131,7 @@ do_test(){
             send \"$TEST_USER_PASSWD\r\"
             expect {
                 # 230 - Login successful
-                \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1} 
+                \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1}
                 # 500 - Login failed
                 \"500\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
                 # 530 - Login failed
@@ -145,7 +145,7 @@ do_test(){
     if [ $? != 0 ]; then
         end_testcase "Testcase failed"
     fi
-}	
+}
 
 #----------------------------------------------------------------------
 # FUNCTION: MAIN

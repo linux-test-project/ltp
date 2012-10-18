@@ -68,7 +68,7 @@ static void cleanup(void)
 static void setup(void)
 {
 
-	/* 
+	/*
 	 * XXX: FreeBSD says you must always be superuser, but Linux says you
 	 * need to have CAP_SYS_PACCT capability.
 	 *
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	/* EISDIR */
-	if (acct("/") == -1 && errno == EISDIR) 
+	if (acct("/") == -1 && errno == EISDIR)
 		tst_resm(TPASS, "Failed with EISDIR as expected");
 	else
 		tst_brkm(TFAIL|TERRNO, cleanup,

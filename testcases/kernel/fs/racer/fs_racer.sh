@@ -77,14 +77,14 @@ usage()
 
 call_exit()
 {
-    echo \"Cleaning up\" 
-    killall fs_racer_file_create.sh 
+    echo \"Cleaning up\"
+    killall fs_racer_file_create.sh
     killall fs_racer_dir_create.sh
-    killall fs_racer_file_rm.sh 
-    killall fs_racer_file_rename.sh 
-    killall fs_racer_file_link.sh 
-    killall fs_racer_file_symlink.sh 
-    killall fs_racer_file_list.sh 
+    killall fs_racer_file_rm.sh
+    killall fs_racer_file_rename.sh
+    killall fs_racer_file_link.sh
+    killall fs_racer_file_symlink.sh
+    killall fs_racer_file_list.sh
     killall fs_racer_file_concat.sh
     exit 0
 }

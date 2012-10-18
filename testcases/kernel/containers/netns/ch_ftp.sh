@@ -19,7 +19,7 @@
 ##                                                                            ##
 
 ## This script checks that the parent namespace is reachable from the child
-## Author:      Veerendra <veeren@linux.vnet.ibm.com> 
+## Author:      Veerendra <veeren@linux.vnet.ibm.com>
 
 TCID=${TCID:-ch_ftp.sh}
 TST_TOTAL=1

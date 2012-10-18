@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # This script verifies the contents of child sysfs is visible in parent NS.
 
@@ -31,13 +31,13 @@ TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-    
-    #capture parent /sys contents 
-    
-    debug "INFO: Parent SYSFS view" 
+
+    #capture parent /sys contents
+
+    debug "INFO: Parent SYSFS view"
     ls /sys/class/net > /tmp/parent_sysfs
     echo PROPAGATE > /tmp/FIFO4
-    
+
     PROPAGATED=`cat /tmp/FIFO5`
     ls /tmp/mnt/sys/class/net > /tmp/child_sysfs_in_parent
     diff /tmp/child_sysfs_in_parent /tmp/child_sysfs
@@ -52,8 +52,8 @@ export TST_TOTAL
 
     #cleanup temp files
 
-    rm -f /tmp/child_sysfs_in_parent /tmp/child_sysfs 
-    umount /tmp/par_sysfs 
+    rm -f /tmp/child_sysfs_in_parent /tmp/child_sysfs
+    umount /tmp/par_sysfs
     umount /tmp/mnt
     sleep 1
     rm -rf /tmp/par_sysfs /tmp/mnt > /dev/null 2>&1 || true

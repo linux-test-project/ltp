@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 
 # 05/22/02 martinjn@us.ibm.com wrote this script for ltp automation using ssh instead of telnet
 # 06/18/02 martinjn@us.ibm.com hacked this script up to try to make it work better with ltp_check
@@ -18,7 +18,7 @@ $LTPSOURCE="/tmp/ltp.tgz";
 $LTPTARGET="/tmp/ltp.tgz";
 $ETIME=time();
 
-if (!-d $LTPRESULTS) 
+if (!-d $LTPRESULTS)
 {
    print "Creating $LTPRESULTS \n";
    print `mkdir $LTPRESULTS`;
@@ -51,7 +51,7 @@ for($i=0; $i <= $#hosts; $i++) {
       ($HOST,$USER,$PASS,$INSTANCES,$DURATION)=split(/,/,@hosts[$i]);
       ($SHORTHOST,$TRASH)=split(/\./,$HOST);
       $LTP_LOGS="$SHORTHOST-$ETIME-ltpoutput.tgz";
-      $RUN_LOG="/root/runall.output"; 
+      $RUN_LOG="/root/runall.output";
 
       #push tar.tgz
       %args = {};
@@ -86,7 +86,7 @@ for($i=0; $i <= $#hosts; $i++) {
           print("Tests completed on $HOST\n");
       }
 
-      #this looks lame, but ltp_check needs ltprun.out to grab the ltp version      
+      #this looks lame, but ltp_check needs ltprun.out to grab the ltp version
       $ssh->cmd('echo version: $(cat VERSION) > ltprun.out');
 
       #stop sar on client(s)

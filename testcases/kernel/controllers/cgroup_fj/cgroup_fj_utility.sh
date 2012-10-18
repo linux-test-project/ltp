@@ -44,10 +44,10 @@ exist_subsystem()
 	if [ "$checksubsystem" = "" ]; then
 		exit -1
 	fi
-	
+
 	exist=`grep -w $checksubsystem /proc/cgroups | cut -f1`;
 	if [ "$exist" = "" ]; then
-		exit 9 
+		exit 9
 	fi
 }
 
@@ -243,11 +243,11 @@ do_exit()
 		echo "ERROR: exit failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	exit_status=$3
-	
+
 	if [ $exit_status -eq 0 ] ;then
 		if [ $expectted -lt 1 ]; then
 			echo "								against with expectted" >> $LOGFILE
@@ -278,7 +278,7 @@ do_echo()
 		echo "ERROR: echo failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	value=$3
@@ -302,7 +302,7 @@ do_mkdir()
 		echo "ERROR: mkdir failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	target=$3
@@ -318,11 +318,11 @@ do_mkdir()
 			echo "\"mkdir $target\" (expectted: fail)" >> $LOGFILE
 		fi
 	fi
-	
+
 	if [ $parents -ne "1" ] && [ -e $target ]; then
 		do_rmdir $exit_here 1 $target
 	fi
-	
+
 	if [ $parents -ne "1" ]; then
 		mkdir $target >> $LOGFILE 2>&1
 	else
@@ -337,7 +337,7 @@ do_rmdir()
 		echo "ERROR: rmdir failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	target=$3
@@ -346,7 +346,7 @@ do_rmdir()
 		echo "INFO: $target is not exist" >> $LOGFILE
 		return
 	fi
-	
+
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
 			echo "\"rmdir $target\" (expectted: success)" >> $LOGFILE
@@ -354,7 +354,7 @@ do_rmdir()
 			echo "\"rmdir $target\" (expectted: fail)" >> $LOGFILE
 		fi
 	fi
-	
+
 	rmdir $3 $4 $5 >> $LOGFILE 2>&1
 	do_exit $exit_here $expectted $?;
 }
@@ -365,7 +365,7 @@ do_mount()
 		echo "ERROR: mount failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	para_o=$3
@@ -374,7 +374,7 @@ do_mount()
 	if [ "$#" -eq "5" ]; then
 		something=$5
 	fi
-	
+
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
 			echo "\"mount -t cgroup $para_o $something $target\" (expectted: success)" >> $LOGFILE
@@ -382,7 +382,7 @@ do_mount()
 			echo "\"mount -t cgroup $para_o $something $target\" (expectted: fail)" >> $LOGFILE
 		fi
 	fi
-	
+
 	mount -t cgroup $para_o $something $target >> $LOGFILE 2>&1
 	do_exit $exit_here $expectted $?;
 }
@@ -393,11 +393,11 @@ do_umount()
 		echo "ERROR: umount failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	target=$3
-	
+
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
 			echo "\"umount $target\" (expectted: success)" >> $LOGFILE
@@ -405,7 +405,7 @@ do_umount()
 			echo "\"umount $target\" (expectted: fail)" >> $LOGFILE
 		fi
 	fi
-	
+
 	umount $target >> $LOGFILE 2>&1
 	do_exit $exit_here $expectted $?;
 }
@@ -416,12 +416,12 @@ do_mv()
 		echo "ERROR: mv failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	source=$3
 	target=$4
-	
+
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
 			echo "\"mv $source $target\" (expectted: success)" >> $LOGFILE
@@ -429,7 +429,7 @@ do_mv()
 			echo "\"mv $source $target\" (expectted: fail)" >> $LOGFILE
 		fi
 	fi
-	
+
 	mv $source $target >> $LOGFILE 2>&1
 	do_exit $exit_here $expectted $?;
 }
@@ -440,7 +440,7 @@ do_kill()
 		echo "ERROR: kill failed,your parameter is wrong..Exiting test" >> $LOGFILE
 		exit -1
 	fi
-	
+
 	exit_here=$1
 	expectted=$2
 	signo=$3
@@ -448,7 +448,7 @@ do_kill()
 
 	if ! [ -e /proc/$pid/ ];then
 		return
-	fi	
+	fi
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
@@ -468,7 +468,7 @@ setup()
 		cleanup;
 	fi
 	do_mkdir 1 1 /dev/cgroup
-	
+
 	if [ -e $TESTROOT/cgroup_fj_release_agent ]
 	then
 		cp -f $TESTROOT/cgroup_fj_release_agent /sbin
@@ -483,7 +483,7 @@ setup()
 	if [ $release_agent_para -eq 8 ] || [ $release_agent_echo -eq 7 ]; then
 		chmod a-x /sbin/cgroup_fj_release_agent
 	fi
-	
+
 	if [ -e $TESTROOT/cgroup_fj_proc ]
 	then
 		chmod a+x $TESTROOT/cgroup_fj_proc
@@ -518,7 +518,7 @@ cleanup()
 		done
 		do_rmdir 0 1 /dev/cgroup/subgroup_*
 	fi
-	
+
 	if [ -e $TMPFILE ]; then
 		rm -f $TMPFILE 2>/dev/null
 	fi
@@ -527,7 +527,7 @@ cleanup()
 	if [ "$mount_str" != "" ]; then
 		do_umount 0 1 /dev/cgroup
 	fi
-	
+
 	if [ -e /dev/cgroup ]; then
 		do_rmdir 0 1 /dev/cgroup
 	fi
@@ -553,7 +553,7 @@ reclaim_foundling()
 
 	if [ $foundlings -ne 0 ]; then
 		echo "ERROR: some processes lost in subgroups's tasks, now they are reclaimed."
-	fi 
+	fi
 }
 
 mkdir_subgroup()
@@ -604,7 +604,7 @@ mount_cgroup ()
 	if [ "$PARAMETER_O" != "" ]; then
 		PARAMETER_O="-o""$PARAMETER_O"
 	fi
-	
+
 	do_mount 1 $expectted "$PARAMETER_O" /dev/cgroup
 }
 
@@ -623,7 +623,7 @@ check_para()
 	get_release_agent;
 	ret6=$?
 
-	if [ $ret1 -ne 0 ] || [ $ret2 -ne 0 ] || [ $ret3 -ne 0 ] || [ $ret4 -ne 0 ] || [ $ret5 -ne 0 ] || [ $ret6 -ne 0 ] 
+	if [ $ret1 -ne 0 ] || [ $ret2 -ne 0 ] || [ $ret3 -ne 0 ] || [ $ret4 -ne 0 ] || [ $ret5 -ne 0 ] || [ $ret6 -ne 0 ]
 	then
 		echo "ERROR: Wrong inputed parameter..Exiting test" >> $LOGFILE
 		return -1

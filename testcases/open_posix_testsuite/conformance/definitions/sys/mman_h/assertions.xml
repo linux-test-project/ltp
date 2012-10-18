@@ -40,24 +40,24 @@
   </assertion>
   <assertion id="7" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:ADV pt:MF pt:SHM">
    The header defines the following symbolic values:
-	POSIX_MADV_NORMAL 
-	POSIX_MADV_SEQUENTIAL 
-	POSIX_MADV_RANDOM 
-	POSIX_MADV_WILLNEED 
-	POSIX_MADV_DONTNEED 
+	POSIX_MADV_NORMAL
+	POSIX_MADV_SEQUENTIAL
+	POSIX_MADV_RANDOM
+	POSIX_MADV_WILLNEED
+	POSIX_MADV_DONTNEED
   </assertion>
   <assertion id="8" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:TYM">
    The header defines the following flags for posix_typed_mem_open():
-	POSIX_TYPED_MEM_ALLOCATE 
-	POSIX_TYPED_MEM_ALLOCATE_CONTIG 
-	POSIX_TYPED_MEM_MAP_ALLOCATABLE 
+	POSIX_TYPED_MEM_ALLOCATE
+	POSIX_TYPED_MEM_ALLOCATE_CONTIG
+	POSIX_TYPED_MEM_MAP_ALLOCATABLE
   </assertion>
   <assertion id="9" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}">
-   The mode_t, off_t, and size_t types shall be defined as described in 
-   sys/types.h 
+   The mode_t, off_t, and size_t types shall be defined as described in
+   sys/types.h
   </assertion>
   <assertion id="10" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
-   The sys/mman.h header shall define the structure posix_typed_mem_info, 
+   The sys/mman.h header shall define the structure posix_typed_mem_info,
    which includes at least the following member:
 	size_t posix_tmi_length
   </assertion>

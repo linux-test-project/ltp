@@ -7,9 +7,9 @@ When pthread_create uses the attributes objects, the inheritsched attribute dete
 PTHREAD_INHERIT_SCHED
    specifies that the thread scheduling attributes shall be inherited from the creating thread, and the scheduling attributes in this attr argument shall be ignored.
 PTHREAD_EXPLICIT_SCHED
-   specifies that the thread scheduling attributes shall be set to the corresponding values from this attributes object. 
+   specifies that the thread scheduling attributes shall be set to the corresponding values from this attributes object.
 The schedpolicy, schedparam, cotentionscope are affected by the inherisched attribute.
-  </assertion> 
+  </assertion>
   <assertion id="3" tag="ref:XSH6:31347:31347">
 If successful, pthread_attr_setinheritsched functions return zero.
   </assertion>

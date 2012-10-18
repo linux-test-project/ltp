@@ -77,7 +77,7 @@ RHOST_HOST_PART=${RHOST_IPV4_HOST:-"1"}     # remote host
 # Prefix of the Multicast Address
 MCAST_ADDR_PREFIX=224.10
 
-# Multicast Address 
+# Multicast Address
 MCAST_ADDR=224.10.0.1	# If you modify this, please refer ns-mcast_join.c
 
 #-----------------------------------------------------------------------
@@ -93,7 +93,7 @@ do_cleanup()
     # Make sure to kill the multicast receiver and sender
     killall -SIGHUP ns-mcast_join >/dev/null 2>&1
     $LTP_RSH $RHOST killall -SIGHUP ns-igmp_querier >/dev/null 2>&1
-    
+
     # Clean up each interface
     initialize_if lhost ${LINK_NUM}
     initialize_if rhost ${LINK_NUM}

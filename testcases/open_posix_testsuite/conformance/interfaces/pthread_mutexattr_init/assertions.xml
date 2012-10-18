@@ -3,7 +3,7 @@
    The function
 
    int pthread_mutexattr_init(pthread_mutexattr_t *attr)
- 
+
    initializes a mutex attributes object 'attr' with the default
    value for all of the attributes defined by the implementation.  Results
    are undefined if it is called specifying an already initialized 'attr'
@@ -19,7 +19,7 @@
   </assertion>
   <assertion id="4" tag="ref:XSH6:34108:34109">
   If it fails, an error number shall be returned:
-  [ENOMEM] - Insufficient memory exists to initialize the mutex attributes 
+  [ENOMEM] - Insufficient memory exists to initialize the mutex attributes
   object.
   </assertion>
 </assertions>

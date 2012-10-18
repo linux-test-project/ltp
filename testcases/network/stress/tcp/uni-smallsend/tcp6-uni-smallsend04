@@ -45,7 +45,7 @@ $trace_logic
 
 #
 # Variables -- Changed by each uni-smallsend testcase
-# 
+#
 
 # The test case ID
 TCID=tcp6-uni-smallsend04

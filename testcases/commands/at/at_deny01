@@ -125,7 +125,7 @@ do_cleanup()
 #-----------------------------------------------------------------------
 run_test()
 {
-	if [ $(whoami) = "${test_user1}" ]; then 
+	if [ $(whoami) = "${test_user1}" ]; then
 		. "${test_user1_home}/cached_ltproot" || exit 1
 		export PATH="$PATH:$LTPROOT/testcases/bin"
 
@@ -136,7 +136,7 @@ run_test()
 			echo "Error while adding job using at for user ${test_user1}."
 			exit 1
 		fi
-		echo " Sleeping for 75 seconds...."	
+		echo " Sleeping for 75 seconds...."
 		sleep 75
 
 		exit_code=1

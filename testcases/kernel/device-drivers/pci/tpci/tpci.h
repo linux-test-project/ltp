@@ -58,9 +58,9 @@
 struct tpci_interface {
 	int 	in_len;		// input data length
 	caddr_t	in_data;	// input data
-	int 	out_rc;		// return code from the test 
-	int 	out_len;	// output data length 
-	caddr_t	out_data;	// output data 
+	int 	out_rc;		// return code from the test
+	int 	out_len;	// output data length
+	caddr_t	out_data;	// output data
 };
 typedef struct tpci_interface tpci_interface_t;
 

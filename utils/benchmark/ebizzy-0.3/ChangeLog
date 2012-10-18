@@ -8,7 +8,7 @@
 2007-08-15 Valerie Henson <val@nmt.edu>
 
 	* Release 0.2.
-	
+
 	* Started reporting a rate of transactions per second rather than
 		just measuring the time.
 

@@ -13,7 +13,7 @@ usage()
 
   OPTIONS
     -h    display this message and exit
-    -d    delay for top, in seconds 
+    -d    delay for top, in seconds
     -n    number of iterations for top
 EOF
 }
@@ -75,7 +75,7 @@ do
 	./adp_test.sh &
 done
 
-echo "Starting 'top', redirecting output to 'adp.log'..." 
+echo "Starting 'top', redirecting output to 'adp.log'..."
 top -b -d $delay -n $iterations > adp.log &
 
 echo "LTP ADP Test done. Killing processes..."

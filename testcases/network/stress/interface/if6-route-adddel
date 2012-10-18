@@ -96,7 +96,7 @@ ADDDEL_ROUTE="fd00:100:1:1::/64"
 # SET VALUES:
 #   rhost_ipv6addr	- IPv6 Address of the remote host
 #   lhost_ifname	- Interface name of the localhost
-#   rhost_ifname        - Interface name of the local host 
+#   rhost_ifname        - Interface name of the local host
 #
 #-----------------------------------------------------------------------
 do_setup()

@@ -31,7 +31,7 @@
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
 #-----------------------------------------------------------------------
-                                                                               
+
 do_setup()
 {
 
@@ -45,7 +45,7 @@ do_setup()
 
     if [ -n "$PASSWD" ]; then
         TEST_USER_PASSWORD=$PASSWD
-    else	
+    else
         end_testcase "You must set your password via the PASSWD variable."
         exit 1
     fi

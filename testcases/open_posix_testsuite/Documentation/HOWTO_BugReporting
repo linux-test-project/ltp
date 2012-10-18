@@ -23,7 +23,7 @@ manner.
 3.  Debug as much as possible.
     Some steps include:
     - Create a test case which clearly shows the bug.
-    - If possible, find the fault in the code under test causing the test case 
+    - If possible, find the fault in the code under test causing the test case
       failure.
     - If possible, create a patch to fix the fault.
 4.  If the code under test is compatible with another POSIX version (e.g.,
@@ -44,7 +44,7 @@ manner.
 
 *targeted implementation = an implementation which POSIX Test Suite will
 be run against; not yet formally defined
-**Process for tracing a test case to previous POSIX specifications not 
+**Process for tracing a test case to previous POSIX specifications not
 yet defined.
 
 Contributors:	geoffrey.r.gustafson REMOVE-THIS AT intel DOT com

@@ -11,7 +11,7 @@
 	</assertion>
 	<assertion id="4" tag="ref:XSH6TC2:4235:4236">
 	aio_return() may fail with EINVAL]:
-        if the aiocbp does not refer to an operation whose return status 
+        if the aiocbp does not refer to an operation whose return status
 	has not yet been retrieved.
 	</assertion>
 </assertions>

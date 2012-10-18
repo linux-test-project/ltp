@@ -1,6 +1,6 @@
 #!/bin/sh
 # This will run all the network stress tests, with the status logged in
-# /tmp/netpan.log  
+# /tmp/netpan.log
 #
 # Please read ltp-yyyymmdd/testcases/network/stress/README before running
 
@@ -42,7 +42,7 @@ export IPV4_NETWORK_REVERSE=
 # export NS_TIMES=10000
 # export CONNECTION_TOTAL=4000
 # export IP_TOTAL=10000
-# export IP_TOTAL_FOR_TCPIP=100 
+# export IP_TOTAL_FOR_TCPIP=100
 # export ROUTE_TOTAL=10000
 # export MTU_CHANGE_TIMES=1000
 # export IF_UPDOWN_TIMES=10000
@@ -114,7 +114,7 @@ cat ${LTPROOT}/runtest/${TEST_CASE} > $TMPDIR/network_stress.tests
 cd $TMPDIR
 
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
- 
+
 if [ ${VERBOSE} = "yes" ]; then
 	echo "Network parameters:"
 	echo " - ${INTERFACE} local interface (MAC address: ${LHOST_HWADDRS})"

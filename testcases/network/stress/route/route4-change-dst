@@ -211,7 +211,7 @@ test_body()
     cnt=0
     while [ $cnt -lt $NS_TIMES ]; do
 	# Define the destination IP address
-	dst_network_postfix=`expr $cnt % 255` 
+	dst_network_postfix=`expr $cnt % 255`
 	dst_addr=${DST_NETWORK_PREFIX}.${dst_network_postfix}.${DST_HOST}
 	dst_network=${DST_NETWORK_PREFIX}.${dst_network_postfix}.0
 

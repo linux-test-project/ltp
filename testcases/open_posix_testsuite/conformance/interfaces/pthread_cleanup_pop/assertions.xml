@@ -2,7 +2,7 @@
   <assertion id="1" tag="ref:XSH6:32048:32049">
    The function
 
-   void pthread_cleanup_pop(int execute); 
+   void pthread_cleanup_pop(int execute);
 
   Shall remove the routine at the top of the calling thread's cancelation cleanup stack and
   optionally invoke it (if execute is non-zero).

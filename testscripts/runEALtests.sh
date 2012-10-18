@@ -1,11 +1,11 @@
 #!/bin/sh
 
 
-# 
-#  07/10/02 - Jeff Martin - martinjn@us.ibm.com: Added instance and 
+#
+#  07/10/02 - Jeff Martin - martinjn@us.ibm.com: Added instance and
 #                           time command line options
 #
-#  12/15/02 - Manoj Iyer  - manjo@mail.utexas.edu: Added options to run 
+#  12/15/02 - Manoj Iyer  - manjo@mail.utexas.edu: Added options to run
 #                           LTP under CPU, IO and MM load.
 #
 #  01/26/03 - Manoj Iyer  - manjo@mail.utexas.edu: Added -f option; Execute
@@ -14,15 +14,15 @@
 #  01/27/03 - Manoj Iyer  - manjo@mail.utexas.edu: Enabled formatted printing
 #                           of logfiles.
 #
-#  01/28/03 - Manoj Iyer  - manjo@mail.utexas.edu: added option to enable 
+#  01/28/03 - Manoj Iyer  - manjo@mail.utexas.edu: added option to enable
 #                           formatted printing of logfiles.
-#   
+#
 #  01/29/03 - Manoj Iyer  - manjo@mail.utexas.edu: merged networktests.sh with
 #                           this script, added the -n option to run these
 #                           tests. Also, added -h option to print help messages.
-#                          
-#  01/29/03 - Manoj Iyer  - manjo@mail.utexas.edu: 
-#                           added code to cause pan to print less verbose 
+#
+#  01/29/03 - Manoj Iyer  - manjo@mail.utexas.edu:
+#                           added code to cause pan to print less verbose
 #                           output.
 #  02/01/03 - Manoj Iyer  - manjo@mail.utexas.edu: Removed variables
 #                           initialization of RHOST and PASSWD.
@@ -45,12 +45,12 @@ quiet_mode=" "
 NetPipe=0
 GenLoad=0
 
-usage() 
+usage()
 {
 	cat <<-END >&2
-    usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] [-i # (in Mb)] [ -l logfile ] 
-                  [ -m # (in Mb)] -N -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
-                
+    usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] [-i # (in Mb)] [ -l logfile ]
+                  [ -m # (in Mb)] -N -n -q [ -r ltproot ] [ -t duration ] [ -x instances ]
+
     -c              Run LTP under additional background CPU load.
     -d tmpdir       Directory where temporary files will be created.
     -f cmdfile      Execute user defined list of testcases.
@@ -58,11 +58,11 @@ usage()
     -i # (in Mb)    Run LTP with a _minimum_ IO load of # megabytes in background.
     -l logfile      Log results of test in a logfile.
     -m # (in Mb)    Run LTP with a _minimum_ memory load of # megabytes in background.
-    -N              Run all the networking tests. 
+    -N              Run all the networking tests.
                     (export RHOST = remote hostname)
                     (export PASSWD = passwd of remote host)
     -n              Run LTP with network traffic in background.
-    -p              Human readable format logfiles. 
+    -p              Human readable format logfiles.
     -q              Print less verbose output to screen.
     -r ltproot      Fully qualified path where testsuite is installed.
     -t duration     Execute the testsuite for given duration in hours.
@@ -83,26 +83,26 @@ fi
 
 while getopts cd:f:hi:l:m:Nnpqr:t:x arg
 do  case $arg in
-    c)	   
+    c)
             $LTPROOT/../testcases/bin/genload --cpu 1 2>&1 1>/dev/null &
 	    GenLoad=1 ;;
-                
-    d)      # append $$ to TMP, as it is recursively 
+
+    d)      # append $$ to TMP, as it is recursively
             # removed at end of script.
             TMPBASE=$OPTARG;;
     f)        # Execute user defined set of testcases.
             cmdfile=$OPTARG;;
 
     h)	    usage;;
-    
-    i)        
+
+    i)
             bytesize=$(($OPTARG * 1024 * 1024))
             $LTPROOT/../testcases/bin/genload --io 1 2>&1 1>/dev/null &
             $LTPROOT/../testcases/bin/genload --hdd 0 --hdd-bytes $bytesize \
-            2>&1 1>/dev/null & 
+            2>&1 1>/dev/null &
 	    GenLoad=1 ;;
 
-    l)      
+    l)
             if [ ${OPTARG:0:1} != "/" ]
 			then
 				if [ -d $LTPROOT/results ]
@@ -122,10 +122,10 @@ do  case $arg in
 				logfile="-l $OPTARG"
 			fi ;;
 
-    m)      
-            memsize=$(($OPTARG * 1024 * 1024)) 
+    m)
+            memsize=$(($OPTARG * 1024 * 1024))
 	    $LTPROOT/../testcases/bin/genload  --vm 0 --vm-bytes $memsize\
-            2>&1 1>/dev/null & 
+            2>&1 1>/dev/null &
 	    GenLoad=1;;
 
     N)	    run_netest=1;;
@@ -139,8 +139,8 @@ do  case $arg in
 
     r)      LTPROOT=$OPTARG;;
 
-    t)      # In case you want to specify the time 
-            # to run from the command line 
+    t)      # In case you want to specify the time
+            # to run from the command line
             # (2m = two minutes, 2h = two hours, etc)
             duration="-t $OPTARG" ;;
 
@@ -157,7 +157,7 @@ then
 	echo "ERROR:"
 	echo "Please export enviroment variable PASSWD"
 	echo "INFO: export PASSWD = 'root's password'"
-    exit 1	
+    exit 1
 fi
 
 #if [ $run_netest -eq 1 ]
@@ -173,10 +173,10 @@ fi
 #		echo " "
 #		echo " "
 #		echo " "
-#		usage	
+#		usage
 #	fi
 #fi
-	
+
 if [ -n "$instances" ]; then
   instances="$instances -O ${TMP}"
 fi
@@ -197,7 +197,7 @@ then
 fi
 
 # The fsx-linux tests use the SCRATCHDEV environment variable as a location
-# that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
+# that can be reformatted and run on.  Set SCRATCHDEV if you want to run
 # these tests.  As a safeguard, this is disabled.
 unset SCRATCHDEV
 if [ -n "$SCRATCHDEV" ]; then
@@ -207,7 +207,7 @@ fi
 # display versions of installed software
 ${LTPROOT}/../ver_linux
 
-${LTPROOT}/../bin/ltp-pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
+${LTPROOT}/../bin/ltp-pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile
 
 if [ $? -eq 0 ]; then
   echo ltp-pan reported PASS
@@ -218,7 +218,7 @@ fi
 if [ $GenLoad -eq 1 ]
 then
 	killall -9 genload
-fi 
+fi
 
 if [ $NetPipe -eq 1 ]
 then

@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -39,32 +39,32 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
-	
+
+
 	"${FS_BIND_ROOT}/bin/makedir" share parent1
 	"${FS_BIND_ROOT}/bin/makedir" priv parent2
 	"${FS_BIND_ROOT}/bin/makedir" share share1
 	"${FS_BIND_ROOT}/bin/makedir" share parent1/child1
-	
+
 	mount --bind share1 parent1/child1
-	
+
 	mount --rbind "$disk1" parent1/child1
 	"${FS_BIND_ROOT}/bin/makedir" slave parent1/child1
-	
-	mount --rbind parent1 parent2 
-	
-	check parent1 parent2 
-	check parent1/child1/ parent2/child1 
-	
+
+	mount --rbind parent1 parent2
+
+	check parent1 parent2
+	check parent1/child1/ parent2/child1
+
 	mount --rbind "$disk2" parent1/child1/a
-	
+
 	check -n parent1/child1/a parent2/child1/a
 	check -n parent1/child1/a share1/a
-	
+
 	mount --rbind "$disk3" parent2/child1/b
-	
+
 	check -n parent1/child1/b parent2/child1/b
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "rbind/test26: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -93,6 +93,6 @@ then
 	exit 1
 else
 	tst_resm TPASS "rbind/test26: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

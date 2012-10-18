@@ -20,7 +20,7 @@
  */
 
 /*
- * Must be ported to OS's other than Linux 
+ * Must be ported to OS's other than Linux
  */
 
 #ifdef __linux__

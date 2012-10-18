@@ -1,6 +1,6 @@
  <assertions>
   <assertion id="1" tag="ref:XSH6:31763:31764">
-  The pthread_barrier_destroy( ) function shall destroy the barrier referenced by barrier and 
+  The pthread_barrier_destroy( ) function shall destroy the barrier referenced by barrier and
   release any resources used by the barrier.
   </assertion>
 

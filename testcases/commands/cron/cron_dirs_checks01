@@ -23,8 +23,8 @@
 #			/etc/cron.daily
 #			/etc/cron.hourly
 #			/etc/cron.monthly
-#			/etc/cron.weekly				
-#			/var/spool/cron				
+#			/etc/cron.weekly
+#			/var/spool/cron
 #	HISTORY:
 #		Jerone Young (jyoung5@us.ibm.com)
 #
@@ -34,7 +34,7 @@ DIRS="/etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.monthly /etc/cron.w
 EXIT_CODE=0
 for i in $DIRS
 do
-	cron_dirs_check $i	
+	cron_dirs_check $i
 	if [ $? != 0 ]
 	then
 		echo "$i FAILED TEST!!!!!"

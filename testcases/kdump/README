@@ -11,7 +11,7 @@ scenarios. Each test cycle does the following:
 4.  System reboots to 1st kernel.
 5.  vmcore is validated and results are saved.
 6.  After a 1 to 2 minute delay, the next crash scenario is setup and
-    run. 
+    run.
 
 The scripts make use of the crasher module for basic testing of kdump
 and the new Linux Kernel Dump Test Module (LKDTM) for more involved
@@ -34,7 +34,7 @@ distributions are welcome.
 1. Install these additional packages:
 
 For SLES10 or OpenSUSE Distro :
-   
+
    * kernel-kdump
    * kernel-source
    * kexec-tools
@@ -58,7 +58,7 @@ sample/.
 4.  Run "make". Carefully check for any errors.
 
 Few Important points to remember:
-      
+
 * If you need to stop the tests before all tests have run, run "crontab
 -r" and "killall runkdump.sh" within 1 minute after the 1st kernel
 reboots. Then, if you'd like to carry on tests from the point on, run

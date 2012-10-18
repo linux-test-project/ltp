@@ -45,15 +45,15 @@
 #define DEV_PATH                            "/dev"
 #define LTP_FS_DIR_NAME                   ""
 #define LTP_FS_DEV_NAME                   "LTPFS"
-#define LTP_FS_DEV_NODE_PATH              DEV_PATH "/" 
+#define LTP_FS_DEV_NODE_PATH              DEV_PATH "/"
 #define LTP_FS_DEVICE_NAME                DEV_PATH "/"  LTP_FS_DEV_NAME
-#define MINOR_SHIFT_BITS 3 
+#define MINOR_SHIFT_BITS 3
 #define MAX_PARTITIONS 8                    /* partition 0 + 7 more possible due to 3 bit partition number field */
 #define	MAX_NUM_DISKS 3                   /* number of real devices */
 
 #define MPDEV_FLAG_CLEAR 0
 #define MPDEV_FLAG_SET   1
-                       
+
 typedef struct _ltpdev_cmd {
     u_int32_t     cmd;           // input - 0==recover, 1==fail
     u_int32_t     status;        // ouput - 0==success

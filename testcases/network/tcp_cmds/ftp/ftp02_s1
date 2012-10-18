@@ -30,8 +30,8 @@
 #                (If WS system, no vsftpd; connection will fail.)
 
 set RHOST $env(RHOST)
-set TEST_USER $env(TEST_USER) 
-set TEST_USER_PASSWD $env(TEST_USER_PASSWD) 
+set TEST_USER $env(TEST_USER)
+set TEST_USER_PASSWD $env(TEST_USER_PASSWD)
 set TEST_USER_HOMEDIR $env(TEST_USER_HOMEDIR)
 
 #RUSER

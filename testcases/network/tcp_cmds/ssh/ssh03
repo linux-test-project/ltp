@@ -16,9 +16,9 @@
 #   along with this program;  if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-#  FILE   : ssh 
+#  FILE   : ssh
 #
-#  PURPOSE: Tests to see that ssh allows a valid username (non-root) 
+#  PURPOSE: Tests to see that ssh allows a valid username (non-root)
 #
 #  SETUP: The program `/usr/bin/expect' MUST be installed.
 #
@@ -47,7 +47,7 @@ do_setup()
 
     exists expect ssh ssh03_s1 useradd userdel
 
-    userdel $TEST_USER 
+    userdel $TEST_USER
     sleep 1
 
     if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then
@@ -81,7 +81,7 @@ do_cleanup()
 # FUNCTION:  MAIN
 #
 # DESCRIPTION: Create Test User
-#              Call upon script to make sure an invalid user can not have access 
+#              Call upon script to make sure an invalid user can not have access
 #              Cleanup Test User from system
 #              Exit with exit code of script called upon
 #-----------------------------------------------------------------------

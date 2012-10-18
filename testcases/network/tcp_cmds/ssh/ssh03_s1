@@ -16,7 +16,7 @@
 #   along with this program;  if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-#  FILE   : ssh 
+#  FILE   : ssh
 #
 #  PURPOSE: Tests to see that ssh accepts a valid user (non-root)
 #
@@ -38,7 +38,7 @@ set timeout 90
 
 send_user "TEST: SSH allow (non-root) valid User \n"
 
-set RUSER $TEST_USER 
+set RUSER $TEST_USER
 set PASSWD $TEST_USER_PASSWD
 
 
@@ -59,4 +59,4 @@ while 1 {
     sleep 1
 }
 
-exit 0 
+exit 0

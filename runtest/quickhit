@@ -8,7 +8,7 @@ alarm01 alarm01
 alarm02 alarm02
 # Boundary Value Test for alarm(2)
 #    TEST CASES
-#      Test Case One - A call to alarm() shall not return an error if 
+#      Test Case One - A call to alarm() shall not return an error if
 #       seconds is a -1.
 #       Test FAILS if a non-zero value is returned.
 #      Test Case Two - A call to alarm() shall not return an error if
@@ -29,7 +29,7 @@ asyncio02 asyncio02
 # 	Repeated call to testrun() with decreasing write sizes
 # 		less than BUFSIZ
 # 	End
-# 
+#
 # 	Start testrun()
 # 	Attempt to open a temporary file.
 # 	Write the memory to the file.
@@ -127,16 +127,16 @@ fork04 fork04
 # Child inheritance of Environment Variables after fork()
 #    TEST CASES
 #       Test these environment variables correctly inherited by child:
-#       1. TERM 
+#       1. TERM
 #       2. NoTSetzWq
-#       3. TESTPROG 
+#       3. TESTPROG
 fork05 fork05
 # This is a test sent in my Ulrich Drepper to test for a bug in fork() where
 # %gs is not handled correctly.  See fork05.c for a copy of Ulrich's email
 fpathconf01 fpathconf01
 # Basic test for fpathconf(2)
 fstat01 fstat01
-# Basic test for fstat(2) 
+# Basic test for fstat(2)
 fstatfs01 fstatfs01
 # Basic test for fstatfs(2)
 fsync01 fsync01
@@ -146,7 +146,7 @@ getegid01 getegid01
 geteuid01 geteuid01
 # Basic test for geteuid(2)
 getgid01 getgid01
-# Basic test for getgid(2) 
+# Basic test for getgid(2)
 getgroups01 getgroups01
 # Getgroups system call critical test
 #    TEST CASES
@@ -164,13 +164,13 @@ gethostid01 gethostid01
 gethostname01 gethostname01
 # Basic test for gethostname(2)
 getpgrp01 getpgrp01
-# Basic test for getpgrp(2) 
+# Basic test for getpgrp(2)
 getpid01 getpid01
-# Basic test for getpid(2) 
+# Basic test for getpid(2)
 getppid01 getppid01
-# Basic test for getppid(2) 
+# Basic test for getppid(2)
 getuid01 getuid01
-# Basic test for getuid(2) 
+# Basic test for getuid(2)
 kill02 kill02
 # Sending a signal to processes with the same process group ID.
 kill09 kill09
@@ -248,7 +248,7 @@ setuid01 setuid01
 sighold02 sighold02
 # Holding all signals
 signal03 signal03
-# Boundary value and other invalid value checking of signal setup 
+# Boundary value and other invalid value checking of signal setup
 # and signal sending.
 sigrelse01 sigrelse01
 # Releasing held signals
@@ -261,7 +261,7 @@ statfs01 statfs01
 statvfs01 statvfs01
 # Basic test for statvfs(2) mounted filesys
 sync01 sync01
-# Basic test for sync(2) 
+# Basic test for sync(2)
 time01 time01
 # Basic test for time(2)
 times01 times01

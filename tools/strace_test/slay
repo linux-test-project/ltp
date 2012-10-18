@@ -1,10 +1,10 @@
 #!/bin/sh
 #
 # slay 2.0 - kill all processes belonging to the specified user(s).
-# originally by Chris Ausbrooks <fish@bucket.ualr.edu> 
+# originally by Chris Ausbrooks <fish@bucket.ualr.edu>
 # based on kall (a script of unknown origin)
 # Heavily rewritten by Pawel Wiecek <coven@debian.org> for Debian
-# This is a free software distributed according to terms of GNU GPL 
+# This is a free software distributed according to terms of GNU GPL
 # (see /usr/share/common-licenses/GPL)
 
 # Revision history:
@@ -77,7 +77,7 @@ then
     echo "       Kills all processes belonging to any of the given names."
     echo "       Use -clean as a signal name to kill with TERM first and then with KILL."
   fi
-  exit -1 
+  exit -1
 fi
 
 # Misuse trap.

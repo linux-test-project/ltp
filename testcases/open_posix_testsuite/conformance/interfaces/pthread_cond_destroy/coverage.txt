@@ -5,7 +5,7 @@ Assertion	Tested?
 2		YES
 3		YES
 4		NO  * When it specifies it 'may' fail and not 'shall' fail,
-		      it will always return PASS, but will return a 
+		      it will always return PASS, but will return a
 		      PASS and print out a warning if it fails.
-		    * EBUSY is tested 
+		    * EBUSY is tested
 NOTE:

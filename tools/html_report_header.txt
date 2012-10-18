@@ -37,7 +37,7 @@
 
 <h2 id="_1">Detailed Report</h2>
 <div>
-<table border="1" cellspacing="3"> 
+<table border="1" cellspacing="3">
 <tbody>
     <tr>
       <td bgcolor="Silver"><strong>No</strong></td>

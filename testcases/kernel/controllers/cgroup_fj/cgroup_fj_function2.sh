@@ -60,7 +60,7 @@ export TMPFILE=$TESTROOT/tmp_tasks
 case1()
 {
 	do_mkdir 1 1 /dev/cgroup/subgroup_2
-	
+
 	do_echo 1 0 $pid /dev/cgroup/subgroup_1/tasks
 	sleep 1
 	do_echo 1 0 $pid /dev/cgroup/subgroup_2/tasks
@@ -71,11 +71,11 @@ case1()
 case2()
 {
 	do_mkdir 1 1 /dev/cgroup/subgroup_2
-	
+
 	$TESTROOT/cgroup_fj_proc &
 	pid2=$!
 	sleep 1
-	
+
 	cat /dev/cgroup/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
 	for i in `seq 1 $nlines`
@@ -85,9 +85,9 @@ case2()
 			do_echo 1 0 "$cur_pid" /dev/cgroup/subgroup_1/tasks
 		fi
 	done
-	
+
 	sleep 1
-	
+
 	cat /dev/cgroup/subgroup_1/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
 	for i in `seq 1 $nlines`
@@ -97,9 +97,9 @@ case2()
 			do_echo 1 0 "$cur_pid" /dev/cgroup/subgroup_2/tasks
 		fi
 	done
-	
+
 	sleep 1
-	
+
 	cat /dev/cgroup/subgroup_2/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
 	for i in `seq 1 $nlines`
@@ -116,25 +116,25 @@ case3()
 	exist_subsystem "cpuset"
 	exist_subsystem "ns"
 	do_mount 1 1 "-odebug,cpuset,ns" /dev/cgroup cgroup1
-	
+
 	mount_str="`mount -l | grep /dev/cgroup2`"
 	if [ "$mount_str" != "" ]; then
 		do_umount 0 1 /dev/cgroup2
 	fi
-	
+
 	if [ -e /dev/cgroup2 ]; then
 		do_rmdir 1 1 /dev/cgroup2
 	fi
-	
+
 	do_mkdir 1 1 /dev/cgroup2
 
 	exist_subsystem "cpu"
 	exist_subsystem "cpuacct"
 	exist_subsystem "memory"
 	do_mount 1 1 "-ocpu,cpuacct,memory" /dev/cgroup2 cgroup2
-	
+
 	sleep 1
-	
+
 	do_umount 0 1 /dev/cgroup
 	do_rmdir 0 1 /dev/cgroup
 	do_umount 0 1 /dev/cgroup2
@@ -146,22 +146,22 @@ case4()
 	exist_subsystem "cpuset"
 	exist_subsystem "ns"
 	do_mount 1 1 "-odebug,cpuset,ns" /dev/cgroup cgroup1
-	
+
 	mount_str="`mount -l | grep /dev/cgroup2`"
 	if [ "$mount_str" != "" ]; then
 		do_umount 1 1 /dev/cgroup2
 	fi
-	
+
 	if [ -e /dev/cgroup2 ]; then
 		do_rmdir 0 1 /dev/cgroup2
 	fi
-	
+
 	do_mkdir 0 1 /dev/cgroup2
-	
+
 	do_mount 1 1 "-odebug,cpuset,ns" /dev/cgroup2 cgroup2
-	
+
 	sleep 1
-	
+
 	do_umount 0 1 /dev/cgroup
 	do_rmdir 0 1 /dev/cgroup
 	do_umount 0 1 /dev/cgroup2
@@ -174,22 +174,22 @@ case5()
 	exist_subsystem "ns"
 	exist_subsystem "memory"
 	do_mount 1 1 "-odebug,cpuset,ns" /dev/cgroup cgroup1
-	
+
 	mount_str="`mount -l | grep /dev/cgroup2`"
 	if [ "$mount_str" != "" ]; then
 		do_umount 1 1 /dev/cgroup2
 	fi
-	
+
 	if [ -e /dev/cgroup2 ]; then
 		do_rmdir 0 1 /dev/cgroup2
 	fi
-	
+
 	do_mkdir 0 1 /dev/cgroup2
-	
+
 	do_mount 0 1 "-odebug,cpuset,memory" /dev/cgroup2 cgroup2
-	
+
 	sleep 1
-	
+
 	do_umount 0 1 /dev/cgroup
 	do_rmdir 0 1 /dev/cgroup
 	do_umount 0 1 /dev/cgroup2
@@ -202,22 +202,22 @@ case6()
 	exist_subsystem "cpuset"
 	exist_subsystem "ns"
 	do_mount 1 1 "-odebug,cpuset,ns" /dev/cgroup cgroup1
-	
+
 	mount_str="`mount -l | grep /dev/cgroup2`"
 	if [ "$mount_str" != "" ]; then
 		do_umount 1 1 /dev/cgroup2
 	fi
-	
+
 	if [ -e /dev/cgroup2 ]; then
 		do_rmdir 0 1 /dev/cgroup2
 	fi
-	
+
 	do_mkdir 0 1 /dev/cgroup2
-	
+
 	do_mount 0 1 "-oall" /dev/cgroup2 cgroup2
-	
+
 	sleep 1
-	
+
 	do_umount 0 1 /dev/cgroup
 	do_rmdir 0 1 /dev/cgroup
 	do_umount 0 1 /dev/cgroup2
@@ -227,14 +227,14 @@ case6()
 case7()
 {
 	do_mkdir 0 1 /dev/cgroup/subgroup_2
-	
+
 	do_mv 0 1 /dev/cgroup/subgroup_1 /dev/cgroup/subgroup_3
 }
 
 case8()
 {
 	do_mkdir 0 1 /dev/cgroup/subgroup_2
-	
+
 	do_mv 0 0 /dev/cgroup/subgroup_1 /dev/cgroup/subgroup_2
 }
 
@@ -244,15 +244,15 @@ case9()
 	if [ "$mount_str" != "" ]; then
 		do_umount 1 1 /dev/cgroup2
 	fi
-	
+
 	if [ -e /dev/cgroup2 ]; then
 		do_rmdir 0 1 /dev/cgroup2
 	fi
-	
+
 	do_mkdir 0 1 /dev/cgroup2
-	
+
 	do_mkdir 0 1 /dev/cgroup2/subgroup_2
-	
+
 	do_mv 0 1 /dev/cgroup/subgroup_1 /dev/cgroup/subgroup_2
 
 	sleep 1
@@ -264,31 +264,31 @@ case9()
 case10()
 {
 	do_mkdir 0 1 /dev/cgroup/subgroup_2
-	
+
 	do_mv 0 0 /dev/cgroup/subgroup_1 /dev/cgroup/tasks
 }
 
 case11()
 {
 	do_echo 0 1 $pid /dev/cgroup/subgroup_1/tasks
-	
+
 	sleep 1
-	
+
 	do_rmdir 0 0 /dev/cgroup/subgroup_1
-	
+
 	sleep 1
-	
+
 	do_echo 1 1 $pid /dev/cgroup/tasks
 }
 
 case12()
 {
 	do_mkdir 0 1 /dev/cgroup/subgroup_1/subgroup_1_1
-	
+
 	sleep 1
-	
+
 	do_rmdir 0 0 /dev/cgroup/subgroup_1
-	
+
 	do_rmdir 1 1 /dev/cgroup/subgroup_1/subgroup_1_1
 }
 
@@ -307,7 +307,7 @@ echo "-------------------------------------------------------------------------"
 echo "case no : $CASENO1" >> $LOGFILE
 echo `date` >> $LOGFILE
 
-exist_subsystem "debug"	
+exist_subsystem "debug"
 setup;
 
 echo "INFO: now we begin to test no $CASENO1 ..." >> $LOGFILE
@@ -325,5 +325,5 @@ cleanup;
 if [ $caseno -lt 3 ] || [ $caseno -gt 6 ]; then
 	do_kill 1 1 9 $pid
 fi
-sleep 1	
+sleep 1
 exit 0;

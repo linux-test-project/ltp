@@ -1,7 +1,7 @@
-This document defines the coverage for function pthread_sigmask(). The functions pthread_sigmask() 
+This document defines the coverage for function pthread_sigmask(). The functions pthread_sigmask()
 and sigprocmask() are equivalent functions, but pthread_sigmask() should also work in a
 multi-threaded process. The tests in this section are similar in n nature to the tests for the
-sigprocmask() function, but calls will be made from threads that belong to multi-threaded processes 
+sigprocmask() function, but calls will be made from threads that belong to multi-threaded processes
 instead of single-threaded processes.
 
 Assertion	Covered?

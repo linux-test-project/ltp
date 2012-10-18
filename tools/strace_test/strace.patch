@@ -4,7 +4,7 @@ diff -urN strace-4.5.1/defs.h devel/defs.h
 @@ -456,6 +456,9 @@
  extern void printtv32 P((struct tcb*, long));
  extern void tprint_iov P((struct tcb *, int, long));
- 
+
 +extern int test_percent;
 +extern void test_syscall P((struct tcb *));
 +
@@ -21,7 +21,7 @@ diff -urN strace-4.5.1/Makefile.am devel/Makefile.am
 -		 proc.c stream.c
 +		 proc.c stream.c tester.c
  noinst_HEADERS = defs.h
- 
+
  EXTRA_DIST = $(man_MANS) errnoent.sh signalent.sh syscallent.sh ioctlsort.c \
 diff -urN strace-4.5.1/Makefile.in devel/Makefile.in
 --- strace-4.5.1/Makefile.in	2003-11-06 18:24:18.000000000 -0800
@@ -32,9 +32,9 @@ diff -urN strace-4.5.1/Makefile.in devel/Makefile.in
  		 resource.c signal.c sock.c system.c term.c time.c \
 -		 proc.c stream.c
 +		 proc.c stream.c tester.c
- 
+
  noinst_HEADERS = defs.h
- 
+
 @@ -210,7 +210,7 @@
  	ioctl.$(OBJEXT) mem.$(OBJEXT) net.$(OBJEXT) process.$(OBJEXT) \
  	bjm.$(OBJEXT) resource.$(OBJEXT) signal.$(OBJEXT) \
@@ -73,7 +73,7 @@ diff -urN strace-4.5.1/strace.c devel/strace.c
 +  /* this just slows things down so it's commented out */
 +  /*
  	va_list args;
- 
+
  	VA_START(args, fmt);
 @@ -2232,6 +2237,7 @@
  	}
@@ -81,7 +81,7 @@ diff -urN strace-4.5.1/strace.c devel/strace.c
  	return;
 +  */
  }
- 
+
  void
 diff -urN strace-4.5.1/syscall.c devel/syscall.c
 --- strace-4.5.1/syscall.c	2003-11-01 14:11:22.000000000 -0800
@@ -89,7 +89,7 @@ diff -urN strace-4.5.1/syscall.c devel/syscall.c
 @@ -2118,6 +2118,7 @@
  			return 0;
  		}
- 
+
 +		test_syscall(tcp);
  		if (tcp->flags & TCB_REPRINT) {
  			printleader(tcp);
@@ -105,28 +105,28 @@ diff -urN strace-4.5.1/tester.c devel/tester.c
 +
 +int test_percent = 20;
 +
-+int 
++int
 +zero(arg)
 +int arg;
 +{
 +	return 0;
 +}
 +
-+int 
++int
 +one(arg)
 +int arg;
 +{
 +	return 1;
 +}
 +
-+int 
++int
 +minus_one(arg)
 +int arg;
 +{
 +	return -1;
 +}
 +
-+int 
++int
 +maxed(arg)
 +int arg;
 +{
@@ -175,7 +175,7 @@ diff -urN strace-4.5.1/tester.c devel/tester.c
 +
 +static int test_counter;
 +static jmp_buf safe_state;
-+void 
++void
 +handle_segv(num)
 +int num;
 +{
@@ -208,19 +208,19 @@ diff -urN strace-4.5.1/tester.c devel/tester.c
 +		f = magics[(test_counter + rand_offset) % len_magics];
 +		test_counter++;
 +		val = f(val_init);
-+		
-+		syscall(tcp->scno, 
-+			(narg == 0)? val: tcp->u_arg[0], 
-+			(narg == 1)? val: tcp->u_arg[1], 
-+			(narg == 2)? val: tcp->u_arg[2], 
-+			(narg == 3)? val: tcp->u_arg[3], 
-+			(narg == 4)? val: tcp->u_arg[4], 
++
++		syscall(tcp->scno,
++			(narg == 0)? val: tcp->u_arg[0],
++			(narg == 1)? val: tcp->u_arg[1],
++			(narg == 2)? val: tcp->u_arg[2],
++			(narg == 3)? val: tcp->u_arg[3],
++			(narg == 4)? val: tcp->u_arg[4],
 +			(narg == 5)? val: tcp->u_arg[5]);
 +	}
 +	signal(SIGSEGV, SIG_DFL);
 +}
 +
-+void 
++void
 +test_syscall(tcp)
 +struct tcb *tcp;
 +{

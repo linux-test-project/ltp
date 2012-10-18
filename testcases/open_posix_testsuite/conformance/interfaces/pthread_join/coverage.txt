@@ -7,6 +7,6 @@ Assertion	Tested?
 4		NO ** Skipping for now.
 5		YES
 6		YES ** When it specifies 'may' fail and not 'shall' fail,
-		      it will always return PASS, but will return a 
+		      it will always return PASS, but will return a
 		      PASS and print out a warning if it fails.
 NOTE:

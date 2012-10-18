@@ -18,8 +18,8 @@
    timer_gettime() returns -1 on failure
   </assertion>
   <assertion id="6" tag="ref:XSH6TC2:46940:46941 pt:TMR">
-   If timer ID does not correspond to a valid timer ID (i.e., one created 
-   using timer_create() but not yet deleted with timer_delete()), 
+   If timer ID does not correspond to a valid timer ID (i.e., one created
+   using timer_create() but not yet deleted with timer_delete()),
    timer_gettime() may return errno==EINVAL.
   </assertion>
 </assertions>

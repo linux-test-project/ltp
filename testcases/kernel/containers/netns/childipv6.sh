@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -24,7 +24,7 @@
 # This test scripts passes the PID of the child NS to the parent NS.
 # Also it assigns the device address and starts the sshd daemon
 # It checks for basic network connection between parent and child.
-# It renames the network device of the child 
+# It renames the network device of the child
 #
 # Arguments:    Accepts an argument 'script' and executes on top of this
 ################################################################################
@@ -39,19 +39,19 @@ export TST_COUNT
 export TST_TOTAL
 .  initialize.sh
 status=0
-    
-    # Passing the PID of child 
+
+    # Passing the PID of child
     echo $$ > /tmp/FIFO1
-    
+
     # waiting for the virt-eth devname and IPv6 addr from parent
     vnet1=`cat /tmp/FIFO2`
     # Assigning the dev addresses
     ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1
     ifconfig lo up
     sleep 2
-    
+
     #starting the sshd inside the child NS
-    /usr/sbin/sshd -p $PORT 
+    /usr/sbin/sshd -p $PORT
     if [ $? = 0 ]; then
         debug "INFO: started the sshd @ port no $PORT"
         sshpid=`ps -ef | grep "sshd -p $PORT" | awk '{ print $2 ; exit 0} ' `
@@ -59,15 +59,15 @@ status=0
         tst_resm TFAIL "Failed in starting ssh @ port $PORT"
         status=1
     fi
-    
+
     childIPv6=`ip -6 addr show dev $vnet1 | awk ' /inet6/ { print $2 } ' | awk -F"/" ' { print $1 } '`
     echo $childIPv6 >> /tmp/FIFO3
-    
+
     parIPv6=`cat /tmp/FIFO4`
     debug "INFO: Received the Ipv6 addr $parIPv6"
 
     # checking if parent ns responding
-    ping6 -I $vnet1 -qc 2 $parIPv6 >/dev/null 2>&1 
+    ping6 -I $vnet1 -qc 2 $parIPv6 >/dev/null 2>&1
            if [ $? = 0 ] ; then
                tst_resm TINFO "IPv6: Pinging Parent from Child: PASS"
             else

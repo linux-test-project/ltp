@@ -17,5 +17,5 @@ following.
    ok> boot floppy:,\<kernel image> load_ramdisk=1 ramdisk_size=128000
    root=/dev/fd0h1440 video=keep (hit enter)
 4. when prompted for root disk, remove floppy 1 and insert floppy 2 (hit enter)
-   
+
 

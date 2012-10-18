@@ -115,7 +115,7 @@ do_cleanup()
 
     # Make sure to delete the temporary files
     rm -f $message_file
-    
+
     # Initialize the interface
     initialize_if lhost ${LINK_NUM}
     initialize_if rhost ${LINK_NUM}

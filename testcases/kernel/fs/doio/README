@@ -6,18 +6,18 @@ This file contains some very basic information on:
    growfiles
 
 All tools use the -h flag for printing some form of help (sometimes voluminous).
-They are extremely configurable; the examples below are some common uses. 
+They are extremely configurable; the examples below are some common uses.
 Read the help and experiment!   This testing tools were originally written
-to test UNICOS's NC1 and IRIX XFS filesystems. 
+to test UNICOS's NC1 and IRIX XFS filesystems.
 
 
 IOGEN & DOIO
 =============
 
 This is a pair of programs that does basic I/O operations on a set of files.
-The file offset, I/O length, I/O operation, and what open(2) flags are 
+The file offset, I/O length, I/O operation, and what open(2) flags are
 selected randomly from a pre-defined or commandline given set. All data
-written can be verified (this is the usual method). 
+written can be verified (this is the usual method).
 
 rwtest is a shell script that is a wrapper of iogen and doio.
 
@@ -37,7 +37,7 @@ rwtest -c -i 0 -T 64b 500b:/tmp/rwtest01%f
 GROWFILES
 =============
 
-Growfiles will create and truncate files in gradual steps using write, and 
+Growfiles will create and truncate files in gradual steps using write, and
 lseek. All system calls are checked for proper returns. The writes or the
 whole file content can be verified.  It can cause disk fragmentation.
 

@@ -16,7 +16,7 @@
 #   along with this program;  if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-#  FILE   : ssh 
+#  FILE   : ssh
 #
 #  PURPOSE: Tests to see that ssh rejects an invalid username
 #
@@ -47,7 +47,7 @@ set PASSWD $TEST_USER_PASSWD
 spawn ssh -l $RUSER $RHOST
 
 while 1 {
-    sleep 2 
+    sleep 2
     expect {
 
         "Are you sure you want to continue connecting (yes/no)?" { exp_send "yes\r"}

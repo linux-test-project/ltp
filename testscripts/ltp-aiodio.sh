@@ -3,9 +3,9 @@
 # A valid large file should be passed to the test.
 # These tests will only run correctly if the kernel and libaio has been compiled
 # with at least a 3.3.X GCC. Older versions of the compiler will seg fault.
-# 
-# 02/08/04 mridge@us.ibm.com 
-# 
+#
+# 02/08/04 mridge@us.ibm.com
+#
 # 04/12/06 a Forth scenerio file has been added ltp-aiodio.part4
 #
 
@@ -25,7 +25,7 @@ nextTest=0
 runExtendedStress=0
 
 export TMPBASE="/tmp"
-usage() 
+usage()
 {
 	cat <<-END >&2
 	usage: ${0##*/} [ -f large_filename -b partition] [-o optional partition] [-e 1] [-t 1] [-j 1] [-x 1] or [-a 1]
@@ -53,8 +53,8 @@ usage()
           but there is not a default filesystem. ReiserFS does not support AIO so these tests will not support ReiserFS.
 
         - WARNING !! The partition you pass will be overwritten. This is a destructive test so only pass a partition where data can be destroyed.
-          
-        
+
+
 
 	END
 exit
@@ -70,7 +70,7 @@ do      case $arg in
 		x)	xfs=$OPTARG;;
 		j)	jfs=$OPTARG;;
 		a)	allfs=$OPTARG;;
-			
+
                 \?)     echo "************** Help Info: ********************"
                         usage;;
         esac
@@ -131,9 +131,9 @@ if [ "$run0" -eq 0 ]; then
   usage;
 fi
 
-mkdir $TMP  > /dev/null 2>&1 
-mkdir $TMP/aiodio > /dev/null  2>&1 
-mkdir $TMP/aiodio2 > /dev/null  2>&1 
+mkdir $TMP  > /dev/null 2>&1
+mkdir $TMP/aiodio > /dev/null  2>&1
+mkdir $TMP/aiodio2 > /dev/null  2>&1
 
 while [ "$runTest" -lt "$run0" ]
 do
@@ -142,7 +142,7 @@ echo "runTest=$runTest run0=$run0 nextTest=$nextTest"
 
 if [ -n "$ext2" -a $nextTest -eq 0 ]; then
   echo "***************************"
-  echo "* Testing ext2 filesystem *" 
+  echo "* Testing ext2 filesystem *"
   echo "***************************"
   mkfs -t ext2 $part1
   mount -t ext2 $part1 $TMP/aiodio
@@ -227,7 +227,7 @@ mkdir $TMP/aiodio/junkdir
 dd if=$file1 of=$TMP/aiodio/junkfile bs=8192 conv=block,sync
 
 date
-echo "************ Running aio-stress tests " 
+echo "************ Running aio-stress tests "
 echo "current working dir = ${PWD}"
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
 
@@ -240,7 +240,7 @@ echo "************ End Running aio-stress tests "
 echo ""
 
 if [ "$runExtendedStress" -eq 1 ];then
-echo "************ Running EXTENDED aio-stress tests " 
+echo "************ Running EXTENDED aio-stress tests "
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part2 > ${TMPBASE}/ltp-aio-stress.part2
 
 ${LTPROOT}/bin/ltp-pan -e -S -a ltpaiostresspart2 -n ltp-aiostresspart2 -l ltpaiostress.logfile -o ltpaiostress.outfile -p -f ${TMPBASE}/ltp-aio-stress.part2 &
@@ -255,7 +255,7 @@ dd if=$file1 of=$TMP/aiodio/ff1      bs=2048 conv=block,sync
 dd if=$file1 of=$TMP/aiodio/ff2      bs=1024 conv=block,sync
 dd if=$file1 of=$TMP/aiodio/ff3      bs=512  conv=block,sync
 
-echo "************ Running aiocp tests " 
+echo "************ Running aiocp tests "
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part1 > ${TMPBASE}/ltp-aiodio.part1
 
 ${LTPROOT}/bin/ltp-pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l ltpaiodio1.logfile -o ltpaiodio1.outfile -p -f ${TMPBASE}/ltp-aiodio.part1 &
@@ -265,7 +265,7 @@ sync
 echo "************ End Running aiocp tests "
 echo ""
 
-echo "************ Running aiodio_sparse tests " 
+echo "************ Running aiodio_sparse tests "
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part2 > ${TMPBASE}/ltp-aiodio.part2
 
 ${LTPROOT}/bin/ltp-pan -e -S -a ltpaiodiopart2 -n ltp-aiodiopart2 -l ltpaiodio2.logfile -o ltpaiodio2.outfile -p -f ${TMPBASE}/ltp-aiodio.part2 &
@@ -295,7 +295,7 @@ dd if=$file1 of=$TMP/aiodio/file5      bs=4096 conv=block,sync
 
 
 
- 
+
 echo "************ Running dio_sparse & miscellaneous tests "
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part4 > ${TMPBASE}/ltp-aiodio.part4
 ${LTPROOT}/bin/ltp-pan -e -S -a ltpaiodiopart4 -n ltp-aiodiopart4 -l ltpaiodio4.logfile -o ltpaiodio4.outfile -p -f ${TMPBASE}/ltp-aiodio.part4 &
@@ -305,7 +305,7 @@ sync
 echo "************ End Running dio_sparse & miscellaneous tests "
 echo ""
 
-echo "************ Cleaning/Umounting" 
+echo "************ Cleaning/Umounting"
 
 rm -f $TMP/aiodio/fff
 rm -f $TMP/aiodio/ff1

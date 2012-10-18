@@ -37,7 +37,7 @@
 #define __MALLOC_STANDARD__
 #endif
 #include <errno.h>
-/* 
+/*
  * NOTE: struct mallinfo is only exported via malloc.h (not stdlib.h), even
  * though it's an obsolete header for malloc(3).
  *

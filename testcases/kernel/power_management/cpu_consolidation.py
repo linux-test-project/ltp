@@ -43,11 +43,11 @@ def main(argv=None):
         count_num_sockets()
         if is_hyper_threaded():
             generate_sibling_list()
-        
+
         # User should set option -v to test cpu consolidation
         # resets when sched_mc &(/) sched_smt is disabled when
         # workload is already running in the system
- 
+
         if options.vary_mc_smt:
 
             # Since same code is used for testing package consolidation and core
@@ -73,7 +73,7 @@ def main(argv=None):
             else:
                 #Wait for 120 seconds and then validate cpu consolidation works
                 #When sched_mc & sched_smt is set
-                trigger_kernbench (options.smt_value, "partial", background, pinned, "no") 
+                trigger_kernbench (options.smt_value, "partial", background, pinned, "no")
                 work_ld="kernbench"
                 import time
                 time.sleep(300)
@@ -112,7 +112,7 @@ def main(argv=None):
                 print "INFO: CPU consolidation failed when sched_mc &(/) \
 sched_smt was enabled. This is pre-requisite to proceed"
                 return(status)
-        else:           
+        else:
             #The else part of the code validates behaviour of sched_mc
             # and sched_smt set to 0, 1 & 2
             if is_multi_socket():
@@ -136,7 +136,7 @@ sched_smt was enabled. This is pre-requisite to proceed"
             reset_schedmc()
             if is_hyper_threaded():
                 reset_schedsmt()
-            return(status)        
+            return(status)
     except Exception, details:
         print "INFO: CPU consolidation failed", details
         return(1)

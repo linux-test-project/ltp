@@ -47,7 +47,7 @@ static int child_busy(int fd)
 
 	/* Tell the parent we're ready */
 	write(fd, "go", 2);
-	
+
 	for (;;) {
 		rc = sched_yield();
 		if (rc) {

@@ -253,7 +253,7 @@ test01()
     done
 
     rm -f $FTP_DOWNLOAD_DIR/$TESTFILE
-    
+
     if $not_run_rmtscript ; then
 	tst_resm TBROK "Failed to run the test script at the remote host"
 	rm -f $message_file

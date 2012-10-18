@@ -1,9 +1,9 @@
 Strace Test
 
 Introduction:
-Strace Test is designed to test the kernel by calling syscalls improperly.  
+Strace Test is designed to test the kernel by calling syscalls improperly.
 It uses ltp as a base to generate realistic syscalls and then it randomly
-calls improper variations of those system calls. 
+calls improper variations of those system calls.
 
 The tests are started by root but they are run with user permisions.  The root
 user needs to restart the tests around every 10 seconds.

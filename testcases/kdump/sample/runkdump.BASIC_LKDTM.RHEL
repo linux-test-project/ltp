@@ -24,7 +24,7 @@ MAKE_OPTIONS=
 # Delay in seconds when dumping to a network destination.
 LINK_DELAY=
 
-# The list of testcases. Please see doc for the overview of 
+# The list of testcases. Please see doc for the overview of
 # those tests.
 
 # ACS ACP ACB ACE ACL

@@ -51,7 +51,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	sar -P ALL 1 0 > $TMP/log_$$ &
 	sleep 2
 	SAR_PID=$!
-	
+
 	# Verify that SAR has correctly listed the missing CPU as 'nan'
 	while ! grep -iq nan $TMP/log_$$; do
 		tst_resm TFAIL "CPU${CPU_TO_TEST} Not Found on SAR!"
@@ -72,7 +72,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 		tst_resm TFAIL "CPU${CPU_TO_TEST} cannot be onlined line"
 		exit_clean 1
 	fi
-	
+
 	sleep 1
 	time=$(date +%T)
 	sleep .5

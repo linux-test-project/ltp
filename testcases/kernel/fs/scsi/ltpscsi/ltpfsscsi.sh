@@ -1,8 +1,8 @@
 #!/bin/sh
 # This script should be run to execute the filesystem tests on SCSI vitual devices.
 # 10/21/03 mridge@us.ibm.com Initial creation of testcases
-# 
-# 
+#
+#
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -15,7 +15,7 @@ fi
 export TMPBASE="/tmp"
 
 
-usage() 
+usage()
 {
 	cat <<-END >&2
 	usage: ${0##*/} [ -a part1 ] [ -b part2 ] [ -k Kernel Path - fully qualified kernel path ]
@@ -41,7 +41,7 @@ do      case $arg in
                 b)      part2=$OPTARG;;
                 c)      part3=$OPTARG;;
                 k)      kernpath=$OPTARG;;
-			
+
                 \?)     echo "************** Help Info: ********************"
                         usage;;
         esac
@@ -74,12 +74,12 @@ fi
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 
-mkdir /test                   >/dev/null 2>&1 
-mkdir /test/growfiles         >/dev/null 2>&1  
-mkdir /test/growfiles/scsi    >/dev/null 2>&1  
-mkdir /test/growfiles/scsi/ext2    >/dev/null 2>&1  
-mkdir /test/growfiles/scsi/ext3    >/dev/null 2>&1  
-mkdir /test/growfiles/scsi/reiser  >/dev/null 2>&1  
+mkdir /test                   >/dev/null 2>&1
+mkdir /test/growfiles         >/dev/null 2>&1
+mkdir /test/growfiles/scsi    >/dev/null 2>&1
+mkdir /test/growfiles/scsi/ext2    >/dev/null 2>&1
+mkdir /test/growfiles/scsi/ext3    >/dev/null 2>&1
+mkdir /test/growfiles/scsi/reiser  >/dev/null 2>&1
 
 
 mkfs -V -t ext2     /dev/$part1 <yesenter.txt
@@ -87,15 +87,15 @@ mkfs -V -t ext3     /dev/$part2 <yesenter.txt
 mkreiserfs -f       /dev/$part3 <yesenter.txt
 
 
-mount -v -t ext2 /dev/$part1       /test/growfiles/scsi/ext2                              
-mount -v -t ext3 /dev/$part2       /test/growfiles/scsi/ext3                              
-mount -v /dev/$part3               /test/growfiles/scsi/reiser                             
+mount -v -t ext2 /dev/$part1       /test/growfiles/scsi/ext2
+mount -v -t ext3 /dev/$part2       /test/growfiles/scsi/ext3
+mount -v /dev/$part3               /test/growfiles/scsi/reiser
 
 cd $kernpath/drivers/scsi
 modprobe scsi_debug max_luns=2 num_tgts=7 add_host=10
 cd ${LTPROOT}
 
-echo "************ Running tests " 
+echo "************ Running tests "
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/scsi.part1 > ${TMPBASE}/scsi.part1
 
 ${LTPROOT}/pan/pan -e -S -a scsipart1 -n scsipart1 -l scsilogfile -f ${TMPBASE}/scsi.part1 &

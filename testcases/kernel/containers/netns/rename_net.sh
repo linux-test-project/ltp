@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # This script Renames the net device of the child ns to $NewNetDev.
 
@@ -31,13 +31,13 @@ export TCID
 export TST_COUNT
 export TST_TOTAL
 
-    # Find the free dev name 
+    # Find the free dev name
     for i in `seq 1 100`
     do
         newdev=veth$i
         ip link show | grep -qw $newdev
         # On finding free device break.
-        if [ $? != 0 ] ; then 
+        if [ $? != 0 ] ; then
                 break
         fi
     done

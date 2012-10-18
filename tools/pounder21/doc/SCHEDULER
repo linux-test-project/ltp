@@ -4,7 +4,7 @@ the pounder30 package.  This document reflects pounder30 as of 2011-8-09.
 Authors:
 Darrick Wong <djwong@us.ibm.com>
 Lucy Liang <lgliang@us.ibm.com>
-	
+
 Copyright (C) 2011 IBM.
 
 Contents
@@ -80,11 +80,11 @@ cached tarballs and files used for whatever it is you'll need to build.
 (see "$POUNDER_CACHE" in doc/CONFIGURATION for more information)
 
 Should there be a failure in the build script that is essential to the ability
-to run a test, the build script should exit with error to halt the main build 
+to run a test, the build script should exit with error to halt the main build
 process immediately.
 
 Also, be aware that distributing pre-built binary tarballs is not always a good
-idea. Though one could cache pre-built binary tarballs rather than source, it may 
+idea. Though one could cache pre-built binary tarballs rather than source, it may
 not be a good idea because distros are not always good at ABI/library path compatibility,
 despite the efforts of LSB, FHS, etc.  It is always safest to build your
 subtests from source on your target system.
@@ -227,7 +227,7 @@ Examples:
 	until it has failed 10 times, regardless of what $MAX_FAILURES is.
 
 2. test_scripts/time_drift contains the following line:
-       
+
 	"$POUNDER_HOME/timed_loop 900 "$POUNDER_SRCDIR/time_tests/drift-test.py" $NTP_SERVER $FREQ"
 
 	which will run the drift-test.py script ($NTP_SERVER and $FREQ are some args passed to drift-test.py)
@@ -314,7 +314,7 @@ The tests/ directory should now contain the subtests to be run
 	- lists all of the subtests that came with the currently active test scheduler.
 	The output should look something like:
 
-	------------------	
+	------------------
 	#./pounder -l
 	Included subtests:
 	...

@@ -3,7 +3,7 @@
  * sctp.h
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- *    http://www.gnu.org/copyleft/lesser.txt 
+ *    http://www.gnu.org/copyleft/lesser.txt
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -72,11 +72,11 @@ enum sctp_optname {
 #define SCTP_NODELAY	SCTP_NODELAY
 	SCTP_AUTOCLOSE,
 #define SCTP_AUTOCLOSE SCTP_AUTOCLOSE
-	SCTP_SET_PEER_PRIMARY_ADDR, 
+	SCTP_SET_PEER_PRIMARY_ADDR,
 #define SCTP_SET_PEER_PRIMARY_ADDR SCTP_SET_PEER_PRIMARY_ADDR
 	SCTP_PRIMARY_ADDR,
 #define SCTP_PRIMARY_ADDR SCTP_PRIMARY_ADDR
-	SCTP_ADAPTION_LAYER,      
+	SCTP_ADAPTION_LAYER,
 #define SCTP_ADAPTION_LAYER SCTP_ADAPTION_LAYER
 	SCTP_DISABLE_FRAGMENTS,
 #define SCTP_DISABLE_FRAGMENTS SCTP_DISABLE_FRAGMENTS
@@ -95,7 +95,7 @@ enum sctp_optname {
 	SCTP_GET_PEER_ADDR_INFO,
 #define SCTP_GET_PEER_ADDR_INFO SCTP_GET_PEER_ADDR_INFO
 
-	/* Internal Socket Options. Some of the sctp library functions are 
+	/* Internal Socket Options. Some of the sctp library functions are
 	 * implemented using these socket options.
 	 */
 	SCTP_SOCKOPT_BINDX_ADD = 100,/* BINDX requests for adding addresses. */
@@ -175,7 +175,7 @@ enum sctp_sinfo_flags {
 	SCTP_UNORDERED = 1,  /* Send/receive message unordered. */
 	SCTP_ADDR_OVER = 2,  /* Override the primary destination. */
 	SCTP_ABORT=4,        /* Send an ABORT message to the peer. */
-	SCTP_EOF=MSG_FIN,    /* Initiate graceful shutdown process. */ 
+	SCTP_EOF=MSG_FIN,    /* Initiate graceful shutdown process. */
 };
 
 
@@ -434,7 +434,7 @@ typedef enum sctp_sn_error {
  *
  *   The protocol parameters used to initialize and bound retransmission
  *   timeout (RTO) are tunable.  See [SCTP] for more information on how
- *   these parameters are used in RTO calculation. 
+ *   these parameters are used in RTO calculation.
  */
 struct sctp_rtoinfo {
 	sctp_assoc_t	srto_assoc_id;
@@ -571,10 +571,10 @@ enum sctp_sstat_state {
 };
 
 /*
- * 8.3, 8.5 get all peer/local addresses in an association. 
+ * 8.3, 8.5 get all peer/local addresses in an association.
  * This parameter struct is used by SCTP_GET_PEER_ADDRS and
  * SCTP_GET_LOCAL_ADDRS socket options used internally to implement
- * sctp_getpaddrs() and sctp_getladdrs() API. 
+ * sctp_getpaddrs() and sctp_getladdrs() API.
  */
 struct sctp_getaddrs_old {
 	sctp_assoc_t            assoc_id;

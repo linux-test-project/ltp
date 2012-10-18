@@ -33,16 +33,16 @@ b. ./s-c > data
 c. ./do-plot data
 This script will use gnuplot to create a png file named scalable.png.
 
-(If your gnuplot does not support png terminal, just remove 
+(If your gnuplot does not support png terminal, just remove
 set term png
 set output "scalable.png"
 from the do-plot script).
 
 Stress tests will run until they are killed with SIGUSR1 (or they
-fail). Currently, I do 
+fail). Currently, I do
 $> ./stress &
 and then after a while
-$> kill -USR1 <pid> 
+$> kill -USR1 <pid>
 or
 $> for PR in `ps o pid --no-headers -Cstress`; \
    do echo Sending SIGUSR1 to pid $PR...; \

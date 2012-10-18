@@ -25,7 +25,7 @@
 /*
  * HP-UX compatibility stuff
  */
-#ifdef _HPUX_SOURCE 
+#ifdef _HPUX_SOURCE
 #define _SC_NPROCESSORS_ONLN pthread_num_processors_np()
 #endif
 

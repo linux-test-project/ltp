@@ -7,4 +7,4 @@ Assertion	Tested?
 4		NO  *Looking for a way to use up the memory without screwing
  		     up the machine.
 
-Note: 
+Note:

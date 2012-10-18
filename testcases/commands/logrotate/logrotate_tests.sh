@@ -28,11 +28,11 @@
 #                logfile is set for rotation every week. Execute the command
 #                logrotate -f <file.conf>, check to see if it forced rotation.
 #                Test #2: Check if logrotate running as a cronjob will rotate a
-#                logfile when it exceeds a specific size. Create two cronjobs 
+#                logfile when it exceeds a specific size. Create two cronjobs
 #                1. runs a command to log a string to a logfile. 2. runs
 #                logrotate <file.conf> every minute. The conf file specifies
 #                that the rotation happen only if the log file exceeds 2k file
-#                size. 
+#                size.
 #
 # Author:        Manoj Iyer, manjo@mail.utexas.edu
 #
@@ -47,7 +47,7 @@
 #
 # Input:        - $1 - calling test case.
 #               - $2 - command that needs to be checked.
-# 
+#
 # Return:		- zero on success.
 # 				- non-zero on failure.
 chk_ifexists()
@@ -66,9 +66,9 @@ chk_ifexists()
 # Function: init
 #
 # Description:  - Check if command required for this test exits.
-#               - Create temporary directories required for this test. 
+#               - Create temporary directories required for this test.
 #               - Initialize global variables.
-# 
+#
 # Return:		- zero on success.
 # 				- non-zero on failure.
 init()
@@ -134,7 +134,7 @@ cleanup()
 #               - use force option to force logrotate to cause the log file to
 #                 be rotated.
 #               - compress the file after rotation.
-# 
+#
 # Return:		- zero on success.
 # 				- non-zero on failure.
 test01()
@@ -182,7 +182,7 @@ test01()
 	while [ $count -lt 10 ]
 	do
 		echo "This a dummy log file used to test logrotate command." >> \
-			/var/log/tst_logfile 
+			/var/log/tst_logfile
 		 		 count=$(( $count+1 ))
 	done
 
@@ -306,7 +306,7 @@ fi
 # cron job to increase the log file size.
 cat >$LTPTMP/tst_addtolog.cron <<EOF
 
-* * * * * echo "To Err Is Human, To Really Screw Up You Need A Computer."  >>/var/log/tst_largelogfile 2>/dev/null 
+* * * * * echo "To Err Is Human, To Really Screw Up You Need A Computer."  >>/var/log/tst_largelogfile 2>/dev/null
 EOF
 
 tst_resm TINFO "Test #2: Installing cron job to increase logsize"
@@ -369,7 +369,7 @@ fi
 #
 # Description:	- Execute all tests and report results.
 #
-# Exit:			- zero on success 
+# Exit:			- zero on success
 #               - non-zero on failure.
 
 RC=0

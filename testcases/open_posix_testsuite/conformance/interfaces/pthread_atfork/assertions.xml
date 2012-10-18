@@ -3,10 +3,10 @@
    The function
 
    int pthread_atfork(void (*prepare) (void), void (*parent) (void), void (*child) (void))
- 
+
    shall declare fork handlers to be called before and after a fork() command, in the context
    of the thread that called the fork().  The 'prepare' fork handler shall be called before
-   fork() processing commences.  The 'parent' fork handle shall be called after fork() 
+   fork() processing commences.  The 'parent' fork handle shall be called after fork()
    processing completes in the parent process.  The 'child' fork shall be called after
    fork() processing completes in the child process.
   </assertion>
@@ -25,8 +25,8 @@
   The function shall not return an error code of [EINTR]
   </assertion>
   <assertion id="4" tag="ref:XSH6TC2:31696:31698">
-  When pthread_atfork is called several times, the prepare handlers are 
-executed in reversed order as they were registered, and child and parent 
+  When pthread_atfork is called several times, the prepare handlers are
+executed in reversed order as they were registered, and child and parent
 handlers are executed in the same order as they were registered.
   </assertion>
 </assertions>

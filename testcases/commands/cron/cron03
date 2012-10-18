@@ -16,7 +16,7 @@
 #   along with this program;  if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-#  FILE   : cron 
+#  FILE   : cron
 #
 #  PURPOSE: Test a bad (negative) cron job
 #			- try to edit the crontab of root
@@ -45,10 +45,10 @@ do_setup(){
 
     #erase user if he may exist , so we can have a clean env
         rm -rf /home/$TEST_USER
-        userdel $TEST_USER 
+        userdel $TEST_USER
 	sleep 1
 
-        useradd -m -g $TEST_USER_GROUP $TEST_USER 
+        useradd -m -g $TEST_USER_GROUP $TEST_USER
         if [ $? != 0 ]
         then {
                 echo "Could not add test user $TEST_USER to system $RHOST."
@@ -70,7 +70,7 @@ do_setup(){
 
 do_cleanup(){
         rm -rf /home/$TEST_USER
-        userdel $TEST_USER 
+        userdel $TEST_USER
 }
 
 #-----------------------------------------------------------------------

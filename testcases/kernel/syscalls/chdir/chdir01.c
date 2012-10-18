@@ -159,7 +159,7 @@ void checknames(char **pfilnames, int fnamecount, DIR *ddir)
 	found = 0;
 	while ((dir = readdir(ddir)) != NULL) {
 		for (i = 0; i < fnamecount; i++) {
-			/* 
+			/*
 			 * if dir->d_name is not null terminated it is a bug
 			 * anyway
 			 */

@@ -76,7 +76,7 @@ case $ip_ver in
     exit 1
     ;;
 esac
-    
+
 # Check the connectivity first
 if [ ! -f $ssh_config ]; then
     echo "$ssh_config is something wrong."
@@ -88,7 +88,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 
+#
 # Mail loop
 #
 start_epoc=`date +%s`

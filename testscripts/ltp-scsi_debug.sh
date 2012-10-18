@@ -47,7 +47,7 @@ else
 fi
 
 
-echo "Remove the scsi_debug device..." 
+echo "Remove the scsi_debug device..."
 dev_name=$(ls /proc/scsi/scsi_debug)
 # echo $dev_name
 rm_dev=$dev_name:0:0:0
@@ -79,7 +79,7 @@ num_host=$(cat /sys/bus/pseudo/drivers/scsi_debug/add_host)
 if [ $num_host -ne 2 ];
 then
 	echo "The new host was not added - add host error"
-else 
+else
 	echo "The new host was added successfully"
 fi
 
@@ -104,7 +104,7 @@ else
 fi
 
 echo "Load scsi_debug with multiple hosts..."
-modprobe scsi_debug max_luns=2 num_tgts=2 add_host=2 dev_size_mb=20 
+modprobe scsi_debug max_luns=2 num_tgts=2 add_host=2 dev_size_mb=20
 lsmod | grep scsi_debug > /dev/null 2>&1
 if [ $? -eq 0 ];
 then
@@ -158,7 +158,7 @@ fi
 
 export TMPBASE="/tmp"
 
-# check if the newly created scsi_debug partitions are in /proc/partitions file 
+# check if the newly created scsi_debug partitions are in /proc/partitions file
 check_count=$(cat /proc/partitions | wc -l)
 save_count=$(( $check_count - $orig_count ))
 if [ $save_count -lt 4 ]; then
@@ -180,33 +180,33 @@ echo $part4
 
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-mkdir /test                   >/dev/null 2>&1 
-mkdir /test/growfiles         >/dev/null 2>&1  
-mkdir /test/growfiles/ext2    >/dev/null 2>&1  
+mkdir /test                   >/dev/null 2>&1
+mkdir /test/growfiles         >/dev/null 2>&1
+mkdir /test/growfiles/ext2    >/dev/null 2>&1
 mkdir /test/growfiles/ext3    >/dev/null 2>&1
-mkdir /test/growfiles/reiser  >/dev/null 2>&1  
-mkdir /test/growfiles/msdos     >/dev/null 2>&1  
+mkdir /test/growfiles/reiser  >/dev/null 2>&1
+mkdir /test/growfiles/msdos     >/dev/null 2>&1
 
 echo "----- make ext3 fs -----"
 mkfs -V -t ext3     /dev/$part1
 echo "----- make ext2 fs -----"
 mkfs -V -t ext2	    /dev/$part2
 echo "----- make reiserfs fs -----"
-mkreiserfs -f          /dev/$part3 
+mkreiserfs -f          /dev/$part3
 echo "----- make msdos fs -----"
 mkfs -V -t msdos -I     /dev/$part4
 
 echo "----- Mount partitions -----"
-mount /dev/$part1 /test/growfiles/ext3                              
+mount /dev/$part1 /test/growfiles/ext3
 mount /dev/$part2 /test/growfiles/ext2
-mount /dev/$part3 /test/growfiles/reiser                            
+mount /dev/$part3 /test/growfiles/reiser
 mount /dev/$part4 /test/growfiles/msdos
 
-echo "----- Running tests ----- " 
+echo "----- Running tests ----- "
 echo "The test may take about 2 hours to finish..."
 ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/scsi_debug.part1 > ${TMPBASE}/scsi_debug
- 
-${LTPROOT}/bin/ltp-pan -e -S -a scsi_debug -n scsi_debug -l ${TMPBASE}/fs-scsi_debug.log -o ${TMPBASE}/fs-scsi_debug.out -f ${TMPBASE}/scsi_debug 
+
+${LTPROOT}/bin/ltp-pan -e -S -a scsi_debug -n scsi_debug -l ${TMPBASE}/fs-scsi_debug.log -o ${TMPBASE}/fs-scsi_debug.out -f ${TMPBASE}/scsi_debug
 
 wait $!
 

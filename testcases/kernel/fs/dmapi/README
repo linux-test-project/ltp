@@ -3,11 +3,11 @@
 
 I. Test Bucket Introduction
 
-This test bucket tests the interfaces and events defined in the CAE 
-Specification entitled "Systems Management: Data Storage Management (XDSM) 
+This test bucket tests the interfaces and events defined in the CAE
+Specification entitled "Systems Management: Data Storage Management (XDSM)
 API," which was copyrighted in February, 1997 by The Open Group.  The test
-bucket consists of 20 executables containing 1097 variations which test 59 of 
-67 published DMAPIs and all JFS-supported events except DM_EVENT_NOSPACE on a 
+bucket consists of 20 executables containing 1097 variations which test 59 of
+67 published DMAPIs and all JFS-supported events except DM_EVENT_NOSPACE on a
 functional level.
 
 II. Test Bucket Contents
@@ -21,7 +21,7 @@ dm_vars.h	: Defines variation number bases for all DMAPI test cases;
 		  theoretically these could all be zero, but the author
 		  believes that giving every variation a unique number makes
 		  it much easier when discussing successes/failures
-dm_impl.h	: Define implementation-dependent functions and variables 
+dm_impl.h	: Define implementation-dependent functions and variables
 		  common to all DMAPI test cases; these must be modified prior
 		  to running the test bucket on a new platform (note: although
 		  this is a .h file, it is really a .c file that is included by
@@ -42,15 +42,15 @@ event.c		: Tests dm_get_events, dm_respond_event, dm_move_event and
 		  dm_pending
 event_am.c	: Tests DM_EVENT_ATTRIBUTE, DM_EVENT_CLOSE, DM_EVENT_DESTROY
 		  and dm_set_return_on_destroy
-event_an.c	: Tests DM_EVENT_POSTCREATE, DM_EVENT_POSTREMOVE, 
-		  DM_EVENT_POSTRENAME, DM_EVENT_POSTSYMLINK and 
+event_an.c	: Tests DM_EVENT_POSTCREATE, DM_EVENT_POSTREMOVE,
+		  DM_EVENT_POSTRENAME, DM_EVENT_POSTSYMLINK and
 		  DM_EVENT_POSTLINK
 event_sd.c	: Tests DM_EVENT_READ, DM_EVENT_WRITE and DM_EVENT_TRUNCATE
 event_sn.c	: Tests DM_EVENT_CREATE, DM_EVENT_REMOVE, DM_EVENT_RENAME,
 		  DM_EVENT_SYMLINK and DM_EVENT_LINK
 event_us.c	: Tests DM_EVENT_USER, dm_create_userevent, dm_send_msg and
 		  dm_find_eventmsg
-handle.c	: Tests dm_path_to_handle, dm_fd_to_handle, 
+handle.c	: Tests dm_path_to_handle, dm_fd_to_handle,
 		  dm_path_to_fshandle, dm_handle_to_fshandle, dm_handle_cmp,
 		  dm_handle_free, dm_handle_is_valid, dm_handle_hash,
 		  dm_handle_to_fsid, dm_handle_to_igen, dm_handle_to_ino,
@@ -66,7 +66,7 @@ pmr_pre.c	: Tests dm_set_region
 pmr_post.c	: Tests dm_get_region
 right.c		: Tests dm_request_right, dm_release_right, dm_query_right,
 		  dm_upgrade_right and dm_downgrade_right
-session.c	: Tests dm_create_session, dm_destroy_session, 
+session.c	: Tests dm_create_session, dm_destroy_session,
 		  dm_getall_sessions and dm_query_session
 token.c		: Tests dm_getall_tokens
 
@@ -82,7 +82,7 @@ Other file(s):
 README		: You're looking at it
 Makefile	: Builds the test harness and scenario; the platform must be
 		  defined (i.e. JFS) to build the proper stuff in dm_impl.c,
-		  and other constants as necessary to build the proper support 
+		  and other constants as necessary to build the proper support
 		  (i.e. MULTIPLE_REGIONS)
 
 III. Test Bucket Omissions
@@ -127,7 +127,7 @@ DMAPI implementation (kernel and user space code) is installed on the system
 	   NOTE: Modify dmapi_lib in Makefile to point to the user space
 	   library for the DMAPI implementation to be tested
 
-	3) If the file system is compiled as a module, make sure it is 
+	3) If the file system is compiled as a module, make sure it is
 	    installed first:
 
 		modprobe blah
@@ -191,11 +191,11 @@ options supported by the test harness are:
 
 -runfrom n	: Defines the starting variation to begin executing from; sets
 		  a variation range to execute when used along with -runto, or
-		  runs all variations greater than or equal to n if -runto is 
+		  runs all variations greater than or equal to n if -runto is
 		  not specified
 -runto n	: Defines the stopping variation to end executing at; sets
 		  a variation range to execute when used along with -runfrom,
-		  or runs all variations less than or equal to n if -runfrom is 
+		  or runs all variations less than or equal to n if -runfrom is
 		  not specified
 -runonly n	: Executes only variation n
 -loglevel n	: Write all messages less than or equal to n to the log file
@@ -203,9 +203,9 @@ options supported by the test harness are:
 -logname s	: Write all messages defined by -loglevel to the log file named
 		  s; if not defined, the default log file name is dm_logfile
 
-Options and corresponding option values MUST be separated by whitespace.  Any 
-unrecognized option (that is, one starting with a dash such as -devname) and 
-its option value can be obtained by using the DMOPT_GET macro (such as 
+Options and corresponding option values MUST be separated by whitespace.  Any
+unrecognized option (that is, one starting with a dash such as -devname) and
+its option value can be obtained by using the DMOPT_GET macro (such as
 DMOPT_GET("devname")).
 
 VII. Test Case Output

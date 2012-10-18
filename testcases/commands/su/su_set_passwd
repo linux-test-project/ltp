@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 #
 # Set Password for a specific new user
 # This script should be run as 'root'

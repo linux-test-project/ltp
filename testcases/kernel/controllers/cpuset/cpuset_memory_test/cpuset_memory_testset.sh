@@ -179,7 +179,7 @@ test6()
 
 	save_nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
 	echo 2 > /proc/sys/vm/nr_hugepages
-	
+
 	./cpuset_memory_test --mmap-file --hugepage -s $HUGEPAGESIZE >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 
@@ -218,7 +218,7 @@ test7()
 
 	save_nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
 	echo 2 > /proc/sys/vm/nr_hugepages
-	
+
 	./cpuset_memory_test --shm --hugepage -s $HUGEPAGESIZE --key=7 >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 
@@ -382,7 +382,7 @@ talk2memory_test_for_case_12_13()
 	sleep 1
 	echo $1 > "$2/tasks"
 	/bin/kill -s SIGUSR1 $1
-	
+
 	echo 0 > "$2/mems" || return 1
 	sleep 1
 	/bin/kill -s SIGUSR1 $1
@@ -410,7 +410,7 @@ test12()
 		read node0
 		read node1
 	} < "$MEMORY_RESULT"
-	
+
 	if [ "$node0" != "1" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node0(Expect: Node#1)."
 		return 1
@@ -447,7 +447,7 @@ test13()
 		read node1
 		read node2
 	} < "$MEMORY_RESULT"
-	
+
 	if [ "$node0" != "1" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node0(Expect: Node#1)."
 		return 1
@@ -502,7 +502,7 @@ test14()
 
 		echo $testpid > "$CPUSET/1/tasks"
 		/bin/kill -s SIGUSR1 $testpid
-		
+
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
 		/bin/kill -s SIGUSR2 $testpid
@@ -515,7 +515,7 @@ test14()
 		read node0
 		read node1
 	} < "$MEMORY_RESULT"
-	
+
 	if [ "$node0" != "0" ]; then
 		tst_resm TFAIL "Thread1 allocated memory on the Node#$node0(Expect: Node#0)."
 		return 1
@@ -558,7 +558,7 @@ test15()
 
 		echo $testpid > "$CPUSET/1/tasks"
 		/bin/kill -s SIGUSR1 $testpid
-		
+
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
 		/bin/kill -s SIGUSR2 $testpid
@@ -571,7 +571,7 @@ test15()
 		read node0
 		read node1
 	} < "$MEMORY_RESULT"
-	
+
 	if [ "$node0" != "0" ]; then
 		tst_resm TFAIL "Thread1 allocated memory on the Node#$node0(Expect: Node#0)."
 		return 1
@@ -614,7 +614,7 @@ test16()
 
 		echo $testpid > "$CPUSET/1/tasks"
 		/bin/kill -s SIGUSR1 $testpid
-		
+
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
 		echo 1 > "$CPUSET/1/memory_migrate"
@@ -634,7 +634,7 @@ test16()
 		read node1
 		read node2
 	} < "$MEMORY_RESULT"
-	
+
 	if [ "$node0" != "0" ]; then
 		tst_resm TFAIL "Thread1 allocated memory on the Node#$node0(Expect: Node#0) first."
 		return 1
@@ -680,7 +680,7 @@ test17()
 
 		echo $testpid > "$CPUSET/1/tasks"
 		/bin/kill -s SIGUSR1 $testpid
-		
+
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
 		echo 0 > "$CPUSET/1/mems"
@@ -705,7 +705,7 @@ test17()
 		read node2
 		read node3
 	} < "$MEMORY_RESULT"
-	
+
 	if [ "$node0" != "1" ]; then
 		tst_resm TFAIL "Thread1 allocated memory on the Node#$node0(Expect: Node#1) first."
 		return 1
@@ -762,7 +762,7 @@ test18()
 
 		echo $testpid > "$CPUSET/1/tasks"
 		/bin/kill -s SIGUSR1 $testpid
-		
+
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
 		echo 0 > "$CPUSET/1/mems"
@@ -787,7 +787,7 @@ test18()
 		read node2
 		read node3
 	} < "$MEMORY_RESULT"
-	
+
 	if [ "$node0" != "1" ]; then
 		tst_resm TFAIL "Thread1 allocated memory on the Node#$node0(Expect: Node#1) first."
 		return 1

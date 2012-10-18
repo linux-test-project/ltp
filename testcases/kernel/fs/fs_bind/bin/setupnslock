@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 lockfile="/.nslock"
 SUCCESS=0

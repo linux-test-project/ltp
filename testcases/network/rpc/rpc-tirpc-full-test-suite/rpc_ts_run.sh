@@ -10,9 +10,9 @@
 # Please refer to RPC & TI-RPC Test Suite documentation.
 # More details at http://nfsv4.bullopensource.org/doc/rpc_testsuite.php
 
-# Usage : 
+# Usage :
 # ./rpc_ts_run.sh -l tst_list_db_1 -l tst_list_db_2 ... -l tst_list_db_n ... [-v] [-m XXX] [-n X]
-# where 
+# where
 # -l indicates a tests script to run
 # -v for verbose mode
 # -m for way to run tests cases, see TESTWAY description for more information on XXX value
@@ -138,7 +138,7 @@ echo " - Number of scalability test iterations : "$SCALINSTNUMBER>>$TESTRUNDETAI
 
 
 # looking for script arguments
-for arg in $* 
+for arg in $*
 do
 	if [ "$arg" = "-l" ]
 	then
@@ -148,7 +148,7 @@ do
 		TSTSCRTBL=( "${TSTSCRTBL[@]}" "$1" )
 		shift
 	fi
-	
+
 	if [ "$arg" = "-m" ]
 	then
 		# value following -m is the way to run tests cases
@@ -156,7 +156,7 @@ do
 		TESTWAY=$1
 		shift
 	fi
-	
+
 	if [ "$arg" = "-n" ]
 	then
 		# value following -n is the number tests cases instances to launch
@@ -164,7 +164,7 @@ do
 		TESTINSTANCE=$1
 		shift
 	fi
-	
+
 	if [ "$arg" = "-v" ]
 	then
 		VERBOSE=1
@@ -231,7 +231,7 @@ else
 	then
 		echo " - collecting logs file from remote client"
 	fi
-	scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/ 
+	scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/
 fi
 
 # cleaning up before Test Suite end

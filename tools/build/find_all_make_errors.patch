@@ -4,7 +4,7 @@ index 7ffb9e9..c81b9b4 100644
 +++ b/include/mk/generic_trunk_target.inc
 @@ -75,7 +75,8 @@ trunk-install: $(INSTALL_FILES)
  all: trunk-all
- 
+
  clean:: trunk-clean
 -	set -e; for dir in $(SUBDIRS); do \
 +	#@set -e; for dir in $(SUBDIRS); do

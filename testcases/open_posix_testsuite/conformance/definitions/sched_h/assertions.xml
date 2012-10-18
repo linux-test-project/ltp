@@ -3,28 +3,28 @@
    The sched.h header file exists
   </assertion>
   <assertion id="2" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
-   The sched.h header defines the structure sched_param which includes 
+   The sched.h header defines the structure sched_param which includes
    the following, at a minimum:
      int     sched_priority
   </assertion>
   <assertion id="3" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION} pt:SS">
-   When _POSIX_SPORADIC_SERVER is defined, the structure sched_param 
+   When _POSIX_SPORADIC_SERVER is defined, the structure sched_param
    shall also include the following:
-     int    sched_ss_low_priority 
-     struct timespec sched_ss_repl_period 
-     struct timespec sched_ss_init_budget 
-     int    sched_ss_max_repl     
-  </assertion>  
+     int    sched_ss_low_priority
+     struct timespec sched_ss_repl_period
+     struct timespec sched_ss_init_budget
+     int    sched_ss_max_repl
+  </assertion>
   <assertion id="4" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION} pt:TSP">
-   When _POSIX_THREAD_SPORADIC_SERVER is defined, the structure 
+   When _POSIX_THREAD_SPORADIC_SERVER is defined, the structure
    sched_param shall also includes  the following:
-     int    sched_ss_low_priority 
-     struct timespec sched_ss_repl_period 
-     struct timespec sched_ss_init_budget 
-     int    sched_ss_max_repl     
+     int    sched_ss_low_priority
+     struct timespec sched_ss_repl_period
+     struct timespec sched_ss_init_budget
+     int    sched_ss_max_repl
   </assertion>
   <assertion id="5" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
-   Each process is controlled by an associated scheduling policy 
+   Each process is controlled by an associated scheduling policy
    and priority
   </assertion>
   <assertion id="6" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
@@ -84,7 +84,7 @@
    int    sched_yield(void);
   </assertion>
   <assertion id="19" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
-   Inclusion of the sched.h header may make visible all symbols from 
+   Inclusion of the sched.h header may make visible all symbols from
    the time.h header.
-  </assertion>  
+  </assertion>
 </assertions>

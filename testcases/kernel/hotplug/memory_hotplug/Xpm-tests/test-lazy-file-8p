@@ -1,6 +1,6 @@
 # memtoy test - lazy 8p region of single file seg
 # requires ./zerofile-1m
-# 
+#
 #numa
 file zerofile-1m
 map zerofile-1m

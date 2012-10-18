@@ -46,7 +46,7 @@
    All possible events can be sent on timer expirations.
   </assertion>
   <assertion id="12" tag="pt:TMR" files="timers/twoevtimers.c">
-   Two timers in one process can expire at the same time, but with 
+   Two timers in one process can expire at the same time, but with
    different events.
   </assertion>
   <assertion id="13" tag="pt:TMR" files="timers/twoptimers.c">

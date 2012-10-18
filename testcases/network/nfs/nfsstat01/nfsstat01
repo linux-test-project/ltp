@@ -18,7 +18,7 @@
 #
 #  FILE   : nfsstat
 #
-#  PURPOSE: Tests the 'nfsstat' command.  This test runs locally, so no 
+#  PURPOSE: Tests the 'nfsstat' command.  This test runs locally, so no
 #           actual network connection is needed.
 #
 #  SETUP: The nfs server/client daemons must be active.
@@ -74,7 +74,7 @@ $trace_logic
    #Check for mountd.
    rpcinfo -p | grep mountd
    [ $? -eq 0 ] || end_testcase "Mountd is NOT running"
-   
+
    #Check for nfsd.
    rpcinfo -p | grep nfs
    [ $? -eq 0 ] || end_testcase "NFS server daemon (nfsd) is NOT running"
@@ -113,27 +113,27 @@ $trace_logic
 
 #---------------------------------------------------------------------#
 # FUNCTION: do_test
-# PURPOSE:  Performs simple copies and removes to verify statistic 
+# PURPOSE:  Performs simple copies and removes to verify statistic
 #           tracking using the 'nfsstat' command and /proc/net/rpc
 #---------------------------------------------------------------------#
-do_test() 
+do_test()
 {
-$trace_logic 
+$trace_logic
   echo "do_test $TC"
-   
+
   echo "Checking RPC calls for server and client"
-  
+
   # Server
   SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep rpc | awk '{print $2}'`
   nfsstat -sr | grep $SERVER_CALLS
   [ $? -eq 0 ] || end_testcase "Check of server RPC calls failed"
-  
+
   # Client
   CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep rpc | awk '{print $2}'`
   nfsstat -cr | grep $CLIENT_CALLS
   [ $? -eq 0 ] || end_testcase "Check of client RPC calls failed"
- 
-  
+
+
   echo "Checking for tracking of RPC calls for server and client"
   cat /proc/cpuinfo > $TESTDIR/nfsstat01.tmp
   NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep rpc | awk '{print $2}'`
@@ -142,7 +142,7 @@ $trace_logic
   [ $NEW_CLIENT_CALLS -gt $CLIENT_CALLS ] || end_testcase "Client RPC calls not increased"
 
   nfsstat -sr | grep $NEW_SERVER_CALLS
-  [ $? -eq 0 ] || end_testcase "nfsstat not reporting change in server RPC calls" 
+  [ $? -eq 0 ] || end_testcase "nfsstat not reporting change in server RPC calls"
   nfsstat -cr | grep $NEW_CLIENT_CALLS
   [ $? -eq 0 ] || end_testcase "nfsstat not reporting change in client RPC calls"
 
@@ -154,7 +154,7 @@ $trace_logic
    SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc2 | awk '{print $13}'`
   else
    SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc3 | awk '{print $15}'`
-  fi 
+  fi
   nfsstat -sn | grep $SERVER_CALLS
   [ $? -eq 0 ] || end_testcase "Check of server NFS calls failed"
 
@@ -167,9 +167,9 @@ $trace_logic
   nfsstat -cn | grep $CLIENT_CALLS
   [ $? -eq 0 ] || end_testcase "Check of client NFS calls failed"
 
-  
+
   echo "Checking for tracking of NFS calls for server and client"
-  
+
   rm -f $TESTDIR/nfsstat01.tmp
   if [ "$VERSION" = "2" ]; then
    NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc2 | awk '{print $13}'`
@@ -199,7 +199,7 @@ $trace_logic
 # INPUT:    None.
 # OUTPUT:   None.
 #---------------------------------------------------------------------#
-do_cleanup() 
+do_cleanup()
 {
 $trace_logic
    echo "do_cleanup $TC "
@@ -211,7 +211,7 @@ $trace_logic
    sleep 3
 
    echo "Unmounting EXPORTDIR"
-   /usr/sbin/exportfs -u $HOST:$EXPORTDIR 
+   /usr/sbin/exportfs -u $HOST:$EXPORTDIR
    umount $EXPORTDIR
    sleep 3
    rm -rf $EXPORTDIR
@@ -251,5 +251,5 @@ $trace_logic
 #           test.
 #---------------------------------------------------------------------#
 do_setup
-do_test 
+do_test
 end_testcase

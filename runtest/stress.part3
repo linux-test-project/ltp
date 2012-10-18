@@ -46,7 +46,7 @@ chmod01A symlink01 -T chmod01
 chmod02 chmod02
 chmod03 chmod03
 chmod04 chmod04
-chmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod05 
+chmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod05
 chmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod06
 chmod07 chmod07
 
@@ -123,7 +123,7 @@ fchmod01 fchmod01
 fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
-fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod05 
+fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod05
 fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod06
 fchmod07 fchmod07
 
@@ -817,7 +817,7 @@ truncate04 truncate04
 # This syscall is obsolete.  The latest glibc does not even
 # include the ulimit.h file anymore.  The test will fail
 # because the error handling has been simplified.
-# 
+#
 # ulimit01 ulimit01
 
 umask01 umask01

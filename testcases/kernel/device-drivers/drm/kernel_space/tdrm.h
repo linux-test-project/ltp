@@ -17,15 +17,15 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
 
- * In this header file keep all flags and other 
+ * In this header file keep all flags and other
  * structures that will be needed in both kernel
  * and user space. Specifically the ioctl flags
- * will go in here so that in user space a program 
+ * will go in here so that in user space a program
  * can specify flags for the ioctl call.
- * 
+ *
  * author: Kai Zhao
  * date:   09/03/2003
- * 
+ *
  */
 #ifndef __TDRM_H
 #define __TDRM_H
@@ -35,12 +35,12 @@
 #define DRIVER_NAME     DEVICE_NAME
 
 #define MAG_NUM			'k'
-#define TDRM_MAJOR      2 
+#define TDRM_MAJOR      2
 #define DRIVER_MAJOR    TDRM_MAJOR
 #define DRIVER_MINOR     0
 #define DRIVER_PATCHLEVEL 0
 
-/*--------------------------------------------------------------------------*/ 
+/*--------------------------------------------------------------------------*/
 /* This remains constant for all DRM template files.
  */
 #define DRM(x) tdrm_##x

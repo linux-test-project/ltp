@@ -8,13 +8,13 @@
   </assertion>
 
   <assertion id="2" tag="ref:XSH6:32476:32477">
-  Upon successful return, the mutex shall have been locked and shall be owned 
+  Upon successful return, the mutex shall have been locked and shall be owned
   by the calling thread.
-  </assertion> 
+  </assertion>
 
   <assertion id="3" tag="ref:XSH6:32516:32516">
   Upon successful completion, a value of zero shall be returned;
-  </assertion> 
+  </assertion>
 
   <assertion id="4" tag="ref:XSH6:32521:32526">
   The pthread_cond_wait() function may fail if:
@@ -23,6 +23,6 @@
              pthread_cond_wait() operations on the same condition variable.
     [EPERM] The mutex was not owned by the current thread at the time of the call.
   These functions shall not return an error code of [EINTR].
-  </assertion> 
-  
+  </assertion>
+
 </assertions>

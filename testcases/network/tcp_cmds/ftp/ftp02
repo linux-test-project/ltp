@@ -20,7 +20,7 @@
 #
 #  FILE   : ftp
 #
-#  PURPOSE: Test to see if ftp rejects a user with an invalid password 
+#  PURPOSE: Test to see if ftp rejects a user with an invalid password
 #
 #  HISTORY:
 #     03/03  Jerone Young (jeroney@us.ibm.com)
@@ -48,8 +48,8 @@ do_setup()
     tst_setup
 
     exists expect ftp ftp02_s1 useradd userdel
-    
-    userdel $TEST_USER 
+
+    userdel $TEST_USER
     sleep 1
 
     if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then

@@ -90,7 +90,7 @@ for eth in $IFNAME
 
 # Added for support for more adapters configured
     MulticastAdap=
-    for eth in $IFNAME 
+    for eth in $IFNAME
     do
 
 	$trace_logic
@@ -130,7 +130,7 @@ for eth in $IFNAME
        end_testcase "Multicast ping disabled on this system (this is normal on post year:2005 kernels)"
    fi
 
-   # Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper 
+   # Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper
    # number of responses are returned.
 
    echo "Ping all-host-groups address(over default route!)"

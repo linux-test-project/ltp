@@ -46,7 +46,7 @@ $trace_logic
 
 #
 # Variables -- Changed by each uni-dsackoff testcase
-# 
+#
 
 # The test case ID
 TCID=tcp6-uni-dsackoff10

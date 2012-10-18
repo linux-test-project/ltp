@@ -5,7 +5,7 @@
   </assertion>
 
   <assertion id="2" tag="ref:XSH6:35581:35582">
-  Upon successful completion, the pthread_spin_unlock( ) function shall return zero; otherwise, 
+  Upon successful completion, the pthread_spin_unlock( ) function shall return zero; otherwise,
   an error number shall be returned to indicate the error.
   </assertion>
 

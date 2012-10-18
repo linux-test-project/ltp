@@ -6,12 +6,12 @@
 
    gets the schedpolicy attribute in the 'attr' argument.
   </assertion>
-  
+
   <assertion id="2" tag="ref:XSH6:31439:31440">
-   The supported values of policy will include SCHED_FIFO, SCHED_RR, 
+   The supported values of policy will include SCHED_FIFO, SCHED_RR,
    and SCHED_OTHER.
   </assertion>
-  
+
   <assertion id="3" tag="ref:XSH6:31443:31445">
    If success, the function returns zero;
    otherwise, an error number shall be returned indicating the error.

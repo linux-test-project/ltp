@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -39,12 +39,12 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
-	
+
+
 	mkdir dir
 	mount --bind "$disk1" dir
 	check "$disk1" dir
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "regression/test01: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -56,8 +56,8 @@ fi
 trap '' ERR
 {
 	umount dir
-	
-	rm -rf dir 
+
+	rm -rf dir
 	cleanup
 } >& /dev/null
 if [ $result -ne 0 ]
@@ -66,6 +66,6 @@ then
 	exit 1
 else
 	tst_resm TPASS "regression/test01: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

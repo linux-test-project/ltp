@@ -50,7 +50,7 @@ Notes:
 ------
 1)
 /* datafiles are supposed to be placed to the same directory as executables */
-/* this can be changed giving the absolute path of the directory to the 
+/* this can be changed giving the absolute path of the directory to the
  testcase ex:$ float_trigo -D /home/linux/livr */
 
 2) number of threads is initialized to 20 per function

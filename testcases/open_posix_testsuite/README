@@ -36,7 +36,7 @@ This project was created with the following design goals:
   specifications.  We wanted to capture enough data to make deterministic
   statements about our coverage of the POSIX specification.
 
-- Give the ability to send test case source to bug reports to appropriate 
+- Give the ability to send test case source to bug reports to appropriate
   open source projects when our test cases revealed bugs in those projects.
   (Meaning we wanted fairly simple, self-contained test cases which
   illuminated a single failure.)
@@ -48,8 +48,8 @@ This project was created with the following design goals:
 
 This project will cover conformance, functional, stress, performance,
 and speculative testing.  Conformance, functional, and stress tests are
-the only tests formally documented and enabled by our framework, with our 
-focus mainly on conformance; however, the other types of testing will be 
+the only tests formally documented and enabled by our framework, with our
+focus mainly on conformance; however, the other types of testing will be
 added as the need arises.
 
 For more information on these types of testing, under 'Documenation' see:
@@ -86,7 +86,7 @@ suite, see HOWTO_RunTests.
 * When you create a new test, please fill out an assertion description
   if none is available. Create a simple C [.c] or shell script [.sh]
   snippet that exploits the assertion and returns 0 or !0
-  [passes/fails]. 
+  [passes/fails].
 
   Please name the file after the assertion it tests-dash-the number of
   the test [up to you, we can do the naming for you also].

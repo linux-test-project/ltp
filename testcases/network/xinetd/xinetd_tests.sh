@@ -34,7 +34,7 @@
 #
 # Input:        - $1 - calling test case.
 #               - $2 - command that needs to be checked.
-# 
+#
 # Return:       - zero on success.
 #               - non-zero on failure.
 chk_ifexists()
@@ -53,9 +53,9 @@ chk_ifexists()
 # Function: init
 #
 # Description:  - Check if command required for this test exits.
-#               - Create temporary directories required for this test. 
+#               - Create temporary directories required for this test.
 #               - Initialize global variables.
-# 
+#
 # Return:       - zero on success.
 #               - non-zero on failure.
 init()
@@ -90,7 +90,7 @@ init()
     chk_ifexists INIT diff       || return $RC
     chk_ifexists INIT telnet     || return $RC
 
-	# Create custom xinetd.conf file. 
+	# Create custom xinetd.conf file.
 	# tst_xinetd.conf.1 config file has telnet service disabled.
 	cat > $LTPTMP/tst_xinetd.conf.1 <<-EOF || RC=$?
 	defaults
@@ -122,8 +122,8 @@ init()
         user            = root
         server          = /usr/sbin/in.telnetd
         server_args     = -n
-        no_access       = 
-    }       
+        no_access       =
+    }
 	EOF
 
     # Create expected file with telnet disabled.
@@ -159,7 +159,7 @@ init()
 
 # Function:     cleanup
 #
-# Description:  - remove temporaty files and directories. 
+# Description:  - remove temporaty files and directories.
 #
 # Return:       - zero on success.
 #               - non-zero on failure.
@@ -202,7 +202,7 @@ cleanup()
 #               - telnet to locahost should fail.
 #               - restart xinetd with configuration file with telnet enabled.
 #               - telnet to locahost should work.
-# 
+#
 # Return:       - zero on success.
 #               - non-zero on failure.
 test01()
@@ -213,7 +213,7 @@ test01()
     RC=0                # Return value from commands.
 
     tst_resm TINFO "Test #1: restart xinetd with telnet disabled."
-	
+
 	# create a backup of the original xinetd.conf file.
 	mv /etc/xinetd.conf /etc/xinetd.conf.orig > $LTPTMP/tst_xinetd.err 2>&1 \
 		|| RC=$?
@@ -246,7 +246,7 @@ test01()
        "Test #1: unable to restart service with telnet disabled. Details:"
         return $RC
 	else
-		# even if xinetd restart has zero exit value, 
+		# even if xinetd restart has zero exit value,
 		# make certain there was no failure.
 		grep -i "fail" $LTPTMP/tst_xinetd.out > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
 		if [ $RC -eq 0 ]
@@ -261,7 +261,7 @@ test01()
 		fi
 	fi
 
-	# Not checking for exit code from telnet command because telnet is 
+	# Not checking for exit code from telnet command because telnet is
 	# not terminated by the test gracefully.
 	echo "" | telnet localhost 2>$LTPTMP/tst_xinetd.out 1>/dev/null
 	diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.1 \
@@ -285,7 +285,7 @@ test01()
     fi
 
     tst_resm TINFO "Test #1: new xinetd.conf installed with telnet enabled."
-	
+
 	sleep 1s
 
 	# restart services.
@@ -310,9 +310,9 @@ test01()
 		fi
 	fi
 
-	# Not checking for exit code from telnet command because telnet is 
+	# Not checking for exit code from telnet command because telnet is
 	# not terminated by the test gracefully.
-	echo "" | telnet localhost > $LTPTMP/tst_xinetd.out 2>&1 
+	echo "" | telnet localhost > $LTPTMP/tst_xinetd.out 2>&1
 
 	diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.2 \
 		> $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
@@ -326,7 +326,7 @@ test01()
 		"Test #1: xinetd reads the config file and starts or stops services."
     fi
 
-    return $RC    
+    return $RC
 }
 
 
@@ -334,7 +334,7 @@ test01()
 #
 # Description:    - Execute all tests and report results.
 #
-# Exit:            - zero on success 
+# Exit:            - zero on success
 #               - non-zero on failure.
 
 RC=0

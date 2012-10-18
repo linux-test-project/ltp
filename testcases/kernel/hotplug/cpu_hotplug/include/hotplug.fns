@@ -1,8 +1,8 @@
-# hotplug.fns - Collection of functions for hotplugging 
+# hotplug.fns - Collection of functions for hotplugging
 # operations.
 
 # Routines in this library are set up to allow timing to be done
-# by defining $TIME to a timing command.  
+# by defining $TIME to a timing command.
 TIME=${TIME:-""}
 
 # get_all_irqs()
@@ -16,7 +16,7 @@ get_all_irqs()
 }
 
 # migrate_irq(CPU, IRQS)
-# 
+#
 #  Sets the smp_affinity for the list of $IRQS to the given
 #  CPU number
 #
@@ -62,7 +62,7 @@ set_affinity()
 #  to perform the online operation successfully, false otherwise.
 #
 #  $CPU should either be a specific number like 4, or the cpu name,
-#  as in 'cpu4'.  
+#  as in 'cpu4'.
 #
 online_cpu()
 {
@@ -192,7 +192,7 @@ cpu_is_online()
     CPU=${1#cpu}
     if [ `cat /sys/devices/system/cpu/cpu${CPU}/online` = "1" ]; then
         return 0
-    else 
+    else
         return 1
     fi
 }

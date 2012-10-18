@@ -28,7 +28,7 @@ LIB			:= $(LIBDIR)/libclone.a
 
 LDLIBS			:= -ldl -lltp
 
-INSTALL_TARGETS		:= *.sh 
+INSTALL_TARGETS		:= *.sh
 
 $(LIBDIR):
 	mkdir -p "$@"

@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Test that sched_getscheduler() sets errno == ESRCH if the pid cannot be 
+# Test that sched_getscheduler() sets errno == ESRCH if the pid cannot be
 # found.
 # This is tested implicitly via assertion 5.
 

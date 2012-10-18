@@ -69,7 +69,7 @@ case "$bind_type" in
 	mount $mflags --make-rslave "$dir" 2> /dev/null || \
 	smount "$dir" rslave || exit $?
       	;;
-   unclone) 
+   unclone)
    	echo "mount $mflags --make-runbindable \"$dir\""
 	mount $mflags --make-runbindable "$dir" 2> /dev/null || \
 	smount "$dir" runclone || exit $?
@@ -89,7 +89,7 @@ case "$bind_type" in
 	mount $mflags --make-slave "$dir" 2> /dev/null || \
 	smount "$dir" slave || exit $?
       	;;
-   nunclone) 
+   nunclone)
    	echo "mount $mflags --make-unbindable \"$dir\""
 	mount $mflags --make-unbindable "$dir" 2> /dev/null || \
 	smount "$dir" unclone || exit $?

@@ -32,10 +32,10 @@
 #     - IPsec is not used
 #     - Disable window scaling
 #     - Enable Nagle algorithm
-#     - Disable TCP Duplicate SACK support 
+#     - Disable TCP Duplicate SACK support
 #     - Enable SACK Support
 #     - Some packets are lost
-#     - Disable TSO if it is avalable 
+#     - Disable TSO if it is avalable
 #
 #   *) This script may be read by the other test case
 #
@@ -68,10 +68,10 @@ tst_resm TINFO "Verify that the kernel, when the Duplicate SACK support is off, 
 DO_DSACK=false
 
 # Make some packets are lost
-DO_PACKET_LOSS=true 
+DO_PACKET_LOSS=true
 
 # Make some packets are duplicated
-DO_PACKET_DUP=true 
+DO_PACKET_DUP=true
 
 # Load tcp4-uni-basic01
 NON_BASIC=true

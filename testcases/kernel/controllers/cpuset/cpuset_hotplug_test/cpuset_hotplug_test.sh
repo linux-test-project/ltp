@@ -87,7 +87,7 @@ root_cpu_hotplug_test()
 	fi
 
 	root_cpus="`cat $CPUSET/cpus`"
-	
+
 	task_cpus="`cat /proc/$tst_pid/status | grep Cpus_allowed_list`"
 	task_cpus="`echo $task_cpus | sed -e 's/Cpus_allowed_list: //'`"
 
@@ -156,7 +156,7 @@ general_cpu_hotplug_test()
 	fi
 
 	cpus="`cat $path/cpus`"
-	
+
 	task_cpus="`cat /proc/$tst_pid/status | grep Cpus_allowed_list`"
 	task_cpus="`echo $task_cpus | sed -e 's/Cpus_allowed_list: //'`"
 

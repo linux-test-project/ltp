@@ -26,18 +26,18 @@
 #
 # Description:
 #   Kill all of the udp traffic utilities (ns-udpserver, ns-udpclient)
-#  
+#
 # Arguments:
 #   None
-#   
+#
 # Returns:
-#   None 
+#   None
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
@@ -80,12 +80,12 @@ done
 # Verify the client is dead.
 start_epoc=`date +%s`
 while true ; do
-    #ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l '[[:blank:]]ns-udpclient[[:blank:]]' >/dev/null 2>&1; echo $?'` 
-    ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l '/ns-udpclient[[:blank:]]' >/dev/null 2>&1; echo $?'` 
+    #ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l '[[:blank:]]ns-udpclient[[:blank:]]' >/dev/null 2>&1; echo $?'`
+    ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l '/ns-udpclient[[:blank:]]' >/dev/null 2>&1; echo $?'`
 
     if [ -z $ret ]; then
 	continue
-    fi 
+    fi
 
     if [ $ret -ne 0 ]; then
 	break

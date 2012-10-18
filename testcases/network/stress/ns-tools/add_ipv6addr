@@ -26,7 +26,7 @@
 #
 # Description:
 #   Add an IPv6 address to the interface which belongs to the specified
-#   test link 
+#   test link
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>
@@ -58,7 +58,7 @@ export LTPROOT
 . check_envval || exit 1
 
 # Arguments
-if [ $# -ne 4 ]; then 
+if [ $# -ne 4 ]; then
     echo "Usage: $0 host_type link_number network_portion host_portion" >&2
     exit 1
 fi

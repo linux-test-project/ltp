@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 		break;
 		}
 	}
-	
+
 	cleanup();
 	tst_exit();
 }

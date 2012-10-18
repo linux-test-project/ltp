@@ -21,7 +21,7 @@
 #ifndef USER_TAGP_H
 #define USER_TAGP_H
 
-#ifndef BUFFER_LEN 
+#ifndef BUFFER_LEN
 #define BUFFER_LEN 32
 #endif
 

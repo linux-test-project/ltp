@@ -21,7 +21,7 @@
 #  FILE   : host
 #
 #  PURPOSE: To test the basic functionality of the `host` command.
-#  
+#
 #  SETUP: If "RHOST" is not exported, then the local hostname is used.
 #
 #  HISTORY:
@@ -65,7 +65,7 @@ do_test()
                 end_testcase "reverse lookup with host failed"
             fi
 
-        else 
+        else
             end_testcase "host $RHOST on local machine failed"
         fi
 

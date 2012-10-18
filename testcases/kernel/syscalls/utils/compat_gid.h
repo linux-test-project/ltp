@@ -28,7 +28,7 @@
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 typedef __kernel_old_gid_t GID_T;
-int 
+int
 GID_SIZE_CHECK(gid_t gid)
 {
 	/* See high2lowgid in linux/highuid.h
@@ -40,7 +40,7 @@ GID_SIZE_CHECK(gid_t gid)
 #else
 
 typedef gid_t GID_T;
-int 
+int
 GID_SIZE_CHECK(gid_t gid)
 {
 	return 1;

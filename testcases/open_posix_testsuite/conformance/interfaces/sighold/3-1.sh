@@ -7,6 +7,6 @@
 
 #
 #   Test various methods of adding invalid signals to sighold().
-# 
+#
 
 ./3-core 1

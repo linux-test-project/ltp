@@ -54,7 +54,7 @@
 
 
 typedef struct argstruct ArgStruct;
-struct argstruct 
+struct argstruct
 {
     /* This is the common information that is needed for all tests           */
     char     *host;         /* Name of receiving host                        */

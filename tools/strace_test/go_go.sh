@@ -45,4 +45,4 @@ while true ; do
 	sleep 8
 	./slay $user
 done
-	
+

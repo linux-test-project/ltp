@@ -52,7 +52,7 @@ mq_unlink		YES			MED		DONE
 	- Create the mqueue FS:
 		mkdir /dev/mqueue
 		mount -t mqueue none /dev/mqueue
-							
+
 */
 Maintainer: Julie Fleischer
 Contributor:  Crystal Xiong

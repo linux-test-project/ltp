@@ -11,7 +11,7 @@
 #   1)  Initialize an full signal set.
 #   2)  Add the SIGALRM signal to the full signal set.
 #   3)  Verify that SIGALRM is a member of the signal set.
-# 
+#
 
 # Calling 1-core with a 1 parameter initializes to an
 # full set.

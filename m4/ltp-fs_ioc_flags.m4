@@ -19,7 +19,7 @@ dnl Author: Cyril Hrubis <chrubis@suse.cz>
 dnl
 
 dnl
-dnl LTP_CHECK_FS_IOC_FLAGS 
+dnl LTP_CHECK_FS_IOC_FLAGS
 dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_FS_IOC_FLAGS],[

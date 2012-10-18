@@ -58,7 +58,7 @@ static void* fn(void *arg)
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* 
+	/*
 	 * The CLOCK_REALTIME represents time passed since the Epoch
 	 * so we may expect that tv_sec is > TIMEOUT (1 sec)
 	 */

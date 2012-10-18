@@ -102,7 +102,7 @@ int main(void)
 	key_t key;
 
 	nb_cpu = get_ncpu();
-	
+
 	if (nb_cpu == -1) {
 		printf("Can not get the number of CPUs of your machines.\n");
 		return PTS_UNRESOLVED;

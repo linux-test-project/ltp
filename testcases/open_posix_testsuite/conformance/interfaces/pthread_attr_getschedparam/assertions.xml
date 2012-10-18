@@ -2,9 +2,9 @@
   <assertion id="1" tag="ref:XSH6:31388:31391">
    The function
 
-   int pthread_attr_getschedparam(const pthread_attr_t *restrict attr, 
+   int pthread_attr_getschedparam(const pthread_attr_t *restrict attr,
 	contst struct sched_param *restrict param);
- 
+
   gets the scheduling parameter attributes in the 'attr' argument.
   The contents of the 'param' structure are defined in sched.h.
   For the SCHED_FIFO and SCHED_RR policies, the only required member of
@@ -12,5 +12,5 @@
   </assertion>
   <assertion id="2" tag="ref:XSH6:31399:31400">
   If success, it returns 0;
-  </assertion> 
+  </assertion>
 </assertions>

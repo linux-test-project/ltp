@@ -149,7 +149,7 @@ static int testfperm(const char *file_name, int flag, int user_id,
 	default:
 	break;
 	}
-	
+
 	wait(&status);
 
 	return WEXITSTATUS(status);

@@ -139,7 +139,7 @@ int main(int ac, char *av[])
 			}
 		}
 		cwd = startdir;
-		
+
 		snprintf(dirname, ARRAY_SIZE(dirname),
 		         "%s/ftest06.%d", cwd, getpid());
 		snprintf(homedir, ARRAY_SIZE(homedir),
@@ -150,7 +150,7 @@ int main(int ac, char *av[])
 
 		if (chdir(dirname) < 0)
 			tst_brkm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", dirname);
-		
+
 		dirlen = strlen(dirname);
 
 		if (chdir(homedir) < 0)

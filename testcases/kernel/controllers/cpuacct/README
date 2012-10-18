@@ -19,7 +19,7 @@ cpuacct_setup.sh
 This file contains the functions which are common for all the tests. For ex.
 the setup and cleanup functions which do the setup for running the test and do
 the cleanup once the test finishes. The setup() function creates /dev/cpuacct
-directory and mounts cgroup filesystem on it with accounting  controller. It 
+directory and mounts cgroup filesystem on it with accounting  controller. It
 then creates a number(n) of groups in /dev/cpuacct. The cleanup function does a
 complete cleanup of the system.
 

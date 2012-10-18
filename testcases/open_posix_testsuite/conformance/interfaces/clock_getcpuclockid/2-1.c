@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 		printf("clock_gettime(clockid_2,) failed\n");
 		return PTS_FAIL;
 	}
-	
+
 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t3) != 0) {
 		printf("clock_gettime(CLOCK_PROCESS_CPUTIME_ID,) failed\n");
 		return PTS_FAIL;

@@ -56,7 +56,7 @@ syslog_case5()
 		;;
 	esac
 
-	restart_syslog_daemon	
+	restart_syslog_daemon
 
 	# check if /var/log/messages script exists
 	if [ "$CONFIG_FILE" != "/etc/syslog-ng/syslog-ng.conf" -a ! -e /var/log/messages ]

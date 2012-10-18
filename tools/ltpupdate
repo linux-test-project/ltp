@@ -6,8 +6,8 @@
 #
 
 export CVSROOT=:pserver:anonymous@cvs.LTP.sourceforge.net:/cvsroot/ltp
-#cvs -d:pserver:anonymous@cvs.LTP.sourceforge.net:/cvsroot/ltp login 
-#cvs -z3 -d:pserver:anonymous@cvs.LTP.sourceforge.net:/cvsroot/ltp co ltp 
+#cvs -d:pserver:anonymous@cvs.LTP.sourceforge.net:/cvsroot/ltp login
+#cvs -z3 -d:pserver:anonymous@cvs.LTP.sourceforge.net:/cvsroot/ltp co ltp
 
 #CHANGEME:
 LTP_HOST=ltp_host.somewhere.org

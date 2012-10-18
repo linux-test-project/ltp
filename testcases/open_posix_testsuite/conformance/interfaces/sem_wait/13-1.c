@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 		UNRESOLVED(errno, "Unable to read clock");
 	}
 
-	/* 
+	/*
 	 * POSIX allows for alarm to quite unprecise, so we ask for 2 seconds
 	 * and check for at least one.
 	 */
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
                        ts_fin.tv_sec, ts_fin.tv_nsec);
 		FAILED("The sem_wait call did not block");
 	}
-	
+
 	ret = sem_destroy(&sem);
 
 	if (ret != 0) {

@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -39,22 +39,22 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
-	mkdir mnt mnt/1 mnt/2 mnt/1/abc tmp1 tmp1/3 tmp2 
-	
+
+	mkdir mnt mnt/1 mnt/2 mnt/1/abc tmp1 tmp1/3 tmp2
+
 	mount --bind mnt mnt
 	"${FS_BIND_ROOT}/bin/makedir" share mnt/1 mnt/1
 	mount --bind mnt/1 mnt/2
 	mount --bind "$disk1" mnt/1/abc
-	
+
 	check mnt/1/abc mnt/2/abc "$disk1"
-	
+
 	"${FS_BIND_ROOT}/bin/makedir" share tmp1
 	mount --bind tmp1 tmp2
-	
+
 	mount --move mnt tmp1/3
 	check tmp1/3/1/abc tmp2/3/1/abc tmp2/3/2/abc "$disk1"
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "bind/test23: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -72,10 +72,10 @@ trap '' ERR
 	umount tmp1
 	umount tmp1
 	umount tmp2
-	
+
 	rm -rf mnt tmp1 tmp2
-	
-	
+
+
 	cleanup
 } >& /dev/null
 if [ $result -ne 0 ]
@@ -84,6 +84,6 @@ then
 	exit 1
 else
 	tst_resm TPASS "bind/test23: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

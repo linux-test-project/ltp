@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # This script propagates the child sysfs contents to be visible for parent
 # Also it will check the parent sysfs contents are visible.
@@ -40,7 +40,7 @@ export TST_TOTAL
     mount -t sysfs none /sys || ret=1
     mkdir -p /tmp/mnt/sys || ret=1
     mount --bind /sys /tmp/mnt/sys > /dev/null || ret=1
-    
+
     if [ $ret -ne 0 ]; then
         status=1
         tst_resm TFAIL "error while doing bind mount"
@@ -63,6 +63,6 @@ export TST_TOTAL
     fi
 
     #cleanup
-    rm -f /tmp/parent_sysfs_in_child /tmp/parent_sysfs 
+    rm -f /tmp/parent_sysfs_in_child /tmp/parent_sysfs
     umount /tmp/mnt/sys
     rm -rf /tmp/mnt  > /dev/null 2>&1 || true

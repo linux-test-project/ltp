@@ -1,12 +1,12 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:38847:38852">
-   sem_open test cases make sure that it establish connection between the 
-   Semaphore and the process.  There are checks for return values of the 
+   sem_open test cases make sure that it establish connection between the
+   Semaphore and the process.  There are checks for return values of the
    address, increament, decrement, and close.
   </assertion>
   <assertion id="2" tag="ref:XSH6:38855:38874">
    sem_open attempts to open an existing semaphore,
-   which it should fail when both O_CREAT and O_EXCL name exist during the 
+   which it should fail when both O_CREAT and O_EXCL name exist during the
    opening of a Semaphore.
   </assertion>
   <assertion id="3" tag="ref:XSH6:38897:38899">
@@ -43,7 +43,7 @@
   of the semaphore.
   </assertion>
   <assertion id="12" tag="ref:XSH6:38860:38861">
-  The initial value for the semaphore should be less than or equal to 
+  The initial value for the semaphore should be less than or equal to
   SEM_VALUE_MAX.  Any other initial value is invalid.
   </assertion>
   <assertion id="13" tag="ref:XSH6:38862:38864">
@@ -57,7 +57,7 @@
   </assertion>
   <assertion id="15" tag="ref:XSH6TC2:39883:39886">
 If a process calls sem_open several times with the same name, the same adress
-must be returned as long as the semaphore has not been unlinked or closed as 
+must be returned as long as the semaphore has not been unlinked or closed as
 many times as opened.
   </assertion>
 </assertions>

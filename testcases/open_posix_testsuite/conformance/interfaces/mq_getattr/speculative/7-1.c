@@ -38,12 +38,12 @@ int main(void)
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
-	
+
 	if (mqdes == (mqd_t)-1) {
 		perror("mq_open()");
 		return PTS_UNRESOLVED;
 	}
-	
+
 	mqdes_invalid = mqdes + 1;
 	memset(&mqstat, 0, sizeof(mqstat));
 
@@ -65,7 +65,7 @@ int main(void)
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
-		
+
 	if (saved_errno != EBADF) {
 		printf("mq_getattr() returned -1, but errno != EBADF (%s)\n",
 		       strerror(saved_errno));

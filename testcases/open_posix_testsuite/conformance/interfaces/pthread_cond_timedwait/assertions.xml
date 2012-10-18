@@ -12,12 +12,12 @@
   The pthread_cond_timedwait() function shall be equivalent to pthread_cond_wait(), except that an
   error is returned if the absolute time specified by abstime passes (that is, system time equals or
   exceeds abstime) before the condition cond is signaled or broadcasted, or if the absolute time
-  specified by abstime has already been passed at the time of the call. 
-   </assertion> 
+  specified by abstime has already been passed at the time of the call.
+   </assertion>
 
   <assertion id="3" tag="ref:XSH6:32516:32516">
   Upon successful completion, a value of zero shall be returned;
-  </assertion> 
+  </assertion>
 
   <assertion id="4" tag="ref:XSH6:32521:32526">
   The pthread_cond_timedwait() function shall fail if:
@@ -28,6 +28,6 @@
              pthread_cond_wait() operations on the same condition variable.
     [EPERM] The mutex was not owned by the current thread at the time of the call.
   These functions shall not return an error code of [EINTR].
-  </assertion> 
-  
+  </assertion>
+
 </assertions>

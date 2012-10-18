@@ -29,7 +29,7 @@
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 
-int 
+int
 SETGID(GID_T gid)
 {
 	return syscall(__NR_setgid, gid);
@@ -42,8 +42,8 @@ GETGID(void)
 
 	gid = getgid();
 	if (!GID_SIZE_CHECK(gid))
-	  tst_brkm(TBROK, 
-		   cleanup, 
+	  tst_brkm(TBROK,
+		   cleanup,
 		   "gid for the current process is too large for testing setgid16");
 
 	return (GID_T)gid;
@@ -51,7 +51,7 @@ GETGID(void)
 
 #else
 
-int 
+int
 SETGID(GID_T gid)
 {
 	return setgid(gid);

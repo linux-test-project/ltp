@@ -1,4 +1,4 @@
-<assertions> 
+<assertions>
   <assertion id="1" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
    The mlockall() function shall cause all of the pages mapped by the address
    space of a process to be memory-resident until unlocked or until the process

@@ -59,7 +59,7 @@ enum EPOLL_EVENTS
 #define EPOLL_CTL_MOD 3	/* Change file decriptor epoll_event structure.  */
 
 
-/* 
+/*
  * On x86-64 make the 64bit structure have the same alignment as the
  * 32bit structure. This makes 32bit emulation easier.
  */

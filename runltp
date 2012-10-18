@@ -24,12 +24,12 @@
 #
 # Authors:      Manoj Iyer - manjo@mail.utexas.edu
 #               Robbe Williamson - robbiew@us.ibm.com
-#               
+#
 # History:      Oct 07 2003 - Modified - Manoj Iyer
 #               - use functions
 #               - clean up on script exit
 #               - error checking etc.
-#                
+#
 #               Oct 08 2003 - Modified - Manoj Iyer
 #               - fixed bug in creating results directory
 #               - all checks should be enlclosed in " " to avoid bash error
@@ -101,17 +101,17 @@ version_of_ltp()
     exit 0
 }
 
-usage() 
+usage()
 {
     cat <<-EOF >&2
 
     usage: ${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
     [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
-    [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
+    [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ]
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
     -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B DEVICE_FS_TYPE]
 	[ -F LOOPS,PERCENTAGE ]
-                
+
     -a EMAIL_TO     EMAIL all your Reports to this E-mail Address
     -c NUM_PROCS    Run LTP under additional background CPU load
                     [NUM_PROCS = no. of processes creating the CPU Load by spinning over sqrt()
@@ -132,7 +132,7 @@ usage()
     -i NUM_PROCS    Run LTP under additional background Load on IO Bus
                     [NUM_PROCS   = no. of processes creating IO Bus Load by spinning over sync()]
     -K DMESG_LOG_DIR
-			Log Kernel messages generated for each test cases inside this directory 
+			Log Kernel messages generated for each test cases inside this directory
     -l LOGFILE      Log results of test in a logfile.
     -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG
                     Run LTP under additional background Load on Main memory (Seperate by comma)
@@ -144,10 +144,10 @@ usage()
 		[CHECK_TYPE=1 => Full Memory Leak Check tracing children as well]
 		[CHECK_TYPE=2 => Thread Concurrency Check tracing children as well]
 		[CHECK_TYPE=3 => Full Memory Leak & Thread Concurrency Check tracing children as well]
-    -N              Run all the networking tests. 
+    -N              Run all the networking tests.
     -n              Run LTP with network traffic in background.
     -o OUTPUTFILE   Redirect test output to a file.
-    -p              Human readable format logfiles. 
+    -p              Human readable format logfiles.
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
     -s PATTERN      Only run test cases which match PATTERN.
@@ -215,7 +215,7 @@ main()
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
-        c)       
+        c)
             NUM_PROCS=$(($OPTARG))
             if   [ "$NUM_PROCS" -eq 0 ]; then
                 # User Did not Define the Value ,or, User Defined Zero,
@@ -225,15 +225,15 @@ main()
             $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
 
-        C)  
+        C)
             case $OPTARG in
             /*)
                 FAILCMDFILE="-C $OPTARG" ;;
-            *)    
+            *)
                 FAILCMDFILE="-C $LTPROOT/output/$OPTARG"
                 ALT_DIR_OUT=1 ;;
             esac ;;
-                   
+
         d)  # convert the user path to absolute path.
             export TMPBASE=$(readlink -f ${OPTARG}) ;;
 
@@ -300,10 +300,10 @@ main()
             *)
                 HTMLFILE="$LTPROOT/output/$OPTARG";;
             esac
-            ALT_DIR_OUT=1 
+            ALT_DIR_OUT=1
             ALT_HTML_OUT=1;;
         h)  usage;;
-        
+
         i)
             NUM_PROCS=$(($OPTARG))
             if   [ "$NUM_PROCS" -eq 0 ]; then
@@ -313,8 +313,8 @@ main()
             fi
             $LTPROOT/testcases/bin/genload --io $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
-    
-        K)  
+
+        K)
 	    case $OPTARG in
         	   /*)
                 	DMESG_DIR="$OPTARG-dmesg-output-`echo $$-``date +%X | tr -d ' '`";;
@@ -323,16 +323,16 @@ main()
 	    esac
             mkdir -p $DMESG_DIR
             ALT_DMESG_OUT=1;;
-        l)      
+        l)
             LOGFILE_NAME="$OPTARG"
             case $OPTARG in
             /*)
                 LOGFILE="-l $OPTARG" ;;
-            *)    
+            *)
                 LOGFILE="-l $LTPROOT/results/$OPTARG"
                 ALT_DIR_RES=1 ;;
             esac ;;
-    
+
         m)  NUM_PROCS=1; CHUNKS=1; BYTES=$((256 * 1024 * 1024)); HANGUP_FLAG=0
             ARGUMENT_LIST=$OPTARG
             TOTAL_ARGUMENTS=1
@@ -374,11 +374,11 @@ main()
 		VALGRIND_CHECK_TYPE="$OPTARG";;
 
         N)  RUN_NETEST=1;;
-    
-        n)  
+
+        n)
             $LTPROOT/testcases/bin/netpipe.sh
             NETPIPE=1;;
-    
+
         o)  OUTPUTFILE_NAME="$OPTARG"
             case $OPTARG in
             /*)
@@ -387,13 +387,13 @@ main()
                 OUTPUTFILE="-o $LTPROOT/output/$OPTARG"
                 ALT_DIR_OUT=1 ;;
             esac ;;
-    
+
         p)  PRETTY_PRT=" -p ";;
-   
+
         q)  QUIET_MODE=" -q ";;
-    
+
         r)  LTPROOT=$OPTARG;;
-    
+
         s)  TAG_RESTRICT_STRING=$OPTARG;;
 
 	S)  case $OPTARG in
@@ -402,9 +402,9 @@ main()
             *)
                 SKIPFILE="$LTPROOT/$OPTARG";;
             esac ;;
-    
-        t)  # In case you want to specify the time 
-            # to run from the command line 
+
+        t)  # In case you want to specify the time
+            # to run from the command line
             # (2m = two minutes, 2h = two hours, etc)
             DURATION="-t $OPTARG" ;;
 
@@ -412,7 +412,7 @@ main()
             RUN_REPEATED=$OPTARG;;
 
         w)  CMDFILEADDR=$OPTARG;;
-   
+
         x)  # number of ltp's to run
             cat <<-EOF >&1
             WARNING: The use of -x can cause unpredictable failures, as a
@@ -420,7 +420,7 @@ main()
                      to be ran exclusively.
                      Pausing for 10 seconds..."
 	EOF
-            sleep 10 
+            sleep 10
             INSTANCES="-x $OPTARG";;
         b) DEVICE=$OPTARG;;
         B) DEVICE_FS_TYPE=$OPTARG;;
@@ -435,8 +435,8 @@ main()
        ALT_DIR_RES=1
        PRETTY_PRT=" -p "
     fi
-   
-    ## It would be nice if a Failed File is compulsorily created (gives User better Idea of Tests that failed)  
+
+    ## It would be nice if a Failed File is compulsorily created (gives User better Idea of Tests that failed)
 
     if [ ! "$FAILCMDFILE" ]; then                            ## User has not mentioned about Failed File name
          ALT_DIR_OUT=1
@@ -495,7 +495,7 @@ main()
         }
     }
 
-    # Added -m 777 for tests that call tst_tmpdir() and try to 
+    # Added -m 777 for tests that call tst_tmpdir() and try to
     #  write to it as user nobody
     mkdir -m 777 -p $TMPBASE || \
     {
@@ -519,18 +519,18 @@ main()
       echo "unable to chmod 777 $TMP ... aborting"
       exit 1
     }
-    
+
     cd $TMP || \
     {
       echo "could not cd ${TMP} ... exiting"
       exit 1
     }
-    
+
     [ -n "$INSTANCES" ] && \
     {
       INSTANCES="$INSTANCES -O ${TMP}"
     }
-    
+
     [ "$RUN_NETEST" -eq 1 ] && \
     {
         [ -z "$RHOST" ] || [ -z "$PASSWD" ] && \
@@ -556,7 +556,7 @@ main()
             echo "WARNING: security of $RHOST may be compromised"
         }
     }
-    
+
     # If user does not provide a command file select a default set of testcases
     # to execute.
     if [ -z "$CMDFILES" ] && [ -z "$CMDFILEADDR" ]
@@ -567,7 +567,7 @@ main()
           runtest scenario files:
 
 `cat $LTPROOT/scenario_groups/default | tr '\012' ' '`
-    
+
 	EOF
 
 	SCENARIO_LISTS="$LTPROOT/scenario_groups/default"
@@ -619,7 +619,7 @@ main()
             }
         done
     }
- 
+
     [ -n "$CMDFILEADDR" ] && \
     {
         wget -q "${CMDFILEADDR}" -O ${TMP}/wgetcmdfile
@@ -635,7 +635,7 @@ main()
     }
 
     # The fsx-linux tests use the SCRATCHDEV environment variable as a location
-    # that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
+    # that can be reformatted and run on.  Set SCRATCHDEV if you want to run
     # these tests.  As a safeguard, this is disabled.
     unset SCRATCHDEV
     [ -n "$SCRATCHDEV" ] && \
@@ -661,17 +661,17 @@ main()
             sed -i "/^$file[ \t]/d" ${TMP}/alltests
         done
     fi
-    
+
     # check for required users and groups
     ${LTPROOT}/IDcheck.sh &>/dev/null || \
     {
         echo "WARNING: required users and groups not present"
         echo "WARNING: some test cases may fail"
     }
-       
+
     # display versions of installed software
     [ -z "$QUIET_MODE" ] && \
-    { 
+    {
         ${LTPROOT}/ver_linux || \
         {
             echo "WARNING: unable to display versions of software installed"
@@ -747,7 +747,7 @@ main()
       echo "INFO: Restricted to $TAG_RESTRICT_STRING"
     fi
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
-    
+
     ## Display the Output/Log/Failed/HTML file names here
     echo -e "LOG File: \c"
     echo $LOGFILE | cut -b4-
@@ -834,7 +834,7 @@ main()
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
     "${LTPROOT}/bin/ltp-pan" $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
-     
+
     if [ $? -eq 0 ]; then
       echo "INFO: ltp-pan reported all tests PASS"
       VALUE=0
@@ -871,14 +871,14 @@ main()
        export TEST_OUTPUT_DIRECTORY="$LTPROOT/output"
        export TEST_LOGS_DIRECTORY=$LOGS_DIRECTORY
        echo "Generating HTML Output.....!!"
-       ( perl $LTPROOT/bin/genhtml.pl $LTPROOT/bin/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_DIRECTORY  > $HTMLFILE; )   
+       ( perl $LTPROOT/bin/genhtml.pl $LTPROOT/bin/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_DIRECTORY  > $HTMLFILE; )
        echo "Generated HTML Output.....!!"
        echo "Location: $HTMLFILE";
 
     fi
- 
+
     if [ "$ALT_EMAIL_OUT" -eq 1 ] ; then                      ## User wants reports to be e-mailed
-       if [ [ ! "$HTMLFILE_NAME" ] -o [ ! "$OUTPUTFILE_NAME" ] -o [ ! "$LOGFILE_NAME" ] ] ; then  
+       if [ [ ! "$HTMLFILE_NAME" ] -o [ ! "$OUTPUTFILE_NAME" ] -o [ ! "$LOGFILE_NAME" ] ] ; then
           ##User does not have output/logs/html-output, nothing to be mailed in this situation
           echo "Nothing to be mailed here...."
        else
@@ -947,25 +947,25 @@ main()
               else
                  echo "Reports cannot be mailed to: $EMAIL_TO"
               fi
-           fi 
+           fi
        fi
     fi
-   
+
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
-    
+
     [ "$GENLOAD" -eq 1 ] && { killall -9 genload  >/dev/null 2>&1; }
     [ "$NETPIPE" -eq 1 ] && { killall -9 NPtcp  >/dev/null 2>&1; }
-    
+
     [ "$ALT_DIR_OUT" -eq 1 ] || [ "$ALT_DIR_RES" -eq 1 ] && \
     {
     cat <<-EOF >&1
-        
+
        ###############################################################
-        
+
             Done executing testcases.
             LTP Version:  $version_date
        ###############################################################
-       
+
 	EOF
     }
     exit $VALUE

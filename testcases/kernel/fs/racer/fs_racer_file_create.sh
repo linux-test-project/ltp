@@ -29,7 +29,7 @@ create() {
     dd if=/dev/zero of=$DIR/$file bs=1k count=$SIZE
 }
 
-while /bin/true ; do 
+while /bin/true ; do
     file=$(($RANDOM%$MAX))
     create 2> /dev/null
 done

@@ -22,16 +22,16 @@
 # File :        iptables_tests.sh
 #
 # Description:  Test basic functionality of iptables (firewall administration)
-#		- Test #1:  iptables -L -t <table> will list all rules in the 
+#		- Test #1:  iptables -L -t <table> will list all rules in the
 #		  selected table.
 #		- Test #2:  Test iptables DROP packets from particular IP.
 #		- Test #3:  Test iptables REJECT ping request.
 #		- Test #4:  Test iptables log packets to single port.
 #		- Test #5:  Test iptables log packets to multiple ports.
 #		- Test #6:  Test limit matched logging for ping request.
-#               
 #
-# History: 
+#
+# History:
 #		Jan 20 2004 Hubert Lin <linux02NOSPAAAM@tw.ibm.com or hubertNOSPAAAM@symbio.com.tw>
 #		  - Ported test01, test02 from Manoj Iyer's ipchains_tests.sh
 #		  - Added test03, test04, test05, test06
@@ -112,7 +112,7 @@ cleanup()
 		iptables -F -t filter > $LTPTMP/tst_iptables.out 2>&1
 		iptables -F -t nat > $LTPTMP/tst_iptables.out 2>&1
 		iptables -F -t mangle > $LTPTMP/tst_iptables.out 2>&1
-		rmmod -v ipt_limit ipt_multiport ipt_LOG ipt_REJECT iptable_mangle iptable_nat ip_conntrack iptable_filter ip_tables > $LTPTMP/tst_iptables.out 2>&1 
+		rmmod -v ipt_limit ipt_multiport ipt_LOG ipt_REJECT iptable_mangle iptable_nat ip_conntrack iptable_filter ip_tables > $LTPTMP/tst_iptables.out 2>&1
 	fi
 	rm -fr $LTPTMP/tst_iptables.*
 	return $RC
@@ -122,7 +122,7 @@ cleanup()
 # Function:	test01
 #
 # Description	- Test basic functionality of iptables (firewall administration)
-#               - Test #1:  iptables -L -t <table> will list all rules in the 
+#               - Test #1:  iptables -L -t <table> will list all rules in the
 #                 selected table.
 #
 # Return	- zero on success
@@ -174,7 +174,7 @@ test01()
 		fi
 	fi
 
-	local cmd="iptables -L -t mangle" 
+	local cmd="iptables -L -t mangle"
 	tst_resm TINFO \
 		"$TCID: $cmd will list all rules in table mangle."
 	$cmd > $LTPTMP/tst_iptables.out 2>&1 || RC=$?
@@ -203,7 +203,7 @@ test01()
 # Description	- Test basic functionality of iptables (firewall administration)
 #               - Test #2:  Test iptables DROP packets from particular IP.
 #               - Append new rule to block all packets from loopback.
-#				- ping -c 2 loopback, this should fail. 
+#				- ping -c 2 loopback, this should fail.
 #				- remove rule, and ping -c loopback, this should work.
 #
 # Return	- zero on success
@@ -262,7 +262,7 @@ test02()
 		tst_resm TINFO "$TCID: Ping succsess"
 		tst_resm TPASS "$TCID: iptables can DROP packets from particular IP."
 	fi
-	
+
 	return $RC
 }
 
@@ -272,7 +272,7 @@ test02()
 # Description	- Test basic functionality of iptables (firewall administration)
 #               - Test #3:  Test iptables REJECT ping request.
 #               - Append new rule to block all packets from loopback.
-#				- ping -c 2 loopback, this should fail. 
+#				- ping -c 2 loopback, this should fail.
 #				- remove rule, and ping -c loopback, this should work.
 #
 # Return	- zero on success
@@ -331,7 +331,7 @@ test03()
 		tst_resm TINFO "$TCID: Ping succsess"
 		tst_resm TPASS "$TCID: iptables can REJECT ping requests."
 	fi
-	
+
 	return $RC
 }
 
@@ -543,13 +543,13 @@ test06()
 # Function:	main
 #
 # Description:	- Execute all tests, report results.
-#              
+#
 # Exit:		- zero on success
 # 		- non-zero on failure.
 TFAILCNT=0	# Set TFAILCNT to 0, increment on failure.
 RC=0		# Return code from test.
 
-init || exit $RC # Exit if initializing testcases fails.	
+init || exit $RC # Exit if initializing testcases fails.
 
 test01 || RC=$?
 if [ $RC -ne 0 ]; then

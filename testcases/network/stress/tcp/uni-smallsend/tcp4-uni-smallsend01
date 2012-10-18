@@ -32,10 +32,10 @@
 #     - IPsec is not used
 #     - Disable window scaling
 #     - Disable Nagle algorithm
-#     - Enable TCP Duplicate SACK support 
+#     - Enable TCP Duplicate SACK support
 #     - Enable SACK Support
 #     - No packet are lost
-#     - Disable TSO if it is avalable 
+#     - Disable TSO if it is avalable
 #
 #   *) This script may be read by the other test case
 #
@@ -65,10 +65,10 @@ export TST_TOTAL
 tst_resm TINFO "Verify that the kernel is not crashed by a connection disabling NAGLE algorithm"
 
 # Disable NAGLE algorithm
-DO_SMALL_SEND=true 
+DO_SMALL_SEND=true
 
 # Load tcp4-uni-basic01
-NON_BASIC=true 
+NON_BASIC=true
 
 . tcp4-uni-basic01
 

@@ -3,16 +3,16 @@
    The function
      int pthread_condattr_setpshared(pthread_condattr_t *attr,
                                      int pshared);
-  shall set the process-shared attribute in an initialized attributes object 
+  shall set the process-shared attribute in an initialized attributes object
   referenced by attr.
 
-  The process-shared attribute is set to PTHREAD_PROCESS_SHARED to permit a condition 
+  The process-shared attribute is set to PTHREAD_PROCESS_SHARED to permit a condition
   variable to be operated upon by any thread that has access to the memory where the
   condition variable is allocated, even if the condition variale is allocated in memory
   that is shared by multiple processes.  If the process-shared attribute is set to
-  PTHREAD_PROCESS_PRIVATE, the condition variable shall only be operated upon by threads 
+  PTHREAD_PROCESS_PRIVATE, the condition variable shall only be operated upon by threads
   create within the same process as the thread that initialized the condition varible; if
-  threads of differing processes attempt to operate on such a condition variable, the 
+  threads of differing processes attempt to operate on such a condition variable, the
   behavior is undefined.
   </assertion>
 
@@ -21,7 +21,7 @@
   The pthread_condattr_setpshared() function may fail if:
     [EINVAL] The value specified by attr is invalid.
     [EINVAL] The new value specified for the attribute is outside the range of legal values
-             for that attribute.  
-  </assertion> 
+             for that attribute.
+  </assertion>
 
 </assertions>

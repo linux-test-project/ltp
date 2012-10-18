@@ -39,7 +39,7 @@
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
@@ -51,7 +51,7 @@ PING_MAX=10
 
 # Check the arguments
 if [ $# -ne 2 ]; then
-    echo "Usage: $0 source_interface_name destionation_ipv4_address" >&2 
+    echo "Usage: $0 source_interface_name destionation_ipv4_address" >&2
     exit 1
 fi
 src_ifname=$1

@@ -26,18 +26,18 @@
 #
 # Description:
 #   Kill all of the tcp traffic utilities (ns-tcpserver, ns-tcpclient)
-#  
+#
 # Arguments:
 #   None
-#   
+#
 # Returns:
-#   None 
+#   None
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
@@ -85,7 +85,7 @@ while true ; do
 
     if [ -z $ret ]; then
 	continue
-    fi 
+    fi
 
     if [ $ret -ne 0 ]; then
 	break

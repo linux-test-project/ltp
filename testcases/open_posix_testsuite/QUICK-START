@@ -2,7 +2,7 @@
 QUICK-START
 ***********
 
-So you're in a hurry and don't feel like reading all those docs in the Documentation section that we have worked so hard to write huh?  
+So you're in a hurry and don't feel like reading all those docs in the Documentation section that we have worked so hard to write huh?
 
 No worries! Here's a quick doc to help you around POSIX** Test Suite.
 
@@ -13,7 +13,7 @@ Setting up your machine
 * There is nothing to install, the suite is intended to be run directly.
 
 * See the "BUILD" file for info on how to set up the Makefile and your machine,
-  depending on what specific area you are concentrating on. 
+  depending on what specific area you are concentrating on.
 (Signals, Semaphores, Threads, Timers or Message Queues).
 
 ===================

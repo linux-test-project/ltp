@@ -6,7 +6,7 @@ The following document briefly describes the steps and methodologies used for
 the new and improved Makefile system.
 
 Changelog:
- 
+
  * Initial version: Garrett Cooper <yanegomi@gmail.com>
  * Reformated for asciidoc: Cyril Hrubis <chrubis@suse.cz>
 ******************************************************************************
@@ -99,7 +99,7 @@ $(CXX)			: The system C++ compiler.
 
 $(CPP)			: The system C preprocessor.
 
-$(CFLAGS)		: C compiler flags. 
+$(CFLAGS)		: C compiler flags.
 
 $(CPPFLAGS)		: Preprocessor flags, e.g. -I arguments.
 

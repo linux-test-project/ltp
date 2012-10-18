@@ -30,8 +30,8 @@ and latency measurement tests.  This is still a work in (early) progress!
 
 DEPENDENCIES
 ============
-The testsuite expects glibc ("C" library) (version 2.4 onwards) and 
-the underlying kernel (version 2.6.18 onwards) to support 
+The testsuite expects glibc ("C" library) (version 2.4 onwards) and
+the underlying kernel (version 2.6.18 onwards) to support
 Robust and Priority Inheritance (PI) Mutexes.
 
 Most of the tests need the user to have a privileges that allow

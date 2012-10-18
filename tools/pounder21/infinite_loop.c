@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
 			}
 
 			// run the program
-			if (use_max_failures) {	
+			if (use_max_failures) {
 				if (argc > 5) {
 					stat = execvp(argv[3], &argv[3]);
 				} else {

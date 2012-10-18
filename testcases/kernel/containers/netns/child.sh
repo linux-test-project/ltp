@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # This script checks that the parent namespace is reachable from the child
 
@@ -31,9 +31,9 @@ TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-    
-    ping -qc 2 $IP1 >  /dev/null 
-    
+
+    ping -qc 2 $IP1 >  /dev/null
+
     if [ $? = 0 ] ; then
         tst_resm TINFO "PASS: Pinging ParentNS from ChildNS"
         status=0

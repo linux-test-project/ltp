@@ -14,8 +14,8 @@
     point it was interrupted.
   </assertion>
   <assertion id="5" tag="ref:XSH6:42166:42167">
-    If the handler is called, signal() shall return the value of 
-    func of the last call to signal() that pertains to the 
+    If the handler is called, signal() shall return the value of
+    func of the last call to signal() that pertains to the
     specified signal sig.
   </assertion>
   <assertion id="6" tag="ref:XSH6:42170:42172 pt:CX">

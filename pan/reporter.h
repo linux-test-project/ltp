@@ -68,7 +68,7 @@ int test_end( SYM, SYM, SYM );
 /* Scan Modes (above and beyond what I use lex for) */
 #define		SCAN_OUTSIDE	10	/* not in anything */
 #define		SCAN_RTSKEY	20	/* keywords: rts_keyword */
-#define		SCAN_TSTKEY	21	/* keywords: either test_start or 
+#define		SCAN_TSTKEY	21	/* keywords: either test_start or
 					   execution_status */
 #define		SCAN_OUTPUT	30	/* test_output */
 

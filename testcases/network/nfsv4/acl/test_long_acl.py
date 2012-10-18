@@ -1,5 +1,5 @@
-''' 
-	Access Control Lists testing based on newpynfs framework 
+'''
+	Access Control Lists testing based on newpynfs framework
 	Aurelien Charbon - Bull SA
 '''
 from random_gen import *
@@ -18,7 +18,7 @@ t_alphabet=len(alphabet)
 def test_longacl(l,path):
 	# mesures sur le getfacl
 	test = RandomGen()
-	
+
 	u = commands.getoutput('rm ' + path + "/*")	# clean directory
 	print "test acl getfacl\n"
 	for i in range(l):
@@ -32,7 +32,7 @@ def test_longacl(l,path):
                         u = commands.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + testfile)
 	                if u != "":
                                 print "setfacl -m u:" + user + ':' + mode + " " + path + "/" + testfile
-                                print u	
+                                print u
 def main():
 	parser = OptionParser()
 	parser.add_option("-l", "--length", dest="length",type="int",help="max lentgh of ACL")
