@@ -50,8 +50,8 @@ else
 	exit $TFAILCNT
 fi
 
-no_of_processor=`cat /proc/cpuinfo | grep -c processor`
-no_of_cpu=`ls /sys/devices/system/cpu/ | grep -c cpu[0-9]`
+no_of_processor=`tst_ncpus`
+no_of_cpu=`tst_ncpus_max`
 
 if [ $no_of_processor -lt $no_of_cpu ];then
 	test_op="Enable:/sys/devices/system/cpu/cpuX/online"

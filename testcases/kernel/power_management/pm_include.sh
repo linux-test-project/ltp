@@ -21,15 +21,11 @@ check_config_options() {
 	fi
 }
 
-no_of_cpus() {
-	echo $(cat /proc/cpuinfo | grep processor | wc -l)
-}
-
 get_topology() {
 	declare -a cpus
 	declare -a phyid
 
-	total_cpus=$(no_of_cpus)
+	total_cpus=`tst_ncpus`
 	(( total_cpus-=1 ))
 	for cpu in $(seq 0 "${total_cpus}" )
 	do
@@ -48,7 +44,7 @@ get_topology() {
 }
 
 check_cpufreq() {
-	total_cpus=$(no_of_cpus)
+	total_cpus=`tst_ncpus`
 	(( total_cpus-=1 ))
 
 	for cpu in $(seq 0 "${total_cpus}" )

@@ -24,7 +24,7 @@
 ##                                                                            ##
 ################################################################################
 
-NR_CPUS="`cat /proc/cpuinfo | grep "processor" | wc -l`"
+NR_CPUS=`tst_ncpus`
 if [ -f "/sys/devices/system/node/has_high_memory" ]; then
 	N_NODES="`cat /sys/devices/system/node/has_high_memory`"
 else
