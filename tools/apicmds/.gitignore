@@ -3,5 +3,7 @@ tst_brkm
 tst_exit
 tst_flush
 tst_kvercmp
+tst_ncpus
+tst_ncpus_max
 tst_res
 tst_resm

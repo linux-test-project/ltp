@@ -266,6 +266,10 @@ int main(int argc, char *argv[])
 		else if (exit_value > 0)
 			exit_value = 2;
 		exit(exit_value);
+	} else if (strcmp(cmd_name, "tst_ncpus") == 0) {
+		printf("%li\n", tst_ncpus());
+	} else if (strcmp(cmd_name, "tst_ncpus_max") == 0) {
+		printf("%li\n", tst_ncpus_max());
 	}
 
 	exit(0);

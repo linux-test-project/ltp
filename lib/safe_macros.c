@@ -386,3 +386,24 @@ unsigned long safe_strtoul(const char *file, const int lineno, void (cleanup_fn)
 
 	return rval;
 }
+
+long safe_sysconf(const char *file, const int lineno,
+		  void (cleanup_fn)(void), int name)
+{
+	long rval;
+	errno = 0;
+
+	rval = sysconf(name);
+
+	if (rval == -1) {
+		if (errno == EINVAL)
+			tst_brkm(TBROK|TERRNO, cleanup_fn,
+				 "sysconf failed at %s:%d", file, lineno);
+		else
+			tst_resm(TINFO, "queried option is not available"
+				 " or thers is no definite limit at %s:%d",
+				 file, lineno);
+	}
+
+	return rval;
+}

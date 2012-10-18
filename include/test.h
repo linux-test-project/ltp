@@ -267,6 +267,10 @@ char *get_mountpoint(const char *path);
 /* Function from lib/get_path.c */
 int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
 
+/* lib/tst_cpu.c */
+long tst_ncpus(void);
+long tst_ncpus_max(void);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL
