@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # This scripts contains the IP addr, PortNum of sshd
 # to be used and cleanup functions.

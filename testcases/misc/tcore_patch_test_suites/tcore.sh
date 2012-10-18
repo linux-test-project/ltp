@@ -16,7 +16,7 @@
 #    along with this program;  if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-# Test suite for the t-core kernel patch 
+# Test suite for the t-core kernel patch
 export TCID=tcore01
 PTHREAD_DIR="/lib/i686"
 BIN_DIR=$LTPROOT/testcases/bin/
@@ -28,7 +28,7 @@ pass=0
 fail=0
 check_install()
 {
-	if [ -f /proc/sys/kernel/core_dumps_threads ];then		
+	if [ -f /proc/sys/kernel/core_dumps_threads ];then
 		pass=`expr $pass + 1`
 		return 0
 	else
@@ -46,7 +46,7 @@ os_check()
 cleanup()
 {
 		rm -rf $TEST_DIR
-		[ -f /proc/sys/kernel/core_dumps_threads ] && ! [ -z "$OLD_PATTERN" ] && 
+		[ -f /proc/sys/kernel/core_dumps_threads ] && ! [ -z "$OLD_PATTERN" ] &&
 		echo "$OLD_PATTERN" > /proc/sys/kernel/core_dumps_threads
 		exit $1
 }
@@ -80,7 +80,7 @@ prepare_dump()
 		}
 	fi
 }
-#Prepare for the gdb dump 
+#Prepare for the gdb dump
 prepare_gdb()
 {
 	os_check
@@ -116,7 +116,7 @@ Test_gen_core()
 		echo "FAIL"
 		fail=`expr $fail + 1`
 		return 1
-	fi	
+	fi
 }
 
 Test_core_file()
@@ -138,7 +138,7 @@ Test_core_file
 echo "Linux Tcore test results" > results
 echo "Total pass fail" >>  results
 echo "  5	$pass	$fail" >> results
-cleanup $fail 
+cleanup $fail
 
-	
-	
+
+

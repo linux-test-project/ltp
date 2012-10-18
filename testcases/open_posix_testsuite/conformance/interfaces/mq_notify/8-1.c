@@ -49,7 +49,7 @@ int main()
 			printf("Test FAILED (errno != EBADF)\n");
 			return PTS_FAIL;
 		}
-	}	
+	}
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }

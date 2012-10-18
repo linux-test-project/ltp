@@ -54,7 +54,7 @@ Preparation
 -----------
 You need one, two or three computers, all computers need ssh to run
 test suite correctly and public keys MUST be shared between computers.
-It is REQUIRED ssh is used WITHOUT passwd. 
+It is REQUIRED ssh is used WITHOUT passwd.
 Use ssh-keygen to do that.
 
 
@@ -63,14 +63,14 @@ Quick installation
 ------------------
 
 To install and configure your Test Suite, run in a terminal :
- 	
+
 	./configure.auto
 	or
 	./configure.interactive
-     
+
 This will configure the way to run test suite (computer IP, login)
 
- 	make deploy 
+ 	make deploy
 	make all
 
 Now your test suite is ready to use
@@ -81,7 +81,7 @@ Launch Test Suite
 
 * To start all tests of this test suite :
 
- 	./rpc_ts_wizard.sh -all 
+ 	./rpc_ts_wizard.sh -all
 
 * Or, run a part of the test suite in interactive mode :
 
@@ -90,19 +90,19 @@ Launch Test Suite
 this will ask you the part of tests suite you want to test such as RPC, TI-RPC...
 
 * Or, run manually a part of test suite
- 
+
 	./rpc_ts_run.sh -l <script_lib.sh> [-l <script2_lib.sh> ...]
 
 this will run all tests of script <script_lib.sh>" script_lib.sh are in the test suite root directory,
 use ls *_lib.sh to display them
-Remark : replace <script_lib.sh> by script lib name like domain_subdomain_test_lib.sh 
+Remark : replace <script_lib.sh> by script lib name like domain_subdomain_test_lib.sh
          where domain is RPC or TIRPC, subdomain is i.e. stdcall, toplevel... and test is test
          category such as basic, stress...
 
 -------------------------
 Launch Test Suite Scripts
 -------------------------
-	To run with defaults values (`hostname` for the client ,  RHOST env variable or `hostname`) 
+	To run with defaults values (`hostname` for the client ,  RHOST env variable or `hostname`)
 	./run_rpc_tirpc_test_auto.sh
 	or
 	run_rpc_test_auto.sh
@@ -118,7 +118,7 @@ Launch Test Suite Scripts
 	./runltp -f tirpc
 	or
 	./runltp -f rpctirpc
-	
+
 -------------
 Tests results
 -------------

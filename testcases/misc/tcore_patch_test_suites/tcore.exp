@@ -16,7 +16,7 @@
 #    along with this program;  if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-set curr_thread 0 
+set curr_thread 0
 set pass 0
 proc check_buf {buf key} {
     set num 0
@@ -36,7 +36,7 @@ proc check_buf {buf key} {
 proc check_threads {} {
     global curr_thread
     global pass
-    set istrue 0 
+    set istrue 0
     send "info threads\n"
     expect {
        	-re " \[0-9\]+ process .*(gdb)" {
@@ -86,7 +86,7 @@ proc check_bt {} {
                 set number [check_buf $buf "in"]
                 if {  $number < 1  } {
 			set test 1
-	        } 
+	        }
                 set counter [expr $counter + 1]
         }
 	if { 0 == $test } {
@@ -106,7 +106,7 @@ proc check_fpu {num} {
 	send "\n"
 	send "info register\n"
 	send "\n"
-	expect { 
+	expect {
 		-re "xmm$num\[\t \]+\{f \= .*\}+\[\t \]+\{f \= .*\}" {
 			set buf $expect_out(0,string)
 		}
@@ -122,7 +122,7 @@ proc check_fpu {num} {
 	set number [lindex $buf2 1]
 	if { 0 != $number } {
 		set pass [expr $pass + 1]
-		send_user "success while check whether core dump includes fpu information"	
+		send_user "success while check whether core dump includes fpu information"
 		return 0
 	} else {
 		send_user "fail while check whether core dump includes fpu information"

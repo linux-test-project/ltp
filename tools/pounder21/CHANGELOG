@@ -63,7 +63,7 @@ pounder21-2006-11-07:
 - Fix a bug in randasys on x86-64 where we had insufficient random bits and
   would truncate whatever we got, leading to all 0 arguments by simply
   generating enough random bytes to fill an unsigned long.  Also add a -z
-  switch to enable this zero-only mode because it found some bugs.  :) 
+  switch to enable this zero-only mode because it found some bugs.  :)
 
 pounder21-2006-10-12:
 - Include /sysfs contents in the hw inventory
@@ -211,7 +211,7 @@ pounder21-2005-08-17:
 - More fixes to make sure the xterm_stress test dies when it should, an LTP refresh,
   and a couple of patches designed to make pounder work better with the
   mainline testing rig.  I haven't seen any problems with it, so I'm
-  pushing it out to the group to find more error cases.  :) 
+  pushing it out to the group to find more error cases.  :)
 
 pounder21-2005-08-16:
 - README: Add warning that changing the first line is a bad idea.

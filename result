@@ -8,24 +8,24 @@ On x86_64 machine with RHEL5.4(2.6.18-164.el5):
 
 Result Log file:
 ===============
-eventfd01                      FAIL       4    
-syslog07                       FAIL       1    
-syslog08                       FAIL       1    
-mtest06                        FAIL       255  
-su01                           FAIL       1    
-hugemmap04                     FAIL       2    
-hugeshmat01                    FAIL       6    
-hugeshmat02                    FAIL       6    
-hugeshmat03                    FAIL       2    
-hugeshmctl01                   FAIL       6    
-hugeshmctl02                   FAIL       6    
-hugeshmctl03                   FAIL       2    
-hugeshmdt01                    FAIL       6    
-hugeshmget01                   FAIL       2    
-hugeshmget02                   FAIL       6    
-hugeshmget03                   FAIL       6    
-hugeshmget05                   FAIL       2    
-mail                           FAIL       2    
+eventfd01                      FAIL       4
+syslog07                       FAIL       1
+syslog08                       FAIL       1
+mtest06                        FAIL       255
+su01                           FAIL       1
+hugemmap04                     FAIL       2
+hugeshmat01                    FAIL       6
+hugeshmat02                    FAIL       6
+hugeshmat03                    FAIL       2
+hugeshmctl01                   FAIL       6
+hugeshmctl02                   FAIL       6
+hugeshmctl03                   FAIL       2
+hugeshmdt01                    FAIL       6
+hugeshmget01                   FAIL       2
+hugeshmget02                   FAIL       6
+hugeshmget03                   FAIL       6
+hugeshmget05                   FAIL       2
+mail                           FAIL       2
 
 
 Result Output file:
@@ -41,15 +41,15 @@ On ppc64 machine with RHEL5.4(2.6.18-164.el5):
 
 Result Log file:
 ===============
-cct01                         FAIL       1    
-eventfd01                      FAIL       4    
-fdatasync02                    FAIL       1    
-syslog07                       FAIL       1    
-syslog08                       FAIL       1    
-mtest06                        FAIL       255  
-mmapstress03                   FAIL       1    
-su01                           FAIL       1    
-cron_deny01                    FAIL       1    
+cct01                         FAIL       1
+eventfd01                      FAIL       4
+fdatasync02                    FAIL       1
+syslog07                       FAIL       1
+syslog08                       FAIL       1
+mtest06                        FAIL       255
+mmapstress03                   FAIL       1
+su01                           FAIL       1
+cron_deny01                    FAIL       1
 
 
 Result Output file:
@@ -67,13 +67,13 @@ On s390x machine with RHEL5.4(2.6.18-164.el5):
 
 Result Log file:
 ===============
-eventfd01                      FAIL       4    
-keyctl01                       FAIL       1    
-rt_sigsuspend01                FAIL       11   
-timer_getoverrun01             FAIL       1    
-timer_gettime01                FAIL       1    
-su01                           FAIL       1    
-cron_allow01                   FAIL       1    
+eventfd01                      FAIL       4
+keyctl01                       FAIL       1
+rt_sigsuspend01                FAIL       11
+timer_getoverrun01             FAIL       1
+timer_gettime01                FAIL       1
+su01                           FAIL       1
+cron_allow01                   FAIL       1
 
 
 
@@ -91,6 +91,6 @@ On x86_64 machine with SLES11GA(2.6.27.19-5-default):
 
 Result Log file:
 ===============
-eventfd2_03                    FAIL       1    
-utimensat01                    FAIL       1    
-ftest04                        FAIL       1    
+eventfd2_03                    FAIL       1
+utimensat01                    FAIL       1
+ftest04                        FAIL       1

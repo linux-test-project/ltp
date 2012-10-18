@@ -58,7 +58,7 @@ NOTES
 *For now, didn't include definitions that have specific tags attributed to them.
 (i.e. TPS, XSI, BAR, etc.)
 
-*See BUILD file in top-level dir for info on how to build and execute threads on 
+*See BUILD file in top-level dir for info on how to build and execute threads on
 different implementations on Linux.
 
 =============================

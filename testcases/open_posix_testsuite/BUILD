@@ -35,7 +35,7 @@ Message Queues
 ================
 POSIX message queues have been available in FreeBSD since 6.x. Please add:
 
-options		P1003_1B_MQUEUE 
+options		P1003_1B_MQUEUE
 
 to your kernel conf or build and install the mqueue module, and load it with:
 
@@ -67,9 +67,9 @@ the kernel, then the manual intervention will no longer apply, and we will
 update this document.)
 
 Please refer to your linux distribution's manual for the kernel and
-library information. 
+library information.
 
-Notes for each test section are here. It is targeted for general linux 
+Notes for each test section are here. It is targeted for general linux
 kernel 2.6 and glibc-2.3.3.
 
 =======
@@ -105,7 +105,7 @@ Then make sure to add '-lpthread' to LDLIBS.
 ==============
 Message Queues
 ==============
-POSIX Message Queue (Wronski/Benedyczak's implementation) has been 
+POSIX Message Queue (Wronski/Benedyczak's implementation) has been
 included into linux kernel since 2.6.4-rc1-mm1.
 But you still need to install a user library at the time of writing this
 document.
@@ -119,7 +119,7 @@ Wronski/Benedyczak
 ------------------
 To build against the Michal Wronski/Krzysztof Benedyczak message queues,
 install the kernel patches from http://www.mat.uni.torun.pl/~wrona/posix_ipc/
-and then build the user library from the same site.  Add '-lmqueue' to 
+and then build the user library from the same site.  Add '-lmqueue' to
 LDLIBS to run tests.
 To create the message queue file system, do:
 # mkdir /dev/mqueue
@@ -157,7 +157,7 @@ Make sure /usr/lib/ is in your PATH.
 Signals
 =======
 
-For the signals-related interfaces that start with "pthread_", refer to 
+For the signals-related interfaces that start with "pthread_", refer to
 the Threads section above to learn how to build those particular tests.
 
 Also, please note that if you using version of gcc older than version 3.2-7,
@@ -179,6 +179,6 @@ Maintainers:	Julie Fleischer
 		Majid Awad
 		Crystal Xiong
 		Adam Li
-Contributors:	Jerome Marchand 
+Contributors:	Jerome Marchand
 		Ulrich Drepper
 		Garrett Cooper

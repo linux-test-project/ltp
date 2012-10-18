@@ -186,7 +186,7 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
 	# Set IPv4 addresses to the interfaces
 	ip addr add ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname
 
-	### delete before setting 
+	### delete before setting
 	if [ $? -eq 2 ]; then
 	ip addr del ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname  2>&1
 	ip addr add ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname

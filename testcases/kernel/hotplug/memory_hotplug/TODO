@@ -17,7 +17,7 @@ Desired features?
 
 	+ multiple processes [children] sharing mappings
 
-	+ help summary for help w/ no args.  Details when 
+	+ help summary for help w/ no args.  Details when
 	  command specified.
 
 	+ command to toggle verbosity?

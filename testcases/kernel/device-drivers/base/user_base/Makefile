@@ -5,5 +5,5 @@ OBJS = tbase_ki.o user_tbase.o
 test_base: $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
-clean: 
+clean:
 	rm -f $(OBJS) test_base

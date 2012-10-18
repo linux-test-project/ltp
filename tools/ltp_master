@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 
 #Master control script; ltp_master
 #       3/12/02 William Jay Huie (creation)
@@ -10,7 +10,7 @@
 
 #FIXME: One problem is that the tests need to be run as root as as of now
 #this means that LTP_USER needs to be root, which means root needs to be
-#able to telnet and ftp into the machine. Couldn't figure out how to add 
+#able to telnet and ftp into the machine. Couldn't figure out how to add
 #a su -c to the LTP_CMD_LINE variable, ssh will probably be the solution
 #but for now this works
 
@@ -23,7 +23,7 @@ $| = 1;
 #CHANGEME:
 #change these for different defaults
 #Think carefully because things like ltprun.out are relied upon in the ltprun
-#     script, so you need to change them there too, or better yet make them 
+#     script, so you need to change them there too, or better yet make them
 #     cmd line parms
 #$LTP_USER = "ltp";
 #$LTP_PASS = "ltp";
@@ -74,7 +74,7 @@ for ($j = 0; $j <= $#hosts; $j++)
    chdir "$LTP_RUN_DIR" or die "Can't change to $LTP_RUN_DIR";
    print "\nAttempting to Upload $LTP_RUN to: $hosts[$j]";
 
-   $ftp = Net::FTP->new($hosts[$j], Debug => 0) or 
+   $ftp = Net::FTP->new($hosts[$j], Debug => 0) or
       do { print "\n\tCouldn't connect to: $hosts[$j] --- skipping\n"; next; };
    $ftp->login($LTP_USER, $LTP_PASS) or die "\nUnable to login";
    $ftp->type('I') or die "\nUnable to set type to Binary";
@@ -108,7 +108,7 @@ for ($j = 0; $j <= $#hosts; $j++)
 }
 print "\nAll Done!\n";
 
-#Use snippit below in results script to convert timing info 
+#Use snippit below in results script to convert timing info
 #     from tar file name into human readable format
 #$foo = $ARGV[0];
 #($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($foo);

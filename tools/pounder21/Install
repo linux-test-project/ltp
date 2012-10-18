@@ -3,7 +3,7 @@
 # Download pounder components and build them.
 
 # Copyright (C) 2003-2006 IBM
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
 # published by the Free Software Foundation; either version 2 of the
@@ -13,7 +13,7 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -28,9 +28,9 @@ if [ -z "$POUNDER_CACHE" -o "$POUNDER_CACHE" == "0" ]; then
 	export USE_CACHE=0
 fi
 
-#check utilities needed to run the tests before getting started. 
+#check utilities needed to run the tests before getting started.
 #If you test uses something else or a build fails add
-#the command to the list manually. 
+#the command to the list manually.
 COMMANDS="make g++ lex gcc python wget sudo diff patch egrep rm echo test which cp mkdir"
 MISSING_TOOLS=""
 echo -en "Looking for tools..."
@@ -114,7 +114,7 @@ do
 	fi
 	if [ -x "build_scripts/$i" ]; then
 		FOUND=`find $POUNDER_HOME/tests -name *$i`
-		if [ -n "$FOUND" ]; then	
+		if [ -n "$FOUND" ]; then
 			"build_scripts/$i" $*
 			BUILD_ERR=$?
 			if [ "$BUILD_ERR" -ne 0 ]; then

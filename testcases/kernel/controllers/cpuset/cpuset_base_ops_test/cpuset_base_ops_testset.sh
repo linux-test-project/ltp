@@ -54,11 +54,11 @@ base_op_write_and_test()
 		return 1
 	}
 	[ "$write_string" = NULL ] && write_string=" "
-	
+
 	/bin/echo "$write_string" > "$write_file" 2> $CPUSET_TMP/stderr
 	ret=$?
 	write_result="$(cat "$write_file")"
-	
+
 	case "$expect_string" in
 	EMPTY)
 		test -z "$write_result" -a $ret = 0

@@ -29,7 +29,7 @@
  *
  * cpuset_pin(int relcpu) - Pin current task to one CPU in its cpuset.
  * cpuset_size() - How many CPUs are in current tasks cpuset?
- * cpuset_where() - Most recent CPU in current tasks cpuset that task ran on. 
+ * cpuset_where() - Most recent CPU in current tasks cpuset that task ran on.
  * cpuset_unpin() - Undo cpuset_pin(), let task run anywhere in its cpuset.
  */
 

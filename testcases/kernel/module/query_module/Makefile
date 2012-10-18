@@ -30,7 +30,7 @@ all: $(TARGETS)
 	chmod 755 $(OBJS)
 
 $(OBJS): $(SRC1)
-	$(CC) -DEXPORT_SYMTAB $(MODCFLAGS) -c $(SRC1) -Wall 
+	$(CC) -DEXPORT_SYMTAB $(MODCFLAGS) -c $(SRC1) -Wall
 
 query_module01: query_module01.c
 	$(CC) $(CFLAGS) query_module01.c $(LOADLIBES) -o $@
@@ -41,7 +41,7 @@ query_module02: query_module02.c
 query_module03: query_module03.c
 	$(CC) $(CFLAGS) query_module03.c $(LOADLIBES) -o $@
 
-install: 
+install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:

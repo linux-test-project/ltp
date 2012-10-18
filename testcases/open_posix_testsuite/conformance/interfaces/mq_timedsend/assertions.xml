@@ -3,7 +3,7 @@
 mq_timedsend() places the message msg_ptr points to into message queue mqdes
   </assertion>
   <assertion id="2" tag="ref:XSH6:25951:25953 ref:XSH6:25968:25969 pt:MSG pt:TMO">
-mq_timedsend() will fail if msg_len, the message length, is not less than or 
+mq_timedsend() will fail if msg_len, the message length, is not less than or
 equal to mq_attr->mq_msgsize.
   </assertion>
   <assertion id="3" tag="ref:XSH6:25954:25958 ref:XSH6:25968:25969 pt:MSG pt:TMO">

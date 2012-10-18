@@ -69,7 +69,7 @@ endif # END MAKE_3_80_COMPAT
 
 #
 # Set SUBDIRS to the subdirectories where Makefiles were found.
-# 
+#
 define get_make_dirs
 SUBDIRS	?= $$(subst $$(abs_srcdir)/,,$$(patsubst %/Makefile,%,$$(wildcard $$(abs_srcdir)/*/Makefile)))
 SUBDIRS	:= $$(filter-out $$(FILTER_OUT_DIRS),$$(SUBDIRS))

@@ -27,7 +27,7 @@ iamgoingahead
 
 result=0
 
-ls 
+ls
 ls dir*
 mount --bind "$disk2" dir1/a
 check dir1/a dir2/a

@@ -18,8 +18,8 @@
 #
 
 #
-# This script, and hence the invoked test cases, need to be run from the 
-# root directory of the DMAPI-enabled partition (/dmtest below) being tested 
+# This script, and hence the invoked test cases, need to be run from the
+# root directory of the DMAPI-enabled partition (/dmtest below) being tested
 #
 ./session -loglevel 4 -termlevel 4 -logname session.log
 ./handle -loglevel 4 -termlevel 4 -logname handle.log -mtpt /dmtest

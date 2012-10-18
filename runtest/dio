@@ -18,15 +18,15 @@ dio12 diotest6 -b 65536
 ### Run the tests with larger iterations
 dio13 diotest1 -b 65536 -n 2000
 dio14 diotest2 -b 65536 -i 1000
-dio15 diotest3 -b 65536 -i 1000 
+dio15 diotest3 -b 65536 -i 1000
 dio16 diotest5 -b 65536 -i 1000
 dio17 diotest6 -b 65536 -i 1000
 
 ## Run the tests with larger offset - 1MB
-dio18 diotest2 -b 65536 -i 1000 -o 1024000 
-dio19 diotest3 -b 65536 -i 1000 -o 1024000 
-dio20 diotest5 -b 65536 -i 1000 -o 1024000 
-dio21 diotest6 -b 65536 -i 1000 -o 1024000 
+dio18 diotest2 -b 65536 -i 1000 -o 1024000
+dio19 diotest3 -b 65536 -i 1000 -o 1024000
+dio20 diotest5 -b 65536 -i 1000 -o 1024000
+dio21 diotest6 -b 65536 -i 1000 -o 1024000
 
 ## Run the tests with larger offset - 100 MB
 dio22 diotest2 -b 65536 -i 1000 -o 104857600
@@ -44,19 +44,19 @@ dio28 diotest6 -b 8192 -o 1024000 -i 1000 -v 200
 #dio30 diotest6 -b 65536 -n 100 -i 1000 -o 1024000
 #
 # RAW DEVICE TEST SECTION
-#   DEV1 and DEV2 should be exported prior to execution or 
-# replaced with the actual device ids, i.e. 
-#   dio33 diotest1 -i /dev/sda2 -o /dev/sda3 
-# 
+#   DEV1 and DEV2 should be exported prior to execution or
+# replaced with the actual device ids, i.e.
+#   dio33 diotest1 -i /dev/sda2 -o /dev/sda3
+#
 ### Run the tests with raw device
-#dio33 diotest1 -i $DEV1 -o $DEV2 
-#dio34 diotest2 -f $DEV1 
-#dio36 diotest3 -f $DEV1 
-#dio37 diotest5 -f $DEV1 
-#dio38 diotest6 -f $DEV1 
+#dio33 diotest1 -i $DEV1 -o $DEV2
+#dio34 diotest2 -f $DEV1
+#dio36 diotest3 -f $DEV1
+#dio37 diotest5 -f $DEV1
+#dio38 diotest6 -f $DEV1
 #
 ### Run the tests with raw device and larger iterations
-#dio39 diotest1 -b 65536 -n 2000 -i $DEV1 -o $DEV2 
+#dio39 diotest1 -b 65536 -n 2000 -i $DEV1 -o $DEV2
 #dio40 diotest2 -b 65536 -i 1000 -f $DEV1
 #dio41 diotest3 -b 65536 -i 1000 -f $DEV1
 #dio42 diotest5 -b 65536 -i 1000 -f $DEV1

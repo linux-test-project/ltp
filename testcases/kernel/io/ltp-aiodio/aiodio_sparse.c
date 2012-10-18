@@ -68,7 +68,7 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 
 	if ((num_aio * writesize) > filesize)
 		num_aio = filesize / writesize;
-	
+
 	memset(&myctx, 0, sizeof(myctx));
 	io_queue_init(num_aio, &myctx);
 
@@ -124,7 +124,7 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 	 * As AIO requests finish, keep issuing more AIO until done.
 	 */
 	aio_inflight = num_aio;
-	
+
 	while (offset < filesize)  {
 		int n;
 		struct iocb *iocbp;
@@ -138,12 +138,12 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 				tst_resm(TBROK, "io_getevents() returned %d", n);
 			break;
 		}
-		
+
 		if (debug)
 			tst_resm(TINFO, "aiodio_sparse: io_getevent() returned %d", n);
-		
+
 		aio_inflight--;
-		
+
 		/*
 		 * check if write succeeded.
 		 */
@@ -168,10 +168,10 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 				 offset);
 			break;
 		}
-		
+
 		if (debug)
 			tst_resm(TINFO, "io_submit() return %d", w);
-		
+
 		aio_inflight++;
 	}
 
@@ -198,10 +198,10 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 			         event.res);
 		}
 	}
-	
+
 	close(fd);
 	unlink(filename);
-	
+
 	return 0;
 }
 
@@ -284,9 +284,9 @@ int main(int argc, char **argv)
 		}
 	}
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	
+
 	ret = aiodio_sparse(filename, alignment, writesize, filesize, num_aio);
-	
+
 	tst_resm(TINFO, "Killing childrens(s)");
 
 	for (i = 0; i < num_children; i++)
@@ -308,10 +308,10 @@ int main(int argc, char **argv)
 	if (children_errors)
 		tst_resm(TFAIL, "%i children(s) exited abnormally",
 		         children_errors);
-		
+
 	if (!children_errors && !ret)
 		tst_resm(TPASS, "Test passed");
-	
+
 	cleanup();
 	tst_exit();
 }

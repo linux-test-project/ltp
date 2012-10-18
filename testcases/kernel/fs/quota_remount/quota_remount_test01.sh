@@ -28,7 +28,7 @@
 #               http://git.kernel.org/git/?p=linux/kernel/git/torvalds/       ##
 #               linux-2.6.git;a=commit;                                       ##
 #               h=0ff5af8340aa6be44220d7237ef4a654314cf795                    ##
-#               for more info.                                                ## 
+#               for more info.                                                ##
 #                                                                             ##
 # Author:       Jan Kara <jack@suse.cz>,                                      ##
 #                                                                             ##

@@ -25,12 +25,12 @@ Assertions     Tested ?	   Remarks
 19	       YES	   Unspecified.
 20	       YES
 21	       YES
-22	       YES	
+22	       YES
 23	       YES	   The test never pass. For a conforming
 			   implementation, the test is unresolved.
 24	       YES	   Undefined.
 25	       YES
-26	       YES	   
+26	       YES
 27	       YES	   Undefined.
 28	       YES
 29	       YES	   Unspecified, need to reboot.

@@ -54,12 +54,12 @@ do_clean()
 	done
 }
 
-until [ $TST_COUNT -gt $TST_TOTAL ]; do 
+until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	cpu=0
 	number_of_cpus=0
 
 	# Turns on all CPUs and saves their states
-	for i in $( get_all_cpus ); do 
+	for i in $( get_all_cpus ); do
 		if ! online_cpu $1; then
 			: $(( cpu += 1 ))
 			eval "on_${cpu}=$i"
@@ -74,7 +74,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 
 	# Start up a number of processes equal to twice the number of
 	# CPUs we have.  This is to help ensure we've got enough processes
-	# that at least one will migrate to the new CPU.  Store the PIDs 
+	# that at least one will migrate to the new CPU.  Store the PIDs
 	# so we can kill them later.
 	: $(( number_of_cpus *= 2 ))
 	until [ $number_of_cpus -eq 0 ]; do

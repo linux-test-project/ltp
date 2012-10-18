@@ -7,7 +7,7 @@ N.B., migrate command depends on Ray Bryant's "Manual Page Migration"
 
 May be run interactively or from a script [see ./test*].
 
-Use 'help' command interactively, or, e.g., 
+Use 'help' command interactively, or, e.g.,
 
 	echo help | ./memtoy
 
@@ -28,11 +28,11 @@ numa          - display numa info as seen by this program.
 	shows nodes from which program may allocate memory
 	with total and free memory.
 
-migrate <to-node-id[s]> [<from-node-id[s]>] - 
+migrate <to-node-id[s]> [<from-node-id[s]>] -
 	migrate this process' memory from <from-node-id[s]>
 	to <to-node-id[s]>.  Specify multiple node ids as a
 	comma-separated list.  If both to and from nodes are
-	specified, the sets must have the same # of nodes, 
+	specified, the sets must have the same # of nodes,
 	and must not intersect.  If <from-node-id[s]> is
 	omitted, <to-node-id[s]> must specify a single node.
 
@@ -48,14 +48,14 @@ file <pathname> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] -
 	omitted and specified on the map command.
 	<seg-share> := private|shared - default = private
 
-shm <seg-name> <seg-size>[k|m|g|p] - 
+shm <seg-name> <seg-size>[k|m|g|p] -
 	define a shared memory segment of specified size.
 	You may need to increase limits [/proc/sys/kernel/shmmax].
 	Use map/unmap to attach/detach
 
 remove <seg-name> [<seg-name> ...] - remove the named segment[s]
 
-map <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] - 
+map <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] -
 	mmap()/shmat() a previously defined, currently unmapped() segment.
 	<offset> and <length> apply only to mapped files.
 	Use <length> of '*' or '0' to map to the end of the file.
@@ -64,20 +64,20 @@ map <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] -
 
 unmap <seg-name> - unmap specified segment, but remember name/size/...
 
-touch <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [read|write] - 
+touch <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [read|write] -
 	read [default] or write the named segment from <offset> through
 	<offset>+<length>.  If <offset> and <length> omitted, touches all
 	 of mapped segment.
 
 mbind <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]]
-      <policy> [<node/list>] - 
+      <policy> [<node/list>] -
 	set the numa policy for the specified range of the name segment
 	to policy --  one of {default, bind, preferred, interleaved}.
 	<node/list> specifies a node id or a comma separated list of
 	node ids.  <node> is ignored for 'default' policy, and only
 	the first node is used for 'preferred' policy
 
-where <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] - 
+where <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] -
 	show the node location of pages in the specified range
 	of the specified segment.  <offset> defaults to start of
 	segment; <length> defaults to 64 pages.

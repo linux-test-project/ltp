@@ -6,5 +6,5 @@ chmod +x ./configure.auto
 ./configure.auto
 make deploy
 make all
-./rpc_ts_wizard.sh -alltirpc 
+./rpc_ts_wizard.sh -alltirpc
 

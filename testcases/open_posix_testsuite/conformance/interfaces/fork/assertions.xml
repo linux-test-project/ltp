@@ -3,11 +3,11 @@
     fork() creates a new process.
   </assertion>
   <assertion id="2" tag="ref:XSH6TC2:12992:12993">
-    The new process is a copy of the original process 
+    The new process is a copy of the original process
   -- unless specified otherwise below.
   </assertion>
   <assertion id="3" tag="ref:XSH6TC2:12994:12995">
-    The new process' ID does not match any existing 
+    The new process' ID does not match any existing
    process or group ID.
   </assertion>
   <assertion id="4" tag="ref:XSH6TC2:12996:12997">
@@ -24,10 +24,10 @@
    Positioning information may be shared between both processes.
   </assertion>
   <assertion id="7" tag="ref:XSH6TC2:13004:13004 pt:XSI">
-    The child process gets a copy of the parent message catalog descriptor. 
+    The child process gets a copy of the parent message catalog descriptor.
   </assertion>
   <assertion id="8" tag="ref:XSH6TC2:13005:13005">
-    tms_utime, tms_stime, tms_cutime, and tms_cstime values 
+    tms_utime, tms_stime, tms_cutime, and tms_cstime values
    are set to 0 in the child process.
   </assertion>
   <assertion id="9" tag="ref:XSH6TC2:13006:13007">
@@ -56,7 +56,7 @@
   <assertion id="16" tag="ref:XSH6TC2:13015:13021 pt:MF|SHM">
     Memory mappings created in the parent are retained in the
    child process. If the mapping is MAP_PRIVATE, any modification
-   done after the fork() is visible only to the process doing the 
+   done after the fork() is visible only to the process doing the
    modification.
   </assertion>
   <assertion id="17" tag="ref:XSH6TC2:13022:13024 pt:PS">
@@ -82,7 +82,7 @@
    are initialized to 0.
   </assertion>
   <assertion id="23" tag="ref:XSH6TC2:13060:13062">
-    fork() returns 0 to the child and the child PID to the parent process when 
+    fork() returns 0 to the child and the child PID to the parent process when
    succesful.
   </assertion>
   <assertion id="24" tag="ref:XSH6TC2:13063:13069">

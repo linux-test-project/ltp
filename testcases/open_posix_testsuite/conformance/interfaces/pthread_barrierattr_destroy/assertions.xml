@@ -1,6 +1,6 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:31878:31879">
-  The pthread_barrierattr_destroy( ) function shall destroy a barrier attributes object. 
+  The pthread_barrierattr_destroy( ) function shall destroy a barrier attributes object.
   A destroyed attr attributes object can be reinitialized using pthread_barrierattr_init( );
   </assertion>
 
@@ -10,6 +10,6 @@
 
    These functions shall not return an error code of [EINTR].
   </assertion>
-  
+
 </assertions>
 

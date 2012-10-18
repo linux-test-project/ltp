@@ -23,7 +23,7 @@
 * History:
 * Created by: Cyril Lacabanne (Cyril.Lacabanne@bull.net)
 *
-*/ 
+*/
 
 #include <stdio.h>
 #include <tirpc/netconfig.h>
@@ -37,7 +37,7 @@
 //Standard define
 #define VERSNUM 1
 
-int main(int argn, char *argc[]) 
+int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
 	int progNum = atoi((char *)argc[1]);

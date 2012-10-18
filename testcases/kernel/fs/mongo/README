@@ -9,7 +9,7 @@ Where :
 <device>    - test device
 <processes> - number of processes
 
-The benchmark will be performed on given device with 
+The benchmark will be performed on given device with
 reiserfs and ext2. Then results will be compared.
 
 The relults directory : ./results
@@ -22,7 +22,7 @@ Warning : All info will be erased on device.
 Mongo.pl description :
 
   mongo.pl <filesystem> <device> <test_dir> <log> <processes>
-  
+
   for example :
   mongo.pl reiserfs /dev/hda5 /testfs log 1
 

@@ -15,7 +15,7 @@
 # test information
 TESTNAME="RPC_broadc_clnt_broadcast.performance"
 TESTVERS="1.0"
-# test binaries, used to call 
+# test binaries, used to call
 TESTCLIENTPATH="rpc_suite/rpc/rpc_broadc_clnt_broadcast"
 TESTCLIENTBIN="7-performance.bin"
 TESTCLNTMN="7-perf"
@@ -37,13 +37,13 @@ get_test_result()
 {
 	# default : test failed
 	r_value=1
-	
+
 	# if result table is empty last test crashes (segment fault), so return must be "failed"
 	if [ ${#result[*]} -eq 0 ]
 	then
 		return
 	fi
-	
+
 	# if all test instances return same result return the first element, note that test succeeds if value is 0
 	r_value=${result[0]}
 }
@@ -59,7 +59,7 @@ result_to_logFile()
 	4)r_valueTxt="SKIP";;
 	5)r_valueTxt="UNTESTED";;
 	esac
-	
+
 	echo $TESTCLIENTPATH"/"$( echo $TESTCLIENTBIN | cut -d . -f1 )": execution: "$r_valueTxt>>$LOCLOGDIR/$TESTLOGFILE
 	# print into log file tests perf results
 	echo  -n "Average execution time : "${result[1]}" ms (">>$LOCLOGDIR/$TESTLOGFILE

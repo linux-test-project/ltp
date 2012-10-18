@@ -3,7 +3,7 @@
    The function
 
    pthread_t pthread_self(void)
- 
+
   returns the thread ID of the calling thread.  No errors are defined.
   </assertion>
 </assertions>

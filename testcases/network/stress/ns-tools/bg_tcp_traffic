@@ -58,7 +58,7 @@ export LTPROOT
 . check_envval || exit 1
 
 # Timeout till client starts up [sec]
-CLIENT_TIMEOUT=10 
+CLIENT_TIMEOUT=10
 
 
 #-----------------------------------------------------------------------
@@ -227,7 +227,7 @@ kill_traffic()
 #   Kill all of the TCP traffic
 #
 # Exit Value:
-#   Always 0 
+#   Always 0
 #
 #-----------------------------------------------------------------------
 killall_traffic()

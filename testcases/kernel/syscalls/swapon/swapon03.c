@@ -327,7 +327,7 @@ int create_swapfile(char *swapfile, int bs, int count)
 		    "count=%d > tmpfile 2>&1", swapfile, bs, count) < 0) {
 		tst_resm(TWARN,
 			 "sprintf() failed to create the command string");
-	
+
 		return -1;
 	}
 
@@ -336,7 +336,7 @@ int create_swapfile(char *swapfile, int bs, int count)
 				"command: %s", cmd_buffer);
 		return -1;
 	}
-	
+
 	/* make the file swapfile */
 	if (snprintf(cmd_buffer, sizeof(cmd_buffer),
 		    "mkswap %s > tmpfile 2>&1", swapfile) < 0) {
@@ -344,7 +344,7 @@ int create_swapfile(char *swapfile, int bs, int count)
 			 "snprintf() failed to create mkswap command string");
 		return -1;
 	}
-	
+
 	if (system(cmd_buffer) != 0) {
 		tst_resm(TWARN, "failed to make swap file %s via command %s",
 			 swapfile, cmd_buffer);

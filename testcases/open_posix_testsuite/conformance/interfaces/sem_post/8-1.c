@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
  * adam.li@intel.com 2004-03
- * 
+ *
  * Cleaned up the code and uncommented the lock synchronization.
  * Cyril Hrubis <chrubis@suse.cz> 2011
  */
@@ -66,7 +66,7 @@ int set_my_prio(int priority)
 int get_my_prio(void)
 {
 	struct sched_param sp;
-	
+
 	if (sched_getparam(0, &sp) == -1) {
 		perror("sched_getparam()");
 		return -1;
@@ -78,22 +78,22 @@ int get_my_prio(void)
 int child_fn(int priority, int id)
 {
 	sem_t *sem, *sem_1;
-	
+
 	if (set_my_prio(priority))
 		exit(-1);
-	
+
 	sem = sem_open(semname, 0);
 	if (sem == SEM_FAILED) {
 		perror("sem_open(semname)");
 		exit(-1);
 	}
-	
+
 	sem_1 = sem_open(semname_1, 0);
 	if (sem_1 == SEM_FAILED) {
 		perror("sem_open(semname_1)");
 		exit(-1);
 	}
-	
+
 	fprintf(stderr, "child %d try to get lock, prio: %d\n",
 			id, get_my_prio());
 
@@ -104,7 +104,7 @@ int child_fn(int priority, int id)
 		fprintf(stderr, "Child %d: Cannot get lock", id);
 		exit(-1);
 	}
-	
+
 	fprintf(stderr, "child %d got lock\n", id);
 	exit(0);
 }
@@ -123,7 +123,7 @@ int main(void)
 	int status;
 
 	snprintf(semname, sizeof(semname), "/" TEST "_%d", getpid());
-	
+
 	sem = sem_open(semname, O_CREAT | O_EXCL, 0777, 1);
 	if (sem == SEM_FAILED) {
 		perror("sem_open(semname)");
@@ -131,14 +131,14 @@ int main(void)
 	}
 
 	snprintf(semname_1, sizeof(semname_1), "/" TEST "_%d_1", getpid());
-	
+
 	sem_1 = sem_open(semname_1, O_CREAT | O_EXCL, 0777, 3);
 	if (sem_1 == SEM_FAILED) {
 		perror("sem_open(semname_1)");
 		sem_unlink(semname);
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* The parent has highest priority */
 	priority = sched_get_priority_min(SCHED_FIFO) + 3;
 	if (set_my_prio(priority) == -1) {

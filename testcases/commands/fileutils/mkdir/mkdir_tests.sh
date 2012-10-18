@@ -23,7 +23,7 @@
 #
 # Description:  Test basic functionality of mkdir command
 #				- Test #1:  mkdir -p can make parent directories as needed
-#               
+#
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Feb 03 2003 - Created - Manoj Iyer.
@@ -57,7 +57,7 @@ init()
 		LTPBIN=$LTPROOT/testcases/bin
 	fi
 
-	
+
 	$LTPBIN/tst_resm TINFO "INIT: Inititalizing tests."
 
 	which mkdir > $LTPTMP/tst_mkdir.err 2>&1 || RC=$?
@@ -68,7 +68,7 @@ init()
 		return $RC
 	fi
 
-	mkdir -p $LTPTMP/tst_mkdir.tmp > $LTPTMP/tst_mkdir.err 2>&1 || RC=$? 
+	mkdir -p $LTPTMP/tst_mkdir.tmp > $LTPTMP/tst_mkdir.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_mkdir.err NULL \
@@ -96,8 +96,8 @@ creat_expout()
 	dirname=$3  # name of the base directory
     dircnt=0    # index into dir created in loop
     fcnt=0      # index into files created in loop
-	RC=0        # return code from commands 
-	
+	RC=0        # return code from commands
+
 	echo "$dirname:"  1>>$LTPTMP/tst_mkdir.exp
 	echo "d.$dircnt"  1>>$LTPTMP/tst_mkdir.exp
 	while [ $dircnt -lt $numdirs ]
@@ -124,7 +124,7 @@ creat_expout()
 # Description	- Test #1: Test that mkdir -p creates parent directories as
 #                 needed
 #               - create N directories and fill each with M files.
-#               - mkdir -p dir 
+#               - mkdir -p dir
 #               - list contents of dir and save it to file - actual output
 #               - create expected output
 #               - compare expected output with actual output.
@@ -198,7 +198,7 @@ test01()
 # Function:		main
 #
 # Description:	- Execute all tests, report results.
-#               
+#
 # Exit:			- zero on success
 # 				- non-zero on failure.
 
@@ -206,7 +206,7 @@ test01()
 TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
 RC=0				# Return code from tests.
 
-init || return $RC	# Exit if initializing testcases fails.	
+init || return $RC	# Exit if initializing testcases fails.
 
 test01 || RC=$?
 if [ $RC -ne 0 ]

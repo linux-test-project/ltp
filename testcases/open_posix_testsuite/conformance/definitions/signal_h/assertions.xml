@@ -17,11 +17,11 @@
   </assertion>
   <assertion id="6" tag="ref:XBD6:10735:10741 pt:RTS">
     The signal.h header defines a structure named sigevent which has at least:
-    int sigev_notify 
-    int sigev_signo 
-    union sigval sigev_value 
-    void(*)(union sigval) sigev_notify_function 
-    (pthread_attr_t *) sigev_notify_attributes 
+    int sigev_notify
+    int sigev_signo
+    union sigval sigev_value
+    void(*)(union sigval) sigev_notify_function
+    (pthread_attr_t *) sigev_notify_attributes
   </assertion>
   <assertion id="7" tag="ref:XBD6:10742:10747 pt:RTS">
     For sigev_notify (assertion 6), the following values are defined:
@@ -31,7 +31,7 @@
   </assertion>
   <assertion id="8" tag="ref:XBD6:10748:10750 pt:RTS">
     The sigval union (assertion 6) is defined as:
-    int sival_int 
+    int sival_int
     void *sival_ptr
   </assertion>
   <assertion id="9" tag="ref:XBD6:10751:10753 pt:RTS">
@@ -56,13 +56,13 @@
   </assertion>
   <assertion id="14" tag="ref:XBD6:10765:10797">
     The following signals are always (on all implementations) supported:
-    SIGABRT 
-    SIGALRM 
-    SIGBUS 
+    SIGABRT
+    SIGALRM
+    SIGBUS
     SIGCHLD
     SIGCONT
-    SIGFPE 
-    SIGHUP 
+    SIGFPE
+    SIGHUP
     SIGILL
     SIGINT
     SIGKILL
@@ -78,37 +78,37 @@
     SIGUSR2
     SIGPOLL
     SIGPROF
-    SIGSYS 
+    SIGSYS
     SIGTRAP
-    SIGURG 
+    SIGURG
     SIGVTALRM
-    SIGXCPU 
+    SIGXCPU
     SIGXFSZ
   </assertion>
   <assertion id="15" tag="ref:XBD6:10808:10817">
    The signal.h header declares the struct sigaction which has, at a minimum,
    the following members:
-    void (*sa_handler)(int) 
+    void (*sa_handler)(int)
     sigset_t sa_mask
-    int sa_flags 
+    int sa_flags
     void (*)(int, siginfo_t *, void *) sa_sigaction
   </assertion>
   <assertion id="16" tag="ref:XBD6:10820:10839">
    The constants below are declared:
    SA_NOCLDSTOP
    SIG_BLOCK
-   SIG_UNBLOCK 
+   SIG_UNBLOCK
    SIG_SETMASK
-   SA_ONSTACK 
+   SA_ONSTACK
    SA_RESETHAND
    SA_RESTART
    SA_SIGINFO
    SA_NOCLDWAIT
-   SA_NODEFER 
+   SA_NODEFER
    SS_ONSTACK
-   SS_DISABLE 
+   SS_DISABLE
    MINSIGSTKSZ
-   SIGSTKSZ 
+   SIGSTKSZ
   </assertion>
   <assertion id="17" tag="ref:XBD6:10840:10840">
     The ucontext.h header shall define ucontext_t.
@@ -118,28 +118,28 @@
   </assertion>
   <assertion id="19" tag="ref:XBD6:10842:10846">
    The signal.h header defines the structure stack_t which includes the
-   following, at a minimum: 
+   following, at a minimum:
    void   *ss_sp
    size_t ss_size
    int    ss_flags
   </assertion>
   <assertion id="20" tag="ref:XBD6:10847:10850">
    The signal.h header defines the structure sigstack which includes the
-   following, at a minimum: 
+   following, at a minimum:
    int  ss_onstack
    void *ss_sp
   </assertion>
   <assertion id="21" tag="ref:XBD6:10852:10864">
    The signal.h header defines the structure siginfo_t which includes the
-   following, at a minimum: 
+   following, at a minimum:
    int si_signo
-   int si_errno 
+   int si_errno
    int si_code
    pid_t si_pid
-   uid_t si_uid 
+   uid_t si_uid
    void *si_addr
-   int si_status 
-   long si_band 
+   int si_status
+   long si_band
    union sigval si_value
   </assertion>
   <assertion id="22" tag="ref:XBD6:10867:10910">
@@ -296,7 +296,7 @@
    int sigwaitinfo(const sigset_t *restrict, siginfo_t *restrict);
   </assertion>
   <assertion id="50" tag="ref:XBD6:10959:10959">
-   Inclusion of the signal.h header may make visible all symbols from 
+   Inclusion of the signal.h header may make visible all symbols from
    the time.h header.
   </assertion>
 </assertions>

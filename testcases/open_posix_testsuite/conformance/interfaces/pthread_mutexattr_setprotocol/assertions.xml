@@ -2,12 +2,12 @@
   <assertion id="1" tag="ref:XSH6:34360:34368">
    The function
 
-   int pthread_mutexattr_setprotocol(const pthread_mutexattr_t *restrict attr, 
+   int pthread_mutexattr_setprotocol(const pthread_mutexattr_t *restrict attr,
 	int protocol);
 
   Sets the protocol attribute of a mutex attribute object which was prev. created
   by the function pthread_mutexattr_init().
-  </assertion>  
+  </assertion>
 
   <assertion id="2" tag="ref:XSH6:34402:34405">
   Upon success, it returns 0.
@@ -22,4 +22,4 @@
 
   Shall not return error code of [EINTR].
   </assertion>
-</assertions> 
+</assertions>

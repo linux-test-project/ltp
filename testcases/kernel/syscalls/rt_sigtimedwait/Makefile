@@ -18,7 +18,7 @@
 
 top_srcdir ?= ../../../..
 
-include $(top_srcdir)/include/mk/testcases.mk 
+include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS += -DTEST_RT_SIGTIMEDWAIT
 
@@ -27,5 +27,5 @@ rt_sigtimedwait01: $(abs_srcdir)/../sigwaitinfo/sigwaitinfo01.c
 
 MAKE_TARGETS := rt_sigtimedwait01
 
-include $(top_srcdir)/include/mk/generic_leaf_target.mk 
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
 

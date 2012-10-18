@@ -36,6 +36,6 @@ MAKE_TARGETS			:= create-files random-access\
 				   random-access-del-create
 
 dist: clean
-	(cd $(abs_srcdir); tar zcvf fs-bench.tar.gz $(abs_srcdir)) 
+	(cd $(abs_srcdir); tar zcvf fs-bench.tar.gz $(abs_srcdir))
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

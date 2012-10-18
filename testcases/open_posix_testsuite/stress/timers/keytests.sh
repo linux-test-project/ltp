@@ -28,7 +28,7 @@ keytestlist="clock_gettime/1-2.test \
 		timer_settime/9-1.test \
 		timer_settime/9-2.test \
 		timer_settime/13-1.test"
-		#timer_getoverrun/2-3.test 
+		#timer_getoverrun/2-3.test
 
 currdir=`pwd`
 basedir=$currdir/../../

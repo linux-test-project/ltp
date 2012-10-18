@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaction(SIGRTMIN,  &act, 0);
-	
+
 	while ((c = getopt(argc, argv, "c:b:p:wvh")) != -1) {
 		switch(c) {
 		case 'c':
@@ -123,23 +123,23 @@ int main(int argc, char* argv[])
 			exit(1);
 		}
 	}
-	
+
 	sysinfo(&sstats);
-	total_ram = sstats.totalram + sstats.totalswap; 
+	total_ram = sstats.totalram + sstats.totalswap;
 	total_free = sstats.freeram + sstats.freeswap;
 	/* Total Free Pre-Test RAM */
-	pre_mem = sstats.mem_unit * total_free;   
+	pre_mem = sstats.mem_unit * total_free;
 	max_pids = total_ram / (unsigned long)FIVE_HUNDRED_MB + 1;
- 
+
 	if ((pid_list = malloc(max_pids * sizeof(pid_t))) == NULL)
 		tst_brkm(TBROK|TERRNO, NULL, "malloc failed.");
 	memset(pid_list, 0, max_pids * sizeof(pid_t));
-	
+
 	/* Currently used memory */
 	C = sstats.mem_unit * (total_ram - total_free);
 	tst_resm(TINFO, "Total memory already used on system = %llu kbytes",
 	    C / 1024);
-	
+
 	if (maxpercent) {
 		percent = (float)maxpercent / 100.00;
 
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 		tst_resm(TINFO,
 		    "Total memory used needed to reach maximum = %llu kbytes",
 		    D / 1024);
-		
+
 		/* Are we already using more than maxpercent? */
 		if (C > D) {
 			tst_resm(TFAIL,
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 			free(pid_list);
 			tst_exit();
 		}
-		
+
 		/* set maxbytes to the extra amount we want to allocate */
 		maxbytes = D - C;
 		tst_resm(TINFO, "Filling up %d%% of ram which is %llu kbytes",
@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
 		alloc_bytes = FIVE_HUNDRED_MB;
 	else
 		alloc_bytes = (unsigned long) maxbytes;
-	
+
 #elif __WORDSIZE == 32
 	while (pid != 0 && maxbytes > ONE_GB) {
 		i++;
@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
 		alloc_bytes = ONE_GB;
 	else
 		alloc_bytes = (unsigned long)maxbytes;
-	
+
 #elif __WORDSIZE == 64
 	while (pid != 0 && maxbytes > THREE_GB) {
 		i++;
@@ -249,7 +249,7 @@ int main(int argc, char* argv[])
 	} else {
 		i = 0;
 		sysinfo(&sstats);
-		
+
 		if (dowrite) {
 			/* Total Free Post-Test RAM */
 			post_mem = (unsigned long long)sstats.mem_unit * sstats.freeram;

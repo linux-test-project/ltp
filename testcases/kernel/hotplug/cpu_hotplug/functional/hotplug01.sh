@@ -13,7 +13,7 @@ export TST_TOTAL=${HOTPLUG01_LOOPS:-1}
 CPU_TO_TEST=${1#cpu}
 if [ -z "${CPU_TO_TEST}" ]; then
 	echo "usage: ${0##*/} <CPU to online>"
-	exit 1 
+	exit 1
 fi
 
 # Includes:
@@ -29,13 +29,13 @@ Desc:   What happens to disk controller interrupts when offlining CPUs?
 EOF
 
 # Time delay after an online of cpu
-TM_ONLINE=${HOTPLUG01_TM_ONLINE:-1} 
+TM_ONLINE=${HOTPLUG01_TM_ONLINE:-1}
 
 # Time delay after offline of cpu
-TM_OFFLINE=${HOTPLUG01_TM_OFFLINE:-1} 
+TM_OFFLINE=${HOTPLUG01_TM_OFFLINE:-1}
 
 # Time delay before start of entire new cycle.
-TM_DLY=${HOTPLUG01_TM_DLY:-6}	
+TM_DLY=${HOTPLUG01_TM_DLY:-6}
 
 if ! type -P perl > /dev/null; then
 	tst_brk TCONF "analysis script - report_proc_interrupts - requires perl"
@@ -80,7 +80,7 @@ do_clean()
 		tst_resm TINFO "CPU = $CPU_COUNT @on = $offline_cpu"
 		offline_cpu $offline_cpu
 		: $(( CPU_COUNT -= 1 ))
-	done			
+	done
 	if [ "x${cpustate}" = x1 ]; then
 		online_cpu ${CPU_TO_TEST}
 	else
@@ -113,7 +113,7 @@ do_offline()
 
 # do_online(CPU)
 #
-#  Onlines the CPU and then sets the smp_affinity of all IRQs to 
+#  Onlines the CPU and then sets the smp_affinity of all IRQs to
 #  this CPU.
 #
 do_online()

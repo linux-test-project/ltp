@@ -21,8 +21,8 @@ This script runs the testcases of control test.
 
 control/mem_process.c
 --------------------
-The program allocates memory specified using the '-m' option when 'm' is received 
-through the named pipe /tmp/status_pipe and frees it on receiving 'm' again. 
+The program allocates memory specified using the '-m' option when 'm' is received
+through the named pipe /tmp/status_pipe and frees it on receiving 'm' again.
 It exits on receiving 'x'. It gets the page size on specifying the '-p' option.
 
 functional/memcgroup_function_test.sh
@@ -44,7 +44,7 @@ This script runs all the 2 testcases of stress test.
 
 stress/memcgroup_process_stress.c
 --------------------
-The program allocates some memory in a specified time period when received SIGUSR. 
+The program allocates some memory in a specified time period when received SIGUSR.
 
 regression/memcg_regression_test.sh
 --------------------

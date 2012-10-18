@@ -44,7 +44,7 @@ do
 
 	echo "Checking \"$dir1\" \"$dir2\""
 	diff -r "$dir1" "$dir2" 2> /dev/null
-	
+
 	if [ $? -ne 0 ]
 	then
 		if [ $reverse -eq 1 ]
@@ -56,12 +56,12 @@ do
 			echo "FAILED"
 			echo "---------"
                 	exit 1
-		fi 
+		fi
         fi
         dir1="$dir2"
 done
 
-if [ $reverse -eq 1 ] 
+if [ $reverse -eq 1 ]
 then
 	echo FAILED
 	echo "---------"

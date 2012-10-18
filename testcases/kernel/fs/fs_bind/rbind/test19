@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -39,38 +39,38 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
-	####### SETUP ###### 
-	
-	
-	
+
+	####### SETUP ######
+
+
+
 	"${FS_BIND_ROOT}/bin/makedir" share parent1
 	"${FS_BIND_ROOT}/bin/makedir" share parent2
 	"${FS_BIND_ROOT}/bin/makedir" share share1
 	"${FS_BIND_ROOT}/bin/makedir" share share2
-	
+
 	mount --rbind "$disk1" share1
 	mount --rbind share1 parent1
 	mount --rbind share2 parent2
 	"${FS_BIND_ROOT}/bin/makedir" slave parent2
-	
-	###### BODY ###### 
+
+	###### BODY ######
 	"${FS_BIND_ROOT}/bin/makedir" share parent1/child1
-	mount --rbind parent1 parent2 
-	##### VERIFICATION ###### 
+	mount --rbind parent1 parent2
+	##### VERIFICATION ######
 	check parent1 share1 parent2
 	mount --rbind "$disk2" parent1/child1
 	check parent1/child1 parent2/child1
 	check parent1/child1 share1/child1
 	mount --rbind "$disk3" parent2/a
-	
+
 	check parent1/a parent2/a share1/a
-	
+
 	mount --rbind "$disk4" share1/b
-	
+
 	check parent1/b parent2/b share1/b
-	
-	##### CLEANUP ###### 
+
+	##### CLEANUP ######
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "rbind/test19: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -93,7 +93,7 @@ trap '' ERR
 	umount parent1
 	umount share1
 	umount share2
-	
+
 	rm -rf parent* share*
 	cleanup
 } >& /dev/null
@@ -103,6 +103,6 @@ then
 	exit 1
 else
 	tst_resm TPASS "rbind/test19: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

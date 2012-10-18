@@ -23,7 +23,7 @@ DEV=$1; MOUNT_POINT=$2
 if [ "x$DEV" = x -o "x$MOUNT_POINT" = x ] ; then
     tst_resm TCONF "backend mountpoint for $TMPDIR does not correspond to a real device:"
     df -P .
-    exit 0 
+    exit 0
 fi
 FLAG=$(mount | grep ${DEV} | sed 's/.*(\(.*\)).*/\1/g')
 cat <<EOF
@@ -32,7 +32,7 @@ MOUNT_POINT: $MOUNT_POINT
 FLAG:        $FLAG
 EOF
 if ! mount ${DEV} -o remount,mand; then
-    error "mounting ${DEV} remount,mand failed" 
+    error "mounting ${DEV} remount,mand failed"
     exit 2
 fi
 "$FTRUNCATE"

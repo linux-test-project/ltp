@@ -5,7 +5,7 @@ In the POSIX Test Suite Framework, variables cannot be assigned to values that
 would cause warnings (because warnings are treated as errors), so the following
 list of boundary values has been created for boundary testing.
 
-These boundary values are those values that the gcc compiler would set an 
+These boundary values are those values that the gcc compiler would set an
 invalid parameter to during compile time:
 
 INT32_MAX+1       -2147483647 (gcc compiler gave -2147483648)

@@ -1,4 +1,4 @@
-<assertions> 
+<assertions>
   <assertion id="1" tag="ref:XSH6:{System Interfaces:munlock:DESCRIPTION}">
    The munlock() function shall unlock those whole pages containing any part of
    the address space of the process starting at address addr and continuing for

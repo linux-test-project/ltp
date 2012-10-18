@@ -15,9 +15,9 @@ the functional area is present.
 Stress Test Definition
 ----------------------
 
-Stress tests are designed to monitor how the system behaves when it is 
+Stress tests are designed to monitor how the system behaves when it is
 taxed by excessively using the functional areas in the POSIX specification
-or monitoring how the functional areas in the POSIX specification behave 
+or monitoring how the functional areas in the POSIX specification behave
 when the system is taxed.
 
 Directory Structure

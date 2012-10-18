@@ -12,7 +12,7 @@ released files.
 
 2.  Create a posixtestsuite-<major>.<minor>.<rev>.tar.gz file containing
     everything with the release tag.
-    Note:  Follow guidelines on:  
+    Note:  Follow guidelines on:
     http://en.tldp.org/HOWTO/Software-Release-Practice-HOWTO/distpractice.html
 
 3.  Use the SF admin interface to add this file to the project.

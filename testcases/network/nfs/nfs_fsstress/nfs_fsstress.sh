@@ -26,7 +26,7 @@
 #	   NFS kernel code and possibly the underlying filesystem where
 #	   the export resides.  A PASS is if the test completes.
 #
-#  PREREQUISITE: There must exist an NFS exported filesystem available to 
+#  PREREQUISITE: There must exist an NFS exported filesystem available to
 #		test on.
 #
 #
@@ -63,22 +63,22 @@ echo "Mounting NFS filesystem"
 mount -o "intr,soft,proto=udp,vers=2" $RHOST:$FILESYSTEM /tmp/udp/2/${HOSTNAME}1 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using UDP & version 2 failed"
-  exit 1 
+  exit 1
 fi
 mount -o "intr,soft,proto=tcp,vers=2" $RHOST:$FILESYSTEM /tmp/tcp/2/${HOSTNAME}2 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using TCP & version 2 failed"
-  exit 1 
+  exit 1
 fi
 mount -o "intr,soft,proto=udp,vers=3" $RHOST:$FILESYSTEM /tmp/udp/3/${HOSTNAME}3 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using UDP & version 3 failed"
-  exit 1 
+  exit 1
 fi
 mount -o "intr,soft,proto=tcp,vers=3" $RHOST:$FILESYSTEM /tmp/tcp/3/${HOSTNAME}4 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using TCP & version 3 failed"
-  exit 1 
+  exit 1
 fi
 
 echo "Test set for $DURATION seconds. Starting test processes now."
@@ -93,18 +93,18 @@ sar -o /tmp/nfs_fsstress.sardata 30 0 &
 echo "Testing in progress"
 sleep $DURATION
 echo "Testing done. Killing processes."
-killall -9 sadc 
-killall -9 fsstress 
+killall -9 sadc
+killall -9 fsstress
 ps -ef | grep -v grep | grep fsstress > /dev/null 2>&1
 TESTING=$?
 while [ $TESTING -eq 0 ]
 do
-  killall -9 fsstress 
+  killall -9 fsstress
   echo -n "."
   sleep 5
   ps -ef | grep -v grep | grep -v nfs_fsstress | grep fsstress > /dev/null 2>&1
   TESTING=$?
-done 
+done
 echo " "
 echo "All processes killed."
 echo "Unmounting NFS filesystem"

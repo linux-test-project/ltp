@@ -41,7 +41,7 @@ done
 
 if [[ ! -f include/linux/kernel.h ]] ; then
 	echo "No kernel source found; exiting"
-	exit 
+	exit
 fi
 
 for i in time awk yes date

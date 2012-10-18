@@ -1,8 +1,8 @@
 #!/bin/sh
 #
-#       @(#)runtests	
+#       @(#)runtests
 #
-# runtests script for ACL testing 
+# runtests script for ACL testing
 REMOTEHOST=nfsserver
 MAXLENGTH=30 # maximum ACL length - NB: the current NFSv4 acl implementation does not allow ACL greater than one page (about 35 entries with 6 character user name length and 10 character domain name)
 NFSMNTDIR=/mnt/nfs-acl
@@ -29,7 +29,7 @@ echo "Starting ACL testing"
 echo "Starting BASIC tests"
 
 echo "Creating testing file and directory"
-touch $NFSMNTDIR/$ACLTESTFILE 
+touch $NFSMNTDIR/$ACLTESTFILE
 mkdir $NFSMNTDIR/$ACLTESTDIR
 if test ! -d $NFSMNTDIR/$ACLTESTDIR
 then
@@ -46,7 +46,7 @@ for i in 1 2 3 4 5
         userdel user$i
         groupdel grp$i
     done
-               
+
 echo "Basic tests finished"
 
 echo "LONG ACL TEST"

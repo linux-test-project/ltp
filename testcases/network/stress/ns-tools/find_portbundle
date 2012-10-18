@@ -28,7 +28,7 @@
 #   Find a bundle of consecutive ports
 #
 # Arguments:
-#   $1: tcp or udp 
+#   $1: tcp or udp
 #   $2: port which is the start point to check
 #   $3: quantity of the ports
 #
@@ -40,7 +40,7 @@
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.

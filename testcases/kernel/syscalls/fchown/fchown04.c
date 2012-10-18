@@ -101,7 +101,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	void (*setupfunc) ();
 } test_cases[] = {
 	{ 1, EPERM, setup1 },
-	{ 2, EBADF, setup2 }, 
+	{ 2, EBADF, setup2 },
 };
 
 char test_home[PATH_MAX];	/* variable to hold TESTHOME env */

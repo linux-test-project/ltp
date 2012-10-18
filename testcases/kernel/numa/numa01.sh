@@ -31,9 +31,9 @@
 #		Test #3: Verifies memory interleave on all nodes
 #		Test #4: Verifies physcpubind
 #		Test #5: Verifies localalloc
-#		Test #6: Verifies memory policies on shared memory 
+#		Test #6: Verifies memory policies on shared memory
 #		Test #7: Verifies numademo
-#		Test #8: Verifies memhog 
+#		Test #8: Verifies memhog
 #		Test #9: Verifies numa_node_size api
 #		Test #10:Verifies Migratepages
 #		- it uses numastat output which is expected to be in the format
@@ -111,7 +111,7 @@ getmax()
 
 
 
-# Function:     extract_numastat 
+# Function:     extract_numastat
 #
 # Description:  - extract the value of given row,column from the numastat output .
 #
@@ -137,14 +137,14 @@ extract_numastat()
 	tst_brkm TBROK NULL "numastat o/p seems to be changed, $1 expected to be in the row $2"
         return 1
     fi
-   
+
     RC=$(awk '
         { if ( NR == '$2' ){
             print $'$3';
             }
         }
         ' $LTPTMP/numalog)
-    return 0 
+    return 0
 }
 
 
@@ -193,7 +193,7 @@ init()
     # Page Size
     page_size=0
 
-    # row definitions, pls see at the top of this file 
+    # row definitions, pls see at the top of this file
     numa_hit=2
     numa_miss=3
     numa_foreign=4
@@ -233,13 +233,13 @@ init()
     chk_ifexists INIT kill       || return $RC
 
     RC=0
-    # set max_node 
+    # set max_node
     getmax || return 1
     max_node=$RC
 
     if [ $max_node -eq 1 ]
-    then 
-        tst_resm TCONF "non-NUMA aware kernel is running or your machine does not support numa policy or 
+    then
+        tst_resm TCONF "non-NUMA aware kernel is running or your machine does not support numa policy or
                         your machine is not a NUMA machine"
     exit 0
     fi
@@ -253,7 +253,7 @@ init()
     fi
     page_size=$(cat $LTPTMP/numaarg)
 
-    tst_resm TINFO "INIT: Numa tests will start now !!" 
+    tst_resm TINFO "INIT: Numa tests will start now !!"
 }
 
 
@@ -280,7 +280,7 @@ cleanup()
 # Function:     test01
 #
 # Description:  - Verification of local node and memory affinity
-# 
+#
 # Return:       - zero on success.
 #               - non-zero on failure.
 test01()
@@ -292,32 +292,32 @@ test01()
     Prev_value=0        # extracted from the numastat o/p
     Curr_value=0	# Current value extracted from numastat o/p
     Exp_incr=0          # 1 MB/ PAGESIZE
-    Node_num=0          
+    Node_num=0
     col=0
     MB=$[1024*1024]
 
     # Increase in numastat o/p is interms of pages
     Exp_incr=$[$MB/$page_size]
 
-    COUNTER=1 
+    COUNTER=1
     while [  $COUNTER -le $max_node ]; do
         Node_num=$[$COUNTER-1]		#Node numbers start from 0
         col=$[$COUNTER+1]		#Node number in numastat o/p
         numastat > $LTPTMP/numalog
-        extract_numastat local_node $local_node $col || return 1 
+        extract_numastat local_node $local_node $col || return 1
         Prev_value=$RC
-        numactl --cpunodebind=$Node_num --membind=$Node_num support_numa $ALLOC_1MB 
+        numactl --cpunodebind=$Node_num --membind=$Node_num support_numa $ALLOC_1MB
         numastat > $LTPTMP/numalog
         extract_numastat local_node $local_node $col || return 1
         Curr_value=$RC
-        comparelog $Prev_value $Curr_value 
+        comparelog $Prev_value $Curr_value
         if [ $RC -lt $Exp_incr ]
         then
              tst_resm TFAIL \
                  "Test #1: NUMA hit and localnode increase in node$Node_num is less than expected"
-            return 1 
+            return 1
         fi
-        COUNTER=$[$COUNTER+1] 
+        COUNTER=$[$COUNTER+1]
     done
     tst_resm TPASS "NUMA local node and memory affinity -TEST01 PASSED !!"
     return 0
@@ -327,7 +327,7 @@ test01()
 
 # Function:     test02
 #
-# Description:  - Verification of memory allocated from preferred node 
+# Description:  - Verification of memory allocated from preferred node
 #
 # Return:       - zero on success.
 #               - non-zero on failure.
@@ -349,9 +349,9 @@ test02()
 
     COUNTER=1
     while [  $COUNTER -le $max_node ]; do
-        
+
 	if [ $max_node -eq 1 ]
-        then 
+        then
             tst_brkm TBROK NULL "Preferred policy cant be applied for a single node machine"
 	    return 1
 	fi
@@ -370,19 +370,19 @@ test02()
         numastat > $LTPTMP/numalog
         extract_numastat other_node $other_node $col || return 1
         Prev_value=$RC
-        numactl --cpunodebind=$Node_num --preferred=$Preferred_node support_numa $ALLOC_1MB 
+        numactl --cpunodebind=$Node_num --preferred=$Preferred_node support_numa $ALLOC_1MB
 	sleep 2s	#In RHEL collection of statistics takes more time.
         numastat > $LTPTMP/numalog
         extract_numastat other_node $other_node $col || return 1
         Curr_value=$RC
-        comparelog $Prev_value $Curr_value 
+        comparelog $Prev_value $Curr_value
         if [ $RC -lt $Exp_incr ]
         then
              tst_resm TFAIL \
                  "Test #2: NUMA hit and othernode increase in node$Node_num is less than expected"
             return 1
         fi
-        COUNTER=$[$COUNTER+1]        
+        COUNTER=$[$COUNTER+1]
     done
     tst_resm TPASS "NUMA preferred node policy -TEST02 PASSED !!"
     return 0
@@ -391,7 +391,7 @@ test02()
 
 # Function:     test03
 #
-# Description:  - Verification of memory interleaved on all nodes 
+# Description:  - Verification of memory interleaved on all nodes
 #
 # Return:       - zero on success.
 #               - non-zero on failure.
@@ -412,7 +412,7 @@ test03()
     # Increase in numastat o/p is interms of pages
     Exp_incr=$[$MB/$page_size]
     # Pages will be allocated using round robin on nodes.
-    Exp_incr=$[$Exp_incr/$max_node] 
+    Exp_incr=$[$Exp_incr/$max_node]
 
     # Check whether the pages are equally distributed among available nodes
     numastat > $LTPTMP/numalog
@@ -425,7 +425,7 @@ test03()
         COUNTER=$[$COUNTER+1]
     done
 
-    numactl --interleave=all support_numa $ALLOC_1MB 
+    numactl --interleave=all support_numa $ALLOC_1MB
     sleep 2s        #In RHEL collection of statistics takes more time.
 
     numastat > $LTPTMP/numalog
@@ -435,7 +435,7 @@ test03()
 	Node_num=$[$COUNTER-1]         #Node numbers start from 0
         extract_numastat interleave_hit $interleave_hit $col || return 1
         Curr_value=$RC
-        comparelog ${parray[$COUNTER]} $Curr_value 
+        comparelog ${parray[$COUNTER]} $Curr_value
         if [ $RC -lt $Exp_incr ]
         then
              tst_resm TFAIL \
@@ -452,7 +452,7 @@ test03()
 
 # Function:     test04
 #
-# Description:  - Verification of physical cpu bind 
+# Description:  - Verification of physical cpu bind
 #
 # Return:       - zero on success.
 #               - non-zero on failure.
@@ -462,22 +462,22 @@ test04()
     TCID=numa04
     TST_COUNT=4
 
-    no_of_cpus=0	#no. of cpu's exist 
-    run_on_cpu=0	
+    no_of_cpus=0	#no. of cpu's exist
+    run_on_cpu=0
     running_on_cpu=0
 
     no_of_cpus=$(ls /sys/devices/system/cpu/ | wc -w)
     # not sure whether cpu's can't be in odd number
-    run_on_cpu=$[$[$no_of_cpus+1]/2]		
+    run_on_cpu=$[$[$no_of_cpus+1]/2]
     numactl --physcpubind=$run_on_cpu support_numa $PAUSE & #just waits for sigint
     pid=$!
     var=`awk '{ print $2 }' /proc/$pid/stat`
     while [ $var = '(numactl)' ]; do
         var=`awk '{ print $2 }' /proc/$pid/stat`
     done
-    # Warning !! 39 represents cpu number, on which process pid is currently running and 
+    # Warning !! 39 represents cpu number, on which process pid is currently running and
     # this may change if Some more fields are added in the middle, may be in future
-    running_on_cpu=$(awk '{ print $39; }' /proc/$pid/stat) 
+    running_on_cpu=$(awk '{ print $39; }' /proc/$pid/stat)
     if [ $running_on_cpu -ne $run_on_cpu ]
     then
 	 tst_resm TFAIL \
@@ -498,7 +498,7 @@ test04()
 
 # Function:     test05
 #
-# Description:  - Verification of local node allocation 
+# Description:  - Verification of local node allocation
 #
 # Return:       - zero on success.
 #               - non-zero on failure.
@@ -539,7 +539,7 @@ test05()
         COUNTER=$[$COUNTER+1]
     done
     tst_resm TPASS "NUMA local node allocation -TEST05 PASSED !!"
-    return 0 
+    return 0
 }
 
 
@@ -619,7 +619,7 @@ test06()
 test07()
 {
     TCID=numa07
-    TST_COUNT=7 
+    TST_COUNT=7
 
     RC=0                # Return value from commands.
     Prev_value=0        # extracted from the numastat o/p
@@ -850,7 +850,7 @@ test010()
     init_ret=0
     init || init_ret=$?
     if [ $init_ret -ne 0 ]
-    then 
+    then
         tst_resm TFAIL "INIT NUMA FAILED !!"
         exit $RC
     fi
@@ -862,7 +862,7 @@ test010()
         func_ret=0
 	$call_test || func_ret=$?
         if [ $func_ret -ne 0 ]
-        then 
+        then
             no_of_test_failed=$[$no_of_test_failed+1]
         fi
         COUNT=$[$COUNT+1]

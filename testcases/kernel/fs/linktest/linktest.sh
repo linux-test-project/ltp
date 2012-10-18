@@ -22,7 +22,7 @@
 #  DESCRIPTION : Regression test for max links per file
 #  USE         : linktest.sh <number of symlinks> <number of hardlinks>
 #  AUTHOR      : Garrett Cooper (yanegomi@gmail.com)
-#  HISTORY     : 
+#  HISTORY     :
 #	A rewrite of testcases/kernel/fs/linktest.pl
 
 export TCID=linker01

@@ -30,7 +30,7 @@
 # LOG_DAEMON, LOG_AUTH, LOG_LPR.				 #
 # Don't know how to send kernel messages from syslog()   	 #
 #								 #
-# o Create seperate entries in config file for each facility.	 # 
+# o Create seperate entries in config file for each facility.	 #
 # o Send the message and grep for the entry in log file.	 #
 ##################################################################
 

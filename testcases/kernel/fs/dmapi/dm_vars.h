@@ -129,7 +129,7 @@
 #define MMAP_WRITE_BASE			4450
 
 /* event.c */
-#define GET_EVENTS_BASE			4500	
-#define RESPOND_EVENT_BASE		4550	
-#define MOVE_EVENT_BASE			4600	
-#define PENDING_BASE			4650	
+#define GET_EVENTS_BASE			4500
+#define RESPOND_EVENT_BASE		4550
+#define MOVE_EVENT_BASE			4600
+#define PENDING_BASE			4650

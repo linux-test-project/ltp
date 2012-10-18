@@ -44,7 +44,7 @@ The following steps describe how to build and run the default schedule:
 
 	2. cd tools/pounder21/.  You've already done this too.
 
-	3. (optional) Set up a NFS server to export "/pounder21" (unless you wish 
+	3. (optional) Set up a NFS server to export "/pounder21" (unless you wish
 		to skip nfs tests).
 
 	4. (optional) Modify any variables in "config" (see doc/CONFIGURATION for details).
@@ -58,7 +58,7 @@ The following steps describe how to build and run the default schedule:
 		delete any subtests from the test scheduler that fail to build.
 		If you enter "n", the script will prompt you each time a test
 		fails to build on whether or not to skip the failed test.
-       
+
 	6. Run "./pounder" to start the tests (run "./pounder -h" for usage options).
 
 	7. Press ^C or run "./pounder -k" to stop the tests
@@ -66,8 +66,8 @@ The following steps describe how to build and run the default schedule:
 		duration in seconds by modifying config (see doc/CONFIGURATION for details)
 		or by using the -d option when starting pounder (./pounder -d <duration in seconds>)
 
-	8. Run "make mrclean" to restore everything to the state before the tarball 
-		was unpacked (running this command will of course require you to 
+	8. Run "make mrclean" to restore everything to the state before the tarball
+		was unpacked (running this command will of course require you to
 		rebuild with "make install" for the next pounder run)
 
 See doc/SCHEDULER for details on defining the order in which tests are run, and whether they

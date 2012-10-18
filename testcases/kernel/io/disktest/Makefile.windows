@@ -2,28 +2,28 @@
 !IF "$(CFG)" == ""
 CFG=disktest - Release
 !MESSAGE No configuration specified. Defaulting to disktest - Release.
-!ENDIF 
+!ENDIF
 
 !IF "$(CFG)" != "disktest - Release" && "$(CFG)" != "disktest - Debug"
 !MESSAGE Invalid configuration "$(CFG)" specified.
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE nmake /f "Makefile.windows" CFG="disktest - Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "disktest - Release" (based on "(x86) Console Application")
 !MESSAGE "disktest - Debug" (based on "(x86) Console Application")
-!MESSAGE 
+!MESSAGE
 !ERROR An invalid configuration is specified.
-!ENDIF 
+!ENDIF
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 
 CPP=cl.exe
 RSC=rc.exe
@@ -72,10 +72,10 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /W3 /Gs /MD /D"WIN32" /D"_WIN32_WINNT=0x0500" /D"WINDOWS" /D"NDEBUG" /D"_CONSOLE" /D"_MBCS" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\disktest.pch" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /W3 /Gs /MD /D"WIN32" /D"_WIN32_WINNT=0x0500" /D"WINDOWS" /D"NDEBUG" /D"_CONSOLE" /D"_MBCS" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\disktest.pch" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 LINK=link.exe bufferoverflowu.lib Winmm.lib Ws2_32.lib
-LINK_FLAGS=/nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\disktest.pdb" /out:"$(OUTDIR)\disktest.exe" 
+LINK_FLAGS=/nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\disktest.pdb" /out:"$(OUTDIR)\disktest.exe"
 LINK_OBJS= \
 	"$(INTDIR)\childmain.obj" \
 	"$(INTDIR)\timer.obj" \
@@ -141,10 +141,10 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=bufferoverflow.lib /nologo /MLd /W3 /Gm /GX /ZI /Od /MD /D"WIN32" /D"_WIN32_WINNT=0x0500" /D"WINDOWS" /D"_DEBUG" /D"_CONSOLE" /D "_MBCS" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\disktest.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=bufferoverflow.lib /nologo /MLd /W3 /Gm /GX /ZI /Od /MD /D"WIN32" /D"_WIN32_WINNT=0x0500" /D"WINDOWS" /D"_DEBUG" /D"_CONSOLE" /D "_MBCS" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\disktest.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 LINK=link.exe bufferoverflow.lib Winmm.lib Ws2_32.lib
-LINK_FLAGS=/nologo /subsystem:console /pdb:"$(OUTDIR)\disktest.pdb" /out:"$(OUTDIR)\disktest.exe" 
+LINK_FLAGS=/nologo /subsystem:console /pdb:"$(OUTDIR)\disktest.pdb" /out:"$(OUTDIR)\disktest.exe"
 LINK_OBJS= \
 	"$(INTDIR)\childmain.obj" \
 	"$(INTDIR)\Getopt.obj" \
@@ -165,16 +165,16 @@ LINK_OBJS= \
   $(LINK_FLAGS) $(LINK_OBJS)
 <<
 
-!ENDIF 
+!ENDIF
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 !IF "$(CFG)" == "disktest - Release" || "$(CFG)" == "disktest - Debug"
@@ -231,5 +231,5 @@ SOURCE=.\signals.c
 
 "$(INTDIR)\signals.obj"	"$(INTDIR)\signals.sbr" : $(SOURCE) "$(INTDIR)"
 
-!ENDIF 
+!ENDIF
 

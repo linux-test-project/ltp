@@ -1,6 +1,6 @@
 <assertions>
   <assertion id="2" tag="pt:MSG" files="mqueues/notify.c">
-   When a message is available on a Queue, process can be notified that and 
+   When a message is available on a Queue, process can be notified that and
    prepare to receive the message.
   </assertion>
   <assertion id="1" tag="pt:MSG" files="mqueues/send_rev_1.c">
@@ -8,7 +8,7 @@
   </assertion>
   <assertion id="3" tag="pt:MSG" files="mqueues/send_rev_2.c">
    Two threads sending/receiving on different message queue, and
-   set different Priority to the messages in the message queue, to 
+   set different Priority to the messages in the message queue, to
    see whether the highest priority is received first.
  </assertion>
 </assertions>

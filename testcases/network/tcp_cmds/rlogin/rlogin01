@@ -20,20 +20,20 @@
 #
 #  FILE   : rlogin
 #
-#  PURPOSE: Tests the basic functionality of `rlogin`. 
+#  PURPOSE: Tests the basic functionality of `rlogin`.
 #
 #  SETUP: The program `/usr/bin/expect' MUST be installed.
 #         The home directory of root on the machine exported as "RHOST"
 #         should have a ".rhosts" file with the hostname of the machine
 #         where the test is executed, OR the "PASSWD" section below MUST
-#	  be uncommented and set. 
+#	  be uncommented and set.
 #
 #  HISTORY:
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
-# 
-# rlogin perform a rlogin session to each host in HOST_LIST with user 
+#
+# rlogin perform a rlogin session to each host in HOST_LIST with user
 #    RUSER for a count of LOOPCOUNT and does an ls -l /etc/hosts to
 #    verify that the rlogin was established.
 #
@@ -69,8 +69,8 @@ while {$count < $LOOPCOUNT} {
 
       # rlogin to the host
       spawn rlogin $RHOST -l $RUSER
-      
-      # Uncomment code below and add root's passwd if .rhosts file is not 
+
+      # Uncomment code below and add root's passwd if .rhosts file is not
       # present on remote host.
       #---------------------------------
       #set PASSWD "<ROOT PASSWORD HERE>"
@@ -88,10 +88,10 @@ while {$count < $LOOPCOUNT} {
       exp_send "logout\r"
 
       send_user "CHECKING RLOGIN STATUS\n"
-      set nummatch [exec rsh -n -l $RUSER $RHOST "cat $TESTLOG/$RUSER.$RHOST|grep -c 9"] 
+      set nummatch [exec rsh -n -l $RUSER $RHOST "cat $TESTLOG/$RUSER.$RHOST|grep -c 9"]
       if {$nummatch==1} {
          send_user "$TC interactive Test Successful in LOOP $count\r"
-         exec rsh -n -l $RUSER $RHOST "rm -f $TESTLOG/$RUSER.$RHOST" 
+         exec rsh -n -l $RUSER $RHOST "rm -f $TESTLOG/$RUSER.$RHOST"
       } else {
          send_user "$TC interactive session FAILED\r"
          exit 1

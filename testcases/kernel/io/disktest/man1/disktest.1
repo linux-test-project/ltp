@@ -102,7 +102,7 @@ s [ delay ]
 .B Disktest
 does repeated accesses to a
 .I filespec
-and optionally writes to, reads from, and verifies the data.  By default, 
+and optionally writes to, reads from, and verifies the data.  By default,
 .B disktest
 makes assumptions about the running environment which allows for a quick start of IO generation.  However,
 .B Disktest
@@ -261,7 +261,7 @@ for more details. Access to the file is performed through the file system that t
 .B fsync(2)
 to occur on every write.
 
-Adding 
+Adding
 .B d
 will open with the
 .B O_DIRECT
@@ -444,7 +444,7 @@ The version information will be displayed and
 .B disktest
 will exit normally.
 .IP -w
-Write to 
+Write to
 .I filespec.
 Data will be written as fast as possible and not read back to check for data corruption. can be combined with -r option to do read/write testing and -E to perform data integrity checking.
 .IP -z

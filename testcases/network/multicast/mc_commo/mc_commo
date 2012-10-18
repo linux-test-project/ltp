@@ -93,7 +93,7 @@ do_test ()
       [ $? = 0 ] || end_testcase "Could NOT start mc_recv on `hostname`"
 
       grep -q "cannot join group" $OUTFILE
-      [ $? = 0 ] && end_testcase "Membership NOT set" 
+      [ $? = 0 ] && end_testcase "Membership NOT set"
 
       netstat -ng | grep -q $GROUP_ADDR
       [ $? = 0 ] || end_testcase "membership not set for $GROUP_ADDR"
@@ -110,7 +110,7 @@ do_test ()
 #          echo "Ping test skipped"
 #       else
 #           echo "Running ping to verify group can be reached "
-#           ping -c5 -I $INTERFACE $GROUP_ADDR > /dev/null 
+#           ping -c5 -I $INTERFACE $GROUP_ADDR > /dev/null
 #        [ $? = 0 ] || end_testcase "failed: ping -c5 -I $INTERFACE $GROUP_ADDR"
 #       fi
 
@@ -133,19 +133,19 @@ do_test ()
          sleep 10
 	rsh -n -l root $HOST "ps -ewf | grep mc_send | grep -v grep"
           [ $? = 0 ] || end_testcase "Could NOT start mc_send on $HOST"
-      done 
+      done
 
       echo "Waiting for 100 sec.! Do not interrupt."
       sleep 100  #wait until datagrams are received in $STATUS
-      COUNT=$(( $COUNT + 1 )) 
-   done 
-  
+      COUNT=$(( $COUNT + 1 ))
+   done
+
    #test if datagrams has been sent
    for HOST in $RHOST
    do
       grep -q "$HOST [0-9] [0-9]" $OUTFILE
       [ $? = 0 ] || end_testcase "NO Datagrams received from $HOST"
-   done 
+   done
 }
 
 #-----------------------------------------------------------------------

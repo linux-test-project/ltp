@@ -6,6 +6,6 @@ Assertion	Tested?
 3		YES
 4		NO  * Looking for a way to produce the error conditions
 		    * When it specifies it 'may' fail and not 'shall' fail,
-		      it will always return PASS, but will return a 
+		      it will always return PASS, but will return a
 		      PASS and print out a warning if it fails.
 NOTE:

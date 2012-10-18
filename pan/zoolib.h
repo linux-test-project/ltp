@@ -56,14 +56,14 @@ void wait_handler();
  * 	returns NULL on error */
 char *zoo_getname(void);
 
-/* zoo_open(): open a zoo file for use 
+/* zoo_open(): open a zoo file for use
  * 	returns NULL on error */
 zoo_t zoo_open(char *zooname);
 
 /* zoo_close(): close an open zoo file */
 int zoo_close(zoo_t z);
 
-/* zoo_mark_cmdline(): make an entry to the zoo 
+/* zoo_mark_cmdline(): make an entry to the zoo
  *	returns 0 on success, -1 on error */
 int zoo_mark_cmdline(zoo_t z, pid_t p, char *tag, char *cmdline);
 

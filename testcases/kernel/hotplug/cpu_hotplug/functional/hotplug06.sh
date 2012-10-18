@@ -17,7 +17,7 @@ LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
 . $LHCS_PATH/include/hotplug.fns
 
 cat <<EOF
-Name:   $TCID 
+Name:   $TCID
 Date:   `date`
 Desc:   Verify user tools can handle adding and removing CPUs.
 

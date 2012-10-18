@@ -46,7 +46,7 @@ $trace_logic
 
 #
 # Variables -- Changed by each multi-diffport testcase
-# 
+#
 
 # The test case ID
 TCID=udp4-multi-diffport02

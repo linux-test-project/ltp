@@ -47,7 +47,7 @@ $trace_logic
 
 #
 # Variables -- Changed by each multi-diffnic testcase
-# 
+#
 
 # The test case ID
 TCID=tcp4-multi-diffnic12

@@ -48,7 +48,7 @@ struct sym {
 };
 
 /*
- * Symbol Table Header 
+ * Symbol Table Header
  */
 struct symh {
     int         magic;
@@ -63,7 +63,7 @@ typedef struct symh *SYM;
 
 /*
  * Data for keys and contents (lifted from dbopen(3))
- * dbopen(3) uses this for all functions, but I'm hard-wired into chars 
+ * dbopen(3) uses this for all functions, but I'm hard-wired into chars
  * for keys and the like; I just need this for sym_get
  */
 typedef struct {

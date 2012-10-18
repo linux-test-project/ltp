@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # The test case ID, the test case count and the total number of test case
 
@@ -45,7 +45,7 @@ export TST_TOTAL
     route add -host $IP4 dev $vnet2
     echo 1 > /proc/sys/net/ipv4/conf/$vnet2/proxy_arp
 
-    pid=`cat /tmp/FIFO4` 
+    pid=`cat /tmp/FIFO4`
     debug "INFO: The pid of CHILD2 is $pid"
     ip link set $vnet3 netns $pid
     echo $vnet3 > /tmp/FIFO3

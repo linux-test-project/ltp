@@ -50,8 +50,8 @@
    sporadic server scheduling policy is unaffected.
   </assertion>
   <assertion id="12" tag="ref:XSH6:6642:6648 pt:TCT">
-   If _POSIX_THREAD_CPUTIME is defined, clock_settime() supports clock_ids 
-   obtained via pthread_getcpuclockid().  The value set is the amount of 
+   If _POSIX_THREAD_CPUTIME is defined, clock_settime() supports clock_ids
+   obtained via pthread_getcpuclockid().  The value set is the amount of
    execution time of the thread associated with the clock.
   </assertion>
   <assertion id="13" tag="ref:XSH6:6644:6648 pt:TCT">
@@ -78,7 +78,7 @@
    clock_id
   </assertion>
   <assertion id="19" tag="ref:XSH6:6659:6660">
-   clock_settime() sets errno=EINVAL if tp has a nsec value below 0 or 
+   clock_settime() sets errno=EINVAL if tp has a nsec value below 0 or
    above (or equal to) 1000 million
   </assertion>
   <assertion id="20" tag="ref:XSH6:6661:6661 pt:MON">

@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2006                 ##
@@ -75,7 +75,7 @@ IPV6_NETMASK_NUM=64
 # Host portion of the IPv6 address
 LHOST_IPV6_HOST=":2"		# src
 RHOST_IPV6_HOST_TOP="10"	# gateway
-RHOST_IPV6_HOST_LAST="19"	
+RHOST_IPV6_HOST_LAST="19"
 
 # The destination network
 DST_NETWORK="fd00:100:1:1"	# dest network would be fd00:100:1:1:::/64

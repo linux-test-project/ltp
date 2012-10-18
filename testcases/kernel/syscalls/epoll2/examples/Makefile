@@ -25,7 +25,7 @@ endif
 
 SOURCES = $(SRCDIR)/epoll-test.c
 
-MKDEP = mkdep -f 
+MKDEP = mkdep -f
 
 
 all: blaster httpd pipetest

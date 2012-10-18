@@ -132,7 +132,7 @@ is_root()
 # echo $SHELL
 #
 # Gentoo:
-# gcooper@orangebox ~/Desktop $ ./foo.sh 
+# gcooper@orangebox ~/Desktop $ ./foo.sh
 # foo.sh
 # foo.sh
 # /bin/bash

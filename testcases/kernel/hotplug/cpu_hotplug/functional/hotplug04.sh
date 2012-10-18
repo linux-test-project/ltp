@@ -60,7 +60,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	# Return CPU 0 to its initial state
 	if [ $cpustate = 1 ]; then
 		online_cpu 0
-	else 
+	else
 		offline_cpu 0
 	fi
 

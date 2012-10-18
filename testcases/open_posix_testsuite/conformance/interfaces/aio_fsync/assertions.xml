@@ -35,7 +35,7 @@
 	queued.
 	</assertion>
 	<assertion id="10" tag="ref:XSH6TC2:4084:4084">
-	aio_fsync() shall return the value -1 and set errno to indicate error 
+	aio_fsync() shall return the value -1 and set errno to indicate error
 	if the operation is not successfully queued.
 	</assertion>
 	<assertion id="11" tag="ref:XSH6TC2:4088:4089">

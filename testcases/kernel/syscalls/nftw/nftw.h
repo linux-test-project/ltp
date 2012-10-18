@@ -25,7 +25,7 @@
  * NAME
  *	nftw.h - Header file for nftw.c
  */
- 
+
 
 #ifndef _NFTW_H_
 #define _NFTW_H_
@@ -143,7 +143,7 @@ extern int test_func1(const char *, const struct stat *, int, struct FTW *);
 extern int test_func3(const char *, const struct stat *, int, struct FTW *);
 extern int test_func4(const char *, const struct stat *, int, struct FTW *);
 extern int test_func5(const char *, const struct stat *, int, struct FTW *);
-extern int test_func7(const char *, const struct stat *, int, struct FTW *); 
+extern int test_func7(const char *, const struct stat *, int, struct FTW *);
 extern int test_func8(const char *, const struct stat *, int, struct FTW *);
 extern int test_func9(const char *, const struct stat *, int, struct FTW *);
 extern int test_func10(const char *, const struct stat *, int, struct FTW *);

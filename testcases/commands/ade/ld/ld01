@@ -58,7 +58,7 @@ then
 	fi
 fi
 
-#ASSERTION 1 
+#ASSERTION 1
 #Test for graceful failure when ld can't find a fileTest calling ld directly
 #
 #CODE
@@ -81,7 +81,7 @@ fi
 
 
 
-##ASSERTION 2 
+##ASSERTION 2
 #Test for graceful failure when ld can't find a fileTest calling ld through cc
 #
 #CODE
@@ -185,7 +185,7 @@ fi
 
 
 ## ASSERTION 6
-## Making sure that the linker ignores the "-Bstatic" option 
+## Making sure that the linker ignores the "-Bstatic" option
 ## when using a dynamically linked shared object
 ##
 echo "Assertion 6 .................."
@@ -220,7 +220,7 @@ else
 	else
 		echo "-)"
 	fi
-fi # end of checking for ld version less than 2.16	
+fi # end of checking for ld version less than 2.16
 
 ##
 ## ASSERTION 7
@@ -231,7 +231,7 @@ fi # end of checking for ld version less than 2.16
 
 
 echo "Assertion 7 .................."
-$LD -Bdynamic -shared $TCdat/ldmain.obj $TCdat/f1.obj $TCdat/rf1.obj -o $TCtmp/lola -L/usr/lib/ 
+$LD -Bdynamic -shared $TCdat/ldmain.obj $TCdat/f1.obj $TCdat/rf1.obj -o $TCtmp/lola -L/usr/lib/
 $LD -Bstatic -r  $TCdat/ldmain.obj $TCdat/f1.obj $TCdat/rf1.obj $TCtmp/lola -L/usr/lib/ 2> $TCtmp/errmsg.out
 cat <<EOF > $TCtmp/errmsg.exp
 $TCtmp/lola: could not read symbols: Invalid operation
@@ -240,7 +240,7 @@ EOF
 grep -q  "could not read symbols: Invalid operation" $TCtmp/errmsg.out
 rc_grep=$?
 grep -q "ld: attempted static link of dynamic object" $TCtmp/errmsg.out
-if [ $rc_grep -eq 0  -o $? -eq 0 ]; then 
+if [ $rc_grep -eq 0  -o $? -eq 0 ]; then
 	echo "-)"
 else
 	echo "FAIL - ld failed to give expected error msg"

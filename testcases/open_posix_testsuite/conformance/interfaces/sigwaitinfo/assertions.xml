@@ -1,6 +1,6 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:42491:42491 pt:RTS">
-	The sigwaitinfo ( ) function selects the pending signal from the set specified by set. 
+	The sigwaitinfo ( ) function selects the pending signal from the set specified by set.
   </assertion>
   <assertion id="2" tag="ref:XSH6:42492:42493 pt:RTS">
 	The lowest pending signal should be selected first numbered one, if it is one of multiple
@@ -21,7 +21,7 @@
   </assertion>
   <assertion id="6" tag="ref:XSH6:42498:42500 pt:RTS">
 	If the something other than NULL is specified by the info argument, the sigwaitinfo ( ) function
-	shall be equivalent to sigwait( ), except that the cause of the signal shall be stored in the si_code member. 
+	shall be equivalent to sigwait( ), except that the cause of the signal shall be stored in the si_code member.
   </assertion>
   <assertion id="7" tag="ref:XSH6:42500:42502 pt:RTS">
 	If the info argument is non-NULL, the selected signal's queued value - if any - shall be

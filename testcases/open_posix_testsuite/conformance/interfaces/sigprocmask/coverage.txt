@@ -12,7 +12,7 @@ Assertion	Covered?
 9		YES
 10		YES
 11		WON'T test, because POSIX does not define behavior in this case.
-12		YES		
+12		YES
 13		WON'T test, because POSIX does not define behavior in this case.
 14		WON'T test, bacause it is pthread_sigmask() specific and tested in there.
 15		YES
@@ -20,4 +20,4 @@ Assertion	Covered?
 17		YES
 18		WON'T test, bacause it is pthread_sigmask() specific and tested in there.
 
-		
+

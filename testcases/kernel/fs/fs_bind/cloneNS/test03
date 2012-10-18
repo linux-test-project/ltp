@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -40,15 +40,15 @@ while /bin/true ; do
 
 	cp "${FS_BIND_ROOT}/cloneNS/parent03" ./
 	cp "${FS_BIND_ROOT}/cloneNS/child03" .
-	
+
 	chmod 755 parent03 child03
-	
+
 	"${FS_BIND_ROOT}/bin/makedir" unclone dir1
 	mount --bind "$disk1" dir1
-	
-	
+
+
 	"${FS_BIND_ROOT}/bin/nsclone" ./parent03 ./child03 || result=$?
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "cloneNS/test03: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -61,9 +61,9 @@ trap '' ERR
 {
 	umount dir1
 	umount dir1
-	
+
 	rm -rf dir* parent* child*
-	
+
 	cleanup
 } >& /dev/null
 if [ $result -ne 0 ]
@@ -72,6 +72,6 @@ then
 	exit 1
 else
 	tst_resm TPASS "cloneNS/test03: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

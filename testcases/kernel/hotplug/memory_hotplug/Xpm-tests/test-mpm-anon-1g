@@ -1,5 +1,5 @@
 # memtoy test  - manual migrate single 1G anon segment
-# 
+#
 numa
 anon foo 1g
 map foo

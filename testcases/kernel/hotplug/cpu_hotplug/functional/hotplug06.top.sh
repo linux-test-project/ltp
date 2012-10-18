@@ -48,7 +48,7 @@ do_clean()
 
 until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	# Start up top and give it a little time to run
-	top -b -d 00.10 > /dev/null 2>&1 & 
+	top -b -d 00.10 > /dev/null 2>&1 &
 	TOP_PID=$!
 	sleep 1
 

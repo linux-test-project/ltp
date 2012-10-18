@@ -15,4 +15,4 @@ Assertion	Tested?
 12		YES
 13		YES
 
-Note: 
+Note:

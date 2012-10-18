@@ -4,9 +4,9 @@
   </assertion>
   <assertion id="2" tag="ref:XBD6:10179:10202">
   pthread.h header shall define the following symbols
-  
+
   PTHREAD_BARRIER_SERIAL_THREAD  BAR
-  PTHREAD_CANCEL_ASYNCHRONOUS  
+  PTHREAD_CANCEL_ASYNCHRONOUS
   PTHREAD_CANCEL_ENABLE
   PTHREAD_CANCEL_DEFERRED
   PTHREAD_CANCEL_DISABLE

@@ -69,12 +69,12 @@ ______________
 * EXAMPLES *
 ============
 
-Local testing: 
+Local testing:
 ./locktests -n 50 -f /file/system/to/test
 
 Multiple clients:
 -on the test server (called host1):
-	./locktest -n 50 -f /network/file/system/to/test -c 3 
+	./locktest -n 50 -f /network/file/system/to/test -c 3
 	(Server waiting for 3 clients to be connected)
 
 -test clients:

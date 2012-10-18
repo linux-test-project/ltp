@@ -18,15 +18,15 @@
  */
 
 /*
- * In this header file keep all flags and other 
+ * In this header file keep all flags and other
  * structures that will be needed in both kernel
  * and user space. Specifically the ioctl flags
- * will go in here so that in user space a program 
+ * will go in here so that in user space a program
  * can specify flags for the ioctl call.
- * 
+ *
  * author: Kai Zhao
  * date:   08/25/2003
- * 
+ *
  */
 
 #define tagp_DRIVER_NAME	"ltp agp module"
@@ -37,8 +37,8 @@
 #define SET_MODULE_OWNER(dev) ((dev)->owner = THIS_MODULE)
 #endif
 
-/* put ioctl flags here, use the _IO macro which is 
- found in linux/ioctl.h, takes a letter, and an 
+/* put ioctl flags here, use the _IO macro which is
+ found in linux/ioctl.h, takes a letter, and an
  integer */
 
 #define TEST_PCI_FIND_DEV   			_IO(MAG_NUM, 1)
@@ -63,14 +63,14 @@
 #define TEST_GENERIC_MASK_MEMORY		_IO(MAG_NUM, 21)
 
 /* memory between the kernel and user space is
- seperated, so that if a structure is needed 
- to be passed between kernel and user space 
+ seperated, so that if a structure is needed
+ to be passed between kernel and user space
  a call must be made to copy_to_user or copy
- from user. Use this structure to streamline 
- that process. For example: A function that 
- writes to a disc takes in a ki_write_t 
- pointer from userspace. In the user space 
- program specify the length of the pointer as 
+ from user. Use this structure to streamline
+ that process. For example: A function that
+ writes to a disc takes in a ki_write_t
+ pointer from userspace. In the user space
+ program specify the length of the pointer as
  in_len, and in_data as the actual structure. */
 
 struct tagp_interface {
@@ -82,8 +82,8 @@ struct tagp_interface {
 };
 
 typedef struct tagp_interface tagp_interface_t;
- 
 
- 
+
+
 
 

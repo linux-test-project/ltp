@@ -206,7 +206,7 @@ test_body()
     cnt=0
     while [ $cnt -lt $NS_TIMES ]; do
 	# Define the destination IP address
-	tmp_postfix=`expr $cnt % 65535` 
+	tmp_postfix=`expr $cnt % 65535`
 	dst_network_postfix=`printf "%x" $tmp_postfix`
 	dst_addr=${DST_NETWORK_PREFIX}:${dst_network_postfix}::${DST_HOST}
 	dst_network=${DST_NETWORK_PREFIX}:${dst_network_postfix}::

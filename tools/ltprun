@@ -3,7 +3,7 @@
 #       3/28/02 William Jay Huie minor updates
 #this will be kicked off by ltp_master from the master control machine which
 #uploads this script and then telnets into each machine and kick this script off
-#perhaps by passing a uniq ID to name the LTP_OUTPUT_TAR file by, or 
+#perhaps by passing a uniq ID to name the LTP_OUTPUT_TAR file by, or
 #allowing the script to create a unique name itself (reccommended for now)
 #Check ltp_master for details
 #FIXME: One problem is that the tests need to be run as root and this script
@@ -34,8 +34,8 @@ fi
 download_ltp()
 {
    echo "Attempting to download the LTP testcases";
-   cd ~ 
-   rm -Rf ltp $LTP_TARFILE 
+   cd ~
+   rm -Rf ltp $LTP_TARFILE
    ftp -n $LTP_HOST << END_GET
    	user $LTP_USER $LTP_PASS
 	bin
@@ -43,14 +43,14 @@ download_ltp()
 	bye
 END_GET
 
-   if [ -s $LTP_TARFILE ]; then 
-      echo "              downloaded sucessfully"; 
+   if [ -s $LTP_TARFILE ]; then
+      echo "              downloaded sucessfully";
    else
       echo "FAILED        download of LTP Testcases"; return 0;
    fi
    return 1;
 }
- 
+
 untar_ltp()
 {
    echo "Untarring $LTP_TARFILE now";
@@ -63,7 +63,7 @@ untar_ltp()
    fi
    return 1;
 }
-    
+
 build_ltp()
 {
    cd ~/ltp
@@ -75,7 +75,7 @@ build_ltp()
       echo "         LTP Testsuite compilation successful"
    fi
    return 1;
-}   
+}
 
 run_ltp()
 {
@@ -89,7 +89,7 @@ run_ltp()
    killall -9 sadc
    echo "Killing sar if it is running"
    return 1;
-}   
+}
 
 #FIXME:
 #collect results has a hack to copy the &>ltprun file into the ~/ltp dir then
@@ -101,7 +101,7 @@ collect_results()
    cp ~/$LTP_RUN_OUTPUT .
    tar --ignore-failed-read -czf ~/$LTP_OUTPUT_TAR $LTP_RUNALL_OUT $LTP_LOGFILE $LTP_RUN_OUTPUT $SAR_OUTFILE
 
-   if [ -s ~/$LTP_OUTPUT_TAR ]; then 
+   if [ -s ~/$LTP_OUTPUT_TAR ]; then
       echo "LTP output tarfile created sucessfully";
    else
       echo "FAILED        tar of LTP results"; return 0;
@@ -110,7 +110,7 @@ collect_results()
 }
 
 upload_results()
-{   
+{
    echo "Uploading LTP output"
    cd ~
    ftp -n $LTP_HOST << END_PUT
@@ -121,18 +121,18 @@ upload_results()
 END_PUT
 #FIXME! Right now don't have a way to verify the upload worked, but
 #we'd like to know so we can delete the OUTPUT_TAR file
-#   rm -f $LTP_OUTPUT_TAR 
+#   rm -f $LTP_OUTPUT_TAR
     rm -f $LTP_TARFILE
 }
 
 #Start the work!
 
 download_ltp
-if [ $? = 1 ]; then 
+if [ $? = 1 ]; then
    untar_ltp
-   if [ $? = 1 ]; then 
+   if [ $? = 1 ]; then
       build_ltp
-      if [ $? = 1 ]; then 
+      if [ $? = 1 ]; then
          run_ltp
       fi
    fi

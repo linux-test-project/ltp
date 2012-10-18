@@ -20,7 +20,7 @@ diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_nonbl
 -#include <linux/socket.h>
 +
  #include <sctputil.h>
- 
+
  char *TCID = __FILE__;
 diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvfrom.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_recvfrom.c
 --- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvfrom.c	2005-08-04 13:33:05.000000000 -0700
@@ -32,7 +32,7 @@ diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvf
 -#include <linux/socket.h>
 +
  #include <sctputil.h>
- 
+
  char *TCID = __FILE__;
 diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvmsg.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_recvmsg.c
 --- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvmsg.c	2005-08-04 13:33:05.000000000 -0700
@@ -44,7 +44,7 @@ diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvm
 -#include <linux/socket.h>
 +
  #include <sctputil.h>
- 
+
  #define MSG_EOF 0x200
 diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_rtoinfo.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_rtoinfo.c
 --- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_rtoinfo.c	2005-08-04 13:33:05.000000000 -0700
@@ -68,7 +68,7 @@ diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_send.
 -#include <linux/socket.h>
 +
  #include <sctputil.h>
- 
+
  char *TCID = __FILE__;
 diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendmsg.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_sendmsg.c
 --- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendmsg.c	2005-08-04 13:33:05.000000000 -0700
@@ -80,7 +80,7 @@ diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendm
 -#include <linux/socket.h>
 +
  #include <sctputil.h>
- 
+
  #define MSG_EOF 0x200
 diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendto.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_sendto.c
 --- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendto.c	2005-08-04 13:33:05.000000000 -0700
@@ -92,7 +92,7 @@ diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendt
 -#include <linux/socket.h>
 +
  #include <sctputil.h>
- 
+
  char *TCID = __FILE__;
 diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_shutdown.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_shutdown.c
 --- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_shutdown.c	2005-08-04 13:33:05.000000000 -0700
@@ -116,5 +116,5 @@ diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_threa
 -#include <linux/socket.h>
 +
  #include <sctputil.h>
- 
+
  #define THREADS 10    /* FIXME should be 500 instead of 10 */

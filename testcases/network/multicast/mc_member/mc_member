@@ -24,7 +24,7 @@ unset LIBPATH
 #  TEST DESCRIPTION : To verify that two of the new options for level IPPROTO_IP
 #                     Service Interface allow the list of host group memberships
 #                     to be updated properly in response to the JoinHostGroup and
-#                     LeaveHostGroup requests. To test boundary conditions while 
+#                     LeaveHostGroup requests. To test boundary conditions while
 #                     exercising IP Multicast JoinHostGroup and LeaveHostGroup
 #                     Service Interfaces.
 #
@@ -63,7 +63,7 @@ get_address()
   DIGIT=`ps -ef | grep mc_member | grep -v grep | wc -l`
   ADDRESS=$DIGIT.$DIGIT.$DIGIT.$DIGIT
 }
- 
+
 #******************************************************************************
 #
 # FUNCTION:  do_test
@@ -107,7 +107,7 @@ do_test()
          sleep 5
          grep "cannot join group" $ERRFILE
          [ $? = 0 ] && end_testcase "MC group could NOT join $INTERFACE"
-      done 
+      done
 
       # See if the groups are joined
 
@@ -119,7 +119,7 @@ do_test()
          # See if they respond to a ping.
 	 #ping -c 3 -I $INTERFACE $agroup
 	 #[ $? != 0 ] && { echo "Error - $TC: $agroup NOT responding over $INTERFACE" ;}
-   
+
       done
 
       echo "Waiting 60 seconds! Do not interrupt!"
@@ -128,11 +128,11 @@ do_test()
       for agroup in `cat $GLIST`
       do
 	netstat -gn | grep $agroup
-        if [ $? != 1 ]; then 
+        if [ $? != 1 ]; then
 	   end_testcase "$agroup still joined on $INTERFACE"
 	fi
       done
-      
+
       # Test the membership boundaries
 
       echo "Running member on too many groups over $INTERFACE"

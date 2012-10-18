@@ -4,8 +4,8 @@ with that returned by the gettimeofday() function.
 Assumptions:
 - Machines running these test cases also have access to the gettimeofday
   function.
-- Ideally, the gettimeofday() function has different internals than 
-  clock_gettime().  [Hopefully, clock_gettime() doesn't just _call_ 
+- Ideally, the gettimeofday() function has different internals than
+  clock_gettime().  [Hopefully, clock_gettime() doesn't just _call_
   gettimeofday(), for instance.]
   However, even if not, it's still a valid test to make sure clock_gettime()
   doesn't have an error somewhere else.

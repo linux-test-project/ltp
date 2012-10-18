@@ -7,6 +7,6 @@
 
 #
 #   Test various methods of adding invalid signals to sigrelse().
-# 
+#
 
 ./3-core 4

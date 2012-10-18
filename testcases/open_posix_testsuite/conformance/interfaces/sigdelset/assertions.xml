@@ -3,7 +3,7 @@
 sigdelset() deletes signal signo from signal set set.
   </assertion>
   <assertion id="2" tag="ref:XSH6:41816:41820">
-The results are undefined if an object does not call sigemptyset() or sigfillset() 
+The results are undefined if an object does not call sigemptyset() or sigfillset()
 before calling sigdelset().
   </assertion>
   <assertion id="3" tag="ref:XSH6:41822:41822">

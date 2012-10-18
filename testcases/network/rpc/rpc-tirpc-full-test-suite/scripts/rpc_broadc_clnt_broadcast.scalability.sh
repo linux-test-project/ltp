@@ -15,7 +15,7 @@
 # test information
 TESTNAME="RPC_broadc_clnt_broadcast.scalability"
 TESTVERS="1.0"
-# test binaries, used to call 
+# test binaries, used to call
 TESTCLIENTPATH="rpc_suite/rpc/rpc_broadc_clnt_broadcast"
 TESTCLIENTBIN="5-scalability.bin"
 TESTCLIENT=$CLIENTTSTPACKDIR/$TESTCLIENTPATH/$TESTCLIENTBIN
@@ -38,13 +38,13 @@ get_test_result()
 {
 	# default : test failed
 	r_value=1
-	
+
 	# if result table is empty last test crashes (segment fault), so return must be "failed"
 	if [ ${#result[*]} -eq 0 ]
 	then
 		return
 	fi
-	
+
 	for ((a=0; a < NBINSTS-1 ; a++))
 	do
 		if [ ${result[$a]} -ne ${result[`expr $a + 1`]} ]
@@ -52,7 +52,7 @@ get_test_result()
 			return
 		fi
 	done
-	
+
 	# if all test instances return same result return the first element, note that test succeeds if value is 0
 	r_value=${result[0]}
 }
@@ -68,7 +68,7 @@ result_to_logFile()
 	4)r_valueTxt="SKIP";;
 	5)r_valueTxt="UNTESTED";;
 	esac
-	
+
 	echo $TESTCLIENTPATH"/"$( echo $TESTCLIENTBIN | cut -d . -f1 )": execution: "$r_valueTxt>>$LOCLOGDIR/$TESTLOGFILE
 	echo ${tblresult[*]}>>$LOCLOGDIR/$TESTLOGFILE
 }
@@ -97,15 +97,15 @@ do
 		$REMOTESHELL $CLIENTUSER@$CLIENTIP "$TESTCLIENT $SERVERIP $PROGNUMBASE $NBPERFTESTITER" >>$TMPRESULTFILE
 	done
 	TOC=`echo $(date +%S)"."$(date +%N)`
-	
+
 	CTIME=`echo $(echo "$TOC-$TIC" | bc)`
 	if [ `expr $TOC \< $TIC` -eq 1 ]
 	then
 		CTIME=`echo $(echo 60 + $CTIME | bc)`
 	fi
-	
+
 	tblresult=( "${tblresult[@]}" "("$NBINSTS"; "$CTIME") " )
-	
+
 	NBINSTS=`expr $NBINSTS \* 2`
 done
 

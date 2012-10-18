@@ -9,7 +9,7 @@ hardware. To compare hardware you need to be running the same architecture
 machines (eg i386), the same userspace binaries and run kernbench on the same
 kernel source tree.
 
-It runs a kernel at various numbers of concurrent jobs: 1/2 number of cpus, 
+It runs a kernel at various numbers of concurrent jobs: 1/2 number of cpus,
 optimal (default is 4xnumber of cpus) and maximal job count. Optionally it can
 also run single threaded. It then prints out a number of useful statistics
 for the average of each group of runs and logs them to kernbench.log
@@ -26,7 +26,7 @@ How do I use it?
 You need a kernel tree (any 2.6 will do) and the applications 'time', 'awk',
 'date' and 'yes' installed. 'time' is different to the builtin time used by
 BASH and has more information desired for this benchmark.
- 
+
 Simply cd into the kernel tree directory and type
 
 /path/to/kernbench
@@ -57,10 +57,10 @@ v0.40 Made all runs use the oldconfig if it exists. Changed to only do one
 	Cleaned up the code substantially to reuse code where possible.
 	Added standard deviation statistics courtesy of Peter Williams
 
-v0.30 Added fast run option which bypasses caching, warmup and tree 
-	preparation and drops number of runs to 3. Modified half loads to 
-	detect -j2 and change to -j3. Added syncs. Improved warnings and 
-	messages. 
+v0.30 Added fast run option which bypasses caching, warmup and tree
+	preparation and drops number of runs to 3. Modified half loads to
+	detect -j2 and change to -j3. Added syncs. Improved warnings and
+	messages.
 
 v0.20 Change to average of runs, add options to choose which runs to perform
 	remove single threaded run from defaults, do warmup run, lots more

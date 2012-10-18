@@ -29,7 +29,7 @@ int test_set_priority(pthread_t pid, unsigned policy, unsigned prio)
 	sched_param.sched_priority = prio;
 	if (pthread_setschedparam(pid, policy, &sched_param) == -1)
 	{
-		EPRINTF("UNRESOLVED: Can't set policy to %d and prio to %d", 
+		EPRINTF("UNRESOLVED: Can't set policy to %d and prio to %d",
 		  	policy, prio);
   	  	exit(UNRESOLVED);
   	}
@@ -60,7 +60,7 @@ static inline
 int mutex_init(pthread_mutex_t *mutex, pthread_mutexattr_t *attr)
 {
 	unsigned rc;
-	
+
 	rc = pthread_mutex_init(mutex, attr);
         if (rc != 0) {
                 EPRINTF("UNRESOLVED: pthread_mutex_init: %d %s",
@@ -70,7 +70,7 @@ int mutex_init(pthread_mutex_t *mutex, pthread_mutexattr_t *attr)
 	return 0;
 }
 
-static inline 
+static inline
 int threadattr_init(pthread_attr_t *threadattr)
 {
 	unsigned rc;
@@ -82,4 +82,4 @@ int threadattr_init(pthread_attr_t *threadattr)
         }
 	return 0;
 }
-		
+

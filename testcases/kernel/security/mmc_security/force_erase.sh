@@ -51,7 +51,7 @@ force_erase()
 		echo "erase operation on locked cards."
 		exit 1
 	fi
-	
+
 	while [ -z "$yn" ]; do
 		read -p "WARNING: all card contents will be lost! Continue? (y/n) " yn
 		case "$yn" in
@@ -60,15 +60,15 @@ force_erase()
 			*) yn=""
 		esac
 	done
-	
+
 	echo "Erasing card. This may take some time, wait..."
 	echo erase > /sys/bus/mmc/devices/mmc0\:*/lockable || \
 	{ echo "*** Error erasing card" >&2; exit 1 ;}
-	
+
 	# Clear session keyring
 	# FIXME: It assumes we have only the MMC key there
 	keyctl clear -3
-	
+
 	echo "Card unlocked and erased."
 }
 

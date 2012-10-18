@@ -17,7 +17,7 @@ but it also handles the reporting process as well. It will upload the data
 to the LTP host to be collected later. The ltp_check script does the brunt
 of the results processing. It produces a results.out file which has a
 summary of the system under test, the success (or failure) of the test and
-if there are failures the output from each testcase. 
+if there are failures the output from each testcase.
 
 Here's the scenario (pardon the ASCII art);
 
@@ -42,14 +42,14 @@ ltp_master can be invoked in the following 3 ways:
 #1 ltp_master -f system_file
  - system_file is an ASCII file containing the list of victim machines.
 
-#2 ltp_master system.name.dom.com 
+#2 ltp_master system.name.dom.com
  - space separated names of victim machines.
 
 #3 ltp_master
  - will prompt user for the names of the victim machines.
 
 I reccomend using scheme #2, this will help seperate different
-distros, platforms etc, for example, We might say have a file with RedHat 
+distros, platforms etc, for example, We might say have a file with RedHat
 machines, or all SuSE, or all machines of a certain platform (say zSeries).
 
 Regardless of how it's invoked ltp_master does the following on each
@@ -60,7 +60,7 @@ victim machine.
 
 ltprun script
 ~~~~~~~~~~~~~
-ltprun is where bulk of the automation of ltp is done. 
+ltprun is where bulk of the automation of ltp is done.
 It does the following.
   - downloads the ltp test suite tarfile (ltp.tgz) from ltp_host.
   - uncompress the test suite and compile it.
@@ -82,12 +82,12 @@ ltp_check does the following;
   - Creates a results directory for each machine (using the short
     hostname) and for each run (based on timestamping)
   - Uncompresses the gathered result files into the new directory
-  - parses results gathered,  saves it as results.out file in the same 
+  - parses results gathered,  saves it as results.out file in the same
     directory. The results are sorted by system name and then run time.
 
-Note: 
+Note:
   - Check through the scripts for appropriate variables that you may need to
-change in order to customize further, they should be at the beginning of the 
+change in order to customize further, they should be at the beginning of the
 file.
 
   - This "fire and forget" might not work 100%. But if you find a test

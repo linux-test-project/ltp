@@ -109,7 +109,7 @@ while getopts 'S:f:s:h' opt ; do
 done
 
 # Check the server name
-if [ x$server_name = x ]; then 
+if [ x$server_name = x ]; then
     echo "server name isn't specified."
     usage 1
 fi

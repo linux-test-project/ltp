@@ -4,7 +4,7 @@
 
    int pthread_mutex_trylock(pthread_mutex_t *mutex);
 
-  is equivalent to pthread_mutex_lock() except that if the mutex object 
+  is equivalent to pthread_mutex_lock() except that if the mutex object
   referenced by 'mutex' is currently locked (by any thread, including the
   current thread), the call returns immediately.
   </assertion>
@@ -13,15 +13,15 @@
   owned by the calling thread, the mutex lock count shall be incremented
   by one and the pthread_mutex_trylock() function immediately returns
   success.
-  </assertion> 
+  </assertion>
   <assertion id="3" tag="ref:XSH6:33947:33948">
   It returns 0 if a lock on the mutex object referenced by 'mutex' is
   acquired.
-  </assertion> 
+  </assertion>
   <assertion id="4" tag="ref:XSH6:33950:33965">
   Upon failure, it shall return:
   -[EINVAL]  The mutex was created with the protocol attribute
-   	     PTHREAD_PRIO_PROTECT and the calling thread's priority is higher 
+   	     PTHREAD_PRIO_PROTECT and the calling thread's priority is higher
    	     than the mutex's current priority calling.
   -[EBUSY]   The mutex could not be acquired because it was already locked.
 
@@ -29,5 +29,5 @@
   -[EINVAL] 'mutex' does not refer to an initialized mutex object
 
   It shall not return [EINTR].
-  </assertion> 
+  </assertion>
 </assertions>

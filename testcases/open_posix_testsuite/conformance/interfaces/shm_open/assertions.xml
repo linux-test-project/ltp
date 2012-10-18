@@ -1,4 +1,4 @@
-<assertions> 
+<assertions>
   <assertion id="1" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
    The shm_open() function shall establish a connection between a shared memory
    object and a file descriptor
@@ -47,8 +47,8 @@
   <assertion id="12" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
    Applications specify exactly one of the first two values (access modes)
    below in the value of oflag:
-       O_RDONLY 
-       O_RDWR 
+       O_RDONLY
+       O_RDWR
   </assertion>
   <assertion id="13" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
    When the applications specify the value of O_RDONLY, the file is open for
@@ -84,12 +84,12 @@
    unspecified
   </assertion>
   <assertion id="20" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
-   If the shared memory object does not exists and the O_CREAT flags is set, 
+   If the shared memory object does not exists and the O_CREAT flags is set,
    the mode argument does not affect whether the shared memory object is opened
    for reading, for writing, or for both
   </assertion>
   <assertion id="21" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
-   When created, the shared memory object has a size of zero. 
+   When created, the shared memory object has a size of zero.
   </assertion>
   <assertion id="22" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
    If O_EXCL and O_CREAT are set, shm_open() fails if the shared memory object

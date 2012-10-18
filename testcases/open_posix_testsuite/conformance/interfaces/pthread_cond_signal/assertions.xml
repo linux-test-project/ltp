@@ -2,7 +2,7 @@
   <assertion id="1" tag="ref:XSH6:32244:32245">
   The function
    int pthread_cond_signal(pthread_cond_t *cond);
-  shall unblock at least one of the threads currently blocked on 
+  shall unblock at least one of the threads currently blocked on
   the specified condition variable cond.
   </assertion>
 
@@ -16,16 +16,16 @@
   <assertion id="3" tag="ref:XSH6:32258:32259">
   The pthread_cond_signal() functions shall have no effect if there are
   no threads currently blocked on cond.
-  </assertion> 
+  </assertion>
 
   <assertion id="4" tag="ref:XSH6:32261:32261">
   If successful, the pthread_cond_signal() function shall return zero;
-  </assertion> 
+  </assertion>
 
   <assertion id="5" tag="ref:XSH6:32264:32266">
   The pthread_cond_signal() function may fail if:
   [EINVAL] The value cond does not refer to an initialized condition variable.
   These functions shall not return an error code of [EINTR].
-  </assertion> 
+  </assertion>
 
 </assertions>

@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -41,27 +41,27 @@ while /bin/true ; do
 
 	cp "${FS_BIND_ROOT}/cloneNS/parent06" ./
 	cp "${FS_BIND_ROOT}/cloneNS/child06" .
-	
+
 	chmod 755 parent06 child06
-	
+
 	"${FS_BIND_ROOT}/bin/makedir" share dir1
-	
+
 	mkdir dir1/x dir2 dir3 dir4
-	
+
 	mount --rbind dir1 dir2
 	"${FS_BIND_ROOT}/bin/makedir" slave dir2
 	"${FS_BIND_ROOT}/bin/makedir" -n share dir2
-	
+
 	mount --rbind dir2 dir3
 	"${FS_BIND_ROOT}/bin/makedir" slave dir3
 	"${FS_BIND_ROOT}/bin/makedir" -n share dir3
-	
+
 	mount --rbind dir3 dir4
 	"${FS_BIND_ROOT}/bin/makedir" slave dir4
-	
-	
+
+
 	"${FS_BIND_ROOT}/bin/nsclone" ./parent06 ./child06 || result=$?
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "cloneNS/test06: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -79,18 +79,18 @@ trap '' ERR
 	umount dir3
 	umount dir2
 	umount dir1
-	
+
 	rm -rf parent* child* dir*
-	
+
 	cleanup
 } >& /dev/null
 if [ $result -ne 0 ]
 then
-	tst_resm TFAIL "cloneNS/test06: FAILED: cloneNS: namespace with shared point bind mounted 
+	tst_resm TFAIL "cloneNS/test06: FAILED: cloneNS: namespace with shared point bind mounted
 within the same directory"
 	exit 1
 else
 	tst_resm TPASS "cloneNS/test06: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

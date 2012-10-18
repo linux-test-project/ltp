@@ -10,9 +10,9 @@
 # Please refer to RPC & TI-RPC Test Suite documentation.
 # More details at http://nfsv4.bullopensource.org/doc/rpc_testsuite.php
 
-# Usage : 
+# Usage :
 # ./rpc_ts_run.sh -l tst_list_db_1 -l tst_list_db_2 ... -l tst_list_db_n ... [-v] [-m XXX] [-n X]
-# where 
+# where
 # -l indicates a tests script to run
 # -v for verbose mode
 # -m for way to run tests cases, see TESTWAY description for more information on XXX value

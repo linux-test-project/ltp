@@ -24,7 +24,7 @@
 #  PURPOSE : Exports required environment variables and runs sched_driver
 #
 
-# The command below will only work on x86 setups, b/c other archs keep 
+# The command below will only work on x86 setups, b/c other archs keep
 # their bootfiles other locations.
 export KERNEL=./sched_datafile
 touch $KERNEL

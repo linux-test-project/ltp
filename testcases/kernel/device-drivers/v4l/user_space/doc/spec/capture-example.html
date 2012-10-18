@@ -284,7 +284,7 @@ mainloop                        (void)
 
                         if (read_frame ())
                                 break;
-        
+
                         /* EAGAIN - continue select loop. */
                 }
         }
@@ -344,7 +344,7 @@ HREF="x5953.htm#V4L2-BUFFER"
                         if (-1 == xioctl (fd, VIDIOC_QBUF, &amp;buf))
                                 errno_exit ("VIDIOC_QBUF");
                 }
-                
+
                 type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
                 if (-1 == xioctl (fd, VIDIOC_STREAMON, &amp;type))
@@ -616,7 +616,7 @@ HREF="r10944.htm#V4L2-FORMAT"
                                 break;
                         }
                 }
-        } else {        
+        } else {
                 /* Errors ignored. */
         }
 
@@ -624,7 +624,7 @@ HREF="r10944.htm#V4L2-FORMAT"
         CLEAR (fmt);
 
         fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        fmt.fmt.pix.width       = 640; 
+        fmt.fmt.pix.width       = 640;
         fmt.fmt.pix.height      = 480;
         fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
         fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
@@ -669,7 +669,7 @@ close_device                    (void)
 static void
 open_device                     (void)
 {
-        struct stat st; 
+        struct stat st;
 
         if (-1 == stat (dev_name, &amp;st)) {
                 fprintf (stderr, "Cannot identify '%s': %d, %s\n",
@@ -729,7 +729,7 @@ main                            (int                    argc,
         for (;;) {
                 int index;
                 int c;
-                
+
                 c = getopt_long (argc, argv,
                                  short_options, long_options,
                                  &amp;index);

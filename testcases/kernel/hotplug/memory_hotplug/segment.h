@@ -31,7 +31,7 @@
 typedef enum {
 	SEGT_NONE=0,	/* unused segment */
 	SEGT_ANON=1,	/* anonymous -- MAP_ANON */
-	SEGT_FILE=2,    
+	SEGT_FILE=2,
 	SEGT_SHM=3,
 	SEGT_NTYPES
 } seg_type_t;

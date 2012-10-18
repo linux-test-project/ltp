@@ -44,7 +44,7 @@ The way I'm compiling these test individually by:
 Clean up:
 =========
 file: cln.sh is a file to clean any open semaphores on the system if they remain
-open after running such test. 
+open after running such test.
 
 
 */

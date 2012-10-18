@@ -1,4 +1,4 @@
-#!/usr/bin/expect 
+#!/usr/bin/expect
 #
 # Set Password for a specific new user
 # This script should be run as 'root'
@@ -10,7 +10,7 @@
 if { [llength $argv] < 2} {
     exit 1
 }
- 
+
 set USER [lindex $argv 0]
 set PASSWD [lindex $argv 1]
 

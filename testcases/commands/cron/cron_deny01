@@ -29,7 +29,7 @@ iam=`whoami`
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
 
-if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ] 
+if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ]
 then
 CRON_DENY="/etc/cron.deny"
 CRON_ALLOW="/etc/cron.allow"
@@ -51,7 +51,7 @@ do_setup() {
 	#move any files that may get in the way
 	rm /tmp/cron_deny_test > /dev/null 2>&1
         rm /tmp/cron_deny_test1 > /dev/null 2>&1
-	
+
 	mv $CRON_DENY $CRON_DENY.old > /dev/null 2>&1
 	mv $CRON_ALLOW $CRON_ALLOW.old > /dev/null 2>&1
 
@@ -60,9 +60,9 @@ do_setup() {
     su $TEST_USER2 -c "crontab -r"
         rm -rf /home/$TEST_USER1
         rm -rf /home/$TEST_USER2
-	userdel $TEST_USER1 
+	userdel $TEST_USER1
 	userdel $TEST_USER2
-	sleep 1	
+	sleep 1
 
 #create 1st user
 	useradd -m -g users $TEST_USER1
@@ -73,7 +73,7 @@ do_setup() {
     }
     fi
 
-#create 2nd user	
+#create 2nd user
 	useradd -m -g users $TEST_USER2
     if [ $? != 0 ]
     then {
@@ -105,12 +105,12 @@ do_cleanup(){
 run_test() {
 
 if [ $iam = $TEST_USER1 ]
-then 
+then
 	echo "TEST: $CRON_DENY should allow only allow those who are not in the file to
 run cron jobs."
-		
+
 	echo "(1) TEST THAT PERSON NOT IN $CRON_DENY IS ABLE TO RUN JOB."
-	
+
 	crontab - << EOF
 	`date '+%M' | awk '{ORS=""; print ($1+2)%60" * * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_deny_test 2>&1
 EOF
@@ -118,13 +118,13 @@ EOF
 	echo Error while adding crontab for user $TEST_USER1
 	exit 1
 	fi
-	
-	echo "sleeping for 130 seconds...."	
+
+	echo "sleeping for 130 seconds...."
 	sleep 130
-	
+
 	EXIT_CODE=1
 	test -e /tmp/cron_deny_test && EXIT_CODE=0
-	
+
 	if [ $EXIT_CODE = 1 ]; then
 		echo "Cron did not allow user to execute job , TEST FAILED"
 	else
@@ -132,35 +132,35 @@ EOF
 	fi
 
 	rm -f /tmp/cron_deny_test
-	
-	exit $EXIT_CODE	
+
+	exit $EXIT_CODE
 fi
 
 if [ $iam = $TEST_USER2 ]
 then
         echo "(2) TEST THAT PERSON IN $CRON_DENY IS NOT ABLE TO RUN JOB."
-                                                                                                             
+
         crontab - << EOF
         `date '+%M' | awk '{ORS=""; print ($1+2)%60 " * * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_deny_test 2>&1
 EOF
         if [ $? != 0 ]; then
         echo Error while adding crontab for user $TEST_USER2
         fi
-                                                                                                             
+
         echo "sleeping for 130 seconds...."
         sleep 130
-                                                                                                             
+
         EXIT_CODE=0
         test -e /tmp/cron_deny_test1 && EXIT_CODE=1
-                                                                                                             
+
         if [ $EXIT_CODE = 0 ]; then
                 echo "Cron did not allow user to execute job , TEST PASSED"
         else
                 echo "Cron allowed user to execute test job, TEST FAILED"
         fi
-                                                                                                             
+
         rm -f /tmp/cron_deny_test1
-                                                                                                             
+
         exit $EXIT_CODE
 fi
 
@@ -169,20 +169,20 @@ fi
 #-----------------------------------------------------------------------
 # FUNCTION: main
 #-----------------------------------------------------------------------
-if [ $iam = "root" ] 
+if [ $iam = "root" ]
 then
 	do_setup
 	echo $TEST_USER2 > $CRON_DENY
 	EXIT_CODE=0
 	su $TEST_USER1 -c "$0"
 	if [ $? != 0 ]
-	then 
+	then
 	   EXIT_CODE=1
 	fi
 	su $TEST_USER2 -c "$0"
 	if [ $? != 0 ]
 	then EXIT_CODE=1
-	fi 
+	fi
 	do_cleanup
 	exit $EXIT_CODE
 else

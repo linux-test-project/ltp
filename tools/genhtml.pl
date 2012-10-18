@@ -125,11 +125,11 @@ foreach my $file (@ARGV) {
                              @variable_value_pair = split(/\ /, $line);
                              @tag_value   = split(/=/,$variable_value_pair[0]);
                              @stime_value = split(/=/,$variable_value_pair[1]);
-                             $row_line = $row_line . "<tr><td><p><strong>$test_counter</strong></p></td>\n" . 
+                             $row_line = $row_line . "<tr><td><p><strong>$test_counter</strong></p></td>\n" .
                                                      "<td><p><strong>$tag_value[1]</strong></p></td>\n"     .
                                                      "<td><p><pre><strong>";
                              $get_proper_time = localtime ($stime_value[1]);
-                             $row_line = $row_line . "$get_proper_time" . "</strong></pre></p></td>\n"; 
+                             $row_line = $row_line . "$get_proper_time" . "</strong></pre></p></td>\n";
                              $test_counter++;
                         }
                         if ( $flag == 3) { #Assuming we will find "cmdling" value here
@@ -249,5 +249,5 @@ print "<tr><td><strong>Total Test TCONF</strong></td><td><strong> $conf_test_cou
 print "<tr><td><strong>Kernel Version</strong></td><td><strong> $ENV{KERNEL_VERSION}  </strong></td></tr>\n";
 print "<tr><td><strong>Machine Architecture</strong></td><td><strong> $ENV{MACHINE_ARCH} </strong></td></tr>\n";
 print "<tr><td><strong>Hostname</strong>  </td> <td><strong>";
-$hostname=system("uname -n");             chop($hostname); 
+$hostname=system("uname -n");             chop($hostname);
 print " $hostname </strong></td></tr></tbody></table></div></body></html>\n";

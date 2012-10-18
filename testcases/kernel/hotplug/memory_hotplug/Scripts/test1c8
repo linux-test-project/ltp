@@ -1,5 +1,5 @@
 # memtoy test 1c - single 8 page anon segment
-# 
+#
 numa
 anon foo 8p
 map foo

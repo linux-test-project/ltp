@@ -38,7 +38,7 @@ assert ()                 #  If condition false,
 
   lineno=$2
 
-  if [ ! $1 ] 
+  if [ ! $1 ]
   then
     echo "Assertion failed:  \"$1\""
     echo "File \"$0\", line $lineno"
@@ -46,7 +46,7 @@ assert ()                 #  If condition false,
   # else
   #   return
   #   and continue executing script.
-  fi  
+  fi
 }
 
 ############################################################
@@ -88,7 +88,7 @@ kill_pid()
 TIME=${TIME:-""}
 
 # Allows overriding the filename to use for storing time
-# measurements.  Required in order to 
+# measurements.  Required in order to
 TIME_TMP_FILE=${TIME_TMP_FILE:-"${TMP:-/tmp}/cpu_$$"}
 
 # perform_timings()
@@ -116,7 +116,7 @@ report_timing()
 
 # do_clean()
 #
-#  Virtual function called by do_intr().  Override this to 
+#  Virtual function called by do_intr().  Override this to
 #  provide custom cleanup handling.
 #
 do_clean()

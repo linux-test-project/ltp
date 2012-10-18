@@ -24,7 +24,7 @@
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
-#         where the test is executed. 
+#         where the test is executed.
 #
 #  HISTORY:
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
@@ -64,12 +64,12 @@ do_test()
 
         PASSED=0
 
-        if OUT=$(rsh -n -l root $RHOST 'ls -l /etc/hosts'); then 
+        if OUT=$(rsh -n -l root $RHOST 'ls -l /etc/hosts'); then
 
             #
             # Successful output would be something of the form:
             #
-            # gcooper@orangebox ~ $ ls -l /etc/hosts         
+            # gcooper@orangebox ~ $ ls -l /etc/hosts
             # -rw-r--r-- 1 root root 463 Jul  5 09:26 /etc/hosts
             #
             echo "$OUT" |

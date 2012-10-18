@@ -25,7 +25,7 @@ if [ "${config_file}" = "/proc/config.gz" ] ; then
 	grep_command=zgrep
 fi
 
-while read config_option 
+while read config_option
 do
 	check_config_options "${config_option}=*" ${config_file} ${grep_command}
 done < ${filename}

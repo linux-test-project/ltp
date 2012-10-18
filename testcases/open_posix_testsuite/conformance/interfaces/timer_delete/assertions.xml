@@ -1,6 +1,6 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:46851:46852 pt:TMR">
-   timer_delete() deletes timer, timerid.  [timerid is created by 
+   timer_delete() deletes timer, timerid.  [timerid is created by
    timer_create().]
   </assertion>
   <assertion id="2" tag="ref:XSH6:46852:46854 pt:TMR">

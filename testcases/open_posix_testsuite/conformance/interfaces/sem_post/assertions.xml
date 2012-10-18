@@ -4,7 +4,7 @@ sem_post will unlock a locked semaphore, and will increment the value of
 the semaphore when the value is positive.
   </assertion>
   <assertion id="2" tag="ref:XSH6:38945:38946">
-sem_post will return a value of 0 on successful calls when it unlock a 
+sem_post will return a value of 0 on successful calls when it unlock a
 semaphore.
   </assertion>
   <assertion id="3" tag="ref:XSH6:38941:38942">
@@ -20,8 +20,8 @@ sem_post will continue after it is interrupted by a signal
 sem_post cam be called from within a signal catching function
   </assertion>
   <assertion id="8" tag="ref:XSH6:38947:38953">
-If Process Scheduling extension is supported, and scheduler is SCHED_FIFO or 
-SCHED_RR, the highest priority thread is awaken first. If several threads 
+If Process Scheduling extension is supported, and scheduler is SCHED_FIFO or
+SCHED_RR, the highest priority thread is awaken first. If several threads
 with equal priority are waiting, the threads are awaken in FIFO order.
   </assertion>
 </assertions>

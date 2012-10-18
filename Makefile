@@ -117,7 +117,7 @@ $(MAKE_TARGETS) include-all lib-all:
 # Let's not conflict with ac-clean, maintainer-clean, etc, so.
 $(filter-out include-clean,$(CLEAN_TARGETS))::
 	-$(MAKE) -C "$(subst -clean,,$@)" \
-		 -f "$(abs_top_srcdir)/$(subst -clean,,$@)/Makefile" clean 
+		 -f "$(abs_top_srcdir)/$(subst -clean,,$@)/Makefile" clean
 
 # Just like everything depends on include-all / -install, we need to get rid
 # of include last to ensure that things won't be monkey screwed up. Only do
@@ -167,7 +167,7 @@ SRCDIR_INSTALL_SCRIPTS	:= IDcheck.sh runalltests.sh runltp runltplite.sh ver_lin
 SRCDIR_INSTALL_READONLY	:= Version
 SRCDIR_INSTALL_TARGETS	:= $(SRCDIR_INSTALL_SCRIPTS) $(SRCDIR_INSTALL_READONLY)
 
-# 
+#
 # If we are in git repository, use git describe to indentify current version,
 # otherwise if downloaded as tarball use VERSION file.
 #
@@ -220,7 +220,7 @@ menuconfig:
 	@$(SHELL) "$(top_srcdir)/ltpmenu"
 
 ## Package
-package: 
+package:
 	@$(RPMBUILD) -ba ltp-devel.spec
 
 ## End misc targets.

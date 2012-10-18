@@ -188,7 +188,7 @@ extern void look_up_our_self(proc_t *p);
 extern void freeproc(proc_t* p);
 
 /* openproc/readproctab:
- *   
+ *
  * Return PROCTAB* / *proc_t[] or NULL on error ((probably) "/proc" cannot be
  * opened.)  By default readproc will consider all processes as valid to parse
  * and return, but not actually fill in the cmdline, environ, and /proc/#/statm

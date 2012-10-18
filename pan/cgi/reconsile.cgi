@@ -60,7 +60,7 @@ foreach $result_filename (@result_filenames) {
 	$result_details->[$i]->{SUITE} = $suite;
 	while ($line = <F>) {
 		# check for the end of the header
-		if ($line =~ /^-+/) { 
+		if ($line =~ /^-+/) {
 			# we've reached the top of the scanner output
 			# grab the rest and stop the while loop;
 			@rest = <F>;
@@ -115,8 +115,8 @@ foreach $rtcs (@result_testcases) {
 }
 
 # here is the loop that prints the data into a multi-column table with the test
-# tags grouped together. 
-  
+# tags grouped together.
+
 print "</pre>";
 print "<table border=1>\n";
 
@@ -141,9 +141,9 @@ while (1) {
 	# if there wasn't anything left, leave
 	$somethingleft = 0;
 	foreach $rtcs (@result_testcases) {
-		if ($#$rtcs > -1) { 
-			$somethingleft = 1; 
-			last; 
+		if ($#$rtcs > -1) {
+			$somethingleft = 1;
+			last;
 		}
 	}
 	unless ($somethingleft) { last; }
@@ -151,7 +151,7 @@ while (1) {
 	# find the Lowest Common Record
 	@tops = ();
 	foreach $rtcs (@result_testcases) {
-		if (@$rtcs[0]) { 
+		if (@$rtcs[0]) {
 			push(@tops, copy_record(@$rtcs[0]));
 		}
 	}
@@ -160,7 +160,7 @@ while (1) {
 				|| $a->{TC} <=> $b->{TC}
 				|| $a->{TC} cmp $b->{TC}
 				|| $a->{STATUS} cmp $b->{STATUS}} @tops;
-	
+
 	$LCR = $tops[0];
 
 	# check to see if everyone matches
@@ -177,9 +177,9 @@ while (1) {
 	}
 	# if everyone does match (status included) shift them
 	# and move on.
-	if ($matches == ($#result_testcases+1)) { 
+	if ($matches == ($#result_testcases+1)) {
 		foreach $rtcs (@result_testcases) { shift(@$rtcs); }
-		next; 
+		next;
 	}
 
 	# if we've already output stuff related to this test tag,
@@ -194,10 +194,10 @@ while (1) {
 	# walk through the lists again outputting as we match
 	$column = 0;
 	foreach $rtcs (@result_testcases) {
-		if (! @$rtcs[0]) { 
+		if (! @$rtcs[0]) {
 			print "<td><td><td>";
 			$column++;
-			next; 
+			next;
 		} elsif (@$rtcs[0]->{TAG} eq $LCR->{TAG}
 			&& @$rtcs[0]->{TCID} eq $LCR->{TCID}
 			&& @$rtcs[0]->{TC} eq $LCR->{TC}) {
@@ -230,7 +230,7 @@ while (1) {
 		}
 		$column++;
 	}
-	print "<td>$LCR->{CONTACT}</tr>\n";	
+	print "<td>$LCR->{CONTACT}</tr>\n";
 }
 print "</table>";
 
@@ -246,5 +246,5 @@ sub copy_record {
 	$copy->{STATUS} = $rec->{STATUS};
 	$copy->{CONTACT} = $rec->{CONTACT};
 	return $copy;
-	
+
 }

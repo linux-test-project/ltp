@@ -31,6 +31,6 @@ CPPFLAGS		+= -D_LARGEFILE64_SOURCE -D_GNU_SOURCE -DNO_XFS \
 # aren't as easy to resolve as I would like.
 CPPFLAGS		+= -Wno-error
 
-INSTALL_TARGETS		:= nfs_fsstress.sh 
+INSTALL_TARGETS		:= nfs_fsstress.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

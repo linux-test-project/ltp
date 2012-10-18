@@ -1,2 +1,2 @@
-This document defines the plan for functional testing of POSIX Semaphores. 
+This document defines the plan for functional testing of POSIX Semaphores.
 

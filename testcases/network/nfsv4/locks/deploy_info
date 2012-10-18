@@ -27,11 +27,11 @@ Run test on already configured test machines.
 
 
 Example:
-./locktests.py -n 50 -f /mnt/nfsv4/testfile -c testmachine1 testmachine2 
+./locktests.py -n 50 -f /mnt/nfsv4/testfile -c testmachine1 testmachine2
 
 
 
-_________________________________ 
- Vincent ROQUETA - Bull SA - 2005 
+_________________________________
+ Vincent ROQUETA - Bull SA - 2005
  vincent.roqueta@ext.bull.net
 

@@ -1,5 +1,5 @@
 # memtoy test - manual migrate single 8 page anon segment
-# 
+#
 numa
 anon foo 8p
 map foo

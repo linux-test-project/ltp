@@ -69,7 +69,7 @@ line. There are three types of comment lines that will be ignored:
 For example, only the clock_gettime line would be parsed below:
 
 // SAMPLE FILE: First Line
-   
+
 // The line above is whitespace only, and the line below is blank
 
 /*

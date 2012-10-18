@@ -62,7 +62,7 @@ assign_password()
 		exit 1
 	fi
 	echo "Password assigned."
-	
+
 	exit 0
 	} &> $USER_CONSOLE < $USER_CONSOLE
 }

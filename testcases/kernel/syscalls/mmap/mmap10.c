@@ -159,7 +159,7 @@ void mmapzero(void)
 		tst_brkm(TBROK|TERRNO, cleanup, "fork");
 	case 0:
 		if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
-			tst_brkm(TFAIL|TERRNO, cleanup, 
+			tst_brkm(TFAIL|TERRNO, cleanup,
 					"subsequent munmap #1");
 		exit(0);
 	default:
@@ -168,7 +168,7 @@ void mmapzero(void)
 			tst_brkm(TBROK|TERRNO, cleanup, "fork");
 		case 0:
 			if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
-				tst_brkm(TFAIL|TERRNO, cleanup, 
+				tst_brkm(TFAIL|TERRNO, cleanup,
 						"subsequent munmap #2");
 			exit(0);
 		default:

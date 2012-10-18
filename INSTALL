@@ -257,7 +257,7 @@ To cross compile, you must specify the correct variables:
 1. When running configure (CC, CXX, CXXFLAGS, LDLIBS, etc).
 2. Manually edit include/mk/config.mk, as described in Configuration.
 
-Note: Do not specify variables on the command-line. Use config.mk instead. 
+Note: Do not specify variables on the command-line. Use config.mk instead.
 
 uClinux Users
 --------------
@@ -311,7 +311,7 @@ Issue:    When executing make [all] it says something like:
     install -m 00644 "/scratch/ltp-dev2/ltp/include/usctest.h" "/scratch/ltp-install12/include/usctest.h"
     install -m 00644 "/scratch/ltp-dev2/ltp/include/write_log.h" "/scratch/ltp-install12/include/write_log.h"
     make[1]: Leaving directory `/scratch/ltp-dev2/ltp/include'
-    make -C lib -f "/scratch/ltp-dev2/ltp/lib/Makefile" all 
+    make -C lib -f "/scratch/ltp-dev2/ltp/lib/Makefile" all
     make[1]: Entering directory `/scratch/ltp-dev2/ltp/lib'
     " *** No rule to make target `dataascii.o', needed by `libltp.a'.  Stop." # <-- the error
 

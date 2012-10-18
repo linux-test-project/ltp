@@ -19,7 +19,7 @@
   <assertion id="3" tag="ref:XSH6:6722:6724 pt:CS">
    If TIMER_ABSTIME is set in flags, then if, when clock_nanosleep() is
    called, rqtp time value less than or equal to specified clock\'s time value,
-   clock_nanosleep() returns immediately and the calling process is *not* 
+   clock_nanosleep() returns immediately and the calling process is *not*
    suspended.
   </assertion>
   <assertion id="4" tag="ref:XSH6:6725:6730 pt:CS">
@@ -30,7 +30,7 @@
   </assertion>
   <assertion id="5" tag="ref:XSH6:6730:6733 pt:CS">
    For TIMER_ABSTIME set:
-   Syspension time is always at least until the corresponding clock 
+   Syspension time is always at least until the corresponding clock
    reaches time rqtp.
    Unless clock_nanosleep() is interrupted by a signal.
   </assertion>
@@ -46,8 +46,8 @@
    by rqtp has elapsed)
   </assertion>
   <assertion id="9" tag="ref:XSH6:6743:6747 pt:CS">
-   For relative clock_nanosleep(), if clock_nanosleep() is 
-   interrupted by a signal and rmtp is not-NULL, rmtp contains the 
+   For relative clock_nanosleep(), if clock_nanosleep() is
+   interrupted by a signal and rmtp is not-NULL, rmtp contains the
    amount of time remaining.  [If rmtp is NULL, no time is returned.]
    -- Absolute timers have no effect on rmtp.
   </assertion>
