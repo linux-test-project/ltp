@@ -46,7 +46,7 @@ then
     exit 1
 fi
 
-# test of CAN filters on af_can.c 
+# test of CAN filters on af_can.c
 ./tst-filter $VCAN || exit 1
 
 # test of CAN frame flow down to the netdevice and up again

@@ -4,7 +4,7 @@
 #
 # fs_perms file_mode file_uid file_gid test_uid test_gid mode (r|w|x) expected_result
 
-# We are executing shell script, thuss 
+# We are executing shell script, thuss
 # both exec and read right is needed.
 fs_perms01 fs_perms 005 99 99 12 100 x 0
 fs_perms02 fs_perms 050 99 99 200 99 x 0

@@ -3,11 +3,11 @@ TEST SUITE:
 
 The directory cpuctl_fj contains the tests related to the cpu controller.
 
-Cpu controller is a mechanism for assigning cpu resource (in percent) to 
+Cpu controller is a mechanism for assigning cpu resource (in percent) to
 a set of tasks.
 
-There are total 22 testcases that have been added. These testcases 
-contain the basis operation test and part functionality test of cpu 
+There are total 22 testcases that have been added. These testcases
+contain the basis operation test and part functionality test of cpu
 controller.
 
 NOTE: the test can be run by root only.
@@ -29,7 +29,7 @@ The program does a calculation of sqrt till catched a signal.
 cpuctl_fj_simple_echo.c
 --------------------
 The command "echo" can't return the errno. So we write this program to
-instead of "echo". 
+instead of "echo".
 
 Makefile
 --------------------

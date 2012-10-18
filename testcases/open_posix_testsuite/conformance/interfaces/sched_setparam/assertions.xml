@@ -4,7 +4,7 @@
    in the sched_param structure pointed to by param
   </assertion>
   <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
-   Higher numerical values for the priority represent higher priorities  
+   Higher numerical values for the priority represent higher priorities
   </assertion>
   <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
    If pid is negative, the behavior of sched_setparam() is unspecified
@@ -49,7 +49,7 @@
   <assertion id="12" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION} pt:SS">
    The sched_ss_repl_period and sched_ss_init_budget members of the param
    argument shall represent the time parameters to be used by the sporadic
-   server scheduling policy for the target process 
+   server scheduling policy for the target process
   </assertion>
   <assertion id="13" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION} pt:SS">
    The sched_ss_max_repl member of the param argument shall represent the
@@ -95,7 +95,7 @@
   <assertion id="22" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE}">
    If successful, the sched_setparam() function shall return zero
   </assertion>
-  <assertion id="23" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE}">   
+  <assertion id="23" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE}">
    If the call to sched_setparam() is unsuccessful, the priority shall remain
    unchanged
   </assertion>
@@ -106,7 +106,7 @@
   <assertion id="25" tag="ref:XSH6:{System Interfaces:sched_setparam:ERRORS}">
    sched_setparam() sets errno == EINVAL when one or more of the requested
    scheduling parameters is outside the range defined for the scheduling policy
-   of the specified pid 
+   of the specified pid
   </assertion>
   <assertion id="26" tag="ref:XSH6:{System Interfaces:sched_setparam:ERRORS}">
    sched_setparam() sets errno == EPERM when the requesting process does not
@@ -115,6 +115,6 @@
   </assertion>
   <assertion id="27" tag="ref:XSH6:{System Interfaces:sched_setparam:ERRORS}">
    sched_setparam() sets errno == ESRCH when no process can be found
-   corresponding to that specified by pid 
+   corresponding to that specified by pid
   </assertion>
 </assertions>

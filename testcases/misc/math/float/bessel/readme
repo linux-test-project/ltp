@@ -8,7 +8,7 @@ $ pwd
 $ make all
 
 /* start datafiles generator */
-$ genbessel  
+$ genbessel
 
 /* put datafiles where they have to be loaded */
 $ make install

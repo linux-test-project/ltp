@@ -36,7 +36,7 @@ to tester's name if in progress.  Blank items are open.
 //=============================================================================
 bsd_signal	WONT		LOW
 kill		YES		HIGH
-killpg		YES		HIGH		
+killpg		YES		HIGH
 pthread_kill	YES		MED
 pthread_sigmask	YES		MED
 raise		YES		HIGH

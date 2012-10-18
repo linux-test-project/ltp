@@ -74,10 +74,10 @@ RHOST_HOST_PART=":1"     # remote host
 # Prefix of the Multicast Address
 MCAST_ADDR_PREFIX=ff0e:
 
-# Multicast Address 
+# Multicast Address
 MCAST_ADDR=ff0e::1	# If you modify this, please refer ns-mcast_join.c
 
-# Source Address 
+# Source Address
 SRC_ADDR=fec0:100:100:100::1
 
 # Filter Mode
@@ -96,7 +96,7 @@ do_cleanup()
     # Make sure to kill the multicast receiver and sender
     killall -SIGHUP ns-mcast_join >/dev/null 2>&1
     $LTP_RSH $RHOST killall -SIGHUP ns-icmpv6_sender >/dev/null 2>&1
-    
+
     # Clean up each interface
     initialize_if lhost ${LINK_NUM}
     initialize_if rhost ${LINK_NUM}

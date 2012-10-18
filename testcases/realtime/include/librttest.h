@@ -65,7 +65,7 @@ extern int optind, opterr, optopt;
 extern char *optarg;
 
 #define _MAXTHREADS 256
-#define CALIBRATE_LOOPS 100000 
+#define CALIBRATE_LOOPS 100000
 unsigned long iters_per_us;
 
 #define NS_PER_MS 1000000
@@ -218,7 +218,7 @@ void rt_help();
  *                        handled = 0;
  *                }
  *                return handled;
- *            }           
+ *            }
  * argc: passed from main
  * argv: passed from main
  */
@@ -250,7 +250,7 @@ int create_rr_thread(void*(*func)(void*), void *arg, int prio);
 
 /* create_other_thread: spawn a SCHED_OTHER thread
  * func as the thread function with arg as it's parameter.
- * func: 
+ * func:
  * arg: argument to func
  */
 int create_other_thread(void*(*func)(void*), void *arg);
@@ -294,7 +294,7 @@ void ts_plus(struct timespec *ts_a, struct timespec *ts_b, struct timespec *ts_s
  */
 void ts_normalize(struct timespec *ts);
 
-/* convert nanoseconds to a timespec 
+/* convert nanoseconds to a timespec
  * ts must not be null
  */
 void nsec_to_ts(nsec_t ns, struct timespec *ts);

@@ -1,6 +1,6 @@
 Reuse http://ltp.cvs.sourceforge.net/*checkout*/ltp/ltp/testcases/kernel/containers/check_for_unshare.c to test for unshare (used in nsclone.c) ??
 
-Consider replacing long invocations 
+Consider replacing long invocations
 	(replace "$FS_BIND_ROOT/bin/makedir") with something shorter).
 
 Factor out common bits of setup, setupnslock, and lockfile

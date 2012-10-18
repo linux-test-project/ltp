@@ -24,29 +24,29 @@
 # File:
 #   output_ipsec_conf
 #
-# Description: 
+# Description:
 #   Output IPsec configuration
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # Exit Value:
-#    0: Exit normally 
+#    0: Exit normally
 #   >0: Exit abnormally
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
 $trace_logic
 
 # Encryption algorithm
-EALGO="3des-cbc" 
+EALGO="3des-cbc"
 EALGO_KEY="_I_want_to_have_chicken_"
 
 # Authentication algorithm
-AALGO="hmac-sha1" 
+AALGO="hmac-sha1"
 AALGO_KEY="beef_fish_pork_salad"
 
 # Compression algorithm

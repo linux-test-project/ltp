@@ -7,14 +7,14 @@ success.
 Destruction of the semaphore is postponed until all process which were using the semaphore have called sem_close, _exit or exec.
 </assertion>
 <assertion id="3" tag="ref:XSH6TC2:40126:40126">
-The function returns -1 and sets errno to EACCESS when the process has 
+The function returns -1 and sets errno to EACCESS when the process has
 insufficient priviledge to unlink the semaphore.
 </assertion>
   <assertion id="4" tag="ref:XSH6TC2:40130:40130">
-ERROR: ENOENT: Trying to unlink a named semaphore which doesn't exist. 
+ERROR: ENOENT: Trying to unlink a named semaphore which doesn't exist.
   </assertion>
   <assertion id="5" tag="ref:XSH6TC2:40127:40129">
-ERROR: ENAMETOOLONG: The semaphore name length is greater than PATH_MAX or 
+ERROR: ENAMETOOLONG: The semaphore name length is greater than PATH_MAX or
 a patch component length is greater than NAME_MAX.
   </assertion>
   <assertion id="6" tag="ref:XSH6:39105:39106">

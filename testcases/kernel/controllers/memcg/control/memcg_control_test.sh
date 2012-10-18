@@ -57,7 +57,7 @@ test_proc_kill()
 	( cd $TMP && mem_process -m $PROC_MEM & )
 	sleep 1
 	echo $! > tasks
- 
+
 	#Instruct the test process to start acquiring memory
 	echo m > $STATUS_PIPE
 	sleep 5
@@ -71,7 +71,7 @@ test_proc_kill()
 		: $((KILLED_CNT += 1))
 	fi
 }
-    
+
 # Validate the memory usage limit imposed by the hierarchically topmost group
 testcase_1()
 {

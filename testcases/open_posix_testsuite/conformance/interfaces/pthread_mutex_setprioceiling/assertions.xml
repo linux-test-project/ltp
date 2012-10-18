@@ -4,7 +4,7 @@
     ii.  The pthread_mutex_setprioceiling() function shall attempt to lock the mutex as if by a call to pthread_mutex_lock(), except that the process of locking the mutex need not adhere to the priority protect protocol.
     iii. On acquiring the mutex it shall change the mutex's priority ceiling and then release the mutex as if by a call to pthread_mutex_unlock().
     iv.  When the change is successful, the previous value of the priority ceiling shall be returned in old_ceiling.
-  </assertion>  
+  </assertion>
   <assertion id="2" tag="ref:XSH7 ">
     Upon success, it returns 0, and stores the value of the prioceiling in 'prioceiling'.
   </assertion>

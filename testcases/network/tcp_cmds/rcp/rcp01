@@ -24,7 +24,7 @@
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
-#         where the test is executed. 
+#         where the test is executed.
 #
 #  HISTORY:
 #    06/06/03 Manoj Iyer manjo@mail.utexas.edu

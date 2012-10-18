@@ -18,8 +18,8 @@
 #
 
 #
-# This script, and hence the invoked test cases, need to be run from a 
-# directory that is NOT on the DMAPI-enabled partition (/dmtest below) being 
+# This script, and hence the invoked test cases, need to be run from a
+# directory that is NOT on the DMAPI-enabled partition (/dmtest below) being
 # tested; also, the DMAPI-enabled partition must be a disk (/dev/hda7 below)
 # preformatted for JFS via mkfs.fs
 #

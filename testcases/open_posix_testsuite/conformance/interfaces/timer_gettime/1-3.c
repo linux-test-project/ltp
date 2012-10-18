@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 					itsget.it_value.tv_nsec;
 
 	if (deltans < 0 || deltans > ACCEPTABLEDELTA) {
-		printf("FAIL:  timer_gettime() deltans: %d allowed: %u\n", 
+		printf("FAIL:  timer_gettime() deltans: %d allowed: %u\n",
 			deltans, ACCEPTABLEDELTA);
 		return PTS_FAIL;
 	}

@@ -21,13 +21,13 @@
 #  FILE   : ftp
 #
 #  PURPOSE: To test the basic functionality of the `ftp` command.
-#  
+#
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
 #         where the test is executed. Also, both machines MUST have
 #         the same path configuration for the test for proper test data
 #         file transfers. The PASSWD variable should also be set to root's
-#	  login password. 
+#	  login password.
 #
 #  HISTORY:
 #    06/06/03 Manoj Iyer manjo@mail.utexas.edu
@@ -93,7 +93,7 @@ do_test()
 
             for a in get put; do
                 if [ $a = "get" ]; then
-                    { 
+                    {
                         echo user $RUSER $PASSWD
                         echo lcd $TCtmp
                         echo $i
@@ -102,8 +102,8 @@ do_test()
                         echo quit
                     } | ftp -nv $RHOST
                     SUM1=`ls -l $TCtmp/$j  | awk '{print $5}'`
-                    SUM2=`ls -l $TCdat/$j | awk '{print $5}'` 
-                    rm -f $TCtmp/$j 
+                    SUM2=`ls -l $TCdat/$j | awk '{print $5}'`
+                    rm -f $TCtmp/$j
                 else
                     {
                         echo user $RUSER $PASSWD
@@ -114,10 +114,10 @@ do_test()
                         echo quit
                     } | ftp -nv $RHOST
                     SUM1=`rsh -n -l root $RHOST sum $TCtmp/$j | awk '{print $1}'`
-                    SUM2=`sum $TCdat/$j | awk '{print $1}'` 
+                    SUM2=`sum $TCdat/$j | awk '{print $1}'`
                     rsh -n -l root $RHOST rm -f $TCtmp/$j
                 fi
- 
+
                 if [ $SUM1 = $SUM2 ]; then
                     tst_resm TINFO "Test Successful doing ftp $a $j $i"
                 else

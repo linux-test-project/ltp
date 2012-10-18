@@ -32,12 +32,12 @@ def main(argv=None):
         clear_dmesg()
         count_num_cpu()
         map_cpuid_pkgid()
-       
+
         if is_hyper_threaded() and int(options.smt_level) >= 0:
             set_sched_smt_power(options.smt_level)
 
         if int(options.mc_level) >= 0:
-            set_sched_mc_power(options.mc_level) 
+            set_sched_mc_power(options.mc_level)
         if int(options.smt_level) >= 0 or int(options.mc_level) >= 0:
             status = verify_sched_domain_dmesg(options.mc_level, options.smt_level)
             reset_schedmc()

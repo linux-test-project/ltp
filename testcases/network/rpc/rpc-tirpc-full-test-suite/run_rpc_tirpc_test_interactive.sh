@@ -5,5 +5,5 @@ chmod +x ./configure.interactive
 ./configure.interactive
 make deploy
 make all
-./rpc_ts_wizard.sh 
+./rpc_ts_wizard.sh
 

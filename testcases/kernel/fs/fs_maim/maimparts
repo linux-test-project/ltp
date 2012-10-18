@@ -19,9 +19,9 @@
 
 #
 #  FILE(s)     : maimparts
-#  DESCRIPTION : Takes the disk device name (ex: hda) and number of iterations 
-#                to run thru and then rips the drive into a defined number of 
-#                partitions ($parts).  This sets up the device for partbeat 
+#  DESCRIPTION : Takes the disk device name (ex: hda) and number of iterations
+#                to run thru and then rips the drive into a defined number of
+#                partitions ($parts).  This sets up the device for partbeat
 #                and backbeat which are called after setup occurs.
 #
 #  WARNING!!!  : The device you specify on the command line (hda/sda/etc) will be
@@ -30,7 +30,7 @@
 #                YOU HAVE BEEN WARNED!
 #
 #  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
-#  HISTORY     : 
+#  HISTORY     :
 #
 
 # target is device to split into partions
@@ -45,8 +45,8 @@ $fsid=0x83;
 if (!$ARGV[0]) {
     print "Usage: maimparts [target device ie: hda or sda] [iterations]\n";
     exit;
-    } 
-# run sfdisk to display device geometry and rip out info 
+    }
+# run sfdisk to display device geometry and rip out info
 # (specifically cylinders)
 $Geom = `/sbin/sfdisk -g /dev/$target`;
 chomp $Geom;
@@ -56,7 +56,7 @@ chomp $Geom;
 ($Heads,$Junk) = split(/ /,$Heads,2);
 ($Sec,$Junk) = split(/ /,$Sec,2);
 
-# determine partition size to create (force int so we don't 
+# determine partition size to create (force int so we don't
 # try to use 1/2 a cylinder!)
 $psize = int($Cyl/$parts);
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -40,7 +40,7 @@ status=0
 
     # By now networking is working
     ifconfig $vnet2 $IP4$mask up 2> /dev/null
-    ifconfig lo up 
+    ifconfig lo up
 
     # Creating ssh session
     /usr/sbin/sshd -p $PORT2

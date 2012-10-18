@@ -22,11 +22,11 @@ unset LIBPATH
 #  FILE   : perf_lan
 #
 #  PURPOSE: Generates LAN traffic using ICMP echo packets.
-#           
+#
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
-#         MUST have a ".rhosts" file with the hostname of the client 
-#         machine, where the test is executed. 
+#         MUST have a ".rhosts" file with the hostname of the client
+#         machine, where the test is executed.
 #
 #  HISTORY:
 #    06/06/03 Manoj Iyer manjo@mail.utexas.edu
@@ -60,7 +60,7 @@ do_setup()
 #
 #-----------------------------------------------------------------------
 
-do_test() 
+do_test()
 {
     tst_resm TINFO "Executing $0"
 

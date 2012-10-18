@@ -1,11 +1,11 @@
 #!/usr/bin/perl
- 
+
 #LTP results gathering script: ltp_check
 #       3/12/02 William Jay Huie (creation)
 #       3/28/02 William Jay Huie minor fixes, increased results parsing
 #       5/01/02 William Jay Huie parsing changes
 #       5/17/02 Casey Abell added sar results
-#This will log into the LTP_HOST machine, which may be different then the 
+#This will log into the LTP_HOST machine, which may be different then the
 #machine used to run the ltp_master script
 #This script will check for *ltpoutput.tgz files created by the ltprun script
 #and download them each to their own directory and do a bit of processing
@@ -57,20 +57,20 @@ sub download_results()
    $ftp->type('I') or die "Unable to set type to Binary";
    @files = $ftp->ls("*ltpoutput.tgz");
    $num_files = $#files + 1;
-   print "New results files found $num_files:\n"; 
+   print "New results files found $num_files:\n";
    for ($i = 0; $i < $num_files; $i++) { print "\t$files[$i]\n"; }
-   
+
    for ($i = 0; $i < $num_files; $i++)
    {
       print "Downloading: $files[$i]\t";
       if ($ftp->get($files[$i]))
-      { 
-         print "Successful\n"; 
+      {
+         print "Successful\n";
          $ftp->delete($files[$i]);
       }
       else
       { print "FAILED\n"; }
-      
+
    }
    $ftp->quit;
 
@@ -79,14 +79,14 @@ sub download_results()
    if (@res)
    {
       $num = $#res + 1;
-      print "             download of LTP results finished\n"; 
+      print "             download of LTP results finished\n";
       print "$num unprocessed results files found\n";
       chomp(@res);
       return 1;
    }
    else
    {  print "             no apparent results to process\n"; return 0; }
- 
+
 }
 
 sub untar_results()
@@ -95,8 +95,8 @@ sub untar_results()
    {
       if ( $res[$i] =~ m/\s*(\w+)-((\w+)-)*ltpoutput.tgz/ )
       {
-         $hostname = $1; 
-         $epoch_time = $3; 
+         $hostname = $1;
+         $epoch_time = $3;
          $english_time = localtime($epoch_time);
          $dir = "$LTP_RES_DIR/$hostname/$english_time";
 
@@ -112,7 +112,7 @@ sub untar_results()
             $res_dirs[$count] = $new_dir; $count++;
          }
          else
-         { 
+         {
             print "No timestamp on results file, skipping for now\n";
 #Should come up with a soultion for this, check/create $hostname
 #     then some unique identifier but for now we'll complain and ignore
@@ -167,7 +167,7 @@ sub gather_results()
                 }
         }
 
-      $pass_percent = sprintf("%.2f", 
+      $pass_percent = sprintf("%.2f",
                          ($num_success / ($num_success + $num_fail)) * 100);
 
       $ltp_ver = `grep "version" $LTP_RUN_OUTPUT`;
@@ -191,13 +191,13 @@ sub gather_results()
         $line3 = `sar -c -f $SAR_OUTFILE |tail -n 1`;
         @sarstats3 = split(/\s+/, $line3);
         print "Processes created per second = $sarstats3[1]%\n";
-      }  
+      }
 
       if (open RES, ">$RESULTS_OUT")
       {
          print ". -> Results stored in $RESULTS_OUT\n";
          if (!open FAILS, ">$FAILS_OUT") { print "Error opening $FAILS_OUT\n"; }
-         $num = 
+         $num =
 #The <<<test_start>>> doesn't always get into the runalltest.sh output capture
 #because some output will appear before its corresponding block
 #So for now relying on last thing from ver_linux to know when to stop copying
@@ -226,24 +226,24 @@ sub gather_results()
 #end of new ouput section
 
          $runall = `cat $LTP_RUNALL_OUT`;
-	 
+
 	 # reset hash table values to 0
 	 foreach $case(keys %hash){
 		$hash{$case}=0;
-	 }	
-         
+	 }
+
          for ($j = 0; $j < $num_fail; $j++)
          {
             if ( $fails[$j] =~ m/^tag=(\w+?) / )
-            { 
+            {
                	$test_case = $1;
 		# each failure case will be printed out only once
-	       	if ((exists $hash{$test_case})&&( $hash{$test_case}==0 )) {  	
+	       	if ((exists $hash{$test_case})&&( $hash{$test_case}==0 )) {
 			$hash{$test_case}=1;
-	     	
+
                         if (FAILS) { print FAILS "$test_case\n"; }
                		print RES "\nTrying to find $test_case output";
-               		if ( $runall =~ 
+               		if ( $runall =~
 			#modified because some output is appearing before tagline
                     		m/((^$test_case.*?)*<<<test_start>>>.tag=$test_case.*?<<<test_end>>>)/ms )
                		{
@@ -252,7 +252,7 @@ sub gather_results()
                  		print RES "\n-------------------------\n";
                		}
               		else
-               		{  
+               		{
                   		print RES "\n-------------------------\n";
                   		print RES "Unable to locate output for $test_case!";
                   		print RES "\n-------------------------\n";
@@ -261,7 +261,7 @@ sub gather_results()
             }
          }
          close(RES); close(FAILS);
-      } 
+      }
       else
       { print "Can't open $RESULTS_OUT, test failures are:\n @fails\n"; }
    }

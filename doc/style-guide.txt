@@ -11,7 +11,7 @@ Please refer to the *Linux Kernel Coding Guidelines* unless stated otherwise
 in this document.
 
 Changelog:
- 
+
  * Initial version: Garrett Cooper <yanegomi@gmail.com>
  * Reformated for asciidoc: Cyril Hrubis <chrubis@suse.cz>
 **********************************************************************
@@ -30,13 +30,13 @@ When you can use libltp please observe the following guidelines:
 
 No, only use libltp in non-forked processes and functions +perror(3)+ /
 +exit(3)+ otherwise. Reason being:
- 
+
  * Calling +tst_res()+ from multiple processes is messy.
  * Calling cleanup can break test execution.
  * Establishing a complicated scheme of tracking the testcase state
    for teardown is undesirable.
 
-2. Use SAFE_* macros 
+2. Use SAFE_* macros
 ~~~~~~~~~~~~~~~~~~~~
 
 Use +SAFE_*+ macros (see +safe_macros.h+) instead of bare calls to libcalls and
@@ -129,12 +129,12 @@ if (fork() == -1)
 if (fork() == -1)
 	tst_brkm(TBROK, cleanup, "fork # 2 failed");
 ----------------------------------------------------
-    
+
 If you can't determine where the failure has occurred in a testcase based on
 the entire content of the failure messages, then determining the cause of
 failure may be impossible.
 
-10. Reporting errno and the TEST() macro 
+10. Reporting errno and the TEST() macro
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Don't roll your own +errno+ / +strerror()+ printout when you use +tst_res()+
@@ -149,14 +149,14 @@ it's obvious why it passed (for example a function call returns +0+ or
 exp_errno = ENOENT;
 
 if (fn() == -1) {
-	/* 
+	/*
 	 * Using TERRNO here is valid because the error case
 	 * isn't static.
 	 */
-	if (exp_errno == ENOENT) 
+	if (exp_errno == ENOENT)
 		tst_resm(TPASS|TERRNO,
 		    "fn failed as expected");
-	/* 
+	/*
 	 * Using strerror(TEST_ERRNO) here is valid because
 	 * the error case isn't static.
 	 */
@@ -261,10 +261,10 @@ New Testcases
  1. Always use libltp for Linux centric tests. No ifs, ands, or buts
     about it.
  2. Sort headers, like:
-    
+
 [source,c]
 ---------------------------------------------------------------------------
-/* 
+/*
  * sys/types.h is usually (but not always) required by POSIX
  * APIs.
  */
@@ -318,7 +318,7 @@ The only exception to this is when you define global variables.
 Your testcase should be runnable as root and non-root. What does that mean? It
 should fail gracefull as non-root if it has insufficient privileges, or use
 +tst_require_root(NULL)+ if root access is absolutely required.
- 
+
 A lot of newer testcases don't honor this fact and it causes random
 unnecessary errors when run as non-privileged users.
 

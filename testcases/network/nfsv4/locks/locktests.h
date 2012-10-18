@@ -1,10 +1,10 @@
 /* *************************************************
- * *********** README ****************************** 
- * ************************************************* 
- * 
- * COMPILE : make 
+ * *********** README ******************************
+ * *************************************************
+ *
+ * COMPILE : make
  * RUN : ./locktests -n <number of concurent process> -f <test file> [-P]
- * 
+ *
  * GOAL : This test tries to stress the fcntl locking functions.  A
  * master process sets a lock on a file region (this is called "byte
  * range locking").  Some slave processes try to perform operations on
@@ -23,10 +23,10 @@
  * process. This option may not be usefull to stress.
  *
  * EXAMPLE : ./locktests -n 50 -f /file/system/to/test
- * 
- * 
+ *
+ *
  * Vincent ROQUETA 2005 - vincent.roqueta@ext.bull.net
- * BULL S.A. 
+ * BULL S.A.
  */
 
 
@@ -122,7 +122,7 @@ enum etat_t     {
 /* Public data */
 struct donneesPub {
     /* Nombre de clients */
-    /* Number of clients */  
+    /* Number of clients */
     int nclnt;
     /* Liste des clients (liste des tubes)*/
     /* List of master to slave pipes */
@@ -143,7 +143,7 @@ struct donneesPub {
     /* Detailed error messages */
     int verbose;
 };
- 
+
 /* Donnees privees aux processus */
 /* private data */
 struct donneesPriv {
@@ -163,13 +163,13 @@ struct s_test {
     int type;
     char *nom;
     int resAtt;
-   
+
 };
 
-    
 
-                
-int configureServeur(int  max);  
+
+
+int configureServeur(int  max);
 int configureClient(char *s);
 
 #endif

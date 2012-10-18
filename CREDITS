@@ -1,7 +1,7 @@
 This is an attempt at a credits-file in the style begun by Linus
 Torvalds and the Linux project. It is sorted by name and formatted
 to allow easy grepping and beautification by scripts.  The fields
-are: name (N), email (E), web-address (W), PGP key ID and 
+are: name (N), email (E), web-address (W), PGP key ID and
 fingerprint (P), description (D), and snail-mail address (S).
 
 N: Rich Logan

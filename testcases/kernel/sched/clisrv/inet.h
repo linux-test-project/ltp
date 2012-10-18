@@ -45,7 +45,7 @@ extern void noprintf(char* string, ...);
 
 #else
 
-#define prtln() 
+#define prtln()
 #define dprt	noprintf
 #define dprt2(args) noprintf args
 

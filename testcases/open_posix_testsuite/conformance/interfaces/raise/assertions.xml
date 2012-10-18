@@ -24,7 +24,7 @@
   </assertion>
   <assertion id="7" tag="ref:XSH6:36093:36096">
    Upon unsuccessful completion, raise() sets errno to indicate the
-   error.  The only defined value of errno for raise() is EINVAL if the 
+   error.  The only defined value of errno for raise() is EINVAL if the
    value of the sig argument is an invalid signal number.
   </assertion>
   <assertion id="10000" tag="ref:XSH6:36082:36096">

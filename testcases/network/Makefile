@@ -35,7 +35,7 @@ INSTALL_TARGETS		+= $(addprefix $(DIR)/bin.,sm med lg jmb)
 
 RM			+= -r
 
-$(INSTALL_TARGETS): | generate 
+$(INSTALL_TARGETS): | generate
 
 .PHONY: generate
 

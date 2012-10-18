@@ -46,7 +46,7 @@
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
 
- /* 
+ /*
   * This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)

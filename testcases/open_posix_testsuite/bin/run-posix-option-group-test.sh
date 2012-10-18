@@ -11,7 +11,7 @@ BASEDIR="$(dirname "$0")/../conformance/interfaces"
 
 usage()
 {
-    cat <<EOF 
+    cat <<EOF
 usage: $(basename "$0") [AIO|MEM|MSG|SEM|SIG|THR|TMR|TPS]
 
 Build and run the tests for POSIX area specified by the 3 letter tag

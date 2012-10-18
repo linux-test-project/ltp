@@ -1,6 +1,6 @@
-#!/bin/sh                                                                     
+#!/bin/sh
 
-OS=`uname -s` 
+OS=`uname -s`
 SUPPORTED="Linux SunOS HP-UX FreeBSD"
 
 for i in `echo "$SUPPORTED"`
@@ -20,7 +20,7 @@ LIBS="-lpthread"
 FLAGS=""
 
 case "$OS" in
-	"SunOS") 
+	"SunOS")
         	LIBS="${LIBS} -lmalloc";
 		FLAGS="${FLAGS} -D_solaris";;
 	"FreeBSD")
@@ -34,7 +34,7 @@ ebizzy: ebizzy.c
 	gcc -Wall -Wshadow ${LIBS} ${FLAGS} -o ebizzy ebizzy.c
 
 clean:
-	rm -f ebizzy Makefile 
+	rm -f ebizzy Makefile
 EOF
 
 echo "Type 'make' to compile"

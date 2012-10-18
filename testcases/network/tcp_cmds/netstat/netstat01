@@ -44,8 +44,8 @@ do_setup()
 
 #-------------------------------------------------------------------------
 # FUNCTION:  do_test
-# PURPOSE:   
-#            To loop for LOOPCOUNT times 
+# PURPOSE:
+#            To loop for LOOPCOUNT times
 #            If MAXCOUNT is "-1" the "while"
 #            loop will execute until terminated by "intr" signal.
 # INPUT:     None.
@@ -53,7 +53,7 @@ do_setup()
 #
 #-----------------------------------------------------------------------
 
-do_test() { 
+do_test() {
 
     while [ $TST_COUNT -le $NUMLOOPS ]; do
 

@@ -11,9 +11,9 @@ ASSERTION	COVERED?
 7		YES
 8		WON'T  -- couldn't figure out away of doing it.
 9		YES
-10		YES	
+10		YES
 11		YES
 
 
 
-~      
+~

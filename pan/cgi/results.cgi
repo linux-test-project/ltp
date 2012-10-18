@@ -41,7 +41,7 @@ if ($get_df) {
 						if ($line =~ /^tag=$zoom_tag /) {
 							print "<<<test_start>>>\n";
 							print $line;
-					
+
 							do {
 								$line = <DF>;
 								print $line;
@@ -76,7 +76,7 @@ if ($get_df) {
 
 		foreach (@rest) {
 			s/(\S+)/<a href="results.cgi?get_df=$host.$datestr.$suite.driver&zoom_tag=\1">\1<\/a>/;
-			# colorize the status column 
+			# colorize the status column
 			s/\bPASS\b/\<font color\=green\>PASS\<\/font\>/i;
 			s/\bFAIL\b/\<font color\=\"red\"\>FAIL\<\/font\>/i;
 			s/\bCONF\b/\<font color\=\"yellow\"\>CONF\<\/font\>/i;
@@ -141,7 +141,7 @@ if ($get_df) {
 		if ($indent <= 1) {
 			($year, $month, $day, $hour, $min) = ($thisdate =~ /(\d+)(\d{2})(\d{2})(\d{2})(\d{2})/);
 			print "<tr><td><td>$year-$month-$day $hour:$min\n";
-		} 
+		}
 		# suite level
 		if ($indent <= 2) {
 			print "<tr><td><td><td>";
@@ -149,7 +149,7 @@ if ($get_df) {
 			print " [<a href=\"results.cgi?get_df=$rp->{DRIVER_FILE}\">driver output</a>]";
 			print " [<a href=\"results.cgi?get_df=$thishost.$thisdate.$thissuite.scanner\">results</a>]";
 			print " [<a href=\"results.cgi?get_df=$thishost.$thisdate.$thissuite.summary\">summary</a>]";
-			
+
 			print "\n";
 		}
 

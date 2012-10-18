@@ -35,7 +35,7 @@ extern int usb_hcd_pci_resume(struct pci_dev *);
 	        int (*get_frame_number) (struct usb_device *dev);
 	        int (*submit_urb) (struct urb *urb);
 	        int (*unlink_urb) (struct urb *urb);
-		
+
 		/* allocate dma-consistent buffer for URB_DMA_NOMAPPING */
 	        void *(*buffer_alloc)(struct usb_bus *bus, size_t size,
         	                int mem_flags,

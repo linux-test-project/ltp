@@ -20,14 +20,14 @@
 #
 #***********************************************************************
 #
-# TEST: 
+# TEST:
 # 	NAME:		fs_inod
 #	FUNCTIONALITY: 	File system stress - inode allocation/deallocation
-# 	DESCRIPTION:	Rapidly creates and deletes files through 
-#			multiple processes running in the background.  
-#			The user may specify the number of subdirectories 
-#			to create, the number of files to create (per 
-#			subdirectory), and the number of times to repeat 
+# 	DESCRIPTION:	Rapidly creates and deletes files through
+#			multiple processes running in the background.
+#			The user may specify the number of subdirectories
+#			to create, the number of files to create (per
+#			subdirectory), and the number of times to repeat
 #			the creation/deletion cycle.
 #
 #========================================================================
@@ -76,7 +76,7 @@ make_subdirs ()
         }
 	: $((i += 1))
     done;
-} 
+}
 
 
 #=============================================================================
@@ -97,7 +97,7 @@ touch_files()
 	cd dir$j
 	k=0;
 
-	while [ "$k" -lt "$numfiles" ]; do  
+	while [ "$k" -lt "$numfiles" ]; do
 	    >file$j$k || err_log ">file$j$k FAILED"
 	    : $((k += 1))
 	done
@@ -126,7 +126,7 @@ rm_files()
 	cd dir$j
 	k=0;
 
-	while [ "$k" -lt "$numfiles" ]; do  
+	while [ "$k" -lt "$numfiles" ]; do
 	    rm -f file$j$k || err_log "rm -f file$j$k FAILED"
 	    : $((k += 1))
 	done
@@ -147,7 +147,7 @@ rm_files()
 # RETURNS: 		None.
 #=============================================================================
 step1 ()
-{ 
+{
     echo "=============================================="
     echo "MULTIPLE PROCESSES CREATING AND DELETING FILES"
     echo "=============================================="
@@ -168,8 +168,8 @@ step1 ()
     make_subdirs || err_log "make_subdirs on dir1 FAILED"
     touch_files &
     pid1=$!
-    
-    i=1;   
+
+    i=1;
     while [ "$i" -le "$numloops" ]; do
 	echo "Executing loop $i of $numloops..."
 
@@ -177,13 +177,13 @@ step1 ()
 
 	echo "$0: cd ../dir1 & creating files"
 	cd ../dir1
-	wait $pid1 
+	wait $pid1
 	touch_files &
 	pid1=$!
-	
+
 	echo "$0: cd ../dir1 & removing files"
 	cd ../dir1
-	wait $pid1 
+	wait $pid1
 	rm_files &
 	pid2=$!
 
@@ -195,7 +195,7 @@ step1 ()
 
 	echo "$0: cd ../dir2 & removing files"
 	cd ../dir2
-	wait $pid2 
+	wait $pid2
 	rm_files &
 	pid1=$!
 
@@ -203,14 +203,14 @@ step1 ()
     done
 
     # wait for all background processes to complete execution
-    wait	
+    wait
     return $step_errors
 }
 
 
 #=============================================================================
-# MAIN 
-#     See the description, purpose, and design of this test under TEST 
+# MAIN
+#     See the description, purpose, and design of this test under TEST
 #     in this test's prolog.
 #=============================================================================
     USAGE="Usage: ./fs_inod [volumename] [numsubdirectories] [numfiles] [numloops]"
@@ -228,7 +228,7 @@ step1 ()
     numloops=$4
 
     cd $testvol || exit 2
-    
+
     echo "FS_INODE: File system stress - inode allocation/deallocation"
     echo "Volume under test: $testvol"
     echo "Number of subdirectories: $numsubdirs"
@@ -246,7 +246,7 @@ step1 ()
             echo "step$I failed - see above errors"
             : $((ERRORS += step_errors))
          fi
-    done   
+    done
 
 # Clean up and timestamp
     rm -rf $testvol/dir*

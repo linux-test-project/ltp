@@ -64,13 +64,13 @@ do_setup()
 	$CC $CFLAGS -shared -o $TCtmp/lddfile4.obj.so $TCdat/lddfile4.obj
 	$CC $CFLAGS -shared -o $TCtmp/lddfile5.obj.so $TCdat/lddfile5.obj
 	$CC $CFLAGS -O -o $TCtmp/a.out $TCtmp/lddfile*.obj.so $TCdat/main.obj
-} 
+}
 
 do_test()
 {
 	echo "  ASSERTION 1  "
 
-	$LDD $TCtmp/a.out | grep -E "lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
+	$LDD $TCtmp/a.out | grep -E "lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so"
 	if [ $? -eq 0 ]; then
 		echo "ASSERTION #1 PASS"
 	else
@@ -81,7 +81,7 @@ do_test()
 
 	echo " ASSERTION 2  "
 
-	$LDD -v $TCtmp/a.out | grep -E "GLIBC|lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
+	$LDD -v $TCtmp/a.out | grep -E "GLIBC|lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so"
 	if [ $? -eq 0 ]; then
 		echo "ASSERTION #2 PASS"
 	else

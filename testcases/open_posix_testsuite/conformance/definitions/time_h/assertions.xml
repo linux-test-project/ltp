@@ -41,7 +41,7 @@
     CLOCK_MONOTONIC (@pt:MON)
   </assertion>
   <assertion id="7" tag="ref:XBD6:13690:13691">
-   sys/types.h shall define clock_t, size_t, time_t, clockid_t (@pt:TMR), 
+   sys/types.h shall define clock_t, size_t, time_t, clockid_t (@pt:TMR),
    and timer_t (@pt:TMR).
   </assertion>
   <assertion id="8" tag="ref:XBD6:13698:13698">

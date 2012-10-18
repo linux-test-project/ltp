@@ -49,7 +49,7 @@ netns/*
         Contains the testcases related to the network NS tests. This tests uses
 the routes method to define the network namespaces.
 	The tests uses the library libclone/libnetns.a, netns/parentns.sh and
-netns/childns.sh scripts to define network namespace. 
+netns/childns.sh scripts to define network namespace.
 
 To run your tests you can execute the runnetnstest.sh .
 
@@ -57,18 +57,18 @@ To run the tests individually :
 
 For Ex: To access a container created
 
-1) You can comment the line in the childns.sh 
-  'cleanup $sshpid $vnet1 ' 
-2)  run the script to create your first namespace. 
-   ./crtchild 
+1) You can comment the line in the childns.sh
+  'cleanup $sshpid $vnet1 '
+2)  run the script to create your first namespace.
+   ./crtchild
 3) Now you can login into the containers using
    ssh -p 7890 root@192.168.0.182
 
-Also the same scripts parentns.sh and childns.sh can be used to 
+Also the same scripts parentns.sh and childns.sh can be used to
 create a container and write your testcases to test the namespace.
 
 Note:
-	This tests would use the following IPaddresses 
+	This tests would use the following IPaddresses
 running sshd on PORT @ 7890 and @ 9876
 	192.168.0.181
 	192.168.0.182

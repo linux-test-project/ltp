@@ -21,7 +21,7 @@ mcast4-queryfld05
 	Verify that the kernel is not crashed when joining joining plural IPv4
 	multicast groups on separate socket, then receiving a large number of
 	Multicast Address Specific Query
-	
+
 mcast4-queryfld06
 	Verify that the kernel is not crashed when joining joining plural IPv4
 	multicast groups on separate socket, then receiving a large number of
@@ -50,7 +50,7 @@ mcast6-queryfld05
 	Verify that the kernel is not crashed when joining joining plural IPv6
 	multicast groups on separate socket, then receiving a large number of
 	Multicast Address Specific Query
-	
+
 mcast6-queryfld06
 	Verify that the kernel is not crashed when joining joining plural IPv6
 	multicast groups on separate socket, then receiving a large number of

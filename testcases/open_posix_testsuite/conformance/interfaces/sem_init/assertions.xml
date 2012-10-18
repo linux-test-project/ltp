@@ -1,18 +1,18 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:38795:38796">
-sem_init test case make sure that it establish initialize the unnamed 
-semaphore referred by sem.  
+sem_init test case make sure that it establish initialize the unnamed
+semaphore referred by sem.
   </assertion>
   <assertion id="2" tag="ref:XSH6:38797:38798">
-sem_init is used in subsequence of sem_wait, sem_trywait, sem_post, 
+sem_init is used in subsequence of sem_wait, sem_trywait, sem_post,
 sem_destroy, and the semaphore should be usable until the its destroyed.
   </assertion>
   <assertion id="3" tag="ref:XSH6:38799:38801">
 The semaphore is shared between processes when the pshared value is non-zero.
   </assertion>
   <assertion id="4" tag="ref:XSH6:38795:38798">
-The semaphore is shared between threads of process when the pshared value 
-is zero. any thread in this process can us sem for performing sem_wait, 
+The semaphore is shared between threads of process when the pshared value
+is zero. any thread in this process can us sem for performing sem_wait,
 sem_trywait, ...
   </assertion>
   <assertion id="5" tag="ref:XSH6:38810:38811">

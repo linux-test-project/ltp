@@ -1,6 +1,6 @@
-<assertions> 
+<assertions>
   <assertion id="1" tag="ref:XSH6:{System Interfaces:sched_getparam:DESCRIPTION}">
-   The sched_getparam() function shall return the scheduling parameters of a 
+   The sched_getparam() function shall return the scheduling parameters of a
    process specified by pid in the sched_param structure pointed to by param.
   </assertion>
   <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_getparam:DESCRIPTION}">
@@ -14,12 +14,12 @@
   </assertion>
   <assertion id="5" tag="ref:XSH6:{System Interfaces:sched_getparam:ERRORS}">
    sched_getparam() sets errno == ESRCH if the pid cannot be found
-  </assertion>		
+  </assertion>
   <assertion id="6" tag="ref:XSH6:{System Interfaces:sched_getparam:ERRORS}">
-   sched_getparam() sets errno == EPERM if the requesting process does not 
+   sched_getparam() sets errno == EPERM if the requesting process does not
    have permission
-  </assertion>	
+  </assertion>
   <assertion id="7" tag="oth:">
    sched_getparam() sets errno == EFAULT or EINVAL if param points to NULL
-  </assertion>	
+  </assertion>
 </assertions>

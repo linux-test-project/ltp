@@ -2,6 +2,6 @@ This document defines the coverage for the pthread_barrierattr_destroy() functio
 
 Assertion	Tested?
 1		YES
-2		YES 
+2		YES
 
 NOTE:

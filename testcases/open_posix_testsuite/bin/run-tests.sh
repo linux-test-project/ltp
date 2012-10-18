@@ -124,5 +124,5 @@ if TIMEOUT_RET=$(cat "$T0_VAL"); then
 	exit $NUM_FAIL
 
 else
-	exit $? 
+	exit $?
 fi

@@ -24,7 +24,7 @@ dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_SYSCALL_EVENTFD],
 [dnl
-AH_TEMPLATE(HAVE_IO_SET_EVENTFD, 
+AH_TEMPLATE(HAVE_IO_SET_EVENTFD,
 [Define to 1 if you have the `io_set_eventfd' function.])
 AC_CHECK_HEADERS(libaio.h,[
 	AC_CHECK_LIB(aio,io_setup,[

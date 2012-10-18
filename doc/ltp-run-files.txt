@@ -1,4 +1,4 @@
-List of scripts or executables that need to be run for complete LTP execution. 
+List of scripts or executables that need to be run for complete LTP execution.
 The tests listed are NOT executed with the runalltests.sh script
 
 runalltests.sh
@@ -18,7 +18,7 @@ if run network tests flag is passed these additional tests are run
  - rpc
  - nfs
 
-To test filesystem with LVM 
+To test filesystem with LVM
 - ltpfslvm.sh
 w/o LVM
 - ltpfsnolvm.sh

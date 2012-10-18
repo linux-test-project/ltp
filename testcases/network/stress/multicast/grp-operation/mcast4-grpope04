@@ -81,7 +81,7 @@ RHOST_HOST_PART=${RHOST_IPV4_HOST:-"1"}     # remote host
 MCAST_ADDR=224.10.10.1
 
 # Prefix of the filter souce adddress
-SOURCE_ADDR_PREFIX="10.10"	# 10.10.x.y 
+SOURCE_ADDR_PREFIX="10.10"	# 10.10.x.y
 
 
 #-----------------------------------------------------------------------
@@ -97,7 +97,7 @@ do_cleanup()
     # Make sure to kill the multicast receiver and sender
     killall -SIGHUP ns-mcast_join >/dev/null 2>&1
     $LTP_RSH $RHOST killall -SIGHUP ns-igmp_querier >/dev/null 2>&1
-    
+
     # Clean up each interface
     initialize_if lhost ${LINK_NUM}
     initialize_if rhost ${LINK_NUM}
@@ -205,7 +205,7 @@ while [ $num -lt $MCASTNUM_NORMAL ]; do
     else
 	filter="exclude"
     fi
-    
+
     ns-mcast_join -f 4 -I $lhost_ifname -l $NS_TIMES -a $MCAST_ADDR -F $filter -s $source_addr &
     if [ $? -ne 0 ]; then
 	tst_resm TBROK "Failed to start multicast joining tool Please check the environment"

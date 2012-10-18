@@ -37,7 +37,7 @@ test_arch_stripped: test_arch.o
 	$(STRIP) $@
 
 INSTALL_TARGETS		:= objdump01
- 
+
 MAKE_TARGETS		:= test_arch_debug test_arch_stripped test_arch.obj
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

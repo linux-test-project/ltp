@@ -164,7 +164,7 @@ do_cleanup()
 
     # Initialize the interfaces
     link_num=0
-    while [ $link_num -lt $link_total ]; do 
+    while [ $link_num -lt $link_total ]; do
 	initialize_if lhost ${link_num}
 	initialize_if rhost ${link_num}
 	link_num=`expr $link_num + 1`
@@ -263,7 +263,7 @@ test_body()
 	if [ $link_num -ge $link_total ]; then
 	    link_num=0
 	fi
-	
+
 	pre_lhost_ifname=$lhost_ifname
 	pre_gateway=$gateway
 
@@ -299,7 +299,7 @@ test_body()
     done
 
     # Kill the udp datagram sender
-    killall -SIGHUP ns-udpsender 
+    killall -SIGHUP ns-udpsender
 
     tst_resm TPASS "Test is finished correctly."
     return 0

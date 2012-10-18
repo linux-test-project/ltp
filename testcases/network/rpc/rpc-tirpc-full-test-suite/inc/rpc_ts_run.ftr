@@ -93,7 +93,7 @@ echo " - Number of scalability test iterations : "$SCALINSTNUMBER>>$TESTRUNDETAI
 
 
 # looking for script arguments
-for arg in $* 
+for arg in $*
 do
 	if [ "$arg" = "-l" ]
 	then
@@ -103,7 +103,7 @@ do
 		TSTSCRTBL=( "${TSTSCRTBL[@]}" "$1" )
 		shift
 	fi
-	
+
 	if [ "$arg" = "-m" ]
 	then
 		# value following -m is the way to run tests cases
@@ -111,7 +111,7 @@ do
 		TESTWAY=$1
 		shift
 	fi
-	
+
 	if [ "$arg" = "-n" ]
 	then
 		# value following -n is the number tests cases instances to launch
@@ -119,7 +119,7 @@ do
 		TESTINSTANCE=$1
 		shift
 	fi
-	
+
 	if [ "$arg" = "-v" ]
 	then
 		VERBOSE=1
@@ -186,7 +186,7 @@ else
 	then
 		echo " - collecting logs file from remote client"
 	fi
-	scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/ 
+	scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/
 fi
 
 # cleaning up before Test Suite end

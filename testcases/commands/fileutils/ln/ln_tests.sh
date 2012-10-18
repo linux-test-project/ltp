@@ -23,7 +23,7 @@
 #
 # Description:  Test basic functionality of ln command
 #				- Test #1:  ln -s make symbolic links instead of hard links
-#               
+#
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Feb 03 2003 - Created, Manoj Iyer
@@ -57,7 +57,7 @@ init()
 		LTPBIN=$LTPROOT/testcases/bin
 	fi
 
-	
+
 	$LTPBIN/tst_resm TINFO "INIT: Inititalizing tests."
 
 	which ln > $LTPTMP/tst_ln.err 2>&1 || RC=$?
@@ -68,7 +68,7 @@ init()
 		return $RC
 	fi
 
-	mkdir -p $LTPTMP/tst_ln.tmp > $LTPTMP/tst_ln.err 2>&1 || RC=$? 
+	mkdir -p $LTPTMP/tst_ln.tmp > $LTPTMP/tst_ln.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_ln.err NULL \
@@ -126,7 +126,7 @@ creat_dirnfiles()
 	done
 	return $RC
 }
- 
+
 
 # Function:		creat_expout
 #
@@ -145,8 +145,8 @@ creat_expout()
 	dirname=$3  # name of the base directory
     dircnt=0    # index into dir created in loop
     fcnt=0      # index into files created in loop
-	RC=0        # return code from commands 
-	
+	RC=0        # return code from commands
+
 	echo "$dirname:"  1>>$LTPTMP/tst_ln.exp
 	echo "d.$dircnt"  1>>$LTPTMP/tst_ln.exp
 	while [ $dircnt -lt $numdirs ]
@@ -170,7 +170,7 @@ creat_expout()
 
 # Function:		test01
 #
-# Description	- Test #1: Test that ln -s will copy will copy directories 
+# Description	- Test #1: Test that ln -s will copy will copy directories
 #                 recursively.
 #               - create N directories and fill each with M files.
 #               - ln -s dir1 to dir2
@@ -239,7 +239,7 @@ test01()
 # Function:		main
 #
 # Description:	- Execute all tests, report results.
-#               
+#
 # Exit:			- zero on success
 # 				- non-zero on failure.
 
@@ -247,7 +247,7 @@ test01()
 TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
 RC=0				# Return code from tests.
 
-init || return $RC	# Exit if initializing testcases fails.	
+init || return $RC	# Exit if initializing testcases fails.
 
 test01 || RC=$?
 if [ $RC -ne 0 ]

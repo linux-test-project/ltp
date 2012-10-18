@@ -5,7 +5,7 @@
   destroys a read write attributes objects.
   </assertion>
   <assertion id="2" tag="ref:XSH6:35098:35099">
-  A destroyed 'attr' attributes object can be reinitialized using 
+  A destroyed 'attr' attributes object can be reinitialized using
   pthread_rwlockattr_init();
   </assertion>
   <assertion id="3" tag="ref:XSH6:35110:35111">

@@ -28,7 +28,7 @@ if [ "${crash}" -eq 1 ]; then
     echo "                        CRASH                             "
     echo "----------------------------------------------------------"
     echo ""
-    
+
     cat <<EOF >crash_cmd
 mod
 mod -S
@@ -36,7 +36,7 @@ runq
 foreach bt
 foreach files
 mount
-mount -f 
+mount -f
 mount -i
 vm
 ascii

@@ -49,8 +49,8 @@ def main(argv=None):
         reset_schedmc()
         if is_hyper_threaded():
             reset_schedsmt()
-        return(status)     
-   
+        return(status)
+
     except Exception, details:
         print "INFO: Idle Load Balancer test failed", details
         return(1)

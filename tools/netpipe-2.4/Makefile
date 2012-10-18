@@ -51,7 +51,7 @@ MPI:	NPmpi
 NPmpi:	NPmpi.o MPI.o
 	$(CC) $(CFLAGS) NPmpi.o MPI.o -o NPmpi  -L $(MPI_HOME)/lib/$(MPI_ARCH)/$(MPI_DEVICE) -lmpi $(EXTRA_LIBS)
 
-NPmpi.o:	$(DRIV_SRC) $(INCLUDES) 
+NPmpi.o:	$(DRIV_SRC) $(INCLUDES)
 	$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c -o NPmpi.o $(DRIV_SRC)
 
 MPI.o:	MPI.c MPI.h $(INCLUDES)

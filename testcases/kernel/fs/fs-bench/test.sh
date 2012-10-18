@@ -1,7 +1,7 @@
-#! /bin/bash 
+#! /bin/bash
 
 echo "## Start Test"
-date 
+date
 if [ -d ./00 ] ; then
     echo -n "Clear old files..."
     /bin/rm -fr ./00 >& /dev/null
@@ -11,7 +11,7 @@ STARTT=`date +%s`
 echo $STARTT
 echo ""
 echo "## Create files "
-time ~/fs-bench/cr 
+time ~/fs-bench/cr
 
 echo ""
 echo "## tar all "
@@ -46,5 +46,5 @@ ENDT=`date +%s`
 echo $ENDT
 date
 
-echo -n 'TOTAL(seconds): ' 
+echo -n 'TOTAL(seconds): '
 expr $ENDT - $STARTT

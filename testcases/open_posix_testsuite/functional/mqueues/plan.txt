@@ -1,1 +1,1 @@
-This document defines the plan for functional testing of POSIX message queue. 
+This document defines the plan for functional testing of POSIX message queue.

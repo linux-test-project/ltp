@@ -20,11 +20,11 @@
 #
 #  FILE   : fsx.sh
 #
-#  PURPOSE: Runs the fsx-linux tool with a 50000 iterations setting to 
+#  PURPOSE: Runs the fsx-linux tool with a 50000 iterations setting to
 #	    attempt to uncover the "doread:read input/output" error
 #	    received if the latest NFS patches for 2.4.17 from Trond
-#	    are not applied. http://nfs.sf.net 
-#           
+#	    are not applied. http://nfs.sf.net
+#
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
@@ -74,7 +74,7 @@ setup_testcase()
 $trace_logic
 
     PID=$$
-   
+
     VERSION=${VERSION:=2}
     RHOST=${RHOST:=`hostname`}
     ITERATIONS=${ITERATIONS:=50000}
@@ -166,12 +166,12 @@ end_testcase()
 $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
 	cd \
-	
+
 	echo "Cleaning up testcase"
         cd $HOME
     	echo "Unmounting $TCtmp"
 	sleep 2
-        umount $TCtmp || { echo "Cannot umount $TCtmp"; exit 1; } 
+        umount $TCtmp || { echo "Cannot umount $TCtmp"; exit 1; }
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
         rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR"
  rsh -n $RHOST "rm -rf $TESTDIR"

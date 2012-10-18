@@ -1,6 +1,6 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:31637:31638">
-  The pthread_attr_setstack() shall set the thread creation stack 
+  The pthread_attr_setstack() shall set the thread creation stack
   stacksize in the attr ojbect.
   </assertion>
 
@@ -8,16 +8,16 @@
   The stacksize attribute shall define the minimum stack size (in bytes)
   allocated for the created thread stack.
   </assertion>
-  
+
   <assertion id="3" tag="ref:XSH6:31642:31643 ref:XSH6:31644:31645">
    If success, it returns zero and stores the stacksize attribute in
-   the stacksize if successful. 
+   the stacksize if successful.
   </assertion>
-  
+
   <assertion id="4" tag="ref:XSH6:31643:31643 ref:XSH6:31647:31649">
    if fail, an error number shall be returned to indicate the error.
    The pthread_attr_setstacksize() function shall fail if:
-   [EINVAL] The value of stacksize is less than {PTHREAD_STACK_MIN} 
+   [EINVAL] The value of stacksize is less than {PTHREAD_STACK_MIN}
    or exceeds an implementation-defined limit.
   </assertion>
 

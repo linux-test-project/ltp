@@ -122,7 +122,7 @@ int main (int argc, char * argv[])
 		else if (WIFSIGNALED(status))
 			exit(WTERMSIG(status) + 128);
 
-	}	
+	}
 
 	exit(1);
 }

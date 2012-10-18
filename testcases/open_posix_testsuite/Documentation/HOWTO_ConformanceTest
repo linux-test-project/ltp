@@ -20,14 +20,14 @@ All tests are located in the conformance/ directory off of posixtestsuite/.
 
 Within this directory, there are the following three subdirectories:
 
-definitions/ - This directory contains tests for each *.h file in the POSIX 
+definitions/ - This directory contains tests for each *.h file in the POSIX
 spec.  Tests are taken from the Base Definitions document.
 
-interfaces/ - This directory contains tests for each function listed in the 
+interfaces/ - This directory contains tests for each function listed in the
 POSIX spec.  Tests are taken from the System Interfaces document.
 
-behavior/ - This directory contains tests from any document that do not 
-directly correlate to functions (as in interfaces/) or header files 
+behavior/ - This directory contains tests from any document that do not
+directly correlate to functions (as in interfaces/) or header files
 (as in definitions/).
 
 The breakdown of these subdirectories is as follows:
@@ -52,7 +52,7 @@ on functional/stress test structure).
 Writing Tests
 -------------
 
-Within each lowest level directory (definitions/*_h for definitions, 
+Within each lowest level directory (definitions/*_h for definitions,
 interfaces/<function> for interfaces, and behavior/<functional area> for
 behavior), an assertions.xml file is used to describe the tests, and tests
 have the structure M-N.c or M-N.sh.  More details are below.

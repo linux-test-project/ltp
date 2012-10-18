@@ -1,7 +1,7 @@
 # memtoy test - lazy migration of entire 1M mapped file
 # lazy migrate, then touch to fault
 # requires ./zerofile-1m
-# 
+#
 numa
 file zerofile-1m
 map zerofile-1m

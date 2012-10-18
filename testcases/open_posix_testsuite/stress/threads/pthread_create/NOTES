@@ -27,7 +27,7 @@ gcc -o <bin> -lpthread <source>
 Compilation under AIX5L
 cc -o <bin> -lpthread <source>
   same comment as above
-  
+
 Compilation under Solaris 9 (gcc: http://www.sunfreeware.com)
 gcc -std=gnu99 -lpthread -lrt  -o <bin> <source>
   same comment as above.
@@ -42,10 +42,10 @@ resources consuming on a bigger system. This will create more threads,
 etc... according to each case.
 
 -> Stress tests will run until they are killed with SIGUSR1 (or they
-fail). Currently, I do 
+fail). Currently, I do
 $> ./stress &
 and then after a while
-$> kill -USR1 <pid> 
+$> kill -USR1 <pid>
 or
 $> for PR in `ps o pid --no-headers -Cstress`; \
    do echo Sending SIGUSR1 to pid $PR...; \

@@ -26,10 +26,10 @@
 #
 # Description:
 #   Check the local/remote host has setkey command
-#  
+#
 # Arguments:
 #   None
-#   
+#
 # Returns:
 #   0: Both host have setkey command
 #   1: One or both host doesn't have setkey command
@@ -38,7 +38,7 @@
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.

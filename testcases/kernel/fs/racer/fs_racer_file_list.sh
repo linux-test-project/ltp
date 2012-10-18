@@ -22,7 +22,7 @@
 DIR=$1
 MAX=$2
 
-while /bin/true ; do 
+while /bin/true ; do
     ls -R $DIR/ > /dev/null 2> /dev/null &
     ls -R $DIR/ > /dev/null 2> /dev/null &
     ls -R $DIR/ > /dev/null 2> /dev/null &

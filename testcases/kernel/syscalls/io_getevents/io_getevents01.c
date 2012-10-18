@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 {
 	int lc;
 	char *msg;
-	
+
 	io_context_t ctx;
 
 	memset(&ctx, 0, sizeof(ctx));
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 		break;
 		}
 	}
-	
+
 	cleanup();
 	tst_exit();
 }

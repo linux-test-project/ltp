@@ -40,7 +40,7 @@ exec_prefix?=		$(prefix)
 
 all: conformance-all functional-all stress-all tools-all
 
-clean: $(CRITICAL_MAKEFILES) 
+clean: $(CRITICAL_MAKEFILES)
 	@rm -f $(LOGFILE)*
 	@for dir in $(SUBDIRS) tools; do \
 	    $(MAKE) -C $$dir clean >/dev/null; \

@@ -22,10 +22,10 @@
 #
 #  PURPOSE: Creates a text file of specified size locally and copies
 #	    the file to an NFS mountpoint.  The two files are compared
-#	    and checked for differences.  If the files differ, then 
+#	    and checked for differences.  If the files differ, then
 #	    the test fails.  By default, this test creates a 10Mb file
 #	    and runs for one loop.
-#	               
+#
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
@@ -68,7 +68,7 @@ CLEANUP=${CLEANUP:="ON"}
 setup_testcase()
 {
 $trace_logic
-   
+
     PID=$$
 
     VERSION=${VERSION:=2}
@@ -118,7 +118,7 @@ $trace_logic
     fi
 
     tst_resm TINFO "Mounting NFS filesystem"
-    mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp" 
+    mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
 }
 
@@ -143,13 +143,13 @@ $trace_logic
   tst_resm TINFO "Test Started"
   while [ $loopcount -lt $LOOPS ]
     do
-	cp /tmp/nfs04$PID.testfile $TCtmp/nfs04$PID.testfile$loopcount	
+	cp /tmp/nfs04$PID.testfile $TCtmp/nfs04$PID.testfile$loopcount
 	cmp /tmp/nfs04$PID.testfile $TCtmp/nfs04$PID.testfile$loopcount
 	retval=$?
 	if [ "$retval" != 0 ]; then
 		end_testcase "Error in loop $loopcount: First cmp FAILED"
 	fi
-	cp $TCtmp/nfs04$PID.testfile$loopcount /tmp/nfs04$PID.testfile_compare	
+	cp $TCtmp/nfs04$PID.testfile$loopcount /tmp/nfs04$PID.testfile_compare
 	cmp /tmp/nfs04$PID.testfile /tmp/nfs04$PID.testfile_compare
 	retval=$?
 	if [ "$retval" != 0 ]; then

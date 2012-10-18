@@ -155,11 +155,11 @@ broken_ip
 broken_ip4-version01
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in version field
-	
+
 broken_ip4-ihl01
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the header length field
-	
+
 broken_ip4-totlen01
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the total length field
@@ -171,11 +171,11 @@ broken_ip4-fragment01
 broken_ip4-protcol01
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the protocol field
-	
+
 broken_ip4-checksum01
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the checksum field
-	
+
 broken_ip4-dstaddr01
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets whose destination address is wrong
@@ -277,7 +277,7 @@ uni-dsackoff
 	Verify that the kernel, when the Duplicate SACK support is off, is not
 	crashed by a TCP connection on an unreliable network (Namely, some of
 	the packet is lost, some of them is duplicated).
-	
+
 uni-sackoff
 	Verify that the kernel, when both SACK and Duplicate SACK supports are
 	off, is not crashed by a TCP connection on an unreliable network
@@ -307,8 +307,8 @@ multi-diffnic
 	    test05 - IPsec [ ESP / tunnel ]
 	    test06 - IPComp [ transport ]
 	    test07 - IPComp [ tunnel ]
-	    test08 - delayed network - without IPsec / IPComp 
-	    test09 - delayed network - IPsec [ AH / transport ] 
+	    test08 - delayed network - without IPsec / IPComp
+	    test09 - delayed network - IPsec [ AH / transport ]
 	    test10 - delayed network - IPsec [ AH / tunnel ]
 	    test11 - delayed network - IPsec [ ESP / transport ]
 	    test12 - delayed network - IPsec [ ESP / tunnel ]
@@ -368,7 +368,7 @@ mcast4-queryfld05
 	Verify that the kernel is not crashed when joining joining plural IPv4
 	multicast groups on separate socket, then receiving a large number of
 	Multicast Address Specific Query
-	
+
 mcast4-queryfld06
 	Verify that the kernel is not crashed when joining joining plural IPv4
 	multicast groups on separate socket, then receiving a large number of
@@ -424,7 +424,7 @@ mcast6-queryfld05
 	Verify that the kernel is not crashed when joining joining plural IPv6
 	multicast groups on separate socket, then receiving a large number of
 	Multicast Address Specific Query
-	
+
 mcast6-queryfld06
 	Verify that the kernel is not crashed when joining joining plural IPv6
 	multicast groups on separate socket, then receiving a large number of

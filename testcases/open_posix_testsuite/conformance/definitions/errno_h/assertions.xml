@@ -3,11 +3,11 @@
     The errno.h header file exists.
   </assertion>
   <assertion id="2" tag="ref:BD:{Headers:error.h,DESCRIPTION}">
-    The errno.h header shall provide a declaration for errno 
+    The errno.h header shall provide a declaration for errno
   </assertion>
   <assertion id="3" tag="ref:SH:{Section 2.3}">
-   	All values listed in this section shall be unique integer constant 
-	expressions with type int suitable for 
+   	All values listed in this section shall be unique integer constant
+	expressions with type int suitable for
    	use in #if preprocessing directives.
     [E2BIG]
     [EACCES]

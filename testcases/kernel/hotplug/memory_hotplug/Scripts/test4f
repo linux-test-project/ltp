@@ -3,7 +3,7 @@
 # NOTE:  depends on prior existence of file '/var/tmp/kern'
 #        for my tests, this was a copy of an uncompressed kernel image
 numa
-file /var/tmp/kern 
+file /var/tmp/kern
 map kern
 mbind kern interleaved 0,1
 touch kern w

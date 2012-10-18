@@ -9,7 +9,7 @@
 #
 #   Test that sigdelset() will remove signo from the set signal set.
 #   This test initializes a full signal set first.
-# 
+#
 
 # Calling 1-core with a 1 parameter initializes to an
 # full set.

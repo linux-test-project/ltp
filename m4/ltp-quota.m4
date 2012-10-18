@@ -22,7 +22,7 @@ dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_SYSCALL_QUOTACTL],[dnl
 	AC_LINK_IFELSE([AC_LANG_SOURCE([
-#define _LINUX_QUOTA_VERSION 2 
+#define _LINUX_QUOTA_VERSION 2
 #include <sys/types.h>
 #include <sys/quota.h>
 #include <unistd.h>

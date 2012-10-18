@@ -20,7 +20,7 @@
 #
 #  FILE   : nfs01
 #
-#  PURPOSE: Stresses NFS by opening a large number of files on a nfs 
+#  PURPOSE: Stresses NFS by opening a large number of files on a nfs
 #           mounted filesystem.
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
@@ -69,7 +69,7 @@ EXECUTABLES=${EXECUTABLES:="open_files"}
 setup_testcase()
 {
 $trace_logic
-   
+
     PID=$$
 
     VERSION=${VERSION:=2}
@@ -118,13 +118,13 @@ $trace_logic
     mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
 
-    cd $TCtmp 
+    cd $TCtmp
     echo "Removing old and create new directories"
     [ -d $LOCAL_DIR ] && rm -rf $LOCAL_DIR
     [ -d $LOCAL_DIR ] || { \
 	mkdir -p $LOCAL_DIR || end_testcase "Could not create $LOCAL_DIR"
 	chmod 777 $LOCAL_DIR
-        cp $TCsrc/$EXECUTABLES $LOCAL_DIR || end_testcase "Could not write to mount point" 
+        cp $TCsrc/$EXECUTABLES $LOCAL_DIR || end_testcase "Could not write to mount point"
     }
 }
 
@@ -176,7 +176,7 @@ end_testcase()
 $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
 	cd \
-	
+
 	echo "Cleaning up testcase"
 
         mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || echo "Cannot mount $TCtmp"

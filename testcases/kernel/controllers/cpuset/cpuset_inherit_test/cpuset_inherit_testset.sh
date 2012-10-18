@@ -58,7 +58,7 @@ base_op_write_and_test()
 	mkdir $(dirname $write_file)/2 2> $CPUSET_TMP/stderr
 	return_result=$?
 	write_result="$(cat "$(dirname $write_file)/2/$(basename $write_file)")"
-	
+
 	case "$expect_string" in
 	EMPTY)
 		test -z "$write_result" -a $return_result = 0

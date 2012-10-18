@@ -19,7 +19,7 @@ Assertion	Covered?
 to get an accurate test.
 
 Possible other items to test:
-assertion 6 - What happens if it_interval < it_value? - Would be easy to 
+assertion 6 - What happens if it_interval < it_value? - Would be easy to
 use code from 6-1 and replace numbers to test this.
 
 May also want to run canned boundary tests on tid values.

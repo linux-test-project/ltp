@@ -11,7 +11,7 @@ test_percent=20
 
 ./waker.sh &
 
-for i in `seq $max_tests` ; do 
+for i in `seq $max_tests` ; do
 	./run.sh $test_percent &
 done
 

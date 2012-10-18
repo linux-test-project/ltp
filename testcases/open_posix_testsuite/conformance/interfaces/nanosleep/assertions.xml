@@ -7,9 +7,9 @@
   </assertion>
   <assertion id="2" tag="ref:XSH6:26696:26699">
    Unless nanosleep() is interrupted (as in 2) above), nanosleep() must always
-   suspend the process for _at least_ the time interval in rqtp - as 
+   suspend the process for _at least_ the time interval in rqtp - as
    measured by CLOCK_REALTIME.
-   [Occasionally, the time could be > rqtp interval because of 
+   [Occasionally, the time could be > rqtp interval because of
    scheduling/rounding.]
   </assertion>
   <assertion id="3" tag="ref:XSH6:26700:26700">
@@ -28,7 +28,7 @@
   </assertion>
   <assertion id="7" tag="ref:XSH6:26704:26708 XSH6:26712:26712">
    nanosleep() sets errno to EINTR if it is interrupted by a signal.
-   Also, if rmtp != NULL, rmtp will be set to the time remaining (i.e., 
+   Also, if rmtp != NULL, rmtp will be set to the time remaining (i.e.,
    requested time - time slept).  Otherwise, time remaining is not
    returned.
   </assertion>

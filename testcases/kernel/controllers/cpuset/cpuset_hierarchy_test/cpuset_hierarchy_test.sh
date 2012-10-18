@@ -135,7 +135,7 @@ test8()
 	test "0-1" = "$(cat "$CPUSET/father/cpus")" || return 1
 	test 0 = "$(cat "$CPUSET/father/child/cpus")" || return 1
 }
-	
+
 test9()
 {
 	echo "$cpus_all" > "$CPUSET/father/cpus" || return 1
@@ -337,7 +337,7 @@ test24()
 	test "0-1" = "$(cat "$CPUSET/father/mems")" || return 1
 	test 0 = "$(cat "$CPUSET/father/child/mems")" || return 1
 }
-	
+
 test25()
 {
 	echo "$mems_all" > "$CPUSET/father/mems" || return 1

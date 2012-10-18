@@ -49,7 +49,7 @@ subtrees:
 
 For further details on these types of subtrees please see your kernel source's
 Documentation/filesystems/sharedsubtree.txt file.
- 
+
 Building:
 ---------
 Uses GNU Make. In the root directory type:
@@ -95,7 +95,7 @@ directories perform basic regression tests and combine some of the tests with
 mount namespaces respectively.
 
 The bin directory contains scripts used by each of the testcases for
-common setup, creating, and comparing mounts. 
+common setup, creating, and comparing mounts.
 
 Running the Test Suite:
 -----------------------
@@ -127,7 +127,7 @@ fs_bind-\
 	|	|	  |
 	|	...	  ...
 	|-rbind--\
-	|        |--> 
+	|        |-->
 	...       ...
 
 An testXX/err file will only be left for those tests that had errors and
@@ -156,7 +156,7 @@ LTP environment dependencies. Some of them are documented below:
 		tst_exit
 	LTP contents:
 		LTPROOT/testcases/bin
- 
+
 It's important to note that the individual test scripts use the current working
 directory extensively but never exit it. This may allow the tests to be run
 individually once the above LTP environment dependencies are resolved.

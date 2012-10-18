@@ -19,12 +19,12 @@ memory object.
 15  		NO ** May assertion
 16		YES
 17		YES
-18  		YES 
+18  		YES
 19  		YES
 20		YES
 21		YES
-22  		NO ** Not sure how to get/set the limit of the number of mapped region 
-       		** for a process or system. 
+22  		NO ** Not sure how to get/set the limit of the number of mapped region
+       		** for a process or system.
 23		YES
 24  		YES
 25		YES

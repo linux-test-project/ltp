@@ -15,7 +15,7 @@ if4-addr-change01
 if4-alias-adddel01
 	Verify the IPv4 connectivity is not broken when 'ifconfig add' adds,
 	then deletes an IPv4 alias many times
-	
+
 if4-alias-adddel02
 	Verify the IPv4 connectivity is not broken when 'ifconfig ethn:n' adds,
 	then deletes an IPv4 alias many times
@@ -54,7 +54,7 @@ if4-route-addlarge01
 if4-route-addlarge02
 	Verify the IPv4 connectivity is not broken when the ip command adds
 	many IPv4 routes
-	
+
 
 if4-mtu-change01
 	Verify the IPv4 connectivity is not broken when ifconfig command
@@ -114,7 +114,7 @@ if6-route-addlarge02
 if6-mtu-change01
 	Verify the IPv6 connectivity is not broken when the ifconfig command
 	changes MTU many times every 5 seconds
-	
+
 if6-mtu-change02
 	Verify the IPv6 connectivity is not broken when the ip command changes
 	MTU many times every 5 seconds

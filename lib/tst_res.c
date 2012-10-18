@@ -490,28 +490,28 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 		                 ": errno=%s(%i): %s", strerrnodef(err),
 		                 err, strerror(err));
 	}
-	
+
 	if (size >= sizeof(message)) {
 		printf("%s: %i: line too long\n", __func__, __LINE__);
 		abort();
 	}
-	
+
 	if (ttype & TTERRNO) {
 		size += snprintf(message + size, sizeof(message) - size,
 		                 ": TEST_ERRNO=%s(%i): %s",
 		                 strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
 		                 strerror(TEST_ERRNO));
 	}
-	
+
 	if (size + 1 >= sizeof(message)) {
 		printf("%s: %i: line too long\n", __func__, __LINE__);
 		abort();
 	}
-	
+
 	message[size]   = '\n';
 	message[size+1] = '\0';
 
-	fputs(message, T_out); 
+	fputs(message, T_out);
 
 	/*
 	 * If tst_res() was called with a file, append file contents to the

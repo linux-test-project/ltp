@@ -12,7 +12,7 @@ Assertions     Tested ?	   Remarks
 6	       NO
 7	       YES
 8	       YES
-9	       NO	   
+9	       NO
 10	       YES	   May assertion
 11	       NO	   May assertion
 12	       YES	   May assertion

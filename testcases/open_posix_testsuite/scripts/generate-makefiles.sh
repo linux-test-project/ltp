@@ -44,7 +44,7 @@ generate_makefile() {
 	prereq_cache=$*
 
 	# Add all source files to $make_target_prereq_cache.
-	for prereq in $prereq_cache; do 
+	for prereq in $prereq_cache; do
 		# Stuff that needs to be tested.
 		if echo "$prereq" | grep -Eq '\.(run-test|sh)'; then
 			if [ "$tests" != "" ]; then

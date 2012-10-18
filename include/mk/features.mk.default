@@ -38,7 +38,7 @@ HAVE_SECUREBITS			:= no
 ifeq ($(UCLINUX),1)
 WITH_POWER_MANAGEMENT_TESTSUITE	:= no
 else
-WITH_POWER_MANAGEMENT_TESTSUITE	:= 
+WITH_POWER_MANAGEMENT_TESTSUITE	:=
 endif
 
 # Enable testcases/open_posix_testsuite's compile and install?

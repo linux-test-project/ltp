@@ -218,7 +218,7 @@ sync; sync
 echo "Resuming test, please wait..."
 sleep 60
 
-cd /AUTOFS/DISK/disk/test 
+cd /AUTOFS/DISK/disk/test
 umount /AUTOFS/DISK/disk/ 2>&1 > /dev/null
 if [ $? = 0 ]
 then
@@ -227,7 +227,7 @@ then
 	echo "FAILED: unmounted a busy file system!"
 	exit 1
 fi
-cd 
+cd
 
 umount /AUTOFS/DISK/disk/ 2>&1 > /dev/null
 if [ $? != 0 ]

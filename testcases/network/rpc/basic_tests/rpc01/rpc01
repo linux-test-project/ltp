@@ -24,7 +24,7 @@
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
-#         where the test is executed. 
+#         where the test is executed.
 #
 #  HISTORY:
 #    04/18/01 Robbie Williamson (robbiew@us.ibm.com)
@@ -58,9 +58,9 @@ do_test()
     $trace_logic
 
     # Start server process
-    rsh -n $RHOST $TCbin/rpc_server 
+    rsh -n $RHOST $TCbin/rpc_server
     PID1=`rsh -n $RHOST ps -ewf | grep rpc_server | grep -v grep | awk '{print $2 }'`
-    echo "The rpc_server PID is $PID1" 
+    echo "The rpc_server PID is $PID1"
     # Start client process
     echo "Starting $TC"
     COUNT=1
@@ -70,7 +70,7 @@ do_test()
       do
 	$TCtmp/rpc1 -s $RHOST -f $TCdat/$FILE
 	[ $? -eq 0 ] || end_testcase "Fail on using $FILE"
-      done 
+      done
       COUNT=`expr $COUNT + 1`
     done
 }

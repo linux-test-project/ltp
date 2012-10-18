@@ -25,7 +25,7 @@
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
-#         where the test is executed. 
+#         where the test is executed.
 #
 #  HISTORY:
 #    06/06/03 Manoj Iyer manjo@mail.utexas.edu
@@ -136,7 +136,7 @@ check_result()
                 x=\$(( \$x + \$i ))
             done
             echo \$x`
-            if [ $TOTAL_SUM = $LSUM ]; then 
+            if [ $TOTAL_SUM = $LSUM ]; then
                 tst_resm TINFO "Success rdist in $c_ruser@$c_rhost "
                 rsh -n -l $c_ruser $c_rhost "rm -rf $FILES $DIRECTORIES"
             else

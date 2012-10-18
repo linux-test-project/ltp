@@ -24,7 +24,7 @@ top_srcdir		?= ../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CFLAGS			+= -DPACKAGE=\"stress\" -DVERSION=\"0.17pre11\" 
+CFLAGS			+= -DPACKAGE=\"stress\" -DVERSION=\"0.17pre11\"
 
 LDLIBS			+= -lm
 

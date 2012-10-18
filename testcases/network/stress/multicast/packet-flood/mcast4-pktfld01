@@ -90,7 +90,7 @@ do_cleanup()
     # Make sure to kill the multicast receiver and sender
     killall -SIGHUP ns-mcast_receiver >/dev/null 2>&1
     $LTP_RSH $RHOST killall -SIGHUP ns-udpsender >/dev/null 2>&1
-    
+
     # Clean up each interface
     initialize_if lhost ${LINK_NUM}
     initialize_if rhost ${LINK_NUM}
@@ -183,7 +183,7 @@ if [ $? -ne 0 ]; then
     tst_resm TBROK "No port is available."
     exit 1
 fi
-    
+
 # Run a receiver
 ns-mcast_receiver -f 4 -I $lhost_ifname -m $MCAST_ADDR -p $mcast_port -b
 if [ $? -ne 0 ]; then

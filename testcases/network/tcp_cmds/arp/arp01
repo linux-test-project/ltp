@@ -28,7 +28,7 @@
 #         of the tested machine will be used.
 #
 #  HISTORY:
-#    06/05/03 Manoj Iyer - manjo@mail.utexas.edu 
+#    06/05/03 Manoj Iyer - manjo@mail.utexas.edu
 #      - Ported to use LTP test harness API
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
@@ -73,7 +73,7 @@ do_test()
 
     sleep $SLEEPTIME
 
-    # PURPOSE:  stress the automatic creation of arp entries by pinging a host 
+    # PURPOSE:  stress the automatic creation of arp entries by pinging a host
     #           and deleting the arp entry again.
 
     while [ $TST_COUNT -le $TST_TOTAL ]; do

@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-#  Copyright (c) Linux Test Project, 2010 
+#  Copyright (c) Linux Test Project, 2010
 #
 #  This program is free software;  you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ setup()
 	else
 		# Fallback to /etc/init.d/syslog if $SYSLOG_INIT_SCRIPT
 		# doesn't exist.
-		for SYSLOG_INIT_SCRIPT in "$SYSLOG_INIT_SCRIPT" "/etc/init.d/syslog"; do 
+		for SYSLOG_INIT_SCRIPT in "$SYSLOG_INIT_SCRIPT" "/etc/init.d/syslog"; do
 			if [ -x "$SYSLOG_INIT_SCRIPT" ]; then
 				SYSLOG_RESTART_COMMAND="$SYSLOG_INIT_SCRIPT restart"
 				break

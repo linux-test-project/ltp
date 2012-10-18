@@ -15,8 +15,8 @@ Assertion	Tested?
 12		YES
 13		YES
 14		YES
-15	 	YES	
+15	 	YES
 16		YES
-17		YES	
+17		YES
 18		YES
 19		NO - won't test

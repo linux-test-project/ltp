@@ -1,5 +1,5 @@
 <assertions>
-  
+
   <assertion id="1" tag="ref:XSH6:31925:31926">
   The pthread_barrierattr_setpshared( ) function shall
   set the process-shared attribute in an initialized attributes object referenced by attr.
@@ -13,11 +13,11 @@
 
   These functions shall not return an error code of [EINTR].
   </assertion>
-  
-  <assertion id="3" tag="ref:XSH6:31941:31942">  
-  If successful, the pthread_barrierattr_setpshared( ) function shall return zero; otherwise, 
+
+  <assertion id="3" tag="ref:XSH6:31941:31942">
+  If successful, the pthread_barrierattr_setpshared( ) function shall return zero; otherwise,
   an error number shall be returned to indicate the error.
   </assertion>
-  
+
 </assertions>
 

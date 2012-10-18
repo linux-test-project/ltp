@@ -1,9 +1,9 @@
 Device Driver Testcases:
 
 These tests should always be run individually and never concurrently.  Since
-these test will manipulate devices and may leave them in an unstable state, 
-these tests should not be run when other important system tasks are being 
-performed.  These tests shouldn't be included in any system wide test scripts 
+these test will manipulate devices and may leave them in an unstable state,
+these tests should not be run when other important system tasks are being
+performed.  These tests shouldn't be included in any system wide test scripts
 as they may corrupt the test data from those tests.
 
 To build and execute these tests:

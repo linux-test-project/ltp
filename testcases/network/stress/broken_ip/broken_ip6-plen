@@ -92,7 +92,7 @@ do_cleanup()
 tst_resm TINFO "- Test duration is $NS_DURATION [sec]"
 
 # Get the MAC address of the interface at the local host
-field=`expr $LINK_NUM + 1` 
+field=`expr $LINK_NUM + 1`
 lhost_hwaddr=`echo $LHOST_HWADDRS | cut -d ' ' -f $field`
 if [ x${lhost_hwaddr} = x ]; then
     tst_resm TBROK "Failed to get the MAC address name at the local host"

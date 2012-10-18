@@ -22,10 +22,10 @@ class RandomGen(object):
 	gListSize = len(gList)
 	uList = []
 	uListSize = len(uList)
-	
+
 	fList=[]
 	fListSize = len(fList)
-	
+
 	""" Create a user in available groups to do the tests """
 	def createUser(self,username):
 		group = self.gList[random.randint(0,len(self.gList)-1)][0]
@@ -39,18 +39,18 @@ class RandomGen(object):
 			fName = 'file' + str(i)
 			u = commands.getoutput('touch ' + path + '/'+ fName)
 			self.fList.append(fName)
-	
+
 	def createGroup(self, grpname, gid):
 		u = commands.getoutput('/usr/sbin/groupadd -g' + gid + " " + grpname)
 		if u != "":
 			print u
-	
+
 	def createNGroup(self, n):
 		for i in range(n):
 			gName = 'grp' + str(i)
 			gid = str(500+i)
 			self.createGroup(gName, gid)
-		
+
 
 	""" Random creation of n user """
 	def createNUser(self,n):
@@ -69,7 +69,7 @@ class RandomGen(object):
 		for name in self.gList:
 			u = commands.getoutput('/usr/sbin/groupdel '+ name[0])
 		self.gList = []
-		
+
 	""" Retrieve the list of user from /etc/passwd file """
 	def getUserList(self):
 		f = open('/etc/passwd','r')
@@ -92,7 +92,7 @@ class RandomGen(object):
 			NameOK = re.match("file",tmp[i])
 			if NameOK != None:
 				self.fList.append(tmp[i])
-			
+
 	def getNUserList(self,nb):
 		f = open('/etc/passwd','r')
 		lines = f.readlines()
@@ -141,10 +141,10 @@ class RandomGen(object):
 				break;
 		f.close()
 
-	def printUserList(self):	
+	def printUserList(self):
 		print self.uList
-	
-	def printGroupList(self):	
+
+	def printGroupList(self):
 		print self.gList
 
 	""" Create a random name of random length """
@@ -170,7 +170,7 @@ class RandomGen(object):
 		for i in range(listlength):
 			user = createOneName(lenght)
 			userlist.append(user)
-		return userlist		
+		return userlist
 
 	""" Create Random ACE for a file and a given usr """
 	def createRandomACE(self,user):
@@ -203,7 +203,7 @@ class RandomGen(object):
 		        if random.randint(0,1) == 1:
 			        out_str += 'r'
 		return out_str
-	
+
 	""" Create a random ACL operation (delete / remove / modify on user / group ) """
 	def randomOp(self,path):
 		a = random.randint(1,4)
@@ -220,20 +220,20 @@ class RandomGen(object):
 		if a == 3:	# deletation
 			user = self.uList[random.randint(0,len(self.uList)-1)]
 			u = commands.getoutput('setfacl -x u:' + user + " " + path + "/" + file)
-			
+
 		if a == 4:	# with group
 			group = self.gList[random.randint(0,len(self.gList)-1)][0]
 			u = commands.getoutput('setfacl -x g:' + group + " " + path + "/" + file)
-		
+
 		# request on a unexisting group
-		'''if a == 5:	
+		'''if a == 5:
 			group = self.createOneNameRandomLength(16)
 			print 'setfacl -x g:' + group + " " + path + "/" + file
 			u = commands.getoutput('setfacl -x g:' + group + " " + path + "/" + file)
-		if a == 6:	
+		if a == 6:
 			user = self.createOneNameRandomLength(16)
 			u = commands.getoutput('setfacl -x u:' + user + " " + path + "/" + file)
-		
+
 		if a == 7:	# creation/modification
 			user = self.createOneNameRandomLength(16)
 			u = commands.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + file)
@@ -247,4 +247,4 @@ class RandomGen(object):
               		u = commands.getoutput('getfacl ' + path + "/" + file + "| setfacl --set-file=- " + path + "/" + file2)
 		if u!="":
 			print u'''
-		
+

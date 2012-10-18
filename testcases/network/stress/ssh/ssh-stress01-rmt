@@ -74,7 +74,7 @@ case $ip_ver in
     exit 1
     ;;
 esac
-    
+
 # Check the connectivity first
 if [ ! -f $ssh_config ]; then
     echo "$ssh_config is something wrong."
@@ -101,7 +101,7 @@ done
 
 # Disconnect all ssh connection
 for ssh_pid in `ps auxw | fgrep -v grep | grep "ssh[[:blank:]].*${ssh_config}" | awk '{print $2}'` ; do
-    kill $ssh_pid 
+    kill $ssh_pid
 done
 
 # Check the connectivity again

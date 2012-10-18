@@ -4,8 +4,8 @@
 	buffer aio_buf.
 	</assertion>
 	<assertion id="2" tag="ref:XSH6TC2:4129:4132">
-	If prioritized I/O is supported asynchronous operation shall be 
-	submitted at priority equal to a base schedulling priority minus 
+	If prioritized I/O is supported asynchronous operation shall be
+	submitted at priority equal to a base schedulling priority minus
 	aio_reqprio.
 	</assertion>
 	<assertion id="3" tag="ref:XSH6TC2:4133:4133">
@@ -20,7 +20,7 @@
 	<assertion id="6" tag="ref:XSH6TC2:4151:4152">
 	For regular files, no data transfer shall occur past the offset
 	maximum established in the open file description associated with
-	aio_fildes. 
+	aio_fildes.
 	</assertion>
 	<assertion id="7" tag="ref:XSH6TC2:4154:4154">
 	The aio_read() function shall return the value zero if operation is

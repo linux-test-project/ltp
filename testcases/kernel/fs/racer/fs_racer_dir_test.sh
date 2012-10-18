@@ -22,10 +22,10 @@
 
 count=1
 dir=""
-while /bin/true ; do 
+while /bin/true ; do
     dir=$dir"/a"
     mkdir race/$dir
     count=$(($count + 1))
     echo $count
 done;
-    
+

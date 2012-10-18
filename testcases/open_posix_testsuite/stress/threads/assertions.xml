@@ -1,24 +1,24 @@
 <assertions>
   <assertion id="1" files="pthread_mutex_init/stress.c" tag="pt:THR">
-Mutex initialization and destruction duration does not depend on the number of mutex in use in the system -- for any type of mutex. 
+Mutex initialization and destruction duration does not depend on the number of mutex in use in the system -- for any type of mutex.
   </assertion>
   <assertion id="2" files="pthread_mutex_init/s-c.c" tag="pt:THR">
-Mutex initialization then destruction does not consume any system resource (memory leak, ...) -- for any type of mutex. 
+Mutex initialization then destruction does not consume any system resource (memory leak, ...) -- for any type of mutex.
   </assertion>
   <assertion id="3" files="pthread_mutex_lock/stress.c" tag="pt:THR">
-With a large amount of threads contending for some mutexes (of several types) with pthread_mutex_lock, pthread_mutex_trylock and pthread_mutex_timedlock, there is never more than one thread owning the same mutex at the same time. 
+With a large amount of threads contending for some mutexes (of several types) with pthread_mutex_lock, pthread_mutex_trylock and pthread_mutex_timedlock, there is never more than one thread owning the same mutex at the same time.
   </assertion>
   <assertion id="4" files="pthread_mutex_lock/s-c1.c" tag="pt:THR">
-There is no limit on the number of threads waiting to own the same mutex. 
+There is no limit on the number of threads waiting to own the same mutex.
   </assertion>
   <assertion id="5" files="pthread_mutex_lock/s-c1.c" tag="pt:THR">
-There is no limit on the number of different mutex having threads contending, at the same time. 
+There is no limit on the number of different mutex having threads contending, at the same time.
   </assertion>
   <assertion id="6" files="pthread_cond_init/s-c.c" tag="pt:THR">
-Condvar initialization then destruction does not consume any system resource -- for any kind of condvar. 
+Condvar initialization then destruction does not consume any system resource -- for any kind of condvar.
   </assertion>
   <assertion id="7" files="pthread_cond_init/stress.c" tag="pt:THR">
-Condvar Initialization and destruction duration does not depend on the number of condvars in use in the system -- for any kind of condvar. 
+Condvar Initialization and destruction duration does not depend on the number of condvars in use in the system -- for any kind of condvar.
   </assertion>
   <assertion id="8" files="pthread_cond_timedwait/s-c.c" tag="pt:THR">
 Latency between pthread_cond_timedwait timeout parameter and function actual return does not depend on the number of threads waiting on the condvar -- whatever kind of condvar.
@@ -48,7 +48,7 @@ pthread_self() returns the thread ID.
 The process creation time in a fork() does not depend on the number of processes already created in the system.
   </assertion>
   <assertion id="16" files="pthread_once/stress.c" tag="pt:THR">
-The init_routine argument of pthread_once is never called 
+The init_routine argument of pthread_once is never called
 more or less than once.
   </assertion>
   <assertion id="17" files="pthread_getschedparam/stress.c" tag="pt:THR">
@@ -58,7 +58,7 @@ pthread_getschedparam() always returns the scheduling parameters of the queried 
 Heavy signal delivery with pthread_kill() does not break the system, and no unpending signal get lost.
   </assertion>
   <assertion id="19" files="pthread_cancel/stress.c" tag="pt:THR">
-Heavy cancelation does not break the system or the application. 
+Heavy cancelation does not break the system or the application.
   </assertion>
   <assertion id="20" files="sem_open/s-c1.c" tag="pt:SEM">
 The sem_open and sem_close duration does not depend on the number of opened
@@ -69,7 +69,7 @@ The sem_init and sem_destroy duration does not depend on the number of opened
 unnamed semaphores.
   </assertion>
   <assertion id="22" files="sem_getvalue/stress.c" tag="pt:SEM">
-The sem_getvalue always returns the value of the semaphore at a given time 
+The sem_getvalue always returns the value of the semaphore at a given time
 during the call into the sval argument.
   </assertion>
 </assertions>

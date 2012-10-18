@@ -27,7 +27,7 @@
 #         MUST have a ".rhosts" file with the hostname of the machine
 #         where the test is executed. Also, both machines MUST have
 #         the rwhod daemon installed. However, it does not need to be
-#         active, the test will handle this. 
+#         active, the test will handle this.
 #
 #  HISTORY:
 #    06/09 Manoj Iyer manjo@mail.utexas.edu
@@ -132,7 +132,7 @@ do_cleanup()
 {
     if [ $PID -ne 0 ]; then
         tst_resm TINFO "Stopping rwhod on $LHOST"
-        killall rwhod 
+        killall rwhod
     fi
 
     if [ $RHOST_PID -ne 0 ]; then

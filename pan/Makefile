@@ -54,6 +54,6 @@ ltp-scanner: scan.o ltp-scanner.o reporter.o tag_report.o symbol.o splitstr.o de
 # flex does some whacky junk when it generates files on the fly, so let's make
 # sure gcc doesn't get lost...
 vpath %.c $(abs_srcdir):$(abs_builddir)))
-vpath %.l $(abs_srcdir)	
+vpath %.l $(abs_srcdir)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -28,7 +28,7 @@
 #          Group the options together
 #          Compare the behavior of the two cases
 #          If they behave differently, then fail
-#          If none of the cases fail, then pass 
+#          If none of the cases fail, then pass
 #
 #  HISTORY:
 #    06/01 Robbie Williamson (robbiew@us.ibm.com)
@@ -65,7 +65,7 @@ cleanup() {
 	if [ $TCRESULT = 0 ]; then
 		echo "---------------ar command passed the system test-----------------"
 		exit 0
-	else 
+	else
 		echo "---------------ar command failed the system test-----------------"
 		exit 1
 	fi
@@ -116,7 +116,7 @@ do
 	#The 'a' flag causes files to be placed after 'posname'.
 
 	#  CODE
-	rm -rf $TCtmp/lib.a;cd $TCdat 
+	rm -rf $TCtmp/lib.a;cd $TCdat
 
 	printf "file1.in\nfile2.in\nfile3.in\n" >$TCtmp/lib.a.exp
 
@@ -140,7 +140,7 @@ do
 	rm -rf $TCtmp/lib.a
 	cd $TCdat
 
-	ar -cr $TCtmp/lib.a file1.in file2.in file3.in file4.in 
+	ar -cr $TCtmp/lib.a file1.in file2.in file3.in file4.in
 	crtest
 	printf "file1.in\nfile4.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 	ar -ma file1.in $TCtmp/lib.a file4.in
@@ -182,7 +182,7 @@ do
 
 	# CODE
 	rm -rf $TCtmp/lib.a
-	cd $TCdat 
+	cd $TCdat
 
 	ar -cr $TCtmp/lib.a file1.in file3.in file2.in
 	crtest
@@ -220,7 +220,7 @@ do
 		echo "FAIL - ar with -c option did not suppress messages."
 	fi
 
-	# The 'qc' option causes suppresion of the default message when 
+	# The 'qc' option causes suppresion of the default message when
 	# 'afile' is created.
 
 	# CODE
@@ -257,8 +257,8 @@ do
 		TCRESULT=7
 		echo "FAIL - ar with -d option does not delete files form the archive"
 	fi
- 
-	# The -d option does not delete files from archive when no names 
+
+	# The -d option does not delete files from archive when no names
 	# are specified.
 
 	# CODE
@@ -279,7 +279,7 @@ do
 		TCRESULT=8
 		echo "FAIL - ar with -d option deleted files even when none were specified"
 	fi
- 
+
 	# The -d does not affect behaviour of -s option.
 
 	# CODE
@@ -322,7 +322,7 @@ do
 		TCRESULT=10
 		echo "FAIL - ar with -i did not place the files before 'posname'."
 	fi
- 
+
 	# The 'i' flag with 'm' option causes files to be moved before 'posname'.
 
 	# CODE
@@ -344,7 +344,7 @@ do
 		TCRESULT=11
 		echo "FAIL - ar with -i failed to move files before 'posname'."
 	fi
- 
+
 	# m option moves the files to end of the archive
 
 	# CODE
@@ -367,7 +367,7 @@ do
 		TCRESULT=12
 		echo "FAIL - ar with -m fails to move the files to the end of archive"
 	fi
- 
+
 	# The -p option causes only printing of contents of file contained in
 	# archive.
 
@@ -385,7 +385,7 @@ do
 		TCRESULT=13
 		echo "FAIL - ar with -p option failed to print the contents."
 	fi
- 
+
 	# The -p does not affect behaviour of -s option.
 
 	# CODE
@@ -404,7 +404,7 @@ do
 		TCRESULT=14
 		echo "FAIL - ar with -p did the affect behaviour of -s option"
 	fi
- 
+
 	# The command 'ar -q afile name' appends name to the end of 'afile'.
 
 	# CODE
@@ -425,8 +425,8 @@ do
 		TCRESULT=15
 		echo "FAIL - ar with -q afilename failed to append to the end of file"
 	fi
- 
-	# q option does not affect the behaviour of option s 
+
+	# q option does not affect the behaviour of option s
 
 	# CODE
 
@@ -444,7 +444,7 @@ do
 		TCRESULT=16
 		echo "FAIL - ar with -q did affect the behaviour of -s option."
 	fi
- 
+
 	# The -s causes regeneration of symbol table even if a symbol table exists.
 
 	echo "-)17 SKIPPED due to binutils ar automatically adds a symbol."
@@ -465,19 +465,19 @@ do
 		TCRESULT=18
 		echo "FAIL - ar with -t did not print as desired"
 	fi
- 
+
 	# The -t does not affect behaviour of -s option.
 
 	echo "-)19 SKIPPED due to binutils ar automatically adds a symbol."
 
-	# The 'u' flag causes files only with later modification date than 
+	# The 'u' flag causes files only with later modification date than
 	# in archive are replaced.
 
 	# CODE
 	rm -rf $TCtmp/lib.a
 	cd $TCdat
 
-	ar -cr $TCtmp/lib.a file0.in file2.in 
+	ar -cr $TCtmp/lib.a file0.in file2.in
 	crtest
 	File1time=`ar -tv $TCtmp/lib.a | grep file0.in`
 	File2time=`ar -tv $TCtmp/lib.a | grep file2.in`
@@ -524,7 +524,7 @@ do
 	    	TCRESULT=21
 		echo "FAIL - ar with -v flag failed to print a line for each file"
 	fi
- 
+
 	# The -v option produces a verbose listing like ls -n
 
 	# CODE
@@ -554,8 +554,8 @@ do
 		TCRESULT=22
 		echo "FAIL - ar with -v failed to produce a verbose out put"
 	fi
- 
-	# The 'v' option causes the 'x' option to display a filename for each 
+
+	# The 'v' option causes the 'x' option to display a filename for each
 	# file extracted.
 
 	# CODE
@@ -572,7 +572,7 @@ do
 		TCRESULT=23
 		echo "FAIL - ar with -v along with x did not display extracted file names"
 	fi
- 
+
 	# The command 'ar -x afile ' causes all files from the archive to be extracted.
 
 	# CODE
@@ -581,7 +581,7 @@ do
 	ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 	crtest
 
-	Count=`ar -xv $TCtmp/lib.a | wc -l` 
+	Count=`ar -xv $TCtmp/lib.a | wc -l`
 
 	if [ $Count -eq '3' ]
 	then
@@ -590,8 +590,8 @@ do
 		TCRESULT=24
 		echo "FAIL - ar with -x flag did not extract all file"
 	fi
- 
-	# The command 'ar -x afile name name' causes only named files from 
+
+	# The command 'ar -x afile name name' causes only named files from
 	# the archive to be extracted.
 
 	# CODE
@@ -615,7 +615,7 @@ do
 
 	# CODE
 
-	rm -rf $TCtmp/lib.* 
+	rm -rf $TCtmp/lib.*
 
 	ar -vr $TCtmp/lib.a $LIST >>$TCtmp/lib.a.stdout&
 	while [ ! -s $TCtmp/lib.a ]
@@ -632,12 +632,12 @@ do
 	else
 		echo "-)27"
 	fi
- 
+
 	# Signal SIGQUIT
 
 	# CODE
 
-	rm -rf $TCtmp/lib.* 
+	rm -rf $TCtmp/lib.*
 
 	ar -vr $TCtmp/lib.a $LIST >>$TCtmp/lib.a.stdout&
 	while [ ! -s $TCtmp/lib.a ]
@@ -654,7 +654,7 @@ do
 	else
 		echo "-)28"
 	fi
- 
+
 	# Signal SIGHUP; ar should not remove archive that existed before invocation.
 
 	# CODE
@@ -678,7 +678,7 @@ do
 	else
 		echo "-)29"
 	fi
- 
+
 	# Signal SIGINIT; ar should not remove archive that existed before invocation.
 
 	# CODE
@@ -704,7 +704,7 @@ do
 	else
 		echo "-)30"
 	fi
- 
+
 	# Signal SIGQUIT; ar should not remove archive that existed before invocation.
 
 	# CODE
@@ -729,7 +729,7 @@ do
 	else
 		echo "-)31"
 	fi
- 
+
 	rm -rf $TCtmp
 	COUNT=`expr $COUNT + 1`
 

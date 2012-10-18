@@ -2,12 +2,12 @@
   <assertion id="1" tag="ref:XSH6:34307:34308">
    The function
 
-   int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *restrict attr, 
+   int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *restrict attr,
 	int *restrict prioceiling);
 
   Gets the priority ceiling attribute of a mutexattr object (which was prev. created
   by the function pthread_mutexattr_init()).
-  </assertion>  
+  </assertion>
   <assertion id="2" tag="ref:XSH6:34323:34326">
   Upon success, it returns 0, and stores the value of the prioceiling in 'prioceiling'.
   </assertion>

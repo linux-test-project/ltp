@@ -57,7 +57,7 @@ ask_password()
 			exit 1
 		fi
 		echo "Password accepted."
-		
+
 		exit 0
 	} &> $USER_CONSOLE < $USER_CONSOLE
 }

@@ -70,7 +70,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 		exit_clean 1
 	fi
 	tst_resm TPASS "turned off CPU ${CPU_TO_TEST}, process migrated to CPU ${NEW_CPU}"
-	
+
 	# Turn the CPU back online just to see what happens.
 	online_cpu ${CPU_TO_TEST}
 	: $(( TST_COUNT += 1 ))

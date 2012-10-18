@@ -25,13 +25,13 @@
 #   check_icmpv6_connectivity
 #
 # Description:
-#   Functions for the network stress tests 
+#   Functions for the network stress tests
 #   Check the ICMPv6 connectivity from a interface to a IPv6 address
 #
 # Arguments:
 #   $1: source interface name
 #   $2: destination IPv6 address
-#   
+#
 # Returns:
 #   0: connectivity is good.
 #   1: connectivity is something wrong.
@@ -40,7 +40,7 @@
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.

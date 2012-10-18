@@ -18,13 +18,13 @@
 #
 
 #
-#  FILE(s)     : partbeat 
+#  FILE(s)     : partbeat
 #  DESCRIPTION : Quick test to test storage management functions like mount and fsck.
 #                More can be added later without much trouble.  Command line takes the
 #                partition device name (ex: /dev/hda1), an integer for how many iterations
 #                of the test you would like to run and the filesystem type to use (jfs or ext2 for now).
 #  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
-#  HISTORY     : 
+#  HISTORY     :
 #
 
 $target=$ARGV[0];

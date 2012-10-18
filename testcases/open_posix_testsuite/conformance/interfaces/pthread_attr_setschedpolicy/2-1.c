@@ -213,13 +213,13 @@ int main(void)
 	/* priorities must be high to low */
 	status = PTS_FAIL;
 	if (priorities[0] != PRIO_HIGH)
-		printf("Failed: first is prio: %u, should be: %u\n", 
+		printf("Failed: first is prio: %u, should be: %u\n",
 				priorities[0], PRIO_HIGH);
 	else if (priorities[1] != PRIO_MED)
-		printf("Failed: second is prio: %u, should be: %u\n", 
+		printf("Failed: second is prio: %u, should be: %u\n",
 				priorities[1], PRIO_MED);
 	else if (priorities[2] != PRIO_LOW)
-		printf("Failed: third is prio: %u, should be: %u\n", 
+		printf("Failed: third is prio: %u, should be: %u\n",
 				priorities[2], PRIO_LOW);
 	else
 		status = PTS_PASS;

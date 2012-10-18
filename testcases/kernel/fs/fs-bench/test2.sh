@@ -1,7 +1,7 @@
-#! /bin/bash 
+#! /bin/bash
 
 echo "## Start Test"
-date 
+date
 date +%s
 if [ -d ./00 ] ; then
 /bin/rm -fr ./00 >& /dev/null
@@ -11,7 +11,7 @@ echo $STARTT
 
 echo ""
 echo "## Create files "
-time ~/fs-bench/cr 
+time ~/fs-bench/cr
 
 echo ""
 echo "## tar all "
@@ -57,7 +57,7 @@ echo "## Finish test"
 date
 ENDT=`date +%s`
 echo $ENDT
-echo -n 'TOTAL(seconds): ' 
+echo -n 'TOTAL(seconds): '
 expr $ENDT - $STARTT
 
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # This script checks whether child NS is reachable from parent NS.
 #set -x
@@ -34,7 +34,7 @@ export TST_COUNT
 export TST_TOTAL
 
     ping -q -c 2 $IP2 > /dev/null
-    
+
     if [ $? = 0 ] ; then
         tst_resm TINFO "Pinging ChildNS from ParentNS"
 	status=0

@@ -20,18 +20,18 @@
 #
 #  FILE   : telnet
 #
-#  PURPOSE: Tests the basic functionality of `telnet`. 
+#  PURPOSE: Tests the basic functionality of `telnet`.
 #
 #  SETUP: The program `/usr/bin/expect' MUST be installed.
-#	  The PASSWD and RHOST variables MUST be set prior to execution. 
+#	  The PASSWD and RHOST variables MUST be set prior to execution.
 #
 #  HISTORY:
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
 #*********************************************************************
-# 
-# telnet perform a telnet session to each host in HOST_LIST with user 
+#
+# telnet perform a telnet session to each host in HOST_LIST with user
 #    RUSER for a count of LOOPCOUNT and does an ls -l /etc/hosts to
 #    verify that the telnet was established.
 #
@@ -47,21 +47,21 @@ if [info exists env(RUSER)] {
    set RUSER $env(RUSER)
 } else {
    set RUSER root
-} 
+}
 
 if [info exists env(PASSWD)] {
    set PASSWD $env(PASSWD)
 } else {
    set PASSWD .pasroot
    send_user "PASSWD NOT SET:Using .pasroot as the PASSWD variable for $RUSER. \n"
-} 
+}
 
 if [info exists env(RHOST)] {
    set RHOST $env(RHOST)
 } else {
    send_user "Please set/export the RHOST variable. \n"
    exit 1
-} 
+}
 
 set timeout 90
 
@@ -78,7 +78,7 @@ send_user " Starting\n"
 set count 0
 while {$count < $LOOPCOUNT} {
    set count [expr $count+1]
-   foreach HOST $RHOST { 
+   foreach HOST $RHOST {
       send_user "Host: $HOST\n"
 
       # telnet to the host
@@ -92,20 +92,20 @@ while {$count < $LOOPCOUNT} {
 
       send "PS1=\"$PROMPT\"\r"
       # Wait for shell prompt
-      expect "$PROMPT" 
+      expect "$PROMPT"
 
       # Run passwd command - and respond to its prompts
-      send "LC_ALL=C ls -l /etc/hosts | wc -w > $TESTLOG/$RUSER.$HOST \r" 
+      send "LC_ALL=C ls -l /etc/hosts | wc -w > $TESTLOG/$RUSER.$HOST \r"
       # When shell prompt comes back, logout
 
       expect "$PROMPT"
       exp_send "logout\r"
 
       send_user "CHECKING TELNET STATUS\n"
-      set nummatch [exec rsh -n -l $RUSER $HOST "cat $TESTLOG/$RUSER.$HOST|grep -c 9"] 
+      set nummatch [exec rsh -n -l $RUSER $HOST "cat $TESTLOG/$RUSER.$HOST|grep -c 9"]
       if {$nummatch==1} {
          send_user "$TC interactive Test Successful in LOOP $count\r"
-         exec rsh -n -l $RUSER $HOST "rm -f $TESTLOG/$RUSER.$HOST" 
+         exec rsh -n -l $RUSER $HOST "rm -f $TESTLOG/$RUSER.$HOST"
       } else {
          send_user "$TC interactive session failed\n"
          exit 1

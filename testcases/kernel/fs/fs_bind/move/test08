@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -39,20 +39,20 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
+
 	"${FS_BIND_ROOT}/bin/makedir" priv dir
 	"${FS_BIND_ROOT}/bin/makedir" unclone parent2
 	"${FS_BIND_ROOT}/bin/makedir" share share1
-	
+
 	mkdir dir/grandchild
 	mount --bind dir share1
 	mkdir parent2/child2
 	mount --move dir parent2/child2
-	
+
 	mount --bind "$disk1" parent2/child2/grandchild
 	check -n dir/grandchild parent2/child2/grandchild
 	check -n share1/grandchild parent2/child2/grandchild
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "move/test08: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -70,7 +70,7 @@ trap '' ERR
 	umount share1
 	umount parent2
 	umount dir
-	
+
 	rm -rf dir parent* share*
 	cleanup
 } >& /dev/null
@@ -80,6 +80,6 @@ then
 	exit 1
 else
 	tst_resm TPASS "move/test08: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

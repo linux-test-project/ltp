@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -59,7 +59,7 @@ test_setup()
 		cd ..
 		LTPROOT="${PWD}"
 	fi
-	
+
 	FS_BIND_ROOT="${LTPROOT}/testcases/bin/fs_bind"
 
 	total=0 # total number of tests
@@ -75,14 +75,14 @@ test_setup()
 	# Results directory
 	resdir="${LTPROOT}/results/fs_bind"
 	if [ ! -d "${resdir}" ]; then
-		mkdir -p "${resdir}" 2> /dev/null 
+		mkdir -p "${resdir}" 2> /dev/null
 	fi
 
 	TMPDIR="${TMPDIR:-/tmp}"
 	# A temporary directory where we can do stuff and that is
 	# safe to remove
 	sandbox="${TMPDIR}/sandbox"
-	
+
 	ERR_MSG=""
 
 	export LTPBIN PATH FS_BIND_ROOT ERR_MSG TCID TST_COUNT TST_TOTAL
@@ -173,7 +173,7 @@ test_prereqs()
 grep_proc_mounts()
 {
 	local rc=0
-	
+
 	# Save the pipefail shell option
 	shopt -o -q pipefail
 	local save=$?
@@ -240,7 +240,7 @@ restore_proc_mounts()
 	( while grep_proc_mounts ; do
 		grep_proc_mounts | awk '{print $2}' | xargs -r -n 1 umount -l
 	done ) >& /dev/null
-	
+
 	# mount list and exit with 0
 	[ $rm_err -eq 1 ] && rm -f "$2/proc_mounts."{before,after} 1>&2 # >& /dev/null
 	return 0
@@ -253,7 +253,7 @@ restore_proc_mounts()
 grep_mounts()
 {
 	local rc=0
-	
+
 	# Save the pipefail shell option
 	shopt -o -q pipefail
 	local save=$?
@@ -381,7 +381,7 @@ check_sandbox()
 clean_sandbox()
 {
 	local tname="$1"
-	
+
 	{ rm -rf "${sandbox}" ; mkdir "${sandbox}" ; } >& /dev/null
 	if [ ! -d "${sandbox}" -o ! -x "${sandbox}" ]; then
 		tst_brkm TBROK true "$tname: failed to make directory \"${sandbox}\""
@@ -407,7 +407,7 @@ is_file_empty()
 #	test runs)
 # Note that this means the return status is not the success or failure of the
 #	test itself.
-# 
+#
 run_test()
 {
 	local t="$1"

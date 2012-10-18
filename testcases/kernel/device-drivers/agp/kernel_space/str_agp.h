@@ -17,15 +17,15 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
- * Remember that you want to seperate your header 
- * files between what is needed in kernel space 
- * only, and what will also be needed by a user 
- * space program that is using this module. For 
+/*
+ * Remember that you want to seperate your header
+ * files between what is needed in kernel space
+ * only, and what will also be needed by a user
+ * space program that is using this module. For
  * that reason keep all structures that will need
  * kernel space pointers in a seperate header file
  * from where ioctl flags aer kept
- * 
+ *
  * author: Kai Zhao
  * date:   08/25/2003
  *
@@ -44,7 +44,7 @@ static struct agp_bridge_data	*tmp_bridge = NULL;
 
 
 
-#include <asm/agp.h>	// for flush_agp_cache() 
+#include <asm/agp.h>	// for flush_agp_cache()
 
 #define PFX "agpgart: "
 
@@ -61,9 +61,9 @@ enum aper_size_type {
 struct gatt_mask {
 	unsigned long mask;
 	u32 type;
-	// totally device specific, for integrated chipsets that 
+	// totally device specific, for integrated chipsets that
 	// might have different types of memory masks.  For other
-	// devices this will probably be ignored 
+	// devices this will probably be ignored
 };
 
 struct aper_size_info_8 {
@@ -143,7 +143,7 @@ struct agp_bridge_data {
 	unsigned long *key_list;
 	atomic_t current_memory_agp;
 	atomic_t agp_in_use;
-	int max_memory_agp;	// in number of pages 
+	int max_memory_agp;	// in number of pages
 	int aperture_size_idx;
 	int capndx;
 	char major_version;
@@ -176,7 +176,7 @@ struct agp_bridge_data {
 
 #define PGE_EMPTY(b, p)	(!(p) || (p) == (unsigned long) (b)->scratch_page)
 
-// intel register 
+// intel register
 #define INTEL_APBASE	0x10
 #define INTEL_APSIZE	0xb4
 #define INTEL_ATTBASE	0xb8
@@ -184,7 +184,7 @@ struct agp_bridge_data {
 #define INTEL_NBXCFG	0x50
 #define INTEL_ERRSTS	0x91
 
-// Intel 460GX Registers 
+// Intel 460GX Registers
 #define INTEL_I460_APBASE		0x10
 #define INTEL_I460_BAPBASE		0x98
 #define INTEL_I460_GXBCTL		0xa0
@@ -193,7 +193,7 @@ struct agp_bridge_data {
 #define INTEL_I460_GATT_VALID		(1UL << 24)
 #define INTEL_I460_GATT_COHERENT	(1UL << 25)
 
-// intel i830 registers 
+// intel i830 registers
 #define I830_GMCH_CTRL			0x52
 #define I830_GMCH_ENABLED		0x4
 #define I830_GMCH_MEM_MASK		0x1
@@ -209,10 +209,10 @@ struct agp_bridge_data {
 #define I830_RDRAM_ND(x)		(((x) & 0x20) >> 5)
 #define I830_RDRAM_DDT(x)		(((x) & 0x18) >> 3)
 
-// This one is for I830MP w. an external graphic card 
+// This one is for I830MP w. an external graphic card
 #define INTEL_I830_ERRSTS	0x92
 
-// Intel 855GM/852GM registers 
+// Intel 855GM/852GM registers
 #define I855_GMCH_GMS_STOLEN_0M		0x0
 #define I855_GMCH_GMS_STOLEN_1M		(0x1 << 4)
 #define I855_GMCH_GMS_STOLEN_4M		(0x2 << 4)
@@ -227,31 +227,31 @@ struct agp_bridge_data {
 #define I852_GME			0x2
 #define I852_GM				0x5
 
-// intel 815 register 
+// intel 815 register
 #define INTEL_815_APCONT	0x51
 #define INTEL_815_ATTBASE_MASK	~0x1FFFFFFF
 
-// intel i820 registers 
+// intel i820 registers
 #define INTEL_I820_RDCR		0x51
 #define INTEL_I820_ERRSTS	0xc8
 
-// intel i840 registers 
+// intel i840 registers
 #define INTEL_I840_MCHCFG	0x50
 #define INTEL_I840_ERRSTS	0xc8
- 
-// intel i845 registers 
+
+// intel i845 registers
 #define INTEL_I845_AGPM		0x51
 #define INTEL_I845_ERRSTS	0xc8
 
-// intel i850 registers 
+// intel i850 registers
 #define INTEL_I850_MCHCFG	0x50
 #define INTEL_I850_ERRSTS	0xc8
 
-// intel i860 registers 
+// intel i860 registers
 #define INTEL_I860_MCHCFG	0x50
 #define INTEL_I860_ERRSTS	0xc8
 
-// intel i810 registers 
+// intel i810 registers
 #define I810_GMADDR		0x10
 #define I810_MMADDR		0x14
 #define I810_PTE_BASE		0x10000
@@ -269,7 +269,7 @@ struct agp_bridge_data {
 #define I810_DRAM_ROW_0		0x00000001
 #define I810_DRAM_ROW_0_SDRAM	0x00000001
 
-// Intel 7505 registers 
+// Intel 7505 registers
 #define INTEL_I7505_NAPBASELO	0x10
 #define INTEL_I7505_APSIZE	0x74
 #define INTEL_I7505_NCAPID	0x60
@@ -279,35 +279,35 @@ struct agp_bridge_data {
 #define INTEL_I7505_AGPCTRL	0x70
 #define INTEL_I7505_MCHCFG	0x50
 
-// VIA register 
+// VIA register
 #define VIA_APBASE	0x10
 #define VIA_GARTCTRL	0x80
 #define VIA_APSIZE	0x84
 #define VIA_ATTBASE	0x88
 
-// VIA KT400 
+// VIA KT400
 #define VIA_AGP3_GARTCTRL	0x90
 #define VIA_AGP3_APSIZE	0x94
 #define VIA_AGP3_ATTBASE	0x98
 #define VIA_AGPSEL	0xfd
 
-// SiS registers 
+// SiS registers
 #define SIS_APBASE	0x10
 #define SIS_ATTBASE	0x90
 #define SIS_APSIZE	0x94
 #define SIS_TLBCNTRL	0x97
 #define SIS_TLBFLUSH	0x98
 
-// AMD registers 
+// AMD registers
 #define AMD_APBASE	0x10
 #define AMD_MMBASE	0x14
 #define AMD_APSIZE	0xac
 #define AMD_MODECNTL	0xb0
 #define AMD_MODECNTL2	0xb2
-#define AMD_GARTENABLE	0x02	// In mmio region (16-bit register) 
-#define AMD_ATTBASE	0x04	// In mmio region (32-bit register) 
-#define AMD_TLBFLUSH	0x0c	// In mmio region (32-bit register) 
-#define AMD_CACHEENTRY	0x10	// In mmio region (32-bit register) 
+#define AMD_GARTENABLE	0x02	// In mmio region (16-bit register)
+#define AMD_ATTBASE	0x04	// In mmio region (32-bit register)
+#define AMD_TLBFLUSH	0x0c	// In mmio region (32-bit register)
+#define AMD_CACHEENTRY	0x10	// In mmio region (32-bit register)
 
 #define AMD_8151_APSIZE	0xb4
 #define AMD_8151_GARTBLOCK	0xb8
@@ -325,7 +325,7 @@ struct agp_bridge_data {
 #define AMD_8151_GTLBEN	1<<7
 #define AMD_8151_APEREN	1<<8
 
-// ALi registers 
+// ALi registers
 #define ALI_APBASE			0x10
 #define ALI_AGPCTRL			0xb8
 #define ALI_ATTBASE			0xbc
@@ -335,7 +335,7 @@ struct agp_bridge_data {
 #define ALI_CACHE_FLUSH_ADDR_MASK	0xFFFFF000
 #define ALI_CACHE_FLUSH_EN		0x100
 
-// Serverworks Registers 
+// Serverworks Registers
 #define SVWRKS_APSIZE		0x10
 #define SVWRKS_SIZE_MASK	0xfe000000
 
@@ -343,18 +343,18 @@ struct agp_bridge_data {
 #define SVWRKS_CACHING		0x4b
 #define SVWRKS_FEATURE		0x68
 
-// func 1 registers 
+// func 1 registers
 #define SVWRKS_AGP_ENABLE	0x60
 #define SVWRKS_COMMAND		0x04
 
-// Memory mapped registers 
+// Memory mapped registers
 #define SVWRKS_GART_CACHE	0x02
 #define SVWRKS_GATTBASE		0x04
 #define SVWRKS_TLBFLUSH		0x10
 #define SVWRKS_POSTFLUSH	0x14
 #define SVWRKS_DIRFLUSH		0x0c
 
-// HP ZX1 SBA registers 
+// HP ZX1 SBA registers
 #define HP_ZX1_CTRL		0x200
 #define HP_ZX1_IBASE		0x300
 #define HP_ZX1_IMASK		0x308
@@ -364,23 +364,23 @@ struct agp_bridge_data {
 #define HP_ZX1_CACHE_FLUSH	0x428
 
 struct agp_device_ids {
-	unsigned short device_id; // first, to make table easier to read 
+	unsigned short device_id; // first, to make table easier to read
 	enum chipset_type chipset;
 	const char *chipset_name;
-	int (*chipset_setup) (struct pci_dev *pdev);	// used to override generic 
+	int (*chipset_setup) (struct pci_dev *pdev);	// used to override generic
 };
 
-// Driver registration 
+// Driver registration
 struct agp_bridge_data *agp_alloc_bridge(void);
 void agp_put_bridge(struct agp_bridge_data *bridge);
 int agp_add_bridge(struct agp_bridge_data *bridge);
 void agp_remove_bridge(struct agp_bridge_data *bridge);
 
-// Frontend routines. 
+// Frontend routines.
 int agp_frontend_initialize(void);
 void agp_frontend_cleanup(void);
 
-// Generic routines. 
+// Generic routines.
 void agp_generic_enable(u32 mode);
 int agp_generic_create_gatt_table(void);
 int agp_generic_free_gatt_table(void);
@@ -400,7 +400,7 @@ void global_cache_flush(void);
 void get_agp_version(struct agp_bridge_data *bridge);
 unsigned long agp_generic_mask_memory(unsigned long addr, int type);
 
-// Standard agp registers 
+// Standard agp registers
 #define AGPSTAT			0x4
 #define AGPCMD			0x8
 #define AGPNISTAT		0xc

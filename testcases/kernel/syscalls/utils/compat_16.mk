@@ -20,26 +20,26 @@
 # Technique used here is suggested by Garrett Cooper <yanegomi@gmail.com>
 
 # Usage:
-# 
+#
 # This makefile snippet is for writing test cases
-# for foo16 system calls. Here I assume you already have 
-# test cases for foo like foo01, foo02.. fooN and I also 
+# for foo16 system calls. Here I assume you already have
+# test cases for foo like foo01, foo02.. fooN and I also
 # assume the source file name for fooN is fooN.c.
 # On the above assumption, this file does:
-# 
-# * adding fooN_16 as MAKE_TARGETS, 
+#
+# * adding fooN_16 as MAKE_TARGETS,
 # * making *.c depend on compat_16.h if the header file exists,
 # * adding rules to build fooN_16 from fooN.c (and compat_16.h), and
-# * passing a cpp symbol TST_USE_COMPAT16_SYSCALL to 
+# * passing a cpp symbol TST_USE_COMPAT16_SYSCALL to
 #   CC when building fooN_16.
 #
 #
 # You can use this file in following procedures:
-# 
+#
 # 1. write fooN.c.
 # 2. add the code for 16 bit syscall and wrap
 #    it #ifdef TST_USE_COMPAT16_SYSCALL/endif.
-# 3. introduce your own compat_16.h if the ifdef 
+# 3. introduce your own compat_16.h if the ifdef
 #    block is too large.
 # 4. don't forget putting compat_16.h in all fooN.c
 #    if you introduced compat_16.h.

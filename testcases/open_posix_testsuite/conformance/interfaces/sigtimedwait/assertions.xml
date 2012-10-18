@@ -12,7 +12,7 @@
 	the timeout argument, if the Monotonic Clock option is supported.
   </assertion>
   <assertion id="4" tag="ref:XSH6:424506:42508 pt:RTS">
-	sigtimedwait( ) shall return the selected signal number, upon successful completion 
+	sigtimedwait( ) shall return the selected signal number, upon successful completion
   </assertion>
   <assertion id="5" tag="ref:XSH6:42508:42509 pt:RTS">
 	sigtimedwait() shall return a value of -1 upon unsuccessful completion.

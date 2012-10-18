@@ -3,7 +3,7 @@
 sem_timedwait will lock the unlocked semaphore.
   </assertion>
   <assertion id="2" tag="ref:XSH6:38996:38998">
-if the sempahore can't be locked without waiting for another process 
+if the sempahore can't be locked without waiting for another process
 or thread to unlock the semaphore by performing sem_post function.  This
 wait shall be terminated when the specified timout expires.
   </assertion>
@@ -25,12 +25,12 @@ EINVAL Error: SEM argument doesn't refer to a valid semaphore.
   <assertion id="6" tag="ref:XSH6:39018:39020">
 The sem_timedout function shall fail with:
 EINVAL Error: The process or thread would have blocked, and the abs_timeout
-parameter specified a nanoseconds field value less than zero or greater than 
+parameter specified a nanoseconds field value less than zero or greater than
 or equal to 1000 million.
   </assertion>
   <assertion id="7" tag="ref:XSH6:39017:39017">
 The sem_timedout function shall fail with:
-ETIMEDOUT Error: The semaphore could not be locked before the specified 
+ETIMEDOUT Error: The semaphore could not be locked before the specified
 timeout expired.
   </assertion>
   <assertion id="8" tag="ref:XSH6:39017:39017">

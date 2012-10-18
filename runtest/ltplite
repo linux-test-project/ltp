@@ -26,30 +26,30 @@ fsx-linux export TCbin=$LTPROOT/testcases/bin;fsxtest02 10000
 # These tests use tests/pipeio to put pipes (named or unnamed) through a workout
 #
 pipeio_1 pipeio -T pipeio_1 -c 5 -s 4090 -i 100 -b -f x80
-# spawns 5 children to write 100 chunks of 4090 bytes to a named pipe 
+# spawns 5 children to write 100 chunks of 4090 bytes to a named pipe
 # using blocking I/O
 #pipeio_2 pipeio -T pipeio_2 -c 5 -s 4090 -i 100 -f x80
-# spawns 5 children to write 100 chunks of 4090 bytes to a named pipe 
+# spawns 5 children to write 100 chunks of 4090 bytes to a named pipe
 # using non-blocking I/O
 # This test hits EAGAIN, which pipeio doesn't handle at the moment
 pipeio_3 pipeio -T pipeio_3 -c 5 -s 4090 -i 100 -u -b -f x80
-# spawns 5 children to write 100 chunks of 4090 bytes to an unnamed pipe 
+# spawns 5 children to write 100 chunks of 4090 bytes to an unnamed pipe
 # using blocking I/O
 pipeio_4 pipeio -T pipeio_4 -c 5 -s 4090 -i 100 -u -f x80
-# spawns 5 children to write 100 chunks of 4090 bytes to an unnamed pipe 
+# spawns 5 children to write 100 chunks of 4090 bytes to an unnamed pipe
 # using non-blocking I/O
 pipeio_5 pipeio -T pipeio_5 -c 5 -s 5000 -i 10 -b -f x80
-# spawns 5 children to write 10 chunks of 5000 bytes to a named pipe 
+# spawns 5 children to write 10 chunks of 5000 bytes to a named pipe
 # using blocking I/O
 pipeio_6 pipeio -T pipeio_6 -c 5 -s 5000 -i 10 -b -u -f x80
-# spawns 5 children to write 10 chunks of 5000 bytes to an unnamed pipe 
+# spawns 5 children to write 10 chunks of 5000 bytes to an unnamed pipe
 # using blocking I/O
 #pipeio_7 pipeio -T pipeio_7 -c 5 -s 5000 -i 10 -f x80
-# spawns 5 children to write 10 chunks of 5000 bytes to a named pipe 
+# spawns 5 children to write 10 chunks of 5000 bytes to a named pipe
 # using non-blocking I/O
 # This test hits EAGAIN, which pipeio doesn't handle at the moment
 pipeio_8 pipeio -T pipeio_8 -c 5 -s 5000 -i 10 -u -f x80
-# spawns 5 children to write 10 chunks of 5000 bytes to an unnamed pipe 
+# spawns 5 children to write 10 chunks of 5000 bytes to an unnamed pipe
 # using non-blocking I/O
 
 sem01 sem01
@@ -104,7 +104,7 @@ chmod01A symlink01 -T chmod01
 chmod02 chmod02
 chmod03 chmod03
 chmod04 chmod04
-chmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod05 
+chmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod05
 chmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod06
 chmod07 chmod07
 
@@ -182,7 +182,7 @@ fchmod01 fchmod01
 fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
-fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod05 
+fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod05
 fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod06
 fchmod07 fchmod07
 
@@ -218,8 +218,8 @@ fcntl22 fcntl22
 fcntl23 fcntl23
 fcntl24 fcntl24
 fcntl25 fcntl25
-fcntl26 fcntl26 
-# The tests for these system calls  fcntl27 and fcntl28 are temporarily being disabled 
+fcntl26 fcntl26
+# The tests for these system calls  fcntl27 and fcntl28 are temporarily being disabled
 # fcntl27 fcntl27
 # fcntl28 fcntl28
 
@@ -551,8 +551,8 @@ pause01 pause01
 pause02 pause02
 pause03 pause03
 
-#  The personality() system call is poorly documented 
-#  and difficult to figure out how to use by looking 
+#  The personality() system call is poorly documented
+#  and difficult to figure out how to use by looking
 #  at the different architecture specific kernel files.
 #personality01 personality01
 #personality02 personality02
@@ -927,7 +927,7 @@ truncate04 truncate04
 # This syscall is obsolete.  The latest glibc does not even
 # include the ulimit.h file anymore.  The test will fail
 # because the error handling has been simplified.
-# 
+#
 # ulimit01 ulimit01
 
 umask01 umask01

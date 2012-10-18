@@ -5,7 +5,7 @@ TM_DLY=1    # Time delay before start of entire new cycle.
 
 
 CNT=0
-while : 
+while :
 do
 
 	: $(( CNT += 1 ))

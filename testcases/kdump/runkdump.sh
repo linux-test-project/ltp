@@ -7,7 +7,7 @@ SetupCrontab ()
     set +e
     crontab -r
     set -e
-   
+
     # crontab in some distros will not read from STDIN.
 
     cat <<EOF >kdump.cron
@@ -20,7 +20,7 @@ EOF
     crontab kdump.cron
 
     echo "Enable cron daemon by default."
-    
+
     if [ -f /etc/init.d/crond ]; then
         cron=crond
     else
@@ -31,7 +31,7 @@ EOF
     # Red Hat and SUSE.
     if [ -x "/sbin/chkconfig" ]; then
         /sbin/chkconfig "${cron}" on
- 
+
     # Debian and Ubuntu.
     elif [ -x "/sbin/update-rc.d" ]; then
         /sbin/update-rc.d "${cron}" defaults
@@ -42,16 +42,16 @@ SetupKdump ()
 {
     echo "Start kdump daemon."
     /etc/init.d/kdump restart
-    
+
     echo "Enable kdump daemon by default."
     # Red Hat and SUSE.
     if [ -x "/sbin/chkconfig" ]; then
         /sbin/chkconfig kdump on
-        
+
     # Debian and Ubuntu.
     elif [ -x "/sbin/update-rc.d" ]; then
         /sbin/update-rc.d kdump defaults
-    fi    
+    fi
 }
 
 
@@ -130,11 +130,11 @@ VerifyTest ()
 
     echo "Verifying the result of previous test ${last}."
     ldir=$(ls -td "../${log}/$(hostname)."* | head -1)
-    
+
     if [ -f "${vmcore}" ]; then
         echo "$(date +%F-%T): verification of test ${last} passed." \
         >>"${ldir}/status"
-        
+
         ./verify.sh "../${conf}" "${vmcore}" "${CRASH}" \
         >>"${ldir}/${ITERATION}.${last}.$(date +%F-%T)"
 
@@ -156,7 +156,7 @@ RunTest ()
      "../${conf}"
 
     echo "Running current test ${i}."
-            
+
     echo "$(date +%F-%T): running current test ${i}." \
     >> "${ldir}/status"
 
@@ -185,7 +185,7 @@ cd "${lib}"
 
 while [ "${ITERATION}" -ge 1 ]; do
 
-# Reboot the machine first to take advantage of boot parameter 
+# Reboot the machine first to take advantage of boot parameter
 # changes.
 if [ -z "${REBOOT}" ] || [ "${REBOOT}" -eq 0 ]; then
     echo "Setup test environment."
@@ -245,7 +245,7 @@ else
 
             # Some tests could not reboot target. They can hung up
             # machine or leave it working. But we need to do all
-            # tests. So we are going to reboot if we are in wrong 
+            # tests. So we are going to reboot if we are in wrong
             # place.
 
             sleep 3600
@@ -267,7 +267,7 @@ if [ "${ITERATION}" -eq 1 ]; then
 else
     # Run the next iteration.
     sed -i "s/\(^ITERATION\)=.*/\1=$((ITERATION - 1))/" \
-     "../${conf}"    
+     "../${conf}"
 fi
 
 done

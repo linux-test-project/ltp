@@ -21,7 +21,7 @@ Loop until done:
 
   Wait a little time for top to notice the CPU is gone
 
-  Now check that top hasn't crashed by verifying its PID is still 
+  Now check that top hasn't crashed by verifying its PID is still
   being reported by ps.
 
 When exiting:
@@ -39,7 +39,7 @@ Loop until done:
   Start up sar writing to a temp log and give it a little time to run
 
   Verify that SAR has correctly listed the missing CPU as 'nan' in its
-  tmp log 
+  tmp log
 
   Take a timestamp and count how many CPUs sar is reporting to be
   offline

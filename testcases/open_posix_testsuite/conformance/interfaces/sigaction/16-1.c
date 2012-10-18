@@ -126,7 +126,7 @@ void *threaded(void *arg)
 	rc = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
 	if (rc) {
 		printf("Failed: pthread_setschedparam(SCHED_FIFO), root?\n");
-		
+
 		if (rc == EPERM)
 			exit(PTS_UNTESTED);
 		else
@@ -200,7 +200,7 @@ int test_sig(struct sig_info *s)
 	sem_destroy(&sem);
 
 	status = ((long) thread_status) & 0xFFFFFFFF;
-	
+
 	return status;
 
 done:

@@ -32,10 +32,10 @@
 #     - IPsec is not used
 #     - Enable window scaling
 #     - Enable Nagle algorithm
-#     - Enable TCP Duplicate SACK support 
+#     - Enable TCP Duplicate SACK support
 #     - Enable SACK Support
 #     - No packet are lost
-#     - Enable TSO if it is avalable 
+#     - Enable TSO if it is avalable
 #
 #   *) This script may be read by the other test case
 #
@@ -65,13 +65,13 @@ export TST_TOTAL
 tst_resm TINFO "Verify that the kernel, whose NIC supports TCP Segmentation Offload, is not crashed by a connection enabling TCP window scaling"
 
 # Enable window scaling
-DO_WINDOW_SCALING=true 
+DO_WINDOW_SCALING=true
 
 # Enable TSO
 DO_TSO=true
 
 # Load tcp4-uni-basic01
-NON_BASIC=true 
+NON_BASIC=true
 
 . tcp4-uni-basic01
 

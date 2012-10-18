@@ -1,5 +1,5 @@
-''' 
-	Access Control Lists testing based on newpynfs framework 
+'''
+	Access Control Lists testing based on newpynfs framework
 	Aurelien Charbon - Bull SA
 '''
 
