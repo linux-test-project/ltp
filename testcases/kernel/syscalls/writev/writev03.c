@@ -90,8 +90,8 @@ void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	int nbytes;
 

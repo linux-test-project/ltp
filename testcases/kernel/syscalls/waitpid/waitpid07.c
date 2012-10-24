@@ -75,14 +75,13 @@ void do_child_2_uclinux(void);
 
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	int status;
 	int fail = 0;
 	int pid;
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

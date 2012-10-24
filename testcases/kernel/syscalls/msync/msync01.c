@@ -89,8 +89,8 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char read_buf[BUF_SIZE];	/* buffer to hold data read from file */
 	int nread = 0, count, err_flg = 0;
 

@@ -249,9 +249,9 @@ static void usage(const char *progname)
 int main(int ac, char **av) {
 	int result = RESULT_OK;
 	int c, i;
-	int lc;		/* loop counter */
+	int lc;
 	int ret;
-	char *msg;      /* message returned from parse_opts */
+	char *msg;
 
 	struct option long_options[] = {
 		{ "debug",	no_argument,	0,	'd' },
@@ -261,7 +261,6 @@ int main(int ac, char **av) {
 
 	progname = basename(av[0]);
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();

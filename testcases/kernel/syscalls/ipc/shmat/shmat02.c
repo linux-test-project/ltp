@@ -103,8 +103,8 @@ static void setup_tc(int i, struct test_case_t *tc)
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int i;
 	struct test_case_t *tc;
 

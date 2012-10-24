@@ -141,11 +141,11 @@ int Num_flags;
 int main(int ac, char **av)
 {
 
-	int i;			/* counter */
-	int ret_val;		/* return value from testrun call */
+	int i;
+	int ret_val;
 	int eok;		/* everything is ok flag */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int flag_cnt;
 
 	Num_flags = sizeof(Flags) / sizeof(int);

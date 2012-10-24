@@ -83,10 +83,10 @@ void sig_handle(int sig);	/* signal handler for SIGCLD */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int status;		/* child process exit status */
-	int ret_val;		/* return value for wait() */
+	int ret_val;
 
 	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

@@ -76,11 +76,10 @@ int TC[] = { IPC_SET, IPC_RMID };
 
 int main(int ac, char **av)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	pid_t pid;
 	void do_child(void);
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -122,7 +121,7 @@ int main(int ac, char **av)
  */
 void do_child()
 {
-	int lc;			/* loop counter */
+	int lc;
 	int i;
 	union semun arg;
 	struct semid_ds perm;

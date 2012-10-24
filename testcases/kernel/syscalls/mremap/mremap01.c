@@ -98,7 +98,7 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	int ind;		/* counter variable */
 
 	/* Parse standard options given to run the test. */

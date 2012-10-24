@@ -55,7 +55,7 @@ void cleanup(void);
 int main(int ac, char **av)
 {
 	struct passwd *pwent;
-	int lc;			/* loop counter */
+	int lc;
 	char *msg;		/* message returned by parse_opts */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

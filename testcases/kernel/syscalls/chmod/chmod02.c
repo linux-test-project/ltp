@@ -131,8 +131,8 @@ int Modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int ind;
 	int mode;
 

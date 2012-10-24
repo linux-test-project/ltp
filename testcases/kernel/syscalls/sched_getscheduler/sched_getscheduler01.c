@@ -71,7 +71,7 @@ struct test_case_t {
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
+	int lc;
 	char *msg;		/* message returned by parse_opts */
 
 	int i;

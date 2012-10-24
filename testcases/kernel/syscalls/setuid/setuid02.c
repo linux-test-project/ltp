@@ -130,8 +130,8 @@ int uid;			/* current user id */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
     /***************************************************************
      * parse standard options

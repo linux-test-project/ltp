@@ -93,8 +93,8 @@ int myrenameat(int olddirfd, const char *oldfilename, int newdirfd,
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int i;
 
 	/* Disable test if the version of the kernel is less than 2.6.16 */

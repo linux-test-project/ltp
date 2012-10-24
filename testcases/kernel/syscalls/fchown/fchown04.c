@@ -117,10 +117,10 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int fd;			/* test file descriptor */
-	int i;		/* counter to test different test conditions */
+	int i;
 	uid_t user_id;		/* Effective user id of a test process */
 	gid_t group_id;		/* Effective group id of a test process */
 

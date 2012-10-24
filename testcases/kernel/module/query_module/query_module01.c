@@ -156,11 +156,10 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 int
 main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	size_t buflen = sizeof(out_buf);
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

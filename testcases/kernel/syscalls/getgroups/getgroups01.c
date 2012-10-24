@@ -96,12 +96,12 @@ gid_t cmpset[NGROUPS];
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
+	int lc;
 	char *ptr;		/* message returned from parse_opts */
 
 	gid_t group;
 
-	int i;			/* counter */
+	int i;
 	int entries;		/* number of group entries */
 
 	initgroups("root", 0);

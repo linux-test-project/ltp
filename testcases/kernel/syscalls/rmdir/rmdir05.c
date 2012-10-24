@@ -120,8 +120,8 @@ char *bad_addr = 0;
 
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
     /***************************************************************
      * parse standard options

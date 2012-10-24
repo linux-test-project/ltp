@@ -81,7 +81,6 @@ int main(int argc, char **argv)
 	char wbuf[17 * PIPE_SIZE_TEST];
 	struct sigaction sigptr;	/* set up signal handler */
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

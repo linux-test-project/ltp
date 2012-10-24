@@ -268,16 +268,11 @@ EXIT:
 	return 0;
 }
 
-/*
- * main()
- */
-
 int main(int ac, char **av) {
 	int i;
 	int lc;
 	char *msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -291,9 +286,6 @@ int main(int ac, char **av) {
 
 			ret = 0;
 
-			/*
-			 * Execute test
-			 */
 			for (i = 0; ret == 0 &&
 				    i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
 				ret = do_test(&tcase[i]);

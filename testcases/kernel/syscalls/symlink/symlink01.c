@@ -459,8 +459,8 @@ int main(int argc, char *argv[])
 	struct tcses *tcs_ptr, *get_tcs_info();
 	int do_syscalltests();
 	void cleanup();
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
    /***************************************************************
     * parse standard options, and exit if there is an error

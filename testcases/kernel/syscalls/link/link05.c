@@ -150,8 +150,8 @@ int nlinks = 1000;
  ***********************************************************************/
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	struct stat fbuf, lbuf;
 	int cnt;
 	char lname[255];

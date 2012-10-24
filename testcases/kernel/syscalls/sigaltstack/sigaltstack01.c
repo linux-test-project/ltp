@@ -94,8 +94,8 @@ void sig_handler();		/* signal catching function */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	void *alt_stk;		/* address of alternate stack for signal */
 
 	/* Parse standard options given to run the test. */

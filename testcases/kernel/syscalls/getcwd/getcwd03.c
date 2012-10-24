@@ -78,7 +78,7 @@ int main(int ac, char **av)
 	char *pwd1, *pwd2;
 	char link2[BUFSIZ];
 	int n;
-	int lc;			/* loop counter */
+	int lc;
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

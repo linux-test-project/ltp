@@ -98,8 +98,8 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
-	int lc, i;		/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc, i;
+	char *msg;
 	off_t file_length2;	/* test file length */
 	off_t file_length1;	/* test file length */
 	int rbytes;		/* bytes read from testfile */
@@ -250,7 +250,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int i;			/* counter variable */
+	int i;
 	int wbytes;		/* bytes written to testfile */
 	int write_len = 0;	/* total no. of bytes written to testfile */
 

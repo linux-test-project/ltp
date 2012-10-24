@@ -217,8 +217,8 @@ option_t options[] = {
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int cnt;
 
 

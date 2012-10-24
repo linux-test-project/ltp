@@ -123,8 +123,8 @@ static char *argv0;
 
 int main(int argc, char *argv[])
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);

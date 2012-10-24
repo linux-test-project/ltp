@@ -112,11 +112,10 @@ char *argv[];
 	struct sigaction act;
 
 #ifdef UCLINUX
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
 	argv0 = argv[0];
 
-	/* parse standard options */
 	if ((msg =
 	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -190,12 +190,6 @@ static struct test_case tcase[] = {
 		.ttype	  = NORMAL,
 				//  0	 1	 2	 3
 				//  0123456789012345678901234567890123456789
-		.qname	  = "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
 				   "aaaaaaaaaaaaaaa",
 		.oflag	  = O_CREAT,
 		.ret	    = 0,
@@ -205,12 +199,6 @@ static struct test_case tcase[] = {
 		.ttype	  = NORMAL,
 				//  0	 1	 2	 3
 				//  0123456789012345678901234567890123456789
-		.qname	  = "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-				   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
 				   "aaaaaaaaaaaaaaaa",
 		.oflag	  = O_CREAT,
 		.ret	    = -1,
@@ -400,10 +388,9 @@ EXIT:
 int main(int ac, char **av) {
 	int result = RESULT_OK;
 	int i;
-	int lc;		 /* loop counter */
-	char *msg;	      /* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

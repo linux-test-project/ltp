@@ -90,7 +90,7 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int main(int ac, char **av)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	void *child_stack;	/* stack for child */
 	int status, child_pid;
 

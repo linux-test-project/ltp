@@ -68,15 +68,14 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	int fildes[2];		/* fds for pipe read and write */
 	char wrbuf[BUFSIZ], rebuf[BUFSIZ];
 	int red, written;	/* no. of chars read/written to pipe */
 	int greater, length;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

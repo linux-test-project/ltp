@@ -133,8 +133,8 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. *
 
 int main(int argc, char *argv[])
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);

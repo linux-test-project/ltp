@@ -101,8 +101,8 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	loff_t offset;		/* Ret value from llseek */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

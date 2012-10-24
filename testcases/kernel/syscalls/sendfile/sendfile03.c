@@ -90,7 +90,7 @@ int exp_enos[] = { EBADF, 0 };
 int main(int ac, char **av)
 {
 	int i;
-	int lc;			/* loop counter */
+	int lc;
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

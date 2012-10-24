@@ -54,8 +54,8 @@ int main(int ac, char *av[])
 	int ret = 0;
 	char pbuf[BUFSIZ];
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int fail_count = 0;
 
 	/*

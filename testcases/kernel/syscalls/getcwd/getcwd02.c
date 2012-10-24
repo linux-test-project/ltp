@@ -87,7 +87,7 @@ int main(int ac, char **av)
 {
 	FILE *fin;
 	char *cp, *cp_cur;
-	int lc;			/* loop counter */
+	int lc;
 	char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

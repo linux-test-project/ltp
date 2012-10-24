@@ -97,8 +97,8 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* struct buffer to hold file info. */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	time_t modf_time, access_time;
 	/* file modification/access time */
 

@@ -107,11 +107,10 @@ void hack();
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
+	int lc;
 	int rval;
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 #ifdef UCLINUX

@@ -75,8 +75,8 @@ void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	struct robust_list_head head;
 	size_t len_ptr;		/* size of structure struct robust_list_head */
 	int retval;

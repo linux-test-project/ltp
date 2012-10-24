@@ -92,8 +92,8 @@ void cleanup();			/* Cleanup function for the test */
 int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);

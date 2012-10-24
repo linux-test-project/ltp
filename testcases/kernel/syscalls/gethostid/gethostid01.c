@@ -143,7 +143,7 @@ int main(int ac, char **av)
 {
 	int lc, i, j;		/* loop counters */
 	int bit_64 = 0;		/* used when compiled 64bit on some 64bit machines */
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	char *result;
 	char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN],
 	    hostid2[HOSTIDLEN], *hostid3, hex[2] = "0x";

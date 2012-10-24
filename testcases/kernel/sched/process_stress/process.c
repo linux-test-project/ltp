@@ -362,7 +362,7 @@ void  nextofkin(int sig, int code, struct sigcontext *scp)
 /* given breadth and depth of a tree, sum up total number of nodes created */
 unsigned long sumit(int B, int D)
 {
-    	int i;			/* Depth counter */
+	int i;
     	int exp = 1;		/* exponent of breadth */
 	unsigned long sum = 1;	/* running sum of nodes */
 

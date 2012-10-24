@@ -150,8 +150,8 @@ void cleanup();			/* Cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *test_file;	/* testfile name */
 	char *sym_file;		/* symbolic link file name */
 	char *test_desc;	/* test specific error message */

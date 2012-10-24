@@ -148,9 +148,8 @@ int test_count = sizeof(test_cases) / sizeof(struct test_case_t);
 int main(int ac, char **av) {
 	int i;
 	sigset_t s;
-	char *msg;	/* message returned from parse_opts */
+	char *msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();

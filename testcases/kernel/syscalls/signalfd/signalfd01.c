@@ -273,7 +273,7 @@ void do_test2(int ntst, int fd, int sig)
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	int sfd;
 
 	if ((tst_kvercmp(2, 6, 22)) < 0) {

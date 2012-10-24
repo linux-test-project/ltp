@@ -99,7 +99,6 @@ int main(int argc, char **argv)
 	signum[14] = SIGALRM;
 
 #ifdef UCLINUX
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

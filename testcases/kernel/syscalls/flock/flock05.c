@@ -93,10 +93,9 @@ int main(int argc, char **argv)
 {
 	int lc, retval;
 	/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	pid_t pid;
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -652,8 +652,8 @@ static void overflow_read_test(int evfd)
 
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int fd;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)

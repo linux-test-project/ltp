@@ -105,8 +105,8 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int ind;		/* counter variable for chmod(2) tests */
 	uid_t user_id;		/* user id of the user set for testfile */
 	gid_t group_id;		/* group id of the user set for testfile */

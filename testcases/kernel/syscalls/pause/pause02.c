@@ -88,8 +88,8 @@ void do_child_uclinux();	/* Setup SIGINT handler then do_child() */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int status;		/* child process exit status */
 	int rval;		/* return value for wait() */
 

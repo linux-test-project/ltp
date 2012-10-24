@@ -119,8 +119,8 @@ void cleanup();			/* Main cleanup function for test */
 int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat struct */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	mode_t dir_mode;	/* mode permissions set on test directory */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

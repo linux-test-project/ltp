@@ -115,10 +115,9 @@ int main(int ac, char **av) {
 	siginfo_t infop;
 	int i = 0;
 
-	int lc;                 /* loop counter */
-	char *msg;              /* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-        /* parse standard options */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -68,7 +68,7 @@ void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
 	struct tms buf1, buf2;
 	time_t start_time, end_time;

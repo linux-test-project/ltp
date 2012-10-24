@@ -77,8 +77,8 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	pid_t c1pid, c2pid;
 	int wtstatus;
 	int bytesread;
@@ -86,7 +86,6 @@ int main(int ac, char **av)
 
 	char rbuf[BUFSIZ];
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 #ifdef UCLINUX

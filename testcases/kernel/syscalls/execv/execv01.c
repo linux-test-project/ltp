@@ -134,8 +134,8 @@ char *args[2] = { "/bin/test", 0 };	/* argument list for execv call */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

@@ -97,8 +97,8 @@ int exp_enos[] = { EPERM, 0 };	/* List must end with 0 */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	pid_t pid;
 	int status;
 

@@ -93,8 +93,8 @@ int exp_enos[] = { EFAULT, 0 };
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */

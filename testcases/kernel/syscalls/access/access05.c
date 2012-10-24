@@ -142,8 +142,8 @@ char *bad_addr = 0;
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *file_name;	/* name of the testfile */
 	int access_mode;	/* specified access mode for testfile */
 	int i;

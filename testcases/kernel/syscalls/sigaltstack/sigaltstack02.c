@@ -112,8 +112,8 @@ struct test_case_t {		/* test case struct. to hold diff. test.conds */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 

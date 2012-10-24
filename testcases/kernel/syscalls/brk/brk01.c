@@ -126,8 +126,8 @@ long Beg_brk_val;
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int incr;		/* increment */
 	long nbrkpt;		/* new brk point value */
 	long cur_brk_val;	/* current size returned by sbrk */

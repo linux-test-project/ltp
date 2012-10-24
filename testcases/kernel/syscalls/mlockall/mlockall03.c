@@ -111,8 +111,8 @@ struct test_case_t {
 
 int main(int ac, char **av)
 {
-	int lc, i;		/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc, i;
+	char *msg;
 	struct utsname *buf;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

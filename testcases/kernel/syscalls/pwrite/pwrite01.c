@@ -101,8 +101,8 @@ void check_file_contents();	/* function to verify the contents of file */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int nwrite;		/* no. of bytes written by pwrite() */
 
 	/* Parse standard options given to run the test. */

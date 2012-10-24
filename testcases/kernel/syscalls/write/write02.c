@@ -64,8 +64,8 @@ char pfiln[40] = "";
 
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	int cwrite;
 	int fild;
@@ -73,7 +73,6 @@ int main(int argc, char **argv)
 	int badcount = 0;
 	char pwbuf[BUFSIZ + 1];
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL))) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	 }

@@ -103,8 +103,8 @@ void sig_handler();		/* signal handler to catch SIGSEGV */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char file_content;	/* tempfile content */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

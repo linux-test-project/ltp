@@ -92,9 +92,9 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	int i;			/* counter variable for test case looping */
+	int lc;
+	char *msg;
+	int i;
 	int incr_val;		/* nice value for the process */
 	char *test_desc;	/* test specific error message */
 

@@ -100,8 +100,8 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	uid_t user_id;		/* Owner id of the test file. */
 	gid_t group_id;		/* Group id of the test file. */
 

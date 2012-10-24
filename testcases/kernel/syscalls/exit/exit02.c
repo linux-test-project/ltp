@@ -71,8 +71,8 @@ int main(int ac, char **av)
 	char wbuf[BUFSIZ], rbuf[BUFSIZ];
 	int len, rlen;
 	int rval = 0;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	/*
 	 * parse standard options

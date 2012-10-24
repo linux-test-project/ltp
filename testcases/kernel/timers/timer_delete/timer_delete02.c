@@ -81,11 +81,10 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 int
 main(int ac, char **av)
 {
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	kernel_timer_t timer_id;
 
-	/* parse standard options */
 	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) !=
 			(char *) NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

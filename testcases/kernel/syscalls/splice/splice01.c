@@ -72,8 +72,8 @@ static inline long splice(int fd_in, loff_t * off_in,
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int results;
 
 	/* Disable test if the version of the kernel is less than 2.6.17 */

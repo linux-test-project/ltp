@@ -74,7 +74,7 @@ char *argv[];
 	void dochild2();
 
 #ifdef UCLINUX
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
 	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)

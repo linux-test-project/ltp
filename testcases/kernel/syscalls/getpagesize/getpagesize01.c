@@ -53,8 +53,8 @@ int exp_enos[] = { 0 };		/* must be a 0 terminated list */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	int size, ret_sysconf;
 	/***************************************************************

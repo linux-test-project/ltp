@@ -69,9 +69,8 @@ int TST_TOTAL = 1;
 
 int main(int argc, char **argv)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
-	/* parse standard options */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -82,7 +81,7 @@ int main(int argc, char **argv)
 
 #if HAVE_NUMA_MOVE_PAGES
 	unsigned int i;
-	int lc;			/* loop counter */
+	int lc;
 	unsigned int from_node;
 	unsigned int to_node;
 	int ret;

@@ -137,8 +137,8 @@ fd_set Readfds;
  ***********************************************************************/
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	struct timeval timeout;
 	long test_time = 0;	/* in usecs */
 

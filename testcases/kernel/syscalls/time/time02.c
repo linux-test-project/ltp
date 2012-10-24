@@ -87,8 +87,8 @@ int exp_enos[] = { 0 };
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	time_t tloc;		/* time_t variables for time(2) */
 
 	/* Parse standard options given to run the test. */

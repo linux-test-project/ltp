@@ -72,7 +72,6 @@ int main(int argc, char **argv)
 
 	struct passwd *nobody;
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

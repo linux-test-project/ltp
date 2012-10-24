@@ -95,9 +95,9 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	int ret_val;		/* getgroups(2) return value */
+	int lc;
+	char *msg;
+	int ret_val;
 	int gidsetsize = NGROUPS;	/* total groups */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

@@ -152,8 +152,8 @@ int tcases[] = {		/* modes to give nodes created (1 per text case) */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	TST_TOTAL = (sizeof(tcases) / sizeof(tcases[0]));
     /***************************************************************

@@ -96,11 +96,10 @@ static option_t options[] = {	/* options supported by mount01 test */
 
 int main(int ac, char **av)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	int ret;
 	int len, i, test_num;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

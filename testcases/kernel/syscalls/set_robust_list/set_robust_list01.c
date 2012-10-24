@@ -80,9 +80,9 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 #ifdef __NR_set_robust_list
-	int lc;			/* loop counter */
+	int lc;
 #endif
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 #ifdef __NR_set_robust_list
 	struct robust_list_head head;
 	size_t len;		/* size of structure struct robust_list_head */

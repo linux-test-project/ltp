@@ -117,24 +117,22 @@ variables used are set by the \fBparse_opts(3)\fR routine.
 Below is a partial template of a system call test using these routines, macros, and global variables.
 
 .nf
-void
-setup()
+void setup(void)
 {
 	TEST_PAUSE;	/* Pause  if option specified */
 }
 
-void
-cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 }
 
-int main(ac, av)
+int main(int argc, char *argv[])
 {
-	int lc;		/* loop counter */
-	char *msg;	/* return from parse_opts */
+	int lc;
+	char *msg;
 
-	int exp_enos[]={EACCESS, 0};	/* expected errnos */
+	int exp_enos[]={EACCESS, 0};
 
 
 	TEST_EXP_ENOS(exp_enos);	/* set expected errnos */
@@ -157,8 +155,7 @@ int main(ac, av)
 	}
 
 	cleanup();
-
-	return 0;
+	tst_exit();
 }
 .fi
 

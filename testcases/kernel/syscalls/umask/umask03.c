@@ -73,7 +73,6 @@ int main(int argc, char **argv)
 	int fildes, i;
 	unsigned low9mode;
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

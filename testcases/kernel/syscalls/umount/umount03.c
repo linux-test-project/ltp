@@ -118,13 +118,12 @@ static option_t options[] = {	/* options supported by mount04 test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 	int status;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();

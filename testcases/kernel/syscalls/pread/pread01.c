@@ -100,8 +100,8 @@ void compare_bufers();		/* function to compare o/p of pread/pwrite */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int nread;		/* no. of bytes read by pread() */
 
 	/* Parse standard options given to run the test. */

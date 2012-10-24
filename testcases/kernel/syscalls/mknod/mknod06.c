@@ -134,8 +134,8 @@ void cleanup();			/* cleanup function for the tests */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *node_name;	/* ptr. for node name created */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */

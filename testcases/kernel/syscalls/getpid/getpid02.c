@@ -81,8 +81,8 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	pid_t proc_id;		/* process id of the test process */
 	pid_t pid;		/* process id of the child process */
 	pid_t pproc_id;		/* parent process id */

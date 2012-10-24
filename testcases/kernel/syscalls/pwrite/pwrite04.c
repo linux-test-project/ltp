@@ -70,8 +70,8 @@ int main(int ac, char *av[])
 	int nbytes;
 	char *wbuf[NBUFS];
 	struct stat statbuf;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	strcpy(name, DATA_FILE);
 	sprintf(fname, "%s.%d", name, getpid());

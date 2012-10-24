@@ -113,13 +113,12 @@ int TST_TOTAL = 2;
 int main(int ac, char **av)
 {
 
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	pid_t child_pid;
 	int status;
 	struct sigaction parent_act;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 #ifdef UCLINUX

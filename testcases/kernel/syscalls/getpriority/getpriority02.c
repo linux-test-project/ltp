@@ -105,8 +105,8 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int ind;		/* counter variable for test case looping */
 	char *test_desc;	/* test specific error message */
 	int which;		/* process priority category */

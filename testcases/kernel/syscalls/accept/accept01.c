@@ -106,8 +106,8 @@ int exp_enos[] = { EBADF, ENOTSOCK, EINVAL, EOPNOTSUPP, 0 };
 
 int main(int ac, char *av[])
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

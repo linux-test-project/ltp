@@ -84,14 +84,13 @@ struct test_case_t {
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
+	int lc;
 	int retval = 0;
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
 	pid_t pid, pid1;
 	int i, status, fd;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

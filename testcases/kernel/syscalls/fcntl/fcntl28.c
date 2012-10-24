@@ -108,7 +108,7 @@ int main(int ac, char **av)
 {
 	int lc, expected_result = -1;	/* loop counter, expected resul */
 	/*   from system call */
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
     /***************************************************************
      * parse standard options
      ***************************************************************/

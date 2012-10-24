@@ -141,11 +141,11 @@ void cleanup();			/* Cleanup function for the test */
 int main(int ac, char **av)
 {
 	char buffer[MAX_SIZE];	/* temporary buffer to hold symlink contents */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *sym_file;		/* symbolic link file name */
 	char *test_desc;	/* test specific error message */
-	int i;			/* counter to test different test conditions */
+	int i;
 	size_t buf_size;	/* size of buffer for readlink */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -332,7 +332,7 @@ int setup2()
  */
 int lpath_setup()
 {
-	int i;			/* counter variable */
+	int i;
 
 	for (i = 0; i <= (PATH_MAX + 1); i++) {
 		Longpathname[i] = 'a';

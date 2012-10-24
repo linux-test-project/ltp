@@ -418,7 +418,6 @@ int main(int argc, char** argv)
 	int lc;
 	char* msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

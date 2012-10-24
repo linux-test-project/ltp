@@ -124,7 +124,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	int i;
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	mode_t access_mode;	/* specified access mode for testfile */
 	char *file_name;	/* name of the testfile */
 

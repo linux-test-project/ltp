@@ -106,7 +106,7 @@ int TST_TOTAL = sizeof(testcases) / sizeof(*testcases);
 int main(int ac, char **av)
 {
 	int i;
-	int lc;			/* loop counter */
+	int lc;
 	char *msg;		/* parse_opts() return message */
 
 	/* Parse standard options */

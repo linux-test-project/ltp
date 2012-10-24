@@ -183,8 +183,8 @@ static int sig_array[NUMSIGS];
  ***********************************************************************/
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 
 	/* gcc -Wall complains about sig_caught not being ref'd because of the
 	   external declarations. */

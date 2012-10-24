@@ -86,8 +86,8 @@ void sigproc(int sig);		/* signal catching function */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int time_sec1 = 10;	/* time for which 1st alarm is set */
 	int time_sec2 = 5;	/* time for which 2st alarm is set */
 	int ret_val1, ret_val2;	/* return values for alarm() calls */

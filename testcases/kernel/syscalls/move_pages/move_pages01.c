@@ -68,9 +68,8 @@ int TST_TOTAL = 1;
 
 int main(int argc, char **argv)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
-	/* parse standard options */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -80,7 +79,7 @@ int main(int argc, char **argv)
 	setup();
 
 #if HAVE_NUMA_MOVE_PAGES
-	int lc;			/* loop counter */
+	int lc;
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

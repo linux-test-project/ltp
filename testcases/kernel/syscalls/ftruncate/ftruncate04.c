@@ -284,8 +284,8 @@ int main(int ac, char **av)
 	int fd, i;
 	int tlen = 0;
 	struct sigaction act;
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	struct statvfs fs;
 
 	/*

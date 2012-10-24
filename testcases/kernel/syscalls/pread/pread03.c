@@ -100,7 +100,7 @@ void init_buffers();		/* function to initialize/allocate buffers */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */

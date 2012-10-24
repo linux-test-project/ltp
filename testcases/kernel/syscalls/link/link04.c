@@ -208,8 +208,8 @@ struct test_case_t {
  ***********************************************************************/
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *fname1, *fname2;
 	char *desc1, *desc2;
 	int ind;

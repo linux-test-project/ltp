@@ -232,7 +232,7 @@ void cleanup()
 }
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
+	int lc;
 	char *msg;		/* message got from parse_opts */
 	int i;
 	int test_flags[] = { SA_RESETHAND | SA_SIGINFO, SA_RESETHAND,

@@ -111,9 +111,9 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	int i;			/* counter to test different test conditions */
+	int lc;
+	char *msg;
+	int i;
 	int fildes;		/* file descriptor of test file */
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */

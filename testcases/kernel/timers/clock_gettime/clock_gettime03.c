@@ -93,7 +93,7 @@ int
 main(int ac, char **av)
 {
 	int i, lc;	/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	char *msg;
 	struct timespec spec, *temp;
 
 	clockid_t clocks[] = {
@@ -105,7 +105,6 @@ main(int ac, char **av)
 		CLOCK_THREAD_CPUTIME_ID
 	};
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

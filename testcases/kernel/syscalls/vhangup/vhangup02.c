@@ -64,7 +64,6 @@ int main(int argc, char **argv)
 	pid_t pid, pid1;
 	int status;
 
-	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

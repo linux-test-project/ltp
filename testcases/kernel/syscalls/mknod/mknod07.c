@@ -109,10 +109,10 @@ void cleanup();			/* cleanup function for the tests */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *node_name;	/* ptr. for node name created */
-	int i;		/* counter to test different test conditions */
+	int i;
 	int mode;		/* creation mode for the node created */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

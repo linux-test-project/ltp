@@ -86,8 +86,8 @@ static int flag;
 int
 main(int ac, char **av)
 {
-	int lc, i;	/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc, i;
+	char *msg;
 
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
 			(char *) NULL) {

@@ -143,10 +143,9 @@ static option_t options[] = {	/* options supported by umount02 test */
 
 int main(int ac, char **av)
 {
-	int lc, i;		/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc, i;
+	char *msg;
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();

@@ -86,7 +86,7 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counters */
 	int length;		/* length of character string */
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	pid_t cpid;		/* child process id */
 	char write_buf[] = "Testing";	/* buffer string for write */
 	char read_buf[BUF_SIZE];	/* buffer for read-end of pipe */

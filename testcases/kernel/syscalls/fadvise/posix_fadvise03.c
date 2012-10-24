@@ -98,8 +98,8 @@ static int is_defined_advise(int advise)
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int advise;
 
 	/* Check this system has fadvise64 system which is used

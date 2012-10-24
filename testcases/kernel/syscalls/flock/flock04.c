@@ -91,7 +91,7 @@ int fd, fd1, status;
 int main(int argc, char **argv)
 {
 	int lc, retval;
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	pid_t pid;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
