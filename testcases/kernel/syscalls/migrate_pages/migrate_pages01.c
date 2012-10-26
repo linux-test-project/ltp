@@ -56,7 +56,7 @@ option_t options[] = {
 	{ NULL, NULL, NULL }
 };
 
-#if defined(__NR_migrate_pages) && defined(HAVE_NUMA_H)
+#if defined(__NR_migrate_pages) && HAVE_NUMA_H && HAVE_NUMAIF_H
 static unsigned long *sane_old_nodes;
 static unsigned long *sane_new_nodes;
 static int sane_nodemask_size;

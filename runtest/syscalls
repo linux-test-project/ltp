@@ -518,6 +518,7 @@ memcmp01 memcmp01
 memcpy01 memcpy01
 
 migrate_pages01 migrate_pages01
+migrate_pages02 migrate_pages02
 
 mlockall01 mlockall01
 mlockall02 mlockall02
