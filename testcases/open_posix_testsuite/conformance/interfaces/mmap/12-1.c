@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -34,93 +36,67 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/12-1.c"
-
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  long total_size;
+	char tmpfname[256];
+	void *pa;
+	size_t size;
+	int fd, fd2;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size;
-  int flag;
-  int fd, fd2;
-  off_t off = 0;
-  int prot;
+	size = 1024;
 
-  total_size = 1024;
-  size = total_size;
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_12_1_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_12_1_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
+	/* If there is no reference to the file,
+	 * this file will be removed
+	 */
+	unlink(tmpfname);
 
-  /* If there is no reference to the file,
-   * this file will be removed
-   */
-  unlink(tmpfname);
+	if (ftruncate(fd, size) == -1) {
+		printf("Error at ftruncate(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  if (ftruncate(fd, total_size) == -1)
-  {
-    printf(TNAME "Error at ftruncate(): %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
+	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at mmap: %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
 
-  flag = MAP_SHARED;
-  prot = PROT_READ | PROT_WRITE;
+	close(fd);
 
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-  	printf ("Test Fail: " TNAME " Error at mmap: %s\n",
-            strerror(errno));
-    exit(PTS_FAIL);
-  }
+	/* File still exists */
+	fd2 = open(tmpfname, O_RDWR, S_IRUSR | S_IWUSR);
+	if (fd == -1 && errno == ENOENT) {
+		printf("Error at open(): %s\n", strerror(errno));
+		printf("Test FAILED:"
+		       "The file is removed. mmap does not "
+		       "add extra reference to the file associated with fd\n");
+		exit(PTS_FAIL);
+	}
 
-  close(fd);
+	munmap(pa, size);
 
-  /* File still exists */
+	/* The file should have been removed */
+	fd2 = open(tmpfname, O_RDWR, S_IRUSR | S_IWUSR);
+	if (fd2 == -1 && errno == ENOENT) {
+		printf("Test PASSED\n");
+		exit(PTS_PASS);
+	}
 
-  fd2 = open(tmpfname, O_RDWR, S_IRUSR | S_IWUSR);
-  if (fd == -1 && errno == ENOENT)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    printf ("Test Fail: " TNAME  " The file is removed. mmap does not "
-    		    "add extra reference to the file associated with fd\n");
-    exit(PTS_FAIL);
-  }
+	if (fd2 != -1) {
+		printf("Test FAILED:"
+		       "The file is not removed. munmap does not remove "
+		       "reference to the file associated with fd\n");
+		return PTS_FAIL;
+	}
 
-  munmap (pa, size);
-
-  /* The file should have been removed */
-  fd2 = open(tmpfname, O_RDWR, S_IRUSR | S_IWUSR);
-  if (fd2 == -1 && errno == ENOENT)
-  {
-    printf ("Test PASS: " TNAME  " The file is removed. munmap removed "
-    		    "reference to the file associated with fd\n");
-    exit(PTS_PASS);
-  }
-
-  if (fd2 != -1)
-  {
-  	printf ("Test FAIL: " TNAME
-            " The file is not removed. munmap does not remove "
-    	      "reference to the file associated with fd\n");
-  	return PTS_FAIL;
-  }
-
-  printf("PTS_UNRESLOVED " TNAME " Error at open(): %s\n",
-           strerror(errno));
-  return PTS_UNRESOLVED;
+	printf("Error at open(): %s\n", strerror(errno));
+	return PTS_UNRESOLVED;
 }

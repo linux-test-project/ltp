@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -30,115 +32,90 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/14-1.c"
-
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  char* data;
-  long total_size;
+	char tmpfname[256];
+	char *data;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size;
-  int flag;
-  int fd;
-  off_t off = 0;
-  int prot;
-  struct stat stat_buff;
+	void *pa;
+	size_t size = 1024;
+	int fd;
+	struct stat stat_buff;
 
-  total_size = 1024;
-  size = total_size;
+	time_t mtime1, mtime2, ctime1, ctime2;
 
-  time_t mtime1, mtime2, ctime1, ctime2;
+	char *ch;
 
-  char *ch;
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_14_1_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_14_1_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
+	data = malloc(size);
+	memset(data, 'a', size);
+	printf("Time before write(): %ld\n", time(NULL));
+	if (write(fd, data, size) != size) {
+		printf("Error at write(): %s\n", strerror(errno));
+		unlink(tmpfname);
+		return PTS_UNRESOLVED;
+	}
+	free(data);
+	sleep(1);
+	printf("Time before mmap(): %ld\n", time(NULL));
+	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at mmap: %s\n", strerror(errno));
+		unlink(tmpfname);
+		return PTS_FAIL;
+	}
+	sleep(1);
+	printf("Time before write reference: %ld\n", time(NULL));
+	/* Before write reference */
+	if (stat(tmpfname, &stat_buff) == -1) {
+		printf("Error at 1st stat(): %s\n", strerror(errno));
+		unlink(tmpfname);
+		return PTS_UNRESOLVED;
+	}
 
-  data = (char *) malloc(total_size);
-  memset(data, 'a', total_size);
-  printf("Time before write(): %ld\n", time(NULL));
-  if (write(fd, data, total_size) != total_size)
-  {
-    printf(TNAME "Error at write(): %s\n",
-            strerror(errno));
-    unlink(tmpfname);
-    exit(PTS_UNRESOLVED);
-  }
-  free(data);
-  sleep(1);
-  flag = MAP_SHARED;
-  prot = PROT_READ | PROT_WRITE;
-  printf("Time before mmap(): %ld\n", time(NULL));
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-  	printf ("Test Fail: " TNAME " Error at mmap: %s\n",
-            strerror(errno));
-    unlink(tmpfname);
-    exit(PTS_FAIL);
-  }
-  sleep(1);
-  printf("Time before write reference: %ld\n", time(NULL));
-  /* Before write reference */
-  if (stat(tmpfname, &stat_buff) == -1)
-  {
-    printf(TNAME " Error at 1st stat(): %s\n",
-           strerror(errno));
-    unlink(tmpfname);
-    exit(PTS_UNRESOLVED);
-  }
+	ctime1 = stat_buff.st_ctime;
+	mtime1 = stat_buff.st_mtime;
 
-  ctime1 = stat_buff.st_ctime;
-  mtime1 = stat_buff.st_mtime;
+	ch = pa;
+	*ch = 'b';
 
-  ch = pa;
-  *ch = 'b';
+	/* Wait a while in case the precision of the sa_time
+	 * is not acurate enough to reflect the update
+	 */
+	sleep(1);
+	printf("Time before msync(): %ld\n", time(NULL));
+	msync(pa, size, MS_SYNC);
 
-  /* Wait a while in case the precision of the sa_time
-  * is not acurate enough to reflect the update
-  */
-  sleep(1);
-  printf("Time before msync(): %ld\n", time(NULL));
-  msync(pa, size, MS_SYNC);
+	/* FIXME: Update the in-core meta data to the disk */
+	fsync(fd);
 
-  /* FIXME: Update the in-core meta data to the disk */
-  fsync(fd);
+	if (stat(tmpfname, &stat_buff) == -1) {
+		printf("Error at stat(): %s\n", strerror(errno));
+		unlink(tmpfname);
+		return PTS_UNRESOLVED;
+	}
 
-  if (stat(tmpfname, &stat_buff) == -1)
-  {
-    printf(TNAME " Error at stat(): %s\n",
-           strerror(errno));
-    unlink(tmpfname);
-    exit(PTS_UNRESOLVED);
-  }
+	ctime2 = stat_buff.st_ctime;
+	mtime2 = stat_buff.st_mtime;
 
-  ctime2 = stat_buff.st_ctime;
-  mtime2 = stat_buff.st_mtime;
+	printf("ctime1: %ld, ctime2: %ld\nmtime1: %ld, mtime2: %ld\n",
+	       ctime1, ctime2, mtime1, mtime2);
+	if (ctime2 == ctime1 || mtime2 == mtime1) {
+		printf("Test FAILED: "
+		       "st_ctime and st_mtime were not updated properly\n");
+		unlink(tmpfname);
+		return PTS_FAIL;
+	}
 
-  printf("ctime1: %ld, ctime2: %ld\nmtime1: %ld, mtime2: %ld\n",
-                  ctime1, ctime2, mtime1, mtime2);
-  if (ctime2 == ctime1 || mtime2 == mtime1)
-  {
-    printf("Test Fail " TNAME
-           " st_ctime and st_mtime were not updated properly\n");
-    unlink(tmpfname);
-    exit(PTS_FAIL);
-  }
-
-  munmap(pa, size);
-  close(fd);
-  printf("Test Pass\n");
-  return PTS_PASS;
+	munmap(pa, size);
+	close(fd);
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

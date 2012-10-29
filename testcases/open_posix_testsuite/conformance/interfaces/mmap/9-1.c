@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -31,82 +33,62 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/9-1.c"
-
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  long  page_size;
-  long total_size;
+	char tmpfname[256];
+	long page_size;
+	long total_size;
 
-  void *illegal_addr;
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size;
-  int flag;
-  int fd;
-  off_t off = 0;
-  int prot;
+	void *illegal_addr;
+	void *pa;
+	size_t size;
+	int fd, saved_errno;
 
-  page_size = sysconf(_SC_PAGE_SIZE);
-  total_size = page_size;
-  size = total_size;
+	page_size = sysconf(_SC_PAGE_SIZE);
+	total_size = page_size;
+	size = total_size;
 
-  /* Create tmp file */
+	/* Create tmp file */
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_9_1_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	unlink(tmpfname);
+	if (ftruncate(fd, total_size) == -1) {
+		printf("Error at ftruncate(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_9_1_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
-  if (ftruncate(fd, total_size) == -1)
-  {
-    printf(TNAME "Error at ftruncate(): %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
+	/* Map the file for the first time, to get a legal address, pa */
+	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
-  /* Map the file for the first time, to get a legal address, pa */
+	if ((unsigned long)pa % page_size) {
+		printf("pa is not multiple of page_size\n");
+		illegal_addr = pa;
+	} else {
+		printf("pa is a multiple of page_size\n");
+		illegal_addr = pa + 1;
+	}
 
-  flag = MAP_SHARED;
-  prot = PROT_READ | PROT_WRITE;
-  pa = mmap(addr, size, prot, flag, fd, off);
+	munmap(pa, size);
 
-  if ((unsigned long)pa % page_size)
-  {
-    printf("pa is not multiple of page_size\n");
-    illegal_addr = pa;
-  }
-  else
-  {
-    printf("pa is a multiple of page_size\n");
-    illegal_addr = pa + 1;
-  }
+	/* Mmap again using the illegal address, setting MAP_FIXED */
+	pa = mmap(illegal_addr, size, PROT_READ | PROT_WRITE, MAP_FIXED, fd, 0);
 
-  munmap (pa, size);
+	saved_errno = errno;	
+	
+	close(fd);
+	munmap(pa, size);
+	
+	if (pa == MAP_FAILED && saved_errno == EINVAL) {
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	}
 
-  /* Mmap again using the illegal address, setting MAP_FIXED */
-  prot = PROT_READ | PROT_WRITE;
-  flag = MAP_FIXED;
-  addr = illegal_addr;
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED && errno == EINVAL)
-  {
-    printf("Test Pass: " TNAME " Set MAP_FIXED and get "
-    	   "EINVAL when 'addr' is illegal\n");
-    exit(PTS_PASS);
-  }
-
-  close (fd);
-  munmap (pa, size);
-  printf ("Test FAIL, Set MAP_FIXED but did not get EINVAL"
-          " when 'addr' is illegal\n");
-  return PTS_FAIL;
+	printf("Test FAILED, mmap with MAP_FIXED did not get EINVAL"
+	       " when 'addr' is illegal\n");
+	return PTS_FAIL;
 }

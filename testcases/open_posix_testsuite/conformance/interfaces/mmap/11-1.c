@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -34,65 +36,56 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/11-1.c"
-
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  long  page_size;
-  long total_size;
+	char tmpfname[256];
+	long page_size;
+	long total_size;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size;
-  int flag;
-  int fd;
-  off_t off = 0;
-  int prot;
+	void *pa;
+	size_t size;
+	int fd, saved_errno;
+	off_t off;
 
-  page_size = sysconf(_SC_PAGE_SIZE);
-  total_size = 3 * page_size;
-  size = page_size;
+	page_size = sysconf(_SC_PAGE_SIZE);
+	total_size = 3 * page_size;
+	size = page_size;
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_11_1_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_11_1_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	unlink(tmpfname);
 
-  if (ftruncate(fd, total_size) == -1)
-  {
-    printf(TNAME "Error at ftruncate(): %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
+	if (ftruncate(fd, total_size) == -1) {
+		printf("Error at ftruncate(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  prot = PROT_READ | PROT_WRITE;
-  flag = MAP_SHARED;
+	/* This offset is considered illegal, not a multiple of page_size,
+	 * unless the page_size is 1 byte, which is considered impossible.
+	 */
+	off = page_size + 1;
+	errno = 0;
+	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, off);
+	
+	saved_errno = errno;
+	
+	close(fd);
+	munmap(pa, size);
 
-  /* This offset is considered illegal, not a multiple of page_size,
-   * unless the page_size is 1 byte, which is considered impossible.
-   */
+	if (pa == MAP_FAILED && saved_errno == EINVAL) {
+		printf("Got EINVAL when 'off' is not multiple of page size\n");
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	}
 
-  off = page_size + 1;
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED && errno == EINVAL)
-  {
-    printf("Test Pass: " TNAME " Get "
-    	     "EINVAL when 'off' is not a multiple of page size\n");
-    exit(PTS_PASS);
-  }
-
-  printf ("Test FAIL, Did not get EINVAL"
-          " when 'off' is not a multiple of page size, get: %s\n", strerror(errno));
-  close (fd);
-  munmap (pa, size);
-  return PTS_FAIL;
+	printf("Test FAILED: Did not get EINVAL"
+	       " when 'off' is not a multiple of page size, get: %s\n",
+	       strerror(saved_errno));
+	
+	return PTS_FAIL;
 }

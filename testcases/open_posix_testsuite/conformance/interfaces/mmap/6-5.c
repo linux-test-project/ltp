@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -15,8 +17,8 @@
  * 2. Mmap the file to a memory region setting prot as PROT_WRITE.
  * 3. Setting flag as MAP_PRIVATE.
  * 4. The mmap() should be sucessful.
- *
  */
+
 #define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
@@ -31,62 +33,46 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/6-5.c"
-
 int main(void)
 {
-  char tmpfname[256];
-  int total_size = 1024;
+	char tmpfname[256];
+	void *pa;
+	size_t size = 1024;
+	int fd;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size = total_size;
-  int flag;
-  int fd;
-  off_t off = 0;
-  int prot;
+	/* Create the file */
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_6_5_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	if (ftruncate(fd, size) == -1) {
+		printf("Error at ftruncate(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	close(fd);
 
-  /* Create the file */
+	/* Open it readonly */
+	fd = open(tmpfname, O_RDONLY, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at 2nd open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	unlink(tmpfname);
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_6_5_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  if (ftruncate(fd, total_size) == -1)
-  {
-    printf(TNAME "Error at ftruncate(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  close(fd);
+	pa = mmap(NULL, size, PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at mmap(): %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
 
-  fd = open(tmpfname, O_RDONLY,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at 2nd open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
+	munmap(pa, size);
+	close(fd);
 
-  prot = PROT_WRITE;
-  flag = MAP_PRIVATE;
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf("Test FAIL: " TNAME " Get Error: %s\n",
-           strerror(errno));
-    exit(PTS_FAIL);
-  }
-
-  printf ("Test PASS: Mmap return successfully\n");
-  return PTS_PASS;
+	printf("Succesfully mapped readonly file with "
+	       "PROT_WRITE, MAP_PRIVATE\n"
+	       "Test PASSED\n");
+	return PTS_PASS;
 }

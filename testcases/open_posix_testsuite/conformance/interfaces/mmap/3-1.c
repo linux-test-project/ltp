@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -31,128 +33,106 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/3-1.c"
-
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  char tmpfname2[256];
-  char* data;
-  long total_size;
-  long page_size;
+	char tmpfname[256];
+	char tmpfname2[256];
+	char *data;
+	long total_size;
+	long page_size;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size;
-  int prot = PROT_READ | PROT_WRITE;
-  int flag = MAP_SHARED;
-  int fd;
-  off_t off = 0;
+	void *pa;
+	size_t size;
+	int fd;
+	
+	void *pa2;
+	size_t size2;
+	int fd2;
 
-  void *pa2 = NULL;
-  void *addr2 = NULL;
-  size_t size2;
-  int prot2 = PROT_READ | PROT_WRITE;
-  int flag2 ;
-  int fd2;
-  off_t off2 = 0;
-
-  char *ch;
+	char *ch;
 
 #ifndef MAP_FIXED
-  printf("MAP_FIXED does not defined\n");
-  exit(PTS_UNRESOLVED);
+	printf("MAP_FIXED was not defined at the time of compilation\n");
+	return PTS_UNRESOLVED;
 #endif
 
-  page_size = sysconf(_SC_PAGE_SIZE);
-  size = page_size + 2;
-  size2 = page_size + 1;
+	page_size = sysconf(_SC_PAGE_SIZE);
+	size = page_size + 2;
+	size2 = page_size + 1;
 
-  /* Size of the file */
-  total_size = 2 * page_size;
+	/* Size of the file */
+	total_size = 2 * page_size;
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_3_1_%d",
-           getpid());
-  snprintf(tmpfname2, sizeof(tmpfname2), "/tmp/pts_mmap_3_1_2_%d",
-           getpid());
-  data = (char *) malloc(total_size);
-  unlink(tmpfname);
-  unlink(tmpfname2);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  fd2 = open(tmpfname2, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1 || fd2 == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
-  unlink(tmpfname2);
-  memset(data, 'a', total_size);
-  if (write(fd, data, total_size) != total_size)
-  {
-    printf(TNAME "Error at write(), fd: %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  memset(data, 'b', total_size);
-  if (write(fd2, data, total_size) != total_size)
-  {
-    printf(TNAME "Error at write(), fd1: %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  free(data);
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_3_1_%d_1", getpid());
+	snprintf(tmpfname2, sizeof(tmpfname2), "/tmp/pts_mmap_3_1_%d_2",
+		 getpid());
+	
+	
+	unlink(tmpfname);
+	unlink(tmpfname2);
+	
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	fd2 = open(tmpfname2, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1 || fd2 == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	
+	unlink(tmpfname);
+	unlink(tmpfname2);
+	
+	data = malloc(total_size);
+	
+	memset(data, 'a', total_size);
+	if (write(fd, data, total_size) != total_size) {
+		printf("Error at write(), fd: %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	
+	memset(data, 'b', total_size);
+	if (write(fd2, data, total_size) != total_size) {
+		printf("Error at write(), fd1: %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	
+	free(data);
 
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf ("Test Fail: " TNAME " Error at mmap: %s\n",
-            strerror(errno));
-    exit(PTS_FAIL);
-  }
+	/* Map first file */
+	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at mmap: %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
 
-  ch = pa + size;
-  if (*ch != 'a')
-  {
-    printf ("Test Fail: " TNAME
-            " The file did not mapped to memory\n");
-    exit(PTS_FAIL);
-  }
+	ch = pa + size;
+	if (*ch != 'a') {
+		printf("Test Fail: The file is not mapped correctly\n");
+		return PTS_FAIL;
+	}
 
-  /* Replace orginal mapping*/
+	/* Replace orginal mapping */
+	pa2 = mmap(pa, size2, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, fd2, 0);
+	if (pa2 == MAP_FAILED) {
+		printf("Error at 2nd mmap: %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
 
-  addr2 = pa;
-  flag2 = MAP_SHARED | MAP_FIXED;
-  pa2 = mmap(addr2, size2, prot2, flag2, fd2, off2);
-  if (pa2 == MAP_FAILED)
-  {
-    printf ("Test Fail: " TNAME " Error at 2nd mmap: %s\n",
-            strerror(errno));
-    exit(PTS_FAIL);
-  }
+	if (pa2 != pa) {
+		printf("Error at mmap, the second mmap does not replaced the"
+		       " first mapping\n");
+		return PTS_FAIL;
+	}
 
-  if (pa2 != pa)
-  {
-    printf ("Test Fail: " TNAME " Error at mmap: "
-            "Second mmap does not replace the first mmap\n");
-    exit(PTS_FAIL);
-  }
+	ch = pa2 + size;
+	if (*ch != 'b') {
+		printf("The original mapped page has not been replaced\n");
+		return PTS_FAIL;
+	}
 
-  ch = pa2 + size;
-  if (*ch != 'b')
-  {
-    printf ("Test Fail: " TNAME
-            " The original mapped page has not been replaced\n");
-    exit(PTS_FAIL);
-  }
-
-  close(fd);
-  close(fd2);
-  munmap(pa, size);
-  munmap(pa2, size2);
-  printf ("Test Pass\n");
-  return PTS_PASS;
+	close(fd);
+	close(fd2);
+	munmap(pa, size);
+	munmap(pa2, size2);
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

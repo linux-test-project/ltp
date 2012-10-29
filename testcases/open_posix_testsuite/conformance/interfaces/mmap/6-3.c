@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -13,11 +15,13 @@
  * PROT_WRITE.
  *
  * Test Step:
- * If Memory Protection option is suppored:
+ *
+ * If the Memory Protection option is supported:
+ *
  * 1. Spawn a child process.
  * 2. The child process mmap a memory region setting prot as PROT_NONE.
- * 3. Try to write the mapped memory.
- * 4. If the write will triger SIGSEGV, the PASS.
+ * 3. Try to write to the mapped memory.
+ * 4. If the read will triger SIGSEGV, the PASS.
  *
  * Please refer to IEEE_1003.1-2001. 2.8.3.3 Memory Protection.
  */
@@ -37,115 +41,88 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/6-3.c"
-
 int main(void)
 {
-
 #ifdef _POSIX_MEMORY_PROTECTION
-  char tmpfname[256];
-  int total_size = 1024;
+	char tmpfname[256];
+	void *pa;
+	size_t size = 1024;
+	int fd;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size = total_size;
-  int flag = MAP_SHARED;
-  int fd;
-  off_t off = 0;
-  int prot;
+	pid_t child;
+	int status;
+	int sig_num;
 
-  char * ch;
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_6_2_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	unlink(tmpfname);
 
-  pid_t child;
-  int status;
-  int sig_num;
+	child = fork();
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_6_3_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
+	switch(child) {
+	case 0:
+		pa = mmap(NULL, size, PROT_NONE, MAP_SHARED, fd, 0);
+		if (pa == MAP_FAILED) {
+			printf("Error at mmap: %s\n", strerror(errno));
+			return PTS_FAIL;
+		}
 
-  child = fork();
+		/* Write acess */
+		*(char*)pa = 'b';
+		return 0;
+	break;
+	case -1:
+		perror("fork()");
+		return PTS_UNRESOLVED;
+	break;
+	default:
+	break;
+	}
 
-  if (child == 0)
-  {
-    fflush (NULL);
-    if (ftruncate(fd, total_size) == -1)
-    {
-      printf(TNAME "Error at ftruncate(): %s\n",
-              strerror(errno));
-      exit(PTS_UNRESOLVED);
-    }
+	waitpid(child, &status, 0);
+	close(fd);
 
-    prot = PROT_NONE;
-    pa = mmap(addr, size, prot, flag, fd, off);
-    if (pa == MAP_FAILED)
-    {
-      printf("Test Fail: " TNAME " Error at mmap: %s\n",
-            strerror(errno));
-      exit(PTS_FAIL);
-    }
+	if (WIFSTOPPED(status)) {
+		sig_num = WSTOPSIG(status);
+		printf("Child process stopped by signal %d\n", sig_num);
+		if (sig_num == SIGSEGV) {
+			printf("Got SIGSEGV when writing to the mapped memory, "
+			       "setting PROT_NONE\n"
+			       "Test PASSED\n");
+			return PTS_PASS;
+		}
+	}
+	
+	if (WIFSIGNALED(status)) {
+		sig_num = WTERMSIG(status);
+		printf("Child process terminated by signal %d\n", sig_num);
+		if (sig_num == SIGSEGV) {
+			printf("Got SIGSEGV when writing to the mapped memory, "
+			       "setting PROT_NOTE\n"
+			       "Test PASSED\n");
+			return PTS_PASS;
+		}
+	}
+	
+	if (WIFEXITED(status)) {
+		if (WEXITSTATUS(status) == 0) {
+			printf("Did not got SIGSEGV when writing to the mapped memory, "
+			       "setting PROT_NOTE\n"
+			       "Test FAILED\n");
+			return PTS_FAIL;
+		}
 
-    ch = pa;
+	}
 
-    /* Write acess */
-    *ch = 'b';
-    exit(0);
-  }
-  else if (child > 0)
-  {
-    waitpid(child, &status, 0);
-    close(fd);
-    if (WIFSTOPPED(status))
-    {
-      sig_num = WSTOPSIG(status);
-      if (sig_num == SIGSEGV)
-      {
-        printf("Test Pass: " TNAME
-                " Got SIGSEGV when writing the mapped memory, "
-                "setting PROT_NONE\n");
-        return PTS_PASS;
-      }
-      printf("Child process stopped by signal %d\n", sig_num);
-    }
-    if (WIFSIGNALED(status))
-    {
-      sig_num = WTERMSIG(status);
-      if (sig_num == SIGSEGV)
-      {
-        printf ("Test Pass: " TNAME
-                " Got SIGSEGV when writing the mapped memory, "
-                " setting PROT_NOTE\n");
-        return PTS_PASS;
-      }
-      printf("Child process terminated by signal %d\n", sig_num);
-    }
-    if (WIFEXITED(status))
-    {
-      if (WEXITSTATUS(status) == 0)
-      {
-        printf ("Test FAIL: " TNAME
-                " Did not got SIGSEGV when writing the mapped memory,"
-                " setting PROT_NOTE\n");
-        return PTS_FAIL;
-      }
-
-    }
-    printf ("Test Unresolved\n");
-    return PTS_UNRESOLVED;
-  }
-
+	printf("Test Unresolved\n");
+	return PTS_UNRESOLVED;
 #else
-    printf ("Test Unresolved: " TNAME
-            " _POSIX_MEMORY_PROTECTION not defined\n");
-    return PTS_UNRESOLVED;
+	printf("Test Usupported: _POSIX_MEMORY_PROTECTION not defined\n");
+	return PTS_UNSUPPORTED;
 #endif
 }
