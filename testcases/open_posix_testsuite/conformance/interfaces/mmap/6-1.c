@@ -92,16 +92,6 @@ int main(void)
 	
 	waitpid(child, &status, WUNTRACED);
 	close(fd);
-	if (WIFSTOPPED(status)) {
-		sig_num = WSTOPSIG(status);
-		printf("Child process stopped by signal %d\n", sig_num);
-		if (sig_num == SIGSEGV) {
-			printf("Got SIGSEGV when writing to the mapped memory, "
-			       "without setting PROT_WRITE\n"
-			       "Test PASSED\n");
-			return PTS_PASS;
-		}
-	}
 	
 	if (WIFSIGNALED(status)) {
 		sig_num = WTERMSIG(status);
