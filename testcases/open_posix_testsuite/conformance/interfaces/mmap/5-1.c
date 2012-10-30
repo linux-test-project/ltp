@@ -17,9 +17,8 @@
  * specified by prot, the call to mmap() shall fail.
  *
  * Test Step:
- * 1. mmap(), setting 'prot' as PROT_NONE;
- * 2. mmap(), setting 'prot' as PROT_READ | PROT_WRITE | PROT_EXEC
- *
+ * 1. call mmap() for all combinations permitted by POSIX
+ * 2. each should either succed or fail with ENOTSUP
  */
 
 #define _XOPEN_SOURCE 600
@@ -35,29 +34,65 @@
 #include <errno.h>
 #include "posixtest.h"
 
+struct testcase {
+	int prot;
+	int flags;
+};
+
+struct testcase testcases[] = {
+	{.flags = MAP_SHARED, .prot = PROT_NONE},
+	{.flags = MAP_SHARED, .prot = PROT_READ},
+	{.flags = MAP_SHARED, .prot = PROT_WRITE},
+	{.flags = MAP_SHARED, .prot = PROT_EXEC},
+	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_WRITE},
+	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_EXEC},
+	{.flags = MAP_SHARED, .prot = PROT_EXEC | PROT_WRITE},
+	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_WRITE | PROT_EXEC},
+	
+	{.flags = MAP_PRIVATE, .prot = PROT_NONE},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ},
+	{.flags = MAP_PRIVATE, .prot = PROT_WRITE},
+	{.flags = MAP_PRIVATE, .prot = PROT_EXEC},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_WRITE},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_EXEC},
+	{.flags = MAP_PRIVATE, .prot = PROT_EXEC | PROT_WRITE},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_WRITE | PROT_EXEC},
+};
+
+static void print_error(struct testcase *t, int saved_errno)
+{
+	printf("Combination of ");
+
+	if (t->prot == PROT_NONE)
+		printf("PROT_NONE ");
+	
+	if (t->prot & PROT_READ)
+		printf("PROT_READ ");
+
+	if (t->prot & PROT_WRITE)
+		printf("PROT_WRITE ");
+	
+	if (t->prot & PROT_EXEC)
+		printf("PROT_EXEC ");
+
+	switch (t->flags) {
+	case MAP_SHARED:
+		printf("with MAP_SHARED");
+	break;
+	case MAP_PRIVATE:
+		printf("with MAP_PRIVATE");
+	break;
+	}
+
+	printf(" has failed: %s\n", strerror(saved_errno));
+}
+
 int main(void)
 {
 	char tmpfname[256];
-	void *pa = NULL;
+	void *pa;
 	size_t size = 1024;
-	int fd;
-
-#ifndef PROT_READ
-	printf("Test Fail: PROT_READ not defined\n");
-	return PTS_FAIL;
-#endif
-#ifndef PROT_WRITE
-	printf("Test Fail: PROT_WRITE not defined\n");
-	return PTS_FAIL;
-#endif
-#ifndef PROT_EXEC
-	printf("Test Fail: PROT_EXEC not defined\n");
-	return PTS_FAIL;
-#endif
-#ifndef PROT_NONE
-	printf("Test Fail: PROT_READ not defined\n");
-	return PTS_FAIL;
-#endif
+	int fd, i, fail = 0;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_5_1_%d", getpid());
 	unlink(tmpfname);
@@ -72,23 +107,25 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	pa = mmap(NULL, size, PROT_NONE, MAP_SHARED, fd, 0);
-	if (pa == MAP_FAILED) {
-		printf("Error at mmap, with PROT_NONE %s\n", strerror(errno));
-		return PTS_FAIL;
-	}
-	munmap(pa, size);
+	for (i = 0; i < sizeof(testcases)/sizeof(*testcases); i++) {
+		
+		pa = mmap(NULL, size, testcases[i].prot, testcases[i].flags, fd, 0);
 
-	pa = mmap(NULL, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, fd, 0);
-	if (pa == MAP_FAILED) {
-		printf("Error at mmap, with "
-		       "PROT_READ | PROT_WRITE | PROT_EXEC %s\n",
-		       strerror(errno));
-		return PTS_FAIL;
+		if (pa == MAP_FAILED) {
+			if (errno != ENOTSUP) {
+				print_error(&testcases[i], errno);
+				fail++;
+			}
+		} else {
+			munmap(pa, size);
+		}
 	}
-	munmap(pa, size);
 
 	close(fd);
+
+	if (fail)
+ 		return PTS_FAIL;
+	
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
