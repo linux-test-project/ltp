@@ -33,11 +33,13 @@
 #include <unistd.h>
 #include "posixtest.h"
 
+#define WRITE(str) write(STDOUT_FILENO, str, sizeof(str) - 1)
+
 void sigbus_handler(int signum)
 {
-	printf("SIGBUS triggered\n");
-	printf("Test PASSED\n");
-	exit(PTS_PASS);
+	WRITE("SIGBUS triggered\n");
+	WRITE("Test PASSED\n");
+	_exit(PTS_PASS);
 }
 
 int main(void)
