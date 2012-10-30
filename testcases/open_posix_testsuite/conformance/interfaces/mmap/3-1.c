@@ -33,6 +33,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
+#ifdef MAP_FIXED
 int main(void)
 {
 	char tmpfname[256];
@@ -50,11 +51,6 @@ int main(void)
 	int fd2;
 
 	char *ch;
-
-#ifndef MAP_FIXED
-	printf("MAP_FIXED was not defined at the time of compilation\n");
-	return PTS_UNRESOLVED;
-#endif
 
 	page_size = sysconf(_SC_PAGE_SIZE);
 	size = page_size + 2;
@@ -136,3 +132,11 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+#else
+int main(void)
+{
+	printf("MAP_FIXED was not defined at the time of compilation\n");
+	return PTS_UNRESOLVED;
+}
+#endif /* MAP_FIXED */
+
