@@ -56,6 +56,7 @@
  */
 
 #include "ipcshm.h"
+#include "shmat_common.h"
 
 char *TCID = "shmat01";
 
@@ -108,6 +109,7 @@ int main(int ac, char **av)
 			/*
 			 * Use TEST macro to make the call
 			 */
+			base_addr = probe_free_addr();
 			errno = 0;
 			addr = shmat(*(TC[i].shmid), base_addr+TC[i].offset,
 				     TC[i].flags);
@@ -128,7 +130,7 @@ int main(int ac, char **av)
 			 * clean up things in case we are looping - in
 			 * this case, detach the shared memory
 			 */
-			if (shmdt((const void *)addr) == -1) {
+			if (shmdt(addr) == -1) {
 				tst_brkm(TBROK, cleanup,
 					 "Couldn't detach shared memory");
 			}
@@ -261,20 +263,6 @@ void setup(void)
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource 1 in setup()");
 	}
-
-	/* Probe an available linear address for attachment */
-	if ((base_addr = shmat(shm_id_1, NULL, 0)) == (void *)-1) {
-		tst_brkm(TBROK, cleanup, "Couldn't attach shared memory");
-	}
-	if (shmdt((const void *)base_addr) == -1) {
-		tst_brkm(TBROK, cleanup, "Couldn't detach shared memory");
-	}
-
-	/* some architectures (e.g. parisc) are strange, so better always align to
-	 * next SHMLBA address. */
-	base_addr =
-	    (void *)(((unsigned long)(base_addr) + (SHMLBA - 1)) &
-		     ~(SHMLBA - 1));
 }
 
 /*

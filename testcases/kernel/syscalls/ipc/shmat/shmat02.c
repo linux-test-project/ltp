@@ -55,6 +55,7 @@
 
 #include "ipcshm.h"
 #include <pwd.h>
+#include "shmat_common.h"
 
 char *TCID = "shmat02";
 char nobody_uid[] = "nobody";
@@ -125,6 +126,7 @@ int main(int ac, char **av)
 
 			setup_tc(i, tc);
 
+			base_addr = probe_free_addr();
 			errno = 0;
 			addr = shmat(*(tc->shmid), base_addr + tc->offset, 0);
 
@@ -180,20 +182,6 @@ void setup(void)
 	if ((shm_id_3 = shmget(shmkey2, INT_SIZE, IPC_CREAT|IPC_EXCL)) ==
 	    -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "shmget #2 failed");
-
-	/* Probe an available linear address for attachment */
-	if ((base_addr = shmat(shm_id_2, NULL, 0)) == (void *)-1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmat #1 failed");
-
-	if (shmdt((const void *)base_addr) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmat #2 failed");
-
-	/*
-	 * some architectures (e.g. parisc) are strange, so better always align
-	 * to next SHMLBA address
-	 */
-	base_addr =
-	    (void *)(((unsigned long)(base_addr) & ~(SHMLBA - 1)) + SHMLBA);
 }
 
 /*
