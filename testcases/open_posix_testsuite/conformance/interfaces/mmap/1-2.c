@@ -45,10 +45,20 @@ int main(void)
 		printf("Error at ftruncate(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
+	
+	if (write(fd, "a", 1) != 1) {
+		printf("Error at write(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
 	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED) {
 		printf("Error at mmap: %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
+	
+	if (*(char*)pa != 'a') {
+		printf("Test FAILED: The file was not mapped correctly.\n");
 		return PTS_FAIL;
 	}
 
