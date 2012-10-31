@@ -9,7 +9,7 @@
  * The st_atime field of the mapped file may be marked for update
  * at any time between the mmap() call and the corresponding munmap()
  * call. The initial read or write reference to a mapped region
- * shall cause the file¡¯s st_atime field to be marked for update if
+ * shall cause the file st_atime field to be marked for update if
  * it has not already been marked for update.
  *
  * Test Steps:
@@ -17,10 +17,6 @@
  *    also after writing the mapped region.
  * 2. Compare whether st_atime has been updated.
  */
-
- /* adam.li@intel.com: On linux, it looks mmap() will update
-  * st_atime, write to the mapped region will not cause the update
-  * */
 
 #define _XOPEN_SOURCE 600
 
@@ -35,9 +31,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include "noatime.h"
 #include "posixtest.h"
-
-#define TNAME "mmap/13-1.c"
 
 int main(void)
 {
@@ -52,6 +47,11 @@ int main(void)
 	time_t atime1, atime2, atime3;
 
 	char *ch;
+
+	if (mounted_noatime("/tmp") == 1) {
+		printf("UNTESTED: The /tmp is mounted noatime\n");
+		return PTS_UNTESTED;
+	}
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_13_1_%d", getpid());
 	unlink(tmpfname);
@@ -91,7 +91,7 @@ int main(void)
 	}
 
 	if (stat(tmpfname, &stat_buff2) == -1) {
-		printf(TNAME " Error at 2nd stat(): %s\n", strerror(errno));
+		printf("Error at 2nd stat(): %s\n", strerror(errno));
 		unlink(tmpfname);
 		return PTS_UNRESOLVED;
 	}
