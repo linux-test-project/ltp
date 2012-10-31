@@ -111,11 +111,13 @@ int main(int ac, char **av)
 
 	tc = NULL;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	if ((tc = malloc(sizeof(struct test_case_t))) == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "malloc failed");
+	tc = malloc(sizeof(struct test_case_t));
+	if (tc == NULL)
+		tst_brkm(TBROK | TERRNO, cleanup, "malloc failed");
 
 	setup();
 
@@ -136,12 +138,13 @@ int main(int ac, char **av)
 			}
 
 			if (errno == tc->error)
-				tst_resm(TPASS|TERRNO,
-				    "shmat failed as expected");
+				tst_resm(TPASS | TERRNO,
+					 "shmat failed as expected");
 			else
 				tst_resm(TFAIL,
-				    "shmat failed unexpectedly; expected: "
-				    "%d - %s", tc->error, strerror(tc->error));
+					 "shmat failed unexpectedly; expected: "
+					 "%d - %s", tc->error,
+					 strerror(tc->error));
 		}
 	}
 
@@ -157,9 +160,9 @@ void setup(void)
 	tst_require_root(NULL);
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
+		tst_brkm(TBROK | TERRNO, NULL, "setuid failed");
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -171,23 +174,19 @@ void setup(void)
 
 	shmkey = getipckey();
 
-	if ((shm_id_2 = shmget(shmkey, INT_SIZE, SHM_RW|IPC_CREAT|IPC_EXCL)) ==
-	    -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget #1 failed");
+	shm_id_2 = shmget(shmkey, INT_SIZE, SHM_RW | IPC_CREAT | IPC_EXCL);
+	if (shm_id_2 == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget #1 failed");
 
 	/* Get an new IPC resource key. */
 	shmkey2 = getipckey();
 
 	/* create a shared memory resource without read and write permissions */
-	if ((shm_id_3 = shmget(shmkey2, INT_SIZE, IPC_CREAT|IPC_EXCL)) ==
-	    -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget #2 failed");
+	shm_id_3 = shmget(shmkey2, INT_SIZE, IPC_CREAT | IPC_EXCL);
+	if (shm_id_3 == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget #2 failed");
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
 void cleanup(void)
 {
 	/* if they exist, remove the shared memory resources */

@@ -33,7 +33,7 @@
  *	otherwise,
  *	  if doing functionality testing
  *		check for the correct conditions after the call
- *	  	if correct,
+ *		if correct,
  *			issue a PASS message
  *		otherwise
  *			issue a FAIL message
@@ -60,7 +60,7 @@
 
 char *TCID = "shmat01";
 
-void check_functionality(int);
+static void check_functionality(int);
 
 #define CASE0		10	/* values to write into the shared */
 #define CASE1		20	/* memory location.                */
@@ -90,9 +90,9 @@ int main(int ac, char **av)
 	char *msg;
 	int i;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
@@ -111,29 +111,27 @@ int main(int ac, char **av)
 			 */
 			base_addr = probe_free_addr();
 			errno = 0;
-			addr = shmat(*(TC[i].shmid), base_addr+TC[i].offset,
+			addr = shmat(*(TC[i].shmid), base_addr + TC[i].offset,
 				     TC[i].flags);
 			TEST_ERRNO = errno;
 
 			if (addr == (void *)-1) {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-					"shmat call failed");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "shmat call failed");
 			} else {
-				if (STD_FUNCTIONAL_TEST) {
+				if (STD_FUNCTIONAL_TEST)
 					check_functionality(i);
-				} else {
+				else
 					tst_resm(TPASS, "call succeeded");
-				}
 			}
 
 			/*
 			 * clean up things in case we are looping - in
 			 * this case, detach the shared memory
 			 */
-			if (shmdt(addr) == -1) {
+			if (shmdt(addr) == -1)
 				tst_brkm(TBROK, cleanup,
 					 "Couldn't detach shared memory");
-			}
 		}
 	}
 
@@ -146,7 +144,7 @@ int main(int ac, char **av)
  * check_functionality - check various conditions to make sure they
  *			 are correct.
  */
-void check_functionality(int i)
+static void check_functionality(int i)
 {
 	void *orig_add;
 	int *shared;
@@ -156,9 +154,8 @@ void check_functionality(int i)
 	shared = (int *)addr;
 
 	/* stat the shared memory ID */
-	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
+	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1)
 		tst_brkm(TBROK, cleanup, "couldn't stat shared memory");
-	}
 
 	/* check the number of attaches */
 	if (buf.shm_nattch != 1) {
@@ -214,9 +211,8 @@ void check_functionality(int i)
 		break;
 	}
 
-	if (!fail) {
+	if (!fail)
 		tst_resm(TPASS, "conditions and functionality are correct");
-	}
 }
 
 /*
@@ -229,8 +225,9 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	if ((TC = malloc(TST_TOTAL*sizeof(struct test_case_t))) == NULL)
-		tst_brkm(TFAIL|TERRNO, cleanup, "failed to allocate memory");
+	TC = malloc(TST_TOTAL * sizeof(struct test_case_t));
+	if (TC == NULL)
+		tst_brkm(TFAIL | TERRNO, cleanup, "failed to allocate memory");
 
 	/* a straight forward read/write attach */
 	TC[0].shmid = &shm_id_1;
@@ -239,7 +236,7 @@ void setup(void)
 
 	/* an attach using unaligned memory */
 	TC[1].shmid = &shm_id_1;
-	TC[1].offset = SHMLBA-1;
+	TC[1].offset = SHMLBA - 1;
 	TC[1].flags = SHM_RND;
 
 	/* a read only attach */
@@ -258,16 +255,15 @@ void setup(void)
 	shmkey = getipckey();
 
 	/* create a shared memory resource with read and write permissions */
-	if ((shm_id_1 = shmget(shmkey++, INT_SIZE, SHM_RW | IPC_CREAT |
-			       IPC_EXCL)) == -1) {
+	shm_id_1 = shmget(shmkey++, INT_SIZE, SHM_RW | IPC_CREAT | IPC_EXCL);
+	if (shm_id_1 == -1)
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource 1 in setup()");
-	}
 }
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *		or premature exit.
  */
 void cleanup(void)
 {

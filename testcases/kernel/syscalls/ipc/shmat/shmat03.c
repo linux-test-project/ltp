@@ -70,22 +70,22 @@ void *addr;			/* for result of shmat-call */
 uid_t ltp_uid;
 char *ltp_user = "nobody";
 
-void do_child(void);
+static void do_child(void);
 
 int main(int ac, char **av)
 {
 	char *msg;
 	int pid;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 
-	if ((pid = FORK_OR_VFORK()) == -1) {
+	pid = FORK_OR_VFORK();
+	if (pid == -1)
 		tst_brkm(TBROK, cleanup, "could not fork");
-	}
 
 	if (pid == 0) {		/* child */
 		/* set the user ID of the child to the non root user */
@@ -98,9 +98,8 @@ int main(int ac, char **av)
 
 	} else {		/* parent */
 		/* wait for the child to return */
-		if (waitpid(pid, NULL, 0) == -1) {
+		if (waitpid(pid, NULL, 0) == -1)
 			tst_brkm(TBROK, cleanup, "waitpid failed");
-		}
 
 		/* if it exists, remove the shared memory resource */
 		rm_shm(shm_id_1);
@@ -115,7 +114,7 @@ int main(int ac, char **av)
 /*
  * do_child - make the TEST call as the child process
  */
-void do_child()
+static void do_child(void)
 {
 	int lc;
 
@@ -141,11 +140,11 @@ void do_child()
 
 		switch (TEST_ERRNO) {
 		case EACCES:
-			tst_resm(TPASS|TTERRNO, "expected failure");
+			tst_resm(TPASS | TTERRNO, "expected failure");
 			break;
 		default:
-			tst_resm(TFAIL|TTERRNO,
-			    "call failed with an unexpected error");
+			tst_resm(TFAIL | TTERRNO,
+				 "call failed with an unexpected error");
 			break;
 		}
 	}
@@ -177,11 +176,10 @@ void setup(void)
 	shmkey = getipckey();
 
 	/* create a shared memory segment with read and write permissions */
-	if ((shm_id_1 = shmget(shmkey, SHM_SIZE,
-			       SHM_RW | IPC_CREAT | IPC_EXCL)) == -1) {
+	shm_id_1 = shmget(shmkey, SHM_SIZE, SHM_RW | IPC_CREAT | IPC_EXCL);
+	if (shm_id_1 == -1)
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "segment in setup");
-	}
 
 	/* get the userid for a non root user */
 	ltp_uid = getuserid(ltp_user);
@@ -189,7 +187,7 @@ void setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *		or premature exit.
  */
 void cleanup(void)
 {
