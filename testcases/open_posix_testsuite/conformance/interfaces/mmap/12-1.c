@@ -14,11 +14,9 @@
  *
  * Test Steps:
  * 1. Create a file, while it is open call unlink().
- * 2. mmap the file to memory, then call close(). If mmap() add
- *    extra reference to the file, the file descriptor will not be removed.
- * 3. Try to open the file, open should success;
- * 3. munmap the mapped memory;
- * 4. Try open the file again, should get ENOENT;
+ * 2. mmap the file to memory, then call close(). If mmap() added
+ *    extra reference to the file, the file content should be accesible
+ * 3. Acces and msync the mapped file
  */
 
 #define _XOPEN_SOURCE 600
@@ -40,10 +38,8 @@ int main(void)
 {
 	char tmpfname[256];
 	void *pa;
-	size_t size;
-	int fd, fd2;
-
-	size = 1024;
+	size_t size = 1024;
+	int fd, i;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_12_1_%d", getpid());
 	unlink(tmpfname);
@@ -53,9 +49,6 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	/* If there is no reference to the file,
-	 * this file will be removed
-	 */
 	unlink(tmpfname);
 
 	if (ftruncate(fd, size) == -1) {
@@ -68,35 +61,31 @@ int main(void)
 		printf("Error at mmap: %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
-
+	
+	/* Close the file, now it's referenced only by the mapping */
 	close(fd);
+	
+	/* Fill the buffer */
+	for (i = 0; i < size; i++)
+		((char*)pa)[i] = (13*i)%21;
 
-	/* File still exists */
-	fd2 = open(tmpfname, O_RDWR, S_IRUSR | S_IWUSR);
-	if (fd == -1 && errno == ENOENT) {
-		printf("Error at open(): %s\n", strerror(errno));
-		printf("Test FAILED:"
-		       "The file is removed. mmap does not "
-		       "add extra reference to the file associated with fd\n");
-		exit(PTS_FAIL);
+	/* Force the data to be written to disk */
+	msync(pa, size, MS_SYNC);
+
+	/* Check if the buffer still contains data */
+	for (i = 0; i < size; i++) {
+		if (((char*)pa)[i] != (13*i)%21) {
+			printf("FAILED: Mapped buffer was not preserved\n");
+			return PTS_FAIL;
+		}
 	}
-
+	
+	/*
+	 * Unmap the buffer, now data should be freed
+	 * Unfortunaltely we have no definitive way to check
+	 */
 	munmap(pa, size);
 
-	/* The file should have been removed */
-	fd2 = open(tmpfname, O_RDWR, S_IRUSR | S_IWUSR);
-	if (fd2 == -1 && errno == ENOENT) {
-		printf("Test PASSED\n");
-		exit(PTS_PASS);
-	}
-
-	if (fd2 != -1) {
-		printf("Test FAILED:"
-		       "The file is not removed. munmap does not remove "
-		       "reference to the file associated with fd\n");
-		return PTS_FAIL;
-	}
-
-	printf("Error at open(): %s\n", strerror(errno));
-	return PTS_UNRESOLVED;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
