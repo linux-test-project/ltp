@@ -12,7 +12,10 @@
  * implementation does not support this functionality.
  * The implementation does not support the combination
  * of accesses requested in the prot argument.
- *
+ * 
+ * Test Steps:
+ * 1. Try mmap with MAP_PRIVATE should either fail with ENOTSUP or SUCCEED
+ * 2. Try fixed mapping
  */
 
 #define _XOPEN_SOURCE 600
@@ -36,27 +39,7 @@ int main(void)
 
 	void *pa;
 	size_t len = total_size;
-	int fd;
-
-#ifdef MAP_FIXED
-	printf("Test Untested: MAP_FIXED defined\n");
-	return PTS_UNTESTED;
-#endif
-
-#ifdef MAP_SHARED
-	printf("Test Untested: MAP_SHARED defined\n");
-	return PTS_UNTESTED;
-#endif
-
-#ifdef PROT_WRITE
-	printf("Test Untested: PROT_WRITE defined\n");
-	return PTS_UNTESTED;
-#endif
-
-#ifdef PROT_READ
-	printf("Test Untested: PROT_READ defined\n");
-	return PTS_UNTESTED;
-#endif
+	int fd, err = 0;
 
 	data = malloc(total_size);
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_27_1_%d", getpid());
@@ -75,14 +58,43 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd, 0);
-	if (pa != MAP_FAILED) {
-		printf("Test FAILED: Did not get error\n");
-		return PTS_FAIL;
-	} else if (errno != ENOTSUP) {
-		printf("Test FAILED: Get error: %s\n", strerror(errno));
-		return PTS_FAIL;
+	/* Trie to map file with MAP_PRIVATE */
+	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (pa == MAP_FAILED) {
+		if (errno != ENOTSUP) {
+			printf("MAP_PRIVATE is not supported\n");
+		} else {
+			printf("MAP_PRIVATE failed with: %s\n", strerror(errno));
+			err++;
+		}
+	} else {
+		printf("MAP_PRIVATE succeeded\n");
+		munmap(pa, len);
+	}
+	
+	/* Now try to utilize MAP_FIXED */
+	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at mmap(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	
+	pa = mmap(pa, len/2, PROT_READ, MAP_SHARED | MAP_FIXED, fd, 0);
+	
+	if (pa == MAP_FAILED) {
+		if (errno != ENOTSUP) {
+			printf("MAP_FIXED is not supported\n");
+		} else {
+			printf("MAP_FIXED failed with: %s\n", strerror(errno));
+			err++;
+		}
+	} else {
+		printf("MAP_FIXED succeeded\n");
+		munmap(pa, len);
+	}
 
+	if (err) {
+		return PTS_FAIL;
 	}
 
 	printf("Test PASSED\n");
