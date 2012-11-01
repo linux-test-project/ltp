@@ -12,14 +12,13 @@
  * implementation does not support this functionality.
  * The implementation does not support the combination
  * of accesses requested in the prot argument.
- * 
+ *
  * Test Steps:
  * 1. Try mmap with MAP_PRIVATE should either fail with ENOTSUP or SUCCEED
  * 2. Try fixed mapping
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -64,23 +63,24 @@ int main(void)
 		if (errno != ENOTSUP) {
 			printf("MAP_PRIVATE is not supported\n");
 		} else {
-			printf("MAP_PRIVATE failed with: %s\n", strerror(errno));
+			printf("MAP_PRIVATE failed with: %s\n",
+			       strerror(errno));
 			err++;
 		}
 	} else {
 		printf("MAP_PRIVATE succeeded\n");
 		munmap(pa, len);
 	}
-	
+
 	/* Now try to utilize MAP_FIXED */
 	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED) {
 		printf("Error at mmap(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	
+
 	pa = mmap(pa, len/2, PROT_READ, MAP_SHARED | MAP_FIXED, fd, 0);
-	
+
 	if (pa == MAP_FAILED) {
 		if (errno != ENOTSUP) {
 			printf("MAP_FIXED is not supported\n");
@@ -93,9 +93,8 @@ int main(void)
 		munmap(pa, len);
 	}
 
-	if (err) {
+	if (err)
 		return PTS_FAIL;
-	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

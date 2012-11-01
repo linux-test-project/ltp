@@ -23,7 +23,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -57,7 +56,7 @@ int main(void)
 	}
 	unlink(tmpfname);
 
-	/* 
+	/*
 	 * len + off > maximum offset
 	 * FIXME: We assume maximum offset is ULONG_MAX
 	 */

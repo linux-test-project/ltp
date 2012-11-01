@@ -11,10 +11,10 @@
  * shall not permit a write to succeed where PROT_WRITE has not been set or
  * shall not permit any access where PROT_NONE alone has been set.
  * The implementation shall support at least the following values of prot:
- * PROT_NONE, PROT_READ, PROT_WRITE, and the bitwise-inclusive OR of PROT_READ and
- * PROT_WRITE.
+ * PROT_NONE, PROT_READ, PROT_WRITE, and the bitwise-inclusive OR of PROT_READ
+ * and PROT_WRITE.
  *
- * Test Step:
+ * Test Steps:
  *
  * If Memory Protection option is supported:
  * 1. Spawn a child process.
@@ -32,7 +32,6 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,7 +78,7 @@ int main(void)
 			return PTS_FAIL;
 		}
 
-		*(char*)pa = 'b';
+		*(char *)pa = 'b';
 		return 0;
 	break;
 	case -1:
@@ -89,10 +88,10 @@ int main(void)
 	default:
 	break;
 	}
-	
+
 	waitpid(child, &status, WUNTRACED);
 	close(fd);
-	
+
 	if (WIFSIGNALED(status)) {
 		sig_num = WTERMSIG(status);
 		printf("Child process terminated by signal %d\n", sig_num);
@@ -103,7 +102,7 @@ int main(void)
 			return PTS_PASS;
 		}
 	}
-	
+
 	if (WIFEXITED(status)) {
 		if (WEXITSTATUS(status) == 0) {
 			printf("Did not got SIGSEGV when writing to the mapped memory,"
@@ -112,7 +111,7 @@ int main(void)
 			return PTS_FAIL;
 		}
 	}
-	
+
 	printf("Test Unresolved\n");
 	return PTS_UNRESOLVED;
 #else

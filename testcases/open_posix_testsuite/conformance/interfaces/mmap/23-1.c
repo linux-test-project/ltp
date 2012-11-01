@@ -6,17 +6,16 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * The mmap() function shall fail if:
- * [ENODEV] The fildes argument refers to a file whose type is not supported by mmap().
+ * The mmap() function shall fail if: [ENODEV] The fildes argument refers to a
+ * file whose type is not supported by mmap().
  *
- * Test Step:
+ * Test Steps:
  * 1. Create pipe;
  * 2. mmap the pipe fd to memory, should get ENODEV;
  *
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -39,7 +38,7 @@ int main(void)
 	}
 
 	pa = mmap(NULL, 1024, PROT_READ, MAP_SHARED, pipe_fd[0], 0);
-	
+
 	if (pa == MAP_FAILED && errno == ENODEV) {
 		printf("Test PASSED\n");
 		close(pipe_fd[0]);
@@ -56,6 +55,6 @@ int main(void)
 
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
-	
+
 	return PTS_FAIL;
 }

@@ -21,7 +21,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -61,25 +60,25 @@ int main(void)
 		printf("Error at mmap: %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
-	
+
 	/* Close the file, now it's referenced only by the mapping */
 	close(fd);
-	
+
 	/* Fill the buffer */
 	for (i = 0; i < size; i++)
-		((char*)pa)[i] = (13*i)%21;
+		((char *)pa)[i] = (13*i)%21;
 
 	/* Force the data to be written to disk */
 	msync(pa, size, MS_SYNC);
 
 	/* Check if the buffer still contains data */
 	for (i = 0; i < size; i++) {
-		if (((char*)pa)[i] != (13*i)%21) {
+		if (((char *)pa)[i] != (13*i)%21) {
 			printf("FAILED: Mapped buffer was not preserved\n");
 			return PTS_FAIL;
 		}
 	}
-	
+
 	/*
 	 * Unmap the buffer, now data should be freed
 	 * Unfortunaltely we have no definitive way to check

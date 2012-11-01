@@ -10,12 +10,11 @@
  * according to the value returned by
  * sysconf() when passed _SC_PAGESIZE or _SC_PAGE_SIZE.
  *
- * The mmap() function shall fail if:
- * [EINVAL] The addr argument (if MAP_FIXED was specified) or off is not a multiple of
- * the page size as returned by sysconf(), or is considered invalid by the
- * implementation.
+ * The mmap() function shall fail if: [EINVAL] The addr argument (if MAP_FIXED
+ * was specified) or off is not a multiple of the page size as returned by
+ * sysconf(), or is considered invalid by the implementation.
  *
- * Test step:
+ * Test Steps:
  * 1. Set 'off' a value which is not a multiple of page size;
  * 2. Call mmap() and get EINVAL;
  *
@@ -23,7 +22,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -71,9 +69,9 @@ int main(void)
 	off = page_size + 1;
 	errno = 0;
 	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, off);
-	
+
 	saved_errno = errno;
-	
+
 	close(fd);
 	munmap(pa, size);
 
@@ -86,6 +84,6 @@ int main(void)
 	printf("Test FAILED: Did not get EINVAL"
 	       " when 'off' is not a multiple of page size, get: %s\n",
 	       strerror(saved_errno));
-	
+
 	return PTS_FAIL;
 }

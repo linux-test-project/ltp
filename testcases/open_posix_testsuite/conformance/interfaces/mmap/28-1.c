@@ -10,7 +10,7 @@
  * [ENXIO] Addresses in the range [off,off+len) are invalid
  * for the object specified by fildes.
  *
- * Test Step:
+ * Test Steps:
  * 1. mmap a shared memory object into memory;
  * 2. (off + len) will beyond the the shared memory object;
  *
@@ -20,7 +20,6 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -70,7 +69,7 @@ int main(void)
 		printf("Error at ftruncate(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	
+
 	/* (off + len) will go outside the object */
 	len = 2 * shm_size;
 	off = page_size;

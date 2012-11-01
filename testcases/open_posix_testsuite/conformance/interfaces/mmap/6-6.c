@@ -12,14 +12,13 @@
  * descriptor fildes with write permission unless MAP_PRIVATE
  * is specified in the flags parameter as described below.
  *
- * Test Step:
+ * Test Steps:
  * 1  Open a file with write only permition.
  * 2. Mmap the file to a memory region setting prot as PROT_READ.
  * 3. Get EACCES error when mmap().
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

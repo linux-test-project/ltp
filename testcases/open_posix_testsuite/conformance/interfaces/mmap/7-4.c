@@ -26,7 +26,6 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -73,9 +72,8 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	
 	/* Write the mapped memory */
-	*(char*)pa = 'a';
+	*(char *)pa = 'a';
 
 	child = fork();
 	switch (child) {
@@ -87,7 +85,7 @@ int main(void)
 			return PTS_FAIL;
 		}
 
-		if (*(char*)pa == 'a') {
+		if (*(char *)pa == 'a') {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		}

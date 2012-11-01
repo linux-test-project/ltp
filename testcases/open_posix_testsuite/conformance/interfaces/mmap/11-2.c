@@ -10,7 +10,7 @@
  * continuing for len bytes to whole pages following the end
  * of an object shall result in delivery of a SIGBUS signal.
  *
- * Test step:
+ * Test Steps:
  * 1. Map a file with size = 1/2 page_size, while len = 2 * page_size
  * 2. If Memory Protection option is supported, read the second page
  *    beyond the object (mapped file) size (NOT the patial page),
@@ -25,7 +25,6 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

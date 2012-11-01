@@ -16,13 +16,12 @@
  * If an implementation cannot support the combination of access types
  * specified by prot, the call to mmap() shall fail.
  *
- * Test Step:
+ * Test Steps:
  * 1. call mmap() for all combinations permitted by POSIX
  * 2. each should either succed or fail with ENOTSUP
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -48,7 +47,7 @@ struct testcase testcases[] = {
 	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_EXEC},
 	{.flags = MAP_SHARED, .prot = PROT_EXEC | PROT_WRITE},
 	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_WRITE | PROT_EXEC},
-	
+
 	{.flags = MAP_PRIVATE, .prot = PROT_NONE},
 	{.flags = MAP_PRIVATE, .prot = PROT_READ},
 	{.flags = MAP_PRIVATE, .prot = PROT_WRITE},
@@ -65,13 +64,13 @@ static void print_error(struct testcase *t, int saved_errno)
 
 	if (t->prot == PROT_NONE)
 		printf("PROT_NONE ");
-	
+
 	if (t->prot & PROT_READ)
 		printf("PROT_READ ");
 
 	if (t->prot & PROT_WRITE)
 		printf("PROT_WRITE ");
-	
+
 	if (t->prot & PROT_EXEC)
 		printf("PROT_EXEC ");
 
@@ -108,7 +107,7 @@ int main(void)
 	}
 
 	for (i = 0; i < sizeof(testcases)/sizeof(*testcases); i++) {
-		
+
 		pa = mmap(NULL, size, testcases[i].prot, testcases[i].flags, fd, 0);
 
 		if (pa == MAP_FAILED) {
@@ -124,8 +123,8 @@ int main(void)
 	close(fd);
 
 	if (fail)
- 		return PTS_FAIL;
-	
+		return PTS_FAIL;
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }

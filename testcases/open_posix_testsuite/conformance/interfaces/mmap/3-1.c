@@ -10,7 +10,7 @@
  * mappings for those whole pages containing any part of the address
  * space of the process starting at pa and continuing for len bytes.
  *
- * Test Step:
+ * Test Steps:
  * 1. Set the size of the file to be mapped as (2 * _SC_PAGE_SIZE);
  * 2. Map size = (_SC_PAGE_SIZE + 2) bytes into memory,
  *    setting the content as 'a'. The mapped address is pa.
@@ -21,7 +21,6 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -45,7 +44,7 @@ int main(void)
 	void *pa;
 	size_t size;
 	int fd;
-	
+
 	void *pa2;
 	size_t size2;
 	int fd2;
@@ -62,35 +61,35 @@ int main(void)
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_3_1_%d_1", getpid());
 	snprintf(tmpfname2, sizeof(tmpfname2), "/tmp/pts_mmap_3_1_%d_2",
 		 getpid());
-	
-	
+
+
 	unlink(tmpfname);
 	unlink(tmpfname2);
-	
+
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	fd2 = open(tmpfname2, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1 || fd2 == -1) {
 		printf("Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	
+
 	unlink(tmpfname);
 	unlink(tmpfname2);
-	
+
 	data = malloc(total_size);
-	
+
 	memset(data, 'a', total_size);
 	if (write(fd, data, total_size) != total_size) {
 		printf("Error at write(), fd: %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	
+
 	memset(data, 'b', total_size);
 	if (write(fd2, data, total_size) != total_size) {
 		printf("Error at write(), fd1: %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	
+
 	free(data);
 
 	/* Map first file */

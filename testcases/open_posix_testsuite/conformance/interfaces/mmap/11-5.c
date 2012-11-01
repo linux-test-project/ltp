@@ -15,7 +15,7 @@
  * Further, the system shall never write out any modified portions of
  * the last page of an object which are beyond its end.
  *
- * Test step:
+ * Test Steps:
  * 1. Create a process, in this process:
  *    a. map a shared memory object with size of 1/2 * page_size,
  *       set len = 1/2 * page_size
@@ -30,7 +30,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -109,7 +108,7 @@ int main(void)
 	default:
 	break;
 	}
-	
+
 	wait(&exit_val);
 	if (!(WIFEXITED(exit_val) && (WEXITSTATUS(exit_val) == PTS_PASS))) {
 		shm_unlink(tmpfname);

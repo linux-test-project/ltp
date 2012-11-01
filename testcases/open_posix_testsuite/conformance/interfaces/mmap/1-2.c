@@ -12,7 +12,6 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -45,7 +44,7 @@ int main(void)
 		printf("Error at ftruncate(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	
+
 	if (write(fd, "a", 1) != 1) {
 		printf("Error at write(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
@@ -56,8 +55,8 @@ int main(void)
 		printf("Error at mmap: %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
-	
-	if (*(char*)pa != 'a') {
+
+	if (*(char *)pa != 'a') {
 		printf("Test FAILED: The file was not mapped correctly.\n");
 		return PTS_FAIL;
 	}

@@ -15,7 +15,7 @@
  * after the MAP_PRIVATE mapping is established are visible through
  * the MAP_PRIVATE mapping.
  *
- * Test Step:
+ * Test Steps:
  * 1. mmap a file into memory. Set flag as MAP_PRIVATE.
  * 2. Modify the mapped memory, and call msync to try to synchronize the change.
  * 3. munmap the mapped memory.
@@ -26,7 +26,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -70,7 +69,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	*(char*)pa = 'b';
+	*(char *)pa = 'b';
 
 	/* Try to flush changes back to the file */
 	if (msync(pa, size, MS_SYNC) != 0) {
@@ -87,7 +86,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	if (*(char*)pa == 'b') {
+	if (*(char *)pa == 'b') {
 		printf("Memory write with MAP_PRIVATE has changed "
 		       "the underlying file\n"
 		       "Test FAILED\n");

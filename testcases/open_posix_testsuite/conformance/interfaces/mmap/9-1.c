@@ -9,18 +9,17 @@
  * If MAP_FIXED is set,
  * mmap() may return MAP_FAILED and set errno to [EINVAL].
  *
- * [EINVAL] The addr argument (if MAP_FIXED was specified) or off is not a multiple of
- * the page size as returned by sysconf(), or is considered invalid by the
- * implementation.
+ * [EINVAL] The addr argument (if MAP_FIXED was specified) or off is not a
+ * multiple of the page size as returned by sysconf(), or is considered invalid
+ * by the implementation.
  *
- * Test step:
+ * Test Steps:
  * 1. Set 'addr' as an illegal address, which is not a multiple of page size;
  * 2. Call mmap() and get EINVAL;
  */
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -78,11 +77,11 @@ int main(void)
 	/* Mmap again using the illegal address, setting MAP_FIXED */
 	pa = mmap(illegal_addr, size, PROT_READ | PROT_WRITE, MAP_FIXED, fd, 0);
 
-	saved_errno = errno;	
-	
+	saved_errno = errno;
+
 	close(fd);
 	munmap(pa, size);
-	
+
 	if (pa == MAP_FAILED && saved_errno == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

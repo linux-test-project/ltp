@@ -12,14 +12,13 @@
  * or, if MAP_FIXED was not specified and
  * there is insufficient room in the address space to effect the mapping.
  *
- * Test Step:
+ * Test Steps:
  * 1. In a very long loop, keep mapping a shared memory object,
  *    until there this insufficient room in the address space;
  * 3. Should get ENOMEM.
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -55,7 +54,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 	shm_unlink(tmpfname);
-	
+
 	if (ftruncate(fd, shm_size) == -1) {
 		printf("Error at ftruncate(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;

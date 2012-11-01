@@ -15,7 +15,7 @@
  * Further, the system shall never write out any modified portions of
  * the last page of an object which are beyond its end.
  *
- * Test step:
+ * Test Steps:
  * 1. Create a process, in this process:
  *    a. map a file  with size of 1/2 * page_size,
  *       set len = 1/2 * page_size
@@ -30,7 +30,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -49,12 +48,12 @@ int main(void)
 	long page_size;
 	long total_size;
 
-	void *pa, *pa_2;
+	void *pa;
 	size_t len;
-	int fd, fd_2;
-	
+	int fd;
+
 	pid_t child;
-	char *ch, *ch_2;
+	char *ch;
 	int exit_val;
 
 	page_size = sysconf(_SC_PAGE_SIZE);
@@ -116,25 +115,24 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	fd_2 = open(tmpfname, O_RDWR, 0);
+	fd = open(tmpfname, O_RDWR, 0);
 	unlink(tmpfname);
 
-	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd_2, 0);
-	pa_2 = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd_2, 0);
-	if (pa_2 == MAP_FAILED) {
+	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED) {
 		printf("Error at 2nd mmap(): %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
 
-	printf("pa_2: %p\n", pa_2);
-	ch_2 = pa_2 + len + 1;
-	if (*ch_2 == 'b') {
+	printf("pa: %p\n", pa);
+	ch = pa + len + 1;
+	if (*ch == 'b') {
 		printf("Test FAILED: Modification of the partial page "
 		       "at the end of an object is written out\n");
 		return PTS_FAIL;
 	}
-	close(fd_2);
-	munmap(pa_2, len);
+	close(fd);
+	munmap(pa, len);
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

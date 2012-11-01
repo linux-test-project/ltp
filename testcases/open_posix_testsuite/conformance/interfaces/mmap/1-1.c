@@ -9,14 +9,13 @@
  * The mmap() function shall establish a mapping between a process's
  * address space and a file,
  *
- * Test Step:
+ * Test Steps:
  * 1. Create a tmp file;
  * 2. mmap it to memory using mmap();
  *
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -43,9 +42,9 @@ int main(void)
 		printf("Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	
+
 	unlink(tmpfname);
-	
+
 	data = malloc(len);
 	memset(data, 'a', len);
 	if (write(fd, data, len) != len) {
@@ -60,7 +59,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	if (*(char*)pa != 'a') {
+	if (*(char *)pa != 'a') {
 		printf("Test FAILED: The file was not mapped correctly.\n");
 		return PTS_FAIL;
 	}

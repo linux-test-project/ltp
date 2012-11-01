@@ -10,7 +10,7 @@
  * ML [EAGAIN] The mapping could not be locked in memory,
  * if required by mlockall(), due to a lack of resources.
  *
- * Test Step:
+ * Test Steps:
  * 1. Call mlockall(), setting MCL_FUTURE;
  * 2. Call setrlimit(), set rlim_cur of resource RLIMIT_MEMLOCK to a
  *    certain value.
@@ -22,7 +22,6 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

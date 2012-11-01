@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
- * 
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -9,7 +9,7 @@
  * When the implementation selects a
  * value for pa, it never places a mapping at address 0.
  *
- * Test step:
+ * Test steps:
  * This is not a good test. Cannot make sure (pa == 0) never happens.
  * Repeat LOOP_NUM times mmap() and mnumap(),
  * make sure pa will not equal 0.
@@ -17,7 +17,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

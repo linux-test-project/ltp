@@ -15,7 +15,7 @@
  * after the MAP_PRIVATE mapping is established are visible through
  * the MAP_PRIVATE mapping.
  *
- * Test Step:
+ * Test Steps:
  * 1. mmap() a file, setting MAP_SHARED.
  * 2. Modify the mapped memory.
  * 3. Call msync() to synchronize the modification.
@@ -26,7 +26,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -70,7 +69,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	*(char*)pa = 'b';
+	*(char *)pa = 'b';
 
 	/* Flush changes back to the file */
 	if (msync(pa, size, MS_SYNC) != 0) {
@@ -87,14 +86,14 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	if (*(char*)pa == 'b') {
+	if (*(char *)pa == 'b') {
 		printf("Memory write with MAP_SHARED has changed "
 		       "the underlying file\n"
 		       "Test PASSED\n");
-		
+
 		close(fd);
 		munmap(pa, size);
-		
+
 		return PTS_PASS;
 	}
 

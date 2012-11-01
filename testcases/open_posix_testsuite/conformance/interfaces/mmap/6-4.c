@@ -12,7 +12,7 @@
  * descriptor fildes with write permission unless MAP_PRIVATE
  * is specified in the flags parameter as described below.
  *
- * Test Step:
+ * Test Steps:
  * 1  Open a file RDONLY permition.
  * 2. Mmap the file to a memory region setting prot as PROT_WRITE.
  * 3. Setting flag as MAP_SHARED.
@@ -20,7 +20,6 @@
  *
  */
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
