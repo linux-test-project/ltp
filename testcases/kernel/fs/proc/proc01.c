@@ -87,6 +87,7 @@ const Mapping known_issues[] = {
     {"open", "/proc/sal/cmc/data", EBUSY},
     {"open", "/proc/sal/init/data", EBUSY},
     {"open", "/proc/sal/mca/data", EBUSY},
+    {"read", "/proc/acpi/event", EAGAIN},
     {"read", "/proc/kmsg", EAGAIN},
     {"read", "/proc/sal/cpe/event", EAGAIN},
     {"read", "/proc/sal/cmc/event", EAGAIN},
