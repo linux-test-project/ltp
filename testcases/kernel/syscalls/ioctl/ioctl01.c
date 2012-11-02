@@ -66,7 +66,7 @@ void setup(void);
 void cleanup(void);
 void help(void);
 
-int exp_enos[] = { EBADF, EFAULT, EINVAL, ENOTTY, EFAULT, 0 };
+int exp_enos[] = { EBADF, EFAULT, ENOTTY, ENOTTY, EFAULT, 0 };
 
 int fd, fd1;
 int bfd = -1;
@@ -86,8 +86,11 @@ struct test_case_t {
 	{
 	&fd, TCGETA, (struct termio *)-1, EFAULT},
 	    /* command is invalid */
+	/* This errno value was changed from EINVAL to ENOTTY
+	 * by kernel commit 07d106d0 and bbb63c51
+	 */
 	{
-	&fd, INVAL_IOCTL, &termio, EINVAL},
+	&fd, INVAL_IOCTL, &termio, ENOTTY},
 	    /* file descriptor is for a regular file */
 	{
 	&fd1, TCGETA, &termio, ENOTTY},
@@ -177,6 +180,11 @@ void setup(void) {
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
+
+	if (tst_kvercmp(3, 7, 0) < 0) {
+		exp_enos[2] = EINVAL;
+		TC[2].error = EINVAL;
+	}
 
 	/* create a temporary file */
 	if ((fd1 = open("x", O_CREAT, 0777)) == -1)
