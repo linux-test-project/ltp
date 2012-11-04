@@ -25,7 +25,7 @@ MAKE_TARGETS		:= nftw01 nftw6401
 nftw01: CPPFLAGS += -D_LARGEFILE_SOURCE
 
 nftw01: nftw.o tools.o test_func.o test.o lib.o 
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o "$@"
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
 
 nftw64.o tools64.o test_func64.o test64.o lib64.o: %.o: %.c
 
