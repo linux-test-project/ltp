@@ -15,7 +15,7 @@
 ##										##
 ## You should have received a copy of the GNU General Public License		##
 ## along with this program;  if not, write to the Free Software			##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA	##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA	##
 ##										##
 ################################################################################
 #
@@ -24,7 +24,7 @@
 # Description:  Tests basic functions of mail system. The aim of the test is to
 #		make sure that certain basic functionality of mail is expected
 #		to work as per man page. There are 4 - 5 operations that are
-#		done on a regular basis wrt mail. ie. 
+#		done on a regular basis wrt mail. ie.
 #
 #		   mail sent to an user@domain - received by that user@domain
 #		   mail is sent to nosuchuser@domain - mail delivery failure
@@ -37,7 +37,7 @@
 # History:	  Jan 07 2003 - Created - Manoj Iyer.
 #		  Jan 09 2003 - Added Test #2 #3 #4 and #5.
 #		  Jan 10 2002 - Fixed various bugs I had introduced in the test.
-#			      - Added SETUP and CLEANUP sections 
+#			      - Added SETUP and CLEANUP sections
 #
 
 export TST_TOTAL=5
@@ -87,7 +87,7 @@ if id -u mail_test >/dev/null 2>&1; then
 	fi
 fi
 
-trap 
+trap
 
 tst_resm TINFO "INIT: Removing all mails for mail_test and root"
 echo "d*" | mail -u mail_test > /dev/null 2>&1
@@ -136,7 +136,7 @@ fi
 
 # Test #2
 # Test that mail user@bad-domain will result in a warning from the mailer
-# daemon that the domain does not exist. 
+# daemon that the domain does not exist.
 
 export TCID=mail_tests::mail02
 export TST_COUNT=2
@@ -160,7 +160,7 @@ if [ $? -ne 0 ]; then
 	    "Test #2: mail command failed. Reason:"
 	: $(( TFAILCNT += 1 ))
 else
-	# check if Mailer-Deamon reported any delivery failure.	
+	# check if Mailer-Deamon reported any delivery failure.
 	# but wait for the mail to arrive first, sleep 5.
 	sleep 5
 	echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
@@ -241,7 +241,7 @@ if [ $? -ne 0 ]; then
 	    "Test #3: mail command failed. Reason: "
 	: $(( TFAILCNT += 1 ))
 else
-	# check if Mailer-Deamon reported any delivery failure.	
+	# check if Mailer-Deamon reported any delivery failure.
 	# but wait for the mail to arrive first, sleep 5.
 	sleep 5
 	echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
@@ -291,7 +291,7 @@ else
 	fi
 fi
 
-# Test #4 
+# Test #4
 # Test that mail -c user@domain option will carbon copy that user.
 
 export TCID=mail_tests::mail04
@@ -300,7 +300,7 @@ RC=0
 
 tst_resm TINFO "Test #4: Test that mail -c user@domain will"
 tst_resm TINFO "Test #4: carbon copy user@domain"
-# send mail to root and carbon copy mail_test 
+# send mail to root and carbon copy mail_test
 mail -s "Test" root@localhost -c mail_test@localhost < \
     $LTPTMP/tst_mail.in > $LTPTMP/tst_mail.out 2>&1
 if [ $? -ne 0 ]; then
@@ -308,7 +308,7 @@ if [ $? -ne 0 ]; then
 	    "Test #4: mail command failed. Reason:"
 	: $(( TFAILCNT += 1 ))
 else
-	# Check if mail_test received the mail and 
+	# Check if mail_test received the mail and
 	# also if root received the main copy of the email.
 	sleep 5
 	echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
@@ -327,7 +327,7 @@ else
 
 fi
 
-# Test #5 
+# Test #5
 # Test that mail -b user@domain option will blind carbon copy that user.
 
 export TCID=mail_tests::mail05
@@ -337,7 +337,7 @@ RC=0
 tst_resm TINFO "Test #5: Test that mail -b user@domain will"
 tst_resm TINFO "Test #5: blind carbon copy user@domain"
 
-# send mail to root and blind carbon copy mail_test 
+# send mail to root and blind carbon copy mail_test
 mail -s "Test" root@localhost -c mail_test@localhost < \
 	$LTPTMP/tst_mail.in > $LTPTMP/tst_mail.out 2>&1
 if [ $? -ne 0 ]; then
@@ -345,7 +345,7 @@ if [ $? -ne 0 ]; then
 	    "Test #5: mail command failed. Reason:"
 	: $(( TFAILCNT += 1 ))
 else
-	# Check if mail_test received the mail and 
+	# Check if mail_test received the mail and
 	# also if root received the main copy of the email.
 	sleep 5
 	echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
@@ -370,7 +370,7 @@ export TCID=mail_tests::cleanup
 export TST_COUNT=1
 
 tst_resm TINFO "Test CLEAN: Removing temporary files from $LTPTMP"
-rm -fr $LTPTMP/tst_mail* 
+rm -fr $LTPTMP/tst_mail*
 
 tst_resm TINFO "Test CLEAN: Removing temporary user mail_test"
 userdel -r mail_test > /dev/null 2>&1

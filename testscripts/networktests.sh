@@ -33,7 +33,7 @@ CMD_DEFAULT=$(($CMD_MULTICAST|$CMD_NFS|$CMD_RPC|$CMD_TCPCMDS))
 
 # ---***** NFS OPTIONAL SETTINGS *****---
 # DEFAULTS
-# export VERSION=2 
+# export VERSION=2
 # export SOCKET_TYPE=udp
 # ---*********************************---
 

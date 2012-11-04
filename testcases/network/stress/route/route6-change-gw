@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2006                 ##
@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -75,7 +75,7 @@ IPV6_NETMASK_NUM=64
 # Host portion of the IPv6 address
 LHOST_IPV6_HOST=":2"		# src
 RHOST_IPV6_HOST_TOP="10"	# gateway
-RHOST_IPV6_HOST_LAST="19"	
+RHOST_IPV6_HOST_LAST="19"
 
 # The destination network
 DST_NETWORK="fd00:100:1:1"	# dest network would be fd00:100:1:1:::/64

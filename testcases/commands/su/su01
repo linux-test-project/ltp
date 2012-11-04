@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 #*********************************************************************
 #   Copyright (c) International Business Machines  Corp., 2003, 2004
 #
@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #  FILE   : su
 #
@@ -43,7 +43,7 @@ tvar=${tvar#*-}
 export tvar
 printf "Machine type is: $tvar\n\n"
 
-if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ] 
+if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ]
 # Need to also set group for TEST_USER2
 then
 export TEST_USER1_GROUP="wheel"
@@ -94,7 +94,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
                 exit 1
         }
         fi
-		
+
 		usermod -G users,$TEST_USER1_GROUP $TEST_USER1
 
 	#create users home directory (SLES 8 does not do this, even when specified in adduser)
@@ -119,11 +119,11 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
 #Create 2nd test user
 	#erase user if he may exist , so we can have a clean en
         rm -rf /home/$TEST_USER2
-        userdel $TEST_USER2 
+        userdel $TEST_USER2
 	sleep 1
 
-        useradd -m -g users $TEST_USER2 
-		
+        useradd -m -g users $TEST_USER2
+
         if [ $? != 0 ]
         then {
                 echo "Could not add test user $TEST_USER2."
@@ -132,7 +132,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
         fi
 
 		usermod -G users,$TEST_USER2_GROUP $TEST_USER2
-	
+
 	#create users home diretory (SLES 8 does not do this, even when specified in adduser)
 # Only do this if not RH; RH creates the directory.
         if [ "$tvar" != "redhat" -a "$tvar" != "redhat-linux" ]
@@ -161,7 +161,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
 do_cleanup() {
         rm -rf /home/$TEST_USER1
         rm -rf /home/$TEST_USER2
-	userdel $TEST_USER1 
+	userdel $TEST_USER1
 	userdel $TEST_USER2
 	#REMOVE ANY TEMPOARY FILES THAT MAY STILL BE AROUND
 	rm -f $TEST_ENV_FILE_USER > /dev/null 2>&1

@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 # Copyright (C) 2004 Dan Carpenter
 # This software is released under the terms of the GPL
@@ -15,7 +15,7 @@ else
 fi
 
 secs=0
-while true ; do 
+while true ; do
         # fixme (hack) assumes tests in test/ dir
         # assumes ltp naming scheme with a number on the
         # end of each test script

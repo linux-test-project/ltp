@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /* 12/03/2002   Port to LTP     robbiew@us.ibm.com */
@@ -68,7 +68,7 @@ static void cleanup(void)
 static void setup(void)
 {
 
-	/* 
+	/*
 	 * XXX: FreeBSD says you must always be superuser, but Linux says you
 	 * need to have CAP_SYS_PACCT capability.
 	 *
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	/* EISDIR */
-	if (acct("/") == -1 && errno == EISDIR) 
+	if (acct("/") == -1 && errno == EISDIR)
 		tst_resm(TPASS, "Failed with EISDIR as expected");
 	else
 		tst_brkm(TFAIL|TERRNO, cleanup,

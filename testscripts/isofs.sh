@@ -17,7 +17,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #  FILE        : isofs.sh
 #  USAGE       : isofs.sh <optional> -n (no clean up)
@@ -32,7 +32,7 @@
 #      06/27/2003 Prakash Narayana (prakashn@us.ibm.com)
 #      07/28/2005 Michael Reed (mreed10@us.ibm.com)
 #      - Changed the directory where the filesytems were being created
-#        from /etc to copying /etc to /tmp/for_isofs_test/etc and 
+#        from /etc to copying /etc to /tmp/for_isofs_test/etc and
 #        creating the file systems there
 #      - Added the -n option to not remove the directories created for
 #        debugging purposes
@@ -130,7 +130,7 @@ for mkisofs_opt in \
 	"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -L -R"
 do
         echo "Running mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR  Command"
-	mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR 
+	mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR
 	if [ $? != 0 ]
 	then
 		rm -rf isofs.iso $MNT_POINT

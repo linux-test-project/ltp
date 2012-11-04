@@ -16,7 +16,7 @@ fi
 
 RC=0
 echo "${0}: ---Valid test cases---"
-check_input "${valid_input}" valid $test_file 
+check_input "${valid_input}" valid $test_file
 RC=$?
 echo "${0}: ---Invalid test cases---"
 check_input "${invalid_input}" invalid $test_file

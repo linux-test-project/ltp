@@ -15,7 +15,7 @@
   </assertion>
   <assertion id="3" tag="ref:XSH6:46926:46928 pt:RTS">
    timer_getoverrun() can only return a value up to but not including
-   {DELAYTIMER_MAX}.  If the number of overruns > {DELAYTIMER_MAX}, 
+   {DELAYTIMER_MAX}.  If the number of overruns > {DELAYTIMER_MAX},
    timer_getoverrun() returns {DELAYTIMER_MAX}.
   </assertion>
   <assertion id="4" tag="ref:XSH6:46933:46934">
@@ -25,7 +25,7 @@
    timer_getoverrun() returns -1 on failure
   </assertion>
   <assertion id="6" tag="ref:XSH6TC2:46940:46941">
-   if timerid is not a valid timer ID, timer_getoverrun() may sets 
+   if timerid is not a valid timer ID, timer_getoverrun() may sets
    errno == EINVAL
   </assertion>
 </assertions>

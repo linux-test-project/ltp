@@ -1,8 +1,8 @@
-Revision History: 
+Revision History:
 2004-06-29	Adam Li.
 
 This sub-directory contains test cases testing functional
-area defined by POSIX. 
+area defined by POSIX.
 It is still open WRT how to organize the test cases clearly.
 For the first steps, we will organize the test cases by
 funtional area (somewhat like POSIX options), or by APIs.

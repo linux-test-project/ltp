@@ -3,8 +3,8 @@
 # Prepare test suite & Make Makefile shell script for RPC & TIRPC Test Suite
 # Automatic configuration script design for LTP
 # (c) 2008 BULL S.A.S.
-# 
-# 2008-02-25: created by Aurelien Charbon - Bull SA - aurelien.charbon@ext.bull.net  
+#
+# 2008-02-25: created by Aurelien Charbon - Bull SA - aurelien.charbon@ext.bull.net
 # 2008-11-27: updated by Aime Le Rouzic - Bull SA - aime.lerouzic@bull.net
 
 # ***************************
@@ -128,17 +128,17 @@ cat inc/Makefile.hdr>Makefile.clnt
 find tests_pack -name "*.c" | grep -v tirpc | while read fil
 do
 		echo '	$(CC) '$fil' $(CFLAGS_RPC) -o '`echo $fil | cut -d '.' -f1`".bin">>Makefile
-	
+
 		TSTXPR=$( echo $TSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
 		OTHXPR=$(echo $SERVERTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 		echo '	$(CC) '$SFILE' $(CFLAGS_RPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.svc
-	
+
 		OTHXPR=$(echo $CLIENTTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 		echo '	$(CC) '$SFILE' $(CFLAGS_RPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.clnt
-	
-	
+
+
 done
 
 # find all TI-RPC sources
@@ -146,14 +146,14 @@ done
 find tests_pack -name "*.c" | grep tirpc | while read fil
 do
 	echo '	$(CC) $(LDFLAGS_TIRPC) '$fil' $(CFLAGS_TIRPC) -o '`echo $fil | cut -d '.' -f1`".bin">>Makefile
-	
+
 	TSTXPR=$( echo $TSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
 	OTHXPR=$(echo $SERVERTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	$(CC) $(LDFLAGS_TIRPC) '$SFILE' $(CFLAGS_TIRPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.svc
-	
+
 	OTHXPR=$(echo $CLIENTTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	$(CC) $(LDFLAGS_TIRPC) '$SFILE' $(CFLAGS_TIRPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.clnt
 done
 
@@ -169,14 +169,14 @@ echo "clean:">>Makefile.clnt
 find $TSTPACKDIR -name "*.c" | while read fil
 do
 	echo '	rm -f '`echo $fil | cut -d '.' -f1`".bin">>Makefile
-	
+
 	TSTXPR=$( echo $TSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
 	OTHXPR=$(echo $SERVERTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	rm -f '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.svc
-	
+
 	OTHXPR=$(echo $CLIENTTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	rm -f '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.clnt
 done
 

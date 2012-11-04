@@ -1,4 +1,4 @@
-/* include/config.h.default. 
+/* include/config.h.default.
    A semi-sane set of defaults for more recent Linux platforms. Please tailor
    to meet your needs.
  */

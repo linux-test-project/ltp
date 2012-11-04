@@ -15,15 +15,15 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software		      ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##									      ##
 ################################################################################
 #
 # File:			unzip_genfile.sh
 #
 # Description:	This program will generate the zip file that will be used to
-#               test the unzip program. 
-# 
+#               test the unzip program.
+#
 # Author:		Manoj Iyer manjo@mail.utexas.edu
 #
 # History:

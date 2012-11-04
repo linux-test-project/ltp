@@ -1,4 +1,4 @@
-<assertions> 
+<assertions>
   <assertion id="1" tag="ref:XSH6:{System Interfaces:shm_unlink:DESCRIPTION}">
    The shm_unlink() function shall remove the name of the shared memory object
    named by the string pointed to by name
@@ -34,7 +34,7 @@
   </assertion>
   <assertion id="9" tag="ref:XSH6:{System Interfaces:shm_unlink:ERRORS}">
    The shm_unlink() function sets errno = EACCES if permission is denied to
-   unlink the named shared memory object 
+   unlink the named shared memory object
   </assertion>
   <assertion id="10" tag="ref:XSH6:{System Interfaces:shm_unlink:ERRORS}">
    The shm_unlink() function sets errno = ENAMETOOLONG if the length of the

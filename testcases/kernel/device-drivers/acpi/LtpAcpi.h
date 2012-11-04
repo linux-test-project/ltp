@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -73,15 +73,15 @@
 #define DEV_PATH                            "/dev"
 #define LTP_ACPI_DIR_NAME                   ""
 #define LTP_ACPI_DEV_NAME                   "LTP"
-#define LTP_ACPI_DEV_NODE_PATH              DEV_PATH "/" 
+#define LTP_ACPI_DEV_NODE_PATH              DEV_PATH "/"
 #define LTP_ACPI_DEVICE_NAME                DEV_PATH "/"  LTP_ACPI_DEV_NAME
-#define MINOR_SHIFT_BITS 3 
+#define MINOR_SHIFT_BITS 3
 #define MAX_PARTITIONS 8                    /* partition 0 + 7 more possible due to 3 bit partition number field */
 #define	MAX_NUM_DISKS 3                   /* number of real devices */
 
 #define MPDEV_FLAG_CLEAR 0
 #define MPDEV_FLAG_SET   1
-                       
+
 typedef struct _ltpdev_cmd {
     u_int32_t     cmd;           // input - 0==recover, 1==fail
     u_int32_t     status;        // ouput - 0==success
@@ -89,7 +89,7 @@ typedef struct _ltpdev_cmd {
 
 typedef enum ltpdev_ioctl_cmds_s {
 	/* version commands */
-	LTP_IOCTL_NUMBER = 0x5500	
+	LTP_IOCTL_NUMBER = 0x5500
 } ltpdev_ioctl_cmds_t;
 
 // define the ioctl cmds

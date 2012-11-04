@@ -16,7 +16,7 @@
 #                                                                              #
 # You should have received a copy of the GNU General Public License            #
 # along with this program;  if not, write to the Free Software                 #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA      #
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA      #
 #                                                                              #
 # Author: Miao Xie <miaox@cn.fujitsu.com>                                      #
 #                                                                              #
@@ -37,7 +37,7 @@ test1()
 {
 	echo 0 > "$CPUSET/father/cpu_exclusive" || return 1
 	echo 0 > "$CPUSET/father/child/cpu_exclusive" || return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
 }
 
@@ -45,7 +45,7 @@ test2()
 {
 	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
 	echo 0 > "$CPUSET/father/child/cpu_exclusive" || return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
 }
 
@@ -53,7 +53,7 @@ test3()
 {
 	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
 	echo 1 > "$CPUSET/father/child/cpu_exclusive" || return 1
-	
+
 	test 1 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
 }
 
@@ -61,7 +61,7 @@ test4()
 {
 	echo 0 > "$CPUSET/father/cpu_exclusive" || return 1
 	echo 1 > "$CPUSET/father/child/cpu_exclusive" 2> /dev/null && return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
 }
 
@@ -70,7 +70,7 @@ test5()
 	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
 	echo 1 > "$CPUSET/father/child/cpu_exclusive" || return 1
 	echo 0 > "$CPUSET/father/cpu_exclusive" 2> /dev/null && return 1
-	
+
 	test 1 = $(cat "$CPUSET/father/cpu_exclusive") || return 1
 }
 
@@ -82,7 +82,7 @@ test6()
 	echo 0 > "$CPUSET/father/child/cpus" || return 1
 	mkdir "$CPUSET/father/other" || return 1
 	echo 1 > "$CPUSET/father/other/cpus" || return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/cpus") || return 1
 	test 1 = $(cat "$CPUSET/father/other/cpus") || return 1
 }
@@ -95,7 +95,7 @@ test7()
 	echo 0 > "$CPUSET/father/child/cpus" || return 1
 	mkdir "$CPUSET/father/other" || return 1
 	echo "0-1" > "$CPUSET/father/other/cpus" 2> /dev/null && return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/cpus") || return 1
 	test -z $(cat "$CPUSET/father/other/cpus") || return 1
 }
@@ -130,7 +130,7 @@ test10()
 {
 	echo 0 > "$CPUSET/father/mem_exclusive" || return 1
 	echo 0 > "$CPUSET/father/child/mem_exclusive" || return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
 }
 
@@ -138,7 +138,7 @@ test11()
 {
 	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
 	echo 0 > "$CPUSET/father/child/mem_exclusive" || return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
 }
 
@@ -146,7 +146,7 @@ test12()
 {
 	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
 	echo 1 > "$CPUSET/father/child/mem_exclusive" || return 1
-	
+
 	test 1 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
 }
 
@@ -154,7 +154,7 @@ test13()
 {
 	echo 0 > "$CPUSET/father/mem_exclusive" || return 1
 	echo 1 > "$CPUSET/father/child/mem_exclusive" 2> /dev/null && return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
 }
 
@@ -163,7 +163,7 @@ test14()
 	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
 	echo 1 > "$CPUSET/father/child/mem_exclusive" || return 1
 	echo 0 > "$CPUSET/father/mem_exclusive" 2> /dev/null && return 1
-	
+
 	test 1 = $(cat "$CPUSET/father/mem_exclusive") || return 1
 }
 
@@ -175,7 +175,7 @@ test15()
 	echo 0 > "$CPUSET/father/child/mems" || return 1
 	mkdir "$CPUSET/father/other" || return 1
 	echo 1 > "$CPUSET/father/other/mems" || return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/mems") || return 1
 	test 1 = $(cat "$CPUSET/father/other/mems") || return 1
 }
@@ -188,7 +188,7 @@ test16()
 	echo 0 > "$CPUSET/father/child/mems" || return 1
 	mkdir "$CPUSET/father/other" || return 1
 	echo "0-1" > "$CPUSET/father/other/mems" 2> /dev/null && return 1
-	
+
 	test 0 = $(cat "$CPUSET/father/child/mems") || return 1
 	test -z $(cat "$CPUSET/father/other/mems") || return 1
 }

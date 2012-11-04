@@ -15,7 +15,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -139,7 +139,7 @@ int main(int ac, char *av[])
 			}
 		}
 		cwd = startdir;
-		
+
 		snprintf(dirname, ARRAY_SIZE(dirname),
 		         "%s/ftest06.%d", cwd, getpid());
 		snprintf(homedir, ARRAY_SIZE(homedir),
@@ -150,7 +150,7 @@ int main(int ac, char *av[])
 
 		if (chdir(dirname) < 0)
 			tst_brkm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", dirname);
-		
+
 		dirlen = strlen(dirname);
 
 		if (chdir(homedir) < 0)

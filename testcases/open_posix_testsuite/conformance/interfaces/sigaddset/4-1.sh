@@ -7,6 +7,6 @@
 
 #
 #   Test various methods of adding invalid signals to sigaddset().
-# 
+#
 
 ./4-core 1

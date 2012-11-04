@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -14,14 +16,12 @@
  * If an implementation cannot support the combination of access types
  * specified by prot, the call to mmap() shall fail.
  *
- * Test Step:
- * 1. mmap(), setting 'prot' as PROT_NONE;
- * 2. mmap(), setting 'prot' as PROT_READ | PROT_WRITE | PROT_EXEC
- *
+ * Test Steps:
+ * 1. call mmap() for all combinations permitted by POSIX
+ * 2. each should either succed or fail with ENOTSUP
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -33,79 +33,98 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/5-1.c"
+struct testcase {
+	int prot;
+	int flags;
+};
 
-int main()
+struct testcase testcases[] = {
+	{.flags = MAP_SHARED, .prot = PROT_NONE},
+	{.flags = MAP_SHARED, .prot = PROT_READ},
+	{.flags = MAP_SHARED, .prot = PROT_WRITE},
+	{.flags = MAP_SHARED, .prot = PROT_EXEC},
+	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_WRITE},
+	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_EXEC},
+	{.flags = MAP_SHARED, .prot = PROT_EXEC | PROT_WRITE},
+	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_WRITE | PROT_EXEC},
+
+	{.flags = MAP_PRIVATE, .prot = PROT_NONE},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ},
+	{.flags = MAP_PRIVATE, .prot = PROT_WRITE},
+	{.flags = MAP_PRIVATE, .prot = PROT_EXEC},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_WRITE},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_EXEC},
+	{.flags = MAP_PRIVATE, .prot = PROT_EXEC | PROT_WRITE},
+	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_WRITE | PROT_EXEC},
+};
+
+static void print_error(struct testcase *t, int saved_errno)
 {
-  char tmpfname[256];
-  int total_size = 1024;
+	printf("Combination of ");
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size = total_size;
-  int flag = MAP_SHARED;
-  int fd;
-  int prot;
-  off_t off = 0;
+	if (t->prot == PROT_NONE)
+		printf("PROT_NONE ");
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_5_1_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
-  if (ftruncate(fd, total_size) == -1)
-  {
-    printf(TNAME "Error at ftruncate(): %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
+	if (t->prot & PROT_READ)
+		printf("PROT_READ ");
 
-#ifndef PROT_READ
-    printf("Test Fail: " TNAME " PROT_READ not defined\n");
-    exit(PTS_FAIL);
-#endif
-#ifndef PROT_WRITE
-    printf("Test Fail: " TNAME " PROT_WRITE not defined\n");
-    exit(PTS_FAIL);
-#endif
-#ifndef PROT_EXEC
-    printf("Test Fail: " TNAME " PROT_EXEC not defined\n");
-    exit(PTS_FAIL);
-#endif
-#ifndef PROT_NONE
-    printf("Test Fail: " TNAME " PROT_READ not defined\n");
-    exit(PTS_FAIL);
-#endif
+	if (t->prot & PROT_WRITE)
+		printf("PROT_WRITE ");
 
-  prot = PROT_NONE;
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf("Test Fail: " TNAME " Error at mmap, with PROT_NONE  %s\n",
-            strerror(errno));
-    exit(PTS_FAIL);
-  }
-  munmap(pa, size);
+	if (t->prot & PROT_EXEC)
+		printf("PROT_EXEC ");
 
-  prot = PROT_READ | PROT_WRITE | PROT_EXEC;
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf("Test Fail: " TNAME " Error at mmap,"
-            "with PROT_READ | PROT_WRITE | PROT_EXEC  %s\n",
-            strerror(errno));
-    exit(PTS_FAIL);
-  }
-  munmap(pa, size);
+	switch (t->flags) {
+	case MAP_SHARED:
+		printf("with MAP_SHARED");
+	break;
+	case MAP_PRIVATE:
+		printf("with MAP_PRIVATE");
+	break;
+	}
 
-  close(fd);
-  printf ("Test Pass\n");
-  return PTS_PASS;
+	printf(" has failed: %s\n", strerror(saved_errno));
+}
+
+int main(void)
+{
+	char tmpfname[256];
+	void *pa;
+	size_t size = 1024;
+	int fd, i, fail = 0;
+
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_5_1_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	unlink(tmpfname);
+	if (ftruncate(fd, size) == -1) {
+		printf("Error at ftruncate(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+
+	for (i = 0; i < sizeof(testcases)/sizeof(*testcases); i++) {
+
+		pa = mmap(NULL, size, testcases[i].prot, testcases[i].flags, fd, 0);
+
+		if (pa == MAP_FAILED) {
+			if (errno != ENOTSUP) {
+				print_error(&testcases[i], errno);
+				fail++;
+			}
+		} else {
+			munmap(pa, size);
+		}
+	}
+
+	close(fd);
+
+	if (fail)
+		return PTS_FAIL;
+
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

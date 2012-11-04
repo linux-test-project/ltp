@@ -82,7 +82,7 @@ fi
 
 echo
 echo 'free reports:'
-free 
+free
 
 echo
 echo '/proc/cpuinfo'

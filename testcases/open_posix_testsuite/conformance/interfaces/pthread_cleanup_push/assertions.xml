@@ -2,7 +2,7 @@
   <assertion id="1" tag="ref:XSH6:32050:32055">
    The function
 
-   void pthread_cleanup_push(void (*routine) (void*), void *arg); 
+   void pthread_cleanup_push(void (*routine) (void*), void *arg);
 
   Shall push the specified cancelation cleanup handler routine onto the calling thread's
   cancelation cleanup stack.

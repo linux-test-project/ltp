@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 SETS_DEFAULTS="${TCID=test07-2} ${TST_COUNT=1} ${TST_TOTAL=1}"
 declare -r TCID
@@ -20,20 +20,20 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
+
 	"${FS_BIND_ROOT}/bin/makedir" share parent2
 	"${FS_BIND_ROOT}/bin/makedir" share share2
-	
+
 	mount --bind share2 parent2
 	"${FS_BIND_ROOT}/bin/makedir" slave parent2
 	mount --bind "$disk1" share2
-	
+
 	check parent2 share2
-	
+
 	mount --bind "$disk2" parent2/a
-	
+
 	check -n parent2/a share2/a
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "bind/test07-2: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -48,11 +48,11 @@ trap '' ERR
 	umount parent2
 	umount parent2
 	umount parent2
-	
+
 	umount share2
 	umount share2
-	
-	
+
+
 	rm -rf parent* share*
 	cleanup
 } >& /dev/null

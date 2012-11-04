@@ -21,21 +21,17 @@ check_config_options() {
 	fi
 }
 
-no_of_cpus() {
-	echo $(cat /proc/cpuinfo | grep processor | wc -l)
-}
-
 get_topology() {
 	declare -a cpus
 	declare -a phyid
 
-	total_cpus=$(no_of_cpus)
+	total_cpus=`tst_ncpus`
 	(( total_cpus-=1 ))
 	for cpu in $(seq 0 "${total_cpus}" )
 	do
 		cpus[$cpu]=cpu${cpu}
 		phyid[$cpu]=$(cat /sys/devices/system/cpu/cpu${cpu}/topology/physical_package_id)
-	done 
+	done
 	j=0
 	while [ "${j}" -lt "${total_cpus}" ]
 	do
@@ -48,7 +44,7 @@ get_topology() {
 }
 
 check_cpufreq() {
-	total_cpus=$(no_of_cpus)
+	total_cpus=`tst_ncpus`
 	(( total_cpus-=1 ))
 
 	for cpu in $(seq 0 "${total_cpus}" )
@@ -61,7 +57,7 @@ check_cpufreq() {
 }
 
 get_supporting_freq() {
-	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_frequencies | uniq	
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_frequencies | uniq
 }
 
 get_supporting_govr() {
@@ -119,7 +115,7 @@ is_multi_core() {
 		: $(( num_of_cpus = siblings / cpu_cores ))
 		[ $num_of_cpus -gt 1 ]; return $?
 	fi
-}		
+}
 
 is_dual_core() {
 	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
@@ -145,7 +141,7 @@ get_valid_input() {
 		*) export valid_input="0 1 2" ;;
 	esac
 }
-		
+
 analyze_result_hyperthreaded() {
 	sched_mc=$1
     pass_count=$2
@@ -219,7 +215,7 @@ sched_mc=$sched_mc"
 			else
 				tst_resm TPASS "Consolidation at package level passed for \
 sched_mc=$sched_mc"
-			fi	
+			fi
         	;;
     	esac
 	fi
@@ -237,7 +233,7 @@ when sched_smt=$sched_smt"
 		else
 			tst_resm TFAIL "Consolidation at core level passed for \
 sched_smt=$sched_smt"
-		fi ;;	
+		fi ;;
 	*)
 		if [ $pass_count -lt 5 ]; then
 			RC=1
@@ -268,7 +264,7 @@ analyze_sched_domain_result(){
 				tst_resm TPASS "sched domain test for sched_mc=$sched_mc"
 			else
 				RC=1
-				tst_resm TFAIL "sched domain test for sched_mc=$sched_mc"		
+				tst_resm TFAIL "sched domain test for sched_mc=$sched_mc"
 			fi
 		fi
 	else

@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -186,7 +186,7 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
 	# Set IPv4 addresses to the interfaces
 	ip addr add ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname
 
-	### delete before setting 
+	### delete before setting
 	if [ $? -eq 2 ]; then
 	ip addr del ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname  2>&1
 	ip addr add ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname

@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -26,18 +26,18 @@
 #
 # Description:
 #   Kill all of the icmp traffic utilities (ping or ping6)
-#  
+#
 # Arguments:
 #   None
-#   
+#
 # Returns:
-#   None 
+#   None
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
@@ -55,7 +55,7 @@ export LTPROOT
 WARN_WAIT=300
 
 
-# Send SIGINT to ping and ping6 
+# Send SIGINT to ping and ping6
 $LTP_RSH $RHOST "killall -SIGINT ping ping6" >/dev/null 2>&1
 
 # Verify the all ping utitlities are dead.
@@ -66,7 +66,7 @@ while true ; do
 
     if [ -z $ret ]; then
 	continue
-    fi 
+    fi
 
     if [ $ret -ne 0 ]; then
 	break

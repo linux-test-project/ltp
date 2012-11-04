@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -10,14 +12,13 @@
  * or, if MAP_FIXED was not specified and
  * there is insufficient room in the address space to effect the mapping.
  *
- * Test Step:
+ * Test Steps:
  * 1. In a very long loop, keep mapping a shared memory object,
  *    until there this insufficient room in the address space;
  * 3. Should get ENOMEM.
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -31,64 +32,52 @@
 #include <stdint.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/24-1.c"
-
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  int shm_fd;
+	char tmpfname[256];
+	void *pa;
+	size_t len;
+	int fd;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t len;
-  int prot = PROT_READ | PROT_WRITE;
-  int flag = MAP_SHARED;
-  int fd;
-  off_t off = 0;
+	/* Size of the shared memory object */
+	size_t shm_size = 1024;
 
-  /* Size of the shared memory object */
-  size_t shm_size = 1024;
+	size_t mapped_size = 0;
 
-  size_t mapped_size = 0;
+	snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_25_1_%d", getpid());
 
-  snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_25_1_%d",
-           getpid());
-
-  /* Create shared object */
+	/* Create shared object */
 	shm_unlink(tmpfname);
-	shm_fd = shm_open(tmpfname, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-	if (shm_fd == -1)
-	{
-		printf(TNAME " Error at shm_open(): %s\n", strerror(errno));
+	fd = shm_open(tmpfname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at shm_open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-  shm_unlink(tmpfname);
-  if (ftruncate(shm_fd, shm_size) == -1) {
-    printf(TNAME " Error at ftruncate(): %s\n", strerror(errno));
-    return PTS_UNRESOLVED;
-  }
+	shm_unlink(tmpfname);
 
-  fd = shm_fd;
-  len = shm_size;
+	if (ftruncate(fd, shm_size) == -1) {
+		printf("Error at ftruncate(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  mapped_size = 0;
-  while (mapped_size < SIZE_MAX)
-  {
-    pa = mmap (addr, len, prot, flag, fd, off);
-    if (pa == MAP_FAILED && errno == ENOMEM)
-    {
-      printf ("Test Pass: " TNAME " Get ENOMEM: %s\n",
-              strerror(errno));
-      printf ("Total mapped size is %lu bytes\n", (unsigned long)mapped_size);
-      exit(PTS_PASS);
-    }
+	len = shm_size;
 
-    mapped_size += shm_size;
-    if (pa == MAP_FAILED)
-      perror("Error at mmap()");
-  }
+	mapped_size = 0;
+	while (mapped_size < SIZE_MAX) {
+		pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		if (pa == MAP_FAILED && errno == ENOMEM) {
+			printf("Total mapped size is %lu bytes\n",
+			       (unsigned long)mapped_size);
+			printf("Test PASSED\n");
+			return PTS_PASS;
+		}
 
-  close(fd);
-  printf ("Test Fail: Did not get ENOMEM as expected\n");
-  return PTS_FAIL;
+		mapped_size += shm_size;
+		if (pa == MAP_FAILED)
+			perror("Error at mmap()");
+	}
+
+	close(fd);
+	printf("Test FAILED: Did not get ENOMEM as expected\n");
+	return PTS_FAIL;
 }

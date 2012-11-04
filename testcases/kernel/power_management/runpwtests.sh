@@ -1,9 +1,9 @@
-#! /bin/sh 
+#! /bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
 ##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##      
+## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
 ## the Free Software Foundation; either version 2 of the License, or          ##
 ## (at your option) any later version.                                        ##
@@ -15,13 +15,13 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
 # File :        runpwtests.sh
 #
-# Description:  
+# Description:
 #
 # Author:       Nageswara R Sastry <nasastry@in.ibm.com>
 #
@@ -192,14 +192,14 @@ if ! type python > /dev/null ; then
 test cannot run"
 elif ! grep sched_debug -qw /proc/cmdline ; then
 	tst_resm TCONF "Kernel cmdline parameter 'sched_debug' needed,\
-CPU Consolidation test cannot run" 
+CPU Consolidation test cannot run"
 else
 	if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
     		echo "max sched mc $max_sched_mc"
 		for sched_mc in `seq 0 $max_sched_mc`; do
 			: $(( TST_COUNT+=1))
 			sched_domain.py -c $sched_mc; RC=$?
-			analyze_sched_domain_result $sched_mc $RC 
+			analyze_sched_domain_result $sched_mc $RC
 			if [ $hyper_threaded -eq $YES -a -f /sys/devices/system/cpu/sched_smt_power_savings ]; then
 				get_sched_values sched_smt; max_sched_smt=$?
 				for sched_smt in `seq 0 $max_sched_smt`; do
@@ -232,8 +232,8 @@ else
 	fi
 fi
 
-if [ $# -gt 0 -a "$1" = "-exclusive" ]; then 
-	# Test CPU consolidation 
+if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
+	# Test CPU consolidation
 	if [ $multi_socket -eq $YES -a $multi_core -eq $YES ]; then
 		for sched_mc in `seq 0  $max_sched_mc`; do
 			: $(( TST_COUNT += 1 ))
@@ -249,8 +249,8 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 					: $(( sched_mc_pass_cnt += 1 ))
 				fi
 			done
-			analyze_package_consolidation_result $sched_mc $sched_mc_pass_cnt	
-			
+			analyze_package_consolidation_result $sched_mc $sched_mc_pass_cnt
+
 			if [ $hyper_threaded -eq $YES ]; then
 				for sched_smt in `seq 0 $max_sched_smt`; do
 					: $(( TST_COUNT += 1 ))
@@ -274,7 +274,7 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 			for sched_smt in `seq 0 $max_sched_smt`; do
 				if [ $sched_smt -eq 2 ]; then
 				 	work_load="kernbench"
-				else	
+				else
 					work_load="ebizzy"
 				fi
 				sched_smt_pass_cnt=0
@@ -293,7 +293,7 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
     if [ $multi_socket -eq $YES -a $multi_core -eq $YES ]; then
         for sched_mc in `seq 1  $max_sched_mc`; do
 			: $(( TST_COUNT += 1 ))
-		
+
 			# Vary sched_mc from 1/2 to 0 when workload is running and ensure that
 			# tasks do not consolidate to single package when sched_mc is set to 0
 			if cpu_consolidation.py -v -c $sched_mc; then
@@ -303,7 +303,7 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
         	fi
 
 			if [ $hyper_threaded -eq $YES ]; then
-				for sched_smt in `seq 1  $max_sched_smt`; do		
+				for sched_smt in `seq 1  $max_sched_smt`; do
 					if [ $sched_smt -eq $sched_mc ]; then
 						# Vary sched_mc & sched_smt from 1 to 0 & 2 to 0 when workload is running and ensure that
             			# tasks do not consolidate to single package when sched_mc is set to 0
@@ -331,11 +331,11 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 		else
 			tst_resm TFAIL "CPU consolidation test by varying sched_smt from 1 to 0"
 		fi
-        
+
         # Vary only sched_smt from 2 to 0 when workload is running and ensure that
         # tasks do not consolidate to single core when sched_smt is set to 0
-        : $(( TST_COUNT += 1 )) 
-        if cpu_consolidation.py -v -t 2; then 
+        : $(( TST_COUNT += 1 ))
+        if cpu_consolidation.py -v -t 2; then
             tst_resm TPASS "CPU consolidation test by varying sched_smt 2 to 0"
         else
             tst_resm TFAIL "CPU consolidation test by varying sched_smt 2 to 0"
@@ -369,7 +369,7 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 & sched_smt=$sched_smt"
 					else
 						tst_resm TFAIL "ILB & workload did not execute in same package for \
-sched_mc=$sched_mc & sched_smt=$sched_smt. Ensure CONFIG_NO_HZ is set"    
+sched_mc=$sched_mc & sched_smt=$sched_smt. Ensure CONFIG_NO_HZ is set"
 					fi
 				done
 			fi

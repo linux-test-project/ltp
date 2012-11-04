@@ -16,7 +16,7 @@
 #                                                                               #
 #  You should have received a copy of the GNU General Public License            #
 #  along with this program;  if not, write to the Free Software                 #
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA      #
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA      #
 #                                                                               #
 #################################################################################
 # Name Of File: run_cpuctl_stress_test.sh                                       #
@@ -64,7 +64,7 @@ SCRIPT_PID=$$;
 FILE="stress-678";		# suffix for results file
 TEST_NAME="CPUCTL NUM_GROUPS vs NUM_TASKS TEST:";
 
-NUM_CPUS=`cat /proc/cpuinfo | grep -w -i processor | wc -l`
+NUM_CPUS=`tst_ncpus`
 N=$NUM_CPUS;		# Default total num of groups (classes)
 M=10;			# Default total num of tasks in a group
 

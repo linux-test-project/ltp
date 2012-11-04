@@ -16,7 +16,7 @@
 # for local or global runs (<RT_TESTS_ROOT>/run.sh or <TESTDIR>/run_auto.sh)
 #
 
-# Pass if maximum time for signaled thread to be scheduled is less 
+# Pass if maximum time for signaled thread to be scheduled is less
 # than threshold (us).
 # Default threshold=100 us
 func/async_handler		async_handler -c 100

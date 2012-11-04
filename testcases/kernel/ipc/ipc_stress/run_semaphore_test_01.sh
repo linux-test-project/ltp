@@ -2,7 +2,7 @@
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
-## Copyright (c) Jinbing Guo, guojb@cn.ibm.com, 2008                          ## 
+## Copyright (c) Jinbing Guo, guojb@cn.ibm.com, 2008                          ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 ################################################################################
@@ -56,7 +56,7 @@ RC=0                # Exit values of system commands used
 SEM_ID=0
 
 if [ -f $LTPROOT/testcases/bin/semaphore_test_01 ]; then
-	RC=0                
+	RC=0
 else
 	tst_resm TBROK, "Could not find the case semaphore_test_01."
 	RC=1
@@ -87,7 +87,7 @@ TST_COUNT=1                 # Test case number.
 RC=0                        # return code from commands.
 
 SEM_ID=`semaphore_test_01`
-RC=$?   
+RC=$?
 
 # Check the return value of semaphore_test_01
 if [ $RC -ne 0 ]

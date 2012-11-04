@@ -15,7 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
@@ -28,7 +28,7 @@
 #         of the tested machine will be used.
 #
 #  HISTORY:
-#    06/05/03 Manoj Iyer - manjo@mail.utexas.edu 
+#    06/05/03 Manoj Iyer - manjo@mail.utexas.edu
 #      - Ported to use LTP test harness API
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
@@ -73,7 +73,7 @@ do_test()
 
     sleep $SLEEPTIME
 
-    # PURPOSE:  stress the automatic creation of arp entries by pinging a host 
+    # PURPOSE:  stress the automatic creation of arp entries by pinging a host
     #           and deleting the arp entry again.
 
     while [ $TST_COUNT -le $TST_TOTAL ]; do

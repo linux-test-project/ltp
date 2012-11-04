@@ -18,8 +18,8 @@
  * other software, or any other product whatsoever.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ * with this program; if not, write the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
@@ -490,28 +490,28 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 		                 ": errno=%s(%i): %s", strerrnodef(err),
 		                 err, strerror(err));
 	}
-	
+
 	if (size >= sizeof(message)) {
 		printf("%s: %i: line too long\n", __func__, __LINE__);
 		abort();
 	}
-	
+
 	if (ttype & TTERRNO) {
 		size += snprintf(message + size, sizeof(message) - size,
 		                 ": TEST_ERRNO=%s(%i): %s",
 		                 strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
 		                 strerror(TEST_ERRNO));
 	}
-	
+
 	if (size + 1 >= sizeof(message)) {
 		printf("%s: %i: line too long\n", __func__, __LINE__);
 		abort();
 	}
-	
+
 	message[size]   = '\n';
 	message[size+1] = '\0';
 
-	fputs(message, T_out); 
+	fputs(message, T_out);
 
 	/*
 	 * If tst_res() was called with a file, append file contents to the

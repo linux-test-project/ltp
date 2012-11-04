@@ -31,7 +31,7 @@ omit_redhat_minor_version=0
 
 while getopts "d:m" opt; do
 
-	case "$opt" in 
+	case "$opt" in
 	d)
 		if [ ! -d "$OPTARG" ] ; then
 			error "$OPTARG doesn't exist"

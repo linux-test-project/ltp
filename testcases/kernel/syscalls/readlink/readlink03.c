@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -141,11 +141,11 @@ void cleanup();			/* Cleanup function for the test */
 int main(int ac, char **av)
 {
 	char buffer[MAX_SIZE];	/* temporary buffer to hold symlink contents */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	char *sym_file;		/* symbolic link file name */
 	char *test_desc;	/* test specific error message */
-	int i;			/* counter to test different test conditions */
+	int i;
 	size_t buf_size;	/* size of buffer for readlink */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -332,7 +332,7 @@ int setup2()
  */
 int lpath_setup()
 {
-	int i;			/* counter variable */
+	int i;
 
 	for (i = 0; i <= (PATH_MAX + 1); i++) {
 		Longpathname[i] = 'a';

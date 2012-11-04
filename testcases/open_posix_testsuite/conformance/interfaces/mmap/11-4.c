@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -13,9 +15,9 @@
  * Further, the system shall never write out any modified portions of
  * the last page of an object which are beyond its end.
  *
- * Test step:
+ * Test Steps:
  * 1. Create a process, in this process:
-      a. map a file  with size of 1/2 * page_size,
+ *    a. map a file  with size of 1/2 * page_size,
  *       set len = 1/2 * page_size
  *    b. Read the partial page beyond the object size.
  *       Make sure the partial page is zero-filled;
@@ -28,7 +30,6 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -41,113 +42,98 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/11-4.c"
-
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  long  page_size;
-  long total_size;
+	char tmpfname[256];
+	long page_size;
+	long total_size;
 
-  void *pa = NULL, *pa_2 = NULL;
-  void *addr = NULL;
-  size_t len;
-  int flag;
-  int fd, fd_2;
-  off_t off = 0;
-  int prot;
+	void *pa;
+	size_t len;
+	int fd;
 
-  pid_t child;
-  char *ch = NULL, *ch_2 = NULL;
-  int exit_val;
+	pid_t child;
+	char *ch;
+	int exit_val;
 
-  page_size = sysconf(_SC_PAGE_SIZE);
+	page_size = sysconf(_SC_PAGE_SIZE);
 
-  /* Size of the file to be mapped */
-  total_size = page_size / 2;
+	/* Size of the file to be mapped */
+	total_size = page_size / 2;
 
-  /* mmap will create a partial page */
-  len = page_size / 2;
+	/* mmap will create a partial page */
+	len = page_size / 2;
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_11_5_%d",
-             getpid());
-  child = fork();
-  if (child == 0)
-  {
-    /* Create shared object */
-    unlink(tmpfname);
-    fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-              S_IRUSR | S_IWUSR);
-    if (fd == -1)
-    {
-      printf(TNAME " Error at open(): %s\n",
-             strerror(errno));
-      exit(PTS_UNRESOLVED);
-    }
-    if (ftruncate(fd, total_size) == -1) {
-      printf(TNAME " Error at ftruncate(): %s\n", strerror(errno));
-      return PTS_UNRESOLVED;
-    }
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_11_5_%d", getpid());
+	child = fork();
+	switch (child) {
+	case 0:
+		/* Create shared object */
+		unlink(tmpfname);
+		fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
+			  S_IRUSR | S_IWUSR);
+		if (fd == -1) {
+			printf("Error at open(): %s\n", strerror(errno));
+			return PTS_UNRESOLVED;
+		}
+		if (ftruncate(fd, total_size) == -1) {
+			printf("Error at ftruncate(): %s\n", strerror(errno));
+			return PTS_UNRESOLVED;
+		}
 
-    prot = PROT_READ | PROT_WRITE;
-    flag = MAP_SHARED;
-    off = 0;
-    pa = mmap(addr, len, prot, flag, fd, off);
-    if (pa == MAP_FAILED)
-    {
-      printf("Test FAIL: " TNAME " Error at mmap(): %s\n",
-      	     strerror(errno));
-      return PTS_FAIL;
-    }
-    printf("pa: %p\n", pa);
-    /* Check the patial page is ZERO filled */
-    ch = pa + len + 1;
-    if (*ch != 0)
-    {
-      printf("Test Fail: " TNAME " The partial page at the end of an object "
-              "is not zero-filled\n");
-      return PTS_FAIL;
-    }
+		pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		if (pa == MAP_FAILED) {
+			printf("Error at mmap(): %s\n", strerror(errno));
+			return PTS_FAIL;
+		}
+		printf("pa: %p\n", pa);
+		/* Check the patial page is ZERO filled */
+		ch = pa + len + 1;
+		if (*ch != 0) {
+			printf("Test FAILED: "
+			       "The partial page at the end of an object "
+			       "is not zero-filled\n");
+			return PTS_FAIL;
+		}
 
-    /* Write the partial page */
-    *ch = 'b';
-    munmap (pa, len);
-    close (fd);
-    return PTS_PASS;
-  }
-  wait(&exit_val);
-  if (!(WIFEXITED(exit_val) &&
-	(WEXITSTATUS(exit_val) == PTS_PASS)))
-  {
-    unlink(tmpfname);
-    return PTS_FAIL;
-  }
+		/* Write the partial page */
+		*ch = 'b';
+		munmap(pa, len);
+		close(fd);
+		return PTS_PASS;
+	case -1:
+		printf("Error at fork(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	default:
+	break;
+	}
 
-  fd_2 = open(tmpfname, O_RDWR, 0);
-  unlink(tmpfname);
+	wait(&exit_val);
+	if (!(WIFEXITED(exit_val) && (WEXITSTATUS(exit_val) == PTS_PASS))) {
+		unlink(tmpfname);
+		printf("Child exited abnormally\n");
+		return PTS_UNRESOLVED;
+	}
 
-  prot = PROT_READ | PROT_WRITE;
-  flag = MAP_SHARED;
-  off = 0;
-  pa = mmap(addr, len, prot, flag, fd_2, off);
-  pa_2 = mmap(addr, len, prot, flag, fd_2, off);
-  if (pa_2 == MAP_FAILED)
-  {
-    printf("Test FAIL: " TNAME " Error at 2nd mmap(): %s\n",
-            strerror(errno));
-    exit(PTS_FAIL);
-  }
+	fd = open(tmpfname, O_RDWR, 0);
+	unlink(tmpfname);
 
-  printf("pa_2: %p\n", pa_2);
-  ch_2 = pa_2 + len + 1;
-  if (*ch_2 == 'b')
-  {
-    	printf("Test Fail: " TNAME " Modification of the partial page "
-     	   "at the end of an object is written out\n");
-  	exit(PTS_FAIL);
-  }
-  close (fd_2);
-  munmap (pa_2, len);
-  printf("Test Passed\n");
-  return PTS_PASS;
+	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at 2nd mmap(): %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
+
+	printf("pa: %p\n", pa);
+	ch = pa + len + 1;
+	if (*ch == 'b') {
+		printf("Test FAILED: Modification of the partial page "
+		       "at the end of an object is written out\n");
+		return PTS_FAIL;
+	}
+	close(fd);
+	munmap(pa, len);
+
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

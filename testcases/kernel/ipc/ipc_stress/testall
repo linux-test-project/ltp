@@ -7,14 +7,14 @@ touch testlog
 
 export CYCLE=5
 
-while 
+while
 	[ -w testlog ]
 do
 	./message_queue_test_01 		1>> testlog 2>> testlog
 	./message_queue_test_02_get 		1>> testlog 2>> testlog
 	./message_queue_test_02_rcv 		1>> testlog 2>> testlog&
 	./message_queue_test_02_snd 		1>> testlog 2>> testlog
-	./message_queue_test_02_ctl -r  	1>> testlog 2>> testlog 
+	./message_queue_test_02_ctl -r  	1>> testlog 2>> testlog
 	./message_queue_test_04 		1>> testlog 2>> testlog
 	./message_queue_test_05 -n 8 		1>> testlog 2>> testlog
 	./cleanup
@@ -28,7 +28,7 @@ do
 	./semaphore_test_02 -s 64 -p 16 	1>> testlog 2>> testlog
 	./semaphore_test_03			1>> testlog 2>> testlog
 	./semaphore_test_03 -s 30 -p 16 	1>> testlog 2>> testlog
-	./cleanup	
+	./cleanup
 	./shmem_test_01 			1>> testlog 2>> testlog
 	./shmem_test_01 -s 1024 		1>> testlog 2>> testlog
 	./shmem_test_02 	 		1>> testlog 2>> testlog

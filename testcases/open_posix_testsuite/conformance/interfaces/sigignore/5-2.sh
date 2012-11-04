@@ -7,6 +7,6 @@
 
 #
 #   Test various methods of passing invalid signals to sigignore().
-# 
+#
 
 ./5-core 2

@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 trap 'exit 0' 15
 

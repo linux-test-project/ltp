@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -24,22 +24,22 @@
 # File:
 #   initialize_if
 #
-# Description: 
-#   Initialize the interface which belongs to the specified test link 
+# Description:
+#   Initialize the interface which belongs to the specified test link
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # Arguments:
 #   $1:	Set the host type (lhost - local host | rhost - remote host)
-#   $2: The number of the test link	
+#   $2: The number of the test link
 #
 # Exit Value:
-#    0: Exit normally 
+#    0: Exit normally
 #   >0: Exit abnormally
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
@@ -53,7 +53,7 @@ export LTPROOT
 . check_envval || exit 1
 
 # Arguments
-if [ $# -ne 2 ]; then 
+if [ $# -ne 2 ]; then
     echo "Usage: $0 host_type link_num" >&2
     exit 1
 fi

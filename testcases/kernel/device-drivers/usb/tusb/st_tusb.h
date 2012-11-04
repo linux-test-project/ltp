@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
 */
 //extern struct usb_bus *usb_alloc_bus(struct usb_operations *);
@@ -35,7 +35,7 @@ extern int usb_hcd_pci_resume(struct pci_dev *);
 	        int (*get_frame_number) (struct usb_device *dev);
 	        int (*submit_urb) (struct urb *urb);
 	        int (*unlink_urb) (struct urb *urb);
-		
+
 		/* allocate dma-consistent buffer for URB_DMA_NOMAPPING */
 	        void *(*buffer_alloc)(struct usb_bus *bus, size_t size,
         	                int mem_flags,

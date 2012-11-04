@@ -1,15 +1,16 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
-
  *
  * The mmap() function shall fail if:
  * ML [EAGAIN] The mapping could not be locked in memory,
- * if required by mlockall (), due toa lack of resources.
+ * if required by mlockall(), due to a lack of resources.
  *
- * Test Step:
+ * Test Steps:
  * 1. Call mlockall(), setting MCL_FUTURE;
  * 2. Call setrlimit(), set rlim_cur of resource RLIMIT_MEMLOCK to a
  *    certain value.
@@ -21,7 +22,6 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -35,10 +35,8 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/18-1.c"
-
-/** Set the euid of this process to a non-root uid */
-int set_nonroot()
+/* Set the euid of this process to a non-root uid */
+int set_nonroot(void)
 {
 	struct passwd *pw;
 	setpwent();
@@ -54,7 +52,8 @@ int set_nonroot()
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf
+			    ("You don't have permission to change your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -66,97 +65,83 @@ int set_nonroot()
 	return 0;
 }
 
-int main()
+int main(void)
 {
-  char tmpfname[256];
-  int shm_fd;
+	char tmpfname[256];
 
-  /* size of shared memory object */
-  size_t shm_size;
+	/* size of shared memory object */
+	size_t shm_size;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t len;
-  int prot = PROT_READ | PROT_WRITE;
-  int flag = MAP_SHARED;
-  int fd;
-  off_t off = 0;
+	void *pa;
+	size_t len;
+	int fd;
 
-  size_t memlock_size;
-  struct rlimit rlim = {.rlim_max = RLIM_INFINITY};
+	size_t memlock_size;
+	struct rlimit rlim = {.rlim_max = RLIM_INFINITY};
 
-  /* Lock all memory page to be mapped */
-  if (mlockall(MCL_FUTURE) == -1)
-  {
-    printf(TNAME " Error at mlockall(): %s\n", strerror(errno));
-		return PTS_UNRESOLVED;
-  }
-
-  /* Set rlim.rlim_cur < len */
-
-  len = 1024 * 1024;
-  memlock_size = len / 2;
-  rlim.rlim_cur = memlock_size;
-
-  /* We don't cate the size of the actual shared memory object */
-  shm_size = 1024;
-
-  if (setrlimit (RLIMIT_MEMLOCK, &rlim) == -1)
-  {
-		printf(TNAME " Error at setrlimit(): %s\n", strerror(errno));
-		return PTS_UNRESOLVED;
-  }
-
-  snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_18_1_%d",
-           getpid());
-
-  /* Create shared object */
-	shm_unlink(tmpfname);
-	shm_fd = shm_open(tmpfname, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-	if (shm_fd == -1)
-	{
-		printf(TNAME " Error at shm_open(): %s\n", strerror(errno));
+	/* Lock all memory page to be mapped */
+	if (mlockall(MCL_FUTURE) == -1) {
+		printf("Error at mlockall(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-  shm_unlink(tmpfname);
-  if (ftruncate(shm_fd, shm_size) == -1) {
-    printf(TNAME " Error at ftruncate(): %s\n", strerror(errno));
-    return PTS_UNRESOLVED;
-  }
 
-  fd = shm_fd;
+	/* Set rlim.rlim_cur < len */
+	len = 1024 * 1024;
+	memlock_size = len / 2;
+	rlim.rlim_cur = memlock_size;
 
-  /* This test should be run under standard user permissions */
-  if (getuid() == 0) {
-	  if (set_nonroot() != 0) {
-		  printf("Cannot run this test as non-root user\n");
-		  return PTS_UNTESTED;
-	  }
-  }
+	/* We don't care of the size of the actual shared memory object */
+	shm_size = 1024;
 
-  /*
-   * EAGAIN:
-   * Lock all the memory by mlockall().
-   * Set resource limit setrlimit()
-   * Change the user to non-root then only setrmilit is applicable.
-   */
+	if (setrlimit(RLIMIT_MEMLOCK, &rlim) == -1) {
+		printf("Error at setrlimit(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  pa = mmap (addr, len, prot, flag, fd, off);
-  if (pa == MAP_FAILED && errno == EAGAIN)
-  {
-    printf ("Test Pass: " TNAME " Get EAGAIN: %s\n",
-            strerror(errno));
-    /* Change user to root */
-    seteuid(0);
-    close(fd);
-    munmap(pa, len);
-    exit(PTS_PASS);
-  }
+	snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_18_1_%d", getpid());
 
-  if (pa == MAP_FAILED)
-    perror("Error at mmap()");
-  close(fd);
-  munmap(pa, len);
-  printf ("Test Fail: Did not get EAGAIN as expected\n");
-  return PTS_FAIL;
+	/* Create shared object */
+	shm_unlink(tmpfname);
+	fd = shm_open(tmpfname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at shm_open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	shm_unlink(tmpfname);
+	if (ftruncate(fd, shm_size) == -1) {
+		printf("Error at ftruncate(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+
+	/* This test should be run under standard user permissions */
+	if (getuid() == 0) {
+		if (set_nonroot() != 0) {
+			printf("Cannot run this test as non-root user\n");
+			return PTS_UNTESTED;
+		}
+	}
+
+	/*
+	 * EAGAIN:
+	 * Lock all the memory by mlockall().
+	 * Set resource limit setrlimit()
+	 * Change the user to non-root then only setrmilit is applicable.
+	 */
+	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (pa == MAP_FAILED && errno == EAGAIN) {
+		printf("Got EAGAIN: %s\n", strerror(errno));
+		printf("Test PASSED\n");
+		/* Change user to root */
+		seteuid(0);
+		close(fd);
+		munmap(pa, len);
+		return PTS_PASS;
+	}
+
+	if (pa == MAP_FAILED)
+		perror("Error at mmap()");
+	close(fd);
+	munmap(pa, len);
+	printf("Test FAILED: Did not get EAGAIN as expected\n");
+	return PTS_FAIL;
 }

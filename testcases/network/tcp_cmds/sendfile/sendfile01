@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
@@ -22,11 +22,11 @@
 #
 #  PURPOSE: Copy files from server to client using the sendfile()
 #           function.
-#           
+#
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
-#         MUST have a ".rhosts" file with the hostname of the client 
-#         machine, where the test is executed. 
+#         MUST have a ".rhosts" file with the hostname of the client
+#         machine, where the test is executed.
 #
 #  HISTORY:
 #    06/09/2003 Manoj Iyer manjo@mail.utexas.edu
@@ -81,9 +81,9 @@ do_setup()
 do_test()
 {
     tst_resm TINFO "Doing $0."
-  
+
     mkdir -p $TCtmp
-    PORT=$$ 
+    PORT=$$
     if ! rsh -l root $IPADDR "$LTPROOT/testcases/bin/SF_Server $IPADDR $PORT $LTPROOT/testcases/bin $SERVER"; then
         end_testcase "rsh failed to $IPADDR as root failed"
     fi
@@ -95,10 +95,10 @@ do_test()
         serv_fname=$TCdat/$clnt_fname
         SIZE=`stat -c '%s' $serv_fname`
         tst_resm TINFO "Starting $SERVER $IPADDR Client_filename Server_filename Size "
-  
-        $CLIENT $IPADDR $PORT "$TCtmp/$clnt_fname" $serv_fname $SIZE 
+
+        $CLIENT $IPADDR $PORT "$TCtmp/$clnt_fname" $serv_fname $SIZE
         RetVal=$?
-  
+
         [ $RetVal -eq 0 ] || end_testcase "$CLIENT returned error $RetVal"
 
         diff $serv_fname $TCtmp/$clnt_fname

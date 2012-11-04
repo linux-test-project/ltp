@@ -1,7 +1,7 @@
 #!/bin/sh
 # This script should be run prior to running executing the filesystem tests.
 # valid devices need to be passed for Device Mapper to work correctly
-# 03/14/03 mridge@us.ibm.com added instance and time command line options 
+# 03/14/03 mridge@us.ibm.com added instance and time command line options
 # 05/16/03 changed script paths
 # 05/20/03 Added instructions on setup and warnings
 
@@ -16,7 +16,7 @@ fi
 export TMPBASE="/tmp"
 
 
-usage() 
+usage()
 {
 	cat <<-END >&2
 	usage: ${0##*/} [ -a part1 ] [ -b part2 ] [ -c part3 ]
@@ -30,7 +30,7 @@ usage()
 	ltproot=$TPROOT
 	tmpdir=$TMPBASE
 
-	example: ${0##*/} -a hdc1 -b hdc2 -c hdc3 -d hdc4 -n mytesthost:/testmountdir 
+	example: ${0##*/} -a hdc1 -b hdc2 -c hdc3 -d hdc4 -n mytesthost:/testmountdir
 
         fdisk needs to be run and the 4 HD partitions marked as 0x8e -- Linux LVM
 
@@ -52,7 +52,7 @@ do      case $arg in
                 d)      part4=$OPTARG;;
                 n)      nfsmount=$OPTARG;;
                 v)      verb=$OPTARG;;
-			
+
                 \?)     echo "************** Help Info: ********************"
                         usage;;
         esac
@@ -91,31 +91,31 @@ fi
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 
-mkdir /test                   >/dev/null 2>&1 
-mkdir /test/growfiles         >/dev/null 2>&1  
-mkdir /test/growfiles/ext2    >/dev/null 2>&1  
+mkdir /test                   >/dev/null 2>&1
+mkdir /test/growfiles         >/dev/null 2>&1
+mkdir /test/growfiles/ext2    >/dev/null 2>&1
 mkdir /test/growfiles/ext3    >/dev/null 2>&1
-mkdir /test/growfiles/msdos   >/dev/null 2>&1  
-mkdir /test/growfiles/reiser  >/dev/null 2>&1  
-mkdir /test/growfiles/minix   >/dev/null 2>&1  
-mkdir /test/growfiles/nfs     >/dev/null 2>&1  
-mkdir /test/growfiles/jfs     >/dev/null 2>&1  
-mkdir /test/growfiles/ramdisk >/dev/null 2>&1  
+mkdir /test/growfiles/msdos   >/dev/null 2>&1
+mkdir /test/growfiles/reiser  >/dev/null 2>&1
+mkdir /test/growfiles/minix   >/dev/null 2>&1
+mkdir /test/growfiles/nfs     >/dev/null 2>&1
+mkdir /test/growfiles/jfs     >/dev/null 2>&1
+mkdir /test/growfiles/ramdisk >/dev/null 2>&1
 
 mkfs -V -t ext2     /dev/$part1
 mkfs -V -t msdos    /dev/$part2
-mkreiserfs          /dev/$part3 
+mkreiserfs          /dev/$part3
 mkfs -V -t minix    /dev/$part4
 
 
-mount -v -t nfs $nfsmount               /test/growfiles/nfs                                          
-mount -v /dev/$part1                    /test/growfiles/ext2                              
-mount -v /dev/$part2                    /test/growfiles/msdos                             
-mount -v /dev/$part3                    /test/growfiles/reiser                            
-mount -v /dev/$part4                    /test/growfiles/minix                             
-mount -v /dev/ram                       /test/growfiles/ramdisk                              
+mount -v -t nfs $nfsmount               /test/growfiles/nfs
+mount -v /dev/$part1                    /test/growfiles/ext2
+mount -v /dev/$part2                    /test/growfiles/msdos
+mount -v /dev/$part3                    /test/growfiles/reiser
+mount -v /dev/$part4                    /test/growfiles/minix
+mount -v /dev/ram                       /test/growfiles/ramdisk
 
-echo "************ Running tests " 
+echo "************ Running tests "
 ${LTPROOT}/../bin/rand_lines -g ${LTPROOT}/../runtest/lvm.part1 > ${TMPBASE}/lvm.part1
 
 ${LTPROOT}/../bin/ltp-pan -e -S -a lvmpart1 -n lvmpart1 -l lvmlogfile -f ${TMPBASE}/lvm.part1 &
@@ -124,12 +124,12 @@ wait $!
 
 
 
-umount -v -t nfs $nfsmount            
+umount -v -t nfs $nfsmount
 umount -v /dev/$part1
 umount -v /dev/$part2
 umount -v /dev/$part3
 umount -v /dev/$part4
-umount -v /dev/ram                      
+umount -v /dev/ram
 
 mkfs -V -t ext3     /dev/$part4
 mkfs -V -t jfs /dev/$part1  <yesenter.txt
@@ -137,14 +137,14 @@ mkfs -V -t jfs /dev/$part1  <yesenter.txt
 mount -v -t ext3   /dev/$part4         /test/growfiles/ext3
 mount -v -t jfs    /dev/$part1         /test/growfiles/jfs
 
-echo "************ Running EXT3 & JFS tests...  " 
+echo "************ Running EXT3 & JFS tests...  "
 ${LTPROOT}/../bin/rand_lines -g ${LTPROOT}/../runtest/lvm.part2 > ${TMPBASE}/lvm.part2
 
 ${LTPROOT}/../bin/ltp-pan -e -S -a lvmpart2 -n lvmpart2 -l lvmlogfile -f ${TMPBASE}/lvm.part2 &
 
 wait $!
 
-umount -v /dev/$part1                      
-umount -v /dev/$part4                      
+umount -v /dev/$part1
+umount -v /dev/$part4
 
 

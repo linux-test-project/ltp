@@ -14,13 +14,13 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
-#  FILE   : acls 
+#  FILE   : acls
 #
-#  PURPOSE: Tests extended acls 
+#  PURPOSE: Tests extended acls
 #
 #  HISTORY:
 #    03/03 Jerone Young  (jyoung5@us.ibm.com)
@@ -67,7 +67,7 @@ do_setup(){
 	fi
 
 	# XXX (garrcoop): why is cleanup junk being done in setup??? Bad test!!!
-	rm -rf $TEST_USER1_HOMEDIR 
+	rm -rf $TEST_USER1_HOMEDIR
 	userdel $TEST_USER1 > /dev/null 2>&1
 	sleep 1
 	useradd -d $TEST_USER1_HOMEDIR -m -g $TEST_USER1_GROUP $TEST_USER1 -s /bin/sh
@@ -179,7 +179,7 @@ then
 	echo "Trying extended acls for files"
 	${TCbin}/acl_file_test $FILE_ACL
 	if [ $? -ne 0 ]
-	then 
+	then
 		EXIT_CODE=1
 		echo "Extended acls for files (FAILED)"
 	else
@@ -192,8 +192,8 @@ then
 	then
 		EXIT_CODE=1
 		echo "Extended acls for links (FAILED)"
-	else 
-		echo "Extended acls for links (PASSED)"	
+	else
+		echo "Extended acls for links (PASSED)"
 	fi
 else
 	do_setup
@@ -206,7 +206,7 @@ else
 	#setup files for extended attributes
 	setfacl -mu:root:r $FILE_ACL_LINK
 	setfacl -mu:root:r $FILE_ACL
-	
+
 	echo "Trying extended acls for files"
 	${TCbin}/acl_file_test $FILE_ACL
 	if [ $? -ne 0 ]
@@ -217,7 +217,7 @@ else
 		echo "Extended acls for files (PASSED)"
 	fi
 
-	echo "Trying extended acls for file links"	
+	echo "Trying extended acls for file links"
 	${TCbin}/acl_link_test $FILE_ACL_LINK
 	if [ $? -ne 0 ]
 	then
@@ -233,6 +233,6 @@ else
 	su $TEST_USER1 -c "$0"
 	echo ""
 	do_cleanup
-fi	
+fi
 
 exit $EXIT_CODE

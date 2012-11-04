@@ -9,13 +9,13 @@ Assertions     Tested ?	   Remarks
 3	       YES	   Behavior unspecified
 4	       YES
 5	       YES
-6	       YES	   Implementation-defined	   
+6	       YES	   Implementation-defined
 7	       YES	   may assertion
 8	       YES	   Only a stub.
 9	       YES
 10	       YES
 11	       YES
-12	       YES	
+12	       YES
 13	       YES
 14	       YES
 15	       YES	   Implementation-defined

@@ -15,12 +15,12 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software		          ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##									                                          ##
 ################################################################################
 # File:        mkrootfs
 #
-# Description: script to create rootfs that will fit on a floppy. This 
+# Description: script to create rootfs that will fit on a floppy. This
 #              filesystem contains a staticly linked busybox that provides
 #              basic commands and a shell.
 #
@@ -30,12 +30,12 @@
 #
 
 
-TWDIR=/tmp/mkrootfs.$$ # temporary working directory 
+TWDIR=/tmp/mkrootfs.$$ # temporary working directory
 
 clean()
-{    
+{
     echo "INFO: Cleaning and exiting program"
- 
+
     mount | grep "$TWDIR/mnt" 2>&1 >/dev/null && \
     {
         echo "INFO: unmounting $TWDIR/mnt"
@@ -114,7 +114,7 @@ main()
 
     # parse input arguments
     while getopts b:cd:f:h arg
-    do case $arg in 
+    do case $arg in
         b) BBLOC=$OPTARG;;
         c) CREATEFD=1;;
         d) HDDTYPE=$OPTARG;;
@@ -122,12 +122,12 @@ main()
         h) help;;
         \?) usage;;
        esac
-    done       
+    done
 
     # on exit clean up all temporary files and directories.
     trap "clean" 0
 
-    # create temporary working directory 
+    # create temporary working directory
     mkdir -p $TWDIR  2>&1 || \
     {
         echo "FAILED: creating temporary working directory"
@@ -161,10 +161,10 @@ main()
             echo "FAILED: unable to create EXT2 filesystem on block file."
             echo "FAILED: `cat $TWDIR/crfs.out`"
             exit 1
-        } 
-    else 
+        }
+    else
         [ "$FSTYPE" = "reiserfs" ] && \
-        { 
+        {
             FORCEREI="-f -f";
         }
         mkfs.$FSTYPE $FORCEREI $TWDIR/ramdisk_fs 2>&1 >$TWDIR/crfs.out || \
@@ -224,7 +224,7 @@ main()
         echo "WARNING: cat `$TWDIR/crfs.out`"
     }
 
-    # setting up the /etc directory, the three main files that will 
+    # setting up the /etc directory, the three main files that will
     # be created are fstab, rc.sysinit and inittab.
 
     # create the inittab file.
@@ -234,7 +234,7 @@ main()
 	EOF
 
     [ $RC -ne 0 ] && \
-    {  
+    {
         echo "FAILED: creating inittab file"
         exit 1
     }
@@ -288,10 +288,10 @@ main()
         exit 1
     }
 
-    # setting up /dev directory. Assuming that this script is 
-    # executed on a linux system, contents of /dev directory of the 
-    # host system will simply be copied to the rootfs file. Alternatively 
-    # the mknod command may be used to create 
+    # setting up /dev directory. Assuming that this script is
+    # executed on a linux system, contents of /dev directory of the
+    # host system will simply be copied to the rootfs file. Alternatively
+    # the mknod command may be used to create
     # each device file. But the former is quick and easy.
 
     # set up floppy drives. /dev/null and /dev/console
@@ -307,7 +307,7 @@ main()
 
     # set up scsi or ide devices.
 
-    if [ "$HDDTYPE" = "scsi" ] || [ "$HDDTYPE" = "SCSI" ] 
+    if [ "$HDDTYPE" = "scsi" ] || [ "$HDDTYPE" = "SCSI" ]
     then
         # set up SCSI cdrom drives.
         cp -dpR /dev/sr0 $TWDIR/mnt/dev 2>&1 >$TWDIR/crfs.out || \
@@ -346,7 +346,7 @@ main()
     fi
 
 
-    # setting up busybox. 
+    # setting up busybox.
 
     if [ "$BBLOC" = "NONE" ]
     then
@@ -357,7 +357,7 @@ main()
             echo "FAILED: fetching busybox from www.busybox.net"
             exit 1
         }
- 
+
         tar zxf ./busybox-0.60.5.tar.gz 2>&1 >$TWDIR/crfs.out || \
         {
             echo "FAILED: uncompressing busybox tar ball"
@@ -401,10 +401,10 @@ main()
     else
         cp $BBLOC/busybox $TWDIR/mnt/bin/ 2>&1 \
            >$TWDIR/crfs.out || \
-        {   
+        {
             echo "FAILED: copying busybox binary to $TWDIR/mnt/bin/"
             exit 1
-        }   
+        }
     fi
 
     echo "INFO: installing busybox"
@@ -423,7 +423,7 @@ main()
          echo "FAILED: linking busybox to chroot"
          exit 1
      }
- 
+
      # set up /bin directory
      for SYS_CMD in ash chmod dd false kill mknod pidof rmdir sync umount \
                      chown df grep ln more ps sed tar uname cat cp dmesg  \
@@ -438,7 +438,7 @@ main()
              exit 1
          }
      done
- 
+
      # set up /sbin directory
      for SYS_CMD in halt  klogd  mkswap    poweroff  swapoff  syslogd \
                     init  lsmod  modprobe  reboot    swapon
@@ -466,7 +466,7 @@ main()
              exit 1
          }
      done
- 
+
     # sync'ing changes to disk.
 
     sync; sync; sync; sync; sync; sync;
@@ -479,17 +479,17 @@ main()
         exit 1
     }
 
-    # create a copy of the rootfs.gz on PWD. 
+    # create a copy of the rootfs.gz on PWD.
     cp $TWDIR/rootfs.gz ./ 2>&1 >$TWDIR/crfs.out || \
     {
         echo "FAILED:  coping rootfs.gz from temp directory to $PWD"
         echo "FAILED: `cat $TWDIR/crfs.out`"
         exit 1
     }
- 
+
     if [ $CREATEFD -ne 0 ]
     then
-        # creating filesystem on floppy 
+        # creating filesystem on floppy
         if [ "$FSTYPE" = "ext2" ]; then
             mke2fs -v -m 0 -N 24 /dev/fd0h1440 2>&1 >$TWDIR/crfs.out || \
             {
@@ -498,10 +498,10 @@ main()
                 echo "INFO: mke2fs -m 0 -N 24 /dev/fd0h1440"
                 echo "INFO: and dd rootfs.gz to this floppy"
                 exit 1
-            } 
-        else 
+            }
+        else
             [ "$FSTYPE" = "reiserfs" ] && \
-            { 
+            {
                 FORCEREI="-f -f";
             }
             mkfs.$FSTYPE $FORCEREI /dev/fd0h1440 2>&1 >$TWDIR/crfs.out || \
@@ -514,14 +514,14 @@ main()
             }
         fi
 
-        sync; sync; sync; sync 
-        # dd the rootfs on to floppy, if the rootfs.gz is greater than 
+        sync; sync; sync; sync
+        # dd the rootfs on to floppy, if the rootfs.gz is greater than
         # dd will fail so no pre-check is done on size of rootfs.gz
         dd if=$TWDIR/rootfs.gz of=/dev/fd0h1440 bs=1k 2>&1 >$TWDIR/crfs.out || \
         {
             echo "FAILED: dd'ing the rootfs.gz onto floppy."
             echo "FAILED: `cat $TWDIR/crfs.out`"
-            echo "INFO: please try it manually" 
+            echo "INFO: please try it manually"
             echo "INFO: dd if=./rootfs.gz of=/dev/fd0 bs=1k"
             exit 1
         }

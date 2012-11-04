@@ -1,6 +1,6 @@
 # memtoy test  - lazy migrate single 1G anon segment
 # no 'WAIT on mbind
-# 
+#
 numa
 anon foo 1g
 map foo

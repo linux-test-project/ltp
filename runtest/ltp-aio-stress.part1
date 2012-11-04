@@ -1,5 +1,5 @@
 #DESCRIPTION:ltp A-sync IO Stress IO tests
-# 
+#
 # aio-stress [-s size] [-r size] [-a size] [-d num] [-b num]
 #                 [-i num] [-t num] [-c num] [-C size] [-nxhlvOS ]
 #                 file1 [/test/aiodio/file2 ...]
@@ -61,18 +61,18 @@ ADS1031 aio-stress -I500  -o1 -S -r4    -t2    /test/aiodio/junkfile /test/aiodi
 ADS1032 aio-stress -I500  -o1 -S -r8    -t2    /test/aiodio/junkfile /test/aiodio/file2
 ADS1033 aio-stress -I500  -o1 -S -r16   -t2    /test/aiodio/junkfile /test/aiodio/file2
 ADS1034 aio-stress -I500  -o1 -S -r32   -t4    /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8
-ADS1035 aio-stress -I500  -o1 -S -r64   -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
-ADS1036 aio-stress -I500  -o1 -S -r128  -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS1035 aio-stress -I500  -o1 -S -r64   -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8
+ADS1036 aio-stress -I500  -o1 -S -r128  -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8
 ADS1037 aio-stress -I500  -o1 -S -r256  -t8  /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6
 ADS1038 aio-stress -I500  -o1 -S -r512  -t8  -x /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
 ADS1039 aio-stress -I500  -o1 -O -r4    -t8  -x  /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
-ADS1040 aio-stress -I500  -o1 -O -r8    -t2  -x /test/aiodio/junkfile /test/aiodio/file2         
-ADS1041 aio-stress -I500  -o1 -O -r16   -t2  -x  /test/aiodio/junkfile /test/aiodio/file2         
-ADS1042 aio-stress -I500  -o1 -O -r32   -t2   /test/aiodio/junkfile /test/aiodio/file2      
-ADS1043 aio-stress -I500  -o1 -O -r64   -t2   /test/aiodio/junkfile /test/aiodio/file2      
-ADS1044 aio-stress -I500  -o1 -O -r4    -t4   /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8                                                                               
-ADS1045 aio-stress -I500  -o1 -O -r8    -t4   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
-ADS1046 aio-stress -I500  -o1 -O -r16   -t4   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS1040 aio-stress -I500  -o1 -O -r8    -t2  -x /test/aiodio/junkfile /test/aiodio/file2
+ADS1041 aio-stress -I500  -o1 -O -r16   -t2  -x  /test/aiodio/junkfile /test/aiodio/file2
+ADS1042 aio-stress -I500  -o1 -O -r32   -t2   /test/aiodio/junkfile /test/aiodio/file2
+ADS1043 aio-stress -I500  -o1 -O -r64   -t2   /test/aiodio/junkfile /test/aiodio/file2
+ADS1044 aio-stress -I500  -o1 -O -r4    -t4   /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8
+ADS1045 aio-stress -I500  -o1 -O -r8    -t4   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8
+ADS1046 aio-stress -I500  -o1 -O -r16   -t4   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8
 ADS1047 aio-stress -I500  -o1 -O -r32   -t8   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6
 ADS1048 aio-stress -I500  -o1 -O -r64   -t8   /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
 ADS1049 aio-stress -I500  -o1 -O -r128  -t8   /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6

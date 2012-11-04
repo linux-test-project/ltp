@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /* Author: Masatake YAMATO <yamato@redhat.com> */
@@ -28,7 +28,7 @@
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 typedef __kernel_old_gid_t GID_T;
-int 
+int
 GID_SIZE_CHECK(gid_t gid)
 {
 	/* See high2lowgid in linux/highuid.h
@@ -40,7 +40,7 @@ GID_SIZE_CHECK(gid_t gid)
 #else
 
 typedef gid_t GID_T;
-int 
+int
 GID_SIZE_CHECK(gid_t gid)
 {
 	return 1;

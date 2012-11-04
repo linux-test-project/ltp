@@ -37,10 +37,10 @@
 #include "numa_helper.h"
 #include "linux_syscall_numbers.h"
 
-#if HAVE_NUMA_H
-static unsigned long get_max_node()
+unsigned long get_max_node(void)
 {
 	unsigned long max_node = 0;
+#if HAVE_NUMA_H
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 	max_node = NUMA_NUM_NODES;
 	/*
@@ -53,9 +53,11 @@ static unsigned long get_max_node()
 #else
 	max_node = numa_max_possible_node() + 1;
 #endif
+#endif /* HAVE_NUMA_H */
 	return max_node;
 }
 
+#if HAVE_NUMA_H
 static void get_nodemask_allnodes(nodemask_t *nodemask,
 	unsigned long max_node)
 {

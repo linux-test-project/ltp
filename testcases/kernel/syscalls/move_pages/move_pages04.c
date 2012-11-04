@@ -18,7 +18,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -75,9 +75,8 @@ typedef void (*sighandler_t) (int);
 
 int main(int argc, char **argv)
 {
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 
-	/* parse standard options */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -88,7 +87,7 @@ int main(int argc, char **argv)
 
 #if HAVE_NUMA_MOVE_PAGES
 	unsigned int i;
-	int lc;			/* loop counter */
+	int lc;
 	unsigned int from_node;
 	unsigned int to_node;
 	int ret;

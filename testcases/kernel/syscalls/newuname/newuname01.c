@@ -13,7 +13,7 @@
 /*                                                                            */
 /* You should have received a copy of the GNU General Public License          */
 /* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    */
+/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
 /*                                                                            */
 /******************************************************************************/
 /******************************************************************************/
@@ -109,10 +109,9 @@ void setup() {
 
 int main(int ac, char **av) {
         struct utsname name;
-	int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int lc;
+	char *msg;
 
-        /* parse standard options */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
              tst_exit();

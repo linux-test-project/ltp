@@ -5,7 +5,7 @@ testing
 
 Assertion #	Covered?	Notes
 1		YES
-2		YES  		The symbols with tags associated with them 
+2		YES  		The symbols with tags associated with them
 				usually fail on my implementaion of linux (e.g.
  				BAR, XSI, etc.)
 3		YES		#2,3,10,11,12 fail on my implemention of linux

@@ -12,7 +12,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
 The directory consists of follwing:
@@ -32,14 +32,14 @@ To run the programs:
 
 		$ <testprogram-name> [options]
 
-Note: 
+Note:
 -----
 1: The script diorun gives different ways to run the tests. Add additional
    test cases as needed.
-2: For diotest3.c and diotest6.c fails randomly with a number of children 
-   for bigger runs. The test fail with either data comparaision failures 
-   or input/output errors during read. Two issues are identified with 
-   buffered/direct read, write coherence and the problem is reported. 
+2: For diotest3.c and diotest6.c fails randomly with a number of children
+   for bigger runs. The test fail with either data comparaision failures
+   or input/output errors during read. Two issues are identified with
+   buffered/direct read, write coherence and the problem is reported.
    (bugzilla.linux.ibm.com - Bug# 862).
 
 Any questions?

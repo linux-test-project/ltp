@@ -126,7 +126,7 @@ run_test()
 			echo "Error while adding job using at for user ${test_user1}."
 			exit 1
 		fi
-		echo " Sleeping for 75 seconds...."	
+		echo " Sleeping for 75 seconds...."
 		sleep 75
 
 		exit_code=1

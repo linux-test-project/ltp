@@ -22,21 +22,21 @@ Testcase1:
 Verifies the node affinity and memory affinity by running the support_numa process which will allocate 1MB of memory.
 
 TestCase2:
-Verifies the preferred node memory policy which will allocate memory from the node we specify. This 
+Verifies the preferred node memory policy which will allocate memory from the node we specify. This
 testcase will use the support_numa process for the verfication.
 
 TestCase3:
-Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This 
+Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
 testcase will use the support_numa process for the verfication.
 
 TestCase4:
 Verifies the physical cpu affinity which runs the process support_numa on the specified physical cpu number.
 
 TestCase5:
-Verifies the local allocation policy which always allocates memory from the local node. This testcase 
+Verifies the local allocation policy which always allocates memory from the local node. This testcase
 will use the support_numa process for the verfication.
 
-TestCase6: 
+TestCase6:
 Verifies the memory interleaving policy on the shared memory which will interleave the shared memory on
 all nodes equally. Here, the testcase use touch command instead of running a seperate process to verify
 the policy applied.

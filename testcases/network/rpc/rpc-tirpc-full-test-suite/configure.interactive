@@ -211,31 +211,31 @@ cat inc/Makefile.hdr>Makefile.clnt
 find tests_pack -name "*.c" | grep -v tirpc | while read fil
 do
 		echo '	$(CC) '$fil' $(CFLAGS_RPC) -o '`echo $fil | cut -d '.' -f1`".bin">>Makefile
-	
+
 		TSTXPR=$( echo $TSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
 		OTHXPR=$(echo $SERVERTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 		echo '	$(CC) '$SFILE' $(CFLAGS_RPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.svc
-	
+
 		OTHXPR=$(echo $CLIENTTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+		SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 		echo '	$(CC) '$SFILE' $(CFLAGS_RPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.clnt
-	
-	
+
+
 done
 
 # find all TI-RPC sources
 find tests_pack -name "*.c" | grep tirpc | while read fil
 do
 	echo '	$(CC) $(LDFLAGS_TIRPC) '$fil' $(CFLAGS_TIRPC) -o '`echo $fil | cut -d '.' -f1`".bin">>Makefile
-	
+
 	TSTXPR=$( echo $TSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
 	OTHXPR=$(echo $SERVERTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	$(CC) $(LDFLAGS_TIRPC) '$SFILE' $(CFLAGS_TIRPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.svc
-	
+
 	OTHXPR=$(echo $CLIENTTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	$(CC) $(LDFLAGS_TIRPC) '$SFILE' $(CFLAGS_TIRPC) -o '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.clnt
 done
 
@@ -251,13 +251,13 @@ echo "clean:">>Makefile.clnt
 find $TSTPACKDIR -name "*.c" | while read fil
 do
 	echo '	rm -f '`echo $fil | cut -d '.' -f1`".bin">>Makefile
-	
+
 	TSTXPR=$( echo $TSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
 	OTHXPR=$(echo $SERVERTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	rm -f '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.svc
-	
+
 	OTHXPR=$(echo $CLIENTTSTPACKDIR | sed -e s/'\/'/'\\\/'/g )
-	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g ) 
+	SFILE=$( echo $fil | sed -e s/$TSTXPR/$OTHXPR/g )
 	echo '	rm -f '`echo $SFILE | cut -d '.' -f1`".bin">>Makefile.clnt
 done

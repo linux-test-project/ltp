@@ -37,7 +37,7 @@
    - 0, if the timer was previously disarmed
    - previous amount of time before the timer would have expired, if the
      timer was previously armed
-   ovalue.it_interval = 
+   ovalue.it_interval =
    - 0, if the timer was previously disarmed
    - previous timer reload value, if the timer was previously armed
   </assertion>
@@ -51,7 +51,7 @@
    timer_settime() returns -1 on failure
   </assertion>
   <assertion id="12" tag="ref:XSH6TC2:46940:46941">
-   if timerid doesn't = a timer ID created via timer_create() and not yet 
+   if timerid doesn't = a timer ID created via timer_create() and not yet
    deleted by timer_delete(), timer_settime() may set errno=EINVAL
   </assertion>
   <assertion id="13" tag="ref:XSH6:46943:46945">

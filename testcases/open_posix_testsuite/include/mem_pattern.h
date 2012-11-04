@@ -24,7 +24,7 @@ static void fill_mem(void *dst, size_t size)
 static int check_mem(void *src, size_t size)
 {
 	unsigned char *ptr = src;
-	
+
 	while (--size > 0) {
 		if (*ptr != ((size % 256) ^ 0x42))
 			return 1;

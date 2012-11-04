@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /* Author: Masatake YAMATO <yamato@redhat.com> */
@@ -29,7 +29,7 @@
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 
-int 
+int
 SETGID(GID_T gid)
 {
 	return syscall(__NR_setgid, gid);
@@ -42,8 +42,8 @@ GETGID(void)
 
 	gid = getgid();
 	if (!GID_SIZE_CHECK(gid))
-	  tst_brkm(TBROK, 
-		   cleanup, 
+	  tst_brkm(TBROK,
+		   cleanup,
 		   "gid for the current process is too large for testing setgid16");
 
 	return (GID_T)gid;
@@ -51,7 +51,7 @@ GETGID(void)
 
 #else
 
-int 
+int
 SETGID(GID_T gid)
 {
 	return setgid(gid);

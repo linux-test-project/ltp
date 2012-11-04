@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -101,7 +101,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	void (*setupfunc) ();
 } test_cases[] = {
 	{ 1, EPERM, setup1 },
-	{ 2, EBADF, setup2 }, 
+	{ 2, EBADF, setup2 },
 };
 
 char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
@@ -117,10 +117,10 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	int fd;			/* test file descriptor */
-	int i;		/* counter to test different test conditions */
+	int i;
 	uid_t user_id;		/* Effective user id of a test process */
 	gid_t group_id;		/* Effective group id of a test process */
 

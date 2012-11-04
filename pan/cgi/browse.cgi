@@ -74,7 +74,7 @@ sub get_result_uname {
 
 # Create the headers row, adding links for sorting options
 sub print_headers {
-	
+
 	print "\n<tr>";
 
 	for($i = 0; $i <= $#rso; $i++) {
@@ -104,7 +104,7 @@ unless (chdir("/usr/tests/ltp/results")) {
 @extra_path = split(/\//, $ENV{PATH_INFO});
 
 # rso = Result Sort Order
-# rsd = Result Sort Direction 
+# rsd = Result Sort Direction
 #@rso = (HOST,SUITE, DATE, UNAME);
 @rso = (SUITE, HOST, DATE, UNAME);
 @rsd = (1, 1, -1, 1);
@@ -127,11 +127,11 @@ if ($sort_order = param("sort")) {
 }
 
 if ($#extra_path > 0) {
-		
+
 } else {
 
 	%results = ();
-	
+
 	# run through the files in the results directory
 	@driver_files = <*driver*>;
 	foreach $df (@driver_files) {
@@ -203,7 +203,7 @@ if ($#extra_path > 0) {
 			if ($i == $#rso) {
 				# last column
 				print " <input type=checkbox name=results value=\"$this->{HOST}.$this->{DATE}.$this->{SUITE}\">";
-				
+
 			}
 
 

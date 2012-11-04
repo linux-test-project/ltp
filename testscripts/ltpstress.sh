@@ -14,11 +14,11 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program;  if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #   FILE        : ltpstress.sh
 #   DESCRIPTION : A script that will stress your system using the LTP testsuite.
-#   REQUIREMENTS: 
+#   REQUIREMENTS:
 #                 1) The 'rsh' daemon must be running and NFS (versions 2 &3) must be
 #                    configured into the kernel and installed for networking tests.
 #		  2) The 'sar' application must be installed to use the "-S" option
@@ -65,7 +65,7 @@ usage()
     -l logfile      Log results of test in a logfile. Default is "/tmp/ltpstress.log"
     -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is all the RAM + 1/2 swap.
     -n              Disable networking stress.
-    -S              Use 'sar' to measure data. 
+    -S              Use 'sar' to measure data.
     -T              Use LTP's modified 'top' tool to measure data.
     -t duration     Execute the testsuite for given duration in hours. Default is 24.
 
@@ -80,7 +80,7 @@ check_memsize()
   do
     PROC_NUM=$(( PROC_NUM + 1 ))
     memsize=$(( $memsize - 1048576 ))
-  done  
+  done
   leftover_memsize=$memsize
 }
 
@@ -110,7 +110,7 @@ do  case $arg in
 		LOGGING=1;;
 
         m)	memsize=$(($OPTARG * 1024))
-		check_memsize;;	
+		check_memsize;;
 
 	n)	NO_NETWORK=1;;
 
@@ -171,7 +171,7 @@ if [ $NO_NETWORK -eq 0 ];then
           Echo "Error: Could not start rpcbind daemon."
           exit 1
         else
-          echo "The RPC test suite is using rpcbind"	
+          echo "The RPC test suite is using rpcbind"
         fi
       else
 	echo "The RPC test suite is using portmap"
@@ -185,7 +185,7 @@ if [ $NO_NETWORK -eq 0 ];then
 
   ps -e | grep nfsd
   if [ $? -eq 1 ];then
-    /usr/sbin/rpc.nfsd 
+    /usr/sbin/rpc.nfsd
   fi
   sleep 1
   ps -e | grep nfsd
@@ -196,7 +196,7 @@ if [ $NO_NETWORK -eq 0 ];then
 
   ps -e | grep rpc.statd
   if [ $? -eq 1 ];then
-    /sbin/rpc.statd 
+    /sbin/rpc.statd
   fi
   sleep 1
   ps -e | grep rpc.statd
@@ -207,7 +207,7 @@ if [ $NO_NETWORK -eq 0 ];then
 
   ps -e | grep rpc.mountd
   if [ $? -eq 1 ];then
-    /usr/sbin/rpc.mountd 
+    /usr/sbin/rpc.mountd
   fi
   sleep 1
   ps -e | grep rpc.mountd
@@ -231,7 +231,7 @@ if [ $memsize -eq 0 ]; then
   fi
  #Convert to kilobytes
   memsize=$(($TESTMEM * 1024))
-  check_memsize	
+  check_memsize
 fi
 
 # Set max processes to unlimited.
@@ -241,7 +241,7 @@ if [ $PROC_NUM -gt 0 ];then
   genload --vm $PROC_NUM --vm-bytes 1073741824 2>&1 1>/dev/null &
 fi
 if [ $leftover_memsize -gt 0 ];then
-  genload --vm 1 --vm-bytes $(($leftover_memsize * 1024)) 2>&1 1>/dev/null & 
+  genload --vm 1 --vm-bytes $(($leftover_memsize * 1024)) 2>&1 1>/dev/null &
 fi
 
 if [ $NO_NETWORK -eq 0 ];then
@@ -275,7 +275,7 @@ output1=${TMPBASE}/ltpstress.$$.output1
 output2=${TMPBASE}/ltpstress.$$.output2
 output3=${TMPBASE}/ltpstress.$$.output3
 
-${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 & 
+${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 &
 ${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
 ${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
 
@@ -287,7 +287,7 @@ echo "        $output2"
 echo "        $output3"
 
 # Sleep a little longer than duration to let ltp-pan "try" to gracefully end itself.
-sleep $(($duration + 10))  
+sleep $(($duration + 10))
 
 if [ $Sar -eq 1 ]; then
   killall -9 sadc >/dev/null 2>&1

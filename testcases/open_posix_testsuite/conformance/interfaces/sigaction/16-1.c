@@ -13,8 +13,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ * with this program; if not, write the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * This sample test aims to check the following assertions:
  *
@@ -126,7 +126,7 @@ void *threaded(void *arg)
 	rc = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
 	if (rc) {
 		printf("Failed: pthread_setschedparam(SCHED_FIFO), root?\n");
-		
+
 		if (rc == EPERM)
 			exit(PTS_UNTESTED);
 		else
@@ -200,7 +200,7 @@ int test_sig(struct sig_info *s)
 	sem_destroy(&sem);
 
 	status = ((long) thread_status) & 0xFFFFFFFF;
-	
+
 	return status;
 
 done:

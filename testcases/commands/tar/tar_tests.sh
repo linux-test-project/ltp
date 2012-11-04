@@ -15,14 +15,14 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software	              ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
 # File:        tar_test.sh
-# 
+#
 # Description: Tests tar command. These tests test the basic functioanlity of
-#              tape archive command. 
+#              tape archive command.
 #
 # Author:      Manoj Iyer, manjo@mail.utexas.edu
 #
@@ -49,8 +49,8 @@ fi
 # in case of error. Set TFAILCNT to 0, increment if there occures a failure.
 #
 
-TFAILCNT=0     
-RC=0                         
+TFAILCNT=0
+RC=0
 RC1=0
 RC2=0
 RC3=0
@@ -100,7 +100,7 @@ else
     touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
     tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
 	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-    
+
     if [ $RC -eq 0 ]; then
 	if [ -f $LTPTMP/tar_tstf.tar ]; then
 	    echo "tar file created" > /dev/null 2>&1
@@ -122,7 +122,7 @@ if [ $RC -eq 0 ]; then
     grep  "tar_tstf1" $LTPTMP/tar_tst.out > $LTPTMP/tar_tst2.out 2>&1 || RC1=$?
     grep  "tar_tstf2" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC2=$?
     grep  "tar_tstf3" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC3=$?
-    
+
     if [ $RC1 -eq 0 -a $RC2 -eq 0 -a $RC3 -eq 0 ]; then
 	$LTPBIN/tst_resm TPASS 	"tar: tvf option listed all its contents"
     else
@@ -134,7 +134,7 @@ fi
 
 
 # Test #3
-# Test if tar command can create a compressed tar file 'tar cvf <tar filename> 
+# Test if tar command can create a compressed tar file 'tar cvf <tar filename>
 # <list of files>'
 
 export TCID=tar03
@@ -185,10 +185,10 @@ if [ -f $LTPTMP/tar_tstf.tar ]; then
     echo "tar file exists" > /dev/null 2>&1
 else
     touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
-    
+
     tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
 	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-    
+
     if [ $RC -eq 0 ]; then
 	if [ -f $LTPTMP/tar_tstf.tar ];	then
 	    $LTPBIN/tst_resm TINFO "tar: cvf option created a tar file."
@@ -223,7 +223,7 @@ fi
 rm -f $LTPTMP/tar_tst*
 
 # Test #5
-# Test if tar command can extract a compressed tar file 'tar zxvf 
+# Test if tar command can extract a compressed tar file 'tar zxvf
 # <tar filename> <list of files>'
 
 export TCID=tar05
@@ -239,7 +239,7 @@ else
     touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
     tar zcvf $LTPTMP/tar_tstf.tgz $LTPTMP/tar_tstf1 \
 	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-    
+
 	if [ $RC -eq 0 ]; then
 	    if [ -f $LTPTMP/tar_tstf.tgz ]; then
 		file $LTPTMP/tar_tstf.tgz | grep "gzip compressed data" \

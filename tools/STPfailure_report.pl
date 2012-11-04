@@ -15,15 +15,15 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program;  if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #   FILE        : STPfailure_report.pl
 #   DESCRIPTION : A script that will retrieve the run results through the net from
 #		  the STP results and then finds the corresponding source code
 #		  file in your LTP tree for each failure.  It then prints the
 #		  description and details for each to STDOUT.
-#   REQUIREMENTS: LWP::Simple, File::Find, and Text::Wrap must be installed 
-#   AUTHOR      : Bryce Harrington <bryce@osdl.org>       
+#   REQUIREMENTS: LWP::Simple, File::Find, and Text::Wrap must be installed
+#   AUTHOR      : Bryce Harrington <bryce@osdl.org>
 #   HISTORY     :
 #       04/28/2004 Robbie Williamson (robbiew@austin.ibm.com)
 #               Adapted for and added to LTP
@@ -52,7 +52,7 @@ die "Cannot find testcases directory in '$ltp_base'"
     unless (-d "$ltp_base/testcases");
 
 # Retrieve the results for the test run
-my $fail_results = get($fail_report) 
+my $fail_results = get($fail_report)
     || die "Could not retrieve URL $fail_report\n";
 
 # Process the results, extracting each test name & generating a report
@@ -126,7 +126,7 @@ sub print_report {
 ========================================================================
 Test name: $testname
 
-Description: 
+Description:
 
 $description
 

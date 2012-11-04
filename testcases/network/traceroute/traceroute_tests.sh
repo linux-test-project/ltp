@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
@@ -35,7 +35,7 @@
 #
 # Input:        - $1 - calling test case.
 #               - $2 - command that needs to be checked.
-# 
+#
 # Return:       - zero on success.
 #               - non-zero on failure.
 chk_ifexists()
@@ -54,9 +54,9 @@ chk_ifexists()
 # Function: init
 #
 # Description:  - Check if command required for this test exits.
-#               - Create temporary directories required for this test. 
+#               - Create temporary directories required for this test.
 #               - Initialize global variables.
-# 
+#
 # Return:       - zero on success.
 #               - non-zero on failure.
 init()
@@ -110,7 +110,7 @@ init()
 
 # Function:     cleanup
 #
-# Description:  - remove temporaty files and directories. 
+# Description:  - remove temporaty files and directories.
 #
 # Return:       - zero on success.
 #               - non-zero on failure.
@@ -124,9 +124,9 @@ cleanup()
 
 # Function:     test01
 #
-# Description:  - Test that traceroute hostname will trace route of an IP 
+# Description:  - Test that traceroute hostname will trace route of an IP
 #                 packet to that host.
-# 
+#
 # Return:       - zero on success.
 #               - non-zero on failure.
 test01()
@@ -148,7 +148,7 @@ test01()
         return $RC
     fi
 
-    cat $LTPTMP/tst_traceroute.out | head -n 1 > $LTPTMP/tst_traceroute.out.1 2>&1    
+    cat $LTPTMP/tst_traceroute.out | head -n 1 > $LTPTMP/tst_traceroute.out.1 2>&1
     diff -iwB $LTPTMP/tst_traceroute.out.1 $LTPTMP/tst_traceroute.exp \
         > $LTPTMP/tst_traceroute.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
@@ -157,18 +157,18 @@ test01()
             "Test #1: unexpected output. Details:"
         return $RC
     else
-        # Only one hop is required to get to hostname. 
+        # Only one hop is required to get to hostname.
         nhops=$(cat $LTPTMP/tst_traceroute.out | tail -n 1 | awk '{print $1}')
         if [ $nhops -ne 1 ]
         then
-            tst_resm TFAIL "Test #1: $hops number of hops unexpected" 
+            tst_resm TFAIL "Test #1: $hops number of hops unexpected"
         else
             tst_resm TPASS \
                 "Test #1: traceroute $hostname traced route correctly"
         fi
     fi
 
-    return $RC    
+    return $RC
 }
 
 
@@ -176,7 +176,7 @@ test01()
 #
 # Description:    - Execute all tests and report results.
 #
-# Exit:            - zero on success 
+# Exit:            - zero on success
 #               - non-zero on failure.
 
 RC=0

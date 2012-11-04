@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  * NAME
  *      swapon03.c
@@ -327,7 +327,7 @@ int create_swapfile(char *swapfile, int bs, int count)
 		    "count=%d > tmpfile 2>&1", swapfile, bs, count) < 0) {
 		tst_resm(TWARN,
 			 "sprintf() failed to create the command string");
-	
+
 		return -1;
 	}
 
@@ -336,7 +336,7 @@ int create_swapfile(char *swapfile, int bs, int count)
 				"command: %s", cmd_buffer);
 		return -1;
 	}
-	
+
 	/* make the file swapfile */
 	if (snprintf(cmd_buffer, sizeof(cmd_buffer),
 		    "mkswap %s > tmpfile 2>&1", swapfile) < 0) {
@@ -344,7 +344,7 @@ int create_swapfile(char *swapfile, int bs, int count)
 			 "snprintf() failed to create mkswap command string");
 		return -1;
 	}
-	
+
 	if (system(cmd_buffer) != 0) {
 		tst_resm(TWARN, "failed to make swap file %s via command %s",
 			 swapfile, cmd_buffer);

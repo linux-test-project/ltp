@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
@@ -103,7 +103,7 @@ do_test()
 	##ASSERTION POSIX NEXT_AVAILABLE C
 	#
 	#-R Dump dynamic linking information and static shared library information, if
-	#available. 
+	#available.
 	#
 	#CODE
 
@@ -166,7 +166,7 @@ do_test()
 	#--show-raw-insn
 	#
 	#When disassembling instructions, print the instruction  in  hex  as
-	#well  as  in symbolic form.  This is the default except when 
+	#well  as  in symbolic form.  This is the default except when
 	#--prefix-addresses is used.
 	#
 	#CODE
@@ -186,7 +186,7 @@ do_test()
 
 	##ASSERTION POSIX NEXT_AVAILABLE C
 	#
-	#-h --show-raw-insn 
+	#-h --show-raw-insn
 	#
 	#When disassembling instructions, print the instruction  in  hex  as
 	#well  as  in symbolic form.  This is the default except when

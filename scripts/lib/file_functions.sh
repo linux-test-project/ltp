@@ -35,13 +35,13 @@
 #    iv. Replace /./ with /
 #    v. Replace trailing /. with /
 #    vi. Replace heading ./ with /
-#    vii. Replace /. with "". 
+#    vii. Replace /. with "".
 
 # testcases/kernel/controllers/libcontrollers/../../../..
 _abspath() {
 	echo "$@" | awk -v PWD=$(pwd) '{
 	sub(/^[[:space:]]+/, ""); sub(/[[:space:]]+$/, ""); # 1.
-	if ($0 == "") { 
+	if ($0 == "") {
 		print PWD
 	} else {
 		if (!($0 ~ /^\//)) { # i.
@@ -50,7 +50,7 @@ _abspath() {
 		while (gsub(/\/\//, "/")) { }; # ii.
 		while (sub(/\/[^\/]+\/\.\.\/?/, "/")) { }; # iii.
 		while (sub(/\/\.\//, "/")) { }; # iv.
-		sub(/(\/\.)?\/$/, ""); 
+		sub(/(\/\.)?\/$/, "");
 		sub(/^\.\//, "/");
 		sub(/\/\.$/, "");
 		if ($0 == "") {
@@ -63,7 +63,7 @@ _abspath() {
 			}
 		}
 	}
-}' 
+}'
 }
 
 _realpath() {

@@ -15,7 +15,7 @@
 # test information
 TESTNAME="TIRPC_expert-level_svc_reg.mt"
 TESTVERS="1.0"
-# test binaries, used to call 
+# test binaries, used to call
 TESTCLIENTPATH="rpc_suite/tirpc/tirpc_expertlevel_svc_reg"
 TESTCLIENTBIN="4-mt.bin"
 TESTCLIENT=$CLIENTTSTPACKDIR/$TESTCLIENTPATH/$TESTCLIENTBIN
@@ -36,18 +36,18 @@ get_test_result()
 {
 	# default : test failed
 	r_value=1
-	
+
 	# if result table is empty last test crashes (segment fault), so return must be "failed"
 	if [ ${#result[*]} -eq 0 ]
 	then
 		return
 	fi
-	
+
 	if [ ${result[0]} -ne 0 ]
 	then
 		return
 	fi
-	
+
 	# if all test instances return same result return the first element, note that test succeeds if value is 0
 	r_value=${result[0]}
 }
@@ -63,7 +63,7 @@ result_to_logFile()
 	4)r_valueTxt="SKIP";;
 	5)r_valueTxt="UNTESTED";;
 	esac
-	
+
 	echo $TESTCLIENTPATH"/"$( echo $TESTCLIENTBIN | cut -d . -f1 )": execution: "$r_valueTxt>>$LOCLOGDIR/$TESTLOGFILE
 }
 

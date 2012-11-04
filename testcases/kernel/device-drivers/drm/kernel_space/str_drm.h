@@ -14,22 +14,22 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
 
- * Remember that you want to seperate your header 
- * files between what is needed in kernel space 
- * only, and what will also be needed by a user 
- * space program that is using this module. For 
+ * Remember that you want to seperate your header
+ * files between what is needed in kernel space
+ * only, and what will also be needed by a user
+ * space program that is using this module. For
  * that reason keep all structures that will need
  * kernel space pointers in a seperate header file
  * from where ioctl flags aer kept
- * 
+ *
  * author: Kai Zhao
  * date:   09/03/2003
  *
  */
- 
+
 /* test function export to user space*/
 extern int tdrm_test_interface(struct inode *inode, struct file *filp,
 			unsigned int cmd, unsigned long arg);

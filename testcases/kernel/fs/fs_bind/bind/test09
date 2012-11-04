@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -39,40 +39,40 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
+
 	"${FS_BIND_ROOT}/bin/makedir" share parent1
 	"${FS_BIND_ROOT}/bin/makedir" share parent2
 	"${FS_BIND_ROOT}/bin/makedir" share share1
 	"${FS_BIND_ROOT}/bin/makedir" share share2
 	"${FS_BIND_ROOT}/bin/makedir" share parent1/child1
-	
+
 	mount --bind parent2 share2
 	mount --bind share1 parent1/child1
 	mount --bind "$disk1" share1
 	"${FS_BIND_ROOT}/bin/makedir" slave parent1/child1
-	
+
 	check parent1/child1 share1
-	
+
 	mkdir parent2/child2
-	
+
 	mount --bind parent1/child1 parent2/child2
-	
+
 	check parent1/child1 parent2/child2
-	
+
 	mount --bind "$disk2" parent1/child1/a
-	
+
 	check -n  parent1/child1/a parent2/child2/a
 	check -n parent1/child1/a share1/a
-	
+
 	mount --bind "$disk3" parent2/child2/b
-	
+
 	check -n parent1/child1/b parent2/child2/b
 	check parent2/child2 share2/child2
-	
+
 	mount --bind "$disk4" share1/c
 	check share1/c parent1/child1/c
 	check parent1/child1/c parent2/child2/c
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "bind/test09: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -95,8 +95,8 @@ trap '' ERR
 	umount share2
 	umount parent2
 	umount parent1
-	
-	
+
+
 	rm -rf parent* share*
 	cleanup
 } >& /dev/null

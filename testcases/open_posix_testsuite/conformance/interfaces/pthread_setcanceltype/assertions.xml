@@ -2,8 +2,8 @@
   <assertion id="1" tag="ref:XSH6:35257:35259">
    The function
 
-   int pthread_setcanceltype(int type, int* oldtype); 
-  
+   int pthread_setcanceltype(int type, int* oldtype);
+
   Atomically sets the cancelability type to 'type' and returns the old
   cancelability type in the location referenced by 'oldtype'.
 
@@ -11,7 +11,7 @@
   </assertion>
   <assertion id="2" tag="ref:XSH6:35261:35263">
   The cancelability type of a newly created thread is PTHREAD_CANCEL_DEFERRED.
-  </assertion> 
+  </assertion>
   <assertion id="3" tag="ref:XSH6:35267:35276">
   It returns a 0 on success.  It may return an error code of:
 
@@ -19,5 +19,5 @@
   PTHREAD_CANCEL_ASYNCHRONOUS.
 
   It will not return EINTR.
-  </assertion> 
+  </assertion>
 </assertions>

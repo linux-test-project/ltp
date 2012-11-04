@@ -18,7 +18,7 @@ priorities. I would like to add them as many as possible.
 
 == filtered vmcore utilities ==
 - in different compressed levels, verify the vmcore with the correct
-  layout. 
+  layout.
 - verify it in flat file or ELF formats from a network host.
 
 == analyse vmcore utilities ==

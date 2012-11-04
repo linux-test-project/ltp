@@ -15,7 +15,7 @@
 #* 										*#
 #* You should have received a copy of the GNU General Public License 		*#
 #* along with this program; if not, write to the Free Software 			*#
-#* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 	*#
+#* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA 	*#
 #* 										*#
 #********************************************************************************#
 
@@ -43,21 +43,21 @@ remove_password()
 	export TCID="remove_password" # Test case identifier
 	export TST_COUNT=0  # Set up is initialized as test 0
 	RC=0                # Exit values of system commands used
-	
+
 	echo "=== Remove MMC Password ==="
 	keyid=$(keyctl request mmc "mmc:key")
 	if [ -z "$keyid" ]; then
 		echo "*** No protected and unlocked MMC was found. The password cannot be removed."
 		exit 1
 	fi
-	
+
 	echo remove > /sys/bus/mmc/devices/mmc0\:*/lockable || \
 	{ echo "*** Password reset failed."; exit 1 ;}
-	
+
 	# Clear session keyring
 	# FIXME: It assumes we have only the MMC key there
 	keyctl clear -3
-	
+
 	echo "Password removed."
 }
 

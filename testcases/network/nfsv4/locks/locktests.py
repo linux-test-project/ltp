@@ -51,7 +51,7 @@ class Client(Machine):
     def do(self):
         self.command="ssh "+user+"@"+self.machine+" "+self.command
         os.system(self.command)
-    
+
     def isomount(self, dir):
         export=NFS4_SERVER
         mntpoint=NFS4_PATH
@@ -114,7 +114,7 @@ def usage():
         print "\n"
         print "_________________________________"
         print "Vincent ROQUETA - Bull SA - 2005\n"
-        
+
         return 0
 
 
@@ -193,7 +193,7 @@ for i in rge:
         f=True
         continue
 
-    if a=="clients":    
+    if a=="clients":
        clients.append(args[i])
        continue
     if a=="file":
@@ -206,7 +206,7 @@ for i in rge:
         NFS4_SERVER=args[i]
         continue
 
-        
+
     usage()
 # For ...
 if s:
@@ -217,7 +217,7 @@ if s:
     print NFS4_SERVER
     setup()
     print "Setup complete"
-    
+
 if r:
     if (not c) or (not f) or (not n):
         usage()
@@ -225,12 +225,12 @@ if r:
 
     print "Running test"
     run()
-    
 
 
 
 
-    
-              
+
+
+
 
 

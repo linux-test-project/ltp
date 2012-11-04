@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 
@@ -46,7 +46,7 @@ then
     exit 1
 fi
 
-# test of CAN filters on af_can.c 
+# test of CAN filters on af_can.c
 ./tst-filter $VCAN || exit 1
 
 # test of CAN frame flow down to the netdevice and up again

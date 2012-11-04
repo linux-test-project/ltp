@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #  FILE   : nfs02
 #
@@ -82,7 +82,7 @@ $trace_logic
 
    IAM=${IAM:=`whoami`}
    [ $IAM = "root" ] || end_testcase "Must be root user"
-   
+
    #Setup and Export the data directory on RHOST
    rsh -n $RHOST "mkdir -p $TESTDIR"
    [ $? -eq 0 ] || end_testcase "Could not create $TESTDIR from $RHOST"
@@ -120,15 +120,15 @@ $trace_logic
 # INPUT:    None.
 # OUTPUT:    Error messages are logged if any of the tests fail.
 #---------------------------------------------------------------------#
-do_test1() 
+do_test1()
 {
-$trace_logic 
+$trace_logic
   echo "do_test1 $TC "
   cp $TCdat/ascii.jmb $TCtmp &
   wait $!
   echo "compare both ascii.jmbs"
-  diff $TCtmp/ascii.jmb $TCdat/ascii.jmb 
-  [ $? -eq 0 ] || end_testcase "'diff' of ascii.jmb FAILED" 
+  diff $TCtmp/ascii.jmb $TCdat/ascii.jmb
+  [ $? -eq 0 ] || end_testcase "'diff' of ascii.jmb FAILED"
 
 }
 
@@ -138,7 +138,7 @@ $trace_logic
 # INPUT:    None.
 # OUTPUT:    Error messages are logged if any of the tests fail.
 #---------------------------------------------------------------------#
-do_test2() 
+do_test2()
 {
 $trace_logic
    echo "do_test2 $TC "
@@ -153,19 +153,19 @@ $trace_logic
    cp $TCtmp/ascii.sm $TCtmp/ascii.smcp &
    wait $!
    diff $TCtmp/ascii.smcp $TCdat/ascii.sm
-   [ $? -eq 0 ] || end_testcase "'diff' of ascii.sm FAILED" 
+   [ $? -eq 0 ] || end_testcase "'diff' of ascii.sm FAILED"
 
    #medium file
    cp $TCtmp/ascii.med $TCtmp/ascii.medcp &
    wait $!
    diff $TCtmp/ascii.medcp $TCdat/ascii.med
-   [ $? -eq 0 ] || end_testcase "'diff' of ascii.med FAILED" 
+   [ $? -eq 0 ] || end_testcase "'diff' of ascii.med FAILED"
 
    #large file
    cp $TCtmp/ascii.lg $TCtmp/ascii.lgcp &
    wait $!
    diff $TCtmp/ascii.lgcp $TCdat/ascii.lg
-   [ $? -eq 0 ] || end_testcase "'diff' of ascii.lg FAILED" 
+   [ $? -eq 0 ] || end_testcase "'diff' of ascii.lg FAILED"
 
 }
 
@@ -181,7 +181,7 @@ $trace_logic
    echo "do_test3 $TC "
    chmod a-wx $TCtmp/ascii.sm &
    wait $!
-   ls -l $TCtmp/ascii.sm | grep "r--" 
+   ls -l $TCtmp/ascii.sm | grep "r--"
    [ $? -eq 0 ] || end_testcase "Removal of write permissions not honored on ascii.sm"
    chmod a+w $TCtmp/ascii.sm
 }
@@ -192,7 +192,7 @@ $trace_logic
 # INPUT:    None.
 # OUTPUT:   None.
 #---------------------------------------------------------------------#
-do_cleanup() 
+do_cleanup()
 {
 $trace_logic
    echo "do_cleanup $TC "
@@ -201,8 +201,8 @@ $trace_logic
    umount $TCtmp
    sleep 3
    rmdir $TCtmp
-   rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR" 
-   rsh -n $RHOST "rm -rf $TESTDIR"   
+   rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR"
+   rsh -n $RHOST "rm -rf $TESTDIR"
 }
 
 #=============================================================================

@@ -17,8 +17,8 @@
  * other software, or any other product whatsoever.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ * with this program; if not, write the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
@@ -56,14 +56,14 @@ void wait_handler();
  * 	returns NULL on error */
 char *zoo_getname(void);
 
-/* zoo_open(): open a zoo file for use 
+/* zoo_open(): open a zoo file for use
  * 	returns NULL on error */
 zoo_t zoo_open(char *zooname);
 
 /* zoo_close(): close an open zoo file */
 int zoo_close(zoo_t z);
 
-/* zoo_mark_cmdline(): make an entry to the zoo 
+/* zoo_mark_cmdline(): make an entry to the zoo
  *	returns 0 on success, -1 on error */
 int zoo_mark_cmdline(zoo_t z, pid_t p, char *tag, char *cmdline);
 

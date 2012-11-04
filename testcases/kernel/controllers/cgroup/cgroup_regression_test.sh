@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author: Li Zefan <lizf@cn.fujitsu.com>                                     ##
 ##                                                                            ##
@@ -31,7 +31,7 @@ export TST_COUNT=1
 tst_kvercmp 2 6 29
 if [ $? -eq 0 ]; then
 	tst_brkm TCONF ignored "test must be run with kernel 2.6.29 or newer"
-	exit 0 
+	exit 0
 elif [ ! -f /proc/cgroups ]; then
 	tst_brkm TCONF ignored "Kernel does not support for control groups; skipping testcases";
 	exit 0
@@ -207,7 +207,7 @@ test_3()
 # Bug:    cgroup hierarchy lock's lockdep subclass may overflow
 # Kernel: 2.6.29-rcX
 # Link:   http://lkml.org/lkml/2009/2/4/67
-# Fix:    
+# Fix:
 #---------------------------------------------------------------------------
 test_4()
 {

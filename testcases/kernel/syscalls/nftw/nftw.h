@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /* 10/31/2002   Port to LTP     robbiew@us.ibm.com */
@@ -25,7 +25,7 @@
  * NAME
  *	nftw.h - Header file for nftw.c
  */
- 
+
 
 #ifndef _NFTW_H_
 #define _NFTW_H_
@@ -143,7 +143,7 @@ extern int test_func1(const char *, const struct stat *, int, struct FTW *);
 extern int test_func3(const char *, const struct stat *, int, struct FTW *);
 extern int test_func4(const char *, const struct stat *, int, struct FTW *);
 extern int test_func5(const char *, const struct stat *, int, struct FTW *);
-extern int test_func7(const char *, const struct stat *, int, struct FTW *); 
+extern int test_func7(const char *, const struct stat *, int, struct FTW *);
 extern int test_func8(const char *, const struct stat *, int, struct FTW *);
 extern int test_func9(const char *, const struct stat *, int, struct FTW *);
 extern int test_func10(const char *, const struct stat *, int, struct FTW *);

@@ -15,7 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
@@ -117,7 +117,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-dump -f /dev/fd0 dumpdir 
+dump -f /dev/fd0 dumpdir
 if [ $? -ne 0 ]; then
   echo "$the_file dump write failed!"
   exit 1
@@ -125,7 +125,7 @@ else
   echo "$the_file dump write passed."
 fi
 
-rm -rf $TCtmp/dumpdir 
+rm -rf $TCtmp/dumpdir
 cd /
 
 restore -v -r -f /dev/fd0 2>/dev/null
@@ -226,11 +226,11 @@ do
 done
 }
 
-test_linuxformat() 
+test_linuxformat()
 {
 $trace_logic
 echo Testing mkdosfs....
-mkfs -v /dev/fd0 
+mkfs -v /dev/fd0
   if [ $? -ne 0 ]; then
     echo "Linux (ext2) format failed!"
     exit 1
@@ -239,11 +239,11 @@ mkfs -v /dev/fd0
   fi
 }
 
-test_dosformat() 
+test_dosformat()
 {
 $trace_logic
 echo Testing mkdosfs....
-mkdosfs -v /dev/fd0 
+mkdosfs -v /dev/fd0
   if [ $? -ne 0 ]; then
     echo "Dosformat failed!"
     exit 1

@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 # 	FILE: /var/spool/cron/allow
 #
@@ -29,7 +29,7 @@ iam=`whoami`
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
 
-if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ] 
+if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ]
 then
 CRON_ALLOW="/etc/cron.allow"
 else
@@ -57,7 +57,7 @@ do_setup() {
         rm -rf /home/$TEST_USER1
         rm -rf /home/$TEST_USER2
 	userdel $TEST_USER1
-	userdel $TEST_USER2 
+	userdel $TEST_USER2
 	sleep 1
 
 #create 1st user
@@ -69,7 +69,7 @@ do_setup() {
     }
     fi
 
-#create 2nd user	
+#create 2nd user
 	useradd -m -g users $TEST_USER2
     if [ $? != 0 ]
     then {
@@ -100,15 +100,15 @@ do_cleanup(){
 run_test() {
 
 if [ $iam = $TEST_USER1 ]
-then 
+then
 	echo "TEST: $CRON_ALLOW should only allow those in the file to
 run cron jobs."
-		
+
 	echo "(1) TEST THAT PERSON IN $CRON_ALLOW IS ABLE TO RUN JOB."
 
 	echo "backup crontab...."
     crontab -l | grep '^[^#]' > /tmp/crontab-cronallow-save-$iam
-	
+
 	crontab - << EOF
         `date '+%M' | awk '{ORS=""; print ($1+2)%60 " * * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_allow_test 2>&1
 EOF
@@ -116,49 +116,49 @@ EOF
 	echo Error while adding crontab for user $TEST_USER1
 	exit 1
 	fi
-	
-	echo "sleeping for 130 seconds...."	
+
+	echo "sleeping for 130 seconds...."
 	sleep 130
-	
+
 	EXIT_CODE=1
 	test -e /tmp/cron_allow_test && EXIT_CODE=0
-	
+
 	if [ $EXIT_CODE = 1 ]; then
 		echo "Cron did not allow user to execute job , TEST FAILED"
 	else
 		echo "Cron allowed user to execute test job, TEST PASSED"
 	fi
-	
+
 	 echo "restore old crontab..."
      crontab /tmp/crontab-cronallow-save-$iam
      rm -f /tmp/crontab-cronallow-save-$iam
- 
+
 
 	rm -f /tmp/cron_allow_test
-	
-	exit $EXIT_CODE	
+
+	exit $EXIT_CODE
 fi
 
 if [ $iam = $TEST_USER2 ]
 then
         echo "(2) TEST THAT PERSON NOT IN $CRON_ALLOW IS NOT ABLE TO RUN JOB."
-        
+
 		echo "backup crontab...."
     	crontab -l | grep '^[^#]' > /tmp/crontab-cronallow-save-$iam
-                                                        
+
         crontab - << EOF
         `date '+%M' | awk '{ORS=""; print ($1+2)%60 " * * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_allow_test1 2>&1
 EOF
         if [ $? != 0 ]; then
         echo Error while adding crontab for user $TEST_USER2
         fi
-                                                                                                             
+
         echo "sleeping for 130 seconds...."
         sleep 130
-                                                                                                             
+
         EXIT_CODE=0
         test -e /tmp/cron_allow_test1 && EXIT_CODE=1
-                                                                                                             
+
         if [ $EXIT_CODE = 0 ]; then
                 echo "Cron did not allow user to execute job , TEST PASSED"
         else
@@ -168,9 +168,9 @@ EOF
 		echo "restore old crontab..."
      	crontab /tmp/crontab-cronallow-save-$iam
      	rm -f /tmp/crontab-cronallow-save-$iam
-                                                                                                             
+
         rm -f /tmp/cron_allow_test1
-                                                                                                             
+
         exit $EXIT_CODE
 fi
 
@@ -179,20 +179,20 @@ fi
 #-----------------------------------------------------------------------
 # FUNCTION: main
 #-----------------------------------------------------------------------
-if [ $iam = "root" ] 
+if [ $iam = "root" ]
 then
 	do_setup
 	echo $TEST_USER1 > $CRON_ALLOW
 	EXIT_CODE=0
 	su $TEST_USER1 -c "$0"
 	if [ $? != 0 ]
-	then 
+	then
 	   EXIT_CODE=1
 	fi
 	su $TEST_USER2 -c "$0"
 	if [ $? != 0 ]
 	then EXIT_CODE=1
-	fi 
+	fi
 	do_cleanup
 	exit $EXIT_CODE
 else

@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2012, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -13,19 +15,17 @@
  * after the MAP_PRIVATE mapping is established are visible through
  * the MAP_PRIVATE mapping.
  *
- * Test Step:
- * 1. mmap a file into memory. Set flag as MAP_PRIVATE;
- * 2. Modify the mapped memory, and call msync to try to synchronize the change with
- * 	  the file;
- * 3. munmap the mapped memory;
- * 4. mmap the same file again into memory;
+ * Test Steps:
+ * 1. mmap a file into memory. Set flag as MAP_PRIVATE.
+ * 2. Modify the mapped memory, and call msync to try to synchronize the change.
+ * 3. munmap the mapped memory.
+ * 4. mmap the same file again into memory.
  * 5. If the modification in step 2 appears in the mapped memory, then fail,
  *    otherwise pass.
  */
 
 #define _XOPEN_SOURCE 600
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -38,92 +38,64 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TNAME "mmap/7-2.c"
-
-int main()
+int main(void)
 {
-  int rc;
+	char tmpfname[256];
+	char *data;
+	void *pa;
+	size_t size = 1024;
+	int fd;
 
-  char tmpfname[256];
-  char* data;
-  int total_size = 1024;
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_7_2_%d", getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf("Error at open(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	unlink(tmpfname);
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size = total_size;
-  int flag;
-  int fd;
-  off_t off = 0;
-  int prot;
+	data = malloc(size);
+	memset(data, 'a', size);
+	if (write(fd, data, size) != size) {
+		printf("Error at write(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+	free(data);
 
-  char * ch;
+	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at mmap(): %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_7_2_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
+	*(char *)pa = 'b';
 
-  data = (char *) malloc(total_size);
-  memset(data, 'a', total_size);
-  if (write(fd, data, total_size) != total_size)
-  {
-    printf(TNAME "Error at write(): %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  free(data);
+	/* Try to flush changes back to the file */
+	if (msync(pa, size, MS_SYNC) != 0) {
+		printf("Error at msync(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
-  prot = PROT_READ | PROT_WRITE;
-  flag = MAP_PRIVATE;
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf("Test Fail: " TNAME " Error at mmap: %s\n",
-           strerror(errno));
-    exit(PTS_FAIL);
-  }
+	munmap(pa, size);
 
-  ch = pa;
-  *ch = 'b';
+	/* Mmap again */
+	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (pa == MAP_FAILED) {
+		printf("Error at 2nd mmap(): %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
 
-  /* Flush changes back to the file */
+	if (*(char *)pa == 'b') {
+		printf("Memory write with MAP_PRIVATE has changed "
+		       "the underlying file\n"
+		       "Test FAILED\n");
+		exit(PTS_FAIL);
+	}
 
-  if ((rc =msync(pa, size, MS_SYNC)) != 0)
-  {
-    printf(TNAME " Error at msync(): %s\n",
-           strerror(rc));
-    exit(PTS_UNRESOLVED);
-  }
-
-  munmap(pa, size);
-
-  /* Mmap again */
-
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf("Test Fail: " TNAME " Error at 2nd mmap: %s\n",
-           strerror(errno));
-    exit(PTS_FAIL);
-  }
-
-  ch = pa;
-  if (*ch == 'b')
-  {
-    printf("Test FAIL\n");
-    exit(PTS_FAIL);
-  }
-
-  close (fd);
-  printf ("Test PASS, write referece does not change"
-          " the underlying object when setting MAP_RPIVATE\n");
-  return PTS_PASS;
+	close(fd);
+	printf("Memory write with MAP_PRIVATE has not changed "
+	       "the underlying file\n"
+	       "Test PASSED\n");
+	return PTS_PASS;
 }

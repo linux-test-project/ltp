@@ -14,15 +14,15 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
 #  FILE   : nfs03
 #
-#  DESCRIPTION: This script sets up the NFS directories in the remote machine 
+#  DESCRIPTION: This script sets up the NFS directories in the remote machine
 #		and runs the LTP's filesystem test: fs_inod.
-#  
+#
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
 #         where the test is executed.
@@ -73,8 +73,8 @@ THREAD_NUM=${THREAD_NUM:=1}
 # FUNCTION NAME:        fs_inod
 #
 # FUNCTION DESCRIPTION: Filesystems test from LTP.
-# 
-# PARAMETERS:		Filesystem, number of directories, number of files, 
+#
+# PARAMETERS:		Filesystem, number of directories, number of files,
 #			and loops
 #
 # RETURNS:		0 for PASS and Error Code for FAIL.
@@ -308,7 +308,7 @@ step1()
 setup_testcase()
 {
 $trace_logic
-   
+
 
     echo ""
     echo "Test Options:"
@@ -323,7 +323,7 @@ $trace_logic
     echo " Number of Files per Directory: $FILE_NUM"
     echo " Number of nfsds tested: $THREAD_NUM"
     echo ""
-    
+
     if [ "x$NFS_TYPE" != "xnfs4" ]; then
         OPTS=${OPTS:="-o vers=$VERSION,proto=$SOCKET_TYPE "}
     fi
@@ -352,7 +352,7 @@ $trace_logic
     echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with options '$OPTS'"
     mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
-    
+
     echo "Setting server side nfsd count to $THREAD_NUM"
     ORIG_NFSD=`rsh -n $RHOST "ps -ef" | grep nfsd | grep -v grep | wc -l`
     rsh -n $RHOST "/usr/sbin/rpc.nfsd $THREAD_NUM"
@@ -374,10 +374,10 @@ do_test()
 {
 $trace_logic
     echo "fs_inod starting on $TCtmp."
-    fs_inod $TCtmp $DIR_NUM $FILE_NUM 1 
+    fs_inod $TCtmp $DIR_NUM $FILE_NUM 1
     retval=$?
     echo "fs_inod on $TCtmp finished."
-    
+
     if [ "$retval" != 0 ]; then
       end_testcase "Errors have resulted from this test: fs_inod returned $retval."
     fi
@@ -400,7 +400,7 @@ end_testcase()
 $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
 	cd \
-	
+
 	echo "Cleaning up testcase"
         /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
 	sleep 2

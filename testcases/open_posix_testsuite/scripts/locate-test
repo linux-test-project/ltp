@@ -7,7 +7,7 @@
 
 usage()
 {
-    cat <<EOF 
+    cat <<EOF
 Usage: $(basename "$0") [OPTIONs] DIRECTORY
 
 Lists the tests (source/binary) available from the DIRECTORY directory

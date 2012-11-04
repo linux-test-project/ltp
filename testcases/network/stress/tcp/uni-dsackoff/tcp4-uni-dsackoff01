@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -32,10 +32,10 @@
 #     - IPsec is not used
 #     - Disable window scaling
 #     - Enable Nagle algorithm
-#     - Disable TCP Duplicate SACK support 
+#     - Disable TCP Duplicate SACK support
 #     - Enable SACK Support
 #     - Some packets are lost
-#     - Disable TSO if it is avalable 
+#     - Disable TSO if it is avalable
 #
 #   *) This script may be read by the other test case
 #
@@ -68,10 +68,10 @@ tst_resm TINFO "Verify that the kernel, when the Duplicate SACK support is off, 
 DO_DSACK=false
 
 # Make some packets are lost
-DO_PACKET_LOSS=true 
+DO_PACKET_LOSS=true
 
 # Make some packets are duplicated
-DO_PACKET_DUP=true 
+DO_PACKET_DUP=true
 
 # Load tcp4-uni-basic01
 NON_BASIC=true

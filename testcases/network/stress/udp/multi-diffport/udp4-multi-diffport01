@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -100,7 +100,7 @@ IPSEC_MODE=${IPSEC_MODE:-transport}
 do_cleanup()
 {
     # Kill the udp traffic server
-    killall_udp_traffic 
+    killall_udp_traffic
 
     # Unset SAD/SPD
     output_ipsec_conf flush | setkey -c >/dev/null 2>&1
@@ -293,7 +293,7 @@ connection_num=0
 current_port=$start_port
 while [ $current_port -le $end_port ]; do
     # Run a UDP traffic server
-    ns-udpserver -b -f $IP_VER -p $current_port 
+    ns-udpserver -b -f $IP_VER -p $current_port
     if [ $? -ne 0 ]; then
 	if [ $connection_num -eq 0 ]; then
 	    tst_resm TFAIL "Failed to run a server"
@@ -302,7 +302,7 @@ while [ $current_port -le $end_port ]; do
 	tst_resm TINFO "$connection_num seems the maximum number of the client"
 	break
     fi
-    
+
     ret=`$LTP_RSH $RHOST ${LTPROOT}/testcases/bin/ns-udpclient -b -f $IP_VER -S $lhost_addr -p $current_port'; echo $?'`
     if [ $ret -ne 0 ]; then
 	if [ $connection_num -eq 0 ]; then

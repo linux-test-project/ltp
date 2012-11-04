@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -92,7 +92,7 @@ do_cleanup()
 tst_resm TINFO "- Test duration is $NS_DURATION [sec]"
 
 # Get the MAC address of the interface at the local host
-field=`expr $LINK_NUM + 1` 
+field=`expr $LINK_NUM + 1`
 lhost_hwaddr=`echo $LHOST_HWADDRS | cut -d ' ' -f $field`
 if [ x${lhost_hwaddr} = x ]; then
     tst_resm TBROK "Failed to get the MAC address name at the local host"

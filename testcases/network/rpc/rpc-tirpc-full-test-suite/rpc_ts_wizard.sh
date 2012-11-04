@@ -55,7 +55,7 @@ draw_subcat_menu()
 	echo "Sub-ategories menu :"
 	echo " 0. Cancel and exit"
 	echo " 1. All categories"
-	
+
 	if [ "$1" = "RPC" ]
 	then
 		i=2
@@ -80,7 +80,7 @@ draw_subcat_menu()
 	then
 		echo ""
 	fi
-	
+
 	echo -n "Choice : "
 }
 
@@ -117,7 +117,7 @@ export SCRIPTDIR
 # Main process
 
 # check for automation mode
-for arg in $* 
+for arg in $*
 do
 	if [ "$arg" = "-v" ]
 	then
@@ -127,19 +127,19 @@ do
 	then
 		# run all rpc & tirpc test suite
 		tbl=( $(find ./ -name "*basic*_lib.sh") )
-	
+
 		CMD="$EXECSCRIPT "
-		
+
 		for fic in ${tbl[*]}
 		do
 			CMD="$CMD -l $fic"
 		done
-		
+
 		if [ $VERBOSE -eq 1 ]
 		then
 			CMD="$CMD -v"
 		fi
-		
+
 		$CMD
 		exit 0
 	fi
@@ -195,7 +195,7 @@ do
 	echo "Remarks : add -v flag to use verbose mode for Test Suite"
 	echo ""
 	draw_main_menu
-	
+
 	read MM_CHOICE
 	if [ $MM_CHOICE -eq 0 ]
 	then
@@ -231,23 +231,23 @@ if [ $MNLEVEL -eq 1 ]
 then
 	# run all test suite
 	tbl=( $(find ./ -name "$SCRIPTCATNAME") )
-	
+
 	CMD="$EXECSCRIPT "
-	
+
 	for fic in ${tbl[*]}
 	do
 		CMD="$CMD -l $fic"
 	done
-	
+
 	draw_title
 	draw_instance_menu
 	read NUMBER
-	
+
 	if [ -z $NUMBER ]
 	then
 		NUMBER=1
 	fi
-	
+
 	if [ $NUMBER -eq 0 ]
 	then
 		MNLEVEL=0
@@ -255,29 +255,29 @@ then
 		draw_title
 		draw_waytest_menu
 		read MM_CHOICE
-		
+
 		TESTWAY="onetomany"
-		
+
 		if [ -z $MM_CHOICE ]
 		then
 			MM_CHOICE=2
 		fi
-		
+
 		if [ $MM_CHOICE -eq 1 ]
 		then
 			TESTWAY="manycouple"
 		fi
-		
+
 		if [ $MM_CHOICE -eq 0 ]
 		then
 			MNLEVEL=0
 		fi
-		
+
 		if [ $VERBOSE -eq 1 ]
 		then
 			CMD="$CMD -v"
 		fi
-			
+
 		if [ $MNLEVEL -ne 0 ]
 		then
 			#echo "./$CMD -m $TESTWAY -n $NUMBER"
@@ -408,7 +408,7 @@ then
 	# run a part only
 	RUN=1
 	MNLEVEL=1
-	
+
 	# domain
 	while [ $RUN -eq 1 ]
 	do
@@ -437,26 +437,26 @@ then
 			MNLEVEL=0
 		fi
 	done
-	
+
 	if [ $MNLEVEL -eq 0 ]
 	then
 		# exit test suite
 		echo "Tests suite canceled"
 		exit 0
 	fi
-	
+
 	# category
 	CAT=( `cat inc/categories` )
 	RUN=1
 	MNLEVEL=1
-	
+
 	while [ $RUN -eq 1 ]
 	do
 		draw_title
 		echo "Select a category for $DOMAIN domain"
 		draw_cat_menu ${CAT[*]}
 		read MM_CHOICE
-		
+
 		if [ $MM_CHOICE -eq 0 ]
 		then
 			RUN=0
@@ -469,7 +469,7 @@ then
 			fi
 		fi
 	done
-	
+
 	if [ $MNLEVEL -eq 0 ]
 	then
 		# exit test suite
@@ -481,7 +481,7 @@ then
 	then
 		CMD="$EXECSCRIPT "
 		tbl=( $(find ./ -name "*${CAT[`expr $MM_CHOICE - 1`]}_lib.sh") )
-		
+
 		for fic in ${tbl[*]}
 		do
 			CMD="$CMD -l $fic"
@@ -490,14 +490,14 @@ then
 		# sub category
 		RUN=1
 		MNLEVEL=0
-		
+
 		while [ $RUN -eq 1 ]
 		do
 			draw_title
 			echo "Select a sub category for ${CAT[`expr $MM_CHOICE - 1`]} category for $DOMAIN domain"
 			draw_subcat_menu $DOMAIN ${CAT[`expr $MM_CHOICE - 1`]}
 			read MM_CHOICE_SUB
-			
+
 			if [ $DOMAIN = "RPC" ]
 			then
 				#echo "${CAT[`expr $MM_CHOICE - 1`]}"
@@ -509,20 +509,20 @@ then
 			if [ $DOMAIN = "TIRPC" ]
 			then
 				#echo "${CAT[`expr $MM_CHOICE - 1`]}"
-				scat=( $(find ./ -name "*_${CAT[`expr $MM_CHOICE - 1`]}_lib.sh" | grep "tirpc" | while read fic 
-				do 
-					echo $fic | sed -e 's/\.\/tirpc_//g' | sed -e s/"_"${CAT[`expr $MM_CHOICE - 1`]}"_lib.sh"//g 
+				scat=( $(find ./ -name "*_${CAT[`expr $MM_CHOICE - 1`]}_lib.sh" | grep "tirpc" | while read fic
+				do
+					echo $fic | sed -e 's/\.\/tirpc_//g' | sed -e s/"_"${CAT[`expr $MM_CHOICE - 1`]}"_lib.sh"//g
 				done) )
 			fi
-			
+
 			CMD="$EXECSCRIPT "
-			
+
 			if [ $MM_CHOICE -eq 0 ]
 			then
 				RUN=0
 				MNLEVEL=0
 			fi
-			
+
 			if [ $MM_CHOICE_SUB -eq 1 ]
 			then
 				RUN=0
@@ -544,32 +544,32 @@ then
 				then
 					tbl=( $(find ./ -name "*${scat[`expr $MM_CHOICE_SUB - 2`]}_${CAT[`expr $MM_CHOICE - 1`]}_lib.sh" | grep "tirpc" ) )
 				fi
-				
+
 				if [ ${#tbl[*]} -ne 0 ]
 				then
 					RUN=0
 					MNLEVEL=1
 				fi
 			fi
-		
+
 			for fic in ${tbl[*]}
 			do
 				CMD="$CMD -l $fic"
 			done
-			
+
 		done
 	fi
-	
+
 	# execute chosen tests
 	draw_title
 	draw_instance_menu
 	read NUMBER
-	
+
 	if [ -z $NUMBER ]
 	then
 		NUMBER=1
 	fi
-	
+
 	if [ $NUMBER -eq 0 ]
 	then
 		MNLEVEL=0
@@ -577,29 +577,29 @@ then
 		draw_title
 		draw_waytest_menu
 		read MM_CHOICE
-		
+
 		TESTWAY="onetomany"
-		
+
 		if [ -z $MM_CHOICE ]
 		then
 			MM_CHOICE=2
 		fi
-		
+
 		if [ $MM_CHOICE -eq 1 ]
 		then
 			TESTWAY="manycouple"
 		fi
-		
+
 		if [ $MM_CHOICE -eq 0 ]
 		then
 			MNLEVEL=0
 		fi
-		
+
 		if [ $VERBOSE -eq 1 ]
 		then
 			CMD="$CMD -v"
 		fi
-			
+
 		if [ $MNLEVEL -ne 0 ]
 		then
 			$CMD -m $TESTWAY -n $NUMBER

@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -74,7 +74,7 @@ case $ip_ver in
     exit 1
     ;;
 esac
-    
+
 # Check the connectivity first
 if [ ! -f $ssh_config ]; then
     echo "$ssh_config is something wrong."
@@ -101,7 +101,7 @@ done
 
 # Disconnect all ssh connection
 for ssh_pid in `ps auxw | fgrep -v grep | grep "ssh[[:blank:]].*${ssh_config}" | awk '{print $2}'` ; do
-    kill $ssh_pid 
+    kill $ssh_pid
 done
 
 # Check the connectivity again

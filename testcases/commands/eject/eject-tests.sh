@@ -15,13 +15,13 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
 # File :        eject_tests.sh
 #
-# Description:  Tests basic functionality of eject command. 
+# Description:  Tests basic functionality of eject command.
 #
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
@@ -30,7 +30,7 @@
 #               Jan 03 2003 - Added - Test #3.
 #               Jan 06 2003 - Modified - Test #3.
 #                           - Changed tst_brk to use correct parameters.
-#                           - Check if $LTPTMP/cdrom directory exists before 
+#                           - Check if $LTPTMP/cdrom directory exists before
 #                             creating it.
 #                           - Corrected code to check if return code is not 0
 #                             which indicated failure.
@@ -65,7 +65,7 @@ RC1=0
 RC2=0
 
 # Test #1
-# Test that eject -d lists the default device. 
+# Test that eject -d lists the default device.
 
 export TCID=eject01
 export TST_COUNT=1
@@ -80,7 +80,7 @@ then
     grep "cdrom" $LTPTMP/tst_eject.res \
         2>&1 1>>$LTPTMP/tst_eject.out  || RC2=$?
     if [ $RC1 -eq 0 ] && [ $RC2 -eq 0 ]
-    then 
+    then
         $LTPBIN/tst_resm TPASS  "Test #1: eject -d lists the default device"
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out \
@@ -95,7 +95,7 @@ fi
 
 
 # Test #2
-# Test that eject -d lists the default device. 
+# Test that eject -d lists the default device.
 
 export TCID=eject02
 export TST_COUNT=2
@@ -144,7 +144,7 @@ cp /etc/fstab $LTPTMP/fstab.bak > /dev/null 2>&1
 if [ -d $LTPTMP/cdrom ]
 then
     $LTPBIN/tst_resm TINFO \
-        "Test #3: test cdrom mount point $LTPTMP/cdrom exists. Skip creation" 
+        "Test #3: test cdrom mount point $LTPTMP/cdrom exists. Skip creation"
 else
     mkdir -p $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
@@ -173,7 +173,7 @@ then
 else
     eject > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -eq 0 ]
-    then 
+    then
         mount > $LTPTMP/tst_eject.res 2>&1
         grep "$LTPTMP/cdrom" $LTPTMP/tst_eject.res > $LTPTMP/tst_eject.out 2>&1 \
             || RC=$?
@@ -202,7 +202,7 @@ fi
 
 
 # Test #4
-# Test if eject -a on|1|off|0 will enable/disable auto-eject mode 
+# Test if eject -a on|1|off|0 will enable/disable auto-eject mode
 # the drive automatically ejects when the device is closed.
 
 export TCID=eject04
@@ -218,7 +218,7 @@ $LTPBIN/tst_resm TINFO "Test #4: so test may fail."
 # if not create one.
 if [ -d $LTPTMP/cdrom ]
 then
-    $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom exists, skip creating the directory" 
+    $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom exists, skip creating the directory"
 else
     mkdir -p $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
@@ -229,13 +229,13 @@ else
     fi
 fi
 
-# Check if /etc/fstab has this temporary mount point for /dev/cdrom listed 
-# as one of the entries. If not create and entry and make a back up of the 
+# Check if /etc/fstab has this temporary mount point for /dev/cdrom listed
+# as one of the entries. If not create and entry and make a back up of the
 # origianl /etc/fstab
 grep "$LTPTMP/cdrom" /etc/fstab > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ -f $LTPTMP/fstab.bak && $RC -eq 0 ]
 then
-     $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom entry exists in /etc/fstab" 
+     $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom entry exists in /etc/fstab"
 else
     cp /etc/fstab $LTPTMP/fstab.bak > $LTPTMP/tst_eject.out 2>&1
     echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" >>/etc/fstab 2>$LTPTMP/tst_eject.out || RC=$?
@@ -247,7 +247,7 @@ else
     fi
 fi
 
-# mount the cdrom device /dev/cdrom on to $LTPTMP/cdrom 
+# mount the cdrom device /dev/cdrom on to $LTPTMP/cdrom
 # and enable auto-eject. unmounting $LTPTMP/cdrom should open the tray and
 # eject the cdrom.
 
@@ -293,7 +293,7 @@ else
     then
         $LTPBIN/tst_resm TPASS  "Test #4: /dev/cdrom is tray is open"
     else
-        $LTPBIN/tst_resm TFAIL "Test #4: /dev/cdrom is tray is still closed" 
+        $LTPBIN/tst_resm TFAIL "Test #4: /dev/cdrom is tray is still closed"
     fi
 fi
 
@@ -318,15 +318,15 @@ then
         "Test #4: eject command to close the tray. Reason:"
     TFAILCNT=$(( $TFAILCNT+1 ))
 else
-    grep "closing tray" $LTPTMP/tst_eject.res > $LTPTMP/tst_eject.out 2>&1 || RC=$?    
+    grep "closing tray" $LTPTMP/tst_eject.res > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -eq 0 ]
     then
         $LTPBIN/check_tray || RC=$?
         if [ $RC -eq 2 ]
-        then 
+        then
             $LTPBIN/tst_brkm TBROK NULL \
                 "Test #4: eject -t reported tray closed, but tray is open"
-            TFAILCNT=$(( $TFAILCNT+1 )) 
+            TFAILCNT=$(( $TFAILCNT+1 ))
         fi
     fi
 fi

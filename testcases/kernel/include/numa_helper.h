@@ -30,6 +30,7 @@
 #define NH_MEMS (1 << 0)
 #define NH_CPUS (1 << 1)
 
+unsigned long get_max_node(void);
 int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes);
 int get_allowed_nodes(int flag, int count, ...);
 void nh_dump_nodes();

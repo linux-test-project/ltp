@@ -17,7 +17,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #  FILE        : autofs4.sh
 #  USAGE       : autofs4.sh <disk_partition>
@@ -218,7 +218,7 @@ sync; sync
 echo "Resuming test, please wait..."
 sleep 60
 
-cd /AUTOFS/DISK/disk/test 
+cd /AUTOFS/DISK/disk/test
 umount /AUTOFS/DISK/disk/ 2>&1 > /dev/null
 if [ $? = 0 ]
 then
@@ -227,7 +227,7 @@ then
 	echo "FAILED: unmounted a busy file system!"
 	exit 1
 fi
-cd 
+cd
 
 umount /AUTOFS/DISK/disk/ 2>&1 > /dev/null
 if [ $? != 0 ]

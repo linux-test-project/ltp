@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #                                                                             ##
@@ -28,7 +28,7 @@
 #               http://git.kernel.org/git/?p=linux/kernel/git/torvalds/       ##
 #               linux-2.6.git;a=commit;                                       ##
 #               h=0ff5af8340aa6be44220d7237ef4a654314cf795                    ##
-#               for more info.                                                ## 
+#               for more info.                                                ##
 #                                                                             ##
 # Author:       Jan Kara <jack@suse.cz>,                                      ##
 #                                                                             ##

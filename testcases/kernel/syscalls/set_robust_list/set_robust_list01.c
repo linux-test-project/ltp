@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -80,9 +80,9 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 #ifdef __NR_set_robust_list
-	int lc;			/* loop counter */
+	int lc;
 #endif
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 #ifdef __NR_set_robust_list
 	struct robust_list_head head;
 	size_t len;		/* size of structure struct robust_list_head */

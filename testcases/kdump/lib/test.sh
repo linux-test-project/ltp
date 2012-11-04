@@ -67,36 +67,36 @@ case "${test}" in
 
 	"KPIDB")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HARDWARE_ENTRY cpoint_type=BUG cpoint_count=05
-		;;	
+		;;
 	"KPIDE")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HARDWARE_ENTRY cpoint_type=EXCEPTION cpoint_count=05
-		;;	
+		;;
 	"KPIDL")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HARDWARE_ENTRY cpoint_type=LOOP cpoint_count=05
-		;;	
+		;;
 	"KPIDP")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HARDWARE_ENTRY cpoint_type=PANIC cpoint_count=05
-		;;	
+		;;
 	"KPIDO")
 		echo 1 >/proc/sys/kernel/panic_on_oops
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HARDWARE_ENTRY cpoint_type=OVERFLOW cpoint_count=10
-		;;	
+		;;
 	"KPIEB")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HW_IRQ_EN cpoint_type=BUG cpoint_count=10
-		;;	
+		;;
 	"KPIEE")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HW_IRQ_EN cpoint_type=EXCEPTION cpoint_count=10
-		;;	
+		;;
 	"KPIEL")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HW_IRQ_EN cpoint_type=LOOP cpoint_count=10
-		;;	
+		;;
 	"KPIEP")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HW_IRQ_EN cpoint_type=PANIC cpoint_count=10
-		;;	
+		;;
 	"KPIEO")
 		echo 1 >/proc/sys/kernel/panic_on_oops
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_HW_IRQ_EN cpoint_type=OVERFLOW cpoint_count=10
-		;;	
+		;;
 	"KPTEB")
 		insmod "${lkdtm}"/lkdtm.ko cpoint_name=INT_TASKLET_ENTRY cpoint_type=BUG cpoint_count=10
 		;;

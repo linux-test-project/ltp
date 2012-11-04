@@ -54,10 +54,10 @@ mandir			:= ${datarootdir}/man
 
 RPMBUILD		?= rpmbuild
 
-CPPFLAGS		:= 
+CPPFLAGS		:=
 CFLAGS			:= -g -O2
-LDLIBS			:= 
-LDFLAGS			:= 
+LDLIBS			:=
+LDFLAGS			:=
 
 DEBUG_CFLAGS		?= -g
 DEBUG_CXXFLAGS		?= $(DEBUG_CFLAGS)

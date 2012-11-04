@@ -14,15 +14,15 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
 #
 #  FILE(s)     : backbeat
-#  DESCRIPTION : Test takes 3 partitions (ex: /dev/hda1 /dev/hda2 /dev/hda3) and simulates 
+#  DESCRIPTION : Test takes 3 partitions (ex: /dev/hda1 /dev/hda2 /dev/hda3) and simulates
 #                an online backup of /sbin using cp, tar and diff.
 #  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
-#  HISTORY     : 
+#  HISTORY     :
 #
 
 ($junk,$junk,$part1)=split(/\//,$ARGV[0]);
@@ -49,10 +49,10 @@ $tmp = `diff -r $part3/sbin $part1/sbin`;
 
 if ($tmp) {
         print $tmp;
-        print "\nDiff: FAIL\n"; 
+        print "\nDiff: FAIL\n";
         exit 1;
         }
     else {
-        print "\nDiff: PASS\n"; 
+        print "\nDiff: PASS\n";
         exit 0;
         }

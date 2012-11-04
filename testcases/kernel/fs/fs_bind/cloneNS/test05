@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -41,20 +41,20 @@ while /bin/true ; do
 
 	cp "${FS_BIND_ROOT}/cloneNS/parent05" ./
 	cp "${FS_BIND_ROOT}/cloneNS/child05" .
-	
+
 	chmod 755 parent05 child05
-	
-	
+
+
 	"${FS_BIND_ROOT}/bin/makedir" share parent
 	"${FS_BIND_ROOT}/bin/makedir" share parent/child1
 	"${FS_BIND_ROOT}/bin/makedir" share parent/child2
-	
+
 	mount --rbind "$disk1" parent/child1
-	
+
 	mount --rbind parent parent/child2/
-	
+
 	"${FS_BIND_ROOT}/bin/nsclone" ./parent05 ./child05 || result=$?
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "cloneNS/test05: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -73,18 +73,18 @@ trap '' ERR
 	umount parent/child2
 	umount parent/child2
 	umount parent
-	
+
 	rm -rf parent* child*
-	
+
 	cleanup
 } >& /dev/null
 if [ $result -ne 0 ]
 then
-	tst_resm TFAIL "cloneNS/test05: FAILED: cloneNS: namespace with multi-level 
+	tst_resm TFAIL "cloneNS/test05: FAILED: cloneNS: namespace with multi-level
 chain of slaves"
 	exit 1
 else
 	tst_resm TPASS "cloneNS/test05: PASSED"
-	exit 0 
+	exit 0
 fi
 tst_exit

@@ -15,7 +15,7 @@
 #* 										*#
 #* You should have received a copy of the GNU General Public License 		*#
 #* along with this program; if not, write to the Free Software 			*#
-#* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 	*#
+#* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA 	*#
 #* 										*#
 #********************************************************************************#
 
@@ -41,22 +41,22 @@ change_password()
 	export TCID="change_password" # Test case identifier
 	export TST_COUNT=0  # Set up is initialized as test 0
 	RC=0                # Exit values of system commands used
-	
+
 	echo "=== Change MMC Password ==="
 	keyid=$(keyctl request mmc "mmc:key")
 	if [ -z "$keyid" ]; then
 		echo "*** No protected and unlocked MMC was found. The password cannot be changed."
 		exit 1
 	fi
-	
+
 	while [ -z "$oldpasswd" ]; do
 		read -s -p "Current MMC password: " oldpasswd; echo
 	done
-	
+
 	while [ -z "$newpasswd" ]; do
 		read -s -p "New MMC password: " newpasswd; echo
 	done
-	
+
 	while [ -z "$newpasswd2" ]; do
 		read -s -p "Retype MMC password: " newpasswd2; echo
 	done
@@ -64,16 +64,16 @@ change_password()
 		echo "*** Passwords do not match."
 		exit 1
 	fi
-	
+
 	if ! keyctl update $keyid "$oldpasswd$newpasswd"; then
 		echo "*** Wrong password!"
 		exit 1
 	fi
-	
+
 	# Clear session keyring
 	# FIXME: It assumes we have only the MMC key there
 	keyctl clear -3
-	
+
 	echo "Password changed."
 }
 

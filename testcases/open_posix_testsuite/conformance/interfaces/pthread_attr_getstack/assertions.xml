@@ -5,9 +5,9 @@
   </assertion>
 
   <assertion id="2" tag="ref:XSH6:31541:31541">
-   If success, it returns zero. 
+   If success, it returns zero.
   </assertion>
-  
+
   <assertion id="3" tag="ref:XSH6:31554:31554">
    Shall not return an error code of [EINTR]
   </assertion>

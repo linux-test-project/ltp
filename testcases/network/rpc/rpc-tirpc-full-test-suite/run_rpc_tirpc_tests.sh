@@ -7,5 +7,5 @@ export LTPROOT=${PWD}
 cd $SAVEPWD
 make deploy
 make all
-./rpc_ts_wizard.sh -all 
+./rpc_ts_wizard.sh -all
 

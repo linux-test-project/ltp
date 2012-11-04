@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -191,8 +191,8 @@ mcast_port_top=`echo $mcast_port_range | cut -f 1 -d '-'`
 
 while [ $mcastnum -lt $MCASTNUM_NORMAL ]; do
     # Define the multicast address
-    x=`expr $mcastnum \/ 254` 
-    y=`expr $mcastnum % 254 + 1` 
+    x=`expr $mcastnum \/ 254`
+    y=`expr $mcastnum % 254 + 1`
     if [ $x -gt 254 ]; then
 	tst_resm TINFO "The number of the connection is less than $mcastnum"
 	break
@@ -200,7 +200,7 @@ while [ $mcastnum -lt $MCASTNUM_NORMAL ]; do
     mcast_addr=${MCAST_ADDR_PREFIX}.${x}.${y}
 
     # Run a receiver
-    mcast_port=`expr $mcast_port_top + $mcastnum` 
+    mcast_port=`expr $mcast_port_top + $mcastnum`
     ns-mcast_receiver -f 4 -I $lhost_ifname -m $mcast_addr -p $mcast_port -b
     if [ $? -ne 0 ]; then
 	tst_resm TBROK "Failed to start multicast receiver"

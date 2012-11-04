@@ -15,19 +15,19 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
 # File :        gzip_tests.sh
 #
 # Description:  Test basic functionality of gzip and gunzip command
-#				- Test #1:  Test that gzip -r will travel directories and 
+#				- Test #1:  Test that gzip -r will travel directories and
 #						    compress all the files available.
 #
 #				- Test #2:  Test that gunzip -r will travel directories and
 #						    uncompress all the files available.
-#               
+#
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Fed 06 2003 - Created - Manoj Iyer.
@@ -55,7 +55,7 @@ init()
 		LTPTMP=$TMP
 	fi
 
-	
+
 	tst_resm TINFO "INIT: Inititalizing tests."
 	if ! which gunzip > $LTPTMP/tst_gzip.err 2>&1
 	then
@@ -64,7 +64,7 @@ init()
 		return $RC
 	fi
 
-	mkdir -p $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.err 2>&1 || RC=$? 
+	mkdir -p $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
@@ -122,7 +122,7 @@ creat_dirnfiles()
 	done
 	return $RC
 }
- 
+
 
 # Function:		creat_expout
 #
@@ -143,8 +143,8 @@ creat_expout()
 	ext=$4		# file extension (.gz for compressed files)
     dircnt=0    # index into dir created in loop
     fcnt=0      # index into files created in loop
-	RC=0        # return code from commands 
-	
+	RC=0        # return code from commands
+
 	echo "$dirname:"  1>$LTPTMP/tst_gzip.exp
 	echo "d.$dircnt"  1>>$LTPTMP/tst_gzip.exp
 	while [ $dircnt -lt $numdirs ]
@@ -233,7 +233,7 @@ test01()
 #               - Test #2:  Test that gunzip -r will travel directories and
 #                 uncompress all the files available.
 #               - create N directories and fill each with M files.
-#               - gzip -r dir 
+#               - gzip -r dir
 #               - guzip -r dir
 #               - list contents of dir and save it to file - actual output
 #               - create expected output
@@ -300,7 +300,7 @@ test02()
 # Function:		main
 #
 # Description:	- Execute all tests, report results.
-#               
+#
 # Exit:			- zero on success
 # 				- non-zero on failure.
 
@@ -308,7 +308,7 @@ test02()
 TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
 RC=0				# Return code from tests.
 
-init || return $RC	# Exit if initializing testcases fails.	
+init || return $RC	# Exit if initializing testcases fails.
 
 test01 || RC=$?
 if [ $RC -ne 0 ]
@@ -318,7 +318,7 @@ fi
 
 rm -fr $LTPTMP/tst_gzip.*
 
-init || return $RC	# Exit if initializing testcases fails.	
+init || return $RC	# Exit if initializing testcases fails.
 
 test02 || RC=$?
 if [ $RC -ne 0 ]

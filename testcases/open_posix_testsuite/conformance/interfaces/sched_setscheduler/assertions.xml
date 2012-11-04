@@ -10,7 +10,7 @@
   <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_setscheduler:DESCRIPTION}">
    If a process specified by pid exists, and if the calling process has
    permission, the scheduling policy and scheduling parameters shall be set for
-   the process whose process ID is equal to pid  
+   the process whose process ID is equal to pid
   </assertion>
   <assertion id="4" tag="ref:XSH6:{System Interfaces:sched_setscheduler:DESCRIPTION}">
    If pid is zero, the scheduling policy and scheduling parameters shall be set
@@ -39,7 +39,7 @@
   <assertion id="9" tag="ref:XSH6:{System Interfaces:sched_setscheduler:DESCRIPTION} pt:SS">
    The sched_ss_repl_period and sched_ss_init_budget members of the param
    argument shall represent the time parameters used by the sporadic server
-   scheduling policy for the target process 
+   scheduling policy for the target process
   </assertion>
   <assertion id="10" tag="ref:XSH6:{System Interfaces:sched_setscheduler:DESCRIPTION} pt:SS">
    The sched_ss_max_repl member of the param argument shall represent the
@@ -50,7 +50,7 @@
    If the scheduling policy specified by policy is either SCHED_FIFO or
    SCHED_RR, the sched_ss_low_priority, sched_ss_repl_period, and
    sched_ss_init_budget members of the param argument shall have no effect on
-   the scheduling behavior 
+   the scheduling behavior
   </assertion>
   <assertion id="12" tag="ref:XSH6:{System Interfaces:sched_setscheduler:DESCRIPTION}">
    For threads with system scheduling contention scope, this function shall
@@ -73,18 +73,18 @@
   <assertion id="16" tag="ref:XSH6:{System Interfaces:sched_setscheduler:RETURN VALUE}">
    Upon successful completion, the function shall return the former scheduling policy of the specified process
   </assertion>
-  <assertion id="17" tag="ref:XSH6:{System Interfaces:sched_setscheduler:RETURN VALUE}">   
+  <assertion id="17" tag="ref:XSH6:{System Interfaces:sched_setscheduler:RETURN VALUE}">
    If the sched_setscheduler() function fails to complete successfully, the
    policy and scheduling parameters shall remain unchanged
   </assertion>
-  <assertion id="18" tag="ref:XSH6:{System Interfaces:sched_setscheduler:RETURN VALUE}"> 
+  <assertion id="18" tag="ref:XSH6:{System Interfaces:sched_setscheduler:RETURN VALUE}">
    If the sched_setscheduler() function fails to complete successfully, the
    function shall return a value of -1
   </assertion>
   <assertion id="19" tag="ref:XSH6:{System Interfaces:sched_setscheduler:ERRORS}">
    The sched_setscheduler() function shall return EINVAL if the value of the
    policy parameter is invalid, or one or more of the parameters contained in
-   param is outside the valid range for the specified scheduling policy  
+   param is outside the valid range for the specified scheduling policy
   </assertion>
   <assertion id="20" tag="ref:XSH6:{System Interfaces:sched_setscheduler:ERRORS}">
    The sched_setscheduler() function shall return EPERM if the requesting
@@ -93,12 +93,12 @@
   </assertion>
   <assertion id="21" tag="ref:XSH6:{System Interfaces:sched_setscheduler:ERRORS}">
    The sched_setscheduler() function shall return ESRCH if no process can be
-   found corresponding to that specified by pid 
+   found corresponding to that specified by pid
   </assertion>
 
   <assertion id="22" tag="ref:XSH6:{System Interfaces:sched_setscheduler:DESCRIPTION}">
    Kernel-scheduled entities for use by process contention scope threads that
    are created after this call completes shall inherit their scheduling policy
    and associated scheduling parameters from the process
-  </assertion>  
+  </assertion>
 </assertions>

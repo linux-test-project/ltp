@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #   Copyright (c) International Business Machines  Corp., 2008
-#   
+#
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -14,20 +14,20 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #*******************************************************************************
 # Readme_ROBind has more details on the tests running for ROBIND.
-# TEST: 
+# TEST:
 #   NAME:       test_robind.sh
 #   FUNCTIONALITY:  File system tests for normal mount, bind mount and RO mount
 #
 #   DESCRIPTION:    Performs filesystems tests for RO mount.
 #     For filesystem's like ext2, ext3, reiserfs, jfs & xfs.
 #     This test creates an image-file and
-#        a)  mounts on dir1, 
+#        a)  mounts on dir1,
 #        b)  mount --bind dir2
-#        c)  mount -o remount,ro 
+#        c)  mount -o remount,ro
 #       It verifies the tests on a) and b) works correctly.
 #     For the c) option it checks that the tests are not able to write into dir.
 #     Then it executes the tests from flat-file  {LTPROOT}/testscripts/fs_ro_tests
@@ -53,11 +53,11 @@ export TST_COUNT
 export TST_TOTAL
 
 usage()
-{   
+{
   cat << EOF
   usage: $0 [ext3,ext2,jfs,xfs,reiserfs,ramfs]
 
-  This script verifies ReadOnly-filesystem, by mounting imagefile and 
+  This script verifies ReadOnly-filesystem, by mounting imagefile and
   executing the filesystem tests.
 
   OPTIONS
@@ -82,7 +82,7 @@ trap cleanup INT
 function cleanup
 {
     umount ${TMPDIR}/dir3-ro 2> /dev/null > /dev/null
-    umount ${TMPDIR}/dir2-bound 2> /dev/null 1> /dev/null 
+    umount ${TMPDIR}/dir2-bound 2> /dev/null 1> /dev/null
     umount ${TMPDIR}/dir1 2> /dev/null 1> /dev/null
     if [ ! -z $1 ]; then {
         rm -rf $1 || true
@@ -95,7 +95,7 @@ function cleanup
 #
 # FUNCTION DESCRIPTION: Does the initailization
 #
-# PARAMETERS:   File_systems (if any )    
+# PARAMETERS:   File_systems (if any )
 #
 # RETURNS:      None.
 #===============================================================================
@@ -162,25 +162,25 @@ function testdir
         for tests in `seq $testnums` ; do
             cmd=`cat $FS_Tests | head -$tests | tail -n 1`
 #            eval $cmd 2>&1 /dev/null
-            eval $cmd 2> /dev/null 1> /dev/null 
+            eval $cmd 2> /dev/null 1> /dev/null
             if [ $? -eq 0 ]; then
-                echo "$tests. '$cmd' PASS" >> $PASSLOG 
+                echo "$tests. '$cmd' PASS" >> $PASSLOG
             else
-                echo "$tests. '$cmd' FAIL " >> $FAILLOG 
+                echo "$tests. '$cmd' FAIL " >> $FAILLOG
                 echo "TDIR is $TDIRECTORY" >> $FAILLOG;
-                status=1 
+                status=1
             fi
         done
 
     else                                                # Testing Read-Only dir
         for tests in `seq $testnums` ; do
             cmd=`cat $FS_Tests | head -$tests | tail -n 1`
-            eval $cmd 2> /dev/null 1> /dev/null 
+            eval $cmd 2> /dev/null 1> /dev/null
             if [ $? -ne 0 ]; then
-                echo "$tests. '$cmd' PASS " >> $PASSLOG 
+                echo "$tests. '$cmd' PASS " >> $PASSLOG
             else
-                 echo "$tests. '$cmd' FAIL" >> $FAILLOG 
-                 status=1 
+                 echo "$tests. '$cmd' FAIL" >> $FAILLOG
+                 status=1
             fi
         done
     fi
@@ -199,8 +199,8 @@ function testdir
 }
 
 #=============================================================================
-# MAIN 
-#     See the description, purpose, and design of this test under TEST 
+# MAIN
+#     See the description, purpose, and design of this test under TEST
 #     in this test's prolog.
 #=============================================================================
 retcode=0
@@ -232,7 +232,7 @@ for fstype in $FSTYPES; do
         rm -f $image
         exit -1
     fi
-    
+
     OPTS="-F"
     if [ "$fstype" == "reiserfs" ]; then
     OPTS="-f --journal-size 513 -q"
@@ -261,5 +261,5 @@ done
         rm -rf ./$i || true
     done;
     cd $oldpwd || true
-    exit $retcode 
+    exit $retcode
 

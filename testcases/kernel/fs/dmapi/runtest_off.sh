@@ -14,12 +14,12 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
 #
-# This script, and hence the invoked test cases, need to be run from a 
-# directory that is NOT on the DMAPI-enabled partition (/dmtest below) being 
+# This script, and hence the invoked test cases, need to be run from a
+# directory that is NOT on the DMAPI-enabled partition (/dmtest below) being
 # tested; also, the DMAPI-enabled partition must be a disk (/dev/hda7 below)
 # preformatted for JFS via mkfs.fs
 #

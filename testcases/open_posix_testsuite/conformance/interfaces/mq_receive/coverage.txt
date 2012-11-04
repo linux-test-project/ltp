@@ -5,7 +5,7 @@ Assertion	Tested?
 2		YES
 3		NO - implementation-defined, won't test.
 4	 	YES
-5		YES 
+5		YES
 6		NO - won't test.
 7		YES
 8		YES

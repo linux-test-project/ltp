@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  ************************************************************************/
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		for (i = 0; i < sizeof(tests) / sizeof(struct test); i++) {
 			TEST(syscall(tests[i].syscall, tests[i].u_info));
-			
+
 			if (TEST_RETURN != tests[i].exp_ret) {
 				tst_resm(TFAIL, "%s returned %li expected %i",
 				         get_name(tests[i].syscall),
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 					 strerror(tests[i].exp_errno));
 				continue;
 			}
-			
+
 			tst_resm(TPASS, "%s returned %li errno %i (%s)",
 			         get_name(tests[i].syscall), TEST_RETURN,
 				 TEST_ERRNO, strerror(TEST_ERRNO));

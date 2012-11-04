@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
@@ -63,26 +63,26 @@ cd $TCdat
 ar -cr $TCtmp/lib.a nmfile1.obj nmfile1.obj nmfile2.obj nmfile3.obj
 
 # -A  Displays either the full path name or library name of an object
-# on each line.                   
+# on each line.
 
 # CODE
 RC1=0
-RC2=0 
+RC2=0
 
 mkdir -p $TCtmp/a/b/c/d
 
 $NM -f posix -A $TCtmp/lib.a | grep "$TCtmp/lib.a\[nmfile2.obj\]\:" 2>&1 1>/dev/null
-RC1=$? 
+RC1=$?
 cp $TCtmp/lib.a $TCtmp/a/b/c/d/
 $NM -f posix -A $TCtmp/a/b/c/d/lib.a | grep "$TCtmp/a/b/c/d/lib.a\[nmfile2.obj\]\:"  2>&1 1>/dev/null
-RC2=$? 
+RC2=$?
 
 
-if [ $RC1 -eq  '0' ] && [ $RC2 -eq '0' ] 
+if [ $RC1 -eq  '0' ] && [ $RC2 -eq '0' ]
 then
 	echo "-)1"
 else
-	echo "nm -A: FAIL" 
+	echo "nm -A: FAIL"
 	do_cleanup
 	exit 1
 fi
@@ -93,7 +93,7 @@ fi
 # CODE
 
 COUNT=`$NM -f posix -g $TCtmp/nmfile1 | awk '{print $2 }' | grep "[a,b,d,f,t]"  | wc -l` 2>&1 1>/dev/null
-if [ $COUNT -eq 0 ] 
+if [ $COUNT -eq 0 ]
 then
 	echo "-)2"
 else
@@ -102,22 +102,22 @@ else
 	exit 1
 fi
 #-------------------------------------------------------------------------------
-# -t o Displays a symbol's value as an octal rather than     
-# a decimal number.               
+# -t o Displays a symbol's value as an octal rather than
+# a decimal number.
 
 # CODE
 $NM -f posix -t o $TCtmp/nmfile1 | awk '{print $3}' | grep "[8-9]" >/dev/null 2>&1
-if [ $? -eq "1" ] 
+if [ $? -eq "1" ]
 then
 	echo "-)3"
 else
 	echo "nm -t o: FAIL"
 	do_cleanup
-	exit 1	
+	exit 1
 fi
 #-------------------------------------------------------------------------------
 
-# -f sysv Displays information in a SysV output format 
+# -f sysv Displays information in a SysV output format
 # CODE
 
 count=0
@@ -134,7 +134,7 @@ fi
 
 #-------------------------------------------------------------------------------
 
-# -f bsd Displays information in a BSD output format 
+# -f bsd Displays information in a BSD output format
 # CODE
 $NM -f bsd $TCtmp/nmfile1 | grep printf | awk '{print $2}' > $TCtmp/nm.diff1
 $NM -f posix $TCtmp/nmfile1 | grep printf | awk '{print $1}' > $TCtmp/nm.diff2

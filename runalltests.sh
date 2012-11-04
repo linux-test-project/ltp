@@ -15,14 +15,14 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 ## File:        runalltests.sh                                                ##
 ##                                                                            ##
 ## Description:  This script just calls runltp now, and is being phased out.  ##
 ##		If you rely on this script for automation reasons, please     ##
-##                                                                            ## 
+##                                                                            ##
 ## History	Subrata Modak <subrata@linuc.vnet.ibm.com> changed the code   ##
 ##		to include testing other testcases which are not run by       ##
 ##		default, 08/09/2008                                           ##
@@ -159,10 +159,10 @@ export RUN_FSNOLVM_TESTS=0
 export RUN_LTP_SCSI_DEBUG_TEST=0
 
 ## Set this to 1 if you wish to run the LTP SYSFS tests
-#Note: Must have root access to execute this script. 
+#Note: Must have root access to execute this script.
 #  USAGE       : sysfs.sh [ -k <kernel_module> ]
 #  DESCRIPTION : A script that will test sysfs on Linux system.
-#  REQUIREMENTS: CONFIG_DUMMY must have been used to build kernel, and the 
+#  REQUIREMENTS: CONFIG_DUMMY must have been used to build kernel, and the
 #                dummy network module must exist.
 export RUN_LTP_SYSFS_TEST=0
 export KERNEL_MODULE1=xxxxxxx
@@ -265,7 +265,7 @@ fi
 
 
 ## The next one i plan to run is                      ##
-## ltp/testcases/kernel/io/aio                        ## 
+## ltp/testcases/kernel/io/aio                        ##
 ## START => Test Series 5                             ##
 if [ $RUN_AIOTESTS -eq 1 ]
 then
@@ -302,7 +302,7 @@ fi
 ## END => Test Series 5                               ##
 
 ## The next one i plan to run is                      ##
-## ltp/testcases/kernel/security/filecaps             ## 
+## ltp/testcases/kernel/security/filecaps             ##
 ## START => Test Series 6                             ##
 if [ $RUN_FILECAPS -eq 1 ]
 then

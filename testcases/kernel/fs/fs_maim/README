@@ -7,36 +7,36 @@ License:
     published by the Free Software Foundation; either version 2 of
     the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be 
-    useful, but WITHOUT ANY WARRANTY;  without even the implied 
-    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    This program is distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY;  without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
     PURPOSE.  See the GNU General Public License for more details.
- 
-    You should have received a copy of the GNU General Public 
-    License along with this program;  if not, write to the Free 
-    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
+
+    You should have received a copy of the GNU General Public
+    License along with this program;  if not, write to the Free
+    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
     MA 02111-1307 USA
 
 
-Overview: 
-    Name:          fs_maim 
+Overview:
+    Name:          fs_maim
     Description:   fs_maim is a collection of smaller scripts to stress
-                   storage management utilities.  Each script has more 
+                   storage management utilities.  Each script has more
                    specific documentation in it.
-                        
+
 Files:
     backbeat
     partbeat
     maimparts
-    README 
-                        
-Installation:      Untar. 
-                        
+    README
+
+Installation:      Untar.
+
 Use:               maimparts <device like hda, sda, etc.> <iterations> <fstype like jfs, ext3, etc>
 
 Warning(s):        The device you specify on the command line (hda/sda/etc)
-                   will be blown away...smoking any important data, programs, 
-                   OS, etc.  Don't specify a device name that you don't want 
+                   will be blown away...smoking any important data, programs,
+                   OS, etc.  Don't specify a device name that you don't want
                    to wipe out.
                    YOU HAVE BEEN WARNED!
 

@@ -12,8 +12,8 @@
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 *
 * You should have received a copy of the GNU General Public License along
-* with this program; if not, write the Free Software Foundation, Inc., 59
-* Temple Place - Suite 330, Boston MA 02111-1307, USA.
+* with this program; if not, write the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 * This sample test aims to check the following assertion:
 *
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 		UNRESOLVED(errno, "Unable to read clock");
 	}
 
-	/* 
+	/*
 	 * POSIX allows for alarm to quite unprecise, so we ask for 2 seconds
 	 * and check for at least one.
 	 */
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
                        ts_fin.tv_sec, ts_fin.tv_nsec);
 		FAILED("The sem_wait call did not block");
 	}
-	
+
 	ret = sem_destroy(&sem);
 
 	if (ret != 0) {

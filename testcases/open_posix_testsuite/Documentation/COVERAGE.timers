@@ -44,7 +44,7 @@ See the BUILD file in the main directory for the most up-to-date
 information on how to compile tests from within the framework.
 
 Some additional notes:
-If you want to get CLOCK_MONOTONIC, though, one option that worked 
+If you want to get CLOCK_MONOTONIC, though, one option that worked
 with HRT 2.5.54bk6 and below and RH7.3 was to include
 /usr/src/linux/Documentation/high-res-timers/lib/posix_time.h
 and turn on -D_POSIX_TIMERS.

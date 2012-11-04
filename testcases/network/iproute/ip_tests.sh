@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
@@ -66,8 +66,8 @@ init()
 	then
 		tst_brkm TBROK "INIT: Unable to create temporary directory"
 		return $RC
-	fi	
-		
+	fi
+
 	# Check to see if test harness functions are in the path.
 	which tst_resm  >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
@@ -226,15 +226,15 @@ test02()
 	TST_COUNT=2		# Test number.
 
 	tst_resm TINFO \
-	 "Test #2: ip link show lists device attributes." 
+	 "Test #2: ip link show lists device attributes."
 
-	
+
 	tst_resm TINFO \
 	 "Test #2: Installing dummy.o in kernel"
 
 	modprobe dummy >$LTPTMP/tst_ip.out 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
-	then 
+	then
 		tst_brk TBROK $LTPTMP/tst_ip.out NULL \
 			"Test #2: modprobe failed to load dummy.o"
 		return $RC
@@ -277,7 +277,7 @@ test03()
 
 	tst_resm TINFO \
 	 "Test #3: ip addr add - adds a new protolcol address to the device"
-	
+
 	ip addr add 127.6.6.6 dev lo >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
@@ -313,7 +313,7 @@ test03()
 			else
 				RC=0
 			fi
-		
+
 		tst_resm TPASS \
 			"Test #3: ip addr command tests successful"
 		fi
@@ -327,7 +327,7 @@ test03()
 # Description	- Test basic functionality of ip command
 #               - Test #4: ip neigh add - add new neighbour entry to arp table
 #               - Test #4: ip neigh show - show neighbour entry to arp table
-#               - Test #4: ip neigh delete - delete new neighbour entry to arp 
+#               - Test #4: ip neigh delete - delete new neighbour entry to arp
 #               		   table
 #               - execute the command and create output.
 #               - create expected output
@@ -344,7 +344,7 @@ test04()
 
 	tst_resm TINFO \
 	 "Test #4: ip neigh add - adds a new neighbour to arp tables."
-	
+
 	ip neigh add 127.0.0.1 dev lo nud reachable >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
@@ -396,7 +396,7 @@ test04()
 				RC=0
 			fi
 		fi
-		
+
 		tst_resm TPASS \
 			"Test #4: ip neigh command tests successful"
 	fi
@@ -426,7 +426,7 @@ test05()
 	tst_resm TINFO \
 	 "Test #5: ip route add - adds a new route to route tables."
 
-	
+
 	tst_resm TINFO \
 	 "Test #5: create an interface with inet 10.6.6.6 alias to eth0"
 
@@ -437,7 +437,7 @@ test05()
 			"Test #5: unable to create interface eth0:1 inet 10.6.6.6. Reason:"
 		return $RC
 	fi
-	
+
 	ip route add 10.6.6.6 via 127.0.0.1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
@@ -490,7 +490,7 @@ test05()
 				RC=0
 			fi
 		fi
-		
+
 		tst_resm TPASS \
 			"Test #5: ip route command tests successful"
 	fi
@@ -527,7 +527,7 @@ test06()
 			"Test #6: unable to create interface eth0:1 inet 10.6.6.6. Reason:"
 		return $RC
 	fi
-	
+
 	ip maddr add 66:66:00:00:00:66 dev eth0:1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
@@ -580,7 +580,7 @@ test06()
 				RC=0
 			fi
 		fi
-		
+
 		tst_resm TPASS \
 			"Test #6: ip maddr command tests successful"
 	fi
@@ -590,7 +590,7 @@ test06()
 # Function:		main
 #
 # Description:	- Execute all tests, report results.
-#               
+#
 # Exit:			- zero on success
 # 				- non-zero on failure.
 TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.

@@ -36,7 +36,7 @@ size01
 cpio
 ----
 cpio_test.sh
-	
+
 	Tests the basic functionality of `cpio` command
 
 
@@ -44,8 +44,8 @@ cpio_test.sh
 cron
 ----
 cron_test.sh
-	
-	This testcase tests if crontab <filename> installs the cronjob 
+
+	This testcase tests if crontab <filename> installs the cronjob
 	and cron schedules the job correctly.
 
 
@@ -61,11 +61,11 @@ eject_tests.sh
 fileutils
 ---------
 cp_tests.sh
-	
+
 	Test basic functionality of `cp` command
 
 ln_tests.sh
-	
+
 	Test basic functionality of `ln` command
 
 mkdir_tests.sh
@@ -97,7 +97,7 @@ logrotate_tests.sh
 mail
 ----
 mail_tests.sh
-	
+
 	Test basic functionality of `mail` command.
 
 
@@ -105,7 +105,7 @@ mail_tests.sh
 tar
 ---
 tar_tests.sh
-	
+
 	Test basic functionality of `tar` command.
 
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -16,10 +16,10 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 
 ################################################################################
@@ -37,7 +37,7 @@ export TCID=${TCID:-childns.sh}
 exists awk grep ip ping sshd
 . initialize.sh
 status=0
-    
+
 SSHD=`which sshd`
 
 if [ $# -eq 1 ] ; then
@@ -45,7 +45,7 @@ if [ $# -eq 1 ] ; then
     debug "INFO: The script to be executed in child NS is $childscrpt"
 fi
 
-# Passing the PID of child 
+# Passing the PID of child
 echo "child ready" > /tmp/FIFO1;
 
 # waiting for the device name from parent
@@ -88,4 +88,4 @@ if [ $status -eq 0 ] ; then
 
 fi
 
-exit $status 
+exit $status

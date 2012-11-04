@@ -34,7 +34,7 @@ check "$disk3" parent/child1/b parent/child2/child1/b
 mount --bind "$disk4" parent/child2/child1/c
 check parent/child2/child1/c parent/child1/c
 
-umount parent/child1/b 
+umount parent/child1/b
 check parent/child2/child1/b parent/child1/b
 
 

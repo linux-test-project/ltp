@@ -20,7 +20,7 @@
 /*									      */
 /* You should have received a copy of the GNU General Public License	      */
 /* along with this program;  if not, write to the Free Software		      */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    */
+/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
 /*									      */
 /******************************************************************************/
 /******************************************************************************/
@@ -120,10 +120,10 @@ int mkfile(int size)
 	for (i = 0; i < size; i++)
 		if (write(fd, "a", 1) == -1)
 			tst_brkm(TBROK|TERRNO, NULL, "write() failed");
-	
+
 	if (write(fd, "\0", 1) == -1)
 		tst_brkm(TBROK|TERRNO, NULL, "write() failed");
-		
+
 	if (fsync(fd) == -1)
 		tst_brkm(TBROK|TERRNO, NULL, "fsync() failed");
 
@@ -148,15 +148,15 @@ void *map_write_unmap(void *ptr)
 		                args[0], args[1], args[2]);
 
 	for (i = 0; i < args[2]; i++) {
-		
+
 		map_address = mmap(0, (size_t)args[1], PROT_WRITE|PROT_READ,
 		                        MAP_SHARED, (int)args[0], 0);
-		
+
 		if (map_address == (void*) -1) {
 			perror("map_write_unmap(): mmap()");
 			pthread_exit((void *)1);
 		}
-	
+
 		while (read_lock)
 			sched_yield();
 
@@ -183,7 +183,7 @@ void *map_write_unmap(void *ptr)
 			tst_resm(TINFO, "[%ld] times done: of total [%ld] iterations, "
 			         "map_write_unmap():memset() content of memory = %s",
                                  i, args[2], (char*)map_address);
-		
+
 		sigfillset(&sa.sa_mask);
 		sigdelset(&sa.sa_mask, SIGSEGV);
 		sa.sa_flags = SA_SIGINFO|SA_NODEFER;
@@ -219,7 +219,7 @@ void *read_mem(void *ptr)
                          args[2], map_address);
 
 	for (i = 0; i < args[2]; i++) {
-		
+
 		if (verbose_print)
 			tst_resm(TINFO, "read_mem() in while loop %ld times "
 			         "to go %ld times", i, args[2]);
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
 	sigfillset(&sigptr.sa_mask);
 	sigdelset(&sigptr.sa_mask, SIGSEGV);
 	sigptr.sa_flags = SA_SIGINFO | SA_NODEFER;
-	
+
 	for (i = 0; sig_info[i].signum != -1; i++) {
 		if (sigaction(sig_info[i].signum, &sigptr, NULL) == -1) {
 			perror("man(): sigaction()");
@@ -360,7 +360,7 @@ int main(int argc, char **argv)
 	for (;;) {
 		if ((fd = mkfile(file_size)) == -1)
 			tst_brkm(TBROK, NULL, "main(): mkfile(): Failed to create temp file");
-		
+
 		if (verbose_print)
 			tst_resm(TINFO, "Tmp file created");
 
@@ -370,19 +370,19 @@ int main(int argc, char **argv)
 
 		if ((ret = pthread_create(&thid[0], NULL, map_write_unmap, chld_args)))
 			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s", strerror(ret));
-		
+
 		tst_resm(TINFO, "created writing thread[%lu]", thid[0]);
 
 		if ((ret = pthread_create(&thid[1], NULL, read_mem, chld_args)))
 			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s", strerror(ret));
-		
+
 		tst_resm(TINFO, "created reading thread[%lu]", thid[1]);
 
 		for (i = 0; i < 2; i++) {
 			if ((ret = pthread_join(thid[i], (void*)&status[i])))
 				tst_brkm(TBROK, NULL, "main(): pthread_join(): %s",
 				         strerror(ret));
-			
+
 			if (status[i])
 				tst_brkm(TFAIL, NULL, "thread [%lu] - process exited "
 				         "with %d", thid[i], status[i]);

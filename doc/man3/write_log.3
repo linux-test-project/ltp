@@ -2,33 +2,33 @@
 .\" $Id: write_log.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
-.\" 
+.\"
 .\" This program is free software; you can redistribute it and/or modify it
 .\" under the terms of version 2 of the GNU General Public License as
 .\" published by the Free Software Foundation.
-.\" 
+.\"
 .\" This program is distributed in the hope that it would be useful, but
 .\" WITHOUT ANY WARRANTY; without even the implied warranty of
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-.\" 
+.\"
 .\" Further, this software is distributed without any warranty that it is
 .\" free of the rightful claim of any third person regarding infringement
 .\" or the like.  Any license provided herein, whether implied or
 .\" otherwise, applies only to this software file.  Patent licenses, if
 .\" any, provided herein do not apply to combinations of this program with
 .\" other software, or any other product whatsoever.
-.\" 
+.\"
 .\" You should have received a copy of the GNU General Public License along
-.\" with this program; if not, write the Free Software Foundation, Inc., 59
-.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
-.\" 
+.\" with this program; if not, write the Free Software Foundation, Inc.,
+.\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+.\"
 .\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
 .\" Mountain View, CA  94043, or:
-.\" 
-.\" http://www.sgi.com 
-.\" 
-.\" For further information regarding this notice, see: 
-.\" 
+.\"
+.\" http://www.sgi.com
+.\"
+.\" For further information regarding this notice, see:
+.\"
 .\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
 .\"
 .TH WRITE_LOG 3 07/25/2000 "Linux Test Project"
@@ -50,12 +50,12 @@ write_log \- a set of routines for logging writes to a history file
 The write_log package is a set of routines for creating a history file
 of write operations done to a set of files.
 
-It is assumed that the actual pattern written to the file will be 
+It is assumed that the actual pattern written to the file will be
 repeated occurrences of a string whose length is no greater than
 WLOG_MAX_PATTERN.  See the pattern(3) man
 page for routines to conveniently generate buffers of this kind.
 
-wlog_open() initializes the history file contained in wfile->w_file, and 
+wlog_open() initializes the history file contained in wfile->w_file, and
 fills in the wfile structure.  If trunc is non-zero, and existing history
 file by the same name will be truncated.  If no history file exists, it
 will be created with the specified mode.
@@ -71,7 +71,7 @@ end of the history file.  If offset is >= 0, the record will be written
 at the indicated offset.  This, along with the w_done field in the wlog_rec
 structure, provide a mechanism for 'pre-logging' a write, doing the write
 operation, and then overlaying the original record with the w_done flag
-set to 1.  This is useful for async writes which may not complete in a 
+set to 1.  This is useful for async writes which may not complete in a
 timely manner.  It is also useful for seeing which write operations were
 pending at the time of a system crash - the ones whose w_done flag is 0 have
 not yet been verified as complete.
@@ -100,7 +100,7 @@ is complete.  This is necessary to 'synchronize' simultaneous
 writes to the same area of a file.  Note that the entire file
 does not need to be locked, only the portion being written to.
 If the calling program can guarantee that there will never be more
-than 1 process writing to the same area of a file at the same time, 
+than 1 process writing to the same area of a file at the same time,
 locking is not necessary.  (Note:  UNICOS Shared File Systems do not support
 record locking.  The whole file is silently locked.)
 

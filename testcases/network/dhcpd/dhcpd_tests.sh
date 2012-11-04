@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
@@ -214,7 +214,7 @@ cleanup()
 	fi
 
   # Removing the added route
-  /sbin/route del 10.1.1.12 
+  /sbin/route del 10.1.1.12
 
 	rm -fr $LTPTMP
 	return $RC
@@ -224,7 +224,7 @@ cleanup()
 # Function:		test01
 #
 # Description	- Test basic functionality of dhcpd.
-#               - Test #1: dhcpd will serve IP addresses based on rules in 
+#               - Test #1: dhcpd will serve IP addresses based on rules in
 #                 /etc/dhcpd.conf file.
 #				- create dhcpd.conf file, server to listen to ethX/.../10.1.1.0
 #               - start dhcpd server
@@ -258,7 +258,7 @@ test01()
 		tst_brkm TBROK NULL "Test #1: Unable to create expected reaults."
 		return $RC
 	fi
-	
+
 	tst_resm TINFO "Test #1: starting dhcp server"
 	dhcpd > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
@@ -303,7 +303,7 @@ test01()
 # Function:		main
 #
 # Description:	- Execute all tests, report results.
-#               
+#
 # Exit:			- zero on success
 # 				- non-zero on failure.
 TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.

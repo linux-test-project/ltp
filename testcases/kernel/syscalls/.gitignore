@@ -472,6 +472,8 @@
 /memcpy/memcpy01
 /memmap/mem03
 /memset/memset01
+/migrate_pages/migrate_pages01
+/migrate_pages/migrate_pages02
 /mincore/mincore01
 /mincore/mincore02
 /mkdir/mkdir01

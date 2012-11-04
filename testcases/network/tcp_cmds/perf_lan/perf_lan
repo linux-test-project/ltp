@@ -15,18 +15,18 @@ unset LIBPATH
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
 #  FILE   : perf_lan
 #
 #  PURPOSE: Generates LAN traffic using ICMP echo packets.
-#           
+#
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
-#         MUST have a ".rhosts" file with the hostname of the client 
-#         machine, where the test is executed. 
+#         MUST have a ".rhosts" file with the hostname of the client
+#         machine, where the test is executed.
 #
 #  HISTORY:
 #    06/06/03 Manoj Iyer manjo@mail.utexas.edu
@@ -60,7 +60,7 @@ do_setup()
 #
 #-----------------------------------------------------------------------
 
-do_test() 
+do_test()
 {
     tst_resm TINFO "Executing $0"
 

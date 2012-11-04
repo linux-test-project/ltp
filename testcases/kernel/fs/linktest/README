@@ -9,35 +9,35 @@ License:
     published by the Free Software Foundation; either version 2 of
     the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be 
-    useful, but WITHOUT ANY WARRANTY;  without even the implied 
-    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    This program is distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY;  without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
     PURPOSE.  See the GNU General Public License for more details.
- 
-    You should have received a copy of the GNU General Public 
-    License along with this program;  if not, write to the Free 
-    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
+
+    You should have received a copy of the GNU General Public
+    License along with this program;  if not, write to the Free
+    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
     MA 02111-1307 USA
 
 
-Overview: 
+Overview:
     Name:           linktest.pl
     Description:    A regression test for links per file.
                     Linktest.pl is a simple test that attempts
-                    to create a given number of hard links and 
+                    to create a given number of hard links and
                     symbolic links to a single file.
-                        
+
 Files:
     linktest.pl
-    README 
-                        
+    README
+
 Availability:
-    Currently only available via internal IBM websites pending 
+    Currently only available via internal IBM websites pending
     legal review:
     http://cvs.opensource.ibm.com/cgi-bin/cvsweb.cgi/testcases/fs/fs_perms/?cvsroot=ltp
 
 Installation:
-    N/A                    
+    N/A
 
 Use:
     ./linktest.pl <number of symbolic links> <number of hard links>

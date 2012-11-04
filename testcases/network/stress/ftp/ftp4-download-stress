@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -253,7 +253,7 @@ test01()
     done
 
     rm -f $FTP_DOWNLOAD_DIR/$TESTFILE
-    
+
     if $not_run_rmtscript ; then
 	tst_resm TBROK "Failed to run the test script at the remote host"
 	rm -f $message_file

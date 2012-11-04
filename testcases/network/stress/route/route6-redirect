@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -120,7 +120,7 @@ do_setup()
 {
     # Make sure to cleanup the test environment
     do_cleanup
-    
+
     # Get the Interface name of local host
     lhost_ifname=`get_ifname lhost ${LINK_NUM}`
     if [ $? -ne 0 ]; then
@@ -145,7 +145,7 @@ do_setup()
 	tst_resm TBROK "Failed to assign an IPv6 address at the local host"
 	return 1
     fi
-    
+
     # Add route to the initial gateway
     route -A inet6 add ${DST_NETWORK}::/64 gw fe80:${RHOST_IPV6_HOST} dev $lhost_ifname
 
@@ -189,7 +189,7 @@ test_body()
     tst_resm TPASS "Test is finished correctly."
     return 0
 }
-    
+
 
 #-----------------------------------------------------------------------
 #

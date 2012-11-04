@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 	//if the -m option is used when calling timed_loop, override max_failures
 	//specified by $MAX_FAILURES with the given argument instead
 	if (argc > 4 && strcmp(argv[1], "-m") == 0) {
-		if ((max_failures = atoi(argv[2])) >= 0) {	
+		if ((max_failures = atoi(argv[2])) >= 0) {
 			use_max_failures = 1;
 		}
 		else {

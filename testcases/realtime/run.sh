@@ -14,7 +14,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 
@@ -107,7 +107,7 @@ run_test()
 		usage
 		exit 1
 	fi
-}	
+}
 
 make_clean()
 {
@@ -208,10 +208,10 @@ do
 		tests[$index]="$OPTARG"
 		: $((index += 1 ))
 		TESTCASE="$OPTARG"
-		ISLOOP=1		
+		ISLOOP=1
 		;;
 
-	l ) 
+	l )
 		ISLOOP=0
 		tests[$index]="$OPTARG"
 		LOOP="$OPTARG"
@@ -221,7 +221,7 @@ do
 		profile=$OPTARG
 		;;
 	h )
-		usage	
+		usage
 		;;
 	* ) echo "Unrecognized option specified"
 		usage

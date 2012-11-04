@@ -16,7 +16,7 @@ unset LIBPATH
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
@@ -26,8 +26,8 @@ unset LIBPATH
 #           Service Interface are initially set to the default values as
 #           defined in the documentation and that each of the new options
 #           can be set and read properly by the setsockopt and getsockopt
-#           routines, respectively.  To test boundary conditions and to 
-#           generate errors while exercising the IP Multicast Service 
+#           routines, respectively.  To test boundary conditions and to
+#           generate errors while exercising the IP Multicast Service
 #           Interface options.
 #
 #  HISTORY:
@@ -83,7 +83,7 @@ do_test()
       echo "Running mc_$EXECUTABLES on $IPADDR"
       for i in $EXECUTABLES
       do
-        $TCtmp/$i $IPADDR 
+        $TCtmp/$i $IPADDR
         [ $? = 0 ] || end_testcase "$i $IPADDR failed"
       done
 
@@ -131,7 +131,7 @@ do_cleanup()
 #=============================================================================
 
 end_testcase()
-{ 
+{
    $trace_logic
    echo "$this_file: doing $0."
 
@@ -141,7 +141,7 @@ end_testcase()
    [ $# = 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
-}  
+}
 
 #******************************************************************************
 #

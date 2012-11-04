@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 
@@ -77,14 +77,14 @@ usage()
 
 call_exit()
 {
-    echo \"Cleaning up\" 
-    killall fs_racer_file_create.sh 
+    echo \"Cleaning up\"
+    killall fs_racer_file_create.sh
     killall fs_racer_dir_create.sh
-    killall fs_racer_file_rm.sh 
-    killall fs_racer_file_rename.sh 
-    killall fs_racer_file_link.sh 
-    killall fs_racer_file_symlink.sh 
-    killall fs_racer_file_list.sh 
+    killall fs_racer_file_rm.sh
+    killall fs_racer_file_rename.sh
+    killall fs_racer_file_link.sh
+    killall fs_racer_file_symlink.sh
+    killall fs_racer_file_list.sh
     killall fs_racer_file_concat.sh
     exit 0
 }

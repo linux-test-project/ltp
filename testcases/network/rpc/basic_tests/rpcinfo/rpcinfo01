@@ -15,13 +15,13 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
 #  FILE             : rpcinfo
 #
-#  TEST DESCRIPTION : Basic test for the `rpcinfo` command. 
+#  TEST DESCRIPTION : Basic test for the `rpcinfo` command.
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
@@ -33,7 +33,7 @@
 #    11/20/08 Aime Le Rouzic (aime.lerouzic@bull.net)
 #      - Adapt to rpcbind
 #
-# CMD      FLAG      ARGS       
+# CMD      FLAG      ARGS
 # rpcinfo   -p
 # rpcinfo   -p       rem_host
 # rpcinfo   -b
@@ -81,7 +81,7 @@ $trace_logic
 
 echo "Checking for portmap or rpcbind daemon on `hostname` and $RHOST"
 ps -ewf | grep portmap | grep -v grep > /dev/null
-if [ $? -eq 0 ] 
+if [ $? -eq 0 ]
 then
 	PORTMAPPER="portmap"
 else
@@ -100,7 +100,7 @@ rsh -n $RHOST "ps -ewf" | grep portmap | grep -v grep > /dev/null
 
 echo "Test rpcinfo with default options"
 echo "rpcinfo -p"
-rpcinfo -p $RHOST | grep portmapper 
+rpcinfo -p $RHOST | grep portmapper
 [ $? -eq 0 ] || end_testcase "rpcinfo -p failed"
 
 echo "Test rpcinfo with options"
@@ -134,10 +134,10 @@ PID=0
 
 # -d option
 ps -ewf | grep rusersd | grep -v grep
-if [ $? = 1 ]; then 
+if [ $? = 1 ]; then
   /usr/sbin/rpc.rusersd
   if [ $? = 0 ]; then
-    rpcinfo -p | grep 100002 
+    rpcinfo -p | grep 100002
     echo "rpcinfo -d <prog num> <ver num>"
     rpcinfo -d 100002 3
     rpcinfo -p | grep 100002
@@ -154,11 +154,11 @@ fi
 
 # -t options
 echo "rpcinfo -t <hostname> <tcp prog num>"
-rpcinfo -t $RHOST $TPNUM 
+rpcinfo -t $RHOST $TPNUM
 [ $? -eq 0 ] || end_testcase "rpcinfo -t <hostname> <tcp prog num> - failed"
 
 echo "rpcinfo -t <hostname> <tcp prog num> <ver num>"
-rpcinfo -t $RHOST $TPNUM $TVNUM 
+rpcinfo -t $RHOST $TPNUM $TVNUM
 [ $? -eq 0 ] || end_testcase "rpcinfo -t <hostname> <tcp prog num> <ver num> - failed"
 
 echo "rpcinfo -t <hostname> <tcp prog name>"
@@ -171,7 +171,7 @@ rpcinfo -t $RHOST $TCPNAME $TVNUM
 
 # -u options
 echo "rpcinfo -u <hostname> <udp prog num>"
-rpcinfo -u $RHOST 100000 
+rpcinfo -u $RHOST 100000
 [ $? -eq 0 ] || end_testcase "rpcinfo -u <hostname> <udp prog num> - failed"
 
 echo "rpcinfo -u <hostname> <udp prog num> <ver num>"
@@ -208,11 +208,11 @@ case $PORTMAPPER in
 esac
 
 echo "rpcinfo -p <bad hostname>"
-rpcinfo -p bogushost 
+rpcinfo -p bogushost
 [ $? -eq 1 ] || end_testcase "rpcinfo <bad hostname> should fail"
 
 echo "rpcinfo <bad flag>"
-rpcinfo -bogusflag 
+rpcinfo -bogusflag
 [ $? -eq 1 ] || end_testcase "rpcinfo <bad flag> should fail"
 
 echo "rpcinfo -t <hostname> <no prognum>"
@@ -220,19 +220,19 @@ rpcinfo -t $RHOST
 [ $? -eq 1 ] || end_testcase "rpcinfo -t <hostname> <no prognum> should fail"
 
 echo "rpcinfo -u <hostname> <no prognum>"
-rpcinfo -u $RHOST 
+rpcinfo -u $RHOST
 [ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> <no prognum> should fail"
 
 echo "rpcinfo -u <hostname> <bad prog name>"
-rpcinfo -u $RHOST bogusprog 
+rpcinfo -u $RHOST bogusprog
 [ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> <invalid program name> should fail"
 
 echo "rpcinfo -u <hostname> <bad prog num>"
-rpcinfo -u $RHOST 11579 
+rpcinfo -u $RHOST 11579
 [ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> 11579 should fail"
 
 echo "rpcinfo -u <hostname> <prog num> <bad ver num>"
-rpcinfo -u $RHOST 100000 5 
+rpcinfo -u $RHOST 100000 5
 [ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> <prog num> <bad ver num> should fail"
 }
 
@@ -249,9 +249,9 @@ do_cleanup()
 {
     $trace_logic
 
-    if [ "$PID" != 0 ]; then 
+    if [ "$PID" != 0 ]; then
       kill -9 $PID
-    fi   
+    fi
     rm -f $TCtmp/rpc_out
 }
 

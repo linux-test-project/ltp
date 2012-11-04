@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -16,12 +16,12 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
-# This script deletes the child ns, and checks the device 
+# This script deletes the child ns, and checks the device
 # returned to the parent ns.
 
 # Reading contents of the sys fs to file in Parent
@@ -35,7 +35,7 @@ TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-    
+
     sshpid=`cat /tmp/FIFO3`
     debug "INFO: ssh pid is  $sshpid"
     newnet=`cat /tmp/FIFO4`
@@ -44,21 +44,21 @@ export TST_TOTAL
     if [ $newnet = -1 ] ; then
         status=-1
     fi
-    
+
     ls /sys/class/net > /tmp/sys_b4_child_killed
     sleep 2
-    
+
     debug "INFO: Deleting the child NS created.. "
     debug "INFO: Killing processes $sshpid $pid"
     kill -9 $sshpid $pid > /dev/null 2>&1
     sleep 1
-    
+
     ls /sys/class/net > /tmp/sys_aftr_child_killed
-    diff -q /tmp/sys_b4_child_killed /tmp/sys_aftr_child_killed 
-    
+    diff -q /tmp/sys_b4_child_killed /tmp/sys_aftr_child_killed
+
     if [ $? = 0 ] ; then
         debug "INFO: No difference in the contents of sysfs after deleting the child"
-    else 
+    else
         grep -qw $newnet /tmp/sys_aftr_child_killed
         if [ $? = 0 ]; then
             debug "INFO: Device $newnet is moved to ParentNS"

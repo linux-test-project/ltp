@@ -18,8 +18,8 @@
  * other software, or any other product whatsoever.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ * with this program; if not, write the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
@@ -266,6 +266,10 @@ char *get_mountpoint(const char *path);
 
 /* Function from lib/get_path.c */
 int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
+
+/* lib/tst_cpu.c */
+long tst_ncpus(void);
+long tst_ncpus_max(void);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"

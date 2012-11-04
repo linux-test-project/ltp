@@ -24,7 +24,7 @@ Logged mount lists before and after each test, took a diff, and removed the list
 
 Logged the sandbox contents before and after, took a diff, and removed the
 	logged contents if they look the same. Otherwise it keeps the
-	lists of files and dirs, reports the problem, and cleans up the 
+	lists of files and dirs, reports the problem, and cleans up the
 	sandbox. This happens after the mount cleanups otherwise it could fail.
 
 Factored out the "check" function from most tests (still need to work on "childXX" and "parentXX" scripts) and put it into the setup script.

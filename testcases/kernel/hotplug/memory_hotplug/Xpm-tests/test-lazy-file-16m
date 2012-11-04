@@ -1,6 +1,6 @@
 # memtoy test - lazy migration of entire 16M mapped file
 # requires ./zerofile-16m
-# 
+#
 numa
 file zerofile-16m
 map zerofile-16m

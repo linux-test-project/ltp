@@ -13,14 +13,14 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #ifndef LTP_AIODIO_COMMON_SPARSE
 #define LTP_AIODIO_COMMON_SPARSE
 
 /*
- * This code tries to create dirty free blocks on 
+ * This code tries to create dirty free blocks on
  * the HDD so there is a chance that blocks to be allocated
  * for a file are filled with something else than zeroes.
  *
@@ -37,14 +37,14 @@ static void dirty_freeblocks(int size)
 	size = ((size + pg - 1) / pg) * pg;
 
 	fd = open(filename, O_CREAT|O_RDWR|O_EXCL, 0600);
-	
+
 	if (fd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "failed to open '%s'", filename); 
-	
+		tst_brkm(TBROK|TERRNO, cleanup, "failed to open '%s'", filename);
+
 	SAFE_FTRUNCATE(cleanup, fd, size);
-	
+
 	p = SAFE_MMAP(cleanup, NULL, size, PROT_WRITE|PROT_READ, MAP_SHARED|MAP_FILE, fd, 0);
-	
+
 	memset(p, 0xaa, size);
 	msync(p, size, MS_SYNC);
 	munmap(p, size);
@@ -95,12 +95,12 @@ char *check_zero(char *buf, int size)
 		buf++;
 		size--;
 	}
-	
+
 	return NULL;
 }
 
 /*
- * Make sure we read only zeroes, 
+ * Make sure we read only zeroes,
  * either there is a hole in the file,
  * or zeroes were actually written by parent.
  */
@@ -122,7 +122,7 @@ static void read_sparse(char *filename, int filesize)
 		if (debug)
 			fprintf(stderr, "Child %i waits for '%s' to appear\n",
 			        getpid(), filename);
-		
+
 		usleep(100000);
 	}
 

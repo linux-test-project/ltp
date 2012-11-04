@@ -15,13 +15,13 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
 #  FILE             : rusers
 #
-#  TEST DESCRIPTION : Basic test for the `rusers` command. 
+#  TEST DESCRIPTION : Basic test for the `rusers` command.
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
@@ -31,15 +31,15 @@
 #    04/18/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Written
 #
-# CMD      FLAG      ARGS       
-# rusers                       
-# rusers             RHOST    
-# rusers    -a               
-# rusers    -a       RHOST  
-# rusers    -l             
+# CMD      FLAG      ARGS
+# rusers
+# rusers             RHOST
+# rusers    -a
+# rusers    -a       RHOST
+# rusers    -l
 # rusers    -l       RHOST
-# rusers             bogus_host  
-# rusers   -bogus_flag          
+# rusers             bogus_host
+# rusers   -bogus_flag
 #***********************************************************************
 #Uncomment line below for debug output.
 #trace_logic=${trace_logic:-"set -x"}
@@ -75,19 +75,19 @@ rpcinfo -u $RHOST rusersd > /dev/null 2>&1
 if [ $? -ne 0 ]; then
   echo "Attempting to start rusersd on $RHOST"
   rsh -n -l root $RHOST "/usr/sbin/rpc.rusersd &"
-  [ $? -eq 0 ] || end_testcase "rusersd is inactive on $RHOST" 
+  [ $? -eq 0 ] || end_testcase "rusersd is inactive on $RHOST"
   PID=`rsh -n $RHOST ps -ewf | grep rusersd | awk '{print $2 }'`
   echo "ruserd started on $RHOST"
 fi
 
 #RHOST=`echo $RHOST | cut -d. -f1`   //The use is depriciated as it fails when RHOST is set to an IP address
-#                                    //Pointed out by "Ambar Seksena" <ambar.seksena@calsoftinc.com> 
+#                                    //Pointed out by "Ambar Seksena" <ambar.seksena@calsoftinc.com>
 
 echo "Test rusers with defaults...please be patient"
-# rusers with no options broadcasts over the net and reports 
+# rusers with no options broadcasts over the net and reports
 # responses as it receives them. Time-out for responses is approx. 2 minutes.
 
-rusers > /dev/null 
+rusers > /dev/null
 [ $? -eq 0 ] || end_testcase "rusers with defaults - failed"
 
 echo "Test rusers with options set...please be patient"
@@ -99,11 +99,11 @@ rusers $RHOST > /dev/null
 rusers -a $RHOST > /dev/null
 [ $? -eq 0 ] || end_testcase "rusers -a $RHOST - failed"
 
-rusers -l > /dev/null 
-[ $? -eq 0 ] || end_testcase "rusers -l - failed" 
+rusers -l > /dev/null
+[ $? -eq 0 ] || end_testcase "rusers -l - failed"
 
 rusers -l $RHOST > /dev/null
-[ $? -eq 0 ] || end_testcase "rusers -l $RHOST - failed"   
+[ $? -eq 0 ] || end_testcase "rusers -l $RHOST - failed"
 
 echo "Test rusers with bad options"
 

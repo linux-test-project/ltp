@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -39,7 +39,7 @@
 #   Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
@@ -51,7 +51,7 @@ PING_MAX=10
 
 # Check the arguments
 if [ $# -ne 2 ]; then
-    echo "Usage: $0 source_interface_name destionation_ipv4_address" >&2 
+    echo "Usage: $0 source_interface_name destionation_ipv4_address" >&2
     exit 1
 fi
 src_ifname=$1

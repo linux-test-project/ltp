@@ -1,22 +1,21 @@
-/******************************************************************************/
-/*                                                                            */
-/* Copyright (c) International Business Machines  Corp., 2001                 */
-/*                                                                            */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    */
-/*                                                                            */
-/******************************************************************************/
+/*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *
+ */
 
 /*
  * File:        ltpapicmd.c
@@ -236,11 +235,11 @@ int main(int argc, char *argv[])
 		trestype = ident_ttype((argv++)[0]);
 		strcpy(arg_fmt, *argv);
 		tst_resm(trestype, arg_fmt);
-	} else if (strcmp(cmd_name, "tst_exit") == 0)
+	} else if (strcmp(cmd_name, "tst_exit") == 0) {
 		tst_exit();
-	else if (strcmp(cmd_name, "tst_flush") == 0)
+	} else if (strcmp(cmd_name, "tst_flush") == 0) {
 		tst_flush();
-	else if (strcmp(cmd_name, "tst_kvercmp") == 0) {
+	} else if (strcmp(cmd_name, "tst_kvercmp") == 0) {
 		int exit_value;
 
 		if (argc < 4) {
@@ -266,6 +265,10 @@ int main(int argc, char *argv[])
 		else if (exit_value > 0)
 			exit_value = 2;
 		exit(exit_value);
+	} else if (strcmp(cmd_name, "tst_ncpus") == 0) {
+		printf("%li\n", tst_ncpus());
+	} else if (strcmp(cmd_name, "tst_ncpus_max") == 0) {
+		printf("%li\n", tst_ncpus_max());
 	}
 
 	exit(0);

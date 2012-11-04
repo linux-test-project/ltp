@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -86,7 +86,7 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counters */
 	int length;		/* length of character string */
-	char *msg;		/* message returned from parse_opts */
+	char *msg;
 	pid_t cpid;		/* child process id */
 	char write_buf[] = "Testing";	/* buffer string for write */
 	char read_buf[BUF_SIZE];	/* buffer for read-end of pipe */

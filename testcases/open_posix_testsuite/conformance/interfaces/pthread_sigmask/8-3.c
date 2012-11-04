@@ -29,7 +29,7 @@ int is_changed(sigset_t set, int sig) {
 		SIGPIPE, SIGQUIT, SIGSEGV,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
 		SIGUSR1, SIGUSR2,
-#ifdef SIGPOLL 
+#ifdef SIGPOLL
 		SIGPOLL,
 #endif
 #ifdef SIGPROF

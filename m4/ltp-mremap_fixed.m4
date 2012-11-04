@@ -13,13 +13,13 @@ dnl the GNU General Public License for more details.
 dnl
 dnl You should have received a copy of the GNU General Public License
 dnl along with this program;  if not, write to the Free Software
-dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 dnl
 dnl Author: Cyril Hrubis <chrubis@suse.cz>
 dnl
 
 dnl
-dnl LTP_CHECK_MREMAP_FIXED 
+dnl LTP_CHECK_MREMAP_FIXED
 dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_MREMAP_FIXED],[

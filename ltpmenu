@@ -15,17 +15,17 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
 # File:        runltp
 #
-# Description: This program is a Graphical User Interface (GUI) 
-#              Control Centre for LTP. The Control Centre provides 
+# Description: This program is a Graphical User Interface (GUI)
+#              Control Centre for LTP. The Control Centre provides
 #              functionality to Compile, Execute and View Results of
 #              LTP test cases.
-#              
+#
 # Author:      Manoj Iyer - manjo@mail.utexas.edu
 #
 # Thanks:      Jim Choate - For suggesting the use of dialog command.
@@ -35,7 +35,7 @@
 #	       March 28 2003 - Removed gauges and put make commands in foreground.
 #	                     Robbie Williamson - robbiew@us.ibm.com
 #
-#	       March 31 2003 - Made scenario menu creation dynamic and code 
+#	       March 31 2003 - Made scenario menu creation dynamic and code
 #                              to pull the test descriptions from the scenario files.
 #                            Robbie Williamson - robbiew@us.ibm.com
 #
@@ -54,7 +54,7 @@
 #		 	      - Added time to results filename.
 # Function:    cleanup
 #
-# Description: Remove all temporary files created by this program. Cleanup 
+# Description: Remove all temporary files created by this program. Cleanup
 #              always called on program exit.
 #
 # Input:       NONE
@@ -66,14 +66,14 @@ cleanup()
 }
 
 
-# Function:    display_info_msg 
+# Function:    display_info_msg
 #
 # Description: Displays informational messages window. This window may
 #              may be used to display information like errors, instructions
 #              etc to the user. The window is dismissed when the user hits
 #              the [ENTER] key.
 #
-# Input:       $1 - Title the needs to be displayed on the window. 
+# Input:       $1 - Title the needs to be displayed on the window.
 #                   eg: ERROR: Compiling LTP
 #              $2 - Message text.
 #
@@ -82,15 +82,15 @@ display_info_msg()
 {
     dialog --backtitle "Linux Test Project Control Centre" \
            --title " $1 " \
-           --msgbox " $2 " 10 70 
+           --msgbox " $2 " 10 70
     return $?
 }
 
 
 # Function:    compile_ltp
 #
-# Description: Checks for commands that are pre-reqs for compiling and 
-#              installing LTP. It displays a confirmation window inorder to 
+# Description: Checks for commands that are pre-reqs for compiling and
+#              installing LTP. It displays a confirmation window inorder to
 #              confirm the choice made by the user.
 #
 # Calls:       do_make_clean()
@@ -127,17 +127,17 @@ compile_ltp()
 	    if [ $? -ne 0 ];then
               echo "ERROR in \'make clean\' - exiting."
 	      exit
-	    fi 
+	    fi
             make ;
 	    if [ $? -ne 0 ];then
               echo "ERROR in \'make all\' - exiting."
 	      exit
-	    fi 
+	    fi
             make install ;
 	    if [ $? -ne 0 ];then
               echo "ERROR in \'make install\' - exiting."
 	      exit
-	    fi 
+	    fi
             return ;;
 
         1)  return ;;
@@ -150,9 +150,9 @@ compile_ltp()
 # Function:    disp_ltpres
 #
 # Description: The results generated after the ltp execution located under
-#              ltp-mmddyy/results/ directory in a text (ASCII) file called 
+#              ltp-mmddyy/results/ directory in a text (ASCII) file called
 #              results.todaysdate. This function displays this file in a
-#              window. If the results file does not exit it displays an 
+#              window. If the results file does not exit it displays an
 #              info message window notifing the user that LTP test cases
 #              need to be executed inorder to view results.
 #
@@ -165,7 +165,7 @@ disp_ltpres()
 
     RESULTS_LIST=$(for i in `ls -1 -A -I "CVS" results`;do echo -n "$i [more...] "; done)
     if ! [ -z $RESULTS_LIST ] ;then
-      while [ $RC -ne "1" ] 
+      while [ $RC -ne "1" ]
       do
         dialog --clear
         dialog --backtitle "Linux Test Project Control Centre" \
@@ -179,20 +179,20 @@ disp_ltpres()
           dialog --backtitle "Linux Test Project Control Centre" \
                  --title "LTP Test Results" \
                  --textbox results/$results_item 17 70
-        
+
           dialog --backtitle "Linux Test Project Control Centre" \
                  --title "LTP Test Results." \
                  --yesno "Would you like to share these results with the LTP \
                           community by posting it to the LTP results mailing list?" \
                           7 70 || RESPONSE=$?
-          case $RESPONSE in 
+          case $RESPONSE in
               0) \
                   mail ltp-results@lists.sourceforge.net < \
                           ./results/$results_item ;
                   ;;
-    
+
               1)  ;;
-     
+
               255)  ;;
           esac
         fi
@@ -201,7 +201,7 @@ disp_ltpres()
       dialog --clear
       dialog --backtitle "Linux Test Project Control Centre" \
              --title "LTP Test Results" \
-             --msgbox "ERROR: No files to view in /results directory." 5 53 
+             --msgbox "ERROR: No files to view in /results directory." 5 53
     fi
     return
 }
@@ -209,12 +209,12 @@ disp_ltpres()
 
 # Function:    flags_prompt
 #
-# Description: Prompt for and record user options for run duration and 
+# Description: Prompt for and record user options for run duration and
 #	       test output direction
 #
 # Input:       none
 #
-# Output:      none 
+# Output:      none
 flags_prompt()
 {
     dialog --backtitle "Linux Test Project Control Centre"\
@@ -229,11 +229,11 @@ flags_prompt()
                             name of the file where you wish \
                             to redirect output to" 17 80 \
                           2>/tmp/runltp.outdir.$$ ;
-        flags_outfile=$(cat /tmp/runltp.outdir.$$ | awk '{print $1}') 
+        flags_outfile=$(cat /tmp/runltp.outdir.$$ | awk '{print $1}')
         ./ver_linux > $flags_outfile 2>&1
 	RUNALL_FLAGS=" -o $flags_outfile"
     fi
-    
+
     dialog --backtitle "Linux Test Project Control Centre"\
            --title "Test Duration" --clear\
 	   --yesno "Would you like to specify test duration? \
@@ -249,13 +249,13 @@ flags_prompt()
                        h    "Hours" \
                        d    "Days" \
                   2>/tmp/runltp.interval.$$ ;
-	flags_interval=$(cat /tmp/runltp.interval.$$ | awk '{print $1}') 
+	flags_interval=$(cat /tmp/runltp.interval.$$ | awk '{print $1}')
 	case $flags_interval in
-                s)	INTERVAL="seconds" ;;      
-                m)      INTERVAL="minutes" ;;      
-                h)      INTERVAL="hours"   ;;      
-                d)      INTERVAL="days"    ;;      
-        esac 
+                s)	INTERVAL="seconds" ;;
+                m)      INTERVAL="minutes" ;;
+                h)      INTERVAL="hours"   ;;
+                d)      INTERVAL="days"    ;;
+        esac
 
 	echo $INTERVAL
 	WINDOW_MSG="Please enter the number of $INTERVAL to run"
@@ -264,18 +264,18 @@ flags_prompt()
                --inputbox "$WINDOW_MSG" 7 80 \
 		          2>/tmp/runltp.length.$$ ;
 	flags_length=$(cat /tmp/runltp.length.$$ | awk '{print $1}')
-        flags_duration="$flags_length$flags_interval"	
+        flags_duration="$flags_length$flags_interval"
 	RUNALL_FLAGS=" $RUNALL_FLAGS -t $flags_duration"
     fi
 }
 
 # Function:    exectest_screenout
-# 
-# Description: Execute tests by calling runltp, display test status 
+#
+# Description: Execute tests by calling runltp, display test status
 #              in a window.
 #
 # Input:       none
-# 
+#
 # Output:      messages printed by testcases.
 exectest_screenout()
 {
@@ -285,8 +285,8 @@ exectest_screenout()
 
     # execute runltp with user defined command file.
     ./runltp -q -p $RUNALL_FLAGS -l results.$RESULTS_FILE \
-	-f /tmp/runltp.test.list.$$  
-    
+	-f /tmp/runltp.test.list.$$
+
     sleep 2
 
     return
@@ -298,46 +298,46 @@ exectest_screenout()
 # Description: This function provides a menu of testcases that can be
 #              selected for execution. If networking tests are selected,
 #              they require a remote machine and remote machines root
-#              users password. The user will be prompted to enter this 
+#              users password. The user will be prompted to enter this
 #              information in a text box.
 #              The function checks to see if the ltp-mmddyy/testcases/bin
-#              directory was created, this directory is created when the 
+#              directory was created, this directory is created when the
 #              testcases are compiled and installed, if it is not found
 #              an info message window will notify the user that LTP needs to
 #              be compiled before tests can be executed.
 #              This function creates the senatrio file based on the users
-#              choice of testcases and uses the runltp script to 
+#              choice of testcases and uses the runltp script to
 #              execute these tests.
-#              The messages printed by the testcases are displayed on this 
+#              The messages printed by the testcases are displayed on this
 #              terminal.
 #
 # Input:       Users selection of testcases; scenario file.
-#              
-# Output:      Test selection window, Message window, 
+#
+# Output:      Test selection window, Message window,
 #              information message window
 execute_ltp()
 {
     RC=0
     host_name=" "
     rhost_passwd=" "
-    run_net_test=" "    
+    run_net_test=" "
 
-    if ! [ -d ./testcases/bin ] 
-    then 
+    if ! [ -d ./testcases/bin ]
+    then
 	display_info_msg "Executing LTP testcases" \
 	    "The testcases must to be compiled inorder\
        to execute them. Returning to main menu. \
-       Please select the Compile option." 
+       Please select the Compile option."
 	return
-    fi 
+    fi
 
-    LIST=$(for i in `ls -1 -A -I "CVS" runtest`; do echo -n "$i "; j=$(head -n1 runtest/$i | cut -d: -f2|sed s/" "/_/g); echo -n "$j off "; done) 
+    LIST=$(for i in `ls -1 -A -I "CVS" runtest`; do echo -n "$i "; j=$(head -n1 runtest/$i | cut -d: -f2|sed s/" "/_/g); echo -n "$j off "; done)
     dialog --backtitle "Linux Test Project Control Centre"\
            --title "Execute LTP" --clear\
            --checklist "Select [SPACEBAR] tests to run" 20 80 5 \
     	    $LIST \
             2>/tmp/runltp.choice.$$ || RC=$?
-    size=`wc -m /tmp/runltp.choice.$$|awk '{print $1}'` 
+    size=`wc -m /tmp/runltp.choice.$$|awk '{print $1}'`
     if [ $size -eq 0 ];then
       tst_choice=$(echo "NULL")
     else
@@ -346,7 +346,7 @@ execute_ltp()
     if [[ $tst_choice == NULL ]];then
       RC=1
     fi
-    case $RC in 
+    case $RC in
         0)    \
             for i in $tst_choice ;
             do \
@@ -362,7 +362,7 @@ execute_ltp()
                 then \
                     run_net_test="Y" ;
                 fi ;
-                                       
+
             done ;
             if ! [ -z $run_net_test ] ;
             then \
@@ -378,7 +378,7 @@ execute_ltp()
                 unset $RHOST ;
                 RHOST=$host_name ;
                 export RHOST;
-                
+
                 dialog --backtitle "Linux Test Project Control Centre"\
                        --title "Execute LTP test cases" \
                        --clear \
@@ -399,11 +399,11 @@ execute_ltp()
                      Please select the Compile option." ;
                 return ;
             fi ;
-        
+
             dialog --clear ;
 
 	    flags_prompt ;
-	
+
             exectest_screenout ;
 
             return ;;
@@ -421,8 +421,8 @@ execute_ltp()
 #
 # Description: This function displays a window containing a brief message
 #              describing this programs functionality, and credits the author.
-# 
-# Input:       NONE 
+#
+# Input:       NONE
 #
 # Output:      Message window, description of LTP Control Center.
 about_ltpcc()
@@ -438,7 +438,7 @@ about_ltpcc()
 
 # Function:    ltp_scenarios
 #
-# Description: This function displays a list of scenario files located 
+# Description: This function displays a list of scenario files located
 #              in /runtest.  Users can list the contents of each file.
 #
 # Input:       Files from /runtest
@@ -451,7 +451,7 @@ ltp_scenarios()
 RC=0
 SCENARIOS=$(for i in `ls -1 -A -I "CVS" runtest`;do echo -n "$i [more...] "; done)
 
-while [ $RC -ne "1" ] 
+while [ $RC -ne "1" ]
 do
   dialog --clear
   dialog --backtitle "Linux Test Project Control Centre" \
@@ -466,18 +466,18 @@ do
            --title "LTP Scenario Files" \
            --textbox runtest/$scenario_item 17 70
   fi
-done	        
+done
 }
 
 
-                 
+
 # Function:    main
 #
 # Description: Displays the main menu to the LTP Control Centre. The menu
 #              provides options to Compile, Execute, and View test execution
 #              results.
 #
-# Calls:       about_ltpcc()      
+# Calls:       about_ltpcc()
 #              compile_ltp()
 #              execute_ltp()
 #              disp_ltpres()
@@ -519,7 +519,7 @@ do
                   Results      "Display a summary of test results" \
                   2>/tmp/runltp.mainmenu.$$ || RC=$?
 
-    case $RC in 
+    case $RC in
         0) mmenu_item=`cat /tmp/runltp.mainmenu.$$` ;
            # echo "return code = $RC" ;
            # echo "MENU ITEM = $mmenu_item" ;

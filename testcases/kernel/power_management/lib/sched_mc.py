@@ -100,7 +100,7 @@ def is_hyper_threaded():
 def is_multi_core():
     ''' Return true if system has sockets has multiple cores
     '''
-  
+
     try:
         file_cpuinfo = open("/proc/cpuinfo", 'r')
         for line in file_cpuinfo:
@@ -109,8 +109,8 @@ def is_multi_core():
             if line.startswith('cpu cores'):
                 cpu_cores = line.split(":")
                 break
-       
-        if int( siblings[1] ) == int( cpu_cores[1] ): 
+
+        if int( siblings[1] ) == int( cpu_cores[1] ):
             if int( cpu_cores[1] ) > 1:
                 multi_core = 1
             else:
@@ -144,7 +144,7 @@ def get_hyper_thread_count():
     except Exception:
         print "Failed to check if system is hyper-threaded"
         sys.exit(1)
-         
+
 def map_cpuid_pkgid():
     ''' Routine to map physical package id to cpu id
     '''
@@ -161,7 +161,7 @@ def map_cpuid_pkgid():
                 if not cpu_phy_id in cpu_map.keys():
                     core_info = {}
                 else:
-                    core_info = cpu_map[cpu_phy_id] 
+                    core_info = cpu_map[cpu_phy_id]
                 if not core_id in core_info.keys():
                     core_info[core_id] = [i]
                 else:
@@ -194,7 +194,7 @@ def generate_sibling_list():
             siblings_file += '/topology/thread_siblings_list'
             threads_sibs = open(siblings_file).read().rstrip()
             thread_ids = threads_sibs.split("-")
-    
+
             if not thread_ids in siblings_list:
                 siblings_list.append(thread_ids)
     except Exception, details:
@@ -291,7 +291,7 @@ def set_timer_migration_interface(value):
 def get_job_count(stress, workload, sched_smt):
     ''' Returns number of jobs/threads to be triggered
     '''
-    
+
     try:
         if stress == "thread":
             threads = get_hyper_thread_count()
@@ -301,7 +301,7 @@ def get_job_count(stress, workload, sched_smt):
                 if workload == "ebizzy" and int(sched_smt) ==0:
                     threads = threads / get_hyper_thread_count()
                 if workload == "kernbench" and int(sched_smt) < 2:
-                    threads = threads / get_hyper_thread_count()    
+                    threads = threads / get_hyper_thread_count()
         if stress == "full":
             threads = cpu_count
         if stress == "single_job":
@@ -324,7 +324,7 @@ def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
         wklds_avlbl = list()
         workload = "ebizzy"
         workload_dir = ""
-    
+
         # Use the latest version of similar workload available
         for file_name in os.listdir('.'):
             if file_name.find(workload) != -1:
@@ -343,16 +343,16 @@ def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
                         % (threads, duration))
                 else:
                     if pinned == "yes":
-                        succ = os.system('taskset -c %s ./ebizzy -t%s -s4096 -S %s >/dev/null' 
+                        succ = os.system('taskset -c %s ./ebizzy -t%s -s4096 -S %s >/dev/null'
                             % (cpu_count -1, threads, duration))
                     else:
-                        succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null' 
+                        succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null'
                             % (threads, duration))
-         
-                if succ == 0: 
+
+                if succ == 0:
                     print "INFO: ebizzy workload triggerd"
                     os.chdir(olddir)
-                    #Commented bcoz it doesnt make sense to capture it when workload triggered 
+                    #Commented bcoz it doesnt make sense to capture it when workload triggered
                     #in background
                     #get_proc_loc_count(intr_stop)
                     #get_proc_data(stats_stop)
@@ -365,7 +365,7 @@ def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
                 sys.exit(1)
     except Exception, details:
         print "Ebizzy workload trigger failed ", details
-        sys.exit(1)   
+        sys.exit(1)
 
 def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
     ''' Trigger load on system like kernbench.
@@ -377,7 +377,7 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
         threads = get_job_count(stress, "kernbench", sched_smt)
 
         dst_path = "/root"
-        olddir = os.getcwd()      
+        olddir = os.getcwd()
         path = '%s/utils/benchmark' % os.environ['LTPROOT']
         os.chdir(path)
         wklds_avlbl = list()
@@ -393,7 +393,7 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
                 print "INFO: kernbench benchmark not found"
                 sys.exit(1)
         os.chdir(olddir)
-        
+
         os.chdir(dst_path)
         linux_source_dir=""
         for file_name in os.listdir('.'):
@@ -406,7 +406,7 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
             print "INFO: Linux kernel source not found in /root. Workload\
                Kernbench cannot be executed"
 	    sys.exit(1)
-  
+
         get_proc_data(stats_start)
         get_proc_loc_count(intr_start)
         if pinned == "yes":
@@ -432,15 +432,15 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
                     import time
                     time.sleep(240)
                     stop_wkld("kernbench")
-        
+
         print "INFO: Workload kernbench triggerd"
         os.chdir(olddir)
     except Exception, details:
         print "Workload kernbench trigger failed ", details
         sys.exit(1)
-   
+
 def trigger_workld(sched_smt, workload, stress, duration, background, pinned, perf_test):
-    ''' Triggers workload passed as argument. Number of threads 
+    ''' Triggers workload passed as argument. Number of threads
         triggered is based on stress value.
     '''
     try:
@@ -511,7 +511,7 @@ def generate_report():
                             total += stats_stop["cpu%d" % cpu][i]
             else:
                 total_idle = 0
-                total = 0 
+                total = 0
                 for cpu in cpu_map[pkg]:
                     total_idle += stats_stop["cpu%d" % cpu][4]
                     for i in range(1, len(stats_stop["cpu%d" % cpu])):
@@ -562,11 +562,11 @@ def record_loc_intr_count():
     try:
         global intr_start, intr_stop
         for i in range(0, cpu_count):
-            intr_stat_timer_0.append(intr_stop[i]) 
+            intr_stat_timer_0.append(intr_stop[i])
         intr_start = []
         intr_stop = []
     except Exception, details:
-        print "INFO: Record interrupt statistics when timer_migration=0",details 
+        print "INFO: Record interrupt statistics when timer_migration=0",details
 
 def expand_range(range_val):
     '''
@@ -624,13 +624,13 @@ def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
                         #if CPUs used across the cores
                         for i in range(0, len(core_cpus)):
                             if core_cpus[i] in modi_cpu_grp:
-                                modi_cpu_grp.remove(core_cpus[i]) 
+                                modi_cpu_grp.remove(core_cpus[i])
                                 if len(modi_cpu_grp) == 0:
                                     return 0
-                            #This code has to be deleted 
+                            #This code has to be deleted
                             #else:
                                 # If sched_smt == 0 then its oky if threads run
-                                # in different cores of same package 
+                                # in different cores of same package
                                 #if sched_smt_level > 0 :
                                     #return 1
 	else:
@@ -643,13 +643,13 @@ def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
                     if int(cpus_utilized[0]) in cpu_map[pkg] or int(cpus_utilized[1]) in cpu_map[pkg]:
                         return(0)
 
-        return(1) 
+        return(1)
 
     except Exception, details:
         print "Exception in validate_cpugrp_map: ", details
         sys.exit(1)
-    
- 
+
+
 def verify_sched_domain_dmesg(sched_mc_level, sched_smt_level):
     '''
        Read sched domain information from dmesg.
@@ -722,7 +722,7 @@ def validate_cpu_consolidation(stress, work_ld, sched_mc_level, sched_smt_level)
                         sib_list = siblings.split()
                         utilization = int(stats_percentage[l][1])
                         for i in range(0, len(sib_list)):
-                            utilization += int(get_cpu_utilization("cpu%s" %sib_list[i])) 
+                            utilization += int(get_cpu_utilization("cpu%s" %sib_list[i]))
                     else:
                         utilization = stats_percentage[l][1]
                     if utilization > 40:
@@ -764,7 +764,7 @@ def get_cpuid_max_intr_count():
         highest = 0
         second_highest = 0
         cpus_utilized = []
-        
+
         #Skipping CPU0 as it is generally high
         for i in range(1, cpu_count):
             if int(intr_stop[i]) > int(highest):
@@ -779,7 +779,7 @@ def get_cpuid_max_intr_count():
                     cpu2_max_intr = i
         cpus_utilized.append(cpu1_max_intr)
         cpus_utilized.append(cpu2_max_intr)
-        
+
         for i in range(1, cpu_count):
             if i != cpu1_max_intr and i != cpu2_max_intr:
                 diff = second_highest - intr_stop[i]
@@ -793,7 +793,7 @@ def get_cpuid_max_intr_count():
     except Exception, details:
         print "Exception in get_cpuid_max_intr_count: ", details
         sys.exit(1)
-  
+
 def validate_ilb (sched_mc_level, sched_smt_level):
     ''' Validate if ilb is running in same package where work load is running
     '''
@@ -801,7 +801,7 @@ def validate_ilb (sched_mc_level, sched_smt_level):
         cpus_utilized = get_cpuid_max_intr_count()
         if not cpus_utilized:
             return 1
-       
+
         status = validate_cpugrp_map(cpus_utilized, sched_mc_level, sched_smt_level)
         return status
     except Exception, details:

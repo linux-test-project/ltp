@@ -56,11 +56,11 @@ ADI007 dio_append
 ADI008 dio_append
 ADI009 dio_append
 #Running dio_truncate
-DIT000 dio_truncate 
-DIT001 dio_truncate 
+DIT000 dio_truncate
+DIT001 dio_truncate
 DIT002 dio_truncate
 #Running read_checkzero
-#gread_checkzero 
+#gread_checkzero
 #Running ltp-diorh
 DOR000 ltp-diorh $TMPDIR/aiodio.$$/file2
 DOR001 ltp-diorh $TMPDIR/aiodio.$$/file3

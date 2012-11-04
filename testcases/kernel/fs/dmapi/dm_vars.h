@@ -13,7 +13,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -129,7 +129,7 @@
 #define MMAP_WRITE_BASE			4450
 
 /* event.c */
-#define GET_EVENTS_BASE			4500	
-#define RESPOND_EVENT_BASE		4550	
-#define MOVE_EVENT_BASE			4600	
-#define PENDING_BASE			4650	
+#define GET_EVENTS_BASE			4500
+#define RESPOND_EVENT_BASE		4550
+#define MOVE_EVENT_BASE			4600
+#define PENDING_BASE			4650

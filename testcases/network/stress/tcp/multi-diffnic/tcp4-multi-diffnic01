@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -107,14 +107,14 @@ NET_DELAY_DEFL=${NET_DELAY_DEFL:-200}
 do_cleanup()
 {
     # Kill the tcp traffic server
-    killall_tcp_traffic 
+    killall_tcp_traffic
 
     # Unset SAD/SPD
     output_ipsec_conf flush | setkey -c >/dev/null 2>&1
     $LTP_RSH $RHOST ${LTPROOT}/'testcases/bin/output_ipsec_conf flush | PATH=/sbin:/usr/sbin:$PATH setkey -c' >/dev/null 2>&1
 
     # Clean up each interface
-    link_num=0 
+    link_num=0
     while [ $link_num -lt $link_total ]; do
 	# Unset network delay
 	rhost_ifname=`get_ifname rhost $link_num`

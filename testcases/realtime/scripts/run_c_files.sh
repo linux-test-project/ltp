@@ -41,7 +41,7 @@ do
 			fi
 			[ ! -d $LOG_DIR ] && mkdir -p $LOG_DIR
 
-			( 
+			(
 				echo "--- Running testcase $cmd $params ---"
 				date
 				echo "Logging to $LOG_FILE"

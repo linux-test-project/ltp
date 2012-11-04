@@ -2,11 +2,11 @@
 
 # Copyright (c) 2002, Intel Corporation. All rights reserved.
 # This file is licensed under the GPL license.  For the full content
-# of this license, see the COPYING file at the top level of this 
+# of this license, see the COPYING file at the top level of this
 # source tree.
 
 
-# Upon successful completion, pthread_spin_init() shall return zero; 
+# Upon successful completion, pthread_spin_init() shall return zero;
 # otherwise, an error number shall  be returned to indicate the error.
 
 # This is tested implicitly via assertion 1.

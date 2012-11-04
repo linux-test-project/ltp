@@ -3,7 +3,7 @@
 
 /* Feel free to copy and modify this GPL-ed code into your applications. */
 
-/* Version 0.89 (20030313) 
+/* Version 0.89 (20030313)
 */
 
 
@@ -126,7 +126,7 @@ extern int sg_chk_n_print(const char * leadin, int masked_status,
                           int host_status, int driver_status,
                           const unsigned char * sense_buffer, int sb_len);
 
-/* The following function declaration is for the sg version 3 driver. 
+/* The following function declaration is for the sg version 3 driver.
    Only version 3 sg_err.c defines it. */
 struct sg_io_hdr;
 extern int sg_chk_n_print3(const char * leadin, struct sg_io_hdr * hp);
@@ -149,14 +149,14 @@ extern int sg_err_category_new(int scsi_status, int host_status,
                int driver_status, const unsigned char * sense_buffer,
                int sb_len);
 
-/* The following function declaration is for the sg version 3 driver. 
+/* The following function declaration is for the sg version 3 driver.
    Only version 3 sg_err.c defines it. */
 extern int sg_err_category3(struct sg_io_hdr * hp);
 
 /* Returns length of SCSI command given the opcode (first byte) */
 extern int sg_get_command_size(unsigned char opcode);
 
-extern void sg_get_command_name(unsigned char opcode, int buff_len, 
+extern void sg_get_command_name(unsigned char opcode, int buff_len,
 				char * buff);
 
 #endif

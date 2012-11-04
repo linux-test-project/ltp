@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /* 01/02/2003	Port to LTP	avenkat@us.ibm.com*/
@@ -37,7 +37,7 @@
 #define __MALLOC_STANDARD__
 #endif
 #include <errno.h>
-/* 
+/*
  * NOTE: struct mallinfo is only exported via malloc.h (not stdlib.h), even
  * though it's an obsolete header for malloc(3).
  *

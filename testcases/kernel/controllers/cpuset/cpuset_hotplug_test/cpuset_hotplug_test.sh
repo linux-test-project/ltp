@@ -16,7 +16,7 @@
 #                                                                              #
 # You should have received a copy of the GNU General Public License            #
 # along with this program;  if not, write to the Free Software                 #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA      #
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA      #
 #                                                                              #
 # Author: Miao Xie <miaox@cn.fujitsu.com>                                      #
 #                                                                              #
@@ -87,7 +87,7 @@ root_cpu_hotplug_test()
 	fi
 
 	root_cpus="`cat $CPUSET/cpus`"
-	
+
 	task_cpus="`cat /proc/$tst_pid/status | grep Cpus_allowed_list`"
 	task_cpus="`echo $task_cpus | sed -e 's/Cpus_allowed_list: //'`"
 
@@ -156,7 +156,7 @@ general_cpu_hotplug_test()
 	fi
 
 	cpus="`cat $path/cpus`"
-	
+
 	task_cpus="`cat /proc/$tst_pid/status | grep Cpus_allowed_list`"
 	task_cpus="`echo $task_cpus | sed -e 's/Cpus_allowed_list: //'`"
 

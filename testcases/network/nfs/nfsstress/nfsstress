@@ -14,15 +14,15 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
 #  FILE   : nfsstress
 #
-#  DESCRIPTION: This script sets up the NFS directories in the remote machine 
+#  DESCRIPTION: This script sets up the NFS directories in the remote machine
 #               and invokes the program make_tree with parameters.
-#  
+#
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
 #         where the test is executed.
@@ -84,7 +84,7 @@ THREAD_NUM=${THREAD_NUM:=8}
 setup_testcase()
 {
 $trace_logic
-   
+
 
     echo ""
     echo "Test Options:"
@@ -98,7 +98,7 @@ $trace_logic
     echo " Number of Files per Directory: $FILE_NUM"
     echo " Number of Threads: $THREAD_NUM"
     echo ""
-    
+
     if [ "x$NFS_TYPE" != "xnfs4" ]; then
         OPTS=${OPTS:="-o vers=$VERSION,proto=$SOCKET_TYPE "}
     fi
@@ -127,13 +127,13 @@ $trace_logic
     mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
 
-    cd $TCtmp 
+    cd $TCtmp
     echo "Removing old and create new directories"
     [ -d $LOCAL_DIR ] && rm -rf $LOCAL_DIR
     [ -d $LOCAL_DIR ] || { \
 	mkdir -p $LOCAL_DIR || end_testcase "Could not create $LOCAL_DIR"
 	chmod 777 $LOCAL_DIR
-        cp $TCsrc/$EXECUTABLES $LOCAL_DIR || end_testcase "Could not write to mount point" 
+        cp $TCsrc/$EXECUTABLES $LOCAL_DIR || end_testcase "Could not write to mount point"
     }
 
 }
@@ -151,14 +151,14 @@ $trace_logic
 do_test()
 {
 $trace_logic
-    EXEC=${EXEC:=$EXECUTABLES -d $DIR_NUM -f $FILE_NUM -t $THREAD_NUM} 
+    EXEC=${EXEC:=$EXECUTABLES -d $DIR_NUM -f $FILE_NUM -t $THREAD_NUM}
     cd $LOCAL_DIR
     echo "${LOCAL_DIR}/${EXEC} Starting"
     ./$EXEC &
     wait $!
     retval=$?
     echo "${LOCAL_DIR}/${EXEC} Finished"
-    
+
     if [ "$retval" != 0 ]; then
       end_testcase "Errors have resulted from this test: $EXECUTABLES returned $retval."
     fi
@@ -181,7 +181,7 @@ end_testcase()
 $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
 	cd \
-	
+
 	echo "Cleaning up testcase"
 	rm -rf $LOCAL_DIR || echo "Cannot remove $LOCAL_DIR"
 	sleep 2

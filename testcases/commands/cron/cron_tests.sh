@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software		      ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##									      ##
 ##                                                                            ##
 ################################################################################
@@ -30,12 +30,12 @@
 # date and time. Five samples are taken inorder to verify if cron job is run
 # every minute. It is not practical to check if it works for the remaining
 # fields of the crontab file also.
-# 
+#
 # Author:		Manoj Iyer manjo@mail.utexas.edu
 #
 # History:
 # 	Dec - 19 - 2002 - Created.
-#	Dec - 20 - 2002 - Correted Test #3, grep for the filename of cronjob 
+#	Dec - 20 - 2002 - Correted Test #3, grep for the filename of cronjob
 #                         after executing crontab -l.
 #                       - Fixed bug in #3, test was not installing the cronjob.
 #                       - Added more informational messages TINFO.
@@ -65,7 +65,7 @@ TFAILCNT=0
 RC=0
 
 # Test #1
-# Test if crontab <filename> installs the crontab file and cron schedules the 
+# Test if crontab <filename> installs the crontab file and cron schedules the
 # job correctly.
 
 export TCID=cron01
@@ -75,9 +75,9 @@ $LTPBIN/tst_resm TINFO "Test #1: crontab <filename> installs the crontab file"
 $LTPBIN/tst_resm TINFO "Test #1: cron schedules the job listed in crontab file."
 
 # create the cron job. The job is to run the program tst1_cronprg.sh
-# every minute, every hour, every day, every month, any weekday. 
+# every minute, every hour, every day, every month, any weekday.
 
-cat > $LTPTMP/tst1_cronjob.cron <<EOF 
+cat > $LTPTMP/tst1_cronjob.cron <<EOF
 * * * * * $LTPTMP/tst1_cronprg.sh
 EOF
 
@@ -98,7 +98,7 @@ chmod +x $LTPTMP/tst1_cronprg.sh
 # check the /var/log/messages to see if there is a record of any crontab
 # activity.
 
-$LTPBIN/tst_resm TINFO "Test #1: Installing cron job ... " 
+$LTPBIN/tst_resm TINFO "Test #1: Installing cron job ... "
 crontab $LTPTMP/tst1_cronjob.cron >$LTPTMP/cron_tst2n1.out 2>&1
 RC=$?
 
@@ -151,7 +151,7 @@ sleep 3					# ... for good measure...
 # and time in a file tst1_cron.out. Extract the minute recorded by the program
 # into TS_MIN1 sleep for 1m 10s so that the cron will update this file after
 # 1m, extract TS_MIN2 and check if the minute recorded has advanced by 1. Take
-# 5 such samples, if any one of the fail, flag a failure. 
+# 5 such samples, if any one of the fail, flag a failure.
 
 LOOP_CNTR=5
 TS_MIN1=0
@@ -165,7 +165,7 @@ do
 	# wait for the cronjob to update the tst1_cron.out file.
 	sleep 1m 2s
 
-	# check the time recorded in the tst1_cron.out file, 
+	# check the time recorded in the tst1_cron.out file,
         # this should be 1 minute ahead of what was recored earlier.
 
 	TS_MIN2=$(awk '{print $8}' $LTPTMP/tst1_cron.out |
@@ -242,12 +242,12 @@ crontab -r >/dev/null 2>&1
 
 
 # Test #2
-# Test if crontab -r removes the installed  crontab file 
+# Test if crontab -r removes the installed  crontab file
 
 export TCID=cron02
 export TST_COUNT=2
 
-$LTPBIN/tst_resm TINFO "Test #2: crontab -r removes the crontab file." 
+$LTPBIN/tst_resm TINFO "Test #2: crontab -r removes the crontab file."
 
 cat > $LTPTMP/tst2_cronjob.cron <<EOF
 * * * * * $LTPTMP/tst2_cronprg.sh
@@ -362,7 +362,7 @@ fi
 crontab -l | grep "$LTPTMP/tst2_cronprg.sh" >$LTPTMP/cron_tst2n1.out 2>&1
 RC=$?
 if [ $RC -ne 0 ]
-then	
+then
 	$LTPBIN/tst_brkm TBROK NULL \
 		"Test #3: crontab failed while listing cronjobs installed"
 		 TFAILCNT=$(( $TFAILCNT+1 ))
@@ -375,14 +375,14 @@ $LTPBIN/tst_resm TINFO "Test #3: uninstalling crontab file."
 crontab -r >/dev/null 2>&1
 
 if [ $? -ne 0 ]
-then	
+then
 	$LTPBIN/tst_brkm TBROK NULL "Test #3: crontab failed while removing cronjob"
 		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 crontab -l >$LTPTMP/cron_tst2.out 2>&1
 if [ $? -ne 0 ]
-then	
+then
 	grep "no crontab for" $LTPTMP/cron_tst2.out >$LTPTMP/cron_tst2n1.out 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]

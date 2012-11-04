@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 	printf("---\n");
 
 	for (testcase = 0; testcase < TC; testcase++) {
-		
+
 		rfilter.can_id   = calc_id(testcase);
 		rfilter.can_mask = calc_mask(testcase);
 		setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER,

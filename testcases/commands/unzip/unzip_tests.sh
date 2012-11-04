@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
@@ -37,7 +37,7 @@
 #
 # Input:        - $1 - calling test case.
 #               - $2 - command that needs to be checked.
-# 
+#
 # Return:		- zero on success.
 # 				- non-zero on failure.
 
@@ -55,13 +55,13 @@ chk_ifexists()
 
 # Function: 	cleanup
 #
-# Description:  - remove temporaty files and directories. 
+# Description:  - remove temporaty files and directories.
 #
 # Return:		- zero on success.
 # 				- non-zero on failure.
 cleanup()
 {
-	cd /	
+	cd /
 	# remove all the temporary files created by this test.
 	tst_resm TINFO "CLEAN: removing \"$LTPTMP\""
 	rm -fr "$LTPTMP"
@@ -71,9 +71,9 @@ cleanup()
 # Function: init
 #
 # Description:  - Check if command required for this test exits.
-#               - Create temporary directories required for this test. 
+#               - Create temporary directories required for this test.
 #               - Initialize global variables.
-# 
+#
 # Return:		- zero on success.
 # 				- non-zero on failure.
 init()
@@ -125,7 +125,7 @@ init()
 #               - Execute unzip command on a .zip file, save output to file.
 #               - If unzip exits with a non-zero value or, the expected output
 #                 is different from actual output, test fails.
-# 
+#
 # Return:		- zero on success.
 # 				- non-zero on failure.
 test01()
@@ -152,7 +152,7 @@ test01()
 
 		diff -iwB "$PWD/tst_unzip.out" "$PWD/tst_unzip.out.exp" >\
     		          "$PWD/tst_unzip.out.err" || RC=$?
-		
+
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL "$PWD/tst_unzip.out.err" \
@@ -172,7 +172,7 @@ test01()
 			fi
 		fi
 	fi
-	
+
 	return $RC
 }
 
@@ -180,7 +180,7 @@ test01()
 #
 # Description:	- Execute all tests and report results.
 #
-# Exit:			- zero on success 
+# Exit:			- zero on success
 #               - non-zero on failure.
 
 RC=0

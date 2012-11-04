@@ -14,7 +14,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
@@ -30,7 +30,7 @@
 # LOG_DAEMON, LOG_AUTH, LOG_LPR.				 #
 # Don't know how to send kernel messages from syslog()   	 #
 #								 #
-# o Create seperate entries in config file for each facility.	 # 
+# o Create seperate entries in config file for each facility.	 #
 # o Send the message and grep for the entry in log file.	 #
 ##################################################################
 

@@ -1,7 +1,7 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:38752:38756">
 sem_getvalue will update the location referenced by sval to have the value
-of the semaphore referenced by sem without effecting the state of the 
+of the semaphore referenced by sem without effecting the state of the
 semaphore.  The updated value represents an actual semaphore value that
 occured at some unspecifed time during the call.
   </assertion>

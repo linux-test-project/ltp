@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -101,7 +101,7 @@ RHOST_IPV6_HOST=":1"
 #   do_cleanup
 #
 # Description:
-#   Clean up after running ssh stress test 
+#   Clean up after running ssh stress test
 #
 #-----------------------------------------------------------------------
 do_cleanup()
@@ -109,13 +109,13 @@ do_cleanup()
     # Stop the ssh daemon
     kill `cat ${sshd_dir}/sshd.pid`
 
-    # Delete the dictory that stores configuration files 
+    # Delete the dictory that stores configuration files
     rm -rf $sshd_dir
     $LTP_RSH $RHOST "rm -rf $rhost_ssh_dir"
 
     # Delete the temporary files
     rm -f $message_file
-    
+
     # Initialize the interface
     initialize_if lhost ${LINK_NUM}
     initialize_if rhost ${LINK_NUM}
@@ -131,10 +131,10 @@ do_cleanup()
 #   do_setup
 #
 # Description:
-#   Setup for the ssh stress tests 
-#   - Assign IP address to the interfaces belong to the specified Link 
-#   - Run a sshd daemon for testing 
-#   - Create keys for password-less login 
+#   Setup for the ssh stress tests
+#   - Assign IP address to the interfaces belong to the specified Link
+#   - Run a sshd daemon for testing
+#   - Create keys for password-less login
 #
 # Set Values:
 #   lhost_addr:   IP address of the local host
@@ -180,7 +180,7 @@ do_setup()
 	    tst_resm TBROK "Failed to add any IP address at the remote host"
 	    exit 1
 	fi
-	
+
 	lhost_addr="${IPV4_NETWORK}.${LHOST_IPV4_HOST}"
 	rhost_addr="${IPV4_NETWORK}.${RHOST_IPV4_HOST}"
 	check_icmpv4_connectivity $lhost_ifname $rhost_addr
@@ -219,7 +219,7 @@ do_setup()
     esac
 
     #
-    # Start sshd for testing 
+    # Start sshd for testing
     #
     port=`find_portbundle tcp 1025 1`
     if [ $? -ne 0 ]; then
@@ -239,14 +239,14 @@ UseDNS no
 PidFile ${sshd_dir}/sshd.pid
 EOD
 
- 
+
     $SSHD -f ${sshd_dir}/sshd_config
     if [ $? -ne 0 ]; then
 	tst_resm TBROK "Failed to run sshd daemon."
 	exit 1
     fi
 
-    # 
+    #
     # Generate configuration file and key at the remote host
     #
     rhost_ssh_dir=`$LTP_RSH $RHOST "mktemp -d -p $SSH_TMPDIR_PARENT"`
@@ -296,9 +296,9 @@ test01()
 
     # Script name at the remote host
     rmtscript="ssh-stress01-rmt"
-    
+
     # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR` 
+    message_file=`mktemp -p $TMPDIR`
     not_run_rmtscript=true
     for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
 	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
@@ -346,9 +346,9 @@ test02()
 
     # Script name at the remote host
     rmtscript="ssh-stress02-rmt"
-    
+
     # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR` 
+    message_file=`mktemp -p $TMPDIR`
     not_run_rmtscript=true
     for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
 	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
@@ -413,9 +413,9 @@ test03()
 
     server_pid=`grep PID: $info_file | cut -f 2 -d ' '`
     rm -f $info_file
-    
+
     # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR` 
+    message_file=`mktemp -p $TMPDIR`
     not_run_rmtscript=true
     for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
 	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`

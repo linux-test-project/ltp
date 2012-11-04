@@ -10,5 +10,5 @@ diff -Naur ltp-full-20050804/testcases/kernel/syscalls/setregid/setregid02.c ltp
 +	{ &inval_user, &neg_one, EPERM, &users, &users, "After setregid(invalid group, -1)," },
 +	{ &neg_one, &inval_user, EPERM, &users, &users, "After setregid(-1, invalid group)," },
  };
- 
+
  int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);

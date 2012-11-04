@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author: Shi Weihua <shiwh@cn.fujitsu.com>                                  ##
 ##                                                                            ##
@@ -24,7 +24,7 @@
 
 subsystem=$1
 remount_use=$2
-noprefix_use=$3	
+noprefix_use=$3
 release_agent_para=$4
 subgroup_exist=$5
 attach_operation=$6
@@ -155,7 +155,7 @@ pid=$!
 
 mkdir_subgroup;
 
-# cpuset.cpus and cpuset.mems should be specified with suitable value 
+# cpuset.cpus and cpuset.mems should be specified with suitable value
 # before attaching operation if subsystem is cpuset
 if [ $subsystem -eq 2 ] || [ $subsystem -eq 7 ] || [ $subsystem -eq 8 ] ; then
 	exist=`grep -w cpuset /proc/cgroups | cut -f1`;
@@ -219,7 +219,7 @@ fi
 
 sleep 1
 
-# pid could not be echoed from subgroup if subsystem is ( or include ) ns, 
+# pid could not be echoed from subgroup if subsystem is ( or include ) ns,
 # so we kill them here
 if [ $subsystem -eq 3 ] || [ $subsystem -eq 7 ] || [ $subsystem -eq 8 ] ; then
 	do_kill 1 1 9 $pid
@@ -265,5 +265,5 @@ do_rmdir 0 1 /dev/cgroup/subgroup_*
 cleanup;
 do_kill 1 1 9 $pid
 do_kill 1 1 9 $pid2
-sleep 1	
+sleep 1
 exit 0;

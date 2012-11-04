@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #  FILE   : cron
 #
@@ -23,8 +23,8 @@
 #			/etc/cron.daily
 #			/etc/cron.hourly
 #			/etc/cron.monthly
-#			/etc/cron.weekly				
-#			/var/spool/cron				
+#			/etc/cron.weekly
+#			/var/spool/cron
 #	HISTORY:
 #		Jerone Young (jyoung5@us.ibm.com)
 #
@@ -34,7 +34,7 @@ DIRS="/etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.monthly /etc/cron.w
 EXIT_CODE=0
 for i in $DIRS
 do
-	cron_dirs_check $i	
+	cron_dirs_check $i
 	if [ $? != 0 ]
 	then
 		echo "$i FAILED TEST!!!!!"

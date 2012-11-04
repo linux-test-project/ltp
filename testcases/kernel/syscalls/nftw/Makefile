@@ -1,12 +1,12 @@
-# IBM Corporation 
-# 10/31/2002   Port to LTP     robbiew@us.ibm.com 
+# IBM Corporation
+# 10/31/2002   Port to LTP     robbiew@us.ibm.com
 # 06/30/2001   Port to Linux   nsharoff@us.ibm.com
 
 #
 # $Copyright: $
 # Copyright (c) 1984-1999
 # Sequent Computer Systems, Inc.   All rights reserved.
-#  
+#
 # This software is furnished under a license and may be used
 # only in accordance with the terms of that license and with the
 # inclusion of the above copyright notice.   This software may not

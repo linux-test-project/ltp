@@ -10,8 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 # You should have received a copy of the GNU General Public License along
-# with this program; if not, write the Free Software Foundation, Inc., 59
-# Temple Place - Suite 330, Boston MA 02111-1307, USA.
+# with this program; if not, write the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 ###########################################################################
 # name of file	: Makefile						  #
@@ -30,7 +30,7 @@ all: $(TARGETS)
 	chmod 755 $(OBJS)
 
 $(OBJS): $(SRC1)
-	$(CC) -DEXPORT_SYMTAB $(MODCFLAGS) -c $(SRC1) -Wall 
+	$(CC) -DEXPORT_SYMTAB $(MODCFLAGS) -c $(SRC1) -Wall
 
 query_module01: query_module01.c
 	$(CC) $(CFLAGS) query_module01.c $(LOADLIBES) -o $@
@@ -41,7 +41,7 @@ query_module02: query_module02.c
 query_module03: query_module03.c
 	$(CC) $(CFLAGS) query_module03.c $(LOADLIBES) -o $@
 
-install: 
+install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:

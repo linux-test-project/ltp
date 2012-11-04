@@ -15,7 +15,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 
@@ -23,8 +23,8 @@
 #define DEVICE_NAME		"/dev/tbase"
 #define MAG_NUM			'k'
 
-/* put ioctl flags here, use the _IO macro which is 
- found in linux/ioctl.h, takes a letter, and an 
+/* put ioctl flags here, use the _IO macro which is
+ found in linux/ioctl.h, takes a letter, and an
  integer */
 
 #define TBASEMAJOR      253
@@ -56,7 +56,7 @@
 #define SYSDEV_CLS_REG		_IO(MAG_NUM, 25)
 #define SYSDEV_CLS_UNREG	_IO(MAG_NUM, 26)
 
-/* interface for passing structures between user 
+/* interface for passing structures between user
  space and kernel space easily */
 
 struct tmod_interface {
@@ -67,8 +67,8 @@ struct tmod_interface {
         caddr_t out_data;       // output data
 };
 typedef struct tmod_interface tmod_interface_t;
- 
 
- 
+
+
 
 

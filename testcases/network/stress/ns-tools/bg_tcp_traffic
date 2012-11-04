@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -58,7 +58,7 @@ export LTPROOT
 . check_envval || exit 1
 
 # Timeout till client starts up [sec]
-CLIENT_TIMEOUT=10 
+CLIENT_TIMEOUT=10
 
 
 #-----------------------------------------------------------------------
@@ -227,7 +227,7 @@ kill_traffic()
 #   Kill all of the TCP traffic
 #
 # Exit Value:
-#   Always 0 
+#   Always 0
 #
 #-----------------------------------------------------------------------
 killall_traffic()

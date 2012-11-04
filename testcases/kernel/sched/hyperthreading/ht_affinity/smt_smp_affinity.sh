@@ -13,7 +13,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
@@ -53,8 +53,8 @@ else
 	exit $TFAILCNT
 fi
 
-no_of_processor=`cat /proc/cpuinfo | grep -c processor`
-no_of_cpu=`ls /sys/devices/system/cpu/ | grep -c cpu[0-9]`
+no_of_processor=`tst_ncpus`
+no_of_cpu=`tst_ncpus_max`
 
 if [ $no_of_processor -lt $no_of_cpu ];then
 

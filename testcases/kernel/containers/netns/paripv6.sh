@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -16,10 +16,10 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 ################################################################################
 # This script creates 2 veth devices $vnet0 and $vnet1.
@@ -55,8 +55,8 @@ status=0
     else
         debug "INFO: vnet0 = $vnet0 , vnet1 = $vnet1"
     fi
-       
-    
+
+
     ifconfig $vnet0 $IP1/24 up > /dev/null 2>&1
     route add -host $IP2 dev $vnet0
     echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
@@ -74,7 +74,7 @@ status=0
     parIPv6=`ip -6 addr show dev $vnet0 | awk ' /inet6/ { print $2 } ' | awk -F"/" ' { print $1 } '`
 
     echo $parIPv6 > /tmp/FIFO4
-    ping6 -I $vnet0 -qc 2 $childIPv6 >/dev/null 2>&1 
+    ping6 -I $vnet0 -qc 2 $childIPv6 >/dev/null 2>&1
 
     if [ $? = 0 ] ; then
        tst_resm TINFO "IPv6: Pinging child from parent: PASS"

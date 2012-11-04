@@ -14,7 +14,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 
@@ -23,7 +23,7 @@ POWER MANAGEMENT TESTS AUTOMATION SUITE
 The tests requires the Kernel to  be compiled with the following config's
 
 for CPU FREQUENCY tests:
- 
+
 CONFIG_CPU_FREQ
 CONFIG_CPU_FREQ_TABLE
 CONFIG_CPU_FREQ_DEBUG
@@ -43,7 +43,7 @@ for SCHED_MC tests:
 CONFIG_SCHED_MC
 
 The power management test automation suite helps run the power management functionality
-(e.g: cpu frequency, cpu idle etc..) tests and report results. 
+(e.g: cpu frequency, cpu idle etc..) tests and report results.
 
 Test Scripts for CPU FREQUENCY:
 change_freq.sh
@@ -58,7 +58,7 @@ test_sched_mc.sh
 
 Common functionality:
 pm_include.sh
-check_kv_arch.c 
+check_kv_arch.c
 pwkm_load_unload.sh
 
 To run your tests you can execute the runpwtests.sh

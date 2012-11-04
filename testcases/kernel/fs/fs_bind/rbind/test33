@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 #
 # Copyright (c) International Business Machines  Corp., 2005
@@ -40,41 +40,41 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-	
-	
-	"${FS_BIND_ROOT}/bin/makedir" share dir1  
-	
+
+
+	"${FS_BIND_ROOT}/bin/makedir" share dir1
+
 	mkdir dir1/x dir2 dir3 dir4
-	
+
 	mount --rbind dir1 dir2
 	"${FS_BIND_ROOT}/bin/makedir" slave dir2
-	"${FS_BIND_ROOT}/bin/makedir" -n share dir2 
-	
+	"${FS_BIND_ROOT}/bin/makedir" -n share dir2
+
 	mount --rbind dir2 dir3
 	"${FS_BIND_ROOT}/bin/makedir" slave dir3
-	"${FS_BIND_ROOT}/bin/makedir" -n share dir3 
-	
+	"${FS_BIND_ROOT}/bin/makedir" -n share dir3
+
 	mount --rbind dir3 dir4
 	"${FS_BIND_ROOT}/bin/makedir" slave dir4
-	
+
 	mount --rbind "$disk1" dir1/x
-	
+
 	check dir1/x dir2/x dir3/x dir4/x
-	
+
 	mount --rbind "$disk2" dir2/x/a
 	check -n dir1/x/a dir2/x/a
 	check dir2/x/a dir3/x/a dir4/x/a
-	
+
 	mount --rbind "$disk3" dir3/x/b
 	check -n dir1/x/b dir3/x/b
 	check -n dir2/x/b dir3/x/b
 	check dir3/x/b dir4/x/b
-	
+
 	mount --rbind "$disk4" dir4/x/c
 	check -n dir1/x/c dir4/x/c
 	check -n dir2/x/c dir4/x/c
 	check -n dir3/x/c dir4/x/c
-	
+
 	break
 done
 trap 'ERR=$? ; tst_resm TWARN "rbind/test33: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
@@ -94,9 +94,9 @@ trap '' ERR
 	umount dir2
 	umount dir3
 	umount dir4
-	
+
 	rm -rf dir*
-	
+
 	cleanup
 } >& /dev/null
 

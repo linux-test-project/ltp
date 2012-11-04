@@ -1,2 +1,2 @@
-Although these could be executed against Linuxthreads, they are 
+Although these could be executed against Linuxthreads, they are
 intended to test against the Native Posix Threading Library (NPTL).

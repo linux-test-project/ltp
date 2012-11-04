@@ -1,4 +1,4 @@
-<assertions> 
+<assertions>
   <assertion id="1" tag="ref:XSH6:{System Interfaces:munlockall:DESCRIPTION}">
    Any pages that become mapped into the address space of the process after a
    call to munlockall() shall not be locked, unless there is an intervening

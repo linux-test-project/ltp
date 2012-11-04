@@ -14,17 +14,17 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
 #
-#  FILE(s)     : partbeat 
+#  FILE(s)     : partbeat
 #  DESCRIPTION : Quick test to test storage management functions like mount and fsck.
 #                More can be added later without much trouble.  Command line takes the
 #                partition device name (ex: /dev/hda1), an integer for how many iterations
 #                of the test you would like to run and the filesystem type to use (jfs or ext2 for now).
 #  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
-#  HISTORY     : 
+#  HISTORY     :
 #
 
 $target=$ARGV[0];

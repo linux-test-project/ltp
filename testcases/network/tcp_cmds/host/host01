@@ -14,14 +14,14 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
 #  FILE   : host
 #
 #  PURPOSE: To test the basic functionality of the `host` command.
-#  
+#
 #  SETUP: If "RHOST" is not exported, then the local hostname is used.
 #
 #  HISTORY:
@@ -65,7 +65,7 @@ do_test()
                 end_testcase "reverse lookup with host failed"
             fi
 
-        else 
+        else
             end_testcase "host $RHOST on local machine failed"
         fi
 

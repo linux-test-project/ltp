@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -36,7 +36,7 @@
 #   $2: The number of the test link
 #
 # History:
-#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#   Oct 19 2005 - Created (Mitsuru Chinen)
 #
 #-----------------------------------------------------------------------
 #Uncomment line below for debug output.
@@ -52,7 +52,7 @@ export LTPROOT TMPDIR
 . check_envval || exit 1
 
 # Arguments
-if [ $# -ne 2 ]; then 
+if [ $# -ne 2 ]; then
     echo "Usage: $0 host_type link_num" >&2
     exit 1
 fi
@@ -76,7 +76,7 @@ case $host_type in
 esac
 
 # Pick HWaddr from HWaddr list
-field=`expr $link_num + 1` 
+field=`expr $link_num + 1`
 hwaddr=`echo $hwaddrs | cut -d ' ' -f $field`
 if [ x${hwaddr} = x ]; then
     echo "HWaddr list ($hwaddrs) is something wrong." >&2

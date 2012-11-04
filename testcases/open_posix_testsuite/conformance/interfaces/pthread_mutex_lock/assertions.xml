@@ -12,26 +12,26 @@
 
   <assertion id="2" tag="ref:XSH6:33945:33945">
   Upon success, it returns 0.
-  </assertion> 
+  </assertion>
 
   <assertion id="3" tag="ref:XSH6:33950:33965">
   Upon failure, it shall return:
   -[EINVAL] The mutex was created with the protocol attribute
-            PTHREAD_PRIO_PROTECT and the calling thread's priority 
+            PTHREAD_PRIO_PROTECT and the calling thread's priority
             is higher than the mutex's current priority calling.
   It may fail if:
   -[EINVAL]  'mutex' does not refer to an initialized mutex object
   -[EDEADLK] The current thread already owns the mutex
   It shall not return [EINTR].
-  </assertion> 
+  </assertion>
 
   <assertion id="4" tag="ref:XSH6:33950:33965">
-  If the mutex type is PTHREAD_MUTEX_RECURSIVE, 
+  If the mutex type is PTHREAD_MUTEX_RECURSIVE,
   the mutex shall maintain the concept of a lock count
-  </assertion> 
-  
+  </assertion>
+
   <assertion id="5" tag="ref:XSH6:33950:33965">
-  If a signal is delivered to a thread waiting for a mutex, 
+  If a signal is delivered to a thread waiting for a mutex,
   when return from the signal handler the thread shall resume waiting.
-  </assertion> 
+  </assertion>
 </assertions>

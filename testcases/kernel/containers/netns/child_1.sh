@@ -1,5 +1,5 @@
 #!/bin/sh
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -15,11 +15,11 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>
 
-# This script is trying to ping the Child2 from Child1 
+# This script is trying to ping the Child2 from Child1
 # The test case ID, the test case count and the total number of test case
 
 TCID=${TCID:-child_1.sh}
@@ -48,7 +48,7 @@ status=0
     if [ $? ]; then
         debug "INFO: Started the sshd in CHILD1"
         sshpid1=`ps -ef | grep "sshd -p $PORT" | awk '{ print $2 ; exit 0} ' `
-        
+
         ping -qc 2 $IP1 > /dev/null
         if [ $? -ne 0 ] ; then
             tst_resm TFAIL "FAIL: Unable to ping the Parent1 from Child1"
@@ -68,8 +68,8 @@ status=0
         ping -qc 2 $IP4 > /dev/null
         if [ $? = 0 ];
         then
-            tst_resm TINFO "PASS: Child2 is pinging from CHILD1 !" 
-        else 
+            tst_resm TINFO "PASS: Child2 is pinging from CHILD1 !"
+        else
             tst_resm TFAIL "FAIL: Unable to Ping Child2 from CHILD1 !"
             status=-1
         fi

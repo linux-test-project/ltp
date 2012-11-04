@@ -3,7 +3,7 @@
 # PLEASE READ THE README FILE IN /tcp_cmds BEFORE RUNNING THESE.
 #
 arp arp01
-echo export TCbin=$LTPROOT/testcases/network/tcp_cmds/echo; echo01 
+echo export TCbin=$LTPROOT/testcases/network/tcp_cmds/echo; echo01
 finger finger01
 ftp export TCbin=$LTPROOT/testcases/network/tcp_cmds/ftp; ftp01
 host host01

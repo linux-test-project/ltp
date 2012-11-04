@@ -1,9 +1,9 @@
 /*
  *   Copyright (c) 2004 Daniel McNeil <daniel@osdl.org>
  *                 2004 Open Source Development Lab
- *   
+ *
  *   Copyright (c) 2004 Marty Ridgeway <mridge@us.ibm.com>
- *   
+ *
  *   Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #define _GNU_SOURCE
@@ -81,7 +81,7 @@ int dio_sparse(char *filename, int align, int writesize, int filesize)
 			close(fd);
 			return 1;
 		}
-		
+
 		i += w;
 	}
 
@@ -165,11 +165,11 @@ int main(int argc, char **argv)
 		}
 	}
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	
+
 	ret = dio_sparse(filename, alignment, writesize, filesize);
 
 	tst_resm(TINFO, "Killing childrens(s)");
-	
+
 	for (i = 0; i < num_children; i++)
 		kill(pid[i], SIGTERM);
 
@@ -189,10 +189,10 @@ int main(int argc, char **argv)
 	if (children_errors)
 		tst_resm(TFAIL, "%i children(s) exited abnormally",
 		         children_errors);
-		
+
 	if (!children_errors && !ret)
 		tst_resm(TPASS, "Test passed");
-	
+
 	cleanup();
 	tst_exit();
 }

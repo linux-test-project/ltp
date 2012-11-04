@@ -1,4 +1,4 @@
-<assertions> 
+<assertions>
   <assertion id="1" tag="ref:XSH6:{System Interfaces:sched_get_priority_min:DESCRIPTION}">
    sched_get_priority_min() returns the minimum priority value on success
   </assertion>
@@ -6,7 +6,7 @@
    sched_get_priority_min() returns -1 on failure
   </assertion>
   <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_get_priority_min:ERRORS}">
-   sched_get_priority_min() sets errno == EINVAL if policy is not a valid 
+   sched_get_priority_min() sets errno == EINVAL if policy is not a valid
    policy
   </assertion>
 </assertions>

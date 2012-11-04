@@ -17,8 +17,8 @@
  * other software, or any other product whatsoever.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ * with this program; if not, write the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
@@ -48,7 +48,7 @@ struct sym {
 };
 
 /*
- * Symbol Table Header 
+ * Symbol Table Header
  */
 struct symh {
     int         magic;
@@ -63,7 +63,7 @@ typedef struct symh *SYM;
 
 /*
  * Data for keys and contents (lifted from dbopen(3))
- * dbopen(3) uses this for all functions, but I'm hard-wired into chars 
+ * dbopen(3) uses this for all functions, but I'm hard-wired into chars
  * for keys and the like; I just need this for sym_get
  */
 typedef struct {

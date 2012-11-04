@@ -3,7 +3,7 @@
 #
 # CHANGE ACTIVITY
 #
-#    10/01/04  Kris Wilson    RHEL4 only allows super user 
+#    10/01/04  Kris Wilson    RHEL4 only allows super user
 #                               to use crontab.
 #                               to use crontab.
 #    12/03/04  Marty Ridgeway Pull RHEl4 tests out from script
@@ -118,7 +118,7 @@ else
 fi
 
 CODE=0
-test -e /tmp/$tmpscript.out && CODE=1 
+test -e /tmp/$tmpscript.out && CODE=1
 if [ $CODE = "1" ]; then
 	echo "setuid test part 2 successfully failed (PASS)"
 else

@@ -4,12 +4,12 @@
 I have added a cheezy perl script for generating a bunch of test cases
 where I want to do the same simple operation on each signal.
 
-Templates are in the templates directory, and are of the form 
+Templates are in the templates directory, and are of the form
 template_ASSERTIONID-count.in
 
 gentest.pl will generate a ASSERTIONID-COUNT.c for each signal specified
-in the POSIX definition of required signals where %%MYSIG%% is replaced 
-with the signal name. 
+in the POSIX definition of required signals where %%MYSIG%% is replaced
+with the signal name.
 
 << Misc thoughts >>
 

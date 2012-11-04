@@ -14,12 +14,12 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
 #
-# This script, and hence the invoked test cases, need to be run from the 
-# root directory of the DMAPI-enabled partition (/dmtest below) being tested 
+# This script, and hence the invoked test cases, need to be run from the
+# root directory of the DMAPI-enabled partition (/dmtest below) being tested
 #
 ./session -loglevel 4 -termlevel 4 -logname session.log
 ./handle -loglevel 4 -termlevel 4 -logname handle.log -mtpt /dmtest

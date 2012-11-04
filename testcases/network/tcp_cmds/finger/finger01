@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 #
 #
@@ -25,7 +25,7 @@
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
 #         where the test is executed. Also, both machines MUST have
-#         the fingerd daemon active (see inetd or xinetd config file). 
+#         the fingerd daemon active (see inetd or xinetd config file).
 #
 #  HISTORY:
 #    06/06/03 Manoj Iyer - manjo@mail.utexas.edu
@@ -74,9 +74,9 @@ do_setup()
 
 #-----------------------------------------------------------------------
 # FUNCTION: do_test1
-# PURPOSE: Run finger with no flags 
+# PURPOSE: Run finger with no flags
 # INPUT:    None.
-# OUTPUT:   Error messages are logged for all discrepancies found. 
+# OUTPUT:   Error messages are logged for all discrepancies found.
 #-----------------------------------------------------------------------
 
 do_test1()
@@ -87,7 +87,7 @@ do_test1()
     [ $? = 0 ] || end_testcase "finger @$LHOST"
     finger @$RHOST  2>&1 1>/dev/null
     [ $? = 0 ] || end_testcase "finger @$RHOST"
-	
+
     # Testing finger command with user argument
 
     finger $LUSER 2>&1 1>/dev/null || end_testcase "finger $LUSER"
@@ -127,7 +127,7 @@ do_test2()
 # PURPOSE:  To run the "finger -flag User@Host" commands and verify that the
 #           "finger" command is functioning properly.
 # INPUT:    None.
-# OUTPUT:   Error messages are logged for all discrepancies found. 
+# OUTPUT:   Error messages are logged for all discrepancies found.
 #-----------------------------------------------------------------------
 
 do_test3()

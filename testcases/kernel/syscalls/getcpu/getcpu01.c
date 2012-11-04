@@ -93,8 +93,8 @@ int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
+	int lc;
+	char *msg;
 	unsigned int cpu_id, node_id = 0;
 	unsigned int cpu_set;
 #ifdef __i386__
@@ -111,7 +111,6 @@ int main(int ac, char **av)
 		exit(0);
 	}
 
-	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

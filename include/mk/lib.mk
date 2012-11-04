@@ -51,7 +51,7 @@ MAKE_TARGETS	:= $(LIB)
 LIBSRCS		?= $(wildcard $(abs_srcdir)/*.c)
 
 ifdef MAKE_3_80_COMPAT
-LIBSRCS		:= $(call MAKE_3_80_abspath,$(LIBSRCS)) 
+LIBSRCS		:= $(call MAKE_3_80_abspath,$(LIBSRCS))
 else
 LIBSRCS		:= $(abspath $(LIBSRCS))
 endif

@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author: Shi Weihua <shiwh@cn.fujitsu.com>                                  ##
 ##                                                                            ##
@@ -111,7 +111,7 @@ get_subgroup_path1()
 	if [ "$#" -ne 1 ] || [ "$1" -lt 1 ] || [ "$1" -gt $ulimit_u ]; then
 		return;
 	fi
-	
+
 	cur_subgroup_path1="/dev/cgroup/subgroup_$1/"
 }
 
@@ -122,7 +122,7 @@ get_subgroup_path2()
 	if [ "$#" -ne 1 ] || [ "$1" -lt 2 ] || [ "$1" -gt $ulimit_u ]; then
 		return;
 	fi
-	
+
 	for i in `seq 2 $1`
 	do
 		cur_subgroup_path2="$cur_subgroup_path2""s/"
@@ -195,7 +195,7 @@ fi
 
 mkdir_subgroup;
 
-# cpuset.cpus and cpuset.mems should be specified with suitable value 
+# cpuset.cpus and cpuset.mems should be specified with suitable value
 # before attachint operation if subsystem is cpuset
 if [ $subsystem -eq 2 ] || [ $subsystem -eq 7 ] ; then
 	if [ "$exist_cpuset" != "" ]; then
@@ -262,9 +262,9 @@ else
 		done
 	done
 	echo "...mkdired $count times" >> $LOGFILE
-	
+
 	sleep 1
-	
+
 	case $attach_operation in
 	"1" )
 		for i in `seq 1 $count`

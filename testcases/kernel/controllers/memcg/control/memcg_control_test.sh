@@ -16,7 +16,7 @@
 ##                                                                            ##
 ##   You should have received a copy of the GNU General Public License        ##
 ##   along with this program;  if not, write to the Free Software             ##
-##   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA  ##
+##   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA  ##
 ##                                                                            ##
 ##                                                                            ##
 ##   File:    memcg_control_test.sh                                           ##
@@ -57,7 +57,7 @@ test_proc_kill()
 	( cd $TMP && mem_process -m $PROC_MEM & )
 	sleep 1
 	echo $! > tasks
- 
+
 	#Instruct the test process to start acquiring memory
 	echo m > $STATUS_PIPE
 	sleep 5
@@ -71,7 +71,7 @@ test_proc_kill()
 		: $((KILLED_CNT += 1))
 	fi
 }
-    
+
 # Validate the memory usage limit imposed by the hierarchically topmost group
 testcase_1()
 {

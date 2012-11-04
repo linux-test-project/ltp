@@ -1,10 +1,10 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:32840:32842">
-   The 
+   The
 
-   int pthread_create(pthread_t *restrict thread, const pthread_attr_t 
+   int pthread_create(pthread_t *restrict thread, const pthread_attr_t
   	*restrict attr, void *(*start_routine) (void*), void *restrict arg);
- 
+
    creates a new thread, with attributes specified
    by 'attr', within a process.
   </assertion>
@@ -15,10 +15,10 @@
 
    default: PTHREAD_CREATE_JOINABLE
    Other valid values: PTHREAD_CREATE_DETACHED
-   
+
   </assertion>
   <assertion id="3" tag="ref:XSH6:32842:32843">
-   If the attributes specified by 'attr' are modified later after the thread 
+   If the attributes specified by 'attr' are modified later after the thread
    is create, the thread's attributes should not be affected.
   </assertion>
   <assertion id="4" tag="ref:XSH6:32843:32844">
@@ -32,7 +32,7 @@
   <assertion id="6" tag="ref:XSH6:32845:32848">
   If the 'start_routine' returns, the effect shall be as if there was an
   implicit call to pthread_exit() using the return value of 'start_routine'
-  as the exit status.  
+  as the exit status.
   NOTE: that the thread in which main() was originally invoked is different
   from this
   </assertion>
@@ -58,7 +58,7 @@
   clock accessible, and the initial value of this clock shall be set to 0.
   </assertion>
   <assertion id="12" tag="ref:XSH6:32859:32859">
-  If success, pthread_create() returns zero.  
+  If success, pthread_create() returns zero.
   </assertion>
   <assertion id="13" tag="ref:XSH6:32859:32860">
   If pthread_create() fails, an error number is returned:

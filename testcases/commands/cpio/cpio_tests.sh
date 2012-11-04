@@ -15,7 +15,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ################################################################################
 #
@@ -24,7 +24,7 @@
 #
 # Description:  Test basic functionality of cpio command
 #				- Test #1:  cpio -o can create an archive.
-#               
+#
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Jan 30 2003 - Created - Manoj Iyer.
@@ -58,7 +58,7 @@ init()
 		LTPBIN=$LTPROOT/testcases/bin
 	fi
 
-	
+
 	$LTPBIN/tst_resm TINFO "INIT: Inititalizing tests."
 
 	which cpio > $LTPTMP/tst_cpio.err 2>&1 || RC=$?
@@ -69,14 +69,14 @@ init()
 		return $RC
 	fi
 
-	mkdir -p $LTPTMP/tst_cpio.tmp > $LTPTMP/tst_cpio.err 2>&1 || RC=$? 
+	mkdir -p $LTPTMP/tst_cpio.tmp > $LTPTMP/tst_cpio.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cpio.err NULL \
 			"Test #1: failed creating temp directory. Reason:"
 		return $RC
 	fi
-	
+
 	for i in a b c d e f g h i j k l m n o p q r s t u v w x y z
 	do
 		touch $LTPTMP/tst_cpio.tmp/$i > $LTPTMP/tst_cpio.err 2>&1 || RC=$?
@@ -101,14 +101,14 @@ clean()
 	export TST_COUNT=0	# init identifier,
 
 	$LTPBIN/tst_resm TINFO "CLEAN cleaning up before return"
-	rm -fr $LTPTMP/tst_cpio* > /dev/null 2>&1 
+	rm -fr $LTPTMP/tst_cpio* > /dev/null 2>&1
 	return
 }
 
 
 # Function:		test01
 #
-# Description	- Test #1: Test that cpio -o will create a cpio archive. 
+# Description	- Test #1: Test that cpio -o will create a cpio archive.
 #
 # Return		- zero on success
 #               - non zero on failure. return value from commands ($RC)
@@ -150,7 +150,7 @@ test01()
 # Function:		main
 #
 # Description:	- Execute all tests, report results.
-#               
+#
 # Exit:			- zero on success
 # 				- non-zero on failure.
 
@@ -158,7 +158,7 @@ test01()
 TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
 RC=0				# Return code from tests.
 
-init || exit $RC	# Exit if initializing testcases fails.	
+init || exit $RC	# Exit if initializing testcases fails.
 
 test01 || RC=$?		# Test #1
 if [ $RC -eq 0 ]

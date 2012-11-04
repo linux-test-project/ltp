@@ -1,6 +1,6 @@
 #!/bin/sh
 
-################################################################################ 
+################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
@@ -16,10 +16,10 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################ 
+################################################################################
 
 # This testcase creates the net devices
 
@@ -49,7 +49,7 @@ export TST_TOTAL
     route add -host $IP2 dev $vnet0
     echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
 
-    pid=`cat /tmp/FIFO2` 
+    pid=`cat /tmp/FIFO2`
     debug "INFO: The pid of CHILD1 is $pid"
     ip link set $vnet1 netns $pid
     echo $vnet1 > /tmp/FIFO1

@@ -18,8 +18,8 @@
  * other software, or any other product whatsoever.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ * with this program; if not, write the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
@@ -99,11 +99,11 @@ S	[ \t]+
 
 %Start KEY OUT CUTS
 %%
-^<<<rts_keyword_start>>>$	{ 
+^<<<rts_keyword_start>>>$	{
     BEGIN KEY;
     check_mode(scan_mode, SCAN_OUTSIDE, 0);
     scan_mode = SCAN_RTSKEY;
-    
+
     /* remove any keys that exist right now */
     if(keys != NULL)
 	sym_rm(keys, RM_KEY | RM_DATA);
@@ -130,12 +130,12 @@ S	[ \t]+
 
     sym_put(alltags, "_RTS", (void *)keys, PUT_REPLACE);
     keys = NULL;
-    
-    return(KW_END);			
+
+    return(KW_END);
     /* NOTREACHED */
 }
 
-^<<<test_start>>>$		{ 
+^<<<test_start>>>$		{
     BEGIN KEY;
     check_mode(scan_mode, SCAN_OUTSIDE, 0);
     scan_mode = SCAN_TSTKEY;
@@ -162,22 +162,22 @@ S	[ \t]+
     /* NOTREACHED */
 }
 
-^<<<test_output>>>$		{ 
+^<<<test_output>>>$		{
     BEGIN OUT;
     check_mode(scan_mode, SCAN_TSTKEY, 0);
     scan_mode = SCAN_OUTPUT;
-    
+
     test_output(ctag, keys);
-    
-    return(TEST_OUTPUT);			
+
+    return(TEST_OUTPUT);
     /* NOTREACHED */
 }
 
-^<<<execution_status>>>$	{ 
+^<<<execution_status>>>$	{
     BEGIN KEY;
     check_mode(scan_mode, SCAN_TSTKEY, SCAN_OUTPUT, 0);
     scan_mode = SCAN_TSTKEY;
-    return(EXEC_STATUS);			
+    return(EXEC_STATUS);
     /* NOTREACHED */
 }
 
@@ -214,7 +214,7 @@ S	[ \t]+
 	printf("A quoted keyword: %s = %s\n", key, cont);
 #endif
     sym_put(keys, key, strdup(cont), 0);
-    
+
     return(KEYWORD_QUOTED);
     /* NOTREACHED */
 }
@@ -228,8 +228,8 @@ S	[ \t]+
 	printf("A keyword: %s = %s\n", key, cont);
 #endif
     sym_put(keys, key, strdup(cont), 0);
-    
-    return(KEYWORD);			
+
+    return(KEYWORD);
     /* NOTREACHED */
 }
 
@@ -238,24 +238,24 @@ S	[ \t]+
     /* NOTREACHED */
 }
 
-<OUT>^.+$			{ 
+<OUT>^.+$			{
 #ifdef DEBUGGING
     DEBUG(D_SCAN_LEX, 5)
 	printf("TEXT_LINE: %s\n", yytext);
 #endif
 
-    return(TEXT_LINE);			
+    return(TEXT_LINE);
     /* NOTREACHED */
 }
 
-<CUTS>^{W}{S}{UI}{S}{A}{S}":"	   { 
+<CUTS>^{W}{S}{UI}{S}{A}{S}":"	   {
 #ifdef DEBUGGING
     DEBUG(D_SCAN_LEX, 5)
 	printf("CUTS Result: %s\n", yytext);
 #endif
     cuts_testcase(ctag, keys);
 
-    return(CUTS_RESULT);		
+    return(CUTS_RESULT);
     /* NOTREACHED */
 }
 
@@ -308,7 +308,7 @@ scanner(tags)
 
 /*
  * Test-Output record
- *  check if this is a CUTS test; if so, enter the lex "cuts" state; 
+ *  check if this is a CUTS test; if so, enter the lex "cuts" state;
  *  otherwise do nothing and lex will be in a "data" mode that will just
  *  toss all the output.
  */
@@ -317,7 +317,7 @@ test_output(tag, keys)
     SYM tag, keys;
 {
     char *at;
-    
+
     if((at=(char *)sym_get(keys, "analysis")) != NULL) {
 	/* CUTS:number_of_testcases  || CUTS-1:number_of_testcases */
 	if(strncasecmp("cuts", at, 4) == 0) {
@@ -331,7 +331,7 @@ test_output(tag, keys)
 /* Input Data State Check
  * RTS driver output goes thru specific
  * phases; this is used to verify that the new state is a legal state
- * to change to from the current state.  
+ * to change to from the current state.
  * This accepts a variable number of arguments (valid states to be
  * in).  The last argument MUST be zero
  */
@@ -393,7 +393,7 @@ check_mode(int scan_mode, int fst, ...)
 
 /*
  * This part of the file contains subroutines called by a lex scanner which
- * is parsing rts-driver-format input and putting it into a multi-level 
+ * is parsing rts-driver-format input and putting it into a multi-level
  * symbol table.
  */
 

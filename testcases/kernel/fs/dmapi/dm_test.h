@@ -13,7 +13,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -60,7 +60,7 @@
 #define TIMESTAMP_DELAY { \
 	DMLOG_PRINT(DMLVL_DEBUG, "Sleeping to guarantee timestamp change...\n"); \
 	sleep(3); \
-}		
+}
 #define PAGE_SIZE 4096
 #define PAGEALIGN(n) (((n)+(PAGE_SIZE-1)) & ~(PAGE_SIZE-1))
 #define O_DIRECTORY 0200000
@@ -150,7 +150,7 @@ extern dm_region_t dm_PMR_regbuf[];
 typedef struct configResult {
 	char		*name;
 	dm_size_t	result;
-} configResult_t;	
+} configResult_t;
 
 typedef struct eventValidity {
 	dm_boolean_t bGlobalHandle;

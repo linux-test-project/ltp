@@ -16,7 +16,7 @@
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
 ## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
@@ -122,7 +122,7 @@ do_cleanup()
 do_setup()
 {
     # Make sure to clean up
-    do_cleanup 
+    do_cleanup
 
     # Get the Interface name of local host
     lhost_ifname=`get_ifname lhost ${LINK_NUM}`
@@ -148,7 +148,7 @@ do_setup()
 	tst_resm TBROK "Failed to assign an IPv4 address at the local host"
 	return 1
     fi
-    
+
     # Add route to the initial gateway
     route add -net ${DST_NETWORK}.0 netmask 255.255.255.0 gw ${IPV4_NETWORK}.${RHOST_IPV4_HOST} dev $lhost_ifname
 
@@ -194,7 +194,7 @@ test_body()
     tst_resm TPASS "Test is finished correctly."
     return 0
 }
-    
+
 
 #-----------------------------------------------------------------------
 #
