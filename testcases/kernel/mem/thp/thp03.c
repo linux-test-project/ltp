@@ -52,6 +52,8 @@
 char *TCID = "thp03";
 int TST_TOTAL = 1;
 
+#ifdef MADV_MERGEABLE
+
 static void thp_test(void);
 
 static long hugepage_size;
@@ -119,3 +121,11 @@ void cleanup(void)
 {
 	TEST_CLEANUP;
 }
+
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "Kernel doesn't support MADV_MERGEABLE"
+			      " or you need to update your glibc-headers");
+}
+#endif
