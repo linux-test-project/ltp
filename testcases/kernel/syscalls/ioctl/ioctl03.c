@@ -1,41 +1,42 @@
-/******************************************************************************/
-/*                                                                            */
-/* Copyright (c) Rusty Russell <rusty@rustcorp.com.au>                        */
-/* Copyright (c) International Business Machines  Corp., 2008                 */
-/*                                                                            */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*                                                                            */
-/******************************************************************************/
-/******************************************************************************/
-/*                                                                            */
-/* File:        ioctl03.c                                                     */
-/*                                                                            */
-/* Description: This program tests whether all the valid IFF flags are        */
-/*              returned properly by implementation of TUNGETFEATURES ioctl   */
-/*              on kernel 2.6.27                                              */
-/*                                                                            */
-/* Total Tests: 1                                                             */
-/*                                                                            */
-/* Test Name:   ioctl03                                                       */
-/*                                                                            */
-/* Author:      Rusty Russell <rusty@rustcorp.com.au>                         */
-/*                                                                            */
-/* History:     Created - Nov 28 2008 - Rusty Russell <rusty@rustcorp.com.au> */
-/*              Ported to LTP                                                 */
-/*                      - Nov 28 2008 - Subrata <subrata@linux.vnet.ibm.com>  */
-/******************************************************************************/
+/*
+ *
+ * Copyright (c) Rusty Russell <rusty@rustcorp.com.au>
+ * Copyright (c) International Business Machines  Corp., 2008
+ *
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+/*
+ *
+ *
+ * File:        ioctl03.c
+ *
+ * Description: This program tests whether all the valid IFF flags are
+ *              returned properly by implementation of TUNGETFEATURES ioctl
+ *              on kernel 2.6.27
+ *
+ * Total Tests: 1
+ *
+ * Test Name:   ioctl03
+ *
+ * Author:      Rusty Russell <rusty@rustcorp.com.au>
+ *
+ * History:     Created - Nov 28 2008 - Rusty Russell <rusty@rustcorp.com.au>
+ *              Ported to LTP
+ *                      - Nov 28 2008 - Subrata <subrata@linux.vnet.ibm.com>
+ */
 
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -57,60 +58,18 @@
 #define IFF_VNET_HDR	0x4000
 #endif
 
-/* Extern Global Variables */
 
-/* Global Variables */
-char *TCID = "ioctl03";		/* test program identifier.              */
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "ioctl03";
+int TST_TOTAL = 1;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-extern void cleanup()
+static void cleanup(void)
 {
-
 	TEST_CLEANUP;
 	tst_rmdir();
-
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup()
+static void setup(void)
 {
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
