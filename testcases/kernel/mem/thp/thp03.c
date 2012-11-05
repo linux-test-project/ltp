@@ -25,7 +25,7 @@
  *
  * Modified form a reproducer for
  *          https://patchwork.kernel.org/patch/1358441/
- * Commit: 59af0d4348eb07087097e310f60422b994dd3a2c
+ * Kernel Commit id: 027ef6c87853b0a9df53175063028edb4950d476
  * There was a bug in THP, will crash happened due to the following
  * reason according to developers:
  *
