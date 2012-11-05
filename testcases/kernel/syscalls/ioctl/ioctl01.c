@@ -62,48 +62,43 @@ int TST_TOTAL = 5;
 
 #define	INVAL_IOCTL	9999999
 
-void setup(void);
-void cleanup(void);
-void help(void);
+static void setup(void);
+static void cleanup(void);
+static void help(void);
 
-int exp_enos[] = { EBADF, EFAULT, ENOTTY, ENOTTY, EFAULT, 0 };
+static int exp_enos[] = { EBADF, EFAULT, ENOTTY, ENOTTY, EFAULT, 0 };
 
-int fd, fd1;
-int bfd = -1;
+static int fd, fd1;
+static int bfd = -1;
 
-struct termio termio;
+static struct termio termio;
 
-struct test_case_t {
+static struct test_case_t {
 	int *fd;
 	int request;
 	struct termio *s_tio;
 	int error;
 } TC[] = {
 	/* file descriptor is invalid */
-	{
-	&bfd, TCGETA, &termio, EBADF},
-	    /* termio address is invalid */
-	{
-	&fd, TCGETA, (struct termio *)-1, EFAULT},
-	    /* command is invalid */
+	{&bfd, TCGETA, &termio, EBADF},
+	/* termio address is invalid */
+	{&fd, TCGETA, (struct termio *)-1, EFAULT},
+	/* command is invalid */
 	/* This errno value was changed from EINVAL to ENOTTY
 	 * by kernel commit 07d106d0 and bbb63c51
 	 */
-	{
-	&fd, INVAL_IOCTL, &termio, ENOTTY},
-	    /* file descriptor is for a regular file */
-	{
-	&fd1, TCGETA, &termio, ENOTTY},
-	    /* termio is NULL */
-	{
-	&fd, TCGETA, NULL, EFAULT}
+	{&fd, INVAL_IOCTL, &termio, ENOTTY},
+	/* file descriptor is for a regular file */
+	{&fd1, TCGETA, &termio, ENOTTY},
+	/* termio is NULL */
+	{&fd, TCGETA, NULL, EFAULT}
 };
 
-int Devflag = 0;
-char *devname;
+static int Devflag;
+static char *devname;
 
 /* for test specific parse_opts options - in this case "-D" */
-option_t options[] = {
+static option_t options[] = {
 	{"D:", &Devflag, &devname},
 	{NULL, NULL, NULL}
 };
@@ -114,7 +109,8 @@ int main(int ac, char **av)
 	int i;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
+	msg = parse_opts(ac, av, options, &help);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	if (!Devflag)
@@ -125,7 +121,8 @@ int main(int ac, char **av)
 
 	setup();
 
-	if ((fd = open(devname, O_RDWR, 0777)) == -1)
+	fd = open(devname, O_RDWR, 0777);
+	if (fd == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't open %s", devname);
 
 	TEST_EXP_ENOS(exp_enos);
@@ -159,21 +156,13 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * help() - Prints out the help message for the -D option defined
- *          by this test.
- */
-void help()
+static void help(void)
 {
-
 	printf("  -D <tty device> : for example, /dev/tty[0-9]\n");
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup(void) {
-
+static void setup(void)
+{
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
@@ -187,24 +176,16 @@ void setup(void) {
 	}
 
 	/* create a temporary file */
-	if ((fd1 = open("x", O_CREAT, 0777)) == -1)
+	fd1 = open("x", O_CREAT, 0777);
+	if (fd1 == -1)
 		tst_resm(TFAIL|TERRNO, "Could not open test file");
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup(void) {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+static void cleanup(void)
+{
 	TEST_CLEANUP;
 
 	close(fd1);
 
-	/* delete the test directory created in setup() */
 	tst_rmdir();
 }
