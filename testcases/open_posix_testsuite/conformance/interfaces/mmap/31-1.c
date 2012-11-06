@@ -11,17 +11,17 @@
  * plus len exceeds the offset maximum established in the open
  * file description associated with fildes.
  *
- * Test Steps:
- * 1. Set off and let to ULONG_MAX (make them align to page_size
- * 2. Assume the offset maximum is ULONG_MAX (on both 32 and 64 system).
+ * Note: This error condition came to the standard with large
+ *       file extension and cannot be triggered without it.
  *
- * FIXME: Not quite sure how to make "the value of off plus len
- * exceeds the offset maxium established in the open file description
- * associated with files".
- *
+ *       So in order to trigger this we need 32 bit architecture
+ *       and largefile support turned on.
  */
 
 #define _XOPEN_SOURCE 600
+
+/* Turn on large file support, has no effect on 64 bit archs */
+#define _FILE_OFFSET_BITS 64
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +45,12 @@ int main(void)
 	int fd;
 	off_t off = 0;
 
+	/* check for 64 bit arch */
+	if (sizeof(void*) == 8) {
+		printf("USUPPORTED: Cannot be tested on 64 bit architecture\n");
+		return PTS_UNSUPPORTED;
+	}
+
 	long page_size = sysconf(_SC_PAGE_SIZE);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_31_1_%d", getpid());
@@ -56,23 +62,19 @@ int main(void)
 	}
 	unlink(tmpfname);
 
+	/* Set lenght to maximal multiple of page size */
+	len = ~((size_t)0) & (~(page_size - 1));
+
 	/*
-	 * len + off > maximum offset
-	 * FIXME: We assume maximum offset is ULONG_MAX
+	 * Now we need offset that fits into 32 bit
+	 * value when divided by page size but is big
+	 * enough so that offset + PAGE_ALIGN(len) / page_size
+	 * overflows 32 bits.
 	 */
-	len = ULONG_MAX;
-	if (len % page_size) {
-		/* Lower boundary */
-		len &= ~(page_size - 1);
-	}
+	off = ((off_t)~((size_t)0)) * page_size;
+	off &= ~(page_size - 1);
 
-	off = ULONG_MAX;
-	if (off % page_size) {
-		/* Lower boundary */
-		off &= ~(page_size - 1);
-	}
-
-	printf("off: %lx, len: %lx\n", (unsigned long)off, (unsigned long)len);
+	printf("off: %llx, len: %llx\n", (unsigned long long)off, (unsigned long long)len);
 
 	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, off);
 	if (pa == MAP_FAILED && errno == EOVERFLOW) {
