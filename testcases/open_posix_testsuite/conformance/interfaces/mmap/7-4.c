@@ -18,7 +18,7 @@
  * Test Steps:
  *
  * 1. Create a shared memory object.
- * 2. mmap the shared memory object into memory, setting MAP_PRIVATE.
+ * 2. mmap the shared memory object into memory, setting MAP_SHARED.
  * 3. Modify the mapped memory.
  * 4. Fork a child process.
  * 5. Child process mmap the same shared memory object into memory.
