@@ -17,15 +17,14 @@
  *
  * Test Steps:
  * 1. Create a process, in this process:
- *    a. map a file  with size of 1/2 * page_size,
+ *    a. map a file with size of 1/2 * page_size,
  *       set len = 1/2 * page_size
  *    b. Read the partial page beyond the object size.
  *       Make sure the partial page is zero-filled;
  *    c. Modify a byte in the partial page, then un-map the and close the
  *       file descriptor.
- * 2. Wait for the child proces to exit, then
- *    Map the file again,
- *    read the byte from the position modified at step 1-c and check.
+ * 2. Wait for the child proces to exit, then read the file using read()
+ *    and check that change wasn't written.
  */
 
 #define _XOPEN_SOURCE 600
@@ -47,12 +46,12 @@ int main(void)
 	char tmpfname[256];
 	long page_size;
 
-	char *pa;
+	char *pa, ch;
 	size_t len;
 	int fd;
 
 	pid_t child;
-	int i, exit_val;
+	int i, exit_val, ret, size;
 
 	page_size = sysconf(_SC_PAGE_SIZE);
 
@@ -92,7 +91,6 @@ int main(void)
 
 		/* Write the partial page */
 		pa[len + 1] = 'b';
-		msync(pa, len, MS_SYNC);
 		munmap(pa, len);
 		close(fd);
 		return PTS_PASS;
@@ -113,19 +111,27 @@ int main(void)
 	fd = open(tmpfname, O_RDWR, 0);
 	unlink(tmpfname);
 
-	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (pa == MAP_FAILED) {
-		printf("Error at 2nd mmap(): %s\n", strerror(errno));
-		return PTS_FAIL;
+	while ((ret = read(fd, &ch, 1)) == 1) {
+
+		if (ch != 0) {
+			printf("File is not zeroed\n");
+			return PTS_FAIL;
+		}
+
+		size += ret;
 	}
 
-	if (pa[len + 1] == 'b') {
-		printf("Test FAILED: Modification of the partial page "
-		       "at the end of an object is written out\n");
-		return PTS_FAIL;
+	if (ret == -1) {
+		printf("Error at read(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
 	}
+
+	if (size != len) {
+		printf("File has wrong size\n");
+		return PTS_UNRESOLVED;
+	}
+
 	close(fd);
-	munmap(pa, len);
 
 	printf("Test PASSED\n");
 	return PTS_PASS;
