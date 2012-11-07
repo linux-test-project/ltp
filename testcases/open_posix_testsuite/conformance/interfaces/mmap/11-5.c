@@ -115,6 +115,8 @@ int main(void)
 	fd = shm_open(tmpfname, O_RDWR, 0);
 	shm_unlink(tmpfname);
 
+	size = 0;
+
 	while ((ret = read(fd, &ch, 1)) == 1) {
 
 		if (ch != 0) {
