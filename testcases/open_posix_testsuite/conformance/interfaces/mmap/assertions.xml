@@ -21,7 +21,6 @@ TYM The mmap( ) function shall be supported for regular files, shared memory obj
 memory objects. Support for any other type of file is unspecified.
   </assertion>
 
-
 <assertion id="5" tag="ref:XSH6:25206:25216">
 The prot shall be either PROT_NONE or the bitwise-
 inclusive OR of one or more of the other flags in the following table
@@ -219,5 +218,9 @@ The mmap( ) function shall fail if:
 [EOVERFLOW] The file is a regular file and the value of off plus len exceeds the offset
 maximum established in the open file description associated with fildes.
       </assertion>
+
+      <assertion id="32">
+[EINVAL] The value of len is zero.
+      <assertion>
 </assertions>
 
