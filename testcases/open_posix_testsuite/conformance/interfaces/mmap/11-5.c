@@ -104,6 +104,10 @@ int main(void)
 	wait(&exit_val);
 	if (!(WIFEXITED(exit_val) && (WEXITSTATUS(exit_val) == PTS_PASS))) {
 		unlink(tmpfname);
+
+		if (WIFEXITED(exit_val))
+			return WEXITSTATUS(exit_val);
+
 		printf("Child exited abnormally\n");
 		return PTS_UNRESOLVED;
 	}
