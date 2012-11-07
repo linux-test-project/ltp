@@ -81,7 +81,8 @@ int main(int argc, char **argv)
 		case 0:
 			memset(arg, 'c', length - 1);
 			arg[length - 1] = '\0';
-			for (i = 0; i < ARRAY_SZ - 1; i++)
+			array[0] = "true";
+			for (i = 1; i < ARRAY_SZ - 1; i++)
 				array[i] = arg;
 			array[ARRAY_SZ - 1] = NULL;
 			if (setrlimit(RLIMIT_STACK, &rl) == -1) {
