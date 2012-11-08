@@ -4,11 +4,11 @@
 #
 
 TST_TOTAL=${HOTPLUG06_LOOPS:-${LOOPS}}
-export TCID="hotplug06.top"
+export TCID="cpuhotplug06"
 export TST_COUNT=1
 export TST_TOTAL=${HOTPLUG06_LOOPS:-1}
 
-CPU_TO_TEST=$1
+CPU_TO_TEST=${CPU_TO_TEST:-1}
 if [ -z "$CPU_TO_TEST" ]; then
 	echo "Usage: ${0##*/} <CPU to offline>"
 	exit_clean 1

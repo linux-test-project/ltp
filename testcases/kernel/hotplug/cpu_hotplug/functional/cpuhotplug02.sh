@@ -4,11 +4,11 @@
 #
 
 HOTPLUG02_LOOPS=${HOTPLUG02_LOOPS:-${LOOPS}}
-export TCID="hotplug02"
+export TCID="cpuhotplug02"
 export TST_COUNT=1
 export TST_TOTAL=${HOTPLUG02_LOOPS:-1}
 
-CPU_TO_TEST=$1
+CPU_TO_TEST=${CPU_TO_TEST:-1}
 if [ -z "$CPU_TO_TEST" ]; then
 	echo "usage: ${0##*} <CPU to online>"
 	exit 1

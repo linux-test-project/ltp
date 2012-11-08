@@ -6,7 +6,7 @@
 # a kernel compilation load.
 
 TST_TOTAL=${HOTPLUG07_LOOPS:-${LOOPS}}
-export TCID="hotplug07"
+export TCID="cpuhotplug07"
 export TST_COUNT=1
 export TST_TOTAL=${HOTPLUG07_LOOPS:-1}
 
@@ -23,7 +23,7 @@ Issue:  Hotplug bugs have been found during kernel compiles
 
 EOF
 
-CPU_TO_TEST=${1#cpu}
+CPU_TO_TEST=${CPU_TO_TEST:-1}
 KERNEL_DIR=${2:-/usr/src/linux}
 if [ -z "${CPU_TO_TEST}" ]; then
 	echo "usage: ${0##*/} <CPU to offline> <Kernel source code directory>"

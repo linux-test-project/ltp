@@ -4,7 +4,7 @@
 #
 
 HOTPLUG04_LOOPS=${HOTPLUG04_LOOPS:-${LOOPS}}
-export TCID="hotplug04"
+export TCID="cpuhotplug04"
 export TST_COUNT=1
 export TST_TOTAL=${HOTPLUG04_LOOPS:-1}
 
