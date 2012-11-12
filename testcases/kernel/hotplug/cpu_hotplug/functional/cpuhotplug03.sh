@@ -60,15 +60,22 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 
 	# Turns on all CPUs and saves their states
 	for i in $( get_all_cpus ); do
-		if ! online_cpu $1; then
-			: $(( cpu += 1 ))
-			eval "on_${cpu}=$i"
-		fi
+            if [ "$i" = "cpu0" ]; then
+                continue
+            fi
+            if ! cpu_is_online $i; then
+		if ! online_cpu $i; then
+                    tst_resm TFAIL "Could not online cpu $i"
+                    exit_clean 1
+                fi
+                : $(( cpu += 1 ))
+                eval "on_${cpu}=$i"
+            fi
 		: $(( number_of_cpus += 1 ))
 	done
 
 	if ! offline_cpu ${CPU_TO_TEST} ; then
-		tst_resm TBAIL "CPU${CPU_TO_TEST} cannot be offlined"
+		tst_resm TFAIL "CPU${CPU_TO_TEST} cannot be offlined"
 		exit_clean 1
 	fi
 
@@ -90,7 +97,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	tst_resm TINFO "Onlining CPU ${CPU_TO_TEST}"
 	online_cpu ${CPU_TO_TEST}
 	RC=$?
-	if [ $RC -eq 0 ]; then
+	if [ $RC -ne 0 ]; then
 		tst_resm TFAIL "CPU${CPU_TO_TEST} cannot be onlined"
 		exit_clean 1
 	fi
@@ -101,7 +108,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	ps -o psr -o command --no-headers -C do_spin_loop
 	RC=$?
 	NUM=`ps -o psr -o command --no-headers -C do_spin_loop | sed -e "s/^ *//" | cut -d' ' -f 1 | grep "^${CPU_TO_TEST}$" | wc -l`
-	if [ $RC -eq 0 ]; then
+	if [ $RC -ne 0 ]; then
 		tst_resm TBROK "No do_spin_loop processes found on any processor"
 	elif [ $NUM -lt 1 ]; then
 		tst_resm TFAIL "No do_spin_loop processes found on CPU${CPU_TO_TEST}"
