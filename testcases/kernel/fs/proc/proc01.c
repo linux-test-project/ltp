@@ -52,22 +52,22 @@
 char *TCID = "proc01";
 int TST_TOTAL = 1;
 
-static int	 opt_verbose = 0;
-static int	 opt_procpath = 0;
-static char	*opt_procpathstr;
-static int	 opt_buffsize = 0;
-static int	 opt_readirq = 0;
-static char	*opt_buffsizestr;
-static int	 opt_maxmbytes;
-static char	*opt_maxmbytesstr;
+static int opt_verbose;
+static int opt_procpath;
+static char *opt_procpathstr;
+static int opt_buffsize;
+static int opt_readirq;
+static char *opt_buffsizestr;
+static int opt_maxmbytes;
+static char *opt_maxmbytesstr;
 
-static char	*procpath = "/proc";
-static char	 selfpath[] = "/proc/self";
-size_t		 buffsize = 1024;
+static char *procpath = "/proc";
+static const char selfpath[] = "/proc/self";
+size_t buffsize = 1024;
 static long long maxbytes;
 
-unsigned long long total_read = 0;
-unsigned int total_obj = 0;
+unsigned long long total_read;
+unsigned int total_obj;
 
 struct mapping {
 	char func[MAX_FUNC_NAME];
@@ -75,39 +75,37 @@ struct mapping {
 	int err;
 };
 
-typedef struct mapping Mapping;
-
 /* Those are known failures for 2.6.18 baremetal kernel and Xen dom0
    kernel on i686, x86_64, ia64, ppc64 and s390x. In addition, It looks
    like if SELinux is disabled, the test may still fail on some other
    entries. */
-const Mapping known_issues[] = {
-    {"open", "/proc/acpi/event", EBUSY},
-    {"open", "/proc/sal/cpe/data", EBUSY},
-    {"open", "/proc/sal/cmc/data", EBUSY},
-    {"open", "/proc/sal/init/data", EBUSY},
-    {"open", "/proc/sal/mca/data", EBUSY},
-    {"read", "/proc/acpi/event", EAGAIN},
-    {"read", "/proc/kmsg", EAGAIN},
-    {"read", "/proc/sal/cpe/event", EAGAIN},
-    {"read", "/proc/sal/cmc/event", EAGAIN},
-    {"read", "/proc/sal/init/event", EAGAIN},
-    {"read", "/proc/sal/mca/event", EAGAIN},
-    {"read", "/proc/xen/privcmd", EINVAL},
-    {"read", "/proc/self/mem", EIO},
-    {"read", "/proc/self/task/[0-9]*/mem", EIO},
-    {"read", "/proc/self/attr/*", EINVAL},
-    {"read", "/proc/self/task/[0-9]*/attr/*", EINVAL},
-    {"read", "/proc/self/ns/*", EINVAL},
-    {"read", "/proc/self/task/[0-9]*/ns/*", EINVAL},
-    {"read", "/proc/ppc64/rtas/error_log", EINVAL},
-    {"read", "/proc/powerpc/rtas/error_log", EINVAL},
-    {"read", "/proc/fs/nfsd/unlock_filesystem", EINVAL},
-    {"read", "/proc/fs/nfsd/unlock_ip", EINVAL},
-    {"read", "/proc/fs/nfsd/filehandle", EINVAL},
-    {"read", "/proc/fs/nfsd/.getfs", EINVAL},
-    {"read", "/proc/fs/nfsd/.getfd", EINVAL},
-    {"", "", 0}
+static const struct mapping known_issues[] = {
+	{"open", "/proc/acpi/event", EBUSY},
+	{"open", "/proc/sal/cpe/data", EBUSY},
+	{"open", "/proc/sal/cmc/data", EBUSY},
+	{"open", "/proc/sal/init/data", EBUSY},
+	{"open", "/proc/sal/mca/data", EBUSY},
+	{"read", "/proc/acpi/event", EAGAIN},
+	{"read", "/proc/kmsg", EAGAIN},
+	{"read", "/proc/sal/cpe/event", EAGAIN},
+	{"read", "/proc/sal/cmc/event", EAGAIN},
+	{"read", "/proc/sal/init/event", EAGAIN},
+	{"read", "/proc/sal/mca/event", EAGAIN},
+	{"read", "/proc/xen/privcmd", EINVAL},
+	{"read", "/proc/self/mem", EIO},
+	{"read", "/proc/self/task/[0-9]*/mem", EIO},
+	{"read", "/proc/self/attr/*", EINVAL},
+	{"read", "/proc/self/task/[0-9]*/attr/*", EINVAL},
+	{"read", "/proc/self/ns/*", EINVAL},
+	{"read", "/proc/self/task/[0-9]*/ns/*", EINVAL},
+	{"read", "/proc/ppc64/rtas/error_log", EINVAL},
+	{"read", "/proc/powerpc/rtas/error_log", EINVAL},
+	{"read", "/proc/fs/nfsd/unlock_filesystem", EINVAL},
+	{"read", "/proc/fs/nfsd/unlock_ip", EINVAL},
+	{"read", "/proc/fs/nfsd/filehandle", EINVAL},
+	{"read", "/proc/fs/nfsd/.getfs", EINVAL},
+	{"read", "/proc/fs/nfsd/.getfd", EINVAL},
+	{"", "", 0}
 };
 
 /*
@@ -121,23 +119,24 @@ const Mapping known_issues[] = {
  * installed.
  */
 #ifdef HAVE_LIBSELINUX_DEVEL
-const char lsm_should_work[][PATH_MAX] = {
-    "/proc/self/attr/*",
-    "/proc/self/task/[0-9]*/attr/*",
-    ""
+static const char lsm_should_work[][PATH_MAX] = {
+	"/proc/self/attr/*",
+	"/proc/self/task/[0-9]*/attr/*",
+	""
 };
+
 /* Place holder for none of LSM is detected. */
 #else
-const char lsm_should_work[][PATH_MAX] = {
-    ""
+static const char lsm_should_work[][PATH_MAX] = {
+	""
 };
 #endif
 
 /* Known files that does not honor O_NONBLOCK, so they will hang
    the test while being read. */
-const char error_nonblock[][PATH_MAX] = {
-    "/proc/xen/xenbus",
-    ""
+static const char error_nonblock[][PATH_MAX] = {
+	"/proc/xen/xenbus",
+	""
 };
 
 /*
@@ -147,7 +146,7 @@ const char error_nonblock[][PATH_MAX] = {
  * Return 1 when a known issue is found.
  *
  */
-int found_errno(const char *syscall, const char *obj, int tmperr)
+static int found_errno(const char *syscall, const char *obj, int tmperr)
 {
 	int i;
 
@@ -177,28 +176,20 @@ int found_errno(const char *syscall, const char *obj, int tmperr)
 	return 0;
 }
 
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * remove the tmp directory and exit
-	 */
 	TEST_CLEANUP;
 	tst_rmdir();
-
 }
 
-void setup()
+static void setup(void)
 {
-	/*
-	 * setup a default signal hander and a
-	 * temporary working directory.
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-void help()
+void help(void)
 {
 	printf("  -b x    read byte count\n");
 	printf("  -m x    max megabytes to read from single file\n");
@@ -211,13 +202,13 @@ void help()
  * add the -m option whose parameter is the
  * pages that should be mapped.
  */
-option_t options[] = {
-	{ "b:", &opt_buffsize,	&opt_buffsizestr},
-	{ "m:", &opt_maxmbytes,	&opt_maxmbytesstr},
-	{ "q",	&opt_readirq,	NULL },
-	{ "r:", &opt_procpath,	&opt_procpathstr},
-	{ "v",  &opt_verbose,	NULL },
-	{ NULL, NULL,		NULL }
+static option_t options[] = {
+	{"b:", &opt_buffsize, &opt_buffsizestr},
+	{"m:", &opt_maxmbytes, &opt_maxmbytesstr},
+	{"q", &opt_readirq, NULL},
+	{"r:", &opt_procpath, &opt_procpathstr},
+	{"v", &opt_verbose, NULL},
+	{NULL, NULL, NULL}
 };
 
 /*
@@ -240,7 +231,7 @@ option_t options[] = {
  * (however, be careful, there might be some bufferoverflow holes..)
  * reading proc files might be also a good kernel latency killer.
  */
-long readproc(const char *obj)
+static long readproc(const char *obj)
 {
 	DIR *dir = NULL;	/* pointer to a directory */
 	struct dirent *dir_ent;	/* pointer to directory entries */
@@ -282,11 +273,10 @@ long readproc(const char *obj)
 		 */
 		if (!opt_readirq && !strcmp("/proc/irq", obj)) {
 			return 0;
-		/* Open the directory to get access to what is in it */
+			/* Open the directory to get access to what is in it */
 		} else if ((dir = opendir(obj)) == NULL) {
 			if (errno != EACCES) {
-				tst_resm(TFAIL | TERRNO, "%s: opendir",
-					obj);
+				tst_resm(TFAIL | TERRNO, "%s: opendir", obj);
 				return 1;
 			}
 			return 0;
@@ -305,11 +295,11 @@ long readproc(const char *obj)
 				 * user).
 				 */
 				if (strcmp(dir_ent->d_name, ".") &&
-				     strcmp(dir_ent->d_name, "..") &&
-				     strcmp(dir_ent->d_name, "kcore") &&
-				     (fnmatch("[0-9]*", dir_ent->d_name,
-					      FNM_PATHNAME) ||
-				      strcmp(obj, procpath))) {
+				    strcmp(dir_ent->d_name, "..") &&
+				    strcmp(dir_ent->d_name, "kcore") &&
+				    (fnmatch("[0-9]*", dir_ent->d_name,
+					     FNM_PATHNAME) ||
+				     strcmp(obj, procpath))) {
 
 					if (opt_verbose) {
 						fprintf(stderr, "%s\n",
@@ -319,8 +309,7 @@ long readproc(const char *obj)
 					/* Recursively call this routine to test the
 					 * current entry */
 					snprintf(dirobj, PATH_MAX,
-						"%s/%s", obj,
-						 dir_ent->d_name);
+						 "%s/%s", obj, dir_ent->d_name);
 					ret_val += readproc(dirobj);
 
 				}
@@ -329,7 +318,7 @@ long readproc(const char *obj)
 
 			/* Close the directory */
 			if (dir)
-				(void) closedir(dir);
+				(void)closedir(dir);
 
 			return ret_val;
 
@@ -345,8 +334,8 @@ long readproc(const char *obj)
 #endif
 
 		/* is O_NONBLOCK enough to escape from FIFO's ? */
-		if ((fd = open(obj, O_RDONLY | O_NONBLOCK)) < 0) {
-
+		fd = open(obj, O_RDONLY | O_NONBLOCK);
+		if (fd < 0) {
 			tmperr = errno;
 
 			if (!found_errno("open", obj, tmperr)) {
@@ -355,7 +344,7 @@ long readproc(const char *obj)
 
 				if (errno != EACCES) {
 					tst_resm(TFAIL | TERRNO,
-						"%s: open failed", obj);
+						 "%s: open failed", obj);
 					return 1;
 				}
 
@@ -364,8 +353,8 @@ long readproc(const char *obj)
 
 		}
 
-        	/* Skip write-only files. */
-	        if ((statbuf.st_mode & S_IRUSR) == 0 &&
+		/* Skip write-only files. */
+		if ((statbuf.st_mode & S_IRUSR) == 0 &&
 		    (statbuf.st_mode & S_IWUSR) != 0) {
 			tst_resm(TINFO, "%s: is write-only.", obj);
 			return 0;
@@ -374,8 +363,8 @@ long readproc(const char *obj)
 		/* Skip files does not honor O_NONBLOCK. */
 		for (i = 0; error_nonblock[i][0] != '\0'; i++) {
 			if (!strcmp(obj, error_nonblock[i])) {
-				tst_resm(TWARN,	"%s: does not honor "
-						"O_NONBLOCK", obj);
+				tst_resm(TWARN, "%s: does not honor "
+					 "O_NONBLOCK", obj);
 				return 0;
 			}
 		}
@@ -387,26 +376,24 @@ long readproc(const char *obj)
 
 			if (nread < 0) {
 
-                		tmperr = errno;
-				(void) close(fd);
+				tmperr = errno;
+				(void)close(fd);
 
 				/* ignore no perm (not root) and no
 				 * process (terminated) errors */
-				if (!found_errno("read", obj,
-						tmperr)) {
+				if (!found_errno("read", obj, tmperr)) {
 
 					errno = tmperr;
 
-					if (errno != EACCES &&
-					    errno != ESRCH) {
+					if (errno != EACCES && errno != ESRCH) {
 						tst_resm(TFAIL | TERRNO,
-							"read failed: "
-							"%s", obj);
+							 "read failed: "
+							 "%s", obj);
 						return 1;
 					}
 					return 0;
 
-                		}
+				}
 
 			} else
 				file_total_read += nread;
@@ -420,7 +407,7 @@ long readproc(const char *obj)
 
 			if ((maxbytes > 0) && (file_total_read > maxbytes)) {
 				tst_resm(TINFO, "%s: reached maxmbytes (-m)",
-					obj);
+					 obj);
 				break;
 			}
 		} while (0 < nread);
@@ -430,7 +417,7 @@ long readproc(const char *obj)
 			fprintf(stderr, "\n");
 
 		if (0 <= fd)
-			(void) close(fd);
+			(void)close(fd);
 
 	}
 
@@ -444,7 +431,8 @@ int main(int argc, char *argv[])
 	char *msg;
 	int lc;
 
-	if ((msg = parse_opts(argc, argv, options, help)) != NULL)
+	msg = parse_opts(argc, argv, options, help);
+	if (msg != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	if (opt_buffsize) {
