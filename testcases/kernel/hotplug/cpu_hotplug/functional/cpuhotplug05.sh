@@ -27,6 +27,11 @@ Desc:   Does sar behave properly during CPU hotplug events?
 
 EOF
 
+which sar > /dev/null 2>&1 || {
+        tst_resm TCONF "sar does not exist"
+        exit_clean 1
+}
+
 # Verify the specified CPU is available
 if ! cpu_is_valid "${CPU_TO_TEST}" ; then
 	tst_resm TBROK"CPU${CPU_TO_TEST} not found"
