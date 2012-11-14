@@ -50,6 +50,7 @@
  */
 
 #include <sys/file.h>
+#include <sys/resource.h>
 #include <sys/signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -145,10 +146,6 @@ int main(int argc, char **argv)
 				}
 			}
 		}
-
-		if (access("core", F_OK) == 0) {
-			unlink("core");
-		}
 	}
 	cleanup();
 	tst_exit();
@@ -174,6 +171,13 @@ void do_child()
  */
 void setup(void)
 {
+	/* SIGFPE is expected signal, so avoid creating any corefile.
+	 * '1' is a special value, that will also avoid dumping via pipe. */
+	struct rlimit r;
+	r.rlim_cur = 1;
+	r.rlim_max = 1;
+	setrlimit(RLIMIT_CORE, &r);
+
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
