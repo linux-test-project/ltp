@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # hotplug.fns - Collection of functions for hotplugging
 # operations.
 
@@ -27,7 +29,8 @@ migrate_irq()
     IRQS=$2
     for irq in ${IRQS}
       do
-      echo $MASK > /proc/irq/${irq}/smp_affinity
+      echo $MASK > /proc/irq/${irq}/smp_affinity || \
+        tst_resm TINFO "It is NOT permitted to change the IRQ $irq smp_affinity"
     done
 }
 
@@ -106,7 +109,8 @@ offline_cpu()
 get_all_cpus()
 {
     [ -d /sys/devices/system/cpu/cpu0 ] || return 1
-    ls -dr /sys/devices/system/cpu/cpu[0-9]* || return 2
+    ls -dr /sys/devices/system/cpu/cpu[0-9]* | \
+        sed "s/\/sys\/devices\/system\/cpu\///g" || return 2
 }
 
 
@@ -183,8 +187,8 @@ cpu_is_valid()
 
 # cpu_is_online(CPU)
 #
-#  Returns a true value if the given CPU number is currently online,
-#  false otherwise.  This function requires the system's CPUs have
+#  Returns a 0 value if the given CPU number is currently online,
+#  1 otherwise.  This function requires the system's CPUs have
 #  hotplug capabilities.
 #
 cpu_is_online()

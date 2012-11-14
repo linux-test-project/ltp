@@ -54,14 +54,12 @@ if ! cpu_is_valid "${CPU_TO_TEST}" ; then
 fi
 
 CPU_COUNT=0
-cpustate=1
 
 if ! cpu_is_online "${CPU_TO_TEST}" ; then
 	if ! online_cpu ${CPU_TO_TEST} ; then
 		tst_resm TFAIL "Could not online cpu $CPU_TO_TEST"
 		exit_clean 1
 	fi
-	cpustate=0
 fi
 
 # do_clean()
@@ -81,11 +79,6 @@ do_clean()
 		offline_cpu $offline_cpu
 		: $(( CPU_COUNT -= 1 ))
 	done
-	if [ "x${cpustate}" = x1 ]; then
-		online_cpu ${CPU_TO_TEST}
-	else
-		offline_cpu ${CPU_TO_TEST}
-	fi
 }
 
 
@@ -98,7 +91,7 @@ do_offline()
 	CPU=${1#cpu}
 	# Migrate some irq's this way first.
 	IRQS=`get_all_irqs`
-	migrate_irq ${CPU} ${IRQS}
+	migrate_irq "${CPU}" "${IRQS}"
 	offline_cpu ${CPU}
 	if [ $? -ne 0 ]; then
 		if [ "$CPU" -ne 0 ]; then
@@ -190,5 +183,9 @@ do
 	fi
 
 done
+
+if [ "$RC" -eq 0 ];then
+        tst_resm TPASS "online and offline cpu${CPU} when writing disk"
+fi
 
 exit_clean $RC
