@@ -52,25 +52,25 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup_sigint(void);
-void do_child_1(void);
-void setup(void);
-void cleanup(void);
+static void setup_sigint(void);
+static void do_child_1(void);
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "waitpid07";
 int TST_TOTAL = 1;
 
 volatile int intintr;
-int flag = 0;
-void inthandlr();
-void do_exit();
+static int flag;
+static void inthandlr();
+static void do_exit(void);
 
 #define	FAILED	1
 #define MAXKIDS	8
 
 #ifdef UCLINUX
 static char *argv0;
-void do_child_2_uclinux(void);
+static void do_child_2_uclinux(void);
 #endif
 
 int main(int argc, char **argv)
@@ -82,11 +82,10 @@ int main(int argc, char **argv)
 	int fail = 0;
 	int pid;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
 #ifdef UCLINUX
 	argv0 = argv[0];
 
@@ -101,9 +100,9 @@ int main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		pid = FORK_OR_VFORK();
+		if (pid < 0) {
 			tst_resm(TFAIL, "Fork Failed, may be OK under stress");
-
 		} else if (pid == 0) {
 
 			/*
@@ -119,30 +118,29 @@ int main(int argc, char **argv)
 #else
 			do_child_1();
 #endif
-		} else {	/* parent */
+		} else {
 			fail = 0;
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "child returned bad status");
 				fail = 1;
 			}
-			if (fail) {
+			if (fail)
 				tst_resm(TFAIL, "%s FAILED", TCID);
-			} else {
+			else
 				tst_resm(TPASS, "%s PASSED", TCID);
-			}
 		}
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
 /*
  * setup_sigint()
  *	Sets up a SIGINT handler
  */
-void setup_sigint(void)
+static void setup_sigint(void)
 {
 	if ((sig_t) signal(SIGINT, inthandlr) == SIG_ERR) {
 		tst_resm(TFAIL, "signal SIGINT failed. " "errno = %d", errno);
@@ -150,10 +148,7 @@ void setup_sigint(void)
 	}
 }
 
-/*
- * do_child_1()
- */
-void do_child_1(void)
+static void do_child_1(void)
 {
 	int kid_count, fork_kid_pid[MAXKIDS];
 	int ret_val;
@@ -166,9 +161,8 @@ void do_child_1(void)
 	group1 = getpgrp();
 
 	for (kid_count = 0; kid_count < MAXKIDS; kid_count++) {
-		if (kid_count == (MAXKIDS / 2)) {
+		if (kid_count == (MAXKIDS / 2))
 			group2 = setpgrp();
-		}
 
 		intintr = 0;
 		ret_val = FORK_OR_VFORK();
@@ -182,7 +176,7 @@ void do_child_1(void)
 #else
 			do_exit();
 #endif
-		 }
+		}
 
 		if (ret_val < 0) {
 			tst_resm(TFAIL, "Fork kid %d failed. "
@@ -195,7 +189,8 @@ void do_child_1(void)
 	}
 
 	/* Check that waitpid with WNOHANG returns zero */
-	if ((ret_val = waitpid(-1, &status, WNOHANG)) != 0) {
+	ret_val = waitpid(-1, &status, WNOHANG);
+	if (ret_val != 0) {
 		tst_resm(TFAIL, "Waitpid returned wrong value");
 		tst_resm(TFAIL, "Expected 0 got %d", ret_val);
 		flag = FAILED;
@@ -226,9 +221,8 @@ void do_child_1(void)
 	errno = 0;
 	while (((ret_val = waitpid(-1, &status, WNOHANG)) != -1)
 	       || (errno == EINTR)) {
-		if ((ret_val == -1) || (ret_val == 0)) {
+		if ((ret_val == -1) || (ret_val == 0))
 			continue;
-		}
 
 		if (!WIFEXITED(status)) {
 			tst_resm(TFAIL, "Child %d did not exit "
@@ -279,11 +273,10 @@ void do_child_1(void)
 		}
 	}
 
-	if (flag) {
+	if (flag)
 		exit(1);
-	} else {
+	else
 		exit(0);
-	}
 }
 
 #ifdef UCLINUX
@@ -291,55 +284,37 @@ void do_child_1(void)
  * do_child_2_uclinux()
  *	sets up sigint handler again, then calls the normal child 2 function
  */
-void do_child_2_uclinux(void)
+static void do_child_2_uclinux(void)
 {
 	setup_sigint();
 	do_exit();
 }
 #endif
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
+}
 
- }
-
-void inthandlr()
+static void inthandlr()
 {
 	intintr++;
 }
 
-void wait_for_parent()
+static void wait_for_parent(void)
 {
 	int testvar;
 
-	while (!intintr) {
+	while (!intintr)
 		testvar = 0;
-	}
 }
 
-void do_exit()
+static void do_exit(void)
 {
 	wait_for_parent();
 	exit(3);
