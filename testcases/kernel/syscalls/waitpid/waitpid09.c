@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	waitpid09.c
+ *	waitpid09.c
  *
  * DESCRIPTION
  *	Check ability of parent to wait until child returns, and that the
@@ -69,16 +69,15 @@ int TST_TOTAL = 1;
 volatile int intintr;
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = { 10, 0 };
+static int exp_enos[] = { 10, 0 };
 
-
-void setup(void);
-void cleanup(void);
-void inthandlr();
-void do_exit();
-void setup_sigint();
+static void setup(void);
+static void cleanup(void);
+static void inthandlr();
+static void do_exit(void);
+static void setup_sigint(void);
 #ifdef UCLINUX
-void do_exit_uclinux();
+static void do_exit_uclinux(void);
 #endif
 
 int main(int argc, char **argv)
@@ -88,20 +87,20 @@ int main(int argc, char **argv)
 
 	int fail, pid, status, ret;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");
 #endif
 
 	setup();
 
-	if ((pid = FORK_OR_VFORK()) < 0) {
+	pid = FORK_OR_VFORK();
+	if (pid < 0) {
 		tst_brkm(TFAIL, cleanup, "Fork Failed");
-	 } else if (pid == 0) {
+	} else if (pid == 0) {
 		/*
 		 * Child:
 		 * Set up to catch SIGINT.  The kids will wait till a
@@ -117,14 +116,15 @@ int main(int argc, char **argv)
 			intintr = 0;
 
 			fail = 0;
-			if ((pid = FORK_OR_VFORK()) < 0) {
+			pid = FORK_OR_VFORK();
+			if (pid < 0) {
 				tst_brkm(TFAIL, cleanup, "Fork failed.");
-			 } else if (pid == 0) {	/* child */
+			} else if (pid == 0) {	/* child */
 #ifdef UCLINUX
 				if (self_exec(argv[0], "") < 0) {
 					tst_brkm(TFAIL, cleanup,
 						 "self_exec failed");
-				 }
+				}
 #else
 				do_exit();
 #endif
@@ -135,9 +135,9 @@ int main(int argc, char **argv)
 				 */
 				while (((ret = waitpid(pid, &status, WNOHANG))
 					!= 0) || (errno == EINTR)) {
-					if (ret == -1) {
+					if (ret == -1)
 						continue;
-					}
+
 					tst_resm(TFAIL, "return value for "
 						 "WNOHANG expected 0 got %d",
 						 ret);
@@ -159,9 +159,8 @@ int main(int argc, char **argv)
 
 				while (((ret = waitpid(pid, &status, 0)) != -1)
 				       || (errno == EINTR)) {
-					if (ret == -1) {
+					if (ret == -1)
 						continue;
-					}
 
 					if (ret != pid) {
 						tst_resm(TFAIL, "Expected %d "
@@ -179,9 +178,10 @@ int main(int argc, char **argv)
 				}
 			}
 
-			if ((pid = FORK_OR_VFORK()) < 0) {
+			pid = FORK_OR_VFORK();
+			if (pid < 0) {
 				tst_brkm(TFAIL, cleanup, "Second fork failed.");
-			 } else if (pid == 0) {	/* child */
+			} else if (pid == 0) {	/* child */
 				exit(0);
 			} else {	/* parent */
 				/* Give the child time to startup and exit */
@@ -189,9 +189,8 @@ int main(int argc, char **argv)
 
 				while (((ret = waitpid(pid, &status, WNOHANG))
 					!= -1) || (errno == EINTR)) {
-					if (ret == -1) {
+					if (ret == -1)
 						continue;
-					}
 
 					if (ret != pid) {
 						tst_resm(TFAIL, "proc id %d "
@@ -208,11 +207,11 @@ int main(int argc, char **argv)
 					}
 				}
 			}
-			if (fail) {
+
+			if (fail)
 				tst_resm(TFAIL, "case 1 FAILED");
-			} else {
+			else
 				tst_resm(TPASS, "case 1 PASSED");
-			}
 
 			fail = 0;
 			ret = waitpid(pid, &status, 0);
@@ -241,15 +240,14 @@ int main(int argc, char **argv)
 				fail = 1;
 			}
 
-			if (fail) {
+			if (fail)
 				tst_resm(TFAIL, "case 2 FAILED");
-			} else {
+			else
 				tst_resm(TPASS, "case 2 PASSED");
-			}
-
 		}
+
 		cleanup();
-	 } else {	/* parent */
+	} else {
 		/* wait for the child to return */
 		waitpid(pid, &status, 0);
 		if (WEXITSTATUS(status) != 0) {
@@ -265,59 +263,39 @@ int main(int argc, char **argv)
  * setup_sigint()
  *	sets up a SIGINT handler
  */
-void setup_sigint(void)
+static void setup_sigint(void)
 {
 	if ((sig_t) signal(SIGINT, inthandlr) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup, "signal SIGINT failed, errno = %d",
 			 errno);
 		tst_exit();
-	 }
+	}
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
-
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
+}
 
- }
-
-void inthandlr()
+static void inthandlr()
 {
 	intintr++;
 }
 
-void wait_for_parent()
+static void wait_for_parent(void)
 {
 	int testvar;
-	while (!intintr) {
+	while (!intintr)
 		testvar = 0;
-	}
 }
 
-void do_exit()
+static void do_exit(void)
 {
 	wait_for_parent();
 	exit(0);
@@ -328,7 +306,7 @@ void do_exit()
  * do_exit_uclinux()
  *	Sets up SIGINT handler again, then calls do_exit
  */
-void do_exit_uclinux()
+static void do_exit_uclinux(void)
 {
 	setup_sigint();
 	do_exit();
