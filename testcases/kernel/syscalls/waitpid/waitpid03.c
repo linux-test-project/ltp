@@ -56,19 +56,19 @@
 #include "test.h"
 #include "usctest.h"
 
-void do_child(int);
-void setup(void);
-void cleanup(void);
+static void do_child(int);
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "waitpid03";
 int TST_TOTAL = 1;
 
 #define	MAXUPRC	25
 
-int condition_number;
+static int condition_number;
 
 #ifdef UCLINUX
-void do_child_uclinux(void);
+static void do_child_uclinux(void);
 static int ikids_uclinux;
 #endif
 
@@ -79,11 +79,9 @@ int main(int argc, char **argv)
 
 	int status, pid[25], ret;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "d", &ikids_uclinux);
 #endif
@@ -107,7 +105,8 @@ int main(int argc, char **argv)
 		}
 
 		while (++ikids < MAXUPRC) {
-			if ((pid[ikids] = FORK_OR_VFORK()) > 0) {
+			pid[ikids] = FORK_OR_VFORK();
+			if (pid[ikids] > 0) {
 				if (DEBUG)
 					tst_resm(TINFO, "child # %d", ikids);
 			} else if (pid[ikids] == -1) {
@@ -159,15 +158,12 @@ int main(int argc, char **argv)
 		}
 		condition_number++;
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * do_child()
- */
-void do_child(int ikids)
+static void do_child(int ikids)
 {
 	if (DEBUG)
 		tst_resm(TINFO, "child:%d", ikids);
@@ -180,35 +176,18 @@ void do_child(int ikids)
  * do_child_uclinux()
  *	run do_child with the appropriate ikids variable
  */
-void do_child_uclinux()
+static void do_child_uclinux(void)
 {
 	do_child(ikids_uclinux);
 }
 #endif
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
- }
+}
