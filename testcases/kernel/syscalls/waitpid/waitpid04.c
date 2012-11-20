@@ -48,18 +48,18 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = { 10, 22, 0 };
+static int exp_enos[] = { 10, 22, 0 };
 
 char *TCID = "waitpid04";
 int TST_TOTAL = 1;
 
 #define INVAL_FLAG	-1
 
-int flag, condition_number;
+static int flag, condition_number;
 
 int main(int ac, char **av)
 {
@@ -68,10 +68,9 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	 }
 
 	setup();
 
@@ -99,9 +98,9 @@ int main(int ac, char **av)
 		}
 		condition_number++;
 
-		if (FORK_OR_VFORK() == 0) {
+		if (FORK_OR_VFORK() == 0)
 			exit(0);
-		}
+
 		pid = 1;
 		ret = waitpid(pid, &status, WUNTRACED);
 		flag = 0;
@@ -140,37 +139,20 @@ int main(int ac, char **av)
 		}
 		condition_number++;
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	    /* Pause if that option was specified
-	     * TEST_PAUSE contains the code to fork the test with the -c option.
-	     */
-	    TEST_PAUSE;
+	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
- }
+}
