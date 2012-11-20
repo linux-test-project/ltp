@@ -25,7 +25,7 @@
  *	Tests to see if pid's returned from fork and waitpid are same
  *
  * ALGORITHM
- * 	Check proper functioning of waitpid with pid = -1 and arg = WNOHANG
+ *	Check proper functioning of waitpid with pid = -1 and arg = WNOHANG
  *
  * USAGE:  <for command-line>
  *      waitpid12 [-c n] [-t]
@@ -39,7 +39,7 @@
  *      04/2002 wjhuie sigset cleanups
  *
  * Restrictions
- * 	None
+ *	None
  */
 
 #include <sys/types.h>
@@ -55,17 +55,17 @@ char *TCID = "waitpid12";
 int TST_TOTAL = 1;
 
 volatile int intintr;
-void setup(void);
-void cleanup(void);
-void inthandlr();
-void wait_for_parent();
-void do_exit();
-void setup_sigint();
+static void setup(void);
+static void cleanup(void);
+static void inthandlr();
+static void wait_for_parent(void);
+static void do_exit(void);
+static void setup_sigint(void);
 #ifdef UCLINUX
-void do_exit_uclinux();
+static void do_exit_uclinux(void);
 #endif
 
-int fail;
+static int fail;
 
 int main(int argc, char **argv)
 {
@@ -77,7 +77,8 @@ int main(int argc, char **argv)
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
 	int pid;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 #ifdef UCLINUX
@@ -94,7 +95,8 @@ int main(int argc, char **argv)
 	 * test to be a session leader and setpgrp fails.
 	 */
 
-	if (0 < (pid = FORK_OR_VFORK())) {
+	pid = FORK_OR_VFORK();
+	if (pid > 0) {
 		waitpid(pid, &status, 0);
 		if (WEXITSTATUS(status) != 0) {
 			tst_resm(TFAIL, "child returned bad status");
@@ -106,8 +108,9 @@ int main(int argc, char **argv)
 			tst_resm(TPASS, "%s PASSED", TCID);
 		cleanup();
 		tst_exit();
-	} else if (pid < 0)
+	} else if (pid < 0) {
 		tst_brkm(TBROK, cleanup, "fork failed");
+	}
 
 	/*
 	 * Set up to catch SIGINT.  The kids will wait till a SIGINT
@@ -134,15 +137,16 @@ int main(int argc, char **argv)
 		}
 
 		if (ret_val < 0)
-			tst_resm(TFAIL|TERRNO, "forking kid %d failed",
-			         kid_count);
+			tst_resm(TFAIL | TERRNO, "forking kid %d failed",
+				 kid_count);
 
 		/* parent */
 		fork_kid_pid[kid_count] = ret_val;
 	}
 
 	/* Check that waitpid with WNOHANG returns zero */
-	if ((ret_val = waitpid(0, &status, WNOHANG)) != 0) {
+	ret_val = waitpid(0, &status, WNOHANG);
+	if (ret_val != 0) {
 		tst_resm(TFAIL, "Waitpid returned wrong value");
 		tst_resm(TFAIL, "Expected 0 got %d", ret_val);
 		fail = 1;
@@ -157,8 +161,7 @@ int main(int argc, char **argv)
 	/* Now send all the kids a SIGINT to tell them to proceed */
 	for (i = 0; i < MAXKIDS; i++)
 		if (kill(fork_kid_pid[i], SIGINT) < 0)
-			tst_resm(TFAIL|TERRNO,
-			    "killing child %d failed", i);
+			tst_resm(TFAIL | TERRNO, "killing child %d failed", i);
 
 	/*
 	 * Wait till all kids have terminated.  Stash away their
@@ -203,8 +206,7 @@ int main(int argc, char **argv)
 		}
 		if (!found) {
 			tst_resm(TFAIL, "Did not find a wait_kid_pid "
-				 "for the fork_kid_pid of %d",
-				 wait_kid_pid[i]);
+				 "for the fork_kid_pid of %d", wait_kid_pid[i]);
 			for (k = 0; k < MAXKIDS; k++)
 				tst_resm(TFAIL, "fork_kid_pid[%d] = "
 					 "%d", k, fork_kid_pid[k]);
@@ -228,9 +230,9 @@ int main(int argc, char **argv)
 	errno = 0;
 	while (((ret_val = waitpid(-(group1), &status, WNOHANG)) !=
 		-1) || (errno == EINTR)) {
-		if (ret_val == -1 || ret_val == 0) {
+		if (ret_val == -1 || ret_val == 0)
 			continue;
-		}
+
 		if (!WIFEXITED(status)) {
 			tst_resm(TFAIL, "Child %d did not exit "
 				 "normally", ret_val);
@@ -262,8 +264,7 @@ int main(int argc, char **argv)
 		}
 		if (!found) {
 			tst_resm(TFAIL, "Did not find a wait_kid_pid "
-				 "for the fork_kid_pid of %d",
-				 fork_kid_pid[j]);
+				 "for the fork_kid_pid of %d", fork_kid_pid[j]);
 			for (k = 0; k < MAXKIDS; k++)
 				tst_resm(TFAIL, "fork_kid_pid[%d] = "
 					 "%d", k, fork_kid_pid[k]);
@@ -288,32 +289,30 @@ int main(int argc, char **argv)
 	tst_exit();
 }
 
-void setup_sigint(void)
+static void setup_sigint(void)
 {
 	if (signal(SIGINT, inthandlr) == SIG_ERR)
-		tst_brkm(TFAIL|TERRNO, NULL, "signal SIGINT failed");
+		tst_brkm(TFAIL | TERRNO, NULL, "signal SIGINT failed");
 }
 
-void setup(void)
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
-
 	TEST_CLEANUP;
 }
 
-void inthandlr()
+static void inthandlr()
 {
 	intintr++;
 }
 
-void wait_for_parent()
+static void wait_for_parent(void)
 {
 	int testvar;
 
@@ -321,14 +320,14 @@ void wait_for_parent()
 		testvar = 0;
 }
 
-void do_exit()
+static void do_exit(void)
 {
 	wait_for_parent();
 	exit(3);
 }
 
 #ifdef UCLINUX
-void do_exit_uclinux()
+static void do_exit_uclinux(void)
 {
 	setup_sigint();
 	do_exit();
