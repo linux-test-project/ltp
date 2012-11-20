@@ -19,18 +19,18 @@
 
 /*
  * NAME
- * 	waitpid10.c
+ *	waitpid10.c
  *
  * DESCRIPTION
- * 	Tests to see if pid's returned from fork and waitpid are same
+ *	Tests to see if pid's returned from fork and waitpid are same
  *
  * ALGORITHM
- * 	Set up to catch SIGINTs, SIGALRMs, and the real time timer.
- * 	Until the timer interrupts, do the following.  Fork 8 kids.
- * 	2 will immediately exit, 2 will sleep, 2 will be compute bound,
- * 	and 2 will fork another child, both which will do mkdirs on
- * 	the same directory 50 times.  When the timer expires, kill all
- * 	kids and remove the directory.
+ *	Set up to catch SIGINTs, SIGALRMs, and the real time timer.
+ *	Until the timer interrupts, do the following.  Fork 8 kids.
+ *	2 will immediately exit, 2 will sleep, 2 will be compute bound,
+ *	and 2 will fork another child, both which will do mkdirs on
+ *	the same directory 50 times.  When the timer expires, kill all
+ *	kids and remove the directory.
  *
  * USAGE:  <for command-line>
  *      waitpid10 [-c n] [-i n] [-I x] [-P x] [-t]
@@ -41,9 +41,9 @@
  *              -t   : Turn on syscall timing.
  *
  * NOTE
- * 	This test was designed to see if the intermittant occurrance
- * 	of a waitpid returning a pid different from that returned by the
- * 	fork can be reproduced.
+ *	This test was designed to see if the intermittant occurrance
+ *	of a waitpid returning a pid different from that returned by the
+ *	fork can be reproduced.
  *
  * History
  *	07/2001 John George
@@ -51,7 +51,7 @@
  *      04/2002 wjhuie sigset cleanups
  *
  * Restrictions
- * 	None
+ *	None
  */
 
 #include <sys/types.h>
@@ -69,21 +69,21 @@
 char *TCID = "waitpid10";
 int TST_TOTAL = 1;
 
-int alrmintr;
+static int alrmintr;
 volatile int intintr;
 
-void setup(void);
-void cleanup(void);
-void inthandlr();
-void alrmhandlr();
-void wait_for_parent();
-void do_exit();
-void do_compute();
-void do_fork();
-void do_sleep();
-void do_mkdir();
+static void setup(void);
+static void cleanup(void);
+static void inthandlr();
+static void alrmhandlr();
+static void wait_for_parent(void);
+static void do_exit(void);
+static void do_compute(void);
+static void do_fork(void);
+static void do_sleep(void);
+static void do_mkdir(void);
 
-int fail;
+static int fail;
 
 #ifdef UCLINUX
 static char *argv0;
@@ -99,9 +99,10 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+
 #ifdef UCLINUX
 	argv0 = av[0];
 
@@ -118,10 +119,8 @@ int main(int ac, char **av)
 	 * defaults to 60 sec runtime.
 	 */
 	if (ac == 2) {
-		if (sscanf(av[1], "%d", &runtime) != 1) {
+		if (sscanf(av[1], "%d", &runtime) != 1)
 			tst_resm(TFAIL, "%s is an invalid argument", av[1]);
-
-		}
 	} else {
 		runtime = 60;
 	}
@@ -152,16 +151,14 @@ int main(int ac, char **av)
 		intintr = 0;
 
 		/* Turn on the real time interval timer. */
-		if ((alarm(runtime)) < 0) {
+		if ((alarm(runtime)) < 0)
 			tst_resm(TFAIL, "alarm failed.  errno = %d", errno);
-
-		}
 
 		/* Run the test over and over until the timer expires */
 		for (;;) {
-			if (alrmintr) {
+			if (alrmintr)
 				break;
-			}
+
 			/*
 			 * Fork 8 kids. There will be 4 sets of 2 processes
 			 * doing the same thing. Save all kid pid's in an
@@ -177,12 +174,9 @@ int main(int ac, char **av)
 			intintr = 0;
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 0 */
-				//      intintr = 0;$
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 1) < 0) {
+				if (self_exec(argv0, "n", 1) < 0)
 					tst_resm(TFAIL, "self_exec 0 failed");
-
-				}
 #else
 				do_exit();
 #endif
@@ -198,12 +192,9 @@ int main(int ac, char **av)
 
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 1 */
-				//      intintr = 0;
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 1) < 0) {
+				if (self_exec(argv0, "n", 1) < 0)
 					tst_resm(TFAIL, "self_exec 1 failed");
-
-				}
 #else
 				do_exit();
 #endif
@@ -219,12 +210,9 @@ int main(int ac, char **av)
 
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 2 */
-				//      intintr = 0;
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 2) < 0) {
+				if (self_exec(argv0, "n", 2) < 0)
 					tst_resm(TFAIL, "self_exec 2 failed");
-
-				}
 #else
 				do_compute();
 #endif
@@ -240,12 +228,9 @@ int main(int ac, char **av)
 
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 3 */
-				//      intintr = 0;
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 2) < 0) {
+				if (self_exec(argv0, "n", 2) < 0)
 					tst_resm(TFAIL, "self_exec 3 failed");
-
-				}
 #else
 				do_compute();
 #endif
@@ -261,12 +246,9 @@ int main(int ac, char **av)
 
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 4 */
-				//      intintr = 0;
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 3) < 0) {
+				if (self_exec(argv0, "n", 3) < 0)
 					tst_resm(TFAIL, "self_exec 4 failed");
-
-				}
 #else
 				do_fork();
 #endif
@@ -282,12 +264,9 @@ int main(int ac, char **av)
 
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 5 */
-				//      intintr = 0;
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 3) < 0) {
+				if (self_exec(argv0, "n", 3) < 0)
 					tst_resm(TFAIL, "self_exec 5 failed");
-
-				}
 #else
 				do_fork();
 #endif
@@ -303,12 +282,9 @@ int main(int ac, char **av)
 
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 6 */
-				//      intintr = 0;
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 4) < 0) {
+				if (self_exec(argv0, "n", 4) < 0)
 					tst_resm(TFAIL, "self_exec 6 failed");
-
-				}
 #else
 				do_sleep();
 #endif
@@ -324,12 +300,9 @@ int main(int ac, char **av)
 
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {	/* child 7 */
-				//      intintr = 0;
 #ifdef UCLINUX
-				if (self_exec(argv0, "n", 4) < 0) {
+				if (self_exec(argv0, "n", 4) < 0)
 					tst_resm(TFAIL, "self_exec 7 failed");
-
-				}
 #else
 				do_sleep();
 #endif
@@ -358,7 +331,6 @@ int main(int ac, char **av)
 					tst_resm(TFAIL, "Kill of child %d "
 						 "failed, errno = %d", i,
 						 errno);
-
 				}
 			}
 
@@ -369,9 +341,9 @@ int main(int ac, char **av)
 				while (((ret_val = waitpid(fork_kid_pid[i],
 							   &status, 0)) != -1)
 				       || (errno == EINTR)) {
-					if (ret_val == -1) {
+					if (ret_val == -1)
 						continue;
-					}
+
 					wait_kid_pid[kid_count++] = ret_val;
 				}
 			}
@@ -414,73 +386,53 @@ int main(int ac, char **av)
 		/* Kill kids and remove file from do_mkdir */
 		rmdir("waitpid14.ttt.ttt");
 
-		if (fail) {
+		if (fail)
 			tst_resm(TFAIL, "Test FAILED");
-		} else {
+		else
 			tst_resm(TPASS, "Test PASSED");
-		}
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
+}
 
- }
-
-void alrmhandlr()
+static void alrmhandlr()
 {
 	alrmintr++;
 }
 
-void inthandlr()
+static void inthandlr()
 {
 	intintr++;
 }
 
-void wait_for_parent()
+static void wait_for_parent(void)
 {
 	int testvar;
 
-	while (!intintr) {
+	while (!intintr)
 		testvar = 0;
-	}
 }
 
-void do_exit()
+static void do_exit(void)
 {
 	wait_for_parent();
 	exit(3);
 }
 
-void do_compute()
+static void do_compute(void)
 {
 	int i;
 
@@ -500,7 +452,7 @@ void do_compute()
 	exit(4);
 }
 
-void do_fork()
+static void do_fork(void)
 {
 	int fork_pid, wait_pid;
 	int status, i;
@@ -532,9 +484,8 @@ void do_fork()
 		errno = 0;
 		while (((wait_pid = waitpid(fork_pid, &status, 0)) != -1) ||
 		       (errno == EINTR)) {
-			if (wait_pid == -1) {
+			if (wait_pid == -1)
 				continue;
-			}
 
 			if (fork_pid != wait_pid) {
 				tst_resm(TFAIL, "Didnt get a pid returned "
@@ -550,7 +501,7 @@ void do_fork()
 	exit(4);
 }
 
-void do_sleep()
+static void do_sleep(void)
 {
 	wait_for_parent();
 	sleep(1);
@@ -559,7 +510,7 @@ void do_sleep()
 	exit(4);
 }
 
-void do_mkdir()
+static void do_mkdir(void)
 {
 	int ret_val;
 
