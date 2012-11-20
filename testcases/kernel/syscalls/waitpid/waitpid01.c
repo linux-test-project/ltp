@@ -52,8 +52,8 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "waitpid01";
 int TST_TOTAL = 1;
@@ -66,11 +66,9 @@ int main(int argc, char **argv)
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	 }
 
 	setup();
 
@@ -82,7 +80,8 @@ int main(int argc, char **argv)
 		exno = 1;
 		sig = 14;
 
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		pid = FORK_OR_VFORK();
+		if (pid < 0) {
 			tst_brkm(TFAIL, cleanup, "Fork Failed");
 		} else if (pid == 0) {
 			alarm(2);
@@ -92,9 +91,8 @@ int main(int argc, char **argv)
 			errno = 0;
 			while (((npid = waitpid(pid, &status, 0)) != -1) ||
 			       (errno == EINTR)) {
-				if (errno == EINTR) {
+				if (errno == EINTR)
 					continue;
-				}
 
 				if (npid != pid) {
 					tst_resm(TFAIL, "waitpid error: "
@@ -132,37 +130,18 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * setup()
- *      performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *      performs all ONE TIME cleanup for this test at
- *      completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
- }
+}
