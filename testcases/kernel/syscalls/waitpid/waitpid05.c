@@ -62,15 +62,15 @@
 #include "test.h"
 #include "usctest.h"
 
-void do_child(int);
-void setup(void);
-void cleanup(void);
+static void do_child(int);
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "waitpid05";
 int TST_TOTAL = 1;
 
 #ifdef UCLINUX
-void do_child_uclinux(void);
+static void do_child_uclinux(void);
 static int sig_uclinux;
 #endif
 
@@ -81,10 +81,10 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "d", &sig_uclinux);
 #endif
@@ -108,9 +108,9 @@ int main(int ac, char **av)
 
 		exno = 1;
 		for (sig = 1; sig <= 15; sig++) {
-			if (sig == SIGUSR1 || sig == SIGUSR2 || sig == SIGBUS) {
+			if (sig == SIGUSR1 || sig == SIGUSR2 || sig == SIGBUS)
 				continue;
-			}
+
 			/*Initialize signal to its default action */
 			signal(sig, SIG_DFL);
 			pid = FORK_OR_VFORK();
@@ -127,9 +127,9 @@ int main(int ac, char **av)
 				errno = 0;
 				while (((npid = waitpid(pid, &status, 0)) !=
 					-1) || (errno == EINTR)) {
-					if (errno == EINTR) {
+					if (errno == EINTR)
 						continue;
-					}
+
 					if (npid != pid) {
 						tst_resm(TFAIL, "waitpid "
 							 "error: unexpected "
@@ -148,8 +148,7 @@ int main(int ac, char **av)
 					if (nsig >= 128) {
 						nsig -= 128;
 						if ((sig == 1) || (sig == 2) ||
-						    (sig == 9) ||
-						    (sig == 13) ||
+						    (sig == 9) || (sig == 13) ||
 						    (sig == 14) ||
 						    (sig == 15)) {
 							tst_resm(TFAIL,
@@ -202,19 +201,15 @@ int main(int ac, char **av)
 			}
 		}
 
-		if (access("core", F_OK) == 0) {
+		if (access("core", F_OK) == 0)
 			unlink("core");
-		}
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * do_child()
- */
-void do_child(int sig)
+static void do_child(int sig)
 {
 	int exno = 1;
 	int pid = getpid();
@@ -230,28 +225,18 @@ void do_child(int sig)
  * do_child_uclinux()
  *	run do_child with the appropriate sig variable
  */
-void do_child_uclinux()
+static void do_child_uclinux(void)
 {
 	do_child(sig_uclinux);
 }
 #endif
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 	struct rlimit newlimit;
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 * You want to make sure you do this before you create your temporary
-	 * directory.
-	 */
 	TEST_PAUSE;
 
-	/* Create a unique temporary directory and chdir() to it. */
 	tst_tmpdir();
 
 	newlimit.rlim_max = newlimit.rlim_cur = RLIM_INFINITY;
@@ -260,19 +245,8 @@ void setup(void)
 			 "setrlimit(RLIMIT_CORE,RLIM_INFINITY) failed; this may cause some false core-dump test failures");
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
- }
+}
