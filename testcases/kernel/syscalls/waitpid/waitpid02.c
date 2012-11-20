@@ -58,9 +58,9 @@
 #include "test.h"
 #include "usctest.h"
 
-void do_child(void);
-void setup(void);
-void cleanup(void);
+static void do_child(void);
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "waitpid02";
 int TST_TOTAL = 1;
@@ -73,10 +73,9 @@ int main(int argc, char **argv)
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
@@ -105,9 +104,8 @@ int main(int argc, char **argv)
 			errno = 0;
 			while (((npid = waitpid(pid, &status, 0)) != -1) ||
 			       (errno == EINTR)) {
-				if (errno == EINTR) {
+				if (errno == EINTR)
 					continue;
-				}
 
 				if (npid != pid) {
 					tst_resm(TFAIL, "waitpid error: "
@@ -147,15 +145,12 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * do_child()
- */
-void do_child()
+static void do_child(void)
 {
 	int exno = 1;
 
@@ -165,11 +160,7 @@ void do_child()
 	exit(exno);
 }
 
-/*
- * setup()
- *      performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 	/* SIGFPE is expected signal, so avoid creating any corefile.
 	 * '1' is a special value, that will also avoid dumping via pipe. */
@@ -178,23 +169,10 @@ void setup(void)
 	r.rlim_max = 1;
 	setrlimit(RLIMIT_CORE, &r);
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
- }
+}
