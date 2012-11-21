@@ -536,7 +536,7 @@ do
 	ls -ln --time-style=+%b" "%e" "%H:%M file1.in file2.in file3.in |
 	while read permissions link uid gid size month day time file_name
 	do
-		echo "$permissions;$uid/$gid;$size;$month;$day;$time;$file_name"
+		echo "${permissions%.};$uid/$gid;$size;$month;$day;$time;$file_name"
 	done >>  $TCtmp/lib.a.exp
 
 	ar -tv $TCtmp/lib.a |
