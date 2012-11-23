@@ -466,7 +466,7 @@ test04()
     run_on_cpu=0
     running_on_cpu=0
 
-    no_of_cpus=$(ls /sys/devices/system/cpu/ | wc -w)
+    no_of_cpus=$(tst_ncpus)
     # not sure whether cpu's can't be in odd number
     run_on_cpu=$[$[$no_of_cpus+1]/2]
     numactl --physcpubind=$run_on_cpu support_numa $PAUSE & #just waits for sigint
