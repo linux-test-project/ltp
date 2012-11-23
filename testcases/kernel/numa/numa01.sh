@@ -807,7 +807,7 @@ test010()
         fi
 
             col=2                       #column represents node0 in numastat o/p
-        numnodes=$(ls /sys/devices/system/node | wc -l)
+        numnodes=$(ls /sys/devices/system/node | grep -Ec "node?")
         Preferred_node=$[$[$numnodes/2]-1]
         col=$[$Preferred_node+2]
         numastat > $LTPTMP/numalog
