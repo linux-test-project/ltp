@@ -21,9 +21,9 @@
 #define TIMERSEC 2
 #define ACCEPTABLEDELTA 1
 
-int caught_signal;
+static volatile int caught_signal;
 
-void handler(int signo)
+static void handler(int signo)
 {
 	caught_signal = 1;
 }
@@ -83,8 +83,11 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	while (!caught_signal)
-		;
+	/*
+	 * The bussy loop is intentional. The signal is send after
+	 * two seconds of CPU time has been accumulated.
+	 */
+	while (!caught_signal);
 
 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts_end) != 0) {
 		perror("clock_gettime() failed");
