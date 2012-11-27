@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,100 +18,35 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*
- * NAME
- *	getsid02.c
- *
- * DESCRIPTION
- *	getsid02 - call getsid() with an invalid PID to produce a failure
- *
- * CALLS
- *	getsid()
- *
- * ALGORITHM
- *	loop if that option was specified
- *	issue the system call with an illegal PID value
- *	check the errno value
- *	  issue a PASS message if we get ESRCH
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	  break any remaining tests
- *	  call cleanup
- *
- * USAGE:  <for command-line>
- *  getsid02 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
- */
 #define _GNU_SOURCE 1
-
-/*
- * When attempting to build on SUSE 10, the make fails trying to compile
- * because CONFIG_BASE_SMALL is undefined.
- */
-#ifndef CONFIG_BASE_SMALL
-#define CONFIG_BASE_SMALL 0
-#endif
 
 #include "test.h"
 #include "usctest.h"
 
 #include <errno.h>
 
-/*
- * See the Makefile for comments about the following preprocessor code.
- */
-
-#ifdef _LTP_TASKS_H
-#include <linux/tasks.h>	/* for PID_MAX - old */
-#endif
-
-/*
- * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
- */
-#if defined(__powerpc__) || defined(__powerpc64__)
-#define PID_MAX 0x8000
-#endif
-
-void cleanup(void);
-void setup(void);
-
 char *TCID = "getsid02";
 int TST_TOTAL = 1;
-int pid_max = 32768;		/* Default value for PID_MAX  */
 
-int exp_enos[] = { ESRCH, 0 };	/* 0 terminated list of expected errnos */
+static unsigned long pid_max;
+
+static void cleanup(void);
+static void setup(void);
+
+int exp_enos[] = {ESRCH, 0};
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup */
+	setup();
 
-	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-
-		/*
-		 * call the system call with the TEST() macro
-		 * with an illegal PID value
-		 */
 
 		TEST(getsid(pid_max + 1));
 
@@ -118,8 +54,6 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "call succeed when failure expected");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {
 		case ESRCH:
@@ -135,52 +69,21 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
 void setup(void)
 {
-#if !defined PID_MAX_DEFAULT && !defined PID_MAX
-	FILE *fp;
-#endif
-
-#ifdef PID_MAX_DEFAULT
-	pid_max = PID_MAX_DEFAULT;
-#elif defined(PID_MAX)
-	pid_max = PID_MAX;
-#else
-
-	if ((fp = fopen("/proc/sys/kernel/pid_max", "r")) != NULL) {
-		fscanf(fp, "%d", &pid_max);
-		fclose(fp);
-	} else {
-		tst_resm(TFAIL, "Cannot open /proc/sys/kernel/pid_max");
-		exit(0);
-	}
-#endif
+	SAFE_FILE_SCANF(NULL, "/proc/sys/kernel/pid_max", "%lu", &pid_max);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Set up the expected error numbers for -e option */
+	
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
