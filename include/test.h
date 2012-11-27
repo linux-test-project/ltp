@@ -44,6 +44,8 @@
 
 #include "compiler.h"
 
+#include "safe_file_ops.h"
+
 /* Use low 6 bits to encode test type */
 #define TTYPE_MASK 0x3f
 #define TPASS      0    /* Test passed flag */
