@@ -60,11 +60,11 @@
 char *TCID = "fork13";
 int TST_TOTAL = 1;
 
-static char pid_max[BUFSIZ];
+static unsigned long pid_max;
 
-#define PATH	"/proc/sys/kernel/pid_max"
-#define PIDMAX	32768
-#define RETURN	256
+#define PID_MAX_PATH "/proc/sys/kernel/pid_max"
+#define PID_MAX 32768
+#define RETURN 256
 
 static void setup(void);
 static int pid_distance(pid_t first, pid_t second);
@@ -135,41 +135,21 @@ static void check(void)
 
 static void setup(void)
 {
-	FILE *fp;
-	int fd;
-	char buf[BUFSIZ];
-
 	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
-	/* Backup pid_max value. */
-	fp = fopen(PATH, "r+");
-	if (fp == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
-	if (fgets(pid_max, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fgets");
-	fclose(fp);
 
-	fd = open(PATH, O_WRONLY);
-	if (fd == -1)
-		tst_resm(TBROK | TERRNO, "open");
-	sprintf(buf, "%d", PIDMAX);
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_resm(TBROK | TERRNO, "write");
-	close(fd);
+	/* Backup pid_max value. */
+	SAFE_FILE_SCANF(NULL, PID_MAX_PATH, "%lu", &pid_max);
+	
+	SAFE_FILE_PRINTF(NULL, PID_MAX_PATH, "%d", PID_MAX);
 }
 
 static void cleanup(void)
 {
-	int fd;
-
-	fd = open(PATH, O_WRONLY);
-	if (fd == -1)
-		tst_resm(TWARN | TERRNO, "open");
-	if (write(fd, pid_max, strlen(pid_max)) != strlen(pid_max))
-		tst_resm(TWARN | TERRNO, "write");
-	close(fd);
+	/* Restore pid_max value. */
+	SAFE_FILE_PRINTF(NULL, PID_MAX_PATH, "%lu", pid_max);
 
 	TEST_CLEANUP;
 }
@@ -178,5 +158,5 @@ static void cleanup(void)
    expected to be smaller than the second. */
 static int pid_distance(pid_t first, pid_t second)
 {
-	return (second + PIDMAX - first) % PIDMAX;
+	return (second + PID_MAX - first) % PID_MAX;
 }
