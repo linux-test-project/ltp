@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,41 +19,8 @@
  */
 
 /*
- * NAME
- *	wait401.c
- *
- * DESCRIPTION
  *	wait401 - check that a call to wait4() correctly waits for a child
  *		  process to exit
- *
- * ALGORITHM
- *	loop if that option was specified
- *	fork a child.
- *	issue the system call
- *	check the return value
- *	  if return value == -1
- *	    issue a FAIL message, break remaining tests and cleanup
- *	  if we are doing functional testing
- *	    issue a PASS message if the wait4 call returned the child's pid
- *	  else
- *	    issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *      wait401 [-c n] [-f] [-e] [-i n] [-I x] [-P x] [-t]
- *      where,  -c n : Run n copies concurrently.
- *		-f   : Turn off functionality Testing.
- *              -i n : Execute test n times.
- *              -I x : Execute test for x seconds.
- *              -P x : Pause for x seconds between iterations.
- *              -t   : Turn on syscall timing.
- *
- * History
- *	07/2001 John George
- *		-Ported
- *
- * Restrictions
- *	none
  */
 
 #include "test.h"
@@ -64,11 +32,11 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 
-void cleanup(void);
-void setup(void);
-
 char *TCID = "wait401";
 int TST_TOTAL = 1;
+
+static void cleanup(void);
+static void setup(void);
 
 int main(int ac, char **av)
 {
@@ -76,45 +44,29 @@ int main(int ac, char **av)
 	char *msg;
 	pid_t pid;
 	int status = 1;
-	struct rusage *rusage = NULL;
+	struct rusage rusage;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-
-		/*
-		 * Allocate some space for the rusage structure
-		 */
-
-		if ((rusage = (struct rusage *)malloc(sizeof(struct rusage)))
-		    == NULL) {
-			tst_brkm(TBROK, cleanup, "malloc() failed");
-		}
 
 		pid = FORK_OR_VFORK();
 
-		if (pid == -1) {
+		switch (pid) {
+		case -1:
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
-
-		if (pid == 0) {	/* this is the child */
-			/*
-			 * sleep for a moment to let us do the test
-			 */
+		break;
+		case 0:
 			sleep(1);
 			exit(0);
-		} else {	/* this is the parent */
-
-			/* call wait4 with the TEST() macro */
-			TEST(wait4(pid, &status, 0, rusage));
+		break;
+		default:
+			TEST(wait4(pid, &status, 0, &rusage));
+		break;
 		}
 
 		if (TEST_RETURN == -1) {
@@ -124,9 +76,6 @@ int main(int ac, char **av)
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * The return from this call should be non-zero.
-			 */
 			if (WIFEXITED(status) == 0) {
 				tst_brkm(TFAIL, cleanup,
 					 "%s call succeeded but "
@@ -143,41 +92,20 @@ int main(int ac, char **av)
 			}
 		}
 		tst_resm(TPASS, "%s call succeeded", TCID);
-
-		/*
-		 * Clean up things in case we are looping.
-		 */
-		free(rusage);
-		rusage = NULL;
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- *	       or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
