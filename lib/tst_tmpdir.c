@@ -99,6 +99,11 @@ static void tmpdir_cleanup(void);
 extern char *TCID;		/* defined/initialized in main() */
 static char *TESTDIR = NULL;	/* the directory created */
 
+int tst_tmpdir_created(void)
+{
+	return TESTDIR != NULL;
+}
+
 char *get_tst_tmpdir(void)
 {
 	/* Smack the user for calling things out of order. */
