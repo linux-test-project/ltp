@@ -1,67 +1,28 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * Test Name: pause02
- *
- * Test Description:
- *  Verify that, pause() returns -1 and sets errno to EINTR after receipt
- *  of a signal which is caught by the calling process. Also, verify that
- *  the calling process will resume execution from the point of suspension.
- *
- * Expected Result:
- *  pause() should fail with return value -1 and set expected errno.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	if errno set == expected errno
- *		Issue sys call fails with expected return value and errno.
- *	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *
- * Usage:  <for command-line>
- *  pause02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
+ * Verify that, pause() returns -1 and sets errno to EINTR after receipt of a
+ * signal which is caught by the calling process. Also, verify that the calling
+ * process will resume execution from the point of suspension.
  */
+
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -70,59 +31,52 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "pause02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "pause02";
+int TST_TOTAL = 1;
 
-int exp_enos[] = { EINTR, 0 };
-pid_t cpid;			/* child process id */
+static int exp_enos[] = {EINTR, 0};
+static pid_t cpid;
 
-void do_child();		/* Function to run in child process */
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-void sig_handle(int sig);	/* signal handler for SIGINT */
-void kill_handle(int sig);	/* sends SIGKILL for child */
-
-#ifdef UCLINUX
-void do_child_uclinux();	/* Setup SIGINT handler then do_child() */
-#endif
+static void do_child(void);
+static void setup(void);
+static void cleanup(void);
+static void kill_handle(int sig);
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	int status;		/* child process exit status */
-	int rval;		/* return value for wait() */
+	int status;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
 #ifdef UCLINUX
-	maybe_run_child(&do_child_uclinux, "");
+	maybe_run_child(&do_child, "");
 #endif
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		Tst_count = 0;
 
-		/* Creat a new process using fork() */
-		if ((cpid = FORK_OR_VFORK()) == -1) {
+		cpid = FORK_OR_VFORK();
+		switch (cpid) {
+		case -1:
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
-
-		if (cpid == 0) {	/* Child process */
+		break;
+		case 0:
 #ifdef UCLINUX
-			if (self_exec(av[0], "") < 0) {
+			if (self_exec(av[0], "") < 0)
 				tst_brkm(TBROK, cleanup, "self_exec failed");
-			}
 #else
 			do_child();
 #endif
+		break;
+		default:
+		break;
 		}
+
 
 		/* Parent process */
 		/* sleep to ensure the child executes */
@@ -134,9 +88,6 @@ int main(int ac, char **av)
 		 */
 		kill(cpid, SIGINT);
 
-		/* Sleep to ensure the signal sent is effected */
-		sleep(1);
-
 		/*
 		 * In case pause() doesn't return witin 2 seconds,
 		 * set the alarm to send SIGKILL for the child.
@@ -144,127 +95,70 @@ int main(int ac, char **av)
 		signal(SIGALRM, kill_handle);
 		alarm(2);
 
-		/* wait for child to exit */
 		wait(&status);
-
-		TEST_ERROR_LOG(status >> 8);
 
 		/* Reset the timer in case pause() returned */
 		alarm(0);
 
-		/*
-		 * Verify that, wait() returned due to normal
-		 * or abnormal termination of child due to
-		 * receipt of signal SIGKILL.
-		 * Receipt of SIGKILL indicates that pause()
-		 * didn't returned after receipt of SIGINT.
-		 */
-		if (WTERMSIG(status) == SIGKILL) {
-			rval = wait(&status);
-			if ((rval == -1) && (errno == ECHILD)) {
-				tst_resm(TFAIL, "pause() didn't return "
-					 "as expected");
-			}
+		if (WIFEXITED(status)) {
+			if (WEXITSTATUS(status) == 0)
+				tst_resm(TPASS, "pause was interrupted correctly");
+			else
+				tst_resm(TFAIL, "pause was interrupted but the"
+				                "retval and/or errno was wrong");
+		} else {
+			tst_resm(TFAIL, "Pause was not interrupted");
 		}
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * do_child()
- */
-void do_child()
+static void sig_handle(int sig)
 {
-	/* Suspend the child using pause() */
+}
+
+static void do_child(void)
+{
+	if (signal(SIGINT, sig_handle) == SIG_ERR) {
+		fprintf(stderr, "Child: Failed to setup signal handler\n");
+		exit(1);
+	}
+
 	TEST(pause());
 
-	/*
-	 * Child resumes execution after receipt of
-	 * interrupt signal sent by the parent.
-	 */
 	TEST_ERROR_LOG(TEST_ERRNO);
-	if ((TEST_RETURN == -1) && (TEST_ERRNO == EINTR)) {
-		/* pause returned */
-		tst_resm(TPASS, "Functionality of pause() " "is correct");
-	} else {
-		tst_resm(TFAIL, "pause() returned %ld, error=%d",
-			 TEST_RETURN, TEST_ERRNO);
-	}
+
 	if (TEST_RETURN == -1) {
-		exit(TEST_ERRNO);
-	} else {
-		exit(-1);
-	}
-}
-
-/*
- * do_child_uclinux()
- */
-void do_child_uclinux()
-{
-	/* Catch SIGINT */
-	if (signal(SIGINT, sig_handle) == SIG_ERR) {
-		tst_brkm(TBROK, cleanup, "signal() fails to catch SIGINT");
+		if (TEST_ERRNO == EINTR)
+			exit(0);
+			
+		fprintf(stderr, "Child: Pause returned -1 but errno is %d (%s)\n",
+		        TEST_ERRNO, strerror(TEST_ERRNO));
+		exit(1);
 	}
 
-	do_child();
+	fprintf(stderr, "Child: Pause returned %ld\n", TEST_RETURN);
+	exit(1);
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *	     Set the signal handler to catch SIGINT signal.
- */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
-	/* Catch SIGINT */
-	if (signal(SIGINT, sig_handle) == SIG_ERR) {
-		tst_brkm(TBROK, cleanup, "signal() fails to catch SIGINT");
-	}
+	
+	TEST_EXP_ENOS(exp_enos);
 }
 
-/*
- * sig_handle(int sig)
- *    This is the signal handler to handle the SIGINT signal.
- *    When the child receives SIGINT signal while pausing, parent catches
- *    this signal by executing this handler which simply returns.
- */
-void sig_handle(int sig)
+/* Send SIGKILL to the child */
+static void kill_handle(int sig)
 {
-}
-
-/*
- * void
- * kill_handle(int sig)
- *   This is the signal handler to handle the SIGALRM signal.
- *   This handler is executed if and only if pause() doesn't return
- *   in child after sending SIGINT signal. This means child remains
- *   in sleep until kill signal is sent.
- *   Send SIGKILL to child to terminate it.
- */
-void kill_handle(int sig)
-{
-	/* Send SIGKILL to child */
 	kill(cpid, SIGKILL);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
