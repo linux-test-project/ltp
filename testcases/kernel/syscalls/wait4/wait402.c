@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,39 +18,9 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*
- * NAME
- *	wait402.c
- *
- * DESCRIPTION
- *	wait402 - check for ECHILD errno when using an illegal pid value
- *
- * ALGORITHM
- *	loop if that option was specified
- *	issue the system call with an illegal pid value
- *	check the errno value
- *	  issue a PASS message if we get ECHILD
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	  break any remaining tests
- *	  call cleanup
- *
- * USAGE:  <for command-line>
- *  wait402 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
- *	where,  -c n : Run n copies concurrently.
- *		-e   : Turn on errno logging.
- *		-i n : Execute test n times.
- *		-I x : Execute test for x seconds.
- *		-P x : Pause for x seconds between iterations.
- *		-t   : Turn on syscall timing.
- *
- * History
- *	07/2001 John George
- *		-Ported
- *
- * Restrictions
- *	none
- */
+ /*
+  * wait402 - check for ECHILD errno when using an illegal pid value
+  */
 
 #include "test.h"
 #include "usctest.h"
@@ -62,92 +33,47 @@
 #include <stdlib.h>
 #include <string.h>
 
-void cleanup(void);
-void setup(void);
-
 char *TCID = "wait402";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 10, 0 };
+static void cleanup(void);
+static void setup(void);
 
-/* Get the max number of message queues allowed on system */
-static long get_pid_max()
+static int exp_enos[] = {ECHILD, 0};
+
+static long get_pid_max(void)
 {
-	FILE *fp;
-	char buff[512];
+	long pid_max;
 
-	/* Get the max number of message queues allowed on system */
-	fp = fopen("/proc/sys/kernel/pid_max", "r");
-	if (fp == NULL)
-		tst_brkm(TBROK, cleanup,
-			 "Could not open /proc/sys/kernel/pid_max");
-	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup,
-			 "Could not read /proc/sys/kernel/pid_max");
-	fclose(fp);
+	SAFE_FILE_SCANF(NULL, "/proc/sys/kernel/pid_max", "%ld", &pid_max);
 
-	return atol(buff);
+	return pid_max;
 }
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	pid_t pid;
 	pid_t epid = get_pid_max() + 1;
 
 	int status = 1;
-	struct rusage *rusage = NULL;
+	struct rusage rusage;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/*
-		 * Allocate some space for the rusage structure.
-		 */
-
-		if ((rusage = (struct rusage *)malloc(sizeof(struct rusage)))
-		    == NULL) {
-			tst_brkm(TBROK, cleanup, "malloc() failed");
-		}
-
-		pid = FORK_OR_VFORK();
-
-		if (pid == -1) {
-			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
-
-		if (pid == 0) {	/* this is the child */
-			/*
-			 * sleep for a moment to let us do the test
-			 */
-			sleep(2);
-			exit(0);
-		} else {	/* this is the parent */
-			/*
-			 * call wait4 with the TEST() macro.  epid is set
-			 * to an illegal positive value.  This should give
-			 * an ECHILD error.
-			 */
-			TEST(wait4(epid, &status, 0, rusage));
-		}
+		TEST(wait4(epid, &status, 0, &rusage));
 
 		if (TEST_RETURN == 0) {
 			tst_brkm(TFAIL, cleanup,
 				 "call failed to produce expected error - errno = %d - %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {
 		case ECHILD:
@@ -161,45 +87,23 @@ int main(int ac, char **av)
 				 "error - errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		}
-
-		/*
-		 * Clean up things in case we are looping.
-		 */
-		free(rusage);
-		rusage = NULL;
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- *	       or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	wait(NULL);
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
