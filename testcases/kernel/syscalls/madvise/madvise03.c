@@ -1,12 +1,7 @@
-/***************************************************************************
- *           madvise03 .c
- *
- *  Fri Nov 23 15:00:59 2007
- *  Copyright (c) International Business Machines  Corp., 2004
- *  Email : pavan@in.ibm.com
- ****************************************************************************/
-
 /*
+ *  Copyright (c) International Business Machines  Corp., 2004
+ *  Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -22,50 +17,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/**********************************************************
- *    TEST CASES
- *
- *	1.) madvise(2) advices...(See Description)
- *
- *	INPUT SPECIFICATIONS
- *		The standard options for system call tests are accepted.
- *		(See the parse_opts(3) man page).
- *
- *	OUTPUT SPECIFICATIONS
- *		Output describing whether test cases passed or failed.
- *
- *	ENVIRONMENTAL NEEDS
- *		None
- *
- *	SPECIAL PROCEDURAL REQUIREMENTS
- *		None
- *
- *	DETAILED DESCRIPTION
- *		This is a test case for madvise(2) system call.
- *		It tests madvise(2) with combinations of advice values.
- *		No error should be returned.
- *
- *		Total 3 Test Cases :-
- *		(1) Test Case for MADV_REMOVE
- *		(2) Test Case for MADV_DONTFORK
- *		(3) Test Case for MADV_DOFORK
- *
- *	Setup:
- *		Setup signal handling.
- *		Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *		Loop if the proper options are given.
- *		Execute system call
- *		Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *		Otherwise, Issue a PASS message.
- *
- *	Cleanup:
- *		Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+/*
+ * This is a test case for madvise(2) system call. No error should be returned.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,8 +43,6 @@ char *TCID = "madvise03";
 //#define MM_DEBUG 1
 
 int TST_TOTAL = 3;
-
-#define BUFFER_SIZE  256
 
 static void setup(void);
 static void cleanup(void);
@@ -202,15 +154,8 @@ static void cleanup(void)
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }
 
-/***************************************************************
- * check_and_print(advice) - checks the return value
- *		of the previous madvise call
- *		and based on the advice value
- *		prints the appropriate messages.
- ***************************************************************/
 static void check_and_print(char *advice)
 {
 	if (TEST_RETURN == -1) {
@@ -223,38 +168,16 @@ static void check_and_print(char *advice)
 	}
 }
 
-/***************************************************************
- * get_shmmax() - Reads the size of share memory size
- *                     from /proc/sys/kernel/shmmax
- ***************************************************************/
 static long get_shmmax(void)
 {
 	long maxsize;
-	FILE *f;
-	int retcode = 0;
-	char buff[BUFFER_SIZE];
+	
+	SAFE_FILE_SCANF(cleanup, "/proc/sys/kernel/shmmax", "%ld", &maxsize);
 
-	f = fopen("/proc/sys/kernel/shmmax", "r");
-	if (!f)
-		tst_brkm(TFAIL, cleanup,
-			 "Could not open /proc/sys/kernel/shmmax for reading");
-
-	while (fgets(buff, BUFFER_SIZE, f) != NULL) {
-		retcode = sscanf(buff, "%ld ", &maxsize);
-		if (retcode == 1)
-			break;
-	}
-
-	if (retcode != 1) {
-		fclose(f);
-		tst_brkm(TFAIL, cleanup, "Failed reading size of huge page.");
-	}
-	fclose(f);
 	return maxsize;
 }
 #else
-int
-main(void)
+int main(void)
 {
 	/* "Requires 2.6.16+" were the original comments */
 	tst_brkm(TCONF, NULL,
