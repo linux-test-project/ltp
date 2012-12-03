@@ -105,17 +105,19 @@ int main(int ac, char **av)
 	Tst_count = 0;
 
 	TEST(ltp_clone(SIGCHLD, do_child, NULL, CHILD_STACK_SIZE, child_stack));
+	if (TEST_RETURN == -1)
+		tst_resm(TFAIL|TTERRNO, "clone failed");
 
-again:
 	child_pid = wait(&status);
+	if (child_pid == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "wait failed, status: %d",
+			status);
 
-	/* check return code */
 	if (TEST_RETURN == child_pid)
 		tst_resm(TPASS, "clone returned %ld", TEST_RETURN);
-	else if (TEST_RETURN == -1)
-		tst_resm(TFAIL|TTERRNO, "clone failed for pid = %d", child_pid);
 	else
-		goto again;
+		tst_resm(TFAIL, "clone returned %ld, wait returned %d",
+			TEST_RETURN, child_pid);
 
 	free(child_stack);
 

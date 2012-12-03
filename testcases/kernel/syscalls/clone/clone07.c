@@ -98,7 +98,7 @@ static int fail = FALSE;
 int main(int ac, char **av)
 {
 
-	int lc;
+	int lc, status;
 	char *msg;
 	void *child_stack;	/* stack for child */
 
@@ -120,7 +120,9 @@ int main(int ac, char **av)
 		 */
 		child_pid = ltp_clone(SIGCHLD, do_child, NULL,
 				CHILD_STACK_SIZE, child_stack);
-		wait(NULL);
+		if ((wait(&status)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup,
+				"wait failed, status: %d", status);
 		free(child_stack);
 	}
 

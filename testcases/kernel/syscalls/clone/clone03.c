@@ -74,6 +74,7 @@
 
 #include <errno.h>
 #include <sched.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -95,7 +96,7 @@ int main(int ac, char **av)
 	char *msg;
 	void *child_stack;	/* stack for child */
 	char buff[10];
-	int child_pid;
+	int child_pid, status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -120,7 +121,7 @@ int main(int ac, char **av)
 		/*
 		 * Call clone(2)
 		 */
-		TEST(ltp_clone(0, child_fn, NULL, CHILD_STACK_SIZE,
+		TEST(ltp_clone(SIGCHLD, child_fn, NULL, CHILD_STACK_SIZE,
 				child_stack));
 
 		/* check return code */
@@ -152,6 +153,9 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "Test failed");
 		}
 
+		if ((wait(&status)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup,
+				"wait failed, status: %d", status);
 	}
 
 	free(child_stack);
@@ -165,7 +169,7 @@ int main(int ac, char **av)
 void setup()
 {
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 

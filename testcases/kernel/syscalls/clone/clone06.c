@@ -97,7 +97,7 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 int main(int ac, char **av)
 {
 
-	int lc;
+	int lc, status;
 	char *msg;
 	void *child_stack;	/* stack for child */
 	char *parent_env;
@@ -123,7 +123,7 @@ int main(int ac, char **av)
 		/*
 		 * Call clone(2)
 		 */
-		TEST(ltp_clone(0, child_environ, NULL, CHILD_STACK_SIZE,
+		TEST(ltp_clone(SIGCHLD, child_environ, NULL, CHILD_STACK_SIZE,
 				child_stack));
 
 		/* check return code */
@@ -152,6 +152,10 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TFAIL, "Test Failed");
 		}
+
+		if ((wait(&status)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup,
+				"wait failed, status: %d", status);
 	}
 
 	free(child_stack);
@@ -164,7 +168,7 @@ int main(int ac, char **av)
 void setup()
 {
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
