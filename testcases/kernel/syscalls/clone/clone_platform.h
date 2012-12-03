@@ -17,4 +17,4 @@
 /* Common platform specific defines for the clone system call tests */
 
 //#define CHILD_STACK_SIZE 8192
-#define CHILD_STACK_SIZE 16384
+#define CHILD_STACK_SIZE (1024*1024)
