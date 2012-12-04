@@ -106,6 +106,15 @@ echo
 #fi
 #echo
 
+. cmdlib.sh
+flag=0
+
+status_daemon vsftpd
+if [ $? -ne 0 ]; then
+	start_daemon vsftpd
+	flag=1
+fi
+
 par_chld_ftp
 rc=$?
 if [ $rc -ne 0 ]; then
@@ -115,5 +124,10 @@ if [ $rc -ne 0 ]; then
 else
    echo "par_chld_ftp: PASS"
 fi
+
+if [ $flag -eq 1 ]; then
+	stop_daemon vsftpd
+fi
+
 echo
 exit $exit_code
