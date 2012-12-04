@@ -56,9 +56,8 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	rc = sigset(SIGCHLD, SIG_HOLD);
-	if (rc < 0) {
-		ERR_MSG("sigset()", rc);
+	if (sigset(SIGCHLD, SIG_HOLD) == SIG_ERR) {
+		perror("Unexpected error while using sigset()");
 		return PTS_UNRESOLVED;
 	}
 
