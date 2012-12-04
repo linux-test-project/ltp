@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) 2012 Wanlong Gao <gaowanlong@cn.fujitsu.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -14,56 +15,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**********************************************************
- *
- *    TEST IDENTIFIER	: clone05
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: test for CLONE_VFORK flag
- *
- *    TEST CASE TOTAL	: 1
- *
- *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- *
- *    SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
+/*
  *	Call clone() with CLONE_VFORK flag set. verify that
  *	execution of parent is suspended until child finishes
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *	 Loop if the proper options are given.
- *	  Execute system call with CLONE_VM & CLONE_VFORK flags
- *
- *	CHILD:
- *		sleeps for a second, changes parent_variable to 1
- *	PARENT:
- *		If return code is not -1 and parent_variable == 1
- *			test passed
- *		else
- *			test failed
- *	Cleanup:
- *	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- *  clone05 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- *			where,  -c n : Run n copies concurrently.
- *				-e   : Turn on errno logging.
- *				-h   : Show help screen
- *				-f   : Turn off functional testing
- *				-i n : Execute test n times.
- *				-I x : Execute test for x seconds.
- *				-p   : Pause for SIGUSR1 before starting
- *				-P x : Pause for x seconds between iterations.
- *				-t   : Turn on syscall timing.
- ****************************************************************/
+ *	Execute system call with CLONE_VM & CLONE_VFORK flags
+ */
 
 #if defined UCLINUX && !__THROW
 /* workaround for libc bug */
@@ -79,54 +35,48 @@
 #include "usctest.h"
 #include "clone_platform.h"
 
-#define FLAG CLONE_VM | CLONE_VFORK
+#define FLAG (CLONE_VM|CLONE_VFORK)
 
-static void setup();
-static void cleanup();
+static void setup(void);
+static void cleanup(void);
 static int child_fn();
 
-static int parent_variable = 0;
+static int parent_variable;
 
-char *TCID = "clone05";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "clone05";
+int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {
 
 	int lc, status;
 	char *msg;
-	void *child_stack;	/* stack for child */
+	void *child_stack;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* Allocate stack for child */
-	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
+	child_stack = malloc(CHILD_STACK_SIZE);
+	if (child_stack == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
-	}
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		Tst_count = 0;
 
-		/*
-		 * Call clone(2)
-		 */
-		TEST(ltp_clone(FLAG|SIGCHLD, child_fn, NULL, CHILD_STACK_SIZE,
-				child_stack));
+		TEST(ltp_clone(FLAG | SIGCHLD, child_fn, NULL, CHILD_STACK_SIZE,
+			       child_stack));
 
-		/* check return code & parent_variable */
-		if ((TEST_RETURN != -1) && (parent_variable)) {
+		if ((TEST_RETURN != -1) && (parent_variable))
 			tst_resm(TPASS, "Test Passed");
-		} else {
+		else
 			tst_resm(TFAIL, "Test Failed");
-		}
 
 		if ((wait(&status)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-				"wait failed, status: %d", status);
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "wait failed, status: %d", status);
 
 		/* Reset parent_variable */
 		parent_variable = 0;
@@ -136,38 +86,20 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
 }
 
-/*
- *cleanup() -   performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
 
-/*
- * do_child() - function executed by child
- */
-int child_fn()
+static int child_fn()
 {
 	/*
 	 * Sleep for a second, to ensure that child does not exit

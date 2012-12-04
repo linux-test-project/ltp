@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) 2012 Wanlong Gao <gaowanlong@cn.fujitsu.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -14,60 +15,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**********************************************************
- *
- *    TEST IDENTIFIER	: clone01
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for clone(2)
- *
- *    TEST CASE TOTAL	: 1
- *
- *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- *
- *    SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *	This is a Phase I test for the clone(2) system call.
+
+/*
+ *	This is a test for the clone(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *	 Loop if the proper options are given.
- *	  Call clone() with only SIGCHLD flag
- *
- *	  CHILD:
- *		return 0;
- *
- *	  PARENT:
- *		wait for child to finish
- *		If return values from clone() & wait() are equal & != -1
- *			test passed
- *		else
- *			test failed
- *
- *	Cleanup:
- *	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- *  clone01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- *			where,  -c n : Run n copies concurrently.
- *				-e   : Turn on errno logging.
- *				-h   : Show help screen
- *				-f   : Turn off functional testing
- *				-i n : Execute test n times.
- *				-I x : Execute test for x seconds.
- *				-p   : Pause for SIGUSR1 before starting
- *				-P x : Pause for x seconds between iterations.
- *				-t   : Turn on syscall timing.
- *
- ****************************************************************/
+ */
 
 #if defined UCLINUX && !__THROW
 /* workaround for libc bug */
@@ -81,43 +33,45 @@
 #include "usctest.h"
 #include "clone_platform.h"
 
-static void setup();
-static void cleanup();
+static void setup(void);
+static void cleanup(void);
 static int do_child();
 
-char *TCID = "clone01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "clone01";
+int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {
 	char *msg;
-	void *child_stack;	/* stack for child */
+	void *child_stack;
 	int status, child_pid;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	if ((child_stack = malloc(CHILD_STACK_SIZE)) == NULL)
+	child_stack = malloc(CHILD_STACK_SIZE);
+	if (child_stack == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 
 	Tst_count = 0;
 
 	TEST(ltp_clone(SIGCHLD, do_child, NULL, CHILD_STACK_SIZE, child_stack));
 	if (TEST_RETURN == -1)
-		tst_resm(TFAIL|TTERRNO, "clone failed");
+		tst_resm(TFAIL | TTERRNO, "clone failed");
 
 	child_pid = wait(&status);
 	if (child_pid == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "wait failed, status: %d",
-			status);
+		tst_brkm(TBROK | TERRNO, cleanup, "wait failed, status: %d",
+			 status);
 
 	if (TEST_RETURN == child_pid)
 		tst_resm(TPASS, "clone returned %ld", TEST_RETURN);
 	else
 		tst_resm(TFAIL, "clone returned %ld, wait returned %d",
-			TEST_RETURN, child_pid);
+			 TEST_RETURN, child_pid);
 
 	free(child_stack);
 
@@ -126,35 +80,18 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
 
-/*
- * do_child() - function executed by child
- */
-int do_child(void)
+static int do_child()
 {
 	exit(0);
 }

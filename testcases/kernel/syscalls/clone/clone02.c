@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) 2012 Wanlong Gao <gaowanlong@cn.fujitsu.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -14,31 +15,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**********************************************************
- *
- *    TEST IDENTIFIER	: clone02
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Functionality tests for clone(2)
- *
- *    TEST CASE TOTAL	: 2
- *
- *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- *
- *    SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *	  generate a unique file name fore each test instance
- *
- *	Test:
- *	 Loop if the proper options are given.
+/*
  *	 TEST1
  *	 -----
  *		Call clone() with all resources shared.
@@ -70,26 +47,7 @@
  *			test passed
  *		else
  *			test failed
- *	Cleanup:
- *	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- *	clone02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- *				where,  -c n : Run n copies concurrently.
- *				-e   : Turn on errno logging.
- *				-h   : Show help screen
- *				-f   : Turn off functional testing
- *				-i n : Execute test n times.
- *				-I x : Execute test for x seconds.
- *				-p   : Pause for SIGUSR1 before starting
- *				-P x : Pause for x seconds between iterations.
- *				-t   : Turn on syscall timing.
- *
- *
- * MODIFIED: - mridge@us.ibm.com -- changed getpid to syscall(get thread ID) for unique ID on NPTL threading
- *
- *
- ****************************************************************/
+ */
 
 #if defined UCLINUX && !__THROW
 /* workaround for libc bug */
@@ -107,7 +65,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FLAG_ALL CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD
+#define FLAG_ALL (CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|SIGCHLD)
 #define FLAG_NONE SIGCHLD
 #define PARENT_VALUE 1
 #define CHILD_VALUE 2
@@ -116,22 +74,22 @@
 
 #include "clone_platform.h"
 
-static void setup();
-static int test_setup();
-static void cleanup();
-static void test_cleanup();
+static void setup(void);
+static int test_setup(void);
+static void cleanup(void);
+static void test_cleanup(void);
 static int child_fn();
-static int parent_test1();
-static int parent_test2();
-static int test_VM();
-static int test_FS();
-static int test_FILES();
-static int test_SIG();
-static int modified_VM();
-static int modified_FS();
-static int modified_FILES();
-static int modified_SIG();
-static void sig_child_defined_handler();
+static int parent_test1(void);
+static int parent_test2(void);
+static int test_VM(void);
+static int test_FS(void);
+static int test_FILES(void);
+static int test_SIG(void);
+static int modified_VM(void);
+static int modified_FS(void);
+static int modified_FILES(void);
+static int modified_SIG(void);
+static void sig_child_defined_handler(int);
 static void sig_default_handler();
 
 static int fd_parent;
@@ -140,14 +98,14 @@ static int parent_variable;
 static char cwd_parent[FILENAME_MAX];
 static int parent_got_signal, child_pid;
 
-char *TCID = "clone02";		/* Test program identifier.    */
+char *TCID = "clone02";
 
 struct test_case_t {
 	int flags;
 	int (*parent_fn) ();
 } test_cases[] = {
-	{ FLAG_ALL, parent_test1 },
-	{ FLAG_NONE, parent_test2 }
+	{FLAG_ALL, parent_test1},
+	{FLAG_NONE, parent_test2}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
@@ -157,24 +115,23 @@ int main(int ac, char **av)
 
 	int lc;
 	char *msg;
-	void *child_stack;	/* stack for child */
+	void *child_stack;
 	int status, i;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	/* Allocate stack for child */
-	if ((child_stack = malloc(CHILD_STACK_SIZE)) == NULL)
+	child_stack = malloc(CHILD_STACK_SIZE);
+	if (child_stack == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
-
 			if (test_setup() != 0) {
 				tst_resm(TWARN, "test_setup() failed,"
 					 "skipping this test case");
@@ -183,11 +140,11 @@ int main(int ac, char **av)
 
 			/* Test the system call */
 			TEST(ltp_clone(test_cases[i].flags, child_fn, NULL,
-				CHILD_STACK_SIZE, child_stack));
+				       CHILD_STACK_SIZE, child_stack));
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL|TTERRNO, "clone() failed");
+				tst_resm(TFAIL | TTERRNO, "clone() failed");
 				/* Cleanup & continue with next test case */
 				test_cleanup();
 				continue;
@@ -195,17 +152,16 @@ int main(int ac, char **av)
 
 			/* Wait for child to finish */
 			if ((wait(&status)) == -1) {
-				tst_resm(TWARN|TERRNO,
-				    "wait failed; skipping testcase");
+				tst_resm(TWARN | TERRNO,
+					 "wait failed; skipping testcase");
 				/* Cleanup & continue with next test case */
 				test_cleanup();
 				continue;
 			}
 
-			if (WTERMSIG(status)) {
+			if (WTERMSIG(status))
 				tst_resm(TWARN, "child exitied with signal %d",
 					 WTERMSIG(status));
-			}
 
 			/*
 			 * Check the return value from child function and
@@ -213,11 +169,10 @@ int main(int ac, char **av)
 			 * successfully, test passed, else failed
 			 */
 			if (WIFEXITED(status) && WEXITSTATUS(status) == 0 &&
-			    test_cases[i].parent_fn()) {
+			    test_cases[i].parent_fn())
 				tst_resm(TPASS, "Test Passed");
-			} else {
+			else
 				tst_resm(TFAIL, "Test Failed");
-			}
 
 			/* Do test specific cleanup */
 			test_cleanup();
@@ -228,52 +183,36 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
-	/* Create temporary directory and 'cd' to it. */
 	tst_tmpdir();
 
 	/* Get unique file name for each child process */
 	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "sprintf() failed");
-
+		tst_brkm(TBROK | TERRNO, cleanup, "sprintf() failed");
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	/* Remove temporary file */
-	if (unlink(file_name) == -1) {
-		tst_resm(TWARN|TERRNO, "unlink(%s) failed", file_name);
-	}
+	if (unlink(file_name) == -1)
+		tst_resm(TWARN | TERRNO, "unlink(%s) failed", file_name);
 	tst_rmdir();
 }
 
-/*
- * test_setup() - test specific setup function
- */
-int test_setup()
+static int test_setup(void)
 {
 
 	struct sigaction def_act;
 
 	/* Save current working directory of parent */
 	if (getcwd(cwd_parent, sizeof(cwd_parent)) == NULL) {
-		tst_resm(TWARN|TERRNO, "getcwd() failed in test_setup()");
+		tst_resm(TWARN | TERRNO, "getcwd() failed in test_setup()");
 		return -1;
 	}
 
@@ -287,8 +226,9 @@ int test_setup()
 	 * Open file from parent, which will be closed by
 	 * child in test_FILES(), used for testing CLONE_FILES flag
 	 */
-	if ((fd_parent = open(file_name, O_CREAT|O_RDWR, 0777)) == -1) {
-		tst_resm(TWARN|TERRNO, "open() failed in test_setup()");
+	fd_parent = open(file_name, O_CREAT | O_RDWR, 0777);
+	if (fd_parent == -1) {
+		tst_resm(TWARN | TERRNO, "open() failed in test_setup()");
 		return -1;
 	}
 
@@ -303,17 +243,14 @@ int test_setup()
 	def_act.sa_flags = SA_RESTART;
 
 	if (sigaction(SIGUSR2, &def_act, NULL) == -1) {
-		tst_resm(TWARN|TERRNO, "sigaction() failed in test_setup()");
+		tst_resm(TWARN | TERRNO, "sigaction() failed in test_setup()");
 		return -1;
 	}
 
 	return 0;
 }
 
-/*
- * test_cleanup() - test specific cleanup function
- */
-void test_cleanup()
+static void test_cleanup(void)
 {
 
 	/* Restore parent's working directory */
@@ -323,21 +260,17 @@ void test_cleanup()
 		 *
 		 * XXX (garrcoop): why???
 		 */
-		tst_brkm(TBROK|TERRNO, cleanup, "chdir() failed in test_cleanup()");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "chdir() failed in test_cleanup()");
 	}
 
 }
 
-/*
- * child_fn() - child function
- */
-int child_fn()
+static int child_fn()
 {
 
 	/* save child pid */
 	child_pid = syscall(__NR_gettid);
-
-	/*child_pid = getpid(); changed to above to work on POSIX threads -- NPTL */
 
 	if (test_VM() == 0 && test_FILES() == 0 && test_FS() == 0 &&
 	    test_SIG() == 0)
@@ -345,10 +278,7 @@ int child_fn()
 	exit(1);
 }
 
-/*
- * parent_test1() - parent function for test1
- */
-int parent_test1()
+static int parent_test1(void)
 {
 
 	/*
@@ -365,10 +295,7 @@ int parent_test1()
 	return -1;
 }
 
-/*
- * parent_test2 - parent function for test 2
- */
-int parent_test2()
+static int parent_test2(void)
 {
 
 	/*
@@ -376,11 +303,10 @@ int parent_test2()
 	 * modified_*() functions should return 0 for parent_test2()
 	 * to return 1
 	 */
-
 	if (modified_VM() || modified_FILES() || modified_FS() ||
-	    modified_SIG()) {
+	    modified_SIG())
 		return 0;
-	}
+
 	return -1;
 }
 
@@ -391,7 +317,7 @@ int parent_test2()
  *	       to parent also.
  */
 
-int test_VM()
+static int test_VM(void)
 {
 	parent_variable = CHILD_VALUE;
 	return 0;
@@ -403,10 +329,10 @@ int test_VM()
  *		  the child process share the same file descriptor
  *		  table. so this affects the parent also
  */
-int test_FILES()
+static int test_FILES(void)
 {
 	if (close(fd_parent) == -1) {
-		tst_resm(TWARN|TERRNO, "close failed in test_FILES");
+		tst_resm(TWARN | TERRNO, "close failed in test_FILES");
 		return -1;
 	}
 	return 0;
@@ -417,20 +343,22 @@ int test_FILES()
  *		of the child process. If CLONE_FS flag is set, this
  *		will be visible to parent also.
  */
-int test_FS()
+static int test_FS(void)
 {
 	char *test_tmpdir;
 	int rval;
 
 	test_tmpdir = get_tst_tmpdir();
 	if (test_tmpdir == NULL) {
-		tst_resm(TWARN|TERRNO, "get_tst_tmpdir failed");
+		tst_resm(TWARN | TERRNO, "get_tst_tmpdir failed");
 		rval = -1;
 	} else if (chdir(test_tmpdir) == -1) {
-		tst_resm(TWARN|TERRNO, "chdir failed in test_FS");
+		tst_resm(TWARN | TERRNO, "chdir failed in test_FS");
 		rval = -1;
-	} else
+	} else {
 		rval = 0;
+	}
+
 	free(test_tmpdir);
 	return rval;
 }
@@ -440,7 +368,7 @@ int test_FS()
  *		signal for child. If CLONE_SIGHAND flag is set, this
  *		affects parent also.
  */
-int test_SIG()
+static int test_SIG(void)
 {
 
 	struct sigaction new_act;
@@ -450,15 +378,16 @@ int test_SIG()
 
 	/* Set signal handler to sig_child_defined_handler */
 	if (sigaction(SIGUSR2, &new_act, NULL) == -1) {
-		tst_resm(TWARN|TERRNO, "signal failed in test_SIG");
+		tst_resm(TWARN | TERRNO, "signal failed in test_SIG");
 		return -1;
 	}
 
 	/* Send SIGUSR2 signal to parent */
 	if (kill(getppid(), SIGUSR2) == -1) {
-		tst_resm(TWARN|TERRNO, "kill failed in test_SIG");
+		tst_resm(TWARN | TERRNO, "kill failed in test_SIG");
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -468,13 +397,13 @@ int test_SIG()
  *		   is visible to parent
  */
 
-int modified_VM()
+static int modified_VM(void)
 {
 
-	if (parent_variable == CHILD_VALUE) {
+	if (parent_variable == CHILD_VALUE)
 		/* child has modified parent_variable */
 		return 1;
-	}
+
 	return 0;
 }
 
@@ -482,19 +411,17 @@ int modified_VM()
  * modified_FILES() - This function checks for file descriptor table
  *		      modifications done by child
  */
-int modified_FILES()
+static int modified_FILES(void)
 {
 	char buff[20];
 
-	if (((read(fd_parent, buff, sizeof(buff))) == -1) && (errno == EBADF)) {
+	if (((read(fd_parent, buff, sizeof(buff))) == -1) && (errno == EBADF))
 		/* Child has closed this file descriptor */
 		return 1;
-	}
 
 	/* close fd_parent */
-	if ((close(fd_parent)) == -1) {
-		tst_resm(TWARN|TERRNO, "close() failed in modified_FILES()");
-	}
+	if ((close(fd_parent)) == -1)
+		tst_resm(TWARN | TERRNO, "close() failed in modified_FILES()");
 
 	return 0;
 }
@@ -503,18 +430,17 @@ int modified_FILES()
  * modified_FS() - This function checks parent's current working directory
  *		   to see whether its modified by child or not.
  */
-int modified_FS()
+static int modified_FS(void)
 {
 	char cwd[FILENAME_MAX];
 
-	if ((getcwd(cwd, sizeof(cwd))) == NULL) {
-		tst_resm(TWARN|TERRNO, "getcwd() failed");
-	}
+	if ((getcwd(cwd, sizeof(cwd))) == NULL)
+		tst_resm(TWARN | TERRNO, "getcwd() failed");
 
-	if (!(strcmp(cwd, cwd_parent))) {
+	if (!(strcmp(cwd, cwd_parent)))
 		/* cwd hasn't changed */
 		return 0;
-	}
+
 	return 1;
 }
 
@@ -522,33 +448,32 @@ int modified_FS()
  * modified_SIG() - This function checks whether child has changed
  *		    parent's signal handler for signal, SIGUSR2
  */
-int modified_SIG()
+static int modified_SIG(void)
 {
 
-	if (parent_got_signal) {
+	if (parent_got_signal)
 		/*
 		 * parent came through sig_child_defined_handler()
 		 * this means child has changed parent's handler
 		 */
 		return 1;
-	}
+
 	return 0;
 }
 
 /*
  * sig_child_defined_handler()  - Signal handler installed by child
  */
-void sig_child_defined_handler(int pid)
+static void sig_child_defined_handler(int pid)
 {
-	if ((syscall(__NR_gettid)) == child_pid) {
+	if ((syscall(__NR_gettid)) == child_pid)
 		/* Child got signal, give warning */
 		tst_resm(TWARN, "Child got SIGUSR2 signal");
-	} else {
+	else
 		parent_got_signal = TRUE;
-	}
 }
 
 /* sig_default_handler() - Default handler for parent */
-void sig_default_handler()
+static void sig_default_handler()
 {
 }

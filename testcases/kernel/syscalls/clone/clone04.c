@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) 2012 Wanlong Gao <gaowanlong@cn.fujitsu.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -14,57 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  */
- /*******************************************************************
- *
- *    TEST IDENTIFIER   : clone04
- *
- *    EXECUTED BY       : anyone
- *
- *    TEST TITLE        : test for checking error conditions for clone(2)
- *
- *    TEST CASE TOTAL   : 2
- *
- *    AUTHOR            : Saji Kumar.V.R <saji.kumar@wipro.com>
- *
- *    SIGNALS
- *      Uses SIGUSR1 to pause before test if option set.
- *      (See the parse_opts(3) man page).
- *
- * DESCRIPTION
+ /*
  *	Verify that,
  *      clone(2) returns -1 and sets errno to EINVAL if
  *	child stack is set to a zero value(NULL)
- *
- * ALGORITHM
- * Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if (system call failed (return=-1)) &
- *			   (errno set == expected errno)
- *              Issue sys call fails with expected return value and errno.
- *   Otherwise,
- *      Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *        Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- *  clone04 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- *		where,  -c n : Run n copies concurrently.
- *			-e   : Turn on errno logging.
- *			-h   : Show help screen
- *			-f   : Turn off functional testing
- *			-i n : Execute test n times.
- *			-I x : Execute test for x seconds.
- *			-p   : Pause for SIGUSR1 before starting
- *			-P x : Pause for x seconds between iterations.
- *			-t   : Turn on syscall timing.
- *
- *********************************************************************/
+ */
 
 #if defined UCLINUX && !__THROW
 /* workaround for libc bug */
@@ -82,37 +37,34 @@ static void cleanup(void);
 static void setup(void);
 static int child_fn();
 
-char *TCID = "clone04";
-void *child_stack;
+static void *child_stack;
 
-static int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of *
-					 * expected errnos */
+static int exp_enos[] = { EINVAL, 0 };
+
 static struct test_case_t {
 	int (*child_fn) ();
 	void **child_stack;
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
-	{
-child_fn, NULL, EINVAL, "EINVAL"},};
+	{ child_fn, NULL, EINVAL, "EINVAL" },};
 
+char *TCID = "clone04";
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
 int main(int ac, char **av)
 {
-	int lc, ind;		/* loop counter */
+	int lc, ind;
 	char *msg;
 	void *test_stack;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
@@ -126,70 +78,45 @@ int main(int ac, char **av)
 				test_stack = child_stack;
 			}
 
-			/*
-			 * call the system call with the TEST() macro
-			 */
-			TEST(ltp_clone(0,test_cases[ind].child_fn, NULL,
-					CHILD_STACK_SIZE, test_stack));
+			TEST(ltp_clone(0, test_cases[ind].child_fn, NULL,
+				       CHILD_STACK_SIZE, test_stack));
 
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
 					 test_cases[ind].err_desc);
 			} else {
-				tst_resm(TFAIL|TTERRNO, "Call failed to produce expected error; "
+				tst_resm(TFAIL | TTERRNO,
+					 "Call failed to produce expected error; "
 					 "expected errno %d and result -1; got result %ld",
-					 test_cases[ind].exp_errno, TEST_RETURN);
+					 test_cases[ind].exp_errno,
+					 TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
-	/* Allocate stack for child */
-	child_stack = (void *)malloc(CHILD_STACK_SIZE);
-
+	child_stack = malloc(CHILD_STACK_SIZE);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- *	       or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	free(child_stack);
-
 }
 
-/*
- * child_fn()	- Child function
- */
-int child_fn()
+static int child_fn()
 {
 	exit(1);
 }
