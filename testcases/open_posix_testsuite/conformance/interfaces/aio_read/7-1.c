@@ -70,6 +70,8 @@ int main()
 		exit(PTS_FAIL);
 	}
 
+	while (aio_error(&aiocb) == EINPROGRESS);
+
 	close(fd);
 	printf("Test PASSED\n");
 	return PTS_PASS;
