@@ -42,26 +42,23 @@ int main()
 	char buf[BUF_SIZE];
 	int fd;
 	struct aiocb aiocb;
-	int ret=0;
+	int ret = 0;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_error_3_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	memset (&aiocb, 0, sizeof (struct aiocb));
+	memset(&aiocb, 0, sizeof(struct aiocb));
 
 	aiocb.aio_fildes = fd;
 	aiocb.aio_buf = buf;
@@ -70,14 +67,13 @@ int main()
 
 	ret = aio_error(&aiocb);
 
-	if (ret != EINVAL)
-	{
+	if (ret != EINVAL) {
 		printf(TNAME " return code didn't match expected "
-			"value (%d != %d).\n", ret, EINVAL);
+		       "value (%d != %d).\n", ret, EINVAL);
 		return PTS_UNRESOLVED;
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

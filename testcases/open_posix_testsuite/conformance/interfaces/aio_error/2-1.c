@@ -50,14 +50,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_error_2_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
 
@@ -65,29 +62,25 @@ int main()
 
 	/* create AIO req */
 
-	for (i = 0; i < BUF_NB; i++)
-	{
+	for (i = 0; i < BUF_NB; i++) {
 		aiocb[i] = malloc(sizeof(struct aiocb));
-		if (aiocb[i] == NULL)
-		{
+		if (aiocb[i] == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
-		       		strerror(errno));
+			       strerror(errno));
 			return PTS_UNRESOLVED;
 		}
 		aiocb[i]->aio_fildes = fd;
 		aiocb[i]->aio_buf = malloc(BUF_SIZE);
-		if (aiocb[i]->aio_buf == NULL)
-		{
+		if (aiocb[i]->aio_buf == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
-		       		strerror(errno));
+			       strerror(errno));
 			return PTS_UNRESOLVED;
 		}
 		aiocb[i]->aio_nbytes = BUF_SIZE;
 		aiocb[i]->aio_offset = 0;
 		aiocb[i]->aio_sigevent.sigev_notify = SIGEV_NONE;
 
-		if (aio_write(aiocb[i]) == -1)
-		{
+		if (aio_write(aiocb[i]) == -1) {
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
 			       i, strerror(errno));
 			return PTS_FAIL;
@@ -95,10 +88,8 @@ int main()
 	}
 
 	ret = PTS_UNRESOLVED;
-	for (i = 0; i < BUF_NB; i++)
-	{
-		if (aio_error(aiocb[i]) == EINPROGRESS)
-		{
+	for (i = 0; i < BUF_NB; i++) {
+		if (aio_error(aiocb[i]) == EINPROGRESS) {
 			ret = PTS_PASS;
 			break;
 		}

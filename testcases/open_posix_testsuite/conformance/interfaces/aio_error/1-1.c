@@ -46,12 +46,10 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_error_1_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
@@ -64,22 +62,20 @@ int main()
 	aiocb.aio_buf = buf;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb) == -1)
-	{
+	if (aio_write(&aiocb) == -1) {
 		printf(TNAME " Error at aio_write(): %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS) ;
 
 	ret = aio_error(&aiocb);
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		printf(TNAME " Error at aio_error(): %s\n", strerror(ret));
 		return PTS_FAIL;
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
