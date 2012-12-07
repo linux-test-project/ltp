@@ -58,7 +58,7 @@ int main(void)
 	char *bufs;
 	struct sigaction action;
 	struct sigevent event;
-	struct timespec ts = {0, 1000}; /* 10 ms */
+	struct timespec ts = { 0, 1000 };	/* 10 ms */
 	int errors = 0;
 	int ret;
 	int err;
@@ -68,20 +68,19 @@ int main(void)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_suspend_7_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	bufs = malloc(NUM_AIOCBS*BUF_SIZE);
+	bufs = malloc(NUM_AIOCBS * BUF_SIZE);
 
 	if (bufs == NULL) {
 		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
@@ -89,7 +88,7 @@ int main(void)
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (write(fd, bufs, NUM_AIOCBS*BUF_SIZE) != (NUM_AIOCBS*BUF_SIZE)) {
+	if (write(fd, bufs, NUM_AIOCBS * BUF_SIZE) != (NUM_AIOCBS * BUF_SIZE)) {
 		printf(TNAME " Error at write(): %s\n", strerror(errno));
 		free(bufs);
 		close(fd);
@@ -106,7 +105,7 @@ int main(void)
 
 		aiocbs[i]->aio_fildes = fd;
 		aiocbs[i]->aio_offset = i * BUF_SIZE;
-		aiocbs[i]->aio_buf = &bufs[i*BUF_SIZE];
+		aiocbs[i]->aio_buf = &bufs[i * BUF_SIZE];
 		aiocbs[i]->aio_nbytes = BUF_SIZE;
 		aiocbs[i]->aio_lio_opcode = LIO_READ;
 	}
@@ -119,7 +118,7 @@ int main(void)
 	/* Setup handler for list completion */
 	action.sa_sigaction = sigrt1_handler;
 	sigemptyset(&action.sa_mask);
-	action.sa_flags = SA_SIGINFO|SA_RESTART;
+	action.sa_flags = SA_SIGINFO | SA_RESTART;
 	sigaction(SIGRTMIN + 1, &action, NULL);
 
 	/* Setup suspend list */
