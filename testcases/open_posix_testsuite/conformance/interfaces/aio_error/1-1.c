@@ -67,12 +67,13 @@ int main()
 		return PTS_FAIL;
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS) ;
-
-	ret = aio_error(&aiocb);
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb);
+	} while (ret == EINPROGRESS);
 	if (ret != 0) {
-		printf(TNAME " Error at aio_error(): %s\n", strerror(ret));
-		return PTS_FAIL;
+		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
+		exit(PTS_FAIL);
 	}
 
 	close(fd);

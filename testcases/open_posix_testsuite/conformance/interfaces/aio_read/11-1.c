@@ -70,9 +70,12 @@ int main()
 	aiocb.aio_nbytes = BUF_SIZE;
 
 	if (aio_read(&aiocb) != -1) {
-		while (aio_error(&aiocb) == EINPROGRESS) ;
+		int err;
+		do {
+			usleep(10000);
+			err = aio_error(&aiocb);
+		} while (err == EINPROGRESS);
 
-		int err = aio_error(&aiocb);
 		int ret = aio_return(&aiocb);
 
 		if (ret != -1) {

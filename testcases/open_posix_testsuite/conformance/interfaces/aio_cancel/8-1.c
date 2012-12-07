@@ -42,6 +42,7 @@ int main()
 #define BUF_SIZE 1024
 	char buf[BUF_SIZE];
 	int fd;
+	int ret;
 	struct aiocb aiocb;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
@@ -69,7 +70,14 @@ int main()
 		return PTS_FAIL;
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS) ;
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb);
+	} while (ret == EINPROGRESS);
+	if (ret < 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
+		exit(PTS_FAIL);
+	}
 
 	if (aio_cancel(fd, &aiocb) != AIO_ALLDONE) {
 		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));

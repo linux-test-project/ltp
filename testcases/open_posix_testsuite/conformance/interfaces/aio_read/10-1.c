@@ -61,9 +61,10 @@ int main()
 		exit(PTS_FAIL);
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS) ;
-	ret = aio_error(&aiocb);
-
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb);
+	} while (ret == EINPROGRESS);
 	if (ret != EBADF) {
 		printf(TNAME " errno is not EBADF %s\n", strerror(errno));
 		exit(PTS_FAIL);

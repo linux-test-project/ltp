@@ -81,9 +81,11 @@ int main()
 	}
 
 	/* Wait until end of transaction */
-	while ((err = aio_error(&aiocb)) == EINPROGRESS) ;
+	do {
+		usleep(10000);
+		err = aio_error(&aiocb);
+	} while (err == EINPROGRESS);
 
-	err = aio_error(&aiocb);
 	ret = aio_return(&aiocb);
 
 	if (err != 0) {

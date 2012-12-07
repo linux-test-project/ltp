@@ -86,7 +86,10 @@ int main()
 	}
 
 	/* Wait until completion */
-	while (aio_error(&aiocb[2]) == EINPROGRESS) ;
+	do {
+		usleep(10000);
+		err = aio_error(&aiocb[2]);
+	} while (err == EINPROGRESS);
 
 	for (i = 0; i < 3; i++) {
 		err = aio_error(&aiocb[i]);

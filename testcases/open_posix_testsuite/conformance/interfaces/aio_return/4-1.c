@@ -71,8 +71,11 @@ int main(void)
 		exit(PTS_FAIL);
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS)
-		sleep(1);
+	do {
+		usleep(10000);
+		retval = aio_error(&aiocb);
+	} while (retval == EINPROGRESS);
+
 	retval = aio_error(&aiocb);
 
 	if (retval == 0) {

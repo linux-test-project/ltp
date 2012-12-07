@@ -40,6 +40,7 @@ int main()
 #define BUF_SIZE 111
 	unsigned char check[BUF_SIZE];
 	int fd;
+	int ret;
 	struct aiocb aiocb;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
@@ -67,7 +68,10 @@ int main()
 		exit(PTS_FAIL);
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS) ;
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb);
+	} while (ret == EINPROGRESS);
 
 	close(fd);
 	printf("Test PASSED\n");

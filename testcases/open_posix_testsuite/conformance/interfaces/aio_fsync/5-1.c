@@ -72,8 +72,14 @@ int main()
 	 * something else
 	 * otherwise test hangs
 	 */
-
-	while (aio_error(&aiocb_fsync) == EINPROGRESS) ;
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb_fsync);
+	} while (ret == EINPROGRESS);
+	if (ret < 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
+		exit(PTS_FAIL);
+	}
 
 	close(fd);
 

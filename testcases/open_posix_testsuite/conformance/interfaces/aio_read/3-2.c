@@ -39,6 +39,7 @@ int main()
 #define BUF_SIZE 1024
 	char buf[BUF_SIZE];
 	int fd;
+	int ret;
 	struct aiocb aiocb;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
@@ -73,13 +74,13 @@ int main()
 	}
 
 	/* Wait for request completion */
-	while (aio_error(&aiocb) == EINPROGRESS) ;
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb);
+	} while (ret == EINPROGRESS);
 
 	/* error status shall be 0 and return status shall be BUF_SIZE/2 */
-
-	while (aio_error(&aiocb) == EINPROGRESS) ;
-
-	if (aio_error(&aiocb) != 0) {
+	if (ret != 0) {
 		printf(TNAME " Error at aio_error()\n");
 		exit(PTS_FAIL);
 	}
