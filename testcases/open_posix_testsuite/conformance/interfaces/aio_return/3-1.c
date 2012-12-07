@@ -50,14 +50,12 @@ int main(void)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_return_3_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -66,7 +64,7 @@ int main(void)
 	memset(buf, 0xaa, BUF_SIZE);
 	memset(&aiocb, 0, sizeof(struct aiocb));
 	aiocb.aio_fildes = fd;
-	aiocb.aio_buf    = buf;
+	aiocb.aio_buf = buf;
 	aiocb.aio_nbytes = BUF_SIZE;
 
 	if (aio_write(&aiocb) == -1) {
@@ -89,7 +87,7 @@ int main(void)
 
 	memset(&aiocb, 0, sizeof(struct aiocb));
 	aiocb.aio_fildes = fd;
-	aiocb.aio_buf    = buf;
+	aiocb.aio_buf = buf;
 	aiocb.aio_nbytes = BUF_SIZE / 2;
 
 	if (aio_write(&aiocb) == -1) {
@@ -113,8 +111,7 @@ int main(void)
 		if (retval != (BUF_SIZE / 2)) {
 			close(fd);
 			printf(TNAME " aio_return() didn't fail as expected: "
-				"%d, %s\n",
-				retval, strerror(aio_error(&aiocb)));
+			       "%d, %s\n", retval, strerror(aio_error(&aiocb)));
 			exit(PTS_UNRESOLVED);
 		}
 
