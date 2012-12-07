@@ -49,18 +49,16 @@ int main()
 	memset(&aiocb, 0, sizeof(struct aiocb));
 	aiocb.aio_reqprio = -1;
 
-	if (aio_write(&aiocb) != -1)
-	{
+	if (aio_write(&aiocb) != -1) {
 		printf(TNAME " aio_write should fail!\n");
 		exit(PTS_FAIL);
 	}
 
-	if (errno != EINVAL)
-	{
+	if (errno != EINVAL) {
 		printf(TNAME " errno should be EINVAL!\n");
 		exit(PTS_FAIL);
 	}
 
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

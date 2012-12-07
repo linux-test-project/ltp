@@ -45,8 +45,8 @@ int main()
 	char buf1[BUF_SIZE1];
 #define BUF_SIZE2 1536
 	char buf2[BUF_SIZE2];
-	char *bufs[3] = {buf0, buf1, buf2};
-	ssize_t sizes[3] = {BUF_SIZE0, BUF_SIZE1, BUF_SIZE2};
+	char *bufs[3] = { buf0, buf1, buf2 };
+	ssize_t sizes[3] = { BUF_SIZE0, BUF_SIZE1, BUF_SIZE2 };
 #define CHECK_SIZE (BUF_SIZE0+BUF_SIZE1+BUF_SIZE2)
 	char check[CHECK_SIZE];
 	int fd;
@@ -59,20 +59,18 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_write_2_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_APPEND | O_RDWR | O_EXCL,
 		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	for (i=0; i<3; i++) {
+	for (i = 0; i < 3; i++) {
 		memset(bufs[i], i, sizes[i]);
 		memset(&aiocb[i], 0, sizeof(struct aiocb));
 		aiocb[i].aio_fildes = fd;
@@ -82,28 +80,27 @@ int main()
 		if (aio_write(&aiocb[i]) == -1) {
 			printf(TNAME " Error at aio_write() %d: %s\n",
 			       i, strerror(errno));
-			close (fd);
+			close(fd);
 			exit(PTS_FAIL);
 		}
 	}
 
 	/* Wait until completion */
-	while (aio_error (&aiocb[2]) == EINPROGRESS);
+	while (aio_error(&aiocb[2]) == EINPROGRESS) ;
 
-	for (i=0; i<3; i++) {
+	for (i = 0; i < 3; i++) {
 		err = aio_error(&aiocb[i]);
 		ret = aio_return(&aiocb[i]);
 
-		if (err != 0)
-		{
-			printf (TNAME " Error at aio_error() %d: %s\n", i, strerror (err));
-			close (fd);
+		if (err != 0) {
+			printf(TNAME " Error at aio_error() %d: %s\n", i,
+			       strerror(err));
+			close(fd);
 			exit(PTS_FAIL);
 		}
 
-		if (ret != sizes[i])
-		{
-			printf(TNAME " Error at aio_return() %d\n",i);
+		if (ret != sizes[i]) {
+			printf(TNAME " Error at aio_return() %d\n", i);
 			close(fd);
 			exit(PTS_FAIL);
 		}
@@ -111,39 +108,32 @@ int main()
 
 	/* check the values written */
 
-	if (lseek(fd, 0, SEEK_SET) == -1)
-	{
-		printf(TNAME " Error at lseek(): %s\n",
-		       strerror(errno));
+	if (lseek(fd, 0, SEEK_SET) == -1) {
+		printf(TNAME " Error at lseek(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
-	if (read(fd, check, CHECK_SIZE) != CHECK_SIZE)
-	{
-		printf(TNAME " Error at read(): %s\n",
-		       strerror(errno));
+	if (read(fd, check, CHECK_SIZE) != CHECK_SIZE) {
+		printf(TNAME " Error at read(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
-	if (memcmp(buf0, check, BUF_SIZE0))
-	{
+	if (memcmp(buf0, check, BUF_SIZE0)) {
 		printf(TNAME " Bad value in buffer #0\n");
 		exit(PTS_FAIL);
 	}
 
-	if (memcmp(buf1, check + BUF_SIZE0, BUF_SIZE1))
-	{
+	if (memcmp(buf1, check + BUF_SIZE0, BUF_SIZE1)) {
 		printf(TNAME " Bad value in buffer #1\n");
 		exit(PTS_FAIL);
 	}
 
-	if (memcmp(buf2, check + BUF_SIZE0 + BUF_SIZE1, BUF_SIZE2))
-	{
+	if (memcmp(buf2, check + BUF_SIZE0 + BUF_SIZE1, BUF_SIZE2)) {
 		printf(TNAME " Bad value in buffer #2\n");
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

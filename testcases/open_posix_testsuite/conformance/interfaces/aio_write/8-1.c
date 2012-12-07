@@ -40,7 +40,7 @@ int main()
 #define BUF_SIZE 512
 	char buf[BUF_SIZE];
 	struct aiocb aiocb;
-	int ret=0;
+	int ret = 0;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
@@ -56,21 +56,19 @@ int main()
 	 * and should be collected by aio_error()
 	 */
 
-	if (aio_write(&aiocb) != 0)
-	{
+	if (aio_write(&aiocb) != 0) {
 		printf(TNAME " bad aio_write return value()\n");
 		exit(PTS_FAIL);
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS) ;
 	ret = aio_error(&aiocb);
 
-	if (ret != EBADF)
-	{
+	if (ret != EBADF) {
 		printf(TNAME " errno is not EBADF %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

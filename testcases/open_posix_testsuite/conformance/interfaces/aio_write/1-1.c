@@ -41,7 +41,7 @@ int main()
 	char tmpfname[256];
 #define BUF_SIZE 512
 	char buf[BUF_SIZE];
-	char check[BUF_SIZE+1];
+	char check[BUF_SIZE + 1];
 	int fd;
 	struct aiocb aiocb;
 	int err;
@@ -51,11 +51,10 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_write_1_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
@@ -68,28 +67,25 @@ int main()
 	aiocb.aio_buf = buf;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb) == -1)
-	{
+	if (aio_write(&aiocb) == -1) {
 		printf(TNAME " Error at aio_write(): %s\n", strerror(errno));
 		close(fd);
 		exit(PTS_FAIL);
 	}
 
 	/* Wait until completion */
-	while (aio_error (&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS) ;
 
 	err = aio_error(&aiocb);
 	ret = aio_return(&aiocb);
 
-	if (err != 0)
-	{
-		printf (TNAME " Error at aio_error() : %s\n", strerror (err));
-		close (fd);
+	if (err != 0) {
+		printf(TNAME " Error at aio_error() : %s\n", strerror(err));
+		close(fd);
 		exit(PTS_FAIL);
 	}
 
-	if (ret != BUF_SIZE)
-	{
+	if (ret != BUF_SIZE) {
 		printf(TNAME " Error at aio_return()\n");
 		close(fd);
 		exit(PTS_FAIL);
@@ -97,10 +93,8 @@ int main()
 
 	/* check the values written */
 
-	if (lseek(fd, 0, SEEK_SET) == -1)
-	{
-		printf(TNAME " Error at lseek(): %s\n",
-		       strerror(errno));
+	if (lseek(fd, 0, SEEK_SET) == -1) {
+		printf(TNAME " Error at lseek(): %s\n", strerror(errno));
 		close(fd);
 		exit(PTS_FAIL);
 	}
@@ -108,29 +102,25 @@ int main()
 	/* we try to read more than we wrote to be sure of the size written */
 
 	check[BUF_SIZE] = 1;
-	if (read(fd, check, BUF_SIZE + 1) != BUF_SIZE)
-	{
-		printf(TNAME " Error at read(): %s\n",
-		       strerror(errno));
+	if (read(fd, check, BUF_SIZE + 1) != BUF_SIZE) {
+		printf(TNAME " Error at read(): %s\n", strerror(errno));
 		close(fd);
 		exit(PTS_FAIL);
 	}
 
-	if (check[BUF_SIZE] != 1)
-	{
+	if (check[BUF_SIZE] != 1) {
 		printf(TNAME " Buffer overflow\n");
 		close(fd);
 		exit(PTS_FAIL);
 	}
 
-	if (memcmp(buf, check, BUF_SIZE))
-	{
+	if (memcmp(buf, check, BUF_SIZE)) {
 		printf(TNAME " Bad value in buffer\n");
 		close(fd);
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

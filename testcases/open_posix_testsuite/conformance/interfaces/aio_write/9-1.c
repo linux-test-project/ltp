@@ -50,14 +50,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_write_9_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -69,33 +66,33 @@ int main()
 	aiocb.aio_offset = -1;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb) != -1)
-	{
-		while (aio_error (&aiocb) == EINPROGRESS);
+	if (aio_write(&aiocb) != -1) {
+		while (aio_error(&aiocb) == EINPROGRESS) ;
 
-		int err = aio_error (&aiocb);
-		int ret = aio_return (&aiocb);
+		int err = aio_error(&aiocb);
+		int ret = aio_return(&aiocb);
 
 		if (ret != -1) {
 			printf(TNAME " bad aio_write return value\n");
-			close (fd);
+			close(fd);
 			exit(PTS_FAIL);
 		} else if (err != EINVAL) {
-			printf(TNAME " error code is not EINVAL %s\n", strerror(errno));
-			close (fd);
+			printf(TNAME " error code is not EINVAL %s\n",
+			       strerror(errno));
+			close(fd);
 			exit(PTS_FAIL);
 		}
-	}  else {
+	} else {
 
-		if (errno != EINVAL)
-		{
-			printf(TNAME " errno is not EINVAL %s\n", strerror(errno));
+		if (errno != EINVAL) {
+			printf(TNAME " errno is not EINVAL %s\n",
+			       strerror(errno));
 			close(fd);
 			exit(PTS_FAIL);
 		}
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

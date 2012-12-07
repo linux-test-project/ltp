@@ -50,60 +50,57 @@ int main()
 	int err;
 	int ret;
 
-	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L || sysconf(_SC_AIO_MAX) == -1)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L
+	    || sysconf(_SC_AIO_MAX) == -1)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_write_4_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	for (i=0; i<NUM_AIOCBS;i++) {
+	for (i = 0; i < NUM_AIOCBS; i++) {
 		memset(&aiocbs[i], 0, sizeof(struct aiocb));
 		aiocbs[i].aio_fildes = fd;
 		aiocbs[i].aio_buf = buf;
 		aiocbs[i].aio_nbytes = BUF_SIZE;
 
-		last_req = i+1;
+		last_req = i + 1;
 
-		if ((ret = aio_write(&aiocbs[i])) == -1)
-		{
+		ret = aio_write(&aiocbs[i]);
+		if (ret == -1)
 			break;
-		}
 	}
 
-	for (i=0; i<last_req-1; i++)
-	{
+	for (i = 0; i < last_req - 1; i++) {
 		err = aio_error(&aiocbs[i]);
 		ret = aio_return(&aiocbs[i]);
 
 	}
 
-	if (last_req == NUM_AIOCBS)
-	{
-		printf(TNAME " Could not fail queuing %d request\n", NUM_AIOCBS);
-		close (fd);
+	if (last_req == NUM_AIOCBS) {
+		printf(TNAME " Could not fail queuing %d request\n",
+		       NUM_AIOCBS);
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	printf ("Failed at %d\n", last_req);
+	printf("Failed at %d\n", last_req);
 
 	if ((ret != -1) && (errno != EAGAIN)) {
-		printf(TNAME " failed with code %d: %s\n", errno, strerror (errno));
-		close (fd);
+		printf(TNAME " failed with code %d: %s\n", errno,
+		       strerror(errno));
+		close(fd);
 		exit(PTS_FAIL);
 	}
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }

@@ -42,20 +42,17 @@ int main()
 	char buf[BUF_SIZE];
 	int fd;
 	struct aiocb aiocb;
-	int ret=0;
+	int ret = 0;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_write_8_2_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDONLY | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDONLY | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -72,22 +69,20 @@ int main()
 	 * and should be collected by aio_error()
 	 */
 
-	if (aio_write(&aiocb) != 0)
-	{
+	if (aio_write(&aiocb) != 0) {
 		printf(TNAME " bad aio_write return value()\n");
 		exit(PTS_FAIL);
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS) ;
 	ret = aio_error(&aiocb);
 
-	if (ret != EBADF)
-	{
+	if (ret != EBADF) {
 		printf(TNAME " errno is not EBADF %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
