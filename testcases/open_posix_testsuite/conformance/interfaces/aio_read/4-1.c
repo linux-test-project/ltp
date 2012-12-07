@@ -37,7 +37,7 @@ int main()
 {
 	char tmpfname[256];
 #define BUF_SIZE 512
-	unsigned char buf[BUF_SIZE*2];
+	unsigned char buf[BUF_SIZE * 2];
 	unsigned char check[BUF_SIZE];
 	int fd;
 	struct aiocb aiocb;
@@ -47,13 +47,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_read_4_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -62,9 +60,8 @@ int main()
 	memset(&buf[0], 1, BUF_SIZE);
 	memset(&buf[BUF_SIZE], 2, BUF_SIZE);
 
-	if (write(fd, buf, BUF_SIZE*2) != BUF_SIZE*2) {
-		printf(TNAME " Error at write(): %s\n",
-		       strerror(errno));
+	if (write(fd, buf, BUF_SIZE * 2) != BUF_SIZE * 2) {
+		printf(TNAME " Error at write(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -76,8 +73,7 @@ int main()
 	aiocb.aio_offset = BUF_SIZE;
 
 	if (aio_read(&aiocb) == -1) {
-		printf(TNAME " Error at aio_read(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at aio_read(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
@@ -85,7 +81,7 @@ int main()
 	int ret;
 
 	/* Wait until end of transaction */
-	while ((err = aio_error(&aiocb)) == EINPROGRESS);
+	while ((err = aio_error(&aiocb)) == EINPROGRESS) ;
 
 	err = aio_error(&aiocb);
 	ret = aio_return(&aiocb);

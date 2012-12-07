@@ -48,21 +48,18 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_read_11_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
 	if (write(fd, buf, BUF_SIZE) != BUF_SIZE) {
-		printf(TNAME " Error at write(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at write(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -73,7 +70,7 @@ int main()
 	aiocb.aio_nbytes = BUF_SIZE;
 
 	if (aio_read(&aiocb) != -1) {
-		while (aio_error(&aiocb) == EINPROGRESS);
+		while (aio_error(&aiocb) == EINPROGRESS) ;
 
 		int err = aio_error(&aiocb);
 		int ret = aio_return(&aiocb);

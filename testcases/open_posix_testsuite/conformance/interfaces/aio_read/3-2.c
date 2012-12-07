@@ -45,21 +45,18 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_read_3_2_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	if (write(fd, buf, BUF_SIZE/2) != BUF_SIZE/2) {
-		printf(TNAME " Error at write(): %s\n",
-		       strerror(errno));
+	if (write(fd, buf, BUF_SIZE / 2) != BUF_SIZE / 2) {
+		printf(TNAME " Error at write(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -71,24 +68,23 @@ int main()
 	aiocb.aio_nbytes = BUF_SIZE;
 
 	if (aio_read(&aiocb) == -1) {
-		printf(TNAME " Error at aio_read(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at aio_read(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	/* Wait for request completion */
-	while (aio_error(&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS) ;
 
 	/* error status shall be 0 and return status shall be BUF_SIZE/2 */
 
-	while (aio_error(&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS) ;
 
 	if (aio_error(&aiocb) != 0) {
 		printf(TNAME " Error at aio_error()\n");
 		exit(PTS_FAIL);
 	}
 
-	if (aio_return(&aiocb) != BUF_SIZE/2) {
+	if (aio_return(&aiocb) != BUF_SIZE / 2) {
 		printf(TNAME " Error at aio_return()\n");
 		exit(PTS_FAIL);
 	}

@@ -50,25 +50,23 @@ int main()
 	int err;
 	int ret;
 
-	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L || sysconf(_SC_AIO_MAX) == -1)
+	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L
+	    || sysconf(_SC_AIO_MAX) == -1)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_write_4_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
 	if (write(fd, buf, BUF_SIZE) != BUF_SIZE) {
-		printf(TNAME " Error at write(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at write(): %s\n", strerror(errno));
 		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
@@ -79,7 +77,7 @@ int main()
 		aiocbs[i].aio_buf = buf;
 		aiocbs[i].aio_nbytes = BUF_SIZE;
 
-		last_req = i+1;
+		last_req = i + 1;
 
 		ret = aio_read(&aiocbs[i]);
 		if (ret == -1)

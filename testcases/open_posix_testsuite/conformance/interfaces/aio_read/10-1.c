@@ -61,7 +61,7 @@ int main()
 		exit(PTS_FAIL);
 	}
 
-	while (aio_error(&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS) ;
 	ret = aio_error(&aiocb);
 
 	if (ret != EBADF) {

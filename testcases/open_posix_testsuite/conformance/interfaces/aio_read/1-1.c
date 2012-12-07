@@ -50,24 +50,21 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_read_1_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	for (i = 0; i < WBUF_SIZE/256; i++)
-		memset(&buf[i*256], i+1, 256);
+	for (i = 0; i < WBUF_SIZE / 256; i++)
+		memset(&buf[i * 256], i + 1, 256);
 
 	if (write(fd, buf, WBUF_SIZE) != WBUF_SIZE) {
-		printf(TNAME " Error at write(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at write(): %s\n", strerror(errno));
 		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
@@ -79,13 +76,12 @@ int main()
 	aiocb.aio_offset = 512;
 
 	if (aio_read(&aiocb) == -1) {
-		printf(TNAME " Error at aio_read(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at aio_read(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
 	/* Wait until end of transaction */
-	while ((err = aio_error(&aiocb)) == EINPROGRESS);
+	while ((err = aio_error(&aiocb)) == EINPROGRESS) ;
 
 	err = aio_error(&aiocb);
 	ret = aio_return(&aiocb);
