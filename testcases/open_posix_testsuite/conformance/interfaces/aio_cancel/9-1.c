@@ -39,18 +39,16 @@ int main()
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	if (aio_cancel(-1, NULL) != -1)
-	{
+	if (aio_cancel(-1, NULL) != -1) {
 		printf(TNAME " bad aio_cancel return value()\n");
 		return PTS_FAIL;
 	}
 
-	if (errno == 0)
-	{
+	if (errno == 0) {
 		printf(TNAME " bad errno value()\n");
 		return PTS_FAIL;
 	}
 
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

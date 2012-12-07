@@ -56,14 +56,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_5_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
 
@@ -71,18 +68,15 @@ int main()
 
 	/* create AIO req */
 
-	for (i = 0; i < BUF_NB; i++)
-	{
+	for (i = 0; i < BUF_NB; i++) {
 		aiocb[i] = malloc(sizeof(struct aiocb));
-		if (aiocb[i] == NULL)
-		{
+		if (aiocb[i] == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
 			       strerror(errno));
 			return PTS_UNRESOLVED;
 		}
 		buf[i] = malloc(BUF_SIZE);
-		if (buf[i] == NULL)
-		{
+		if (buf[i] == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
 			       strerror(errno));
 			return PTS_UNRESOLVED;
@@ -93,8 +87,7 @@ int main()
 		aiocb[i]->aio_offset = 0;
 		aiocb[i]->aio_sigevent.sigev_notify = SIGEV_NONE;
 
-		if (aio_write(aiocb[i]) == -1)
-		{
+		if (aio_write(aiocb[i]) == -1) {
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
 			       i, strerror(errno));
 			return PTS_FAIL;
@@ -105,10 +98,8 @@ int main()
 	 * we hope to have enough time to cancel at least one
 	 */
 
-	if (aio_cancel(fd, NULL) == -1)
-	{
-		printf(TNAME " Error at aio_cancel(): %s\n",
-		       strerror(errno));
+	if (aio_cancel(fd, NULL) == -1) {
+		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
 
@@ -117,20 +108,16 @@ int main()
 	check_one = 0;
 	do {
 		in_progress = 0;
-		for (i = 0; i < BUF_NB; i++)
-		{
+		for (i = 0; i < BUF_NB; i++) {
 			int ret;
 
 			ret = (aio_error(aiocb[i]));
 
-			if (ret == -1)
-			{
+			if (ret == -1) {
 				printf(TNAME " Error at aio_error(): %s\n",
-		       			strerror(errno));
+				       strerror(errno));
 				return PTS_FAIL;
-			}
-			else if ((ret == EINPROGRESS) || (ret == 0))
-			{
+			} else if ((ret == EINPROGRESS) || (ret == 0)) {
 				if (ret == EINPROGRESS)
 					in_progress = 1;
 
@@ -143,8 +130,7 @@ int main()
 				    (aiocb[i]->aio_nbytes != BUF_SIZE) ||
 				    (aiocb[i]->aio_offset != 0) ||
 				    (aiocb[i]->aio_sigevent.sigev_notify !=
-				     SIGEV_NONE))
-				{
+				     SIGEV_NONE)) {
 					printf(TNAME " aiocbp modified\n");
 					return PTS_FAIL;
 				}

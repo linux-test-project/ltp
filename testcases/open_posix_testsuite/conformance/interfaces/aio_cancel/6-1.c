@@ -58,14 +58,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_6_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
 
@@ -73,29 +70,25 @@ int main()
 
 	/* create AIO req */
 
-	for (i = 0; i < BUF_NB; i++)
-	{
+	for (i = 0; i < BUF_NB; i++) {
 		aiocb[i] = malloc(sizeof(struct aiocb));
-		if (aiocb[i] == NULL)
-		{
+		if (aiocb[i] == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
-		       		strerror(errno));
+			       strerror(errno));
 			return PTS_UNRESOLVED;
 		}
 		aiocb[i]->aio_fildes = fd;
 		aiocb[i]->aio_buf = malloc(BUF_SIZE);
-		if (aiocb[i]->aio_buf == NULL)
-		{
+		if (aiocb[i]->aio_buf == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
-		       		strerror(errno));
+			       strerror(errno));
 			return PTS_UNRESOLVED;
 		}
 		aiocb[i]->aio_nbytes = BUF_SIZE;
 		aiocb[i]->aio_offset = 0;
 		aiocb[i]->aio_sigevent.sigev_notify = SIGEV_NONE;
 
-		if (aio_write(aiocb[i]) == -1)
-		{
+		if (aio_write(aiocb[i]) == -1) {
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
 			       i, strerror(errno));
 			return PTS_FAIL;
@@ -104,12 +97,10 @@ int main()
 
 	/* try to cancel the last one queued */
 
-	gret = aio_cancel(fd, aiocb[i-1]);
+	gret = aio_cancel(fd, aiocb[i - 1]);
 
-	if (gret == -1)
-	{
-		printf(TNAME " Error at aio_cancel(): %s\n",
-		       strerror(errno));
+	if (gret == -1) {
+		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
 
@@ -117,37 +108,33 @@ int main()
 
 	do {
 		in_progress = 0;
-		for (i = 0; i < BUF_NB; i++)
-		{
+		for (i = 0; i < BUF_NB; i++) {
 			int ret;
 
 			ret = (aio_error(aiocb[i]));
 
-			if (ret == -1)
-			{
+			if (ret == -1) {
 				printf(TNAME " Error at aio_error(): %s\n",
-		       			strerror(errno));
+				       strerror(errno));
 				return PTS_FAIL;
-			}
-			else if (ret == EINPROGRESS)
+			} else if (ret == EINPROGRESS)
 				in_progress = 1;
-			else if (ret == ECANCELED)
-			{
-				if (gret == AIO_CANCELED)
-				{
-					printf ("Test PASSED\n");
+			else if (ret == ECANCELED) {
+				if (gret == AIO_CANCELED) {
+					printf("Test PASSED\n");
 					return PTS_PASS;
 				}
 
-				printf(TNAME " aio_cancel() is not AIO_CANCELED\n");
+				printf(TNAME
+				       " aio_cancel() is not AIO_CANCELED\n");
 				return PTS_FAIL;
 			}
 		}
 	} while (in_progress);
 
-	if (gret == AIO_CANCELED)
-	{
-		printf(TNAME " aio_cancel() is AIO_CANCELED without ECANCELED\n");
+	if (gret == AIO_CANCELED) {
+		printf(TNAME
+		       " aio_cancel() is AIO_CANCELED without ECANCELED\n");
 		return PTS_FAIL;
 	}
 

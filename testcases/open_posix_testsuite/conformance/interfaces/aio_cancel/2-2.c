@@ -45,27 +45,22 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_2_2_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
 
 	unlink(tmpfname);
 
-	if (aio_cancel(fd, NULL) == -1)
-	{
-		printf(TNAME " Error at aio_cancel(): %s\n",
-		       strerror(errno));
+	if (aio_cancel(fd, NULL) == -1) {
+		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

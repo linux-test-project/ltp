@@ -56,13 +56,11 @@ int main(void)
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_7_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
 
@@ -106,8 +104,7 @@ int main(void)
 	 */
 	gret = aio_cancel(fd, NULL);
 	if (gret == -1) {
-		printf(TNAME " Error at aio_cancel(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
 		close(fd);
 		return PTS_FAIL;
 	}
@@ -123,7 +120,7 @@ int main(void)
 				       strerror(errno));
 				close(fd);
 				return PTS_FAIL;
-			break;
+				break;
 			case EINPROGRESS:
 				/* at this point, all operations should be:
 				 *    canceled
@@ -131,14 +128,15 @@ int main(void)
 				 *    with aio_cancel() == AIO_NOTCANCELED
 				 */
 				if (gret != AIO_NOTCANCELED) {
-					printf(TNAME " Error at aio_error(): %s\n",
+					printf(TNAME
+					       " Error at aio_error(): %s\n",
 					       strerror(errno));
 					close(fd);
 					return PTS_FAIL;
 				}
 
 				in_progress = 1;
-			break;
+				break;
 			case 0:
 				/* we seek one not canceled and check why.
 				 * (perhaps) it has not been canceled
@@ -150,7 +148,7 @@ int main(void)
 					close(fd);
 					return PTS_PASS;
 				}
-			break;
+				break;
 			}
 		}
 	} while (in_progress);
