@@ -35,13 +35,11 @@ int main()
 		return PTS_UNSUPPORTED;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_fsync_3_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -53,8 +51,7 @@ int main()
 	aiocb_write.aio_nbytes = BUF_SIZE;
 
 	if (aio_write(&aiocb_write) == -1) {
-		printf(TNAME " Error at aio_write(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at aio_write(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
